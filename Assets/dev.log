@@ -1,0 +1,307 @@
+
+
+Close targets:
+
+Do I need Countre-special needs OR NOT? - Not
+
+Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, exclude Artisan, Clerics and Goverment), no equal rights (meaning, poor strata gaves tax to Aristocrats ). Farmers are free (Serfdom abolited reform) than they just pay feodal tax to aristocrats. Add special SERf unit.
+Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
+
+
++ proper resource readings
+> factory panel stuff
+> not null conditions on reforms
+- factories have no time to rise salary to compete workforce
+
+> make factory efficiency modifiers and GUY
+> clear folder structure
+
+>? hovering
+> add english-style for name generator
+> make demo?
+
+> add caption for panels
+
+* loyalty broke and growth
++ double ray trace
++ centre camera on map
++ Make UI confortabl
++ Windows rehiding
+
+* make not-blake Panels
+* tooltip blocks clicks and glitch
++ find middlepoint of mesh. Bugs caused by polygons Crawling
+* bigger province names
+
+> deal with string builders
+
+
+
+- broke nat economy fabric update? No it never was implemented
+- factory upgardes only for money, not for resurces
+
+> make something with people votes
+
++ reverse triangles
++ dont hide shit in tables
++ make getConditions ()/ WhyCant() for tooltips
++ make some factory for getConditions?
++ make some factory for getConditions?
+
++ separate building & construction in fabrics
+* ToRemove fabric works with delay
+* don't change windows order
++ name gen
++ show factory window on build
+
+! Dont do  anti-cheat protection for now
+- map turn -Forget for Now
+- scale prefabs 
+- fast clicking on windows make them move
+
+
+* politics panel disappear
+> education & POp efficency
+
+? add cross connection in pop - reform?
+> improve pop opinions on reforms, including isMyStatusEnchanced
+> change loyalty properly on reform passin, including change pop staus penalty (in modifiers?), ignored pop opinion penalty (different with Deomocrace)
+> stop politics reform update on every tick
++ division by class in voting description
+
++ politics
++ votings, lol
+
++ shown reform
+* 100% tax is not working
++ get rid of capitalism
+
+
+> min wage reform
+> restore ToolTip basuc functional 
+
+
+> steam power
+> beurocracy
+
+> deal with ToString
+> deal with Enumerates
+
+* broken luxury fullfiling for aristos. Not realy. It just unsimetrical consumprion price
+
+* some fabrics want get money? - Market lost money
+> make this day stats in trade
+- disbalance in Food trade?
+
+> consuming ind. goods without capitalism
+> farmers should eat unsoled goods
+
+* Buyes with new DSB don't get 100% consumption due to some calculation errror --- roundation error - Actualy, reasons is Population growth
+* NeedsFullfilled on lifeneeds - strange 0.33 overflow. Was wron literal
+
+* taxes not payed after full consumption!
+* workers sell food
+* fucking clothes in getEnumerator
+* tribemen don't pay taxes? cause they don't have money income. Make inCapitalism in pop. Let them pay food
++ that blyat todo!!
++ optimize getEffectiveDemand and getSupply by turn
+* Unsold bugged in factories. Dsb gone crazy
+* consuming goods from nowhere
+* ??DSb bagged - becase based on last turn data Even in interface, probabaly error in LED, also - recursion
+* made getSupply based on last turn, trade screwed up. Just don\t cjange demand a lot?
+
+
+
+++ got rid of selller circle
++ give aristocrats and others perma consumption. Including Capitalism
+* buyers cant buy on goods overstock without Capitalism. And even after capitalism invented. Roundation error. Get rid of celler circle?
+
++ allowed buying from non-producer (Aristocrats)
+* Tribesmen dont sell goods. Connect consumption and producing
++ Storage now not emptifyed (except fabrics)
+
+?? price class?
+> factory capitalism mess
+- profit outchecks in non-capitalism
+
+
+>+- make random search for new fabric
+
++ build panel
++ reserv money in half - country
+* mess with owner & owner
+
+> needs of non-invented goods?
+
+- price stuck in middle range with zero supply
+> refactor invest
+> 3d borders markup
+> Meshs roundation
+
+! danger multitreading in Invention panel
+
+? inventions dependicies
+* inventions in code buying from nowhere without inventions. Reason - nottypised comprasion of storages
++ refactor Buy
++ Inventions window
+* bagged Cap income
+
+> make scale for price graph
+> change PrimitiveStorage to some dictionary
+> replace all options in Game.
+
+- same sallary factories - bugged hiring
+- consumption flactuation based on price change/ May be, if prices are about same then buy both goods?
+- broken buying order for posp. Not really, its just how PrimitiveStotage works
+>? bonuses for resorce factories?
+* people don\t want to buy expensive unproduced goods
+- factories flush workforce from resource factories.
+>Fix getInput on last turn hiring && fix mess?
+> should factory drop workforce on small input?
+> Should factory cut buying if there is not enough other resources?
+> remove workforce flactuation on fabrics
+> factory build refinancing from loans?
+
++ background running
+* production window does not refresh
+* production windows popup
+* what is factoryWants is negate?
++ build factories not only on unemployment
+
+- strange unemployment bug. fires people with profit. 
+? double control on workforce - by sallary & profit
+- factory circled on not dropping sallaries & drop workforce
+- factory does not drop workforce on unprofit
+
+> NOT ACTUAL WITH NEW DSB price changing basin on DSB procent 
++ in future add level for factories
+* why not work on first sim - initialize everything
+
+- money lick - Caused by tax somehow and by high prices overload with self selling
+
+> rich aristos can promote into capitalist too
+
+! HowMuchAvailable doest work with new DSB
+
+* iput factor broken in factories. HowMuchAvailable is broken
++ factories bonuses
++ refactor factory efficiency
+++ Switched on new DSB calculations based on real last turn consumption
++ Make new level factories available
++ make fractal worker hiring
+* NeedsFullfilled wrong calculation
+
++ pops should have same needs, for now
+* double demotions 
+* demotion in poorest direction
+
++ factory reopen
++ close factory and fix panel data
++ freshly open factory cant hire people
+* why furniture? was DSB bug to 1
+
++ overpopulation for farmers
++ remove getUnemployment in Invest
++ add auto forestry
++ banking
++ capitalists
++ factory upgrade
+
++ unemployment
++ tostring for debagging
++ initial money
+* salary drop
+* consumes goods from nothere
+
+> bigger lags are from sorting needs
+> improve price changing speed
++ change needs buying ordr for pops. Order by avaqilability is imposible due to  double check on DSB limits
+
++ make windows appear on right place, and windows order
+* pop pnael not refreshing on pop spawn And others
+
+* Buys less than can becouse of wrong DSB use. Turned off DSB forcing. Changed DSB. Change shortage deal
+* market disbalance - Either remove needs order OR calc demand by stages for POPs - EffectiveDemand calculation does not take in account money !!
+
+- !!!! Factory order is important for producing, since it uses same data
+spend on previous expences.
+
+
+- When loose supplay on food - all consumption is gone. Remove it or make price growh faster? 
+	High price on food doesnt work really.
+	Dont allow food shortage to happen?
+
+> partial table refresh
+
+> resources decay
+
+> Incapsulate all shit
+- populatio must be  class
+- roundations sucs
+
+> do strong type checks
+- left provinces napolzaut and broken centres
+
+? autoAdd  Aristocrast on attemp to pay them - NO!
+? Change Needs to one array??
+? Trade inven tion??
+?? make farms act like factories from begginng?
+
+- ban substrac float
+- get rare roundation mistakes in BUY by float in BUY
+? wrong province spawn coused by getRichestDemotionTarget (Onky happened intestting?)
+> proper pop unit spawn
+> check all divisions
+-? might have problems with changing enlisted Storages. Need proper .copy or something, specificly in Set(Storage)
+> work on common scheme
+
++ better workforce management
+* lumber unsold at sawmill. Why discapculated? + zavjishen consume fixed with ForceDSBRecalculation
+* remove inheritance in factory?
++ Optimize factory iput storage and BasicProduction
++ factory profit & sallary
+* rewrite factory consumption for real inputs
+* wrong efficience calculation if there is exta workers
+
++ better price change
++ equal workforce distribution
++ factories list
++ factory prodicing depends on input
++ proper needs fullfilling
++ world market
+
+* storage overflow
+* needs bug with goods availabilility
+* strange tax pay ment 0.08 * n
+* wallet overflowed
+
+* endless selling
+* country wallet
+
++ trade screen
++ movable window
+* suprisingly vanishing provinces
+* dont treat gold as usual goods
+
++ and make wallet strong typised
++ set zero to producedlastTurn in fabrics
+* tribe production
+* not sending gold
+
+* cant select prov n 1
++ factories
++ farming
++ downvert + strings
+
++ pop growth
+* Pop unit Panel refresh
+* merging in wrong province
++ storage/income transfer
++ arisocrat tax
++ popunit info
+
+* zero cell
+* exeption
+* Scrolview movement
++ produce line
++ procent line (probably. do a shadow of value)

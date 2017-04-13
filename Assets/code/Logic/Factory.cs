@@ -1,0 +1,1105 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System;
+public class Factory : Producer
+{
+    //public enum PopTypes { Forestry, GoldMine, MetalMine };
+    //public PopTypes type;
+    internal FactoryType type;
+    protected static uint workForcePerLevel = 1000;
+    protected byte level = 0;
+    /// <summary>shownFactory in a process of building - level 1 </summary>
+    private bool building = true;
+    private bool upgrading = false;
+    private bool working = false;
+    private bool toRemove = false;
+
+    protected Value salary = new Value(0);
+    internal Owner factoryOwner;
+    internal PrimitiveStorageSet needsToUpgrade;
+    protected List<PopLinkage> workForce = new List<PopLinkage>();
+    private static int xMoneyReservForResources = 10;
+    private uint daysInConstruction;
+    private uint daysUnprofitable;
+    private uint daysClosed;
+    internal bool justHiredPeople;
+    private int hiredLastTurn;
+    internal Condition conditionsUpgrade;
+    internal Condition conditionsBuild;
+    internal Factory(Province iprovince, Owner inowner, FactoryType intype)
+    { //assuming this is level 0 building
+        type = intype;
+        //building = true;
+        //working = false;
+        needsToUpgrade = type.getBuildNeeds();
+        iprovince.allFactories.Add(this);
+        //if (inowner is PopUnit)
+        //    factoryOwner = (PopUnit)inowner;
+        //else
+        //    owner = (Country)inowner;
+        factoryOwner = inowner;
+        province = iprovince;
+
+        gainGoodsThisTurn = new Storage(type.basicProduction.getProduct());
+        storageNow = new Storage(type.basicProduction.getProduct());
+        sentToMarket = new Storage(type.basicProduction.getProduct());
+
+        conditionsUpgrade = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),            
+            new ConditionString(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
+            new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+            new ConditionString(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+            new ConditionString(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
+            new ConditionString(delegate (Owner forWhom) {
+                 Value cost = this.getUpgradeCost();
+                return forWhom.wallet.canPay(cost);}, "Have money " + getUpgradeCost(), true)
+        });
+        
+    }
+    internal Procent getResouceFullfillig()
+    {
+        return new Procent(getInputFactor());
+    }
+    internal byte getLevel()
+    {
+        return level;
+    }
+    internal bool isUpgrading()
+    {
+        return upgrading;//building ||
+    }
+    internal bool isBuilding()
+    {
+        return building;
+    }
+    override public string ToString()
+    {
+        return type.name + " L" + getLevel();
+    }
+    internal Wallet getOwnerWallet()
+    {
+        //if (factoryOwner != null) return factoryOwner.wallet;
+        //else return factoryOwner.wallet;
+        return factoryOwner.wallet;
+    }
+    //abstract internal string getName();
+    public override void simulate()
+    {
+        //hireWorkForce();
+        //produce();
+        //payTaxes();
+        //paySalary();
+        //consume();
+
+    }
+    /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
+    override internal float getLocalEffectiveDemand(Product product)
+    {
+        // TODO take in mind work force and others..
+        // need to know huw much i Consumed inside my needs
+        Storage need = type.resourceInput.findStorage(product);
+        if (need != null)
+        {
+            Storage realNeed = new Storage(need.getProduct(), need.get() * getWorkForceFullFilling());
+            //Storage realNeed = new Storage(need.getProduct(), need.get() * getInputFactor());
+            Storage canAfford = wallet.HowMuchCanAfford(realNeed);
+            return canAfford.get();
+        }
+        else return 0f;
+    }
+
+
+
+    /// <summary>
+    /// Should optimize? Seek for changes..
+    /// </summary>
+    /// <returns></returns>
+    public uint getWorkForce()
+    {
+        uint result = 0;
+        foreach (PopLinkage pop in workForce)
+            result += pop.amount;
+        return result;
+    }
+    public void HireWorkforce(uint amount, List<PopUnit> popList)
+    {
+        //check on no too much workers?
+        //if (amount > HowMuchWorkForceWants())
+        //    amount = HowMuchWorkForceWants();
+        uint wasWorkforce = getWorkForce();
+        workForce.Clear();
+        if (amount > 0)
+        {
+
+            uint leftToHire = amount;
+            foreach (PopUnit pop in popList)
+            {
+                if (pop.population >= leftToHire) // satisfied demand
+                {
+                    workForce.Add(new PopLinkage(pop, leftToHire));
+                    hiredLastTurn = (int)getWorkForce() - (int)wasWorkforce;
+                    break;
+                }
+                else
+                {
+                    workForce.Add(new PopLinkage(pop, pop.population)); // hire as we can
+                    leftToHire -= pop.population;
+                }
+            }
+            hiredLastTurn = (int)getWorkForce() - (int)wasWorkforce;
+        }
+    }
+
+    internal uint HowManyEmployed(PopUnit pop)
+    {
+        uint result = 0;
+        foreach (PopLinkage link in workForce)
+            if (link.pop == pop)
+                result += link.amount;
+        return result;
+    }
+    internal bool IsThereMoreWorkersToHire()
+    {
+        uint totalAmountWorkers = province.FindPopulationAmountByType(PopType.workers);
+        uint result = totalAmountWorkers - getWorkForce();
+        return (result > 0);
+    }
+    internal uint getFreeJobSpace()
+    {
+        return getMaxWorkforceCapacity() - getWorkForce();
+    }
+    internal bool ThereIsSpaceToHireMore()
+    {
+        //if there is other pops && there is space on shownFactory
+        // uint totalAmountWorkers = province.FindPopulationAmountByType(PopType.workers);
+        uint freeSpace = getMaxWorkforceCapacity() - getWorkForce();
+        if (freeSpace > 0 && IsThereMoreWorkersToHire())
+            return true;
+        else
+            return false;
+
+    }
+
+    internal void paySalary()
+    {
+        //if (getLevel() > 0)
+        if (isWorking())
+        {
+            // per 1000 men
+            Storage foodSalary = new Storage(Product.Food, 1f);
+            // Value moneySalary = new Value(0.8f);
+            //if (province.owner.isInvented(InventionType.capitalism))
+            if (province.owner.economy.isMarket())
+            {
+                foreach (PopLinkage link in workForce)
+                {
+                    Value howMuchPay = new Value(0);
+                    howMuchPay.set(salary.get() * link.amount / 1000f);
+                    if (wallet.canPay(howMuchPay))
+                    {
+                        wallet.pay(link.pop.wallet, howMuchPay);
+                        //link.pop.producedLastTurn.add(howMuchPay);
+                    }
+                    else
+                        salary.set(province.owner.getMinSalary());
+                    //todo else dont pay if there is nothing to pay
+                }
+            }
+            else
+            {
+                // non market
+                foreach (PopLinkage link in workForce)
+                {
+                    Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.amount / 1000f);
+                    if (factoryOwner is Country)
+                    {
+                        Country payer = factoryOwner as Country;
+
+                        if (payer.storageSet.has(howMuchPay))
+                        {
+                            payer.storageSet.pay(link.pop.storageNow, howMuchPay);
+                            link.pop.gainGoodsThisTurn.add(howMuchPay);
+                            salary.set(foodSalary);
+                        }
+                        else salary.set(0);
+                    }
+                    else // assuming - PopUnit
+                    {
+                        PopUnit payer = factoryOwner as PopUnit;
+
+                        if (payer.storageNow.canPay(link.pop.storageNow, howMuchPay))
+                        {
+                            payer.storageNow.pay(link.pop.storageNow, howMuchPay);
+                            link.pop.gainGoodsThisTurn.add(howMuchPay);
+                            salary.set(foodSalary);
+                        }
+                        else salary.set(0);
+                    }
+                    //else dont pay if there is nothing to pay
+                }
+            }
+        }
+    }
+    internal float getProfit()
+    {
+        float z = wallet.moneyIncomethisTurn.get() - getConsumedCost() - getSalaryCost();
+        return z;
+    }
+    internal Procent getMargin()
+    {
+        float x = getProfit() / (getUpgradeCost().get() * level);
+        return new Procent(x);
+    }
+    internal Value getUpgradeCost()
+    {
+        return Game.market.getCost(type.getUpgradeNeeds());
+    }
+    internal float getConsumedCost()
+    {
+        float result = 0f;
+        foreach (Storage stor in consumedTotal)
+            result += stor.get() * Game.market.findPrice(stor.getProduct()).get();
+        return result;
+    }
+    /// <summary>
+    /// Feels storageNow and gainGoodsThisTurn
+    /// </summary>
+    public override void produce()
+    {
+        //if (getLevel() > 0)
+        if (isWorking())
+        {
+            uint workers = getWorkForce();
+            if (workers > 0)
+            {
+                Value producedAmount;
+                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get());
+
+                storageNow.add(producedAmount);
+                gainGoodsThisTurn.set(producedAmount);
+
+
+
+                if (type == FactoryType.GoldMine)
+                //if (province.owner.isInvented(InventionType.capitalism))
+                {
+
+                    this.wallet.ConvertFromGoldAndAdd(storageNow);
+                    //send 50% to government
+                    wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
+                }
+                //else // send all production to owner
+                //    storageNow.sendAll(province.owner.storageSet);
+                else
+                {
+                    sentToMarket.set(gainGoodsThisTurn);
+                    storageNow.set(0f);
+                    Game.market.tmpMarketStorage.add(gainGoodsThisTurn);
+                }
+
+                //if (province.owner.isInvented(InventionType.capitalism))
+                if (province.owner.economy.isMarket())
+                {
+                    // Buyers should come and buy something...
+                    // its in other files.
+                }
+                else // send all production to owner
+                    ; // write ! capitalism
+                      //storageNow.sendAll(owner.storageSet);
+            }
+        }
+    }
+    /// <summary> only make sense if called before HireWorkforce()
+    ///  PEr 1000 men!!!
+    /// !!! Mirroring PaySalary
+    /// </summary>    
+    public float getSalary()
+    {
+        return salary.get();
+    }
+    public uint getMaxWorkforceCapacity()
+    {
+        uint cantakeMax = level * workForcePerLevel;
+        return cantakeMax;
+    }
+    internal void changeSalary()
+    {
+        //if (getLevel() > 0)
+        if (isWorking() && province.owner.economy.isMarket())
+        //        province.owner.isInvented(InventionType.capitalism))
+        {
+            // rise salary to entice workforce
+            if (ThereIsSpaceToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
+                salary.add(0.01f);
+            //too allocate workers form other popTypes
+            if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600 && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
+                salary.add(0.01f);
+            // freshly builded factories should rise salary to concurency with old ones
+            if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
+                salary.add(0.03f);
+            // reduce salary on non-profit
+            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSlaryCut && !justHiredPeople)
+                if (salary.get() - 0.3f >= province.owner.getMinSalary())
+                    salary.subtract(0.3f);
+                else
+                    salary.set(province.owner.getMinSalary());
+        }
+    }
+    /// <summary>
+    /// max - max capacity
+    /// </summary>
+    /// <returns></returns>
+    public uint HowMuchWorkForceWants()
+    {
+        //if (getLevel() == 0) return 0;
+        if (!isWorking()) return 0;
+        uint wants = (uint)Mathf.RoundToInt(getMaxWorkforceCapacity());// * getInputFactor());
+        int difference = (int)wants - (int)getWorkForce();
+
+        if (difference > Game.maxFactoryFireHireSpeed)
+            difference = Game.maxFactoryFireHireSpeed;
+        else
+            if (difference < -1 * Game.maxFactoryFireHireSpeed) difference = -1 * Game.maxFactoryFireHireSpeed;
+
+        //reduce hiring if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
+        if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0))// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
+            difference = -1 * Game.maxFactoryFireHireSpeed;
+        //don't hire more if unprofitable. Even fire some
+        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSlaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
+            difference = -1 * Game.maxFactoryFireHireSpeed;
+        // just dont't hire more..
+        if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f))
+            difference = 0;
+        //todo optimaze getWorkforce()
+        int result = (int)getWorkForce() + difference;
+        if (result < 0) return 0;
+        return (uint)result;
+    }
+    internal int getHowMuchHiredLastTurn()
+    {
+        return hiredLastTurn;
+    }
+    public override void payTaxes() // currently no taxes for factories
+    {
+
+    }
+    internal float getInputFactor()
+    {
+        float inputFactor = 1;
+        List<Storage> realInput = new List<Storage>();
+        Storage available;
+
+        // how much we really want
+        foreach (Storage input in type.resourceInput)
+        {
+            realInput.Add(new Storage(input.getProduct(), input.get() * getWorkForceFullFilling()));
+        }
+
+        // checking if there is enough in market
+        //old DSB
+        //foreach (Storage input in realInput)
+        //{
+        //    available = Game.market.HowMuchAvailable(input);
+        //    if (available.get() < input.get())
+        //        input.set(available);
+        //}
+        foreach (Storage input in realInput)
+        {
+            available = consumedLastTurn.findStorage(input.getProduct());
+            if (available == null)
+                ;// do nothing - pretend there is 100%, it fires only on shownFactory start
+            else
+            if (!justHiredPeople && available.get() < input.get())
+                input.set(available);
+        }
+        // checking if there is enough money to pay for
+        foreach (Storage input in realInput)
+        {
+            Storage howMuchCan = wallet.HowMuchCanAfford(input);
+            input.set(howMuchCan.get());
+        }
+        // searching lowest factor
+        foreach (Storage rInput in realInput)//todo optimize - convert into for i
+        {
+            float newFactor = rInput.get() / (type.resourceInput.findStorage(rInput.getProduct()).get() * getWorkForceFullFilling());
+            if (newFactor < inputFactor)
+                inputFactor = newFactor;
+        }
+
+        return inputFactor;
+    }
+    /// <summary>
+    /// per 1000 men    
+    /// </summary>
+    /// <returns></returns>
+    internal float getWorkForceFullFilling()
+    {
+        return getWorkForce() / (1000f * level);
+    }
+    internal Procent getEfficiency(bool useBonuses)
+    {
+        //limit production by smalest factor
+        float efficency = 0;
+        float workforceProcent = getWorkForceFullFilling();
+        float inputFactor = getInputFactor();
+        if (inputFactor < workforceProcent) efficency = inputFactor;
+        else efficency = workforceProcent;
+        float basicEff = efficency * getLevel();
+        Procent result = new Procent(basicEff);
+        if (useBonuses)
+        {
+            result.add(basicEff * Game.factoryEachLevelEfficiencyBonus);
+            // if (!type.isResourceGathering() && this.type.resourceInput.findStorage(province.resource) != null)
+            if (!type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput))
+                result.add(basicEff * Game.factoryHaveResourceInProvinceBonus);
+        }
+        return result;
+    }
+    // Should remove market assamption since its goes to double- calculation?
+    public List<Storage> getRealNeeds()
+    {
+        //float useFactor = 0;
+        //float inputF = getInputFactor();
+        //float effF = getWorkForceFullFilling();
+        //if (inputF < effF) useFactor = inputF;
+        //else
+        //    useFactor = effF;
+
+        //Value multiplier = new Value(useFactor * level);
+        Value multiplier = new Value(getEfficiency(false).get());
+
+        List<Storage> result = new List<Storage>();
+
+        foreach (Storage next in type.resourceInput)
+        {
+            Storage nStor = new Storage(next.getProduct(), next.get());
+            nStor.multipleInside(multiplier);
+            result.Add(nStor);
+        }
+        return result;
+    }
+    /// <summary>
+    /// Now includes workforce/efficineneece. Here also happening buying dor upgrading\building
+    /// </summary>
+    override public void consume()
+    {
+        //if (getLevel() > 0)
+        if (isWorking())
+        {
+            List<Storage> needs = getRealNeeds();
+
+            //todo !CAPITALISM part
+
+            Game.market.Buy(this, new PrimitiveStorageSet(needs));
+        }
+        if (isUpgrading() || isBuilding())
+        {
+            bool isBuyingComplete = false;
+            daysInConstruction++;
+            bool isMarket = province.owner.economy.isMarket();// province.owner.isInvented(InventionType.capitalism);
+            if (isMarket)
+            {
+                if (isBuilding())
+                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
+                else
+                    if (isUpgrading())
+                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
+                // what if not enough money to complete buildinG?
+                float minimalFond = wallet.haveMoney.get() - 50f;
+
+                if (minimalFond < 0 && getOwnerWallet().canPay(minimalFond * -1f))
+                    getOwnerWallet().pay(this.wallet, new Value(minimalFond * -1f));
+            }
+            if (isBuyingComplete || (!isMarket && daysInConstruction == Game.fabricConstructionTimeWithoutCapitalism))
+            {
+                level++;
+                building = false;
+                upgrading = false;
+                needsToUpgrade.SetZero();
+                daysInConstruction = 0;
+                reopen();
+            }
+            else if (daysInConstruction == Game.maxDaysBuildingBeforeRemoving)
+                if (isBuilding())
+                    markToDestroy();
+                else // upgrading
+                    stopUpgrading();
+
+        }
+    }
+    private void stopUpgrading()
+    {
+        building = false;
+        upgrading = false;
+        needsToUpgrade.SetZero();
+        daysInConstruction = 0;
+    }
+    internal void markToDestroy()
+    {
+        toRemove = true;
+
+        //return loasns only if banking invented
+        if (province.owner.isInvented(InventionType.banking))
+        {
+            Value howMuchToReturn = new Value(loans.get());
+            if (howMuchToReturn.get() < wallet.haveMoney.get())
+                howMuchToReturn.set(wallet.haveMoney.get());
+            province.owner.bank.returnLoan(this, howMuchToReturn);
+        }
+        wallet.pay(getOwnerWallet(), wallet.haveMoney);
+        MainCamera.factoryPanel.removeFactory(this);
+
+    }
+    internal void destroyImmediately()
+    {
+        markToDestroy();
+        province.allFactories.Remove(this);
+        //province.allFactories.Remove(this);        
+        // + interface 2 places
+        MainCamera.factoryPanel.removeFactory(this);
+        MainCamera.productionWindow.removeFactory(this);
+    }
+    internal bool isToRemove()
+    {
+        return toRemove;
+    }
+
+    float wantsMinMoneyReserv()
+    {
+        return getExpences() * Factory.xMoneyReservForResources + Game.factoryMoneyReservPerLevel * level;
+    }
+    internal void PayDividend()
+    {
+        //if (getLevel() > 0)
+        if (isWorking())
+        {
+            float saveForYourSelf = wantsMinMoneyReserv();
+            float pay = wallet.haveMoney.get() - saveForYourSelf;
+
+            if (pay > 0)
+                wallet.pay(getOwnerWallet(), new Value(pay));
+            if (getProfit() <= 0) // to avoid iternal zero profit factories
+            {
+                daysUnprofitable++;
+                if (daysUnprofitable == Game.maxDaysUnprofitableBeforeFactoryClosing)
+                    this.close();
+            }
+            else
+                daysUnprofitable = 0;
+        }
+        else //closed
+        if (!isBuilding())
+        {
+            daysClosed++;
+            if (daysClosed == Game.maxDaysClosedBeforeRemovingFactory)
+                markToDestroy();
+            else if (Game.random.Next(Game.howOftenCheckForFactoryReopenning) == 1)
+            {//take loan for reopen
+                if (province.owner.isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
+                {
+                    float leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
+                    if (leftOver < 0)
+                    {
+                        Value loanSize = new Value(leftOver * -1f);
+                        if (province.owner.bank.CanITakeThisLoan(loanSize))
+                            province.owner.bank.TakeLoan(this, loanSize);
+                    }
+                    leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
+                    if (leftOver >= 0f)
+                        reopen();
+                }
+            }
+        }
+    }
+
+    //public bool isClosed()
+    //{
+    //    return !working;
+    //}
+
+    internal void close()
+    {
+        working = false;
+        upgrading = false;
+        needsToUpgrade.SetZero();
+        daysInConstruction = 0;
+    }
+    internal void reopen()
+    {
+        working = true;
+        daysUnprofitable = 0;
+        daysClosed = 0;
+    }
+
+    internal bool isWorking()
+    {
+        return working && !building;
+    }
+
+    internal float getExpences()
+    {
+        return getConsumedCost() + getSalaryCost();
+    }
+
+    internal float getSalaryCost()
+    {
+        return getWorkForce() * getSalary() / 1000f;
+    }
+
+    internal bool canUpgrade()
+    {
+        return !isUpgrading() && !isBuilding() && level < Game.maxFactoryLevel;
+    }
+    internal void upgrade(Owner byWhom)
+    {
+        upgrading = true;
+        needsToUpgrade = type.getUpgradeNeeds().getCopy();
+        byWhom.wallet.pay(wallet, getUpgradeCost());
+    }
+
+    internal uint getDaysInConstruction()
+    {
+        return daysInConstruction;
+    }
+
+    internal uint getDaysUnprofitable()
+    {
+        return daysUnprofitable;
+    }
+    internal uint getDaysClosed()
+    {
+        return daysClosed;
+
+
+
+    }
+
+    /// <summary>Returns False if something failed</summary>
+    internal bool getConditionsForFactorySubsidize(Country country, bool fastReturn, out string description)
+    {
+        string result = null;
+        bool atLeastOneNoAnswer = false;
+        // - first lines - why we cant
+
+        if (province.owner.economy.status == Economy.LaissezFaire)
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Economy politics is Laissez Faire";
+            atLeastOneNoAnswer = true;
+        }
+        else
+            result += "\n(+) Economy politics is not Laissez Faire";
+        description = result;
+        if (atLeastOneNoAnswer) return false;
+        else
+            return true;
+    }
+
+    internal bool getConditionsForFactoryUpgradeFast(Country country)
+    {
+        return getConditionsForFactoryUpgradeT(country, true, out Game.dumpString);
+    }
+    internal bool getConditionsForFactoryUpgrade(Country country, out string description)
+    {
+        return getConditionsForFactoryUpgradeT(country, false, out description);
+    }
+    /// <summary>Returns False if something failed</summary>
+    bool getConditionsForFactoryUpgradeT(Country country, bool fastReturn, out string description)
+    {
+        string result = null;
+        bool atLeastOneNoAnswer = false;
+        // - first lines - why we cant
+        if (province.owner.economy.status == Economy.LaissezFaire)
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Economy politics is Laissez Faire";
+            atLeastOneNoAnswer = true;
+        }
+        else
+            result += "\n(+) Economy politics is not Laissez Faire";
+
+        if (isUpgrading())
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Already upgrading";
+            atLeastOneNoAnswer = true;
+        }
+
+        if (isBuilding())
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Not builded yet";
+            atLeastOneNoAnswer = true;
+        }
+        if (!isWorking())
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Closed";
+            atLeastOneNoAnswer = true;
+        }
+        if (level == Game.maxFactoryLevel)
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Max level achieved";
+            atLeastOneNoAnswer = true;
+        }
+
+        Value cost = this.getUpgradeCost();
+        if (!country.wallet.canPay(cost))// no money
+        {
+            if (fastReturn) { description = null; return false; }
+            result += "\n(-) Not enough " + (cost.get() - country.wallet.haveMoney.get()) + " money";
+            atLeastOneNoAnswer = true;
+        }
+        else
+            result += "\n(+) Have money " + cost;
+        //if (level == Game.maxFactoryLevel) // no resources
+        //    result += "\nMax level achieved";
+        description = result;
+        if (atLeastOneNoAnswer) return false;
+        else
+            return true;
+    }
+    /// <summary>Return null if there is no obstacles </summary>    
+    internal string whyCantUpgradeFactory(Country country)
+    {
+        string result = null;
+        if (province.owner.economy.status == Economy.LaissezFaire)
+            result += "\n(-) Economy politics - LaissezFaire";
+        if (isUpgrading())
+            result += "\n(-) Already upgrading";
+        if (isBuilding())
+            result += "\n(-) Not builded yet";
+        if (!isWorking())
+            result += "\n(-) Closed";
+        if (level == Game.maxFactoryLevel)
+            result += "\n(-) Max level achieved";
+        //var resourceToBuild = this.type.getUpgradeNeeds();
+        Value cost = this.getUpgradeCost();
+        if (!country.wallet.canPay(cost))// no money
+            //country.wallet.CanAfford()
+            result += "\nNot enough " + (cost.get() - country.wallet.haveMoney.get()) + " money";
+        //if (level == Game.maxFactoryLevel) // no resources
+        //    result += "\nMax level achieved";
+        return result;
+    }
+    /// <summary>Return null if there is no obstacles </summary>    
+    internal string whyCantDestroyFactory()
+    {
+        string result = null;
+        if (province.owner.economy.status == Economy.LaissezFaire)
+            result += "\n(-) Economy politics - LaissezFaire";
+        //if (isUpgrading())
+        //    result += "\n(-) Already constructing";
+        return result;
+    }
+    /// <summary>Return null if there is no obstacles </summary>    
+    internal string whyCantCloseFactory()
+    {
+        string result = null;
+        if (province.owner.economy.status == Economy.LaissezFaire)
+            result += "\n(-) Economy politics - LaissezFaire";
+        if (isBuilding())
+            result += "\n(-) Not opened yet";
+        if (!isWorking())
+            result += "\n(-) Already closed";
+        return result;
+    }
+    /// <summary>Return null if there is no obstacles </summary>    
+    internal string whyCantReopenFactory()
+    {
+        string result = null;
+        if (province.owner.economy.status == Economy.LaissezFaire)
+            result += "\n(-) Economy politics - LaissezFaire";
+        if (isWorking())
+            result += "\n(-) Already opened";
+        if (isBuilding())
+            result += "\n(-) Not builded yet";
+        return result;
+    }
+}
+/// <summary>
+/// ///////////////////////////////////////////////////////////////////****************
+/// </summary>
+//public class GoldMine : Factory
+//{
+//    public static string name = "Gold mine";
+//    public GoldMine(Province iprovince, Owner inowner) : base(iprovince, inowner, FactoryType.GoldMine)
+//    {
+
+//    }
+//    public override void produce()
+//    {
+//        //todo fix mirroring! gold
+//        uint workers = getWorkForce();
+//        if (workers > 0)
+//        {
+//            Value producedAmount;
+//            producedAmount = new Value(getWorkForce() * type.basicProduction.get() / 1000f);
+//            storageNow.add(producedAmount);
+//            gainGoodsThisTurn.set(producedAmount);
+
+//            if (province.owner.capitalism.Invented())
+//            {
+
+//                this.wallet.ConvertFromGoldAndAdd(storageNow);
+//                //send 50% to government
+
+//                wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
+//            }
+//            else // send all production to owner
+//                storageNow.sendAll(province.owner.storageSet);
+//        }
+//    }
+
+//}
+//public class Forestry : Factory
+//{
+//    public static string name = "Forestry";
+//    public Forestry(Province iprovince, Owner inowner) : base(iprovince, inowner)
+//    {
+//        type.basicProduction = new Storage(Product.findByName("Wood"), 2f);
+//        gainGoodsThisTurn = new Storage(Product.findByName("Wood"));
+//        //type = PopTypes.Forestry;
+//        storageNow = new Storage(Product.findByName("Wood"));
+//    }
+//    internal override string getName()
+//    {
+//        return "Forestry";
+//    }
+//}
+//public class Furniture : Factory
+//{
+//    public static string name = "Furniture";
+//    public Furniture(Province iprovince, Owner inowner) : base(iprovince, inowner)
+//    {
+//        type.basicProduction = new Storage(Product.Furniture, 4f);
+//        gainGoodsThisTurn = new Storage(Product.Furniture);
+//        storageNow = new Storage(Product.Furniture);
+//        type.resourceInput.Set(new Storage(Product.Lumber, 1f));
+//    }
+//    internal override string getName()
+//    {
+//        return "Furniture shownFactory";
+//    }
+//}
+//public class Sawmill : Factory
+//{
+//    public static string name = "Sawmill";
+//    public Sawmill(Province iprovince, Owner inowner) : base(iprovince, inowner)
+//    {
+//        type.basicProduction = new Storage(Product.Lumber, 2f);
+//        storageNow = new Storage(Product.Lumber);
+//        gainGoodsThisTurn = new Storage(Product.Lumber);
+//        type.resourceInput.Set(new Storage(Product.Wood, 1f));
+//    }
+//    internal override string getName()
+//    {
+//        return "Sawmill";
+//    }
+//}
+public class FactoryType
+{
+    internal readonly string name;
+    static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
+
+    ///<summary> per 1000 workers </summary>
+    public Storage basicProduction;
+
+    /// <summary>resource input list 
+    /// per 1000 workers & per 1 unit outcome</summary>
+    internal PrimitiveStorageSet resourceInput;
+
+    /// <summary>Per 1 level upgrade</summary>
+    internal PrimitiveStorageSet upgradeResource = new PrimitiveStorageSet();
+    internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
+    internal Condition conditionsBuild;
+    internal FactoryType(string iname, Storage ibasicProduction, PrimitiveStorageSet iresourceInput)
+    {
+
+        name = iname;
+        if (iname == "Gold pit") GoldMine = this;
+        if (iname == "Furniture factory") Furniture = this;
+        if (iname == "Metal pit") MetalDigging = this;
+        if (iname == "Metal smelter") MetalSmelter = this;
+        allTypes.Add(this);
+        basicProduction = ibasicProduction;
+        if (iresourceInput == null) resourceInput = new PrimitiveStorageSet();
+        else
+            resourceInput = iresourceInput;
+        //upgradeResource.Set(new Storage(Product.Wood, 10f));
+        upgradeResource.Set(new Storage(Product.Stone, 10f));
+        //if (HaveFactory(ft))
+        //    return false;
+        //if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !owner.isInvented(ft.basicProduction.getProduct()))
+        //    return false;
+        //conditionsBuild = new Condition(new List<ConditionString>()
+        //{
+        //    new ConditionString(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+        //    new ConditionString(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
+        //    new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+        //    new ConditionString(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+        //    new ConditionString(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
+        //    new ConditionString(delegate (Owner forWhom) {
+        //         Value cost = this.getUpgradeCost();
+        //        return forWhom.wallet.canPay(cost);}, "Have money " + getUpgradeCost(), true)
+        //});
+    }
+    internal PrimitiveStorageSet getUpgradeNeeds()
+    {
+        return upgradeResource;
+    }
+    internal PrimitiveStorageSet getBuildNeeds()
+    {
+        PrimitiveStorageSet result = new PrimitiveStorageSet();
+        result.Set(new Storage(Product.Food, 40f)); //! has connection in pop.invest!!
+        //if (whoCanProduce(Product.Gold) == this)
+        // result.Set(new Storage(Product.Wood, 40f));
+        return result;
+    }
+    /// <summary>
+    /// Returns first correct value
+    /// Assuming there is only one  FactoryType for each Product
+    /// </summary>
+    /// <param name="pro"></param>
+    /// <returns></returns>
+    internal static FactoryType whoCanProduce(Product pro)
+    {
+        foreach (FactoryType ft in allTypes)
+            if (ft.basicProduction.getProduct() == pro)
+                return ft;
+        return null;
+    }
+    override public string ToString() { return name; }
+    internal bool isResourceGathering()
+    {
+        if (resourceInput.Count() == 0)
+            return true;
+        else return false;
+    }
+    //todo improove getPossibleProfit
+    internal float getPossibleProfit(Province province)
+    {
+        foreach (Storage st in resourceInput)
+            if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
+                return 0;
+        float income = Game.market.getCost(basicProduction);
+        Value outCome = Game.market.getCost(resourceInput);
+        return income - outCome.get();
+    }
+    internal Procent getPossibleMargin(Province province)
+    {
+        Value cost = Game.market.getCost(getBuildNeeds());
+        cost.add(Game.factoryMoneyReservPerLevel);
+        //if (cost.get() > 0)
+        return new Procent(getPossibleProfit(province) / cost.get());
+    }
+    internal static FactoryType getMostTeoreticalProfitable(Province province)
+    {
+        List<FactoryType> possiblefactories = province.WhatFactoriesCouldBeBuild();
+        float possibleProfit = 0;
+        float maxProfitFound = 0;
+        foreach (FactoryType ft in possiblefactories)
+        {
+
+            // if (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft))
+            {
+                possibleProfit = ft.getPossibleProfit(province);
+                if (possibleProfit > maxProfitFound)
+                    maxProfitFound = possibleProfit;
+            }
+        }
+        if (maxProfitFound > 0f)
+            foreach (FactoryType ft in possiblefactories)
+                if (ft.getPossibleProfit(province) == maxProfitFound && (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft)))
+                    return ft;
+        return null;
+    }
+
+    internal static Factory getMostPracticlyProfitable(Province province)
+    {
+        List<FactoryType> possiblefactories = province.WhatFactoriesCouldBeBuild();
+        float profit = 0;
+        float maxProfitFound = 0;
+        foreach (Factory ft in province.allFactories)
+        {
+            if (province.CanUpgradeFactory(ft.type))
+            {
+                profit = ft.getProfit();
+                if (profit > maxProfitFound)
+                    maxProfitFound = profit;
+            }
+        }
+        if (maxProfitFound > 0f)
+            foreach (Factory factory in province.allFactories)
+                if (factory.getProfit() == maxProfitFound && province.CanUpgradeFactory(factory.type))
+                    return factory;
+        return null;
+    }
+}
+public class PopLinkage
+{
+    public PopUnit pop;
+    public uint amount;
+    internal PopLinkage(PopUnit p, uint a)
+    {
+        pop = p;
+        amount = a;
+    }
+}
+public class Owner
+{
+    /// <summary>
+    /// money should be here??
+    /// </summary>
+    public Wallet wallet = new Wallet(0f);
+}
+
+public abstract class Producer : Owner
+{    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
+    public Storage storageNow;
+
+    /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in POpunit.produce and Factore.Produce </summary>
+    public Storage gainGoodsThisTurn;
+
+    /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
+    public Storage sentToMarket;
+
+    internal Value loans = new Value(0);
+    public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
+    public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+    public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
+
+    //protected Country owner; //TODO Could be any Country or POP
+    public Province province;
+
+    /// <summary> /// Return in pieces  /// </summary>    
+    abstract internal float getLocalEffectiveDemand(Product product);
+    public abstract void simulate();
+    public abstract void produce();
+    public abstract void consume();
+    public abstract void payTaxes();
+
+    public void getMoneyFromMarket()
+    {
+        if (sentToMarket.get() > 0f)
+        {
+            Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
+            if (DSB.get() > 1f) DSB.set(1f);
+            Storage realSold = new Storage(sentToMarket);
+            realSold.multipleInside(DSB);
+            float cost = Game.market.getCost(realSold);
+            storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
+            if (Game.market.wallet.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+            {
+                Game.market.wallet.pay(this.wallet, new Value(cost));
+                Game.market.tmpMarketStorage.subtract(realSold);
+            }
+            else
+                Debug.Log("Failed market - producer payment"); // money in market endded... Only first lucky get money
+        }
+    }
+}
+
