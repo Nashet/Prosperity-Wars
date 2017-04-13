@@ -13,14 +13,15 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 > not null conditions on reforms
 - factories have no time to rise salary to compete workforce
 
+> add caption for panels
 > make factory efficiency modifiers and GUY
-> clear folder structure
++ clear folder structure
+> deal with string builders
 
->? hovering
+>? hovering on gui Objects?
 > add english-style for name generator
 > make demo?
 
-> add caption for panels
 
 * loyalty broke and growth
 + double ray trace
@@ -32,9 +33,6 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 * tooltip blocks clicks and glitch
 + find middlepoint of mesh. Bugs caused by polygons Crawling
 * bigger province names
-
-> deal with string builders
-
 
 
 - broke nat economy fabric update? No it never was implemented
