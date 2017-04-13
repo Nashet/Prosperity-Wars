@@ -8,9 +8,24 @@ using System;
 public class Condition
 {
     List<ConditionString> list;
+    // basic constructor
     public Condition(List<ConditionString> inlist)
     {
         list = inlist;
+    }
+    //short constructor, allowing predicats of several types to be checked
+    public Condition(List<Condition_Invention_Interface> inlist)
+    {
+        list = new List<ConditionString>();
+        foreach (var next in inlist)
+            if (next is Government.ReformValue)
+                list.Add(new ConditionString(next as Government.ReformValue, true));
+            else
+                if (next is Economy.ReformValue)
+                list.Add(new ConditionString(next as Economy.ReformValue, true));
+            else
+                if (next is InventionType)
+                list.Add(new ConditionString(next as InventionType, true));        
     }
     /// <summary>Return false if any of conditions is false</summary>    
     public bool isAllTrue(Owner forWhom, out string description)
@@ -136,6 +151,33 @@ public class ConditionString//:AbstractConditionString
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
+    /// <summary>Checks if invention is invented</summary>    
+    public ConditionString(InventionType invention, bool showAchievedConditionDescribtion)
+    {
+        check2 = delegate (Country forWhom)
+        {
+            return forWhom.isInvented(InventionType.individualRights);
+        };
+        this.conditionDescription = invention.getInventedPhrase();
+        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+        //this.conditionIsFalse = conditionIsFalse;
+    }
+    /// <summary>Checks if government == CheckingCountry.government</summary>    
+    public ConditionString(Government.ReformValue government, bool showAchievedConditionDescribtion)
+    {
+        check2 = government.isGovernmentEqualsThat;
+        this.conditionDescription = "Government is " + government.ToString(); // invention.getInventedPhrase();
+        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+        //this.conditionIsFalse = conditionIsFalse;
+    }
+    /// <summary>Checks if economy == CheckingCountry.economy</summary>    
+    public ConditionString(Economy.ReformValue economy, bool showAchievedConditionDescribtion)
+    {
+        check2 = economy.isEconomyEqualsThat;
+        this.conditionDescription = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
+        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    }
+
     /// <summary></summary>    
     internal bool checkIftrue(Owner forWhom, out string description)
     {

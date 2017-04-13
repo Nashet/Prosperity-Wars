@@ -5,8 +5,9 @@ using System;
 
 //public abstract class NameDescriptor
 //{ }
+public interface Condition_Invention_Interface { }
 
-abstract public class AbstractReformValue
+abstract public class AbstractReformValue: Condition_Invention_Interface
 {
     string name;
     string description;
@@ -81,6 +82,11 @@ public class Government : AbstractReform
         {
 
         }
+
+        internal bool isGovernmentEqualsThat(Country forWhom)
+        {
+            return forWhom.government.status == this;
+        }
     }
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
@@ -134,16 +140,16 @@ public class Government : AbstractReform
 }
 public class Economy : AbstractReform
 {
-    public class LocalReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformValue
     {
 
-        public LocalReformValue(string inname, string indescription, int idin, Condition condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, int idin, Condition condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
         }
         internal override bool isAvailable(Country country)
         {
-            LocalReformValue requested = this;
+            ReformValue requested = this;
             if (requested.ID == 0)
                 return true;
             else
@@ -158,6 +164,12 @@ public class Economy : AbstractReform
             else
                 return false;
         }
+
+        internal bool isEconomyEqualsThat(Country forWhom)
+        {
+            return forWhom.economy.status == this;
+        }
+
         internal override void onReformEnacted()
         {
 
@@ -165,20 +177,25 @@ public class Economy : AbstractReform
     }
     static Condition capitalism = new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, "Invented Individual Rights", true),
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, "Invented banking", true)
+            //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
+            //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
+            new ConditionString(InventionType.individualRights, true),
+            new ConditionString(InventionType.banking, true)
         });
-    internal LocalReformValue status;
-    internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
-    internal static LocalReformValue NaturalEconomy = new LocalReformValue("Natural economy", " SSS", 0, Game.alwaysYesCondition);
-    internal static LocalReformValue StateCapitalism = new LocalReformValue("State capitalism", "dddd", 1, capitalism);
-    internal static LocalReformValue Interventionism = new LocalReformValue("Limited Interventionism", "zz", 1, capitalism);
-    internal static LocalReformValue PlannedEconomy = new LocalReformValue("Planned economy", "dirty pants", 2, new Condition(new List<ConditionString>()
+    internal ReformValue status;
+    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
+    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, Game.alwaysYesCondition);
+    internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 1, capitalism);
+    internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
+    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new Condition(new List<Condition_Invention_Interface>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.collectivism); }, "Invented Colectivism", true),
-            new ConditionString(delegate (Country forWhom) { return forWhom.government.status == Government.ProletarianDictatorship; }, "Government is Proletarian Dictatorship", true)
+            //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.collectivism); }, InventionType.collectivism.getInventedPhrase(), true),
+            //new ConditionString(InventionType.collectivism, true),
+            //new ConditionString(delegate (Country forWhom) { return forWhom.government.status == Government.ProletarianDictatorship; }, "Government is Proletarian Dictatorship", true)
+            //new ConditionString(Government.ProletarianDictatorship, true)
+            InventionType.collectivism, Government.ProletarianDictatorship
         }));
-    internal static LocalReformValue LaissezFaire = new LocalReformValue("Laissez Faire", "not dirty pants", 3, capitalism);
+    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "not dirty pants", 3, capitalism);
 
     public Economy(Country country) : base("Economy", "Your economy policy", country)
     {
@@ -199,12 +216,12 @@ public class Economy : AbstractReform
     }
     public override IEnumerator GetEnumerator()
     {
-        foreach (LocalReformValue f in PossibleStatuses)
+        foreach (ReformValue f in PossibleStatuses)
             yield return f;
     }
     internal override void setValue(AbstractReformValue selectedReform)
     {
-        status = (LocalReformValue)selectedReform;
+        status = (ReformValue)selectedReform;
     }
 
     internal bool isMarket()
@@ -330,18 +347,18 @@ public class Serfdom : AbstractReform
     internal static LocalReformValue Abolished = new LocalReformValue("Abolished", "Abolished with no obligations", 2,
         new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, "Invented Individual Rights", true)
+            new ConditionString(InventionType.individualRights, true)
         }));
     internal static LocalReformValue AbolishedWithLandPayment = new LocalReformValue("Abolished with land payment", "Peasants are personally free now but they have to pay debt for land", 3,
         new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, "Invented Individual Rights", true),
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, "Invented Banking", true)
+            new ConditionString(InventionType.individualRights, true),
+            new ConditionString(InventionType.banking, true)
         }));
     internal static LocalReformValue AbolishedAndNationalizated = new LocalReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4,
         new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.government.status == Government.ProletarianDictatorship; }, "Government is Proletarian Dictatorship", true)
+            new ConditionString( Government.ProletarianDictatorship, true)
         }));
 
 
@@ -429,13 +446,13 @@ public class MinimalWage : AbstractReform
     internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
     internal static LocalReformValue None = new LocalReformValue("None", "", 0, new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, "Invented Individual Rights", true),
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, "Invented Banking", true)
+            new ConditionString(InventionType.individualRights, true),
+            new ConditionString(InventionType.banking, true)
         }));
     internal static LocalReformValue Scanty = new LocalReformValue("Scanty", "Half-hungry", 5, new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.Welfare); }, "Invented Welfare", true),
-            new ConditionString(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire; }, "G is !LF", true)
+            new ConditionString(InventionType.Welfare, true),
+            new ConditionString(Economy.LaissezFaire, true)
         }));
     internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, Game.alwaysYesCondition);
     //internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1);
@@ -566,12 +583,13 @@ public class InventionsList
     }
 
 }
-public class InventionType
+public class InventionType: Condition_Invention_Interface
 {
     internal static List<InventionType> allInventions = new List<InventionType>();
     string name;
     string description;
     internal Value cost;
+    string inventedPhrase;
     public static InventionType farming = new InventionType("Farming", "Allows farming and farmers", new Value(100f)),
         //capitalism = new InventionType("Capitalism", "", new Value(50f)),
         banking = new InventionType("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100.34f)),
@@ -583,12 +601,17 @@ public class InventionType
         collectivism = new InventionType("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
         Welfare = new InventionType("Welfare", "Allows min wage and.. other", new Value(100f))
         ;
-    internal InventionType(string inname, string indescription, Value incost)
+    internal InventionType(string name, string description, Value cost)
     {
-        name = inname;
-        description = indescription;
-        cost = incost;
+        this.name = name;
+        this.description = description;
+        this.cost = cost;
+        inventedPhrase = "Invented " + name;
         allInventions.Add(this);
+    }
+    internal string getInventedPhrase()
+    {
+        return inventedPhrase;
     }
     internal InventionType()
     { }
