@@ -14,7 +14,8 @@ public class Factory : Producer
     private bool upgrading = false;
     private bool working = false;
     private bool toRemove = false;
-
+    private bool dontHireOnSubsidies, subsidized;
+    private byte priority = 0;
     protected Value salary = new Value(0);
     internal Owner factoryOwner;
     internal PrimitiveStorageSet needsToUpgrade;
@@ -25,8 +26,10 @@ public class Factory : Producer
     private uint daysClosed;
     internal bool justHiredPeople;
     private int hiredLastTurn;
-    internal Condition conditionsUpgrade;
-    internal Condition conditionsBuild;
+    internal Condition conditionsUpgrade, conditionsBuild, conditionsClose, conditionsReopen,
+        conditionsDestroy, conditionsSell, conditionsBuy, conditionsNatinalize,
+        conditionsSubsidize, conditionsDontHireOnSubsidies, conditionsChangePriority;
+
     internal Factory(Province iprovince, Owner inowner, FactoryType intype)
     { //assuming this is level 0 building
         type = intype;
@@ -47,7 +50,7 @@ public class Factory : Producer
 
         conditionsUpgrade = new Condition(new List<ConditionString>()
         {
-            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),            
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
             new ConditionString(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
             new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new ConditionString(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
@@ -56,8 +59,66 @@ public class Factory : Producer
                  Value cost = this.getUpgradeCost();
                 return forWhom.wallet.canPay(cost);}, "Have money " + getUpgradeCost(), true)
         });
-        
+
+        conditionsClose = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+            new ConditionString(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+        });
+        conditionsReopen = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+            new ConditionString(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
+        });
+        conditionsDestroy = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true)
+        });
+        //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
+        conditionsSell = Condition.IsNotImplemented; // !Planned and ! State
+
+        //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
+        conditionsBuy = Condition.IsNotImplemented; // ! LF and !Planned
+
+        // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
+        conditionsNatinalize = Condition.IsNotImplemented; //!LF and ! Inter
+
+        conditionsBuild = new Condition(new List<Condition_Invention_Interface>() { Economy.LaissezFaire });
+
+        conditionsSubsidize = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true),
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true)
+        }); // !LF
+        conditionsDontHireOnSubsidies = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true),
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true)
+        });        // !LF
+        conditionsChangePriority = new Condition(new List<ConditionString>()
+        {
+            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true)
+        }); //!LF
+
     }
+
+    internal float getPriority()
+    {
+        return priority;
+    }
+
+    internal bool isdontHireOnSubsidies()
+    {
+        return dontHireOnSubsidies;
+    }
+
+    internal bool isSubsidized()
+    {
+        return subsidized;
+    }
+
     internal Procent getResouceFullfillig()
     {
         return new Procent(getInputFactor());
@@ -150,6 +211,21 @@ public class Factory : Producer
             }
             hiredLastTurn = (int)getWorkForce() - (int)wasWorkforce;
         }
+    }
+
+    internal void setDontHireOnSubsidies(bool isOn)
+    {
+        dontHireOnSubsidies = isOn;
+    }
+
+    internal void setSubsidized(bool isOn)
+    {
+        subsidized = isOn;
+    }
+
+    internal void setPriority(byte value)
+    {
+        priority = value;
     }
 
     internal uint HowManyEmployed(PopUnit pop)

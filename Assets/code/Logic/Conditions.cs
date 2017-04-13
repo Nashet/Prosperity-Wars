@@ -27,6 +27,8 @@ public class Condition
                 if (next is InventionType)
                 list.Add(new ConditionString(next as InventionType, true));        
     }
+    internal static Condition AlwaysYes = new Condition(new List<ConditionString>() { new ConditionString(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
+    internal static Condition IsNotImplemented = new Condition(new List<ConditionString>() { new ConditionString(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
     /// <summary>Return false if any of conditions is false</summary>    
     public bool isAllTrue(Owner forWhom, out string description)
     {
@@ -137,6 +139,8 @@ public class ConditionString//:AbstractConditionString
     public Func<Country, bool> check2;
     /// <summary>to hide juncky info /// </summary>
     bool showAchievedConditionDescribtion;
+
+    /// <summary>You better use shorter constructor, if possible </summary>
     public ConditionString(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
         check = myMethodName;
@@ -144,6 +148,7 @@ public class ConditionString//:AbstractConditionString
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
+    /// <summary>You better use shorter constructor, if possible </summary>
     public ConditionString(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
         check2 = myMethodName;
@@ -151,6 +156,7 @@ public class ConditionString//:AbstractConditionString
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
+
     /// <summary>Checks if invention is invented</summary>    
     public ConditionString(InventionType invention, bool showAchievedConditionDescribtion)
     {
