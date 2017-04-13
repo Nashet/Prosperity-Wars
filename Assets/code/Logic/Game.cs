@@ -31,7 +31,7 @@ public class Game
     internal static float maxPrice = 999.99f;
     internal static uint familySize = 5;
 
-    internal static Condition alwaysYesCondition = new Condition(new List<ConditionString>() { });
+    internal static Condition alwaysYesCondition = new Condition(new List<ConditionString>() { new ConditionString(delegate (Country forWhom) { return 2==2; }, "Always Yes condition", true) });
 
     public static uint date;
     float cellMuliplier = 2f;
