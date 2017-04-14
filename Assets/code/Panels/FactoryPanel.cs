@@ -102,6 +102,9 @@ public class FactoryPanel : DragPanel//for dragging
         if (shownFactory != null)
         {
             setGUIElementsAccesability();
+
+            shownFactory.modifierEfficiency.getModifier(Game.player, out generaltext.GetComponentInChildren<ToolTipHandler>().tooltip);
+            
             //var temp = shownFactory.getLifeNeeds();
             //foreach (Storage next in temp)
             //    lifeNeeds += next.ToString() + "; ";
@@ -130,6 +133,8 @@ public class FactoryPanel : DragPanel//for dragging
             generaltext.text = shownFactory.type.name + " level: " + shownFactory.getLevel() + "\n" + "Workforce: " + shownFactory.getWorkForce()
                 + "\nUnsold: " + shownFactory.storageNow.ToString()
                 + "\nGain goods: " + shownFactory.gainGoodsThisTurn.ToString()
+                + "\nBasic production: " + shownFactory.type.basicProduction
+                + "\nEfficiency: " + shownFactory.modifierEfficiency.getModifier(Game.player)
                 + "\nSent to market: " + shownFactory.sentToMarket
                 + "\nCash: " + shownFactory.wallet.ToString()
                 + "\nMoney income: " + shownFactory.wallet.moneyIncomethisTurn
@@ -142,6 +147,7 @@ public class FactoryPanel : DragPanel//for dragging
                 + upgradeNeeds
                 + construction + unprofitable + daysClosed + loans
                 + "\nHowMuchHiredLastTurn " + shownFactory.getHowMuchHiredLastTurn()
+                
                 ;
             //+ "\nExpenses:"
         }

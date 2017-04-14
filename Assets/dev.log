@@ -7,13 +7,22 @@ Do I need Countre-special needs OR NOT? - Not
 Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, exclude Artisan, Clerics and Goverment), no equal rights (meaning, poor strata gaves tax to Aristocrats ). Farmers are free (Serfdom abolited reform) than they just pay feodal tax to aristocrats. Add special SERf unit.
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
-
-
+? reduce multiple constructors in Condition?
+- factories have no time to rise salary to compete workforce
++ make factory efficiency modifiers and GUY
+- broken Build
+> make monoThreadSB
+> Tostr in conditions
+- Procent max capacity at production window
+///////////LAST COMMITMENT\\\\\\\\\\\\
 
 > add borders to panels
 ? negate predicats somehow
+> better use named predicats
+> use universalpredicats as much as possible
+
 + factory panel stuff
-///////////LAST COMMITMENT\\\\\\\\\\\\
+
 * not null conditions on reforms
 + make universal descriptions for Inventions
 
@@ -22,12 +31,9 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + proper resource readings
 
 
-- factories have no time to rise salary to compete workforce
-
-
 
 > add caption for panels
-> make factory efficiency modifiers and GUY
+
 + clear folder structure
 > deal with string builders
 
