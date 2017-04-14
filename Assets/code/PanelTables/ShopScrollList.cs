@@ -6,23 +6,41 @@ using System;
 
 
 public class ShopScrollList : MyTable
-{ 
-   
+{
+
     override protected void Refresh()
     {
         base.RemoveButtons();
         AddButtons();
         contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
     }
-     protected  void AddButton(string text, PopUnit record)
+    protected void AddButton(string text, PopUnit record)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(contentPanel, false);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
-        
+
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, record);
+    }
+    protected void AddButton(string text, PopUnit record, string toolTip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, false);
+        //newButton.transform.SetParent(contentPanel);
+        //newButton.transform.localScale = Vector3.one;
+
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, record);
+        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
+
+
+
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+
+
+
     }
     override protected void AddButtons()
     {
@@ -71,8 +89,12 @@ public class ShopScrollList : MyTable
                 AddButton(record.wallet.ToString(), record);
                 ////Adding needs fulfilling
                 AddButton(record.NeedsFullfilled.ToString(), record);
+
                 ////Adding loyalty
-                AddButton(record.loyalty.ToString(), record);
+                string accu;
+                record.modifiersLoyaltyChange.getModifier(Game.player, out accu);
+                AddButton(record.loyalty.ToString(), record, accu);
+
                 counter++;
                 //contentPanel.r
             }

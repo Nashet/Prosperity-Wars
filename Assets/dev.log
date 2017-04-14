@@ -10,6 +10,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 - factories have no time to rise salary to compete workforce
 - price stuck in middle range with zero supply
+
 * broken Build - old Conditions caused it
 + negate predicats somehow
 * mining
@@ -17,7 +18,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 * BUild panel would not refresh selection on data change caused by Simulation
 
 
-
+? change Func<Country, bool> into Func<Country, T, bool>?
 
 > make monoThreadSB
 + Tostr in conditions

@@ -68,10 +68,7 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
         });
-        conditionsDestroy = new ConditionsList(new List<Condition>()
-        {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true)
-        });
+        conditionsDestroy = new ConditionsList(new List<Condition>() {Economy.isNotLF});
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
         conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State
 

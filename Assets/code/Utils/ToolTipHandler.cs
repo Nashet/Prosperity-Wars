@@ -10,6 +10,10 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public MainTooltip tip;
 
     int counter = 0;
+    void Start()
+    {
+        //tip = MainTooltip.getTip();
+    }
     public void OnPointerEnter(PointerEventData eventData)
     {
         counter = 0;
@@ -36,7 +40,7 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (counter > 200)
         {
-            tip.HideTooltip();
+            //tip.HideTooltip();
             counter = 0;
         }
 

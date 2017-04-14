@@ -21,6 +21,7 @@ public class SampleButton : MonoBehaviour
     void Start()
     {
         buttonComponent.onClick.AddListener(HandleClick);
+        
     }
 
     //public void Setup(string text, PopUnit ipopUnit, MyTable currentScrollList)
@@ -33,6 +34,7 @@ public class SampleButton : MonoBehaviour
                                //popUnit = ipopUnit; // currentItem.popUnit;
                                //iconImage.sprite = item.icon;
                                // priceText.text = item.price.ToString();
+
         scrollList = currentScrollList;
 
     }

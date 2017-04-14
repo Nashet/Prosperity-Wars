@@ -29,6 +29,12 @@ abstract public class PopUnit : Producer
     public static int minGeneratedPopulation = 100;
     public static int maxGeneratedPopulation = 2500;
 
+    public ModifiersList modifiersLoyaltyChange;
+
+    Modifier modifierStarvation;
+    Modifier modifierLifeNeedsFulfilled;
+    Modifier modifierEverydayNeedsFulfilled;
+    Modifier modifierLuxuryNeedsFulfilled;
 
     public PopUnit(uint iamount, PopType ipopType, Culture iculture, Province where)
     {
@@ -36,19 +42,21 @@ abstract public class PopUnit : Producer
         type = ipopType;
         culture = iculture;
 
-        //where.allPopUnits.Add(this);
-
-        // if (ipopType.basicProduction != null)
-        //     storage = new Storage(ipopType.basicProduction.getProduct(), 0);
         storageNow = new Storage(Product.findByName("Food"), 0);
         gainGoodsThisTurn = new Storage(Product.findByName("Food"), 0);
         sentToMarket = new Storage(Product.findByName("Food"), 0);
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         NeedsFullfilled = new Procent(1f);
-
-        //owner = where.owner;
         province = where;
+        modifierStarvation = new Modifier(delegate (Country forWhom) { return NeedsFullfilled.get() < 0.20f; }, "Starvation", false, -3f);
+        modifierLifeNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() == 1f; }, "Life needs are satisfied", false, 1f);
+        modifierEverydayNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getEveryDayNeedsFullfilling().get() == 1f; }, "Everyday needs are satisfied", false, 1.5f);
+        modifierLuxuryNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLuxuryNeedsFullfilling().get() == 1f; }, "Luxury needs are satisfied", false, 2f);
+        modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
+        {
+           modifierStarvation, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled
+        });
     }
 
     // todo refactor mirroring above
@@ -454,19 +462,9 @@ abstract public class PopUnit : Producer
     abstract internal bool canVote();
     public void calcLoyalty()
     {
-        // if (loyalty.get() > 0)
-        if (NeedsFullfilled.get() >= 0.333f)
-        {
-            loyalty.add(new Value(0.01f));
-            if (loyalty.get() > 1f) loyalty.set(1f);
-            else;
-        }
-        else
-            if (NeedsFullfilled.get() >= 0.16f)
-            if (loyalty.get() >= 0.01f) loyalty.subtract(new Value(0.01f));
-            else;
-        else
-            if (loyalty.get() >= 0.02f) loyalty.subtract(new Value(0.02f));
+        float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this.province.owner) / 100f;
+        Mathf.Clamp01(newRes);
+        loyalty.set(newRes);
     }
 
     public override void simulate()

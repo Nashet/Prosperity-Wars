@@ -23,6 +23,9 @@ public class Value
     }
     public void add(float invalue)
     {
+        //int newRes = (int)value + Mathf.RoundToInt(invalue * precision);
+        //if (newRes < 0) newRes = 0;
+        //value = (uint)newRes; //Mathf.RoundToInt(invalue * precision);
         value += (uint)Mathf.RoundToInt(invalue * precision);
     }
     public void subtract(Value invalue)

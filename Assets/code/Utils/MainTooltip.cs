@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class MainTooltip : MonoBehaviour
 {
@@ -14,7 +15,15 @@ public class MainTooltip : MonoBehaviour
 
     //horizontal layout of the tooltip
     public HorizontalLayoutGroup hlG;
-
+    public bool Brazor;
+    
+    public MainTooltip getThis
+    {
+        get
+        {
+            return this;
+        }
+    }
     //tooltip background image
     public RectTransform bgImage;
     Image bgImageSource;
@@ -54,11 +63,12 @@ public class MainTooltip : MonoBehaviour
     //real on screen sizes of the tooltip object
     float tooltipRealHeight;
     float tooltipRealWidth;
+    public static MainTooltip thatObj;
 
-    
     // Use this for initialization
     void Start()
     {
+        
         //in this line you need to change the string in order to get your Camera //TODO MAYBE DO IT FROM THE INSPECTOR
         //GUICamera = GameObject.Find("GUICamera").GetComponent<Camera>();
         //GUICamera = (Camera)GameObject.FindWithTag("MainCamera");// MainCamera.cameraMy;
@@ -81,6 +91,7 @@ public class MainTooltip : MonoBehaviour
         //hide the tooltip
         HideTooltipVisibility();
         this.transform.parent.gameObject.SetActive(false);
+        thatObj = this;
     }
 
 
