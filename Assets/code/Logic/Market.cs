@@ -49,6 +49,13 @@ public class Market : Owner//: PrimitiveStorageSet
         }
         return new Value(cost);
     }
+    //internal Value getCost(Storage need)
+    //{
+    //    float cost = 0;
+    //    // float price;
+        
+    //    return new Value(cost);
+    //}
     internal float getCost(List<Storage> need)
     {
         float cost = 0;

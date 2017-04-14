@@ -28,7 +28,7 @@ public class InventionsList
     }
 
 }
-public class InventionType : Condition_Invention_Interface
+public class InventionType : AbstractCondition
 {
     internal static List<InventionType> allInventions = new List<InventionType>();
     string name;

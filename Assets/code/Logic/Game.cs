@@ -105,38 +105,38 @@ public class Game
 
 
 
-        new FactoryType("Forestry", new Storage(Product.Wood, 2f), null);
-        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null);
-        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null);
-        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), null);
-        new FactoryType("Quarry", new Storage(Product.Stone, 2f), null);
-        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null);
+        new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);
+        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null, true);
+        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null, true);
+        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), null, false);
+        new FactoryType("Quarry", new Storage(Product.Stone, 2f), null, true);
+        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null, false);
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput);
+        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 1f));
-        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
+        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 0.5f));
         resourceInput.Set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput);
+        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wool, 1f));
-        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
+        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 0.5f));
         resourceInput.Set(new Storage(Product.Stone, 1f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput);
+        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Fruit, 0.3333f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput);
+        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, true);
 
         //new Product("Grain");
 

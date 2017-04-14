@@ -21,7 +21,7 @@ public class ConditionsList
     }
 
     //short constructor, allowing predicats of several types to be checked
-    public ConditionsList(List<Condition_Invention_Interface> inlist)
+    public ConditionsList(List<AbstractCondition> inlist)
     {
         list = new List<Condition>();
         foreach (var next in inlist)
@@ -33,13 +33,17 @@ public class ConditionsList
             else
                 if (next is InventionType)
                 list.Add(new Condition(next as InventionType, true));
+            else
+                if (next is Condition)
+                list.Add(next as Condition);
     }
 
 
 
     internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
     internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
-    private List<Modifier> inlist;
+    //private List<Modifier> inlist;
+    
 
     /// <summary>Return false if any of conditions is false</summary>    
     public bool isAllTrue(Owner forWhom, out string description)
@@ -144,7 +148,7 @@ public class ConditionsList
 //        return check(forWhom);
 //    }
 //}
-public class Condition//:AbstractConditionString
+public class Condition: AbstractCondition
 {
     public string conditionDescription; //, conditionIsFalse;
     public Func<Owner, bool> check;
@@ -198,6 +202,10 @@ public class Condition//:AbstractConditionString
         check2 = economy.isEconomyEqualsThat;
         this.conditionDescription = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    }
+    public override string ToString()
+    {
+        return this.conditionDescription;
     }
 
     /// <summary>Returns bool result and description in out description</summary>    
@@ -306,6 +314,12 @@ public class Modifier : Condition
     {
         this.value = value;
     }
+    public override string ToString()
+    {
+        return this.conditionDescription;
+    }
+
+
     internal float getValue()
     { return value; }
     /// <summary>Returns bool result and description in out description</summary>    
@@ -388,7 +402,7 @@ public class ModifiersList : ConditionsList
 
     }
     //short constructor, allowing predicats of several types to be checked
-    public ModifiersList(List<Condition_Invention_Interface> inlist) : base(inlist)
+    public ModifiersList(List<AbstractCondition> inlist) : base(inlist)
     {
 
     }

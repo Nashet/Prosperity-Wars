@@ -26,8 +26,8 @@ public class BuildPanel : DragPanel
     {
         buildPanel.SetActive(true);
         if (bringOnTop)
-        panelRectTransform.SetAsLastSibling();
-        
+            panelRectTransform.SetAsLastSibling();
+
     }
     public void onCloseClick()
     {
@@ -38,9 +38,7 @@ public class BuildPanel : DragPanel
 
     public void onBuildClick()
     {
-
-       
-        if (Game.player.economy.allowsFactoryBuildingByGovernment())
+        //if (Game.player.economy.allowsFactoryBuildingByGovernment())
         {
             bool buildSomething = false;
             var resourceToBuild = selectedFactoryType.getBuildNeeds();
@@ -65,7 +63,7 @@ public class BuildPanel : DragPanel
                 if (Game.player.storageSet.has(needFood))
                 {
                     Factory fact = new Factory(Game.selectedProvince, Game.player, selectedFactoryType);
-                    
+
                     //wallet.pay(fact.wallet, new Value(100f));
                     Game.player.storageSet.subtract(needFood);
                     buildSomething = true;
@@ -79,7 +77,7 @@ public class BuildPanel : DragPanel
                 MainCamera.topPanel.refresh();
                 if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
                 selectedFactoryType = null;
-                
+
                 //Hide();
                 //show();
                 refresh();
@@ -95,73 +93,79 @@ public class BuildPanel : DragPanel
                 + "\n\nResouces to build: " + selectedFactoryType.getBuildNeeds()
                 + "\nEveryday resource input: " + selectedFactoryType.resourceInput
                 ;
-           
+
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Game.player.economy.status != Economy.LaissezFaire)
-            {
-                PrimitiveStorageSet resourceToBuild;
+            //if (Game.player.economy.status != Economy.LaissezFaire)
+            //{
+            //    PrimitiveStorageSet resourceToBuild;
 
-                resourceToBuild = selectedFactoryType.getBuildNeeds();
+            //    resourceToBuild = selectedFactoryType.getBuildNeeds();
 
-                // money / resource enough
-                Storage needFood = resourceToBuild.findStorage(Product.Food);
+            //    // money / resource enough
+            //    Storage needFood = resourceToBuild.findStorage(Product.Food);
 
-                if (Game.player.economy.isMarket())
-                {
-                    // todo refactor mirroring
-                    Value cost = Game.market.getCost(resourceToBuild);
-                    cost.add(Game.factoryMoneyReservPerLevel);
-                    if (Game.player.wallet.canPay(cost))
-                    {
-                        buildButton.interactable = true;
-                        buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
-                    }
-                    else
-                    {
-                        buildButton.interactable = false;
-                        buildButton.GetComponentInChildren<Text>().text = "Not enough money";
-                    }
-                }
-                else //non market
-                {
-                    if (Game.player.storageSet.has(needFood))
-                    {
-                        buildButton.interactable = true;
-                        buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
-                    }
-                    else
-                    {
-                        buildButton.interactable = false;
-                        buildButton.GetComponentInChildren<Text>().text = "Not enough materails";
-                    }
+            //    if (Game.player.economy.isMarket())
+            //    {
+            //        // todo refactor mirroring
+            //        Value cost = Game.market.getCost(resourceToBuild);
+            //        cost.add(Game.factoryMoneyReservPerLevel);
+            //        if (Game.player.wallet.canPay(cost))
+            //        {
+            //            buildButton.interactable = true;
+            //            buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
+            //        }
+            //        else
+            //        {
+            //            buildButton.interactable = false;
+            //            buildButton.GetComponentInChildren<Text>().text = "Not enough money";
+            //        }
+            //    }
+            //    else //non market
+            //    {
+            //        if (Game.player.storageSet.has(needFood))
+            //        {
+            //            buildButton.interactable = true;
+            //            buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
+            //        }
+            //        else
+            //        {
+            //            buildButton.interactable = false;
+            //            buildButton.GetComponentInChildren<Text>().text = "Not enough materails";
+            //        }
 
-                }
-            }
-            else
-            {
+            //    }
+            //}
+            //else
+            //{
+            //    buildButton.interactable = false;
+            //    buildButton.GetComponentInChildren<Text>().text = "Can't built it with Laissez faire";
+            //}
+            //////
+            //selectedFactoryType
+            buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.player, out buildButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            if (!Game.selectedProvince.CanBuildNewFactory(selectedFactoryType))
                 buildButton.interactable = false;
-                buildButton.GetComponentInChildren<Text>().text = "Can't built it with Laissez faire";
-            }
+            if (buildButton.interactable)
+                buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
+
         }
         else
         {
             buildButton.interactable = false;
-            if (Game.player.economy.status == Economy.LaissezFaire)
-            {
-                buildButton.GetComponentInChildren<Text>().text = "Can't built it with Laissez faire";
-                descriptionText.text = "";
-            }
-            else
+            //if (Game.player.economy.status == Economy.LaissezFaire)
+            //{
+            //    buildButton.GetComponentInChildren<Text>().text = "Can't built it with Laissez faire";
+            //    descriptionText.text = "";
+            //}
+            //else
             {
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
                 descriptionText.text = "Select building from left";
             }
+            
         }
 
+        
         show(false);
-    }
-    // Update is called once per frame
-    //   void Update () {
-
-    //}
+    }    
 }

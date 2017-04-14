@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 public class Factory : Producer
 {
     //public enum PopTypes { Forestry, GoldMine, MetalMine };
@@ -26,7 +27,7 @@ public class Factory : Producer
     private uint daysClosed;
     internal bool justHiredPeople;
     private int hiredLastTurn;
-    internal ConditionsList conditionsUpgrade, conditionsBuild, conditionsClose, conditionsReopen,
+    internal ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
         conditionsDestroy, conditionsSell, conditionsBuy, conditionsNatinalize,
         conditionsSubsidize, conditionsDontHireOnSubsidies, conditionsChangePriority;
     internal ModifiersList modifierEfficiency;
@@ -34,14 +35,8 @@ public class Factory : Producer
     internal Factory(Province iprovince, Owner inowner, FactoryType intype)
     { //assuming this is level 0 building
         type = intype;
-        //building = true;
-        //working = false;
         needsToUpgrade = type.getBuildNeeds();
         iprovince.allFactories.Add(this);
-        //if (inowner is PopUnit)
-        //    factoryOwner = (PopUnit)inowner;
-        //else
-        //    owner = (Country)inowner;
         factoryOwner = inowner;
         province = iprovince;
 
@@ -86,22 +81,16 @@ public class Factory : Producer
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
         conditionsNatinalize = ConditionsList.IsNotImplemented; //!LF and ! Inter
 
-        conditionsBuild = new ConditionsList(new List<Condition_Invention_Interface>() { Economy.LaissezFaire });
 
         conditionsSubsidize = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true),
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true)
-        }); // !LF
+            Economy.isNotLF, Economy.isNotNatural
+        });
         conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true),
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true)
-        });        // !LF
-        conditionsChangePriority = new ConditionsList(new List<Condition>()
-        {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true)
-        }); //!LF
+            Economy.isNotLF, Economy.isNotNatural
+        });
+        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF });
 
         Modifier modifierHasResourceInProvince = new Modifier(delegate (Country forWhom)
         {
@@ -109,17 +98,21 @@ public class Factory : Producer
         },
             "Has input resource in thst province", true, 20f);
         Modifier modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concetration bonus", true, 5f);
-
+        Modifier conditionInventedMiningAndIsShaft = new Modifier(
+            delegate (Country forWhom)
+            {
+                return forWhom.isInvented(InventionType.mining) && type.isShaft();
+            },
+            new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), false, 50f);
         modifierEfficiency = new ModifiersList(new List<Condition>()
         {
             new Modifier(InventionType.steamPower, true, 25f),
-            new Modifier(InventionType.mining, true, 50f), //!!
+            conditionInventedMiningAndIsShaft,
             new Modifier(Economy.StateCapitalism, true, 10f),
             new Modifier(Economy.Interventionism, true, 30f),
             new Modifier(Economy.LaissezFaire, true, 50f),
             new Modifier(Economy.PlannedEconomy, true, -10f),
             modifierHasResourceInProvince, modifierLevelBonus
-            //+ level bonus + resource bonus
         });
     }
 
@@ -349,7 +342,10 @@ public class Factory : Producer
     }
     internal Value getUpgradeCost()
     {
-        return Game.market.getCost(type.getUpgradeNeeds());
+        Value result = Game.market.getCost(type.getUpgradeNeeds());
+        result.add(Game.factoryMoneyReservPerLevel);
+        return result;
+        //return Game.market.getCost(type.getUpgradeNeeds());
     }
     internal float getConsumedCost()
     {
@@ -549,7 +545,7 @@ public class Factory : Producer
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
         {
-            result.set( result.get() * (1f + modifierEfficiency.getModifier(Game.player) / 100f));
+            result.set(result.get() * (1f + modifierEfficiency.getModifier(Game.player) / 100f));
             //result.add();
 
             //result.add(basicEff * Game.factoryEachLevelEfficiencyBonus);

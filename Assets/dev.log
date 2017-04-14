@@ -7,22 +7,30 @@ Do I need Countre-special needs OR NOT? - Not
 Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, exclude Artisan, Clerics and Goverment), no equal rights (meaning, poor strata gaves tax to Aristocrats ). Farmers are free (Serfdom abolited reform) than they just pay feodal tax to aristocrats. Add special SERf unit.
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
-? reduce multiple constructors in Condition?
+
 - factories have no time to rise salary to compete workforce
-+ make factory efficiency modifiers and GUY
-- broken Build
+- price stuck in middle range with zero supply
+* broken Build - old Conditions caused it
++ negate predicats somehow
+* mining
++ add condition for  factory allready builted
+* BUild panel would not refresh selection on data change caused by Simulation
+
+
+
+
 > make monoThreadSB
-> Tostr in conditions
++ Tostr in conditions
 - Procent max capacity at production window
-///////////LAST COMMITMENT\\\\\\\\\\\\
 
 > add borders to panels
-? negate predicats somehow
+? reduce multiple constructors in Condition?
+
 > better use named predicats
 > use universalpredicats as much as possible
 
 + factory panel stuff
-
++ make factory efficiency modifiers and GUY
 * not null conditions on reforms
 + make universal descriptions for Inventions
 
@@ -72,7 +80,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + show factory window on build
 
 ! Dont do  anti-cheat protection for now
-- map turn -Forget for Now
+* map turn 
 - scale prefabs 
 - fast clicking on windows make them move
 
@@ -150,7 +158,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 > needs of non-invented goods?
 
-- price stuck in middle range with zero supply
+
 > refactor invest
 > 3d borders markup
 > Meshs roundation

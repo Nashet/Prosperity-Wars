@@ -17,9 +17,12 @@ public class FactoryType
     /// <summary>Per 1 level upgrade</summary>
     internal PrimitiveStorageSet upgradeResource = new PrimitiveStorageSet();
     internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
+
     //internal ConditionsList conditionsBuild;
-    
-    internal FactoryType(string iname, Storage ibasicProduction, PrimitiveStorageSet iresourceInput)
+    internal Condition enoughMoneyOrResourcesToBuild;
+    internal ConditionsList conditionsBuild;
+    bool shaft;
+    internal FactoryType(string iname, Storage ibasicProduction, PrimitiveStorageSet iresourceInput, bool shaft)
     {
 
         name = iname;
@@ -34,18 +37,42 @@ public class FactoryType
             resourceInput = iresourceInput;
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
         upgradeResource.Set(new Storage(Product.Stone, 10f));
-        
+        //internal ConditionsList conditionsBuild;
+        enoughMoneyOrResourcesToBuild = new Condition(
+          (delegate (Country forWhom)
+          {
+              if (forWhom.economy.isMarket())
+                  return forWhom.wallet.canPay(getBuildCost());
+              else
+              {
+
+                  return forWhom.storageSet.has(getBuildNeeds());
+              }
+
+          }), "Have enough money or resources to build", true
+          );
+        conditionsBuild = new ConditionsList(new List<AbstractCondition>() {
+        Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
+        this.shaft = shaft;
     }
     internal PrimitiveStorageSet getUpgradeNeeds()
     {
         return upgradeResource;
     }
+    internal Value getBuildCost()
+    {
+        Value result = Game.market.getCost(getBuildNeeds());
+        result.add(Game.factoryMoneyReservPerLevel);
+        return result;
+    }
     internal PrimitiveStorageSet getBuildNeeds()
     {
+        //return new Storage(Product.Food, 40f);
         PrimitiveStorageSet result = new PrimitiveStorageSet();
-        result.Set(new Storage(Product.Food, 40f)); //! has connection in pop.invest!!
+        result.Set(new Storage(Product.Food, 40f));
+        //TODO!has connection in pop.invest!!
         //if (whoCanProduce(Product.Gold) == this)
-        // result.Set(new Storage(Product.Wood, 40f));
+        //        result.Set(new Storage(Product.Wood, 40f));
         return result;
     }
     /// <summary>
@@ -68,6 +95,11 @@ public class FactoryType
             return true;
         else return false;
     }
+    internal bool isShaft()
+    {
+        return shaft;
+    }
+
     //todo improove getPossibleProfit
     internal float getPossibleProfit(Province province)
     {

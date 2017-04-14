@@ -5,9 +5,9 @@ using System;
 
 //public abstract class NameDescriptor
 //{ }
-public interface Condition_Invention_Interface { }
+public interface AbstractCondition { }
 
-abstract public class AbstractReformValue: Condition_Invention_Interface
+abstract public class AbstractReformValue : AbstractCondition
 {
     string name;
     string description;
@@ -187,7 +187,7 @@ public class Economy : AbstractReform
     internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, ConditionsList.AlwaysYes);
     internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 1, capitalism);
     internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
-    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<Condition_Invention_Interface>()
+    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<AbstractCondition>()
         {
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.collectivism); }, InventionType.collectivism.getInventedPhrase(), true),
             //new ConditionString(InventionType.collectivism, true),
@@ -197,6 +197,16 @@ public class Economy : AbstractReform
         }));
     internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "not dirty pants", 3, capitalism);
 
+    /// ////////////
+
+    internal static Condition isNotLF = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
+    internal static Condition isNotNatural = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true);
+
+    internal static Condition isNotState = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.StateCapitalism; }, "Economy policy is not State Capitalism", true);
+    internal static Condition isNotInterventionism = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.Interventionism; }, "Economy policy is not Limited Interventionism", true);
+    internal static Condition isNotPlanned = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.PlannedEconomy; }, "Economy policy is not Planned Economy", true);
+    
+    /// ////////////
     public Economy(Country country) : base("Economy", "Your economy policy", country)
     {
         status = NaturalEconomy;
@@ -236,56 +246,56 @@ public class Economy : AbstractReform
         return true;
     }
 
-    internal bool allowsFactoryUpgradeByGovernment()
-    {
-        if (status == Economy.LaissezFaire)
-            return false;
-        else return true;
-    }
-    internal bool allowsFactoryCloseByGovernment()
-    {
-        if (status != Economy.LaissezFaire)
-            return true;
-        else return false;
-    }
-    internal bool allowsFactoryReopenByGovernment()
-    {
-        if (status != Economy.LaissezFaire)
-            return true;
-        else return false;
-    }
-    internal bool allowsFactoryDestroyByGovernment()
-    {
-        if (status == Economy.StateCapitalism || status == Economy.PlannedEconomy || status == Economy.NaturalEconomy)
-            //if (status != Economy.LaissezFaire ||)
-            return true;
-        else return false;
-    }
-    internal bool allowsFactorySellByGovernment()
-    {
-        if (status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-            return true;
-        else return false;
-    }
-    internal bool allowsFactoryBuyByGovernment()
-    {
-        if (status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-            return true;
-        else return false;
-    }
-    internal bool allowsFactoryNatonalizeByGovernment()
-    {
-        if (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-            return true;
-        else return false;
-    }
+    //internal bool allowsFactoryUpgradeByGovernment()
+    //{
+    //    if (status == Economy.LaissezFaire)
+    //        return false;
+    //    else return true;
+    //}
+    //internal bool allowsFactoryCloseByGovernment()
+    //{
+    //    if (status != Economy.LaissezFaire)
+    //        return true;
+    //    else return false;
+    //}
+    //internal bool allowsFactoryReopenByGovernment()
+    //{
+    //    if (status != Economy.LaissezFaire)
+    //        return true;
+    //    else return false;
+    //}
+    //internal bool allowsFactoryDestroyByGovernment()
+    //{
+    //    if (status == Economy.StateCapitalism || status == Economy.PlannedEconomy || status == Economy.NaturalEconomy)
+    //        //if (status != Economy.LaissezFaire ||)
+    //        return true;
+    //    else return false;
+    //}
+    //internal bool allowsFactorySellByGovernment()
+    //{
+    //    if (status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy)
+    //        return true;
+    //    else return false;
+    //}
+    //internal bool allowsFactoryBuyByGovernment()
+    //{
+    //    if (status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
+    //        return true;
+    //    else return false;
+    //}
+    //internal bool allowsFactoryNatonalizeByGovernment()
+    //{
+    //    if (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
+    //        return true;
+    //    else return false;
+    //}
 
-    internal bool allowsFactoryBuildingByGovernment()
-    {
-        if (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-            return true;
-        else return false;
-    }
+    //internal bool allowsFactoryBuildingByGovernment()
+    //{
+    //    if (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
+    //        return true;
+    //    else return false;
+    //}
 
 
 }
