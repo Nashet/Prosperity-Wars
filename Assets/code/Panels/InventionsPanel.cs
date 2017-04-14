@@ -44,6 +44,7 @@ public class InventionsPanel : DragPanel
             MainCamera.topPanel.refresh();
             if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
             if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.refresh(true);
+            if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
             //Hide();
             //show();
             refresh();

@@ -53,7 +53,7 @@ public class Game
     internal static float factoryMoneyReservPerLevel = 20f;
     internal static float minMarginToRiseSalary = 0.1f;
     internal static float factoryEachLevelEfficiencyBonus = 0.05f;
-    internal static float factoryHaveResourceInProvinceBonus = 0.2f;
+    //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
     internal static int maxFactoryFireHireSpeed = 50;
     internal static float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
     internal static float defaultSciencePointMultiplier = 0.001f; //0.00001f;

@@ -12,8 +12,8 @@ abstract public class AbstractReformValue: Condition_Invention_Interface
     string name;
     string description;
     internal int ID;
-    internal Condition condition;
-    internal AbstractReformValue(string inname, string indescription, int IDin, Condition condition)
+    internal ConditionsList condition;
+    internal AbstractReformValue(string inname, string indescription, int IDin, ConditionsList condition)
     {
         ID = IDin;
         name = inname;
@@ -66,7 +66,7 @@ public class Government : AbstractReform
 {
     public class ReformValue : AbstractReformValue
     {
-        public ReformValue(string inname, string indescription, int idin, Condition condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
         }
@@ -90,18 +90,18 @@ public class Government : AbstractReform
     }
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
-    internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, Condition.AlwaysYes);
-    internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "Only Aristocrats and Clerics can vote", 1, Condition.AlwaysYes);
-    internal static ReformValue AnticRespublic = new ReformValue("Antique respublic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, Condition.AlwaysYes);
-    internal static ReformValue Despotism = new ReformValue("Despotism", "Despot does what he wants", 2, Condition.AlwaysYes);
-    internal static ReformValue Theocracy = new ReformValue("Theocracy", "Only Clerics have power", 5, Condition.AlwaysYes);
+    internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
+    internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "Only Aristocrats and Clerics can vote", 1, ConditionsList.AlwaysYes);
+    internal static ReformValue AnticRespublic = new ReformValue("Antique respublic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
+    internal static ReformValue Despotism = new ReformValue("Despotism", "Despot does what he wants", 2, ConditionsList.AlwaysYes);
+    internal static ReformValue Theocracy = new ReformValue("Theocracy", "Only Clerics have power", 5, ConditionsList.AlwaysYes);
 
-    internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes", 9, Condition.AlwaysYes);
-    internal static ReformValue Democracy = new ReformValue("Universal Democracy", "Everyone can vote; each vote is equal", 3, Condition.AlwaysYes);
-    internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "Only capitalists have power", 6, Condition.AlwaysYes);
-    internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "Only military guys have power", 7, Condition.AlwaysYes);
+    internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes", 9, ConditionsList.AlwaysYes);
+    internal static ReformValue Democracy = new ReformValue("Universal Democracy", "Everyone can vote; each vote is equal", 3, ConditionsList.AlwaysYes);
+    internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "Only capitalists have power", 6, ConditionsList.AlwaysYes);
+    internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "Only military guys have power", 7, ConditionsList.AlwaysYes);
 
-    internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, Condition.AlwaysYes);
+    internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.AlwaysYes);
 
     // more weited voting?
     public Government(Country country) : base("Government", "Form of government", country)
@@ -143,7 +143,7 @@ public class Economy : AbstractReform
     public class ReformValue : AbstractReformValue
     {
 
-        public ReformValue(string inname, string indescription, int idin, Condition condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
         }
@@ -175,19 +175,19 @@ public class Economy : AbstractReform
 
         }
     }
-    static Condition capitalism = new Condition(new List<ConditionString>()
+    static ConditionsList capitalism = new ConditionsList(new List<Condition>()
         {
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
-            new ConditionString(InventionType.individualRights, true),
-            new ConditionString(InventionType.banking, true)
+            new Condition(InventionType.individualRights, true),
+            new Condition(InventionType.banking, true)
         });
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
-    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, Condition.AlwaysYes);
+    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, ConditionsList.AlwaysYes);
     internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 1, capitalism);
     internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
-    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new Condition(new List<Condition_Invention_Interface>()
+    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<Condition_Invention_Interface>()
         {
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.collectivism); }, InventionType.collectivism.getInventedPhrase(), true),
             //new ConditionString(InventionType.collectivism, true),
@@ -294,7 +294,7 @@ public class Serfdom : AbstractReform
 {
     public class LocalReformValue : AbstractReformValue
     {
-        public LocalReformValue(string inname, string indescription, int idin, Condition condition) : base(inname, indescription, idin, condition)
+        public LocalReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
             this.condition = condition;
@@ -342,23 +342,23 @@ public class Serfdom : AbstractReform
     }
     internal LocalReformValue status;
     internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
-    internal static LocalReformValue Allowed = new LocalReformValue("Allowed", "Peasants and other plebs pay 10% of income to Aristocrats", 0, Condition.AlwaysYes);
-    internal static LocalReformValue Brutal = new LocalReformValue("Brutal", "Peasants and other plebs pay 20% of income to Aristocrats", 1, Condition.AlwaysYes);
+    internal static LocalReformValue Allowed = new LocalReformValue("Allowed", "Peasants and other plebs pay 10% of income to Aristocrats", 0, ConditionsList.AlwaysYes);
+    internal static LocalReformValue Brutal = new LocalReformValue("Brutal", "Peasants and other plebs pay 20% of income to Aristocrats", 1, ConditionsList.AlwaysYes);
     internal static LocalReformValue Abolished = new LocalReformValue("Abolished", "Abolished with no obligations", 2,
-        new Condition(new List<ConditionString>()
+        new ConditionsList(new List<Condition>()
         {
-            new ConditionString(InventionType.individualRights, true)
+            new Condition(InventionType.individualRights, true)
         }));
     internal static LocalReformValue AbolishedWithLandPayment = new LocalReformValue("Abolished with land payment", "Peasants are personally free now but they have to pay debt for land", 3,
-        new Condition(new List<ConditionString>()
+        new ConditionsList(new List<Condition>()
         {
-            new ConditionString(InventionType.individualRights, true),
-            new ConditionString(InventionType.banking, true)
+            new Condition(InventionType.individualRights, true),
+            new Condition(InventionType.banking, true)
         }));
     internal static LocalReformValue AbolishedAndNationalizated = new LocalReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4,
-        new Condition(new List<ConditionString>()
+        new ConditionsList(new List<Condition>()
         {
-            new ConditionString( Government.ProletarianDictatorship, true)
+            new Condition( Government.ProletarianDictatorship, true)
         }));
 
 
@@ -397,7 +397,7 @@ public class MinimalWage : AbstractReform
 {
     public class LocalReformValue : AbstractReformValue
     {
-        public LocalReformValue(string inname, string indescription, int idin, Condition condition) : base(inname, indescription, idin, condition)
+        public LocalReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
         }
@@ -444,20 +444,20 @@ public class MinimalWage : AbstractReform
     }
     internal LocalReformValue status;
     internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
-    internal static LocalReformValue None = new LocalReformValue("None", "", 0, new Condition(new List<ConditionString>()
+    internal static LocalReformValue None = new LocalReformValue("None", "", 0, new ConditionsList(new List<Condition>()
         {
-            new ConditionString(InventionType.individualRights, true),
-            new ConditionString(InventionType.banking, true)
+            new Condition(InventionType.individualRights, true),
+            new Condition(InventionType.banking, true)
         }));
-    internal static LocalReformValue Scanty = new LocalReformValue("Scanty", "Half-hungry", 5, new Condition(new List<ConditionString>()
+    internal static LocalReformValue Scanty = new LocalReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
         {
-            new ConditionString(InventionType.Welfare, true),
-            new ConditionString(Economy.LaissezFaire, true)
+            new Condition(InventionType.Welfare, true),
+            new Condition(Economy.LaissezFaire, true)
         }));
-    internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, Condition.AlwaysYes);
+    internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, ConditionsList.AlwaysYes);
     //internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1);
-    internal static LocalReformValue Middle = new LocalReformValue("Middle", "Plenty good wage", 2, Condition.AlwaysYes);
-    internal static LocalReformValue Big = new LocalReformValue("Generous", "Can live almost likea king. Almost..", 3, Condition.AlwaysYes);
+    internal static LocalReformValue Middle = new LocalReformValue("Middle", "Plenty good wage", 2, ConditionsList.AlwaysYes);
+    internal static LocalReformValue Big = new LocalReformValue("Generous", "Can live almost likea king. Almost..", 3, ConditionsList.AlwaysYes);
     //internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4);
 
 
@@ -501,7 +501,7 @@ public class TaxationForPoor : AbstractReform
     public class ReformValue : AbstractReformValue
     {
         internal Procent tax;
-        public ReformValue(string inname, string indescription, Procent intarrif, int idin, Condition condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, Procent intarrif, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             tax = intarrif;
         }
@@ -526,7 +526,7 @@ public class TaxationForPoor : AbstractReform
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax", "", new Procent(i * 0.1f), i, Condition.AlwaysYes));
+            PossibleStatuses.Add(new ReformValue(" tax", "", new Procent(i * 0.1f), i, ConditionsList.AlwaysYes));
         status = PossibleStatuses[1];
     }
     internal override AbstractReformValue getValue()
@@ -558,72 +558,7 @@ public class TaxationForPoor : AbstractReform
 
 
 
-public class InventionsList
-{
-    internal Dictionary<InventionType, bool> list = new Dictionary<InventionType, bool>();
-    public InventionsList()
-    {
-        foreach (var each in InventionType.allInventions)
-            list.Add(each, false);
-    }
-    public void MarkInvented(InventionType type)
-    {
-        //bool result = false;
-        //if (list.TryGetValue(type, out result))
-        //    result = true;
-        //else
-        //    result = false;
-        list[type] = true;
-    }
-    public bool isInvented(InventionType type)
-    {
-        bool result = false;
-        list.TryGetValue(type, out result);
-        return result;
-    }
 
-}
-public class InventionType: Condition_Invention_Interface
-{
-    internal static List<InventionType> allInventions = new List<InventionType>();
-    string name;
-    string description;
-    internal Value cost;
-    string inventedPhrase;
-    public static InventionType farming = new InventionType("Farming", "Allows farming and farmers", new Value(100f)),
-        //capitalism = new InventionType("Capitalism", "", new Value(50f)),
-        banking = new InventionType("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100.34f)),
-        manufactories = new InventionType("Manufactories", "Allows building manufactories to process raw product\n Testestestestestest Testestestestestest Testestestestestest testestesttestestest testestest testestest", new Value(67.83f)),
-        mining = new InventionType("Mining", "Allows resource gathering from holes in ground, increasing efficience", new Value(100f)),
-        religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
-        metal = new InventionType("Metal", "Allows metal ore and smelting. Metal is good for tools and weapons", new Value(100f)),
-        individualRights = new InventionType("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
-        collectivism = new InventionType("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
-        Welfare = new InventionType("Welfare", "Allows min wage and.. other", new Value(100f))
-        ;
-    internal InventionType(string name, string description, Value cost)
-    {
-        this.name = name;
-        this.description = description;
-        this.cost = cost;
-        inventedPhrase = "Invented " + name;
-        allInventions.Add(this);
-    }
-    internal string getInventedPhrase()
-    {
-        return inventedPhrase;
-    }
-    internal InventionType()
-    { }
-    internal string getDescription()
-    {
-        return description;
-    }
-    override public string ToString()
-    {
-        return name;
-    }
-}
 public class Needs
 {
     //Product product;
