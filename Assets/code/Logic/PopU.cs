@@ -3,10 +3,17 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
+/// <summary>
+///     Clears the contents of the string builder.
+/// </summary>
+/// <param name="value">
+///     The <see cref="StringBuilder"/> to clear.
+/// </param>
 
 abstract public class PopUnit : Producer
 {
+
     public static Procent growthSpeed = new Procent(0.001f);
     public static Procent starvationSpeed = new Procent(0.001f);
 
@@ -31,10 +38,9 @@ abstract public class PopUnit : Producer
 
     public ModifiersList modifiersLoyaltyChange;
 
-    Modifier modifierStarvation;
-    Modifier modifierLifeNeedsFulfilled;
-    Modifier modifierEverydayNeedsFulfilled;
-    Modifier modifierLuxuryNeedsFulfilled;
+    Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
+        modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled;
+    private uint daysUpsetByForcedReform;
 
     public PopUnit(uint iamount, PopType ipopType, Culture iculture, Province where)
     {
@@ -49,14 +55,31 @@ abstract public class PopUnit : Producer
         loyalty = new Procent(0.50f);
         NeedsFullfilled = new Procent(1f);
         province = where;
-        modifierStarvation = new Modifier(delegate (Country forWhom) { return NeedsFullfilled.get() < 0.20f; }, "Starvation", false, -3f);
-        modifierLifeNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() == 1f; }, "Life needs are satisfied", false, 1f);
-        modifierEverydayNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getEveryDayNeedsFullfilling().get() == 1f; }, "Everyday needs are satisfied", false, 1.5f);
-        modifierLuxuryNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLuxuryNeedsFullfilling().get() == 1f; }, "Luxury needs are satisfied", false, 2f);
+        modifierStarvation = new Modifier(delegate (Country forWhom) { return NeedsFullfilled.get() < 0.20f; }, "Starvation", false, -0.3f);
+        modifierLifeNeedsNotFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() < 0.99f; }, "Life needs are not satisfied", false, -0.2f);
+        modifierLifeNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() > 0.99f; }, "Life needs are satisfied", false, 0.1f);
+        modifierEverydayNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getEveryDayNeedsFullfilling().get() > 0.99f; }, "Everyday needs are satisfied", false, 0.15f);
+        modifierLuxuryNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLuxuryNeedsFullfilling().get() > 0.99f; }, "Luxury needs are satisfied", false, 0.2f);
+
+        //Game.threadDangerSB.Clear();
+        //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.owner.government.ToString());
+        modifierCanVote = new Modifier(delegate (Country forWhom) { return canVote(); }, "Likes that government because can vote with it", false, 0.1f);
+        //Game.threadDangerSB.Clear();
+        //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.owner.government.ToString());
+        modifierCanNotVote = new Modifier(delegate (Country forWhom) { return !canVote(); }, "Dislikes that government because can't vote with it", false, -0.1f);
+        //Game.threadDangerSB.Clear();
+        //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
+        modifierUpsetByForcedReform = new Modifier(delegate (Country forWhom) { return daysUpsetByForcedReform > 0; }, "Upset by forced reform", false, -0.3f);
         modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
         {
-           modifierStarvation, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled
+           modifierStarvation,modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled,
+            modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform
         });
+    }
+
+    internal void addDaysUpsetByForcedReform(uint popDaysUpsetByForcedReform)
+    {
+        daysUpsetByForcedReform += popDaysUpsetByForcedReform;
     }
 
     // todo refactor mirroring above
@@ -465,6 +488,8 @@ abstract public class PopUnit : Producer
         float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this.province.owner) / 100f;
         Mathf.Clamp01(newRes);
         loyalty.set(newRes);
+        if (daysUpsetByForcedReform > 0)
+            daysUpsetByForcedReform--;
     }
 
     public override void simulate()

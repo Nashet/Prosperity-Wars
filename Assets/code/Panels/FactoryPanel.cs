@@ -205,6 +205,7 @@ public class FactoryPanel : DragPanel//for dragging
         {
             shownFactory.upgrade(Game.player);
             if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
+            MainCamera.topPanel.refresh();
             this.refresh();
         }
     }

@@ -4,7 +4,7 @@ public class Value
 {
     ///<summary> storing as value as number * precision </summary>
     private uint value;
-    internal static uint precision = 1000; // 0.01
+    internal static uint precision = 10000; // 0.01
     public Value(float number)
     {
         if (number < 0f)
@@ -82,7 +82,13 @@ public class Value
         //  Debug.Log("Value multiple failed");
         return new Value(get() * invalue);
     }
-
+    public void divideInside(Value invalue)
+    {
+        if (invalue.get() < 0)
+            Debug.Log("Value multiple failed");
+        set(this.divide(invalue));
+    }
+    
 
 
     /// <summary>returns new value </summary>
@@ -92,6 +98,14 @@ public class Value
 
         return new Value(get() / invalue);
     }
+    /// <summary>returns new value </summary>
+    internal Value divide(Value invalue)
+    {
+        if (invalue.get() == 0) Debug.Log("Value ivide by zero");
+
+        return new Value(get() / invalue.get());
+    }
+
     public void pay(Value another, uint amount)
     {
         if (this.get() >= amount)

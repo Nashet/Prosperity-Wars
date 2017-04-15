@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.IO;
 using System;
-
+using System.Text;
 
 public class Game
 {
@@ -31,7 +31,7 @@ public class Game
     internal static float maxPrice = 999.99f;
     internal static uint familySize = 5;
 
-    
+    internal static StringBuilder threadDangerSB = new StringBuilder();
 
     public static uint date;
     float cellMuliplier = 2f;
@@ -47,14 +47,14 @@ public class Game
     internal static uint maxDaysUnprofitableBeforeFactoryClosing = 180;
     internal static uint maxDaysBuildingBeforeRemoving = 180; // 180;
     internal static uint maxDaysClosedBeforeRemovingFactory = 180;
-    internal static uint minDaysBeforeSlaryCut = 2;
+    internal static uint minDaysBeforeSalaryCut = 2;
     internal static int howOftenCheckForFactoryReopenning = 30;
     internal static Procent savePopMoneyReserv = new Procent(0.66666f);
     internal static float factoryMoneyReservPerLevel = 20f;
     internal static float minMarginToRiseSalary = 0.1f;
     internal static float factoryEachLevelEfficiencyBonus = 0.05f;
     //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
-    internal static int maxFactoryFireHireSpeed = 50;
+    internal static int maxFactoryFireHireSpeed = 10;
     internal static float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
     internal static float defaultSciencePointMultiplier = 0.001f; //0.00001f;
     internal static uint fabricConstructionTimeWithoutCapitalism = 20;
@@ -64,6 +64,8 @@ public class Game
     // just to store temporeal junk
     internal static string dumpString;
     internal static GameObject r3dTextPrefab;
+    internal static Value defaultPriceLimitMultiplier = new Value(2f);
+    internal static uint PopDaysUpsetByForcedReform = 30;
 
     public Game()
     {
@@ -150,10 +152,7 @@ public class Game
         new PopType(PopType.PopTypes.Workers, null, "Workers");
 
         Culture cul = new Culture("Kocopetji");
-        player = new Country("Kocopia", cul);
-        //player.inventions.MarkInvented(InventionType.capitalism);
-        player.inventions.MarkInvented(InventionType.farming);
-        //player.inventions.MarkInvented(InventionType.banking);
+        player = new Country("Kocopia", cul);        
         player.storageSet.add(new Storage(Product.Food, 200f));
 
         CreateRandomPopulation();
@@ -188,6 +187,12 @@ public class Game
             Aristocrats ar = new Aristocrats(100, PopType.aristocrats, Game.player.culture, province);
             ar.wallet.haveMoney.set(200);
             province.allPopUnits.Add(ar);
+
+            Capitalists ca = new Capitalists(50, PopType.capitalists, Game.player.culture, province);
+            ca.wallet.haveMoney.set(400);
+            province.allPopUnits.Add(ca);
+
+
             //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
 
             //if (Procent.GetChance(chanceForA))

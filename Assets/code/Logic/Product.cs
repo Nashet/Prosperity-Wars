@@ -11,6 +11,7 @@ public class Product
     private string name;
     internal bool resource = false;
     static int resourceCounter = 0;
+    Value defaultPrice;
 
     internal static Product Food;
     internal static Product Wood;
@@ -49,6 +50,7 @@ public class Product
     }
     public Product(string inName, bool inlanded, float defaultPrice)
     {
+        this.defaultPrice = new Value(defaultPrice);
         resource = inlanded;
         if (resource) resourceCounter++;
         name = inName;
@@ -67,8 +69,7 @@ public class Product
         if (inName == "Cement") Cement = this;
         if (inName == "Fruit") Fruit = this;
         if (inName == "Wine") Wine = this;
-        //Game.market.getDemandSupplyBalance(this);
-        //allProducts.Add(new Product("shiit"));
+
         //TODO checks for duplicates&
     }
     public static Product findByName(string name)
@@ -96,8 +97,27 @@ public class Product
     override public string ToString()
     {
         return getName();
-
     }
 
-    
+    internal Value getDefaultPrice()
+    {
+        if (isResource())
+        {
+            return defaultPrice.multiple(Game.defaultPriceLimitMultiplier);
+        }
+        else
+        {
+            var type = FactoryType.whoCanProduce(this);
+            if (type == null)
+                return defaultPrice.multiple(Game.defaultPriceLimitMultiplier);
+            else
+            {
+                Value res = Game.market.getCost(type.resourceInput);
+                res.multipleInside(Game.defaultPriceLimitMultiplier);
+                res.divideInside(type.basicProduction);
+                return res;
+            }
+        }
+    }
+
 }
