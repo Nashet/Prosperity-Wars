@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -200,6 +201,10 @@ public class LimitedQueue<T> : Queue<T>
 }
 public static class UtilsMy
 {
+    public static void Clear(this StringBuilder value)
+    {
+        value.Length = 0;
+    }
     public static string FirstLetterToUpper(string str)
     {
         if (str == null)

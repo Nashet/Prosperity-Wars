@@ -59,7 +59,7 @@ public class PoliticsPanel : DragPanel
     }
     public void onForceDecisionClick()
     {
-        setNewReform();
+
         //write-in here POp's ipset for forcing wrong reform 
         uint votersSayedYes;
         foreach (Province pro in Game.player.ownedProvinces)
@@ -69,12 +69,10 @@ public class PoliticsPanel : DragPanel
                 {
                     votersSayedYes = pop.getSayingYesPopulation(selectedReformValue);
                     if (pop.getSayYesProcent(selectedReformValue) < Game.votingPassBillLimit)
-                        if ((pop.loyalty.get() - Game.votingForcedReformPenalty) > 0f)
-                            pop.loyalty.subtract(Game.votingForcedReformPenalty);
-                        else
-                            pop.loyalty.set(0F);
+                        pop.addDaysUpsetByForcedReform(Game.PopDaysUpsetByForcedReform);
                 }
             }
+        setNewReform();
     }
     //slider.onValueChanged.AddListener(ListenerMethod);
 
@@ -124,7 +122,7 @@ public class PoliticsPanel : DragPanel
         {
             if (callRebuildDropDown) // meaning changed whole reform            
                 rebuildDropDown();
-            
+
             descriptionText.text = selectedReform + " reforms - " + selectedReform.getDescription()
            + "\n\nCurrently: " + selectedReform.getValue() + " - " + selectedReform.getValue().getDescription()
            + "\n\nSelected: ";

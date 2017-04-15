@@ -44,6 +44,7 @@ public class Factory : Producer
         storageNow = new Storage(type.basicProduction.getProduct());
         sentToMarket = new Storage(type.basicProduction.getProduct());
 
+        salary.set(province.getLocalMinSalary());
         conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
             new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
@@ -68,7 +69,7 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
         });
-        conditionsDestroy = new ConditionsList(new List<Condition>() {Economy.isNotLF});
+        conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF });
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
         conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State
 
@@ -308,7 +309,8 @@ public class Factory : Producer
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
-                        else salary.set(0);
+                        //todo no resiuces tio pay salary
+                        //else salary.set(0);
                     }
                     else // assuming - PopUnit
                     {
@@ -320,7 +322,8 @@ public class Factory : Producer
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
-                        else salary.set(0);
+                        //todo no resiuces tio pay salary
+                        //else salary.set(0);
                     }
                     //else dont pay if there is nothing to pay
                 }
@@ -422,13 +425,19 @@ public class Factory : Producer
             if (ThereIsSpaceToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
                 salary.add(0.01f);
             //too allocate workers form other popTypes
-            if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600 && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
+            if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600
+                && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
                 salary.add(0.01f);
+
+            // to help factories catch up other factories salaries
+            //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
+            //    salary.set(province.getLocalMinSalary());
             // freshly builded factories should rise salary to concurency with old ones
             if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.03f);
+            
             // reduce salary on non-profit
-            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSlaryCut && !justHiredPeople)
+            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople)
                 if (salary.get() - 0.3f >= province.owner.getMinSalary())
                     salary.subtract(0.3f);
                 else
@@ -455,7 +464,7 @@ public class Factory : Producer
         if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0))// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
         //don't hire more if unprofitable. Even fire some
-        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSlaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
+        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSalaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
         // just dont't hire more..
         if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f))

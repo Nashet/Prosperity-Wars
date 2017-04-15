@@ -28,7 +28,7 @@ public class Country : Owner
     /// <summary>
     /// per 1000 men
     /// </summary>
-    private Value minSalary = new Value(0.0f);
+    private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
     
     public Country(string iname, Culture iculture)
@@ -46,13 +46,14 @@ public class Country : Owner
         culture = iculture;
         //government.status = Government.Democracy;
         //economy.status = Government.Despotism;
-        //economy.status = Economy.PlannedEconomy;
+        //economy.status = Economy.StateCapitalism;
         //government.status = Economy.PlannedEconomy;
-        //inventions.MarkInvented(InventionType.farming);
-        //inventions.MarkInvented(InventionType.capitalism);
-        //inventions.MarkInvented(InventionType.banking);
-        
-        
+        inventions.MarkInvented(InventionType.farming);
+        inventions.MarkInvented(InventionType.manufactories);
+        inventions.MarkInvented(InventionType.banking);
+        inventions.MarkInvented(InventionType.individualRights);
+
+
 
     }
     public bool isInvented(InventionType type)

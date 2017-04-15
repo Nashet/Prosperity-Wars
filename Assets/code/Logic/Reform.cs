@@ -54,6 +54,7 @@ public abstract class AbstractReform
     {
         return description;
     }
+    
     override public string ToString()
     {
         return name;
@@ -70,7 +71,7 @@ public class Government : AbstractReform
         {
             PossibleStatuses.Add(this);
         }
-
+        
         internal override bool isAvailable(Country country)
         {
             if (ID == 4 && !country.isInvented(InventionType.collectivism))
@@ -87,6 +88,10 @@ public class Government : AbstractReform
         {
             return forWhom.government.status == this;
         }
+    }
+    public override string ToString()
+    {
+        return this.status.ToString();
     }
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
@@ -108,7 +113,7 @@ public class Government : AbstractReform
     {
         status = Tribal;
     }
-
+    
     internal override AbstractReformValue getValue()
     {
         return status;

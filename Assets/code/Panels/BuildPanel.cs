@@ -89,10 +89,16 @@ public class BuildPanel : DragPanel
         hide();
         if (selectedFactoryType != null)
         {
-            descriptionText.text = "Build " + selectedFactoryType
-                + "\n\nResouces to build: " + selectedFactoryType.getBuildNeeds()
-                + "\nEveryday resource input: " + selectedFactoryType.resourceInput
-                ;
+            Game.threadDangerSB.Clear();
+            Game.threadDangerSB.Append("Build ").Append(selectedFactoryType);
+            Game.threadDangerSB.Append("\n\nResouces to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(selectedFactoryType.getBuildCost());            
+            Game.threadDangerSB.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
+
+            descriptionText.text = Game.threadDangerSB.ToString();
+            //descriptionText.text = "Build " + selectedFactoryType
+            //    + "\n\nResouces to build: " + selectedFactoryType.getBuildNeeds()
+            //    + "\nEveryday resource input: " + selectedFactoryType.resourceInput
+            //    ;
 
             //if (Game.player.isInvented(InventionType.capitalism))
             //if (Game.player.economy.status != Economy.LaissezFaire)

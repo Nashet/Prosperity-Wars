@@ -78,9 +78,7 @@ public class FactoryType
     /// <summary>
     /// Returns first correct value
     /// Assuming there is only one  FactoryType for each Product
-    /// </summary>
-    /// <param name="pro"></param>
-    /// <returns></returns>
+    /// </summary>   
     internal static FactoryType whoCanProduce(Product pro)
     {
         foreach (FactoryType ft in allTypes)
