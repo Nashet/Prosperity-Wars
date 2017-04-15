@@ -12,13 +12,13 @@ abstract public class AbstractReformValue : AbstractCondition
     string name;
     string description;
     internal int ID;
-    internal ConditionsList condition;
+    internal ConditionsList allowed;
     internal AbstractReformValue(string inname, string indescription, int IDin, ConditionsList condition)
     {
         ID = IDin;
         name = inname;
         description = indescription;
-        this.condition = condition;
+        this.allowed = condition;
     }
     internal string getDescription()
     {
@@ -312,7 +312,7 @@ public class Serfdom : AbstractReform
         public LocalReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
-            this.condition = condition;
+            this.allowed = condition;
         }
         internal override bool isAvailable(Country country)
         {

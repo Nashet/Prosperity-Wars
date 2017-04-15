@@ -13,7 +13,7 @@ public class PoliticsPanel : DragPanel
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
     List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
-    Procent procentVotersSayedYes = new Procent(0);
+   
     //Province province;
     // Use this for initialization
     void Start()
@@ -59,17 +59,15 @@ public class PoliticsPanel : DragPanel
     }
     public void onForceDecisionClick()
     {
-
-        //write-in here POp's ipset for forcing wrong reform 
-        uint votersSayedYes;
+        //uint votersSayedYes;
         foreach (Province pro in Game.player.ownedProvinces)
             foreach (PopUnit pop in pro.allPopUnits)
             {
-                //if (pop.canVote())
+                if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
                 {
-                    votersSayedYes = pop.getSayingYesPopulation(selectedReformValue);
-                    if (pop.getSayYesProcent(selectedReformValue) < Game.votingPassBillLimit)
-                        pop.addDaysUpsetByForcedReform(Game.PopDaysUpsetByForcedReform);
+                    //votersSayedYes = pop.getSayingYes(selectedReformValue);
+                    //if (pop.getSayYesProcent(selectedReformValue) < Game.votingPassBillLimit)
+                    pop.addDaysUpsetByForcedReform(Game.PopDaysUpsetByForcedReform);
                 }
             }
         setNewReform();
@@ -131,61 +129,16 @@ public class PoliticsPanel : DragPanel
             if (selectedReformValue != selectedReform.getValue())
                 descriptionText.text += selectedReformValue + " - " + selectedReformValue.getDescription();
             else
-                descriptionText.text += "current";
+                descriptionText.text += "current";     
 
-            // calc how much of population wants selected reform
-            uint totalPopulation = Game.player.getMenPopulation();
-            uint votingPopulation = 0;
-            uint populationSayedYes = 0;
-            uint votersSayedYes = 0;
+           
+            ////
             Procent procentPopulationSayedYes = new Procent(0f);
-            foreach (Province pro in Game.player.ownedProvinces)
-                foreach (PopUnit pop in pro.allPopUnits)
-                {
-                    populationSayedYes += pop.getSayingYesPopulation(selectedReformValue);
-                    if (pop.canVote())
-                    {
-                        votersSayedYes += pop.getSayingYesPopulation(selectedReformValue);
-                        votingPopulation += pop.population;
-                    }
-                }
-            if (totalPopulation != 0)
-                procentPopulationSayedYes.set((float)populationSayedYes / totalPopulation);
-            else
-                procentPopulationSayedYes.set(0);
-
-            if (votingPopulation == 0)
-                procentVotersSayedYes.set(0);
-            else
-                procentVotersSayedYes.set((float)votersSayedYes / votingPopulation);
-
-            // division by pop types
-            Dictionary<PopType, uint> divisionVotersResult = new Dictionary<PopType, uint>();
-            foreach (PopType type in PopType.allPopTypes)
-            {
-                divisionVotersResult.Add(type, 0);
-                foreach (Province pro in Game.player.ownedProvinces)
-                {
-                    var popList = pro.FindAllPopUnits(type);
-                    foreach (PopUnit pop in popList)
-                        if (pop.canVote())
-                            divisionVotersResult[type] += pop.getSayingYesPopulation(selectedReformValue);
-
-                }
-            }
+            Procent procentVotersSayedYes = Game.player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 
             Dictionary<PopType, uint> divisionPopulationResult = new Dictionary<PopType, uint>();
-            foreach (PopType type in PopType.allPopTypes)
-            {
-                divisionPopulationResult.Add(type, 0);
-                foreach (Province pro in Game.player.ownedProvinces)
-                {
-                    var popList = pro.FindAllPopUnits(type);
-                    foreach (PopUnit pop in popList)
-                        divisionPopulationResult[type] += pop.getSayingYesPopulation(selectedReformValue);
-                }
-            }
-            ////
+            Dictionary<PopType, uint> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
+
             if (selectedReformValue != selectedReform.getValue())
             {
                 if (Game.player.government.status != Government.Despotism)
@@ -195,7 +148,7 @@ public class PoliticsPanel : DragPanel
                         if (divisionVotersResult[type] > 0)
                         {
                             Procent res = new Procent(divisionVotersResult[type] / (float)Game.player.FindPopulationAmountByType(type));
-                            descriptionText.text += res + " of " + type + " ";
+                            descriptionText.text += res + " of " + type + "; ";
                         }
                     descriptionText.text += ")";
                 }
@@ -206,7 +159,7 @@ public class PoliticsPanel : DragPanel
                     if (divisionPopulationResult[type] > 0)
                     {
                         Procent res = new Procent(divisionPopulationResult[type] / (float)Game.player.FindPopulationAmountByType(type));
-                        descriptionText.text += res + " of " + type + " ";
+                        descriptionText.text += res + " of " + type + "; ";
                     }
                 descriptionText.text += ")";
             }
@@ -216,7 +169,7 @@ public class PoliticsPanel : DragPanel
             {
                 if (procentVotersSayedYes.get() >= Game.votingPassBillLimit || Game.player.government.status == Government.Despotism)
                 { // has enough voters
-                    voteButton.interactable = selectedReformValue.condition.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     forceDecisionButton.interactable = false;
                     voteButton.GetComponentInChildren<Text>().text = "Vote " + selectedReformValue;
@@ -224,7 +177,7 @@ public class PoliticsPanel : DragPanel
                 else // not enough voters
                 {
                     voteButton.interactable = false;
-                    forceDecisionButton.interactable = selectedReformValue.condition.isAllTrue(Game.player, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }

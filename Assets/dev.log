@@ -8,9 +8,17 @@ Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, e
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
 
-> panisments for wrong vote
-- wrong String in new Government conditions 
-> add startup money in Build description
++ panisment for wrong vote
+
+? Make each pop vote yes\no strickly?
+
+- 2 letter words and syllables
+- strange price drops
+
+* wrong String in new Government conditions 
+* add startup money in Build description
+
+
 
 - payNoRecord for factories income
 
@@ -20,6 +28,8 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 
 > make modifiers with mutable description?
+> add multiple temporary modifiers for wrong reforms
+
 * factories have no time to rise salary to compete workforce
 * price stuck in middle range with zero supply
 * zero wage limit

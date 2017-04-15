@@ -22,7 +22,7 @@ public class Country : Owner
     internal TaxationForPoor taxationForPoor;
     internal List<AbstractReform> reforms = new List<AbstractReform>();
     public Culture culture;
-    
+
     public Bank bank = new Bank();
 
     /// <summary>
@@ -30,7 +30,7 @@ public class Country : Owner
     /// </summary>
     private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    
+
     public Country(string iname, Culture iculture)
     {
         government = new Government(this);
@@ -52,9 +52,93 @@ public class Country : Owner
         inventions.MarkInvented(InventionType.manufactories);
         inventions.MarkInvented(InventionType.banking);
         inventions.MarkInvented(InventionType.individualRights);
+    }
 
+    internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
+    {
+        // calc how much of population wants selected reform
+        uint totalPopulation = this.getMenPopulation();
+        uint votingPopulation = 0;
+        uint populationSayedYes = 0;
+        uint votersSayedYes = 0;
+        Procent procentVotersSayedYes = new Procent(0);
+        //Procent procentPopulationSayedYes = new Procent(0f);
+        foreach (Province pro in ownedProvinces)
+            foreach (PopUnit pop in pro.allPopUnits)
+            {
+                if (pop.canVote())
+                {
+                    if (pop.getSayingYes(reform))
+                    {
+                        votersSayedYes += pop.population;
+                        populationSayedYes += pop.population;
+                    }
+                    votingPopulation += pop.population;
+                }
+                else
+                {
+                    if (pop.getSayingYes(reform))
+                        populationSayedYes += pop.population;
+                }
+            }
+        if (totalPopulation != 0)
+            procentPopulationSayedYes.set((float)populationSayedYes / totalPopulation);
+        else
+            procentPopulationSayedYes.set(0);
 
+        if (votingPopulation == 0)
+            procentVotersSayedYes.set(0);
+        else
+            procentVotersSayedYes.set((float)votersSayedYes / votingPopulation);
+        return procentVotersSayedYes;
+    }
+    /// <summary>
+    /// Not finished, dont use it
+    /// </summary>
+    /// <param name="reform"></param>   
+    internal Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
+    {
+        uint totalPopulation = this.getMenPopulation();
+        uint votingPopulation = 0;
+        uint populationSayedYes = 0;
+        uint votersSayedYes = 0;
+        Procent procentVotersSayedYes = new Procent(0f);
+        Dictionary<PopType, uint> divisionPopulationResult = new Dictionary<PopType, uint>();
+        Dictionary<PopType, uint> divisionVotersResult = Game.player.getYesVotesByType(reform, ref divisionPopulationResult);
+        foreach (KeyValuePair<PopType, uint> next in divisionVotersResult)
+            votersSayedYes += next.Value;
 
+        if (totalPopulation != 0)
+            procentPopulationSayedYes.set((float)populationSayedYes / totalPopulation);
+        else
+            procentPopulationSayedYes.set(0);
+
+        if (votingPopulation == 0)
+            procentVotersSayedYes.set(0);
+        else
+            procentVotersSayedYes.set((float)votersSayedYes / votingPopulation);
+        return procentVotersSayedYes;
+    }
+    internal Dictionary<PopType, uint> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, uint> divisionPopulationResult)
+    {  // division by pop types
+        Dictionary<PopType, uint> divisionVotersResult = new Dictionary<PopType, uint>();
+        foreach (PopType type in PopType.allPopTypes)
+        {
+            divisionVotersResult.Add(type, 0);
+            divisionPopulationResult.Add(type, 0);
+            foreach (Province pro in Game.player.ownedProvinces)
+            {
+                var popList = pro.FindAllPopUnits(type);
+                foreach (PopUnit pop in popList)
+                    if (pop.getSayingYes(reform))
+                    {
+                        divisionPopulationResult[type] += pop.population;
+                        if (pop.canVote())
+                            divisionVotersResult[type] += pop.population;
+                    }
+            }
+        }
+        return divisionVotersResult;
     }
     public bool isInvented(InventionType type)
     {

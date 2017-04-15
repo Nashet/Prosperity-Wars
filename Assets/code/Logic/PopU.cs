@@ -63,10 +63,10 @@ abstract public class PopUnit : Producer
 
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.owner.government.ToString());
-        modifierCanVote = new Modifier(delegate (Country forWhom) { return canVote(); }, "Likes that government because can vote with it", false, 0.1f);
+        modifierCanVote = new Modifier(delegate (Country forWhom) { return canVote(); }, "Can vote with that government ", false, 0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.owner.government.ToString());
-        modifierCanNotVote = new Modifier(delegate (Country forWhom) { return !canVote(); }, "Dislikes that government because can't vote with it", false, -0.1f);
+        modifierCanNotVote = new Modifier(delegate (Country forWhom) { return !canVote(); }, "Can't vote with that government ", false, -0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
         modifierUpsetByForcedReform = new Modifier(delegate (Country forWhom) { return daysUpsetByForcedReform > 0; }, "Upset by forced reform", false, -0.3f);
@@ -105,10 +105,10 @@ abstract public class PopUnit : Producer
         tempPopList.Add(this);
     }
 
-    internal float getSayYesProcent(AbstractReformValue selectedReformValue)
-    {
-        return (uint)Mathf.RoundToInt(getSayingYesPopulation(selectedReformValue) / (float)population);
-    }
+    //internal float getSayYesProcent(AbstractReformValue selectedReformValue)
+    //{
+    //    return (uint)Mathf.RoundToInt(getSayingYes(selectedReformValue) / (float)population);
+    //}
 
     public static PopUnit Instantiate(PopType type, PopUnit pop)
     {
@@ -145,7 +145,7 @@ abstract public class PopUnit : Producer
             return null;
         }
     }
-    abstract internal uint getSayingYesPopulation(AbstractReformValue reform);
+    abstract internal bool getSayingYes(AbstractReformValue reform);
     public static uint getRandomPopulationAmount()
     {
         uint randomPopulation = (uint)(minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation));
@@ -823,40 +823,41 @@ public class Tribemen : PopUnit
     {
         return true;
     }
-    internal override uint getSayingYesPopulation(AbstractReformValue reform)
+    internal override bool getSayingYes(AbstractReformValue reform)
     {
         if (reform == Government.Tribal)
         {
             var baseOpinion = new Procent(1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            //return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.8f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.2f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else
-            return 0;
+            return false;
 
     }
 
@@ -917,7 +918,7 @@ public class Farmers : PopUnit
     {
         return true;
     }
-    internal override uint getSayingYesPopulation(AbstractReformValue reform)
+    internal override bool getSayingYes(AbstractReformValue reform)
     {
         if (reform is Government.ReformValue)
         {
@@ -925,34 +926,34 @@ public class Farmers : PopUnit
             {
                 var baseOpinion = new Procent(0f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.getProcent(this.population);
+                return baseOpinion.get() > Game.votingPassBillLimit;
             }
             else if (reform == Government.Aristocracy)
             {
                 var baseOpinion = new Procent(0.2f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.getProcent(this.population);
+                return baseOpinion.get() > Game.votingPassBillLimit;
             }
             else if (reform == Government.Democracy)
             {
                 var baseOpinion = new Procent(1f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.getProcent(this.population);
+                return baseOpinion.get() > Game.votingPassBillLimit;
             }
             else if (reform == Government.Despotism)
             {
                 var baseOpinion = new Procent(0.2f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.getProcent(this.population);
+                return baseOpinion.get() > Game.votingPassBillLimit;
             }
             else if (reform == Government.ProletarianDictatorship)
             {
                 var baseOpinion = new Procent(0.3f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.getProcent(this.population);
+                return baseOpinion.get() > Game.votingPassBillLimit;
             }
             else
-                return 0;
+                return false;
         }
         else if (reform is TaxationForPoor.ReformValue)
         {
@@ -960,10 +961,10 @@ public class Farmers : PopUnit
             var baseOpinion = new Procent(1f);
             baseOpinion.set(baseOpinion.get() - taxReform.tax.get() * 2);
             baseOpinion.set(baseOpinion.get() + loyalty.get() - 0.5f);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else
-            return 0;
+            return false;
     }
     internal override bool canVote()
     {
@@ -1013,40 +1014,40 @@ public class Aristocrats : PopUnit
     {
         return false;
     }
-    internal override uint getSayingYesPopulation(AbstractReformValue reform)
+    internal override bool getSayingYes(AbstractReformValue reform)
     {
         if (reform == Government.Tribal)
         {
             var baseOpinion = new Procent(0.4f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.6f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else
-            return 0;
+            return false;
     }
     internal override bool canVote()
     {
@@ -1086,40 +1087,40 @@ public class Capitalists : PopUnit
     {
         return false;
     }
-    internal override uint getSayingYesPopulation(AbstractReformValue reform)
+    internal override bool getSayingYes(AbstractReformValue reform)
     {
         if (reform == Government.Tribal)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.8f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.3f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else
-            return 0;
+            return false;
     }
     internal override bool canVote()
     {
@@ -1161,40 +1162,40 @@ public class Workers : PopUnit
     {
         return true;
     }
-    internal override uint getSayingYesPopulation(AbstractReformValue reform)
+    internal override bool getSayingYes(AbstractReformValue reform)
     {
         if (reform == Government.Tribal)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.6f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.3f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.8f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.getProcent(this.population);
+            return baseOpinion.get() > Game.votingPassBillLimit;
         }
         else
-            return 0;
+            return false;
     }
     internal override bool canVote()
     {
