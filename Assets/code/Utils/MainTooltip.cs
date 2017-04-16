@@ -282,8 +282,8 @@ public class MainTooltip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //LayoutInit();
-       // if (inside)
+        LayoutInit();
+        if (inside)
         {
         //    if (GUIMode == RenderMode.ScreenSpaceCamera)
             {
@@ -293,7 +293,7 @@ public class MainTooltip : MonoBehaviour
     }
 
     //this function is used in order to setup the size of the tooltip by cheating on the HorizontalLayoutBehavior. The resize is done in the first update.
-    internal void LayoutInit()
+    void LayoutInit()
     {
         if (firstUpdate)
         {
