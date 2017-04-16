@@ -19,8 +19,9 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         counter = 0;
         if (tooltip != "")
         {
-            
+
             tip.SetTooltip(tooltip);
+            tip.LayoutInit();
         }
 
 
@@ -38,9 +39,9 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     }
     public void FixedUpdate()
     {
-        if (counter > 200)
+        if (counter > 300 && tip != null)
         {
-            //tip.HideTooltip();
+            tip.HideTooltip();
             counter = 0;
         }
 
@@ -48,11 +49,13 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     }
     //void StartHover(Vector3 position)
     //{
-    //    tip.SetTooltip(text);
+    //    //tip.SetTooltip(text);
+    //    tip.SetTooltip(tooltip);
     //}
     //void StopHover()
     //{
-    //    tip.HideTooltip();
+    //    if (tip != null)
+    //        tip.HideTooltip();
     //}
 
 }

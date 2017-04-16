@@ -8,27 +8,41 @@ Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, e
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
 
-+ panisment for wrong vote
 
-? Make each pop vote yes\no strickly?
+> conditions for reforms choise for pops
 
 - 2 letter words and syllables
 - strange price drops
-
-* wrong String in new Government conditions 
-* add startup money in Build description
-
-
-
 - payNoRecord for factories income
-
-
-
 - aristos cant finish build factories in market?
 
 
 > make modifiers with mutable description?
 > add multiple temporary modifiers for wrong reforms
+
+
+- Procent max capacity at production window
+
+> add borders to panels
+? reduce multiple constructors in Condition?
+
+! better use named predicats!
+! use universalpredicats as much as possible!
+
+? change Func<Country, bool> into Func<Country, T, bool>?
+
+> add caption for panels
+>? hovering on gui Objects?
+> add english-style for name generator
+> make demo?
+
+- broke nat economy fabric update? No it never was implemented
+- factory upgardes only for money, not for resurces
+
++ panisment for wrong vote
++ Make each pop vote yes\no strickly
+* wrong String in new Government conditions 
+* add startup money in Build description
 
 * factories have no time to rise salary to compete workforce
 * price stuck in middle range with zero supply
@@ -41,19 +55,8 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + add condition for  factory allready builted
 * BUild panel would not refresh selection on data change caused by Simulation
 
-
-? change Func<Country, bool> into Func<Country, T, bool>?
-
-> make monoThreadSB
++ make monoThreadSB
 + Tostr in conditions
-- Procent max capacity at production window
-
-> add borders to panels
-? reduce multiple constructors in Condition?
-
-> better use named predicats
-> use universalpredicats as much as possible
-
 + factory panel stuff
 + make factory efficiency modifiers and GUY
 * not null conditions on reforms
@@ -62,17 +65,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 ////////////////////////////////////////////went to git
 + proper resource readings
-
-
-
-> add caption for panels
-
 + clear folder structure
-> deal with string builders
-
->? hovering on gui Objects?
-> add english-style for name generator
-> make demo?
 
 
 * loyalty broke and growth
@@ -86,12 +79,6 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + find middlepoint of mesh. Bugs caused by polygons Crawling
 * bigger province names
 
-
-- broke nat economy fabric update? No it never was implemented
-- factory upgardes only for money, not for resurces
-
-> make something with people votes
-
 + reverse triangles
 + dont hide shit in tables
 + make getConditions ()/ WhyCant() for tooltips
@@ -104,13 +91,16 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + name gen
 + show factory window on build
 
-! Dont do  anti-cheat protection for now
+
 * map turn 
+* politics panel disappear
+
+! Dont do  anti-cheat protection for now
 - scale prefabs 
 - fast clicking on windows make them move
 
 
-* politics panel disappear
+
 > education & POp efficency
 
 ? add cross connection in pop - reform?
@@ -125,13 +115,13 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + shown reform
 * 100% tax is not working
 + get rid of capitalism
-
++ steam power
 
 > min wage reform
 > restore ToolTip basuc functional 
 
 
-> steam power
+
 > beurocracy
 
 > deal with ToString

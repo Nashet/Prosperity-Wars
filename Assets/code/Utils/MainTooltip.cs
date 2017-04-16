@@ -16,7 +16,7 @@ public class MainTooltip : MonoBehaviour
     //horizontal layout of the tooltip
     public HorizontalLayoutGroup hlG;
     public bool Brazor;
-    
+
     public MainTooltip getThis
     {
         get
@@ -68,7 +68,7 @@ public class MainTooltip : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        
+
         //in this line you need to change the string in order to get your Camera //TODO MAYBE DO IT FROM THE INSPECTOR
         //GUICamera = GameObject.Find("GUICamera").GetComponent<Camera>();
         //GUICamera = (Camera)GameObject.FindWithTag("MainCamera");// MainCamera.cameraMy;
@@ -254,7 +254,7 @@ public class MainTooltip : MonoBehaviour
 
         //this.transform.parent.transform.position = new Vector3(GUICamera.ViewportToWorldPoint(newPos).x, GUICamera.ViewportToWorldPoint(newPos).y, 0f);
         // was it: - nash
-        this.transform.parent.transform.position = new Vector3(newPos.x, newPos.y, 0f);
+        this.transform.parent.transform.position = new Vector3(newPos.x, newPos.y - 40f, 0f);//
 
         //this.transform.SetParent(this.transform.parent, false);
 
@@ -282,10 +282,10 @@ public class MainTooltip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        LayoutInit();
-        if (inside)
+        //LayoutInit();
+       // if (inside)
         {
-            if (GUIMode == RenderMode.ScreenSpaceCamera)
+        //    if (GUIMode == RenderMode.ScreenSpaceCamera)
             {
                 OnScreenSpaceCamera();
             }
@@ -293,7 +293,7 @@ public class MainTooltip : MonoBehaviour
     }
 
     //this function is used in order to setup the size of the tooltip by cheating on the HorizontalLayoutBehavior. The resize is done in the first update.
-    void LayoutInit()
+    internal void LayoutInit()
     {
         if (firstUpdate)
         {
