@@ -5,7 +5,7 @@ Making that tool made me disappointed in how Victoria 2 economy made.
 
 Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 
-So, main principles of that simulation:
+So, main principles of that simulation are:
 * free market agent based economy simulation (currently with one currency - gold)
 * no ridiculous x5 price limits ( except obvious 0.001 and 999), allowing realistic inflation
 * population consume goods not in fixed order but - at first cheap goods, then expensive
