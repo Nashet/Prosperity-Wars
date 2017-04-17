@@ -757,14 +757,11 @@ abstract public class PopUnit : Producer
                         && factory.getMargin().get() >= Game.minMarginToUpgrade
                         && factory.getWorkForceFullFilling() > Game.minWorkforceFullfillingToUpgradeFactory)
                     {
-                        PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
-                        Value cost = Game.market.getCost(resourceToBuild);
-                        if (wallet.canPay(cost))
-                        {
-                            //Factory f = new Factory(province, this, proposition);
+                        //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
+                        //Value cost = Game.market.getCost(resourceToBuild);
+                        Value cost = factory.getUpgradeCost();
+                        if (wallet.canPay(cost))                                                    
                             factory.upgrade(this);
-                            //wallet.pay(factory.wallet, cost);
-                        }
                         else // find money in bank?
                         if (province.owner.isInvented(InventionType.banking))
                         {
@@ -772,8 +769,7 @@ abstract public class PopUnit : Producer
                             if (province.owner.bank.CanITakeThisLoan(needLoan))
                             {
                                 province.owner.bank.TakeLoan(this, needLoan);
-                                factory.upgrade(this);
-                                //wallet.pay(factory.wallet, cost);
+                                factory.upgrade(this);                                
                             }
                         }
                     }
