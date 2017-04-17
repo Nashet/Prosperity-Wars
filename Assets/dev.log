@@ -9,17 +9,31 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 
 * tooltip fix
++ payNoRecord for factories income
+* total money
++ add borders to panels
 
-- payNoRecord for factories income
-> make this day stats in trade
-- 2 letter words and syllables
+- recheck Upgrade Money check
+
+- factory conditions - reopen - upgrade have broken fixed strings
+
 - money stuck in country wallet
-- total money
+> make this day stats in trade
+> add money startup on factory reopen
+- 2 letter words and syllables
+
+> always on top panels
+> finince panel
+
+
+
+
+
 
 > conditions for reforms choise for pops
 
 - aristos cant finish build factories in market?
-> add borders to panels
+
 
 
 
@@ -54,6 +68,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 - broke nat economy fabric update? No it never was implemented
 - factory upgardes only for money, not for resurces
+> factory capitalism mess - not buying staffs
 
 - money lick - Caused by tax somehow and by high prices overload with self selling
 > proper pop unit spawn
@@ -72,7 +87,7 @@ ency
 > deal with Enumerates
 
 ?? price class?
-> factory capitalism mess
+
 - profit outchecks in non-capitalism
 
 

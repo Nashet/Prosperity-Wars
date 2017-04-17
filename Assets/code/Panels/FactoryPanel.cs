@@ -195,13 +195,13 @@ public class FactoryPanel : DragPanel//for dragging
             shownFactory.close();
         else
             //if (shownFactory.whyCantReopenFactory() == null)
-            shownFactory.reopen();
+            shownFactory.reopen(Game.player);
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
     }
     public void onUpgradeClick()
     {
-        if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
+        //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
         {
             shownFactory.upgrade(Game.player);
             if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();

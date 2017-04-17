@@ -41,7 +41,7 @@ public class ConditionsList
 
 
     internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
-    internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
+    
     //private List<Modifier> inlist;
     
 
@@ -155,7 +155,7 @@ public class Condition: AbstractCondition
     public Func<Country, bool> check2;
     /// <summary>to hide juncky info /// </summary>
     bool showAchievedConditionDescribtion;
-
+    internal static Condition IsNotImplemented = new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true);
     /// <summary>You better use shorter constructor, if possible </summary>
     public Condition(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
