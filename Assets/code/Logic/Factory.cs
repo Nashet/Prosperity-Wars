@@ -606,7 +606,7 @@ public class Factory : Producer
                 float minimalFond = wallet.haveMoney.get() - 50f;
 
                 if (minimalFond < 0 && getOwnerWallet().canPay(minimalFond * -1f))
-                    getOwnerWallet().pay(this.wallet, new Value(minimalFond * -1f));
+                    getOwnerWallet().payWithoutRecord(this.wallet, new Value(minimalFond * -1f));
             }
             if (isBuyingComplete || (!isMarket && daysInConstruction == Game.fabricConstructionTimeWithoutCapitalism))
             {
@@ -752,7 +752,7 @@ public class Factory : Producer
     {
         upgrading = true;
         needsToUpgrade = type.getUpgradeNeeds().getCopy();
-        byWhom.wallet.pay(wallet, getUpgradeCost());
+        byWhom.wallet.payWithoutRecord(wallet, getUpgradeCost());
     }
 
     internal uint getDaysInConstruction()

@@ -732,7 +732,7 @@ abstract public class PopUnit : Producer
                         if (wallet.canPay(cost))
                         {
                             Factory found = new Factory(province, this, proposition);
-                            wallet.pay(found.wallet, cost);
+                            wallet.payWithoutRecord(found.wallet, cost);
                         }
                         else // find money in bank?
                         if (province.owner.isInvented(InventionType.banking))
@@ -742,7 +742,7 @@ abstract public class PopUnit : Producer
                             {
                                 province.owner.bank.TakeLoan(this, needLoan);
                                 Factory found = new Factory(province, this, proposition);
-                                wallet.pay(found.wallet, cost);
+                                wallet.payWithoutRecord(found.wallet, cost);
                             }
                         }
                     }

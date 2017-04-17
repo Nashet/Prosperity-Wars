@@ -133,7 +133,7 @@ public class MainCamera : MonoBehaviour
             Game.haveToStepSimulation = false;
 
         if (Game.selectedProvince != null)
-            ProvincePanel.UpdateProvinceWindow(Game.selectedProvince);
+            provincePanel.UpdateProvinceWindow(Game.selectedProvince);
 
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.

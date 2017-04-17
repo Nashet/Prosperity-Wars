@@ -168,6 +168,21 @@ public class Game
 
         MainCamera.topPanel.refresh();
     }
+    internal static float getAllMoneyInWorld()
+    {
+        float allMoney = 0f;
+        foreach (Country co in Country.allCountries)
+        {
+            allMoney += co.wallet.haveMoney.get();
+            allMoney += co.bank.getReservs();
+            foreach (Province pr in co.ownedProvinces)
+            {
+                foreach (Producer factory in pr)
+                    allMoney += factory.wallet.haveMoney.get();                
+            }
+        }
+        return allMoney;
+    }
     void CreateRandomPopulation()
     {
         uint chanceForA = 85;
