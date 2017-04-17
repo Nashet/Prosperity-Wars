@@ -7,9 +7,9 @@ Since I didn't find better game-like economy simulation,  I decided to try to ma
 
 So, main principles of that simulation:
 * free market agent based economy simulation (currently with one currency - gold)
-* no ridiculous x5 price limits ( except obvious 0.001 and 999)
+* no ridiculous x5 price limits ( except obvious 0.001 and 999), allowing realistic inflation
 * population consume goods not in fixed order but - at first cheap goods, then expensive
-* factories can compete for workforce by salary by changeable salary
+* factories can compete for workforce by changeable salary
 * factories have specific owner like government or population unit
 * capitalists could take loans form national bank for business expansion 
 
