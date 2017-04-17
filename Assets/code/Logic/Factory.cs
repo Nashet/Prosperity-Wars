@@ -68,27 +68,29 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
+            new Condition(delegate (Owner forWhom) {
+                return forWhom.wallet.canPay(getReopenCost());}, "Have money " + getReopenCost(), true)
         });
         conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF });
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
-        conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State
+        conditionsSell = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented }); // !Planned and ! State
 
         //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-        conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned
+        conditionsBuy = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented }); // ! LF and !Planned
 
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-        conditionsNatinalize = ConditionsList.IsNotImplemented; //!LF and ! Inter
+        conditionsNatinalize = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented }); //!LF and ! Inter
 
 
         conditionsSubsidize = new ConditionsList(new List<Condition>()
         {
-            Economy.isNotLF, Economy.isNotNatural
+            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
         });
         conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>()
         {
-            Economy.isNotLF, Economy.isNotNatural
+            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
         });
-        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF });
+        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF, Condition.IsNotImplemented });
 
         Modifier modifierHasResourceInProvince = new Modifier(delegate (Country forWhom)
         {
@@ -340,6 +342,11 @@ public class Factory : Producer
         float x = getProfit() / (getUpgradeCost().get() * level);
         return new Procent(x);
     }
+    internal Value getReopenCost()
+    {
+        return new Value(Game.factoryMoneyReservPerLevel);
+
+    }
     internal Value getUpgradeCost()
     {
         Value result = Game.market.getCost(type.getUpgradeNeeds());
@@ -435,7 +442,7 @@ public class Factory : Producer
             // freshly builded factories should rise salary to concurency with old ones
             if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.03f);
-            
+
             // reduce salary on non-profit
             if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople)
                 if (salary.get() - 0.3f >= province.owner.getMinSalary())
@@ -615,7 +622,7 @@ public class Factory : Producer
                 upgrading = false;
                 needsToUpgrade.SetZero();
                 daysInConstruction = 0;
-                reopen();
+                reopen(this);
             }
             else if (daysInConstruction == Game.maxDaysBuildingBeforeRemoving)
                 if (isBuilding())
@@ -704,7 +711,7 @@ public class Factory : Producer
                     }
                     leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver >= 0f)
-                        reopen();
+                        reopen(this);
                 }
             }
         }
@@ -722,11 +729,13 @@ public class Factory : Producer
         needsToUpgrade.SetZero();
         daysInConstruction = 0;
     }
-    internal void reopen()
+    internal void reopen(Owner byWhom)
     {
         working = true;
         daysUnprofitable = 0;
         daysClosed = 0;
+        if (byWhom != this)
+            byWhom.wallet.payWithoutRecord(wallet, getReopenCost());
     }
 
     internal bool isWorking()
