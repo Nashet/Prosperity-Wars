@@ -44,14 +44,18 @@ public class Country : Owner
         TaxationForPoor.ReformValue hru = taxationForPoor.getValue() as TaxationForPoor.ReformValue;
         countryTax = hru.tax;
         culture = iculture;
-        //government.status = Government.Democracy;
-        //economy.status = Government.Despotism;
-        //economy.status = Economy.StateCapitalism;
-        //government.status = Economy.PlannedEconomy;
-        inventions.MarkInvented(InventionType.farming);
-        inventions.MarkInvented(InventionType.manufactories);
-        inventions.MarkInvented(InventionType.banking);
-        inventions.MarkInvented(InventionType.individualRights);
+
+        if (!Game.devMode)
+        {
+            government.status = Government.Aristocracy;
+
+            economy.status = Economy.StateCapitalism;
+
+            inventions.MarkInvented(InventionType.farming);
+            //inventions.MarkInvented(InventionType.manufactories);
+            inventions.MarkInvented(InventionType.banking);
+            // inventions.MarkInvented(InventionType.individualRights);
+        }
     }
 
     internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
@@ -164,7 +168,7 @@ public class Country : Owner
     internal void Think()
     {
         sciencePoints.add(this.getMenPopulation() * Game.defaultSciencePointMultiplier);
-        if (isInvented(InventionType.banking))
+        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 2000f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
     }
     internal uint getMenPopulation()

@@ -79,6 +79,7 @@ public class Factory : Producer
         conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned
 
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
+        conditionsNatinalize = ConditionsList.IsNotImplemented; //!LF and ! Inter
 
 
         conditionsSubsidize = new ConditionsList(new List<Condition>()

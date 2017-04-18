@@ -7,34 +7,42 @@ Do I need Countre-special needs OR NOT? - Not
 Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, exclude Artisan, Clerics and Goverment), no equal rights (meaning, poor strata gaves tax to Aristocrats ). Farmers are free (Serfdom abolited reform) than they just pay feodal tax to aristocrats. Add special SERf unit.
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
+> make demo? Without Nat economy, capitalism only
+> clicking on province name in table handler
+> needs of non-invented goods?
+> make this day stats in trade
 
 * tooltip fix
 + payNoRecord for factories income
 * total money
 + add borders to panels
++ add money startup on factory reopen
++ make Git description
+* recheck Upgrade Money check
+* money stuck in country wallet
 
-- recheck Upgrade Money check
 
-- factory conditions - reopen - upgrade have broken fixed strings
-
-- money stuck in country wallet
-> make this day stats in trade
-> add money startup on factory reopen
+> add english-style for name generator
 - 2 letter words and syllables
+
+
+> conditions for reforms choise for pops
+? add cross connection in pop - reform?
+> improve pop opinions on reforms, including isMyStatusEnchanced
+
+> random map generator
+
+
+- factory conditions - reopen - upgrade have broken fixed strings?
+
+
 
 > always on top panels
 > finince panel
 
 
 
-
-
-
-> conditions for reforms choise for pops
-
 - aristos cant finish build factories in market?
-
-
 
 
 - strange price drops
@@ -55,28 +63,28 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 ? change Func<Country, bool> into Func<Country, T, bool>?
 
 > add caption for panels
-> add english-style for name generator
-> make demo?
+
 
 
 - disbalance in Food trade?
-> consuming ind. goods without capitalism
-> farmers should eat unsoled goods
 
-> needs of non-invented goods?
+> farmers should eat unsoled goods?
+
+
 > refactor invest
 
 - broke nat economy fabric update? No it never was implemented
 - factory upgardes only for money, not for resurces
 > factory capitalism mess - not buying staffs
+> consuming ind. goods without capitalism
+
 
 - money lick - Caused by tax somehow and by high prices overload with self selling
 > proper pop unit spawn
 > education & POp effic
 ency
 
-? add cross connection in pop - reform?
-> improve pop opinions on reforms, including isMyStatusEnchanced
+
 > change loyalty properly on reform passin, including change pop staus penalty (in modifiers?), ignored pop opinion penalty (different with Deomocracy)
 > stop politics reform update on every tick
 
