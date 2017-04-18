@@ -105,12 +105,12 @@ public class ProvincePanel : MonoBehaviour
     public void UpdateProvinceWindow(Province province)
     {
         generaltext.text = "name: " + province 
-            + "\nID: " + province.ID
-            + "\nColor: " + province.colorID
+            + "\nID: " + province.getID()            
             + "\nPopulation (+/-): " + province.getFamilyPopulation()
             + "\nMiddle loyalty" + "\nTax income"
             + "\nResource: " + province.getResource()
             + "\nRural overpopulation: " + province.getOverPopulation()
             ;
+        if (Game.devMode) generaltext.text += "\nColor: " + province.colorID;
     }
 }

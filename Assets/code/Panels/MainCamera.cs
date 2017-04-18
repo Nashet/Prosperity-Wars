@@ -79,7 +79,7 @@ public class MainCamera : MonoBehaviour
         ;
         return System.Convert.ToInt32(mesh.name);
     }
-    internal void SelectProvince(int number)
+    internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
             Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.colorID;

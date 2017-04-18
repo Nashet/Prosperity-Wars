@@ -142,6 +142,20 @@ abstract public class MyTable : MonoBehaviour
     {
         // refresh();
     }
+    protected void AddButton(string text, Province prov)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, false);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, prov);
+    }
+    protected void AddButton(string text)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, false);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, null);
+    }
     protected void RemoveButtons()
     {
         int count = contentPanel.childCount;

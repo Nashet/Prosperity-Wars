@@ -15,7 +15,7 @@ public class Province
     public MeshRenderer meshRenderer;
     //public static uint maxTribeMenCapacity = 2000;
     private string name;
-    public int ID;
+    private int ID;
     public Country owner;
     public List<PopUnit> allPopUnits = new List<PopUnit>();
     public Vector3 centre;
@@ -35,6 +35,8 @@ public class Province
         fertileSoil = 10000;
 
     }
+    internal int getID()
+    { return ID; }
     public void SecedeTo(Country taker)
     {
         //this.owner - current owner

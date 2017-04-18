@@ -54,7 +54,7 @@ public abstract class AbstractReform
     {
         return description;
     }
-    
+
     override public string ToString()
     {
         return name;
@@ -71,7 +71,7 @@ public class Government : AbstractReform
         {
             PossibleStatuses.Add(this);
         }
-        
+
         internal override bool isAvailable(Country country)
         {
             if (ID == 4 && !country.isInvented(InventionType.collectivism))
@@ -89,10 +89,10 @@ public class Government : AbstractReform
             return forWhom.government.status == this;
         }
     }
-    public override string ToString()
-    {
-        return this.status.ToString();
-    }
+    //public override string ToString()
+    //{
+    //    return this.status.ToString();
+    //}
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
     internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
@@ -108,12 +108,12 @@ public class Government : AbstractReform
 
     internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.AlwaysYes);
 
-    // more weited voting?
+   
     public Government(Country country) : base("Government", "Form of government", country)
     {
         status = Tribal;
     }
-    
+
     internal override AbstractReformValue getValue()
     {
         return status;
@@ -189,7 +189,7 @@ public class Economy : AbstractReform
         });
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
-    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, ConditionsList.AlwaysYes);
+    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, ConditionsList.IsNotImplemented);
     internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 1, capitalism);
     internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
     internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<AbstractCondition>()
@@ -198,7 +198,7 @@ public class Economy : AbstractReform
             //new ConditionString(InventionType.collectivism, true),
             //new ConditionString(delegate (Country forWhom) { return forWhom.government.status == Government.ProletarianDictatorship; }, "Government is Proletarian Dictatorship", true)
             //new ConditionString(Government.ProletarianDictatorship, true)
-            InventionType.collectivism, Government.ProletarianDictatorship
+            InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented
         }));
     internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "not dirty pants", 3, capitalism);
 
@@ -210,7 +210,7 @@ public class Economy : AbstractReform
     internal static Condition isNotState = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.StateCapitalism; }, "Economy policy is not State Capitalism", true);
     internal static Condition isNotInterventionism = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.Interventionism; }, "Economy policy is not Limited Interventionism", true);
     internal static Condition isNotPlanned = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.PlannedEconomy; }, "Economy policy is not Planned Economy", true);
-    
+
     /// ////////////
     public Economy(Country country) : base("Economy", "Your economy policy", country)
     {

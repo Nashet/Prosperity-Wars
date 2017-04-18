@@ -34,39 +34,33 @@ public class ShopScrollList : MyTable
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, record);
         newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
-
-
-
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-
-
-
-    }
+    }   
     override protected void AddButtons()
     {
         int counter = 0;
         if (Game.popsToShowInPopulationPanel != null)
         {
             // Adding nomber
-            AddButton("Number", null);
+            AddButton("Number");
             // Adding PopType
-            AddButton("Type", null);
+            AddButton("Type");
             ////Adding population
-            AddButton("Population", null);
+            AddButton("Population");
             ////Adding culture
-            AddButton("Culture", null);
+            AddButton("Culture");
             ////Adding province
-            AddButton("Province", null);
+            AddButton("Province");
             ////Adding education
-            AddButton("Education", null);
+            AddButton("Education");
             ////Adding storage
             //if (null.storage != null)
-            AddButton("Cash", null);
-            //else AddButton("Administration", null);
+            AddButton("Cash");
+            //else AddButton("Administration");
             ////Adding needs fulfilling
-            AddButton("Needs fullfilled", null);
+            AddButton("Needs fullfilled");
             ////Adding loyalty
-            AddButton("Loyalty", null);
+            AddButton("Loyalty");
             foreach (PopUnit record in Game.popsToShowInPopulationPanel)
             {
 
@@ -79,7 +73,7 @@ public class ShopScrollList : MyTable
                 ////Adding culture
                 AddButton(record.culture.name, record);
                 ////Adding province
-                AddButton(record.province.ToString(), record);
+                AddButton(record.province.ToString(), record.province);
                 ////Adding education
                 AddButton(record.education.ToString(), record);
                 ////Adding storage

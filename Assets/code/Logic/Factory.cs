@@ -73,13 +73,12 @@ public class Factory : Producer
         });
         conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF });
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
-        conditionsSell = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented }); // !Planned and ! State
+        conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State
 
         //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-        conditionsBuy = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented }); // ! LF and !Planned
+        conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned
 
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-        conditionsNatinalize = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented }); //!LF and ! Inter
 
 
         conditionsSubsidize = new ConditionsList(new List<Condition>()
@@ -755,7 +754,7 @@ public class Factory : Producer
 
     internal bool canUpgrade()
     {
-        return !isUpgrading() && !isBuilding() && level < Game.maxFactoryLevel;
+        return !isUpgrading() && !isBuilding() && level < Game.maxFactoryLevel && isWorking();
     }
     internal void upgrade(Owner byWhom)
     {

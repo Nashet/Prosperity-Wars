@@ -34,6 +34,9 @@ public class Game
     internal static StringBuilder threadDangerSB = new StringBuilder();
 
     public static uint date;
+    internal static bool devMode = false;
+
+
     float cellMuliplier = 2f;
     internal static float goldToCoinsConvert = 10f;
     internal static float minWorkforceFullfillingToUpgradeFactory = 0.75f;
@@ -154,6 +157,7 @@ public class Game
         Culture cul = new Culture("Kocopetji");
         player = new Country("Kocopia", cul);        
         player.storageSet.add(new Storage(Product.Food, 200f));
+        player.wallet.haveMoney.add(1000f);
 
         CreateRandomPopulation();
         Province.allProvinces[0].allPopUnits[0].education.set(1f);
@@ -202,12 +206,17 @@ public class Game
             Aristocrats ar = new Aristocrats(100, PopType.aristocrats, Game.player.culture, province);
             ar.wallet.haveMoney.set(200);
             province.allPopUnits.Add(ar);
+            if (!Game.devMode)
+            {
+                Capitalists ca = new Capitalists(50, PopType.capitalists, Game.player.culture, province);
+                ca.wallet.haveMoney.set(400);
+                province.allPopUnits.Add(ca);
 
-            Capitalists ca = new Capitalists(50, PopType.capitalists, Game.player.culture, province);
-            ca.wallet.haveMoney.set(400);
-            province.allPopUnits.Add(ca);
+                Farmers far = new Farmers(590, PopType.farmers, Game.player.culture, province);
+                ca.wallet.haveMoney.set(40);
+                province.allPopUnits.Add(far);
 
-
+            }
             //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
 
             //if (Procent.GetChance(chanceForA))

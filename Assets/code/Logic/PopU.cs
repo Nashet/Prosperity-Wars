@@ -14,11 +14,11 @@ using System.Text;
 abstract public class PopUnit : Producer
 {
 
-    public static Procent growthSpeed = new Procent(0.001f);
-    public static Procent starvationSpeed = new Procent(0.001f);
+    public static Procent growthSpeed = new Procent(0.01f);
+    public static Procent starvationSpeed = new Procent(0.01f);
 
     ///<summary> demotion  - when popUnit can't fullfill needs</summary>
-    public static Procent demotionSpeed = new Procent(0.001f);
+    public static Procent demotionSpeed = new Procent(0.01f);
 
     ///<summary> promotion  - when popUnit has chance to get better place in ierarhy</summary>
     public static Procent promotionSpeed = new Procent(0.01f);
@@ -627,7 +627,7 @@ abstract public class PopUnit : Producer
     public int getGrowthSize()
     {
         int result = 0;
-        if (this.NeedsFullfilled.get() >= 0.666f) // positive grotwh
+        if (this.NeedsFullfilled.get() >= 0.33f) // positive grotwh
             result = Mathf.RoundToInt(PopUnit.growthSpeed.get() * population);
         else
             if (this.NeedsFullfilled.get() >= 0.20f) // zero grotwh

@@ -71,7 +71,15 @@ public class SampleButton : MonoBehaviour
             MainCamera.politicsPanel.refresh(true);
             //MainCamera.politicsPanel.selectedReformValue = null;
         }
+        else if (obj is Province)
+        {
+            //MainCamera.politicsPanel.selectedReform = (AbstractReform)obj;
+            //MainCamera.politicsPanel.refresh(true);
+            //MainCamera.politicsPanel.selectedReformValue = null;
+            Province temp = (Province)(obj);
+            MainCamera.SelectProvince(temp.getID());
 
+        }
 
 
     }

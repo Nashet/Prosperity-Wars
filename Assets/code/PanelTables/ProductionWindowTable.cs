@@ -31,28 +31,28 @@ public class ProductionWindowTable : MyTable
         int counter = 0;
 
         // Adding product name 
-        AddButton("Type", null);
+        AddButton("Type");
 
         // Adding province 
-        AddButton("Province", null);
+        AddButton("Province");
 
         ////Adding production
-        AddButton("Production", null);
+        AddButton("Production");
 
         ////Adding effective resource income
-        AddButton("Resources", null);
+        AddButton("Resources");
 
         ////Adding workforce
-        AddButton("Workforce", null);
+        AddButton("Workforce");
 
         ////Adding money income
-        AddButton("Profit", null);
+        AddButton("Profit");
 
         ////Adding profit
-        AddButton("% Profit", null);
+        AddButton("% Profit");
 
         ////Adding slary
-        AddButton("Salary", null);
+        AddButton("Salary");
         foreach (Factory next in Game.factoriesToShowInProductionPanel)
         {           
 
@@ -60,7 +60,7 @@ public class ProductionWindowTable : MyTable
             AddButton(next.type.name +" L"+next.getLevel(), next);
 
             // Adding province 
-            AddButton(next.province.ToString(), next);
+            AddButton(next.province.ToString(), next.province);
 
             ////Adding production
             AddButton(next.gainGoodsThisTurn.ToString(), next);
