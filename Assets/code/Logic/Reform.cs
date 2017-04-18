@@ -368,12 +368,12 @@ public class Serfdom : AbstractReform
         new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true)
+            new Condition(InventionType.banking, true), Condition.IsNotImplemented
         }));
     internal static LocalReformValue AbolishedAndNationalizated = new LocalReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
         {
-            new Condition( Government.ProletarianDictatorship, true)
+            new Condition( Government.ProletarianDictatorship, true), Condition.IsNotImplemented
         }));
 
 

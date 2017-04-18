@@ -386,7 +386,7 @@ public class Factory : Producer
 
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
-                    wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
+                    wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() * Game.GovernmentTakesShareOfGoldOutput));
                 }
                 //else // send all production to owner
                 //    storageNow.sendAll(province.owner.storageSet);

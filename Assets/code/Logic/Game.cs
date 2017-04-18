@@ -41,7 +41,7 @@ public class Game
     internal static float goldToCoinsConvert = 10f;
     internal static float minWorkforceFullfillingToUpgradeFactory = 0.75f;
     internal static Procent BuyInTimeFactoryUpgradeNeeds = new Procent(0.1f);
-    internal static int minUnemploymentToBuldFactory = 300;
+    internal static int minUnemploymentToBuldFactory = 10;
     internal static int maximumFactoriesInUpgradeToBuildNew = 2;
     internal static byte maxFactoryLevel = 255;
     internal static float minMarginToUpgrade = 0.05f;
@@ -57,7 +57,7 @@ public class Game
     internal static float minMarginToRiseSalary = 0.1f;
     internal static float factoryEachLevelEfficiencyBonus = 0.05f;
     //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
-    internal static int maxFactoryFireHireSpeed = 10;
+    internal static int maxFactoryFireHireSpeed = 50;
     internal static float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
     internal static float defaultSciencePointMultiplier = 0.001f; //0.00001f;
     internal static uint fabricConstructionTimeWithoutCapitalism = 20;
@@ -69,6 +69,7 @@ public class Game
     internal static GameObject r3dTextPrefab;
     internal static Value defaultPriceLimitMultiplier = new Value(2f);
     internal static uint PopDaysUpsetByForcedReform = 30;
+    internal static float GovernmentTakesShareOfGoldOutput = 0.1f;
 
     public Game()
     {
@@ -157,7 +158,7 @@ public class Game
         Culture cul = new Culture("Kocopetji");
         player = new Country("Kocopia", cul);        
         player.storageSet.add(new Storage(Product.Food, 200f));
-        player.wallet.haveMoney.add(1000f);
+        player.wallet.haveMoney.add(100f);
 
         CreateRandomPopulation();
         Province.allProvinces[0].allPopUnits[0].education.set(1f);

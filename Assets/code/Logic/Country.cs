@@ -56,6 +56,7 @@ public class Country : Owner
             inventions.MarkInvented(InventionType.banking);
             // inventions.MarkInvented(InventionType.individualRights);
         }
+        serfdom.status = Serfdom.Brutal;
     }
 
     internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
@@ -168,8 +169,10 @@ public class Country : Owner
     internal void Think()
     {
         sciencePoints.add(this.getMenPopulation() * Game.defaultSciencePointMultiplier);
-        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 2000f)
+        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 500f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
+        else
+            bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));
     }
     internal uint getMenPopulation()
     {
