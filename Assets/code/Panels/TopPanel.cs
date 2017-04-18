@@ -23,26 +23,13 @@ public class TopPanel : MonoBehaviour
     }
     public void refresh()
     {
-        float allMoney = 0f;
-        foreach (Country co in Country.allCountries)
-        {
-            allMoney += co.wallet.haveMoney.get();
-            foreach (Province pr in co.ownedProvinces)
-            {
-                foreach (Factory factory in pr.allFactories)
-                    allMoney += factory.wallet.haveMoney.get();
-
-                // todo isServiceProvider()
-                foreach (PopUnit pop in pr.allPopUnits)
-                    allMoney += pop.wallet.haveMoney.get();
-            }
-        }
+        
         generalText.text = "Date: " + Game.date + " Country: " + Game.player.name
             + " Population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() + " Wallet: "
             + Game.player.wallet.haveMoney.ToString() + " income: " + Game.player.wallet.moneyIncomethisTurn.ToString()
             + " Science points: " + Game.player.sciencePoints
             + " Bank reservs: " + Game.player.bank.ToString() + " Bank loans: " + Game.player.bank.getGivenLoans()
-            + " Total money: " + allMoney;
+            + " Total money: " + Game.getAllMoneyInWorld();
     }
     public void onTradeClick()
     {
@@ -154,6 +141,20 @@ abstract public class MyTable : MonoBehaviour
     void Update()
     {
         // refresh();
+    }
+    protected void AddButton(string text, Province prov)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, false);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, prov);
+    }
+    protected void AddButton(string text)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, false);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, null);
     }
     protected void RemoveButtons()
     {

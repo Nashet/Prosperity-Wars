@@ -248,12 +248,17 @@ public class PrimitiveStorageSet
         if (foundStorage != null)
             return (foundStorage.get() >= what.get()) ? true : false;
         else return false;
-        //if (t == null) return false;
-        //if (t.get() < what.get()) return false;
-        //else return true;
-
-
     }
+
+    /// <summary>Returns False when some check not presented in here</summary>    
+    internal bool has(PrimitiveStorageSet check)
+    {
+        foreach (Storage stor in check)
+            if (!has(stor))
+                return false;
+        return true;
+    }
+
     internal Storage findStorage(Product whom)
     {
         foreach (Storage stor in container)
@@ -312,6 +317,8 @@ public class PrimitiveStorageSet
                 this.Set(stor);
         // SetZero();
     }
+
+    
 
     //internal PrimitiveStorageSet Copy()
     //{

@@ -15,7 +15,7 @@ public class Province
     public MeshRenderer meshRenderer;
     //public static uint maxTribeMenCapacity = 2000;
     private string name;
-    public int ID;
+    private int ID;
     public Country owner;
     public List<PopUnit> allPopUnits = new List<PopUnit>();
     public Vector3 centre;
@@ -35,6 +35,8 @@ public class Province
         fertileSoil = 10000;
 
     }
+    internal int getID()
+    { return ID; }
     public void SecedeTo(Country taker)
     {
         //this.owner - current owner
@@ -52,7 +54,7 @@ public class Province
             yield return f;
         foreach (PopUnit f in allPopUnits)
             //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
-            yield return f;        
+            yield return f;
     }
     public uint getMenPopulation()
     {
@@ -276,7 +278,7 @@ public class Province
 
     internal void SetLabel()
     {
-       
+
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
         txtMeshTransform.SetParent(this.gameObject.transform, false);
 
@@ -321,7 +323,46 @@ public class Province
             }
         return usedLand / fertileSoil;
     }
+    /// <summary>Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
+    /// \nCould auto-drop salary on minSalary of there is problems with inputs</summary>
+    internal float getLocalMinSalary()
+    {
+        if (allFactories.Count <= 1)
+            return owner.getMinSalary();
+        else
+        {
+            float minSalary;
+            minSalary = getLocalMaxSalary();
 
+            foreach (Factory fact in allFactories)
+                if (fact.isWorking() && !fact.justHiredPeople)
+                {
+                    if (minSalary > fact.getSalary())
+                        minSalary = fact.getSalary();
+                }
+            return minSalary;
+        }
+    }
+    /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minsalary
+    ///</summary>
+    internal float getLocalMaxSalary()
+    {
+        if (allFactories.Count <= 1)
+            return owner.getMinSalary();
+        else
+        {
+            float maxSalary;
+            maxSalary = allFactories.First().getSalary();
+
+            foreach (Factory fact in allFactories)
+                if (fact.isWorking())
+                {
+                    if (fact.getSalary() > maxSalary)
+                        maxSalary = fact.getSalary();
+                }
+            return maxSalary;
+        }
+    }
     internal float getMiddleFactoryWorkforceFullfilling()
     {
         uint workForce = 0;

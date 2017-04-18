@@ -23,6 +23,9 @@ public class Value
     }
     public void add(float invalue)
     {
+        //int newRes = (int)value + Mathf.RoundToInt(invalue * precision);
+        //if (newRes < 0) newRes = 0;
+        //value = (uint)newRes; //Mathf.RoundToInt(invalue * precision);
         value += (uint)Mathf.RoundToInt(invalue * precision);
     }
     public void subtract(Value invalue)
@@ -79,7 +82,13 @@ public class Value
         //  Debug.Log("Value multiple failed");
         return new Value(get() * invalue);
     }
-
+    public void divideInside(Value invalue)
+    {
+        if (invalue.get() < 0)
+            Debug.Log("Value multiple failed");
+        set(this.divide(invalue));
+    }
+    
 
 
     /// <summary>returns new value </summary>
@@ -89,6 +98,14 @@ public class Value
 
         return new Value(get() / invalue);
     }
+    /// <summary>returns new value </summary>
+    internal Value divide(Value invalue)
+    {
+        if (invalue.get() == 0) Debug.Log("Value ivide by zero");
+
+        return new Value(get() / invalue.get());
+    }
+
     public void pay(Value another, uint amount)
     {
         if (this.get() >= amount)

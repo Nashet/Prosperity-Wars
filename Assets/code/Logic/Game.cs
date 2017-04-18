@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.IO;
 using System;
-
+using System.Text;
 
 public class Game
 {
@@ -31,9 +31,12 @@ public class Game
     internal static float maxPrice = 999.99f;
     internal static uint familySize = 5;
 
-    internal static Condition alwaysYesCondition = new Condition(new List<ConditionString>() { new ConditionString(delegate (Country forWhom) { return 2==2; }, "Always Yes condition", true) });
+    internal static StringBuilder threadDangerSB = new StringBuilder();
 
     public static uint date;
+    internal static bool devMode = false;
+
+
     float cellMuliplier = 2f;
     internal static float goldToCoinsConvert = 10f;
     internal static float minWorkforceFullfillingToUpgradeFactory = 0.75f;
@@ -47,14 +50,14 @@ public class Game
     internal static uint maxDaysUnprofitableBeforeFactoryClosing = 180;
     internal static uint maxDaysBuildingBeforeRemoving = 180; // 180;
     internal static uint maxDaysClosedBeforeRemovingFactory = 180;
-    internal static uint minDaysBeforeSlaryCut = 2;
+    internal static uint minDaysBeforeSalaryCut = 2;
     internal static int howOftenCheckForFactoryReopenning = 30;
     internal static Procent savePopMoneyReserv = new Procent(0.66666f);
     internal static float factoryMoneyReservPerLevel = 20f;
     internal static float minMarginToRiseSalary = 0.1f;
     internal static float factoryEachLevelEfficiencyBonus = 0.05f;
-    internal static float factoryHaveResourceInProvinceBonus = 0.2f;
-    internal static int maxFactoryFireHireSpeed = 50;
+    //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
+    internal static int maxFactoryFireHireSpeed = 10;
     internal static float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
     internal static float defaultSciencePointMultiplier = 0.001f; //0.00001f;
     internal static uint fabricConstructionTimeWithoutCapitalism = 20;
@@ -64,6 +67,8 @@ public class Game
     // just to store temporeal junk
     internal static string dumpString;
     internal static GameObject r3dTextPrefab;
+    internal static Value defaultPriceLimitMultiplier = new Value(2f);
+    internal static uint PopDaysUpsetByForcedReform = 30;
 
     public Game()
     {
@@ -105,38 +110,38 @@ public class Game
 
 
 
-        new FactoryType("Forestry", new Storage(Product.Wood, 2f), null);
-        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null);
-        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null);
-        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), null);
-        new FactoryType("Quarry", new Storage(Product.Stone, 2f), null);
-        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null);
+        new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);
+        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null, true);
+        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null, true);
+        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), null, false);
+        new FactoryType("Quarry", new Storage(Product.Stone, 2f), null, true);
+        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null, false);
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput);
+        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 1f));
-        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
+        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 0.5f));
         resourceInput.Set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput);
+        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wool, 1f));
-        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
+        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 0.5f));
         resourceInput.Set(new Storage(Product.Stone, 1f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput);
+        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, true);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Fruit, 0.3333f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput);
+        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, true);
 
         //new Product("Grain");
 
@@ -150,11 +155,9 @@ public class Game
         new PopType(PopType.PopTypes.Workers, null, "Workers");
 
         Culture cul = new Culture("Kocopetji");
-        player = new Country("Kocopia", cul);
-        //player.inventions.MarkInvented(InventionType.capitalism);
-        player.inventions.MarkInvented(InventionType.farming);
-        //player.inventions.MarkInvented(InventionType.banking);
+        player = new Country("Kocopia", cul);        
         player.storageSet.add(new Storage(Product.Food, 200f));
+        player.wallet.haveMoney.add(1000f);
 
         CreateRandomPopulation();
         Province.allProvinces[0].allPopUnits[0].education.set(1f);
@@ -168,6 +171,21 @@ public class Game
         //Province.allProvinces[0].allPopUnits.Add(new Workers(1000, PopType.workers, new Culture("Milaus"), Province.allProvinces[0]));
 
         MainCamera.topPanel.refresh();
+    }
+    internal static float getAllMoneyInWorld()
+    {
+        float allMoney = 0f;
+        foreach (Country co in Country.allCountries)
+        {
+            allMoney += co.wallet.haveMoney.get();
+            allMoney += co.bank.getReservs();
+            foreach (Province pr in co.ownedProvinces)
+            {
+                foreach (Producer factory in pr)
+                    allMoney += factory.wallet.haveMoney.get();                
+            }
+        }
+        return allMoney;
     }
     void CreateRandomPopulation()
     {
@@ -188,6 +206,17 @@ public class Game
             Aristocrats ar = new Aristocrats(100, PopType.aristocrats, Game.player.culture, province);
             ar.wallet.haveMoney.set(200);
             province.allPopUnits.Add(ar);
+            if (!Game.devMode)
+            {
+                Capitalists ca = new Capitalists(50, PopType.capitalists, Game.player.culture, province);
+                ca.wallet.haveMoney.set(400);
+                province.allPopUnits.Add(ca);
+
+                Farmers far = new Farmers(590, PopType.farmers, Game.player.culture, province);
+                ca.wallet.haveMoney.set(40);
+                province.allPopUnits.Add(far);
+
+            }
             //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
 
             //if (Procent.GetChance(chanceForA))

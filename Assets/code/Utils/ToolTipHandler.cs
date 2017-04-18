@@ -3,52 +3,51 @@ using UnityEngine.EventSystems;
 using System.Collections;
 
 
-public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
+public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 
     public string tooltip;
     public MainTooltip tip;
 
-    int counter = 0;
+    int counter = 0;    
     public void OnPointerEnter(PointerEventData eventData)
     {
-        counter = 0;
+        //counter++
+        //    ;
+        //if (counter > 6 && tooltip != "")
+        //{
         if (tooltip != "")
         {
-            
             tip.SetTooltip(tooltip);
-        }
-
-
-    }
-    public void OnSelect(BaseEventData eventData)
-    {
-
-    }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-    }
-    public void OnDeselect(BaseEventData eventData)
-    {
-
-    }
-    public void FixedUpdate()
-    {
-        if (counter > 200)
-        {
-            tip.HideTooltip();
+            //tip.LayoutInit();
             counter = 0;
         }
+       // }
 
-        counter++;
+
     }
-    //void StartHover(Vector3 position)
+   
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (tip != null)
+            tip.HideTooltip();
+    }
+   
+    //public void FixedUpdate()
     //{
-    //    tip.SetTooltip(text);
+    //    //if (counter > 300 && tip != null)
+    //    //{
+    //    //    tip.HideTooltip();
+    //    //    counter = 0;
+    //    //}
+    //    //if (counter > 300 && tip != null)
+    //    //{
+    //    //    tip.HideTooltip();
+    //    //    counter = 0;
+    //    //}
+
+    //    //counter++;
     //}
-    //void StopHover()
-    //{
-    //    tip.HideTooltip();
-    //}
+   
 
 }

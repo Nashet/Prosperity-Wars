@@ -79,7 +79,7 @@ public class MainCamera : MonoBehaviour
         ;
         return System.Convert.ToInt32(mesh.name);
     }
-    internal void SelectProvince(int number)
+    internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
             Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.colorID;
@@ -133,7 +133,7 @@ public class MainCamera : MonoBehaviour
             Game.haveToStepSimulation = false;
 
         if (Game.selectedProvince != null)
-            ProvincePanel.UpdateProvinceWindow(Game.selectedProvince);
+            provincePanel.UpdateProvinceWindow(Game.selectedProvince);
 
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.

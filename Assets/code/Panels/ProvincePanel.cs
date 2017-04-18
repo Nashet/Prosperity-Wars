@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class ProvincePanel : MonoBehaviour
 {
-    public static Text generaltext;
+    public Text generaltext;
     public GameObject provincePanel;
     // Use this for initialization
     // thisPanel;
     void Start()
     {
-        generaltext = transform.FindChild("GeneralText").gameObject.GetComponent<Text>();
+        //generaltext = transform.FindChild("GeneralText").gameObject.GetComponent<Text>();
         MainCamera.provincePanel = this;
         hide();
     }
@@ -102,15 +102,15 @@ public class ProvincePanel : MonoBehaviour
             MainCamera.productionWindow.show(Game.selectedProvince, true);
         }
     }
-    public static void UpdateProvinceWindow(Province province)
+    public void UpdateProvinceWindow(Province province)
     {
         generaltext.text = "name: " + province 
-            + "\nID: " + province.ID
-            + "\nColor: " + province.colorID
+            + "\nID: " + province.getID()            
             + "\nPopulation (+/-): " + province.getFamilyPopulation()
             + "\nMiddle loyalty" + "\nTax income"
             + "\nResource: " + province.getResource()
             + "\nRural overpopulation: " + province.getOverPopulation()
             ;
+        if (Game.devMode) generaltext.text += "\nColor: " + province.colorID;
     }
 }

@@ -49,6 +49,13 @@ public class Market : Owner//: PrimitiveStorageSet
         }
         return new Value(cost);
     }
+    //internal Value getCost(Storage need)
+    //{
+    //    float cost = 0;
+    //    // float price;
+
+    //    return new Value(cost);
+    //}
     internal float getCost(List<Storage> need)
     {
         float cost = 0;
@@ -496,12 +503,12 @@ public class Market : Owner//: PrimitiveStorageSet
         else
         {
             // assuming available < buying
-            
+
             Storage available = Game.market.HowMuchAvailable(buying);
             if (available.get() > 0f)
             {
                 cost = available.multiple(price);
-                
+
                 if (buyer.wallet.canPay(cost))
                 {
                     buyer.wallet.pay(Game.market.wallet, cost);
@@ -509,16 +516,16 @@ public class Market : Owner//: PrimitiveStorageSet
                     howMuchCanConsume = available;
                 }
                 else
-                {                   
+                {
                     howMuchCanConsume = new Storage(price.getProduct(), buyer.wallet.haveMoney.get() / price.get());
                     if (howMuchCanConsume.get() > available.get())
                         howMuchCanConsume.set(available.get()); // you don't buy more than there is
                     buyer.wallet.pay(Game.market.wallet, buyer.wallet.haveMoney); //pay all money couse you don't have more
                     Game.market.tmpMarketStorage.subtract(howMuchCanConsume);
-                }               
+                }
             }
             else
-                  howMuchCanConsume = new Storage(buying.getProduct(), 0f);
+                howMuchCanConsume = new Storage(buying.getProduct(), 0f);
         }
         return howMuchCanConsume;
 
@@ -665,7 +672,7 @@ public class Market : Owner//: PrimitiveStorageSet
         if (result == null)
             return new Storage(need.getProduct(), 0f);
         else
-            return new Storage (result);
+            return new Storage(result);
 
         //BuyingAmountAvailable = need.get() / DSB;
         ////todo PUT in BUY?? for anti-mirrorring
@@ -804,8 +811,12 @@ public class Market : Owner//: PrimitiveStorageSet
                     //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
                     // else
                     //(0.0001f <= balance &&
-                    if (balance <= 0.5f)
+                if (balance <= 0.75f)
                     priceChangeSpeed = -0.001f + price.get() * -0.02f;
+                else
+                if (balance > 1f)
+                    ChangePrice(price, price.getProduct().getDefaultPrice().get() - price.get());
+
                 // antiBalance = price.get();
                 //if (antiBalance > 10) antiBalance = 10;
                 // old DSB

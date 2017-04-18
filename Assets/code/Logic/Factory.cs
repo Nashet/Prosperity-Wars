@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 public class Factory : Producer
 {
     //public enum PopTypes { Forestry, GoldMine, MetalMine };
@@ -14,7 +15,8 @@ public class Factory : Producer
     private bool upgrading = false;
     private bool working = false;
     private bool toRemove = false;
-
+    private bool dontHireOnSubsidies, subsidized;
+    private byte priority = 0;
     protected Value salary = new Value(0);
     internal Owner factoryOwner;
     internal PrimitiveStorageSet needsToUpgrade;
@@ -25,19 +27,16 @@ public class Factory : Producer
     private uint daysClosed;
     internal bool justHiredPeople;
     private int hiredLastTurn;
-    internal Condition conditionsUpgrade;
-    internal Condition conditionsBuild;
+    internal ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
+        conditionsDestroy, conditionsSell, conditionsBuy, conditionsNatinalize,
+        conditionsSubsidize, conditionsDontHireOnSubsidies, conditionsChangePriority;
+    internal ModifiersList modifierEfficiency;
+
     internal Factory(Province iprovince, Owner inowner, FactoryType intype)
     { //assuming this is level 0 building
         type = intype;
-        //building = true;
-        //working = false;
         needsToUpgrade = type.getBuildNeeds();
         iprovince.allFactories.Add(this);
-        //if (inowner is PopUnit)
-        //    factoryOwner = (PopUnit)inowner;
-        //else
-        //    owner = (Country)inowner;
         factoryOwner = inowner;
         province = iprovince;
 
@@ -45,19 +44,93 @@ public class Factory : Producer
         storageNow = new Storage(type.basicProduction.getProduct());
         sentToMarket = new Storage(type.basicProduction.getProduct());
 
-        conditionsUpgrade = new Condition(new List<ConditionString>()
+        salary.set(province.getLocalMinSalary());
+        conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
-            new ConditionString(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),            
-            new ConditionString(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
-            new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
-            new ConditionString(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
-            new ConditionString(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
-            new ConditionString(delegate (Owner forWhom) {
+            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new Condition(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
+            new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+            new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+            new Condition(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
+            new Condition(delegate (Owner forWhom) {
                  Value cost = this.getUpgradeCost();
                 return forWhom.wallet.canPay(cost);}, "Have money " + getUpgradeCost(), true)
         });
-        
+
+        conditionsClose = new ConditionsList(new List<Condition>()
+        {
+            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+            new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+        });
+        conditionsReopen = new ConditionsList(new List<Condition>()
+        {
+            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
+            new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
+            new Condition(delegate (Owner forWhom) {
+                return forWhom.wallet.canPay(getReopenCost());}, "Have money " + getReopenCost(), true)
+        });
+        conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF });
+        //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
+        conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State
+
+        //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
+        conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned
+
+        // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
+        conditionsNatinalize = ConditionsList.IsNotImplemented; //!LF and ! Inter
+
+
+        conditionsSubsidize = new ConditionsList(new List<Condition>()
+        {
+            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
+        });
+        conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>()
+        {
+            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
+        });
+        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF, Condition.IsNotImplemented });
+
+        Modifier modifierHasResourceInProvince = new Modifier(delegate (Country forWhom)
+        {
+            return !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput);
+        },
+            "Has input resource in thst province", true, 20f);
+        Modifier modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concetration bonus", true, 5f);
+        Modifier conditionInventedMiningAndIsShaft = new Modifier(
+            delegate (Country forWhom)
+            {
+                return forWhom.isInvented(InventionType.mining) && type.isShaft();
+            },
+            new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), false, 50f);
+        modifierEfficiency = new ModifiersList(new List<Condition>()
+        {
+            new Modifier(InventionType.steamPower, true, 25f),
+            conditionInventedMiningAndIsShaft,
+            new Modifier(Economy.StateCapitalism, true, 10f),
+            new Modifier(Economy.Interventionism, true, 30f),
+            new Modifier(Economy.LaissezFaire, true, 50f),
+            new Modifier(Economy.PlannedEconomy, true, -10f),
+            modifierHasResourceInProvince, modifierLevelBonus
+        });
     }
+
+    internal float getPriority()
+    {
+        return priority;
+    }
+
+    internal bool isdontHireOnSubsidies()
+    {
+        return dontHireOnSubsidies;
+    }
+
+    internal bool isSubsidized()
+    {
+        return subsidized;
+    }
+
     internal Procent getResouceFullfillig()
     {
         return new Procent(getInputFactor());
@@ -152,6 +225,21 @@ public class Factory : Producer
         }
     }
 
+    internal void setDontHireOnSubsidies(bool isOn)
+    {
+        dontHireOnSubsidies = isOn;
+    }
+
+    internal void setSubsidized(bool isOn)
+    {
+        subsidized = isOn;
+    }
+
+    internal void setPriority(byte value)
+    {
+        priority = value;
+    }
+
     internal uint HowManyEmployed(PopUnit pop)
     {
         uint result = 0;
@@ -223,7 +311,8 @@ public class Factory : Producer
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
-                        else salary.set(0);
+                        //todo no resiuces tio pay salary
+                        //else salary.set(0);
                     }
                     else // assuming - PopUnit
                     {
@@ -235,7 +324,8 @@ public class Factory : Producer
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
-                        else salary.set(0);
+                        //todo no resiuces tio pay salary
+                        //else salary.set(0);
                     }
                     //else dont pay if there is nothing to pay
                 }
@@ -252,9 +342,17 @@ public class Factory : Producer
         float x = getProfit() / (getUpgradeCost().get() * level);
         return new Procent(x);
     }
+    internal Value getReopenCost()
+    {
+        return new Value(Game.factoryMoneyReservPerLevel);
+
+    }
     internal Value getUpgradeCost()
     {
-        return Game.market.getCost(type.getUpgradeNeeds());
+        Value result = Game.market.getCost(type.getUpgradeNeeds());
+        result.add(Game.factoryMoneyReservPerLevel);
+        return result;
+        //return Game.market.getCost(type.getUpgradeNeeds());
     }
     internal float getConsumedCost()
     {
@@ -275,7 +373,7 @@ public class Factory : Producer
             if (workers > 0)
             {
                 Value producedAmount;
-                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get());
+                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get() * getLevel());
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);
@@ -334,13 +432,19 @@ public class Factory : Producer
             if (ThereIsSpaceToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
                 salary.add(0.01f);
             //too allocate workers form other popTypes
-            if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600 && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
+            if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600
+                && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
                 salary.add(0.01f);
+
+            // to help factories catch up other factories salaries
+            //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
+            //    salary.set(province.getLocalMinSalary());
             // freshly builded factories should rise salary to concurency with old ones
             if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.03f);
+
             // reduce salary on non-profit
-            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSlaryCut && !justHiredPeople)
+            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople)
                 if (salary.get() - 0.3f >= province.owner.getMinSalary())
                     salary.subtract(0.3f);
                 else
@@ -367,7 +471,7 @@ public class Factory : Producer
         if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0))// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
         //don't hire more if unprofitable. Even fire some
-        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSlaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
+        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSalaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
         // just dont't hire more..
         if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f))
@@ -438,37 +542,36 @@ public class Factory : Producer
     {
         return getWorkForce() / (1000f * level);
     }
+    /// <summary>
+    /// per level
+    /// </summary>    
     internal Procent getEfficiency(bool useBonuses)
     {
         //limit production by smalest factor
-        float efficency = 0;
+        float efficencyFactor = 0;
         float workforceProcent = getWorkForceFullFilling();
         float inputFactor = getInputFactor();
-        if (inputFactor < workforceProcent) efficency = inputFactor;
-        else efficency = workforceProcent;
-        float basicEff = efficency * getLevel();
-        Procent result = new Procent(basicEff);
+        if (inputFactor < workforceProcent) efficencyFactor = inputFactor;
+        else efficencyFactor = workforceProcent;
+        //float basicEff = efficencyFactor * getLevel();
+        //Procent result = new Procent(basicEff);
+        Procent result = new Procent(efficencyFactor);
         if (useBonuses)
         {
-            result.add(basicEff * Game.factoryEachLevelEfficiencyBonus);
-            // if (!type.isResourceGathering() && this.type.resourceInput.findStorage(province.resource) != null)
-            if (!type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput))
-                result.add(basicEff * Game.factoryHaveResourceInProvinceBonus);
+            result.set(result.get() * (1f + modifierEfficiency.getModifier(Game.player) / 100f));
+            //result.add();
+
+            //result.add(basicEff * Game.factoryEachLevelEfficiencyBonus);
+            //// if (!type.isResourceGathering() && this.type.resourceInput.findStorage(province.resource) != null)
+            //if (!type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput))
+            //    result.add(basicEff * 0.2f); //Game.factoryHaveResourceInProvinceBonus
         }
         return result;
     }
     // Should remove market assamption since its goes to double- calculation?
     public List<Storage> getRealNeeds()
     {
-        //float useFactor = 0;
-        //float inputF = getInputFactor();
-        //float effF = getWorkForceFullFilling();
-        //if (inputF < effF) useFactor = inputF;
-        //else
-        //    useFactor = effF;
-
-        //Value multiplier = new Value(useFactor * level);
-        Value multiplier = new Value(getEfficiency(false).get());
+        Value multiplier = new Value(getEfficiency(false).get() * getLevel());
 
         List<Storage> result = new List<Storage>();
 
@@ -510,7 +613,7 @@ public class Factory : Producer
                 float minimalFond = wallet.haveMoney.get() - 50f;
 
                 if (minimalFond < 0 && getOwnerWallet().canPay(minimalFond * -1f))
-                    getOwnerWallet().pay(this.wallet, new Value(minimalFond * -1f));
+                    getOwnerWallet().payWithoutRecord(this.wallet, new Value(minimalFond * -1f));
             }
             if (isBuyingComplete || (!isMarket && daysInConstruction == Game.fabricConstructionTimeWithoutCapitalism))
             {
@@ -519,7 +622,7 @@ public class Factory : Producer
                 upgrading = false;
                 needsToUpgrade.SetZero();
                 daysInConstruction = 0;
-                reopen();
+                reopen(this);
             }
             else if (daysInConstruction == Game.maxDaysBuildingBeforeRemoving)
                 if (isBuilding())
@@ -608,7 +711,7 @@ public class Factory : Producer
                     }
                     leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver >= 0f)
-                        reopen();
+                        reopen(this);
                 }
             }
         }
@@ -626,11 +729,13 @@ public class Factory : Producer
         needsToUpgrade.SetZero();
         daysInConstruction = 0;
     }
-    internal void reopen()
+    internal void reopen(Owner byWhom)
     {
         working = true;
         daysUnprofitable = 0;
         daysClosed = 0;
+        if (byWhom != this)
+            byWhom.wallet.payWithoutRecord(wallet, getReopenCost());
     }
 
     internal bool isWorking()
@@ -650,13 +755,13 @@ public class Factory : Producer
 
     internal bool canUpgrade()
     {
-        return !isUpgrading() && !isBuilding() && level < Game.maxFactoryLevel;
+        return !isUpgrading() && !isBuilding() && level < Game.maxFactoryLevel && isWorking();
     }
     internal void upgrade(Owner byWhom)
     {
         upgrading = true;
         needsToUpgrade = type.getUpgradeNeeds().getCopy();
-        byWhom.wallet.pay(wallet, getUpgradeCost());
+        byWhom.wallet.payWithoutRecord(wallet, getUpgradeCost());
     }
 
     internal uint getDaysInConstruction()
@@ -900,145 +1005,7 @@ public class Factory : Producer
 //        return "Sawmill";
 //    }
 //}
-public class FactoryType
-{
-    internal readonly string name;
-    static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
 
-    ///<summary> per 1000 workers </summary>
-    public Storage basicProduction;
-
-    /// <summary>resource input list 
-    /// per 1000 workers & per 1 unit outcome</summary>
-    internal PrimitiveStorageSet resourceInput;
-
-    /// <summary>Per 1 level upgrade</summary>
-    internal PrimitiveStorageSet upgradeResource = new PrimitiveStorageSet();
-    internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
-    internal Condition conditionsBuild;
-    internal FactoryType(string iname, Storage ibasicProduction, PrimitiveStorageSet iresourceInput)
-    {
-
-        name = iname;
-        if (iname == "Gold pit") GoldMine = this;
-        if (iname == "Furniture factory") Furniture = this;
-        if (iname == "Metal pit") MetalDigging = this;
-        if (iname == "Metal smelter") MetalSmelter = this;
-        allTypes.Add(this);
-        basicProduction = ibasicProduction;
-        if (iresourceInput == null) resourceInput = new PrimitiveStorageSet();
-        else
-            resourceInput = iresourceInput;
-        //upgradeResource.Set(new Storage(Product.Wood, 10f));
-        upgradeResource.Set(new Storage(Product.Stone, 10f));
-        //if (HaveFactory(ft))
-        //    return false;
-        //if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !owner.isInvented(ft.basicProduction.getProduct()))
-        //    return false;
-        //conditionsBuild = new Condition(new List<ConditionString>()
-        //{
-        //    new ConditionString(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
-        //    new ConditionString(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
-        //    new ConditionString(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
-        //    new ConditionString(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
-        //    new ConditionString(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
-        //    new ConditionString(delegate (Owner forWhom) {
-        //         Value cost = this.getUpgradeCost();
-        //        return forWhom.wallet.canPay(cost);}, "Have money " + getUpgradeCost(), true)
-        //});
-    }
-    internal PrimitiveStorageSet getUpgradeNeeds()
-    {
-        return upgradeResource;
-    }
-    internal PrimitiveStorageSet getBuildNeeds()
-    {
-        PrimitiveStorageSet result = new PrimitiveStorageSet();
-        result.Set(new Storage(Product.Food, 40f)); //! has connection in pop.invest!!
-        //if (whoCanProduce(Product.Gold) == this)
-        // result.Set(new Storage(Product.Wood, 40f));
-        return result;
-    }
-    /// <summary>
-    /// Returns first correct value
-    /// Assuming there is only one  FactoryType for each Product
-    /// </summary>
-    /// <param name="pro"></param>
-    /// <returns></returns>
-    internal static FactoryType whoCanProduce(Product pro)
-    {
-        foreach (FactoryType ft in allTypes)
-            if (ft.basicProduction.getProduct() == pro)
-                return ft;
-        return null;
-    }
-    override public string ToString() { return name; }
-    internal bool isResourceGathering()
-    {
-        if (resourceInput.Count() == 0)
-            return true;
-        else return false;
-    }
-    //todo improove getPossibleProfit
-    internal float getPossibleProfit(Province province)
-    {
-        foreach (Storage st in resourceInput)
-            if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
-                return 0;
-        float income = Game.market.getCost(basicProduction);
-        Value outCome = Game.market.getCost(resourceInput);
-        return income - outCome.get();
-    }
-    internal Procent getPossibleMargin(Province province)
-    {
-        Value cost = Game.market.getCost(getBuildNeeds());
-        cost.add(Game.factoryMoneyReservPerLevel);
-        //if (cost.get() > 0)
-        return new Procent(getPossibleProfit(province) / cost.get());
-    }
-    internal static FactoryType getMostTeoreticalProfitable(Province province)
-    {
-        List<FactoryType> possiblefactories = province.WhatFactoriesCouldBeBuild();
-        float possibleProfit = 0;
-        float maxProfitFound = 0;
-        foreach (FactoryType ft in possiblefactories)
-        {
-
-            // if (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft))
-            {
-                possibleProfit = ft.getPossibleProfit(province);
-                if (possibleProfit > maxProfitFound)
-                    maxProfitFound = possibleProfit;
-            }
-        }
-        if (maxProfitFound > 0f)
-            foreach (FactoryType ft in possiblefactories)
-                if (ft.getPossibleProfit(province) == maxProfitFound && (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft)))
-                    return ft;
-        return null;
-    }
-
-    internal static Factory getMostPracticlyProfitable(Province province)
-    {
-        List<FactoryType> possiblefactories = province.WhatFactoriesCouldBeBuild();
-        float profit = 0;
-        float maxProfitFound = 0;
-        foreach (Factory ft in province.allFactories)
-        {
-            if (province.CanUpgradeFactory(ft.type))
-            {
-                profit = ft.getProfit();
-                if (profit > maxProfitFound)
-                    maxProfitFound = profit;
-            }
-        }
-        if (maxProfitFound > 0f)
-            foreach (Factory factory in province.allFactories)
-                if (factory.getProfit() == maxProfitFound && province.CanUpgradeFactory(factory.type))
-                    return factory;
-        return null;
-    }
-}
 public class PopLinkage
 {
     public PopUnit pop;
