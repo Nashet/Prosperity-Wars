@@ -34,8 +34,10 @@ public class Country : Owner
     public Country(string iname, Culture iculture)
     {
         government = new Government(this);
+        
         economy = new Economy(this);
         serfdom = new Serfdom(this);
+
         minimalWage = new MinimalWage(this);
         taxationForPoor = new TaxationForPoor(this);
         name = iname;
@@ -52,7 +54,7 @@ public class Country : Owner
             economy.status = Economy.StateCapitalism;
 
             inventions.MarkInvented(InventionType.farming);
-            //inventions.MarkInvented(InventionType.manufactories);
+            inventions.MarkInvented(InventionType.manufactories);
             inventions.MarkInvented(InventionType.banking);
             // inventions.MarkInvented(InventionType.individualRights);
         }

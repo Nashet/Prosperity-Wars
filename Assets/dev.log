@@ -7,16 +7,44 @@ Do I need Countre-special needs OR NOT? - Not
 Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, exclude Artisan, Clerics and Goverment), no equal rights (meaning, poor strata gaves tax to Aristocrats ). Farmers are free (Serfdom abolited reform) than they just pay feodal tax to aristocrats. Add special SERf unit.
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
-> make demo? Without Nat economy, capitalism only
-> clicking on province name in table handler
-> needs of non-invented goods?
+
+> make demo? Without Nat economy, capitalism only. DEv mode
+> tax for rich
+- strange price drops
+? limit max price rise speed?
+
+
+
+
+- auto refill data on production windows
+- DSB > 1 strike on food?
+- factories have no time to rise salary to compete workforce On Reopen
+
+- refresh TopPanel on Factory reopen. Improve
+- factories shows upgrade spendigs as loss
+- Aristocrats build only of food. IS IT WAD?
+
 > make this day stats in trade
+
+
+
+* money stuck in farmers now
++ clicking on province name in table handler
+* growth
+* no one build nothing
+///////////////////////////////// demo
+? bring farmers to market
+> farmers should eat unsoled goods?
+> refactor invest
+> needs of non-invented goods?
+
 
 * tooltip fix
 + payNoRecord for factories income
 * total money
 + add borders to panels
-+ add money startup on factory reopen
+
+* add money startup on factory reopen 
 + make Git description
 * recheck Upgrade Money check
 * money stuck in country wallet
@@ -45,7 +73,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 - aristos cant finish build factories in market?
 
 
-- strange price drops
+
 > make modifiers with mutable description?
 > add multiple temporary modifiers for wrong reforms
 
@@ -68,10 +96,10 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 - disbalance in Food trade?
 
-> farmers should eat unsoled goods?
 
 
-> refactor invest
+
+
 
 - broke nat economy fabric update? No it never was implemented
 - factory upgardes only for money, not for resurces
@@ -104,7 +132,7 @@ ency
 * wrong String in new Government conditions 
 * add startup money in Build description
 
-* factories have no time to rise salary to compete workforce
+
 * price stuck in middle range with zero supply
 * zero wage limit
 + modifiers for Pop Loyalty

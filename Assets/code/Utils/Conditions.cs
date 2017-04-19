@@ -151,8 +151,8 @@ public class ConditionsList
 public class Condition: AbstractCondition
 {
     public string conditionDescription; //, conditionIsFalse;
-    public Func<Owner, bool> check;
-    public Func<Country, bool> check2;
+    protected Func<Owner, bool> check;
+    protected Func<Country, bool> check2;
     /// <summary>to hide juncky info /// </summary>
     bool showAchievedConditionDescribtion;
     internal static Condition IsNotImplemented = new Condition(delegate (Country forWhom) { return 2 == 0 || Game.devMode; }, "Feature is implemented", true);

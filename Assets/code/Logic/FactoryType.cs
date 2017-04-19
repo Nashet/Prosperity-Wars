@@ -41,7 +41,7 @@ public class FactoryType
         enoughMoneyOrResourcesToBuild = new Condition(
           (delegate (Country forWhom)
           {
-              if (forWhom.economy.isMarket())
+              if (Economy.isMarket.checkIftrue(forWhom))
                   return forWhom.wallet.canPay(getBuildCost());
               else
               {

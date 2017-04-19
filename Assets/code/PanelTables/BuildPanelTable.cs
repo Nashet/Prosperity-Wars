@@ -56,7 +56,7 @@ public class BuildPanelTable : MyTable
 
                 ////Adding cost
                 //if (Game.player.isInvented(InventionType.capitalism))
-                if (Game.player.economy.isMarket())
+                if (Economy.isMarket.checkIftrue(Game.player))
                     AddButton(Game.market.getCost(next.getBuildNeeds()).ToString(), next);
                 else
                     AddButton(next.getBuildNeeds().ToString(), next);

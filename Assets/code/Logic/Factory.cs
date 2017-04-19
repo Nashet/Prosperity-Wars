@@ -279,7 +279,8 @@ public class Factory : Producer
             Storage foodSalary = new Storage(Product.Food, 1f);
             // Value moneySalary = new Value(0.8f);
             //if (province.owner.isInvented(InventionType.capitalism))
-            if (province.owner.economy.isMarket())
+            //if (province.owner.economy.isMarket())
+            if (Economy.isMarket.checkIftrue(province.owner))
             {
                 foreach (PopLinkage link in workForce)
                 {
@@ -398,7 +399,7 @@ public class Factory : Producer
                 }
 
                 //if (province.owner.isInvented(InventionType.capitalism))
-                if (province.owner.economy.isMarket())
+                if (Economy.isMarket.checkIftrue(province.owner))
                 {
                     // Buyers should come and buy something...
                     // its in other files.
@@ -425,7 +426,7 @@ public class Factory : Producer
     internal void changeSalary()
     {
         //if (getLevel() > 0)
-        if (isWorking() && province.owner.economy.isMarket())
+        if (isWorking() && Economy.isMarket.checkIftrue(province.owner))
         //        province.owner.isInvented(InventionType.capitalism))
         {
             // rise salary to entice workforce
@@ -601,7 +602,7 @@ public class Factory : Producer
         {
             bool isBuyingComplete = false;
             daysInConstruction++;
-            bool isMarket = province.owner.economy.isMarket();// province.owner.isInvented(InventionType.capitalism);
+            bool isMarket = Economy.isMarket.checkIftrue(province.owner);// province.owner.isInvented(InventionType.capitalism);
             if (isMarket)
             {
                 if (isBuilding())

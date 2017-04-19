@@ -42,7 +42,7 @@ public class BuildPanel : DragPanel
         {
             bool buildSomething = false;
             var resourceToBuild = selectedFactoryType.getBuildNeeds();
-            if (Game.player.economy.isMarket())
+            if (Economy.isMarket.checkIftrue(Game.player))
             //if (Game.player.economy.status == Economy.StateCapitalism)
             //have money /resourse
             {
