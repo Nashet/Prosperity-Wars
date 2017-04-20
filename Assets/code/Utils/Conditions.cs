@@ -150,29 +150,37 @@ public class ConditionsList
 //}
 public class Condition: AbstractCondition
 {
-    public string conditionDescription; //, conditionIsFalse;
+    string text; //, conditionIsFalse;
     protected Func<Owner, bool> check;
     protected Func<Country, bool> check2;
     /// <summary>to hide juncky info /// </summary>
     bool showAchievedConditionDescribtion;
+    Func<string> dynamicString;
     internal static Condition IsNotImplemented = new Condition(delegate (Country forWhom) { return 2 == 0 || Game.devMode; }, "Feature is implemented", true);
-    /// <summary>You better use shorter constructor, if possible </summary>
+    /// <summary></summary>
     public Condition(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
         check = myMethodName;
-        this.conditionDescription = conditionIsTrue;
+        this.text = conditionIsTrue;
+        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    }
+    public Condition(Func<Owner, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion)
+    {
+        check = myMethodName;
+        this.dynamicString = dynamicString;
+        //this.conditionDescription = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
     public Condition(string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
-        this.conditionDescription = conditionIsTrue;
+        this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
     /// <summary>You better use shorter constructor, if possible </summary>
     public Condition(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
         check2 = myMethodName;
-        this.conditionDescription = conditionIsTrue;
+        this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
@@ -184,7 +192,7 @@ public class Condition: AbstractCondition
         {
             return forWhom.isInvented(invention);
         };
-        this.conditionDescription = invention.getInventedPhrase();
+        this.text = invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
@@ -192,7 +200,7 @@ public class Condition: AbstractCondition
     public Condition(Government.ReformValue government, bool showAchievedConditionDescribtion)
     {
         check2 = government.isGovernmentEqualsThat;
-        this.conditionDescription = "Government is " + government.ToString(); // invention.getInventedPhrase();
+        this.text = "Government is " + government.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
@@ -200,12 +208,20 @@ public class Condition: AbstractCondition
     public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion)
     {
         check2 = economy.isEconomyEqualsThat;
-        this.conditionDescription = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
+        this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    }
+    internal string getDescription()
+    {
+        if (text == null)
+            return dynamicString();
+        else
+            return text;
+
     }
     public override string ToString()
     {
-        return this.conditionDescription;
+        return getDescription();
     }
 
     /// <summary>Returns bool result and description in out description</summary>    
@@ -215,12 +231,12 @@ public class Condition: AbstractCondition
         bool answer = false;
         if (check(forWhom))
         {
-            if (showAchievedConditionDescribtion) result += "\n(+) " + conditionDescription;
+            if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
             answer = true;
         }
         else
         {
-            result += "\n(-) " + conditionDescription;
+            result += "\n(-) " + getDescription();
             answer = false;
         }
         description = result;
@@ -240,12 +256,12 @@ public class Condition: AbstractCondition
         {
             if (check(forWhom))
             {
-                if (showAchievedConditionDescribtion) result += "\n(+) " + conditionDescription;
+                if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
                 answer = true;
             }
             else
             {
-                result += "\n(-) " + conditionDescription;
+                result += "\n(-) " + getDescription();
                 answer = false;
             }
             description = result;
@@ -253,12 +269,12 @@ public class Condition: AbstractCondition
         }
         if (check2(forWhom))
         {
-            if (showAchievedConditionDescribtion) result += "\n(+) " + conditionDescription;
+            if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
             answer = true;
         }
         else
         {
-            result += "\n(-) " + conditionDescription;
+            result += "\n(-) " + getDescription();
             answer = false;
         }
         description = result;
@@ -316,7 +332,7 @@ public class Modifier : Condition
     }
     public override string ToString()
     {
-        return this.conditionDescription;
+        return getDescription();
     }
 
 
@@ -329,7 +345,7 @@ public class Modifier : Condition
         if (isMultiplier)
         {
             StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(conditionDescription);
+            str.Append(getDescription());
             str.Append(" ").Append(multiplierModifierFunction() * getValue());            
             description = str.ToString();
             answer = true;
@@ -339,7 +355,7 @@ public class Modifier : Condition
         {
             answer = true;
             StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(conditionDescription);
+            str.Append(getDescription());
             str.Append(" ").Append(getValue());
             description = str.ToString();
         }
@@ -356,7 +372,7 @@ public class Modifier : Condition
         if (isMultiplier)
         {
             StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(conditionDescription);
+            str.Append(getDescription());
             result = multiplierModifierFunction() * getValue();
             str.Append(": ").Append(result);
             description = str.ToString();
@@ -367,7 +383,7 @@ public class Modifier : Condition
         {
             
             StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(conditionDescription);
+            str.Append(getDescription());
             result =  getValue();
             str.Append(": ").Append(result);
 

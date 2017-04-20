@@ -21,12 +21,12 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 *? factories have no time to rise salary to compete workforce On Reopen
 
 - bugged unemployment data
+- empty tooltip
 
 
-
-> consumption tooltip
-> make modifiers with mutable description?
-- factory conditions - reopen - upgrade have broken fixed strings?
++ consumption tooltip
++ make modifiers with mutable description?
+* factory conditions - reopen - upgrade have broken fixed strings?
 
 
 
@@ -46,7 +46,8 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 ///////////////////////////////// demo
 
-> hiring rate shpuld be variable
+> test dynamic strings speed
+> hiring rate shpuld be variable - not fast enough on big population
 > conver 0.333 constants
 - factories shows upgrade spendigs as loss
 - DSB > 1 strike on food?

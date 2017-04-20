@@ -8,7 +8,7 @@ public class PopUnitPanel : DragPanel
 
 
     public GameObject popUnitPanel;
-    public Text generaltext;
+    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText;
     private PopUnit pop;
     // Use this for initialization
     void Start()
@@ -56,18 +56,20 @@ public class PopUnitPanel : DragPanel
             string loans = "";
             if (pop.loans.get() > 0f)
                 loans = "\nLoan: " + pop.loans.ToString();
+
             generaltext.text = pop + "\n" + "Population: " + pop.population + "\nStorage: " + pop.storageNow.ToString()
                 + "\nGain goods: " + pop.gainGoodsThisTurn.ToString()
                 + "\nSent to market: " + pop.sentToMarket
                 + "\nCash: " + pop.wallet.ToString()
                 + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
-                + "\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
-                + "\nConsumed: " + pop.consumedTotal +" costed: "+ Game.market.getCost(pop.consumedTotal)
-                + "\nConsumedLT: " + pop.consumedLastTurn + " costed: " + Game.market.getCost(pop.consumedLastTurn)
-                + "\nConsumedIM: " + pop.consumedInMarket+ " costed: " + Game.market.getCost(pop.consumedInMarket)
+                + "\nConsumed: " + pop.consumedTotal + " costed: " + Game.market.getCost(pop.consumedTotal)
                 + "\nDemotion: " + demotionText + "\nGrowth: " + pop.getGrowthSize()
-                + "\nUnemployment: " + pop.getUnemployedProcent() + loans;
-
+                + "\nUnemployment: " + pop.getUnemployedProcent() + loans
+                + "\n\nLife needs: " + lifeNeeds + "\n\nEveryday needs: " + everyDayNeeds + "\n\nLuxury needs: " + luxuryNeeds
+                ;
+            if (Game.devMode)
+                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " costed: " + Game.market.getCost(pop.consumedLastTurn)
+                + "\nConsumedIM: " + pop.consumedInMarket + " costed: " + Game.market.getCost(pop.consumedInMarket);
 
             //+ "\nExpenses:"
         }

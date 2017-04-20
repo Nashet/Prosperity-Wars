@@ -37,10 +37,10 @@ public class Wallet// : Value // : Storage
         return true;
     }
     /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-    
+
     internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
     {
-        return new Value (Game.market.getCost(need).get() - this.haveMoney.get());
+        return new Value(Game.market.getCost(need).get() - this.haveMoney.get());
     }
 
     internal Storage HowMuchCanAfford(Storage need)
@@ -268,14 +268,20 @@ public class PrimitiveStorageSet
     }
     override public string ToString()
     {
-        
+
         if (container.Count > 0)
         {
-            string result = "";
+            Game.threadDangerSB.Clear();
             foreach (Storage stor in container)
                 if (stor.get() > 0)
-                    result += stor.get() + " " + stor.getProduct().ToString() + ";";
-            return result;
+                    Game.threadDangerSB.AppendLine(stor.ToString());
+            //result += stor.get() + " " + stor.getProduct().ToString() + ";";
+            return Game.threadDangerSB.ToString();
+            //string result = "";
+            //foreach (Storage stor in container)
+            //    if (stor.get() > 0)
+            //        result += stor.get() + " " + stor.getProduct().ToString() + ";";
+            //return result;
         }
         else return "none";
     }
@@ -314,11 +320,11 @@ public class PrimitiveStorageSet
     {
         foreach (Storage stor in consumed)
             //if (stor.get() > 0f)
-                this.Set(stor);
+            this.Set(stor);
         // SetZero();
     }
 
-    
+
 
     //internal PrimitiveStorageSet Copy()
     //{

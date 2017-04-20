@@ -54,7 +54,11 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
             new Condition(delegate (Owner forWhom) {
                  Value cost = this.getUpgradeCost();
-                return forWhom.wallet.canPay(cost);}, "Have money " + getUpgradeCost(), true)
+                return forWhom.wallet.canPay(cost);}, delegate () {
+                    Game.threadDangerSB.Clear();
+                    Game.threadDangerSB.Append("Have ").Append(getUpgradeCost()).Append(" coins");
+                    return Game.threadDangerSB.ToString();
+                }, true)
         });
 
         conditionsClose = new ConditionsList(new List<Condition>()
@@ -69,7 +73,11 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
             new Condition(delegate (Owner forWhom) {
-                return forWhom.wallet.canPay(getReopenCost());}, "Have money " + getReopenCost(), true)
+                return forWhom.wallet.canPay(getReopenCost());},  delegate () {
+                    Game.threadDangerSB.Clear();
+                    Game.threadDangerSB.Append("Have ").Append(getReopenCost()).Append(" coins");
+                    return Game.threadDangerSB.ToString();
+                }, true)
         });
         conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF });
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy

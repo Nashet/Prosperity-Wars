@@ -35,7 +35,19 @@ public class PopulationPanelTable : MyTable
         sampleButton.Setup(text, this, record);
         newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-    }   
+    }
+    protected void AddButton(string text, PopUnit record, Func< string> dynamicTooltip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, false);
+        //newButton.transform.SetParent(contentPanel);
+        //newButton.transform.localScale = Vector3.one;
+
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, record);
+        newButton.GetComponentInChildren<ToolTipHandler>().dynamicString = dynamicTooltip;
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+    }
     override protected void AddButtons()
     {
         int counter = 0;
@@ -81,8 +93,18 @@ public class PopulationPanelTable : MyTable
                 //    AddButton(record.storage.ToString(), record);
                 //else AddButton("Administration", record);        
                 AddButton(record.wallet.ToString(), record);
+
                 ////Adding needs fulfilling
-                AddButton(record.NeedsFullfilled.ToString(), record);
+
+                PopUnit ert = record;
+                AddButton(record.NeedsFullfilled.ToString(), record,
+                    //() => record.consumedTotal.ToString()
+                    delegate ()
+                    {
+                        return ert.consumedTotal.ToString();
+                    }
+                    //record.consumedTotal.ToString()
+                    );
 
                 ////Adding loyalty
                 string accu;
