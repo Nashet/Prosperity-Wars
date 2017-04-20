@@ -11,7 +11,7 @@ public class Country : Owner
     public List<Province> ownedProvinces = new List<Province>();
 
     public PrimitiveStorageSet storageSet = new PrimitiveStorageSet();
-    public Procent countryTax;
+    //public Procent countryTax;
     public Procent aristocrstTax;//= new Procent(0.10f);
     public InventionsList inventions = new InventionsList();
 
@@ -20,6 +20,7 @@ public class Country : Owner
     internal Serfdom serfdom;
     internal MinimalWage minimalWage;
     internal TaxationForPoor taxationForPoor;
+    internal TaxationForRich taxationForRich;
     internal List<AbstractReform> reforms = new List<AbstractReform>();
     public Culture culture;
 
@@ -40,11 +41,12 @@ public class Country : Owner
 
         minimalWage = new MinimalWage(this);
         taxationForPoor = new TaxationForPoor(this);
+        taxationForRich = new TaxationForRich(this);
         name = iname;
         allCountries.Add(this);
         //countryTax = new Procent(0.1f);
-        TaxationForPoor.ReformValue hru = taxationForPoor.getValue() as TaxationForPoor.ReformValue;
-        countryTax = hru.tax;
+        //TaxationForPoor.ReformValue hru = taxationForPoor.getValue() as TaxationForPoor.ReformValue;
+        //countryTax = hru.tax;
         culture = iculture;
 
         if (!Game.devMode)
@@ -57,8 +59,9 @@ public class Country : Owner
             inventions.MarkInvented(InventionType.manufactories);
             inventions.MarkInvented(InventionType.banking);
             // inventions.MarkInvented(InventionType.individualRights);
+            serfdom.status = Serfdom.Abolished;
         }
-        serfdom.status = Serfdom.Brutal;
+        
     }
 
     internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
@@ -171,7 +174,7 @@ public class Country : Owner
     internal void Think()
     {
         sciencePoints.add(this.getMenPopulation() * Game.defaultSciencePointMultiplier);
-        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 500f)
+        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 3000f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));

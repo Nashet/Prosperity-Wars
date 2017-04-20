@@ -146,4 +146,14 @@ public class PopType  {
     {
         return name;
     }
+
+    internal bool isPoorStrata()
+    {
+        return this == PopType.farmers || this == PopType.workers || this == PopType.tribeMen;
+    }
+
+    internal bool isRichStrata()
+    {
+        return this == PopType.aristocrats || this == PopType.capitalists;
+    }
 }

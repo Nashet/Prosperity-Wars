@@ -314,23 +314,41 @@ abstract public class PopUnit : Producer
 
     ////    }
     ////}
+    internal bool hasToPayGovernmentTaxes()
+    {
+        if (this.type == PopType.aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((province.owner)))
+            return false;
+        else return true;
+    }
     public override void payTaxes() // should be abstract 
     {
         Value taxSize = new Value(0);
         if (Economy.isMarket.checkIftrue(province.owner) && type != PopType.tribeMen)
         {
 
-            taxSize = wallet.moneyIncomethisTurn.multiple(province.owner.countryTax);
+            //taxSize = wallet.moneyIncomethisTurn.multiple(province.owner.countryTax);
+            if (this.type.isPoorStrata())
+                taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+            else
+            if (this.type.isRichStrata())             
+                taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+
             if (wallet.canPay(taxSize))
                 wallet.pay(province.owner.wallet, taxSize);
             else
                 wallet.sendAll(province.owner.wallet);
-
         }
         else// non market
         if (this.type != PopType.aristocrats)
         {
-            taxSize = gainGoodsThisTurn.multiple(province.owner.countryTax);
+           // taxSize = gainGoodsThisTurn.multiple(province.owner.countryTax);
+
+            if (this.type.isPoorStrata())
+                taxSize = gainGoodsThisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+            else
+            if (this.type.isRichStrata())
+                taxSize = gainGoodsThisTurn.multiple((province.owner.taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+
             if (storageNow.canPay(taxSize))
                 storageNow.pay(province.owner.storageSet, taxSize);
             else
@@ -516,8 +534,8 @@ abstract public class PopUnit : Producer
         foreach (Country count in Country.allCountries)
         {
             count.wallet.moneyIncomethisTurn.set(0);
-            TaxationForPoor.ReformValue hru = count.taxationForPoor.getValue() as TaxationForPoor.ReformValue;
-            count.countryTax = hru.tax;
+            //TaxationForPoor.ReformValue hru = count.taxationForPoor.getValue() as TaxationForPoor.ReformValue;
+            //count.countryTax = hru.tax;
             count.aristocrstTax = count.serfdom.status.getTax();
             foreach (Province province in count.ownedProvinces)
             {
@@ -760,7 +778,7 @@ abstract public class PopUnit : Producer
                         //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
                         //Value cost = Game.market.getCost(resourceToBuild);
                         Value cost = factory.getUpgradeCost();
-                        if (wallet.canPay(cost))                                                    
+                        if (wallet.canPay(cost))
                             factory.upgrade(this);
                         else // find money in bank?
                         if (province.owner.isInvented(InventionType.banking))
@@ -769,7 +787,7 @@ abstract public class PopUnit : Producer
                             if (province.owner.bank.CanITakeThisLoan(needLoan))
                             {
                                 province.owner.bank.TakeLoan(this, needLoan);
-                                factory.upgrade(this);                                
+                                factory.upgrade(this);
                             }
                         }
                     }

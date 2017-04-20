@@ -374,7 +374,7 @@ public class Factory : Producer
             if (workers > 0)
             {
                 Value producedAmount;
-                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get() * getLevel());
+                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get());// * getLevel());
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);

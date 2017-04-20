@@ -9,30 +9,35 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 
 > make demo? Without Nat economy, capitalism only. DEv mode
-> tax for rich
+> make this day stats in trade
+- auto refill data on production windows
+- refresh TopPanel on Factory reopen. Improve
+
 - strange price drops
 ? limit max price rise speed?
 
 
 
 
-- auto refill data on production windows
 - DSB > 1 strike on food?
 - factories have no time to rise salary to compete workforce On Reopen
 
-- refresh TopPanel on Factory reopen. Improve
+
 - factories shows upgrade spendigs as loss
-- Aristocrats build only of food. IS IT WAD?
-
-> make this day stats in trade
 
 
 
+
++ tax for rich
+* orchard bonuses  
 * money stuck in farmers now
 + clicking on province name in table handler
 * growth
 * no one build nothing
 ///////////////////////////////// demo
+- Aristocrats build only of food. IS IT WAD?
+> move reform values into constructors
+
 ? bring farmers to market
 > farmers should eat unsoled goods?
 > refactor invest

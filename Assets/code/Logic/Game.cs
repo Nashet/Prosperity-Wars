@@ -90,11 +90,11 @@ public class Game
         new Product("Wine", false, 3);
         market.initialize();
         MakeMap();
-        var mapWidth =  mapImage.width * cellMuliplier;
+        var mapWidth = mapImage.width * cellMuliplier;
         var mapHeight = mapImage.height * cellMuliplier;
         //MainCamera.cameraMy.transform.position = GameObject.FindWithTag("mapObject").transform.position;
-        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight /2f, MainCamera.cameraMy.transform.position.z);
-            
+        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
+
         FindProvinceCenters();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dTextPrefab", typeof(GameObject));
         foreach (Province pro in Province.allProvinces)
@@ -156,12 +156,12 @@ public class Game
         new PopType(PopType.PopTypes.Workers, null, "Workers");
 
         Culture cul = new Culture("Kocopetji");
-        player = new Country("Kocopia", cul);        
+        player = new Country("Kocopia", cul);
         player.storageSet.add(new Storage(Product.Food, 200f));
         player.wallet.haveMoney.add(100f);
 
         CreateRandomPopulation();
-        Province.allProvinces[0].allPopUnits[0].education.set(1f);      
+        Province.allProvinces[0].allPopUnits[0].education.set(1f);
 
         MainCamera.topPanel.refresh();
     }
@@ -175,7 +175,7 @@ public class Game
             foreach (Province pr in co.ownedProvinces)
             {
                 foreach (Producer factory in pr)
-                    allMoney += factory.wallet.haveMoney.get();                
+                    allMoney += factory.wallet.haveMoney.get();
             }
         }
         return allMoney;
@@ -362,77 +362,77 @@ public class Game
 
     bool FindProvinceCenters()
     {
-        Vector3 accu = new Vector3(0,0,0);
+        Vector3 accu = new Vector3(0, 0, 0);
         foreach (Province pro in Province.allProvinces)
         {
             accu.Set(0, 0, 0);
             foreach (var c in pro.mesh.vertices)
-                accu+=c;
+                accu += c;
             accu = accu / pro.mesh.vertices.Length;
             pro.centre = accu;
         }
         return true;
         //short[,] bordersMarkers = new short[mapImage.width, mapImage.height];
 
-            //int foundedProvinces = 0;
-            //Color currentColor;
-            //short borderDeepLevel = 0;
-            //short alphaChangeForLevel = 1;
-            //float defaultApha = 1f;
-            //int placedMarkers = 456;//random number
-            ////while (Province.allProvinces.Count != foundedProvinces)
+        //int foundedProvinces = 0;
+        //Color currentColor;
+        //short borderDeepLevel = 0;
+        //short alphaChangeForLevel = 1;
+        //float defaultApha = 1f;
+        //int placedMarkers = 456;//random number
+        ////while (Province.allProvinces.Count != foundedProvinces)
 
-            //foreach (Province pro in Province.allProvinces)
-            //{
-            //    borderDeepLevel = -1;
-            //    placedMarkers = int.MaxValue;
-            //    int emergencyExit = 200;
-            //    while (placedMarkers != 0)
-            //    {
-            //        emergencyExit--;
-            //        if (emergencyExit == 0)
-            //            break;
-            //        placedMarkers = 0;
-            //        borderDeepLevel += alphaChangeForLevel;
-            //        for (int j = 0; j < mapImage.height; j++) // cicle by province        
-            //            for (int i = 0; i < mapImage.width; i++)
-            //            {
+        //foreach (Province pro in Province.allProvinces)
+        //{
+        //    borderDeepLevel = -1;
+        //    placedMarkers = int.MaxValue;
+        //    int emergencyExit = 200;
+        //    while (placedMarkers != 0)
+        //    {
+        //        emergencyExit--;
+        //        if (emergencyExit == 0)
+        //            break;
+        //        placedMarkers = 0;
+        //        borderDeepLevel += alphaChangeForLevel;
+        //        for (int j = 0; j < mapImage.height; j++) // cicle by province        
+        //            for (int i = 0; i < mapImage.width; i++)
+        //            {
 
-            //                currentColor = mapImage.GetPixel(i, j);
-            //                //if (UtilsMy.isSameColorsWithoutAlpha(currentColor, pro.colorID) && currentColor.a == defaultApha && isThereOtherColorsIn4Negbors(i, j))
-            //                // && bordersMarkers[i, j] == borderDeepLevel-1
-            //                if (currentColor == pro.colorID  && isThereOtherColorsIn4Negbors(i, j, bordersMarkers, (short)(borderDeepLevel)))
-            //                {
-            //                    //currentColor.a = borderDeepLevel;
-            //                    //mapImage.SetPixel(i, j, currentColor);
-            //                    borderDeepLevel ++;
-            //                    bordersMarkers[i, j] = borderDeepLevel;
-            //                    borderDeepLevel--;
-            //                    placedMarkers++;
+        //                currentColor = mapImage.GetPixel(i, j);
+        //                //if (UtilsMy.isSameColorsWithoutAlpha(currentColor, pro.colorID) && currentColor.a == defaultApha && isThereOtherColorsIn4Negbors(i, j))
+        //                // && bordersMarkers[i, j] == borderDeepLevel-1
+        //                if (currentColor == pro.colorID  && isThereOtherColorsIn4Negbors(i, j, bordersMarkers, (short)(borderDeepLevel)))
+        //                {
+        //                    //currentColor.a = borderDeepLevel;
+        //                    //mapImage.SetPixel(i, j, currentColor);
+        //                    borderDeepLevel ++;
+        //                    bordersMarkers[i, j] = borderDeepLevel;
+        //                    borderDeepLevel--;
+        //                    placedMarkers++;
 
-            //                }
-            //            }
+        //                }
+        //            }
 
-            //        //if (placedMarkers == 0) 
-            //        //    ;
-            //    }
-            //    //// found centers!
-            //    bool wroteResult = false;
-            //    //
-            //    for (int j = 0; j < mapImage.height && !wroteResult; j++) // cicle by province, looking where is my centre        
-            //        //&& !wroteResult
-            //        for (int i = 0; i < mapImage.width && !wroteResult; i++)
-            //        {
-            //            currentColor = mapImage.GetPixel(i, j);
-            //            //if (currentColor.a == borderDeepLevel)
-            //            if (currentColor == pro.colorID && bordersMarkers[i, j] == borderDeepLevel - 1)
-            //            {
-            //                pro.centre = new Vector3((i + 0.5f) * cellMuliplier, (j + 0.5f) * cellMuliplier, 0f);
-            //                wroteResult = true;
-            //            }
-            //        }
-            //}
-            //return false;
+        //        //if (placedMarkers == 0) 
+        //        //    ;
+        //    }
+        //    //// found centers!
+        //    bool wroteResult = false;
+        //    //
+        //    for (int j = 0; j < mapImage.height && !wroteResult; j++) // cicle by province, looking where is my centre        
+        //        //&& !wroteResult
+        //        for (int i = 0; i < mapImage.width && !wroteResult; i++)
+        //        {
+        //            currentColor = mapImage.GetPixel(i, j);
+        //            //if (currentColor.a == borderDeepLevel)
+        //            if (currentColor == pro.colorID && bordersMarkers[i, j] == borderDeepLevel - 1)
+        //            {
+        //                pro.centre = new Vector3((i + 0.5f) * cellMuliplier, (j + 0.5f) * cellMuliplier, 0f);
+        //                wroteResult = true;
+        //            }
+        //        }
+        //}
+        //return false;
     }
     bool isThereOtherColorsIn4Negbors(int x, int y, short[,] bordersMarkers, short borderDeepLevel)
     {
@@ -484,15 +484,15 @@ public class Game
         //// Convert the Color32 array into a Texture2D
         //mapImage = img.ToTexture2D();
         //mapImage = (Texture2D)Resources.Load("assets\\provinces");
-        
+
 
         //byte[] bytes = File.ReadAllBytes("assets/provinces.png");
-         
+
         //Texture2D texture = new Texture2D(2, 2);
         //texture.filterMode = FilterMode.Trilinear;
         //texture.LoadImage(bytes);
         //var z
-        mapImage = Resources.Load("provinces", typeof(Texture2D))  as Texture2D; ///texture;
+        mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
         //Texture2D mapImage = new Texture2D(z.width, z.height);
         //mapImage.SetPixels(z.GetPixels());
         //mapImage = mapImage.c
@@ -572,9 +572,11 @@ public class Game
                     //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.owner.isInvented(InventionType.capitalism)))
                     if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.owner)))
                         pop.getMoneyFromMarket();
+
                     //becouse income come only after consuming, and only after FULL consumption
-                    if (pop.canTrade())
-                        pop.payTaxes(); // temp
+                    //if (pop.canTrade()) //wtf
+                    if (pop.hasToPayGovernmentTaxes())
+                        pop.payTaxes();
 
                     pop.calcLoyalty();
                     // temp
