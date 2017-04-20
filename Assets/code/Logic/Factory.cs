@@ -170,7 +170,7 @@ public class Factory : Producer
     /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
     override internal float getLocalEffectiveDemand(Product product)
     {
-        // TODO take in mind work force and others..
+        
         // need to know huw much i Consumed inside my needs
         Storage need = type.resourceInput.findStorage(product);
         if (need != null)
@@ -374,17 +374,13 @@ public class Factory : Producer
             if (workers > 0)
             {
                 Value producedAmount;
-                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get());// * getLevel());
+                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get() * getLevel()) ; // * getLevel());
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);
-
-
-
                 if (type == FactoryType.GoldMine)
                 //if (province.owner.isInvented(InventionType.capitalism))
                 {
-
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
                     wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() * Game.GovernmentTakesShareOfGoldOutput));
@@ -556,10 +552,10 @@ public class Factory : Producer
         else efficencyFactor = workforceProcent;
         //float basicEff = efficencyFactor * getLevel();
         //Procent result = new Procent(basicEff);
-        Procent result = new Procent(efficencyFactor);
+        Procent result = new Procent(efficencyFactor );
         if (useBonuses)
         {
-            result.set(result.get() * (1f + modifierEfficiency.getModifier(Game.player) / 100f));
+            result.set(result.get() * (1f + modifierEfficiency.getModifier(province.owner) / 100f));
             //result.add();
 
             //result.add(basicEff * Game.factoryEachLevelEfficiencyBonus);
@@ -737,6 +733,7 @@ public class Factory : Producer
         daysClosed = 0;
         if (byWhom != this)
             byWhom.wallet.payWithoutRecord(wallet, getReopenCost());
+        salary.set(province.getLocalMinSalary());
     }
 
     internal bool isWorking()
@@ -938,7 +935,7 @@ public class Factory : Producer
 //    }
 //    public override void produce()
 //    {
-//        //todo fix mirroring! gold
+//       
 //        uint workers = getWorkForce();
 //        if (workers > 0)
 //        {

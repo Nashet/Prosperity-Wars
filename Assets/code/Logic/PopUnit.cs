@@ -330,7 +330,7 @@ abstract public class PopUnit : Producer
             if (this.type.isPoorStrata())
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
-            if (this.type.isRichStrata())             
+            if (this.type.isRichStrata())
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
 
             if (wallet.canPay(taxSize))
@@ -341,7 +341,7 @@ abstract public class PopUnit : Producer
         else// non market
         if (this.type != PopType.aristocrats)
         {
-           // taxSize = gainGoodsThisTurn.multiple(province.owner.countryTax);
+            // taxSize = gainGoodsThisTurn.multiple(province.owner.countryTax);
 
             if (this.type.isPoorStrata())
                 taxSize = gainGoodsThisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
@@ -675,8 +675,7 @@ abstract public class PopUnit : Producer
         //produced = new Storage(Product.findByName("Food"), 0);
         //education = new Procent(0.01f);
         //loyalty = new Procent(0.50f);
-        //NeedsFullfilled = new Procent(1f);        
-        //TODO finish merge
+        //NeedsFullfilled = new Procent(1f);                
     }
     internal void Invest()
     {
@@ -812,7 +811,7 @@ public class Tribemen : PopUnit
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
-            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.owner)
+            || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
         else
@@ -896,7 +895,7 @@ public class Farmers : PopUnit
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
-            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.owner)
+            || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
         else
@@ -1082,8 +1081,7 @@ public class Capitalists : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
-            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.owner))
+            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming))
             return false;
         else
             return true;
@@ -1157,7 +1155,7 @@ public class Workers : PopUnit
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
-            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.owner)
+            || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
         else

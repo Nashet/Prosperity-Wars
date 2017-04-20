@@ -41,9 +41,9 @@ public class Procent : Value
     {
         if (invalue < 0f)
             base.set(0f);
-        else
-            if (invalue > 1f)
-            base.set(1f);
+        //else
+        //    if (invalue > 1f)
+        //    base.set(1f);
         else
             base.set(invalue);
     }

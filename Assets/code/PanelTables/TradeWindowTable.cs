@@ -60,18 +60,18 @@ public class TradeWindowTable : MyTable
                 // Adding product name 
                 AddButton(product.getName(), next);
                 ////Adding production
-                AddButton(Game.market.getProductionTotal(product).ToString(), next);
+                AddButton(Game.market.getProductionTotal(product, !Game.devMode).ToString(), next);
                 ////Adding abstract Demand
                 //AddButton(Game.market.get(pro).ToString().name, next);
 
                 ////Adding On market
-                AddButton(Game.market.getSupply(product).ToString(), next);
+                AddButton(Game.market.getSupply(product, !Game.devMode).ToString(), next);
                 
                 ////Adding total consumption
-                AddButton(Game.market.getTotalConsumption(product).ToString(), next);
+                AddButton(Game.market.getTotalConsumption(product, !Game.devMode).ToString(), next);
 
                 ////Adding Bought
-                AddButton(Game.market.getBouth(product).ToString(), next);
+                AddButton(Game.market.getBouth(product, !Game.devMode).ToString(), next);
 
                 ////Adding effective Demand/Supply
                 AddButton(Game.market.getDemandSupplyBalance(product).ToString(), next);

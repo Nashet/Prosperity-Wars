@@ -9,24 +9,25 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 
 > make demo? Without Nat economy, capitalism only. DEv mode
-> make this day stats in trade
-- auto refill data on production windows
-- refresh TopPanel on Factory reopen. Improve
-
-- strange price drops
-? limit max price rise speed?
 
 
+- 100% consumption for aristocrats and caps
+- loyalty overflow
 
 
-- DSB > 1 strike on food?
+- bugged unemployment data
+
 - factories have no time to rise salary to compete workforce On Reopen
 
+> consumption tooltip
+> make modifiers with mutable description?
 
-- factories shows upgrade spendigs as loss
-
-
-
+* no demotions into capitalists from poors
+* make this day stats in trade
+* auto refill data on production windows
+* refresh TopPanel on Factory reopen
+* fruit price can\t rise
+* strange price drops
 
 + tax for rich
 * orchard bonuses  
@@ -34,11 +35,18 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + clicking on province name in table handler
 * growth
 * no one build nothing
+
 ///////////////////////////////// demo
+
+- factories shows upgrade spendigs as loss
+- DSB > 1 strike on food?
+
+
 - Aristocrats build only of food. IS IT WAD?
 > move reform values into constructors
 
 ? bring farmers to market
+? limit max price rise speed?
 > farmers should eat unsoled goods?
 > refactor invest
 > needs of non-invented goods?
@@ -79,7 +87,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 
 
-> make modifiers with mutable description?
+
 > add multiple temporary modifiers for wrong reforms
 
 

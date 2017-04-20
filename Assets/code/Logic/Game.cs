@@ -67,7 +67,7 @@ public class Game
     // just to store temporeal junk
     internal static string dumpString;
     internal static GameObject r3dTextPrefab;
-    internal static Value defaultPriceLimitMultiplier = new Value(2f);
+    internal static Value defaultPriceLimitMultiplier = new Value(5f);
     internal static uint PopDaysUpsetByForcedReform = 30;
     internal static float GovernmentTakesShareOfGoldOutput = 0.1f;
 
@@ -75,7 +75,7 @@ public class Game
     {
         Application.runInBackground = true;
         LoadImages();
-        new Product("Food", false, 1f);
+        new Product("Food", false, 0.4f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
         new Product("Gold", true, 4f);

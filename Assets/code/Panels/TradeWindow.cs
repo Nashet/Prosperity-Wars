@@ -49,9 +49,9 @@ public class TradeWindow  : DragPanel //: MonoBehaviour//
         show(false);
     }
     // Update is called once per frame
-    void Update()
-    {
+    //void Update()
+    //{
 
-    }
+    //}
 }
 

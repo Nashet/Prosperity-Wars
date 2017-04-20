@@ -111,7 +111,7 @@ public class FactoryPanel : DragPanel//for dragging
             //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fullfilled";
             string InputRequired = "";
             //var temp = shownFactory.getLifeNeeds();
-            //todo anti-mirorring
+            
             string construction = "";
             if (shownFactory.getDaysInConstruction() > 0)
                 construction = "\nDays in construction: " + shownFactory.getDaysInConstruction();
@@ -198,6 +198,7 @@ public class FactoryPanel : DragPanel//for dragging
             shownFactory.reopen(Game.player);
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
+        MainCamera.topPanel.refresh();
     }
     public void onUpgradeClick()
     {
