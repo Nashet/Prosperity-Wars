@@ -55,7 +55,7 @@ public class TradeWindowTable : MyTable
 
         {
             Product product = next.getProduct();
-            if (product != Product.Gold)
+            if (product != Product.Gold && product.isInventedByAnyOne())
             {
                 // Adding product name 
                 AddButton(product.getName(), next);

@@ -28,7 +28,7 @@ public class ProductionWindow : DragPanel
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
         showingProvince = inn;
-        if (showingProvince != null)
+        if (showingProvince != null && Game.selectedProvince != null)
         {
             Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
         }

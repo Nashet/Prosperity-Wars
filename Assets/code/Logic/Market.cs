@@ -56,14 +56,16 @@ public class Market : Owner//: PrimitiveStorageSet
 
     //    return new Value(cost);
     //}
-    internal float getCost(List<Storage> need)
-    {
-        float cost = 0;
+
+    internal Value getCost(List<Storage> need)
+    {//todo convert return in Value??
+        Value cost = new Value(0f);
         // float price;
         foreach (Storage stor in need)
         {
             //price = Game.market.findPrice(stor.getProduct()).get();
-            cost += getCost(stor);
+            //cost += getCost(stor);
+            cost.add( getCost(stor));
         }
         //return new Value(cost);
         return cost;

@@ -174,7 +174,7 @@ public class Country : Owner
     internal void Think()
     {
         sciencePoints.add(this.getMenPopulation() * Game.defaultSciencePointMultiplier);
-        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 300f)
+        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 1000f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));

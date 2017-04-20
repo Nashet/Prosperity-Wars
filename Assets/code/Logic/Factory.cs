@@ -170,7 +170,7 @@ public class Factory : Producer
     /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
     override internal float getLocalEffectiveDemand(Product product)
     {
-        
+
         // need to know huw much i Consumed inside my needs
         Storage need = type.resourceInput.findStorage(product);
         if (need != null)
@@ -374,7 +374,7 @@ public class Factory : Producer
             if (workers > 0)
             {
                 Value producedAmount;
-                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get() * getLevel()) ; // * getLevel());
+                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get() * getLevel()); // * getLevel());
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);
@@ -552,7 +552,7 @@ public class Factory : Producer
         else efficencyFactor = workforceProcent;
         //float basicEff = efficencyFactor * getLevel();
         //Procent result = new Procent(basicEff);
-        Procent result = new Procent(efficencyFactor );
+        Procent result = new Procent(efficencyFactor);
         if (useBonuses)
         {
             result.set(result.get() * (1f + modifierEfficiency.getModifier(province.owner) / 100f));
@@ -729,11 +729,13 @@ public class Factory : Producer
     internal void reopen(Owner byWhom)
     {
         working = true;
+        if (daysUnprofitable > 20)
+            salary.set(province.getLocalMinSalary());
         daysUnprofitable = 0;
         daysClosed = 0;
         if (byWhom != this)
             byWhom.wallet.payWithoutRecord(wallet, getReopenCost());
-        salary.set(province.getLocalMinSalary());
+
     }
 
     internal bool isWorking()

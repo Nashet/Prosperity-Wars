@@ -44,7 +44,7 @@ public class Game
     internal static int minUnemploymentToBuldFactory = 10;
     internal static int maximumFactoriesInUpgradeToBuildNew = 2;
     internal static byte maxFactoryLevel = 255;
-    internal static float minMarginToUpgrade = 0.05f;
+    internal static float minMarginToUpgrade = 0.005f;
     internal static float minLandForTribemen = 1f;
     internal static float minLandForFarmers = 0.25f;
     internal static uint maxDaysUnprofitableBeforeFactoryClosing = 180;
@@ -69,7 +69,7 @@ public class Game
     internal static GameObject r3dTextPrefab;
     internal static Value defaultPriceLimitMultiplier = new Value(5f);
     internal static uint PopDaysUpsetByForcedReform = 30;
-    internal static float GovernmentTakesShareOfGoldOutput = 0.1f;
+    internal static float GovernmentTakesShareOfGoldOutput = 0.5f;
 
     public Game()
     {
@@ -120,29 +120,29 @@ public class Game
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, true);
+        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 1f));
-        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, true);
+        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 0.5f));
         resourceInput.Set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, true);
+        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wool, 1f));
-        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, true);
+        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Wood, 0.5f));
         resourceInput.Set(new Storage(Product.Stone, 1f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, true);
+        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Fruit, 0.3333f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, true);
+        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
 
         //new Product("Grain");
 
@@ -574,12 +574,14 @@ public class Game
                         pop.getMoneyFromMarket();
 
                     //becouse income come only after consuming, and only after FULL consumption
-                    //if (pop.canTrade()) //wtf
-                    if (pop.hasToPayGovernmentTaxes())
+                    
+                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes()) 
+                        // POps who can't trade will pay tax BEFORE consumption, not after
+                        // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();
 
                     pop.calcLoyalty();
-                    // temp
+                  
                     pop.calcPromotions();
                     pop.calcDemotions();
                     pop.calcGrowth();

@@ -11,16 +11,24 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 > make demo? Without Nat economy, capitalism only. DEv mode
 
 
-- 100% consumption for aristocrats and caps
-- loyalty overflow
+* 100% consumption for aristocrats and caps
+* loyalty overflow
+* mining
+* not buing srone for upgrade - bug in conditions check
++ needs of non-invented goods
 
+
+*? factories have no time to rise salary to compete workforce On Reopen
 
 - bugged unemployment data
 
-- factories have no time to rise salary to compete workforce On Reopen
+
 
 > consumption tooltip
 > make modifiers with mutable description?
+- factory conditions - reopen - upgrade have broken fixed strings?
+
+
 
 * no demotions into capitalists from poors
 * make this day stats in trade
@@ -38,6 +46,8 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 ///////////////////////////////// demo
 
+> hiring rate shpuld be variable
+> conver 0.333 constants
 - factories shows upgrade spendigs as loss
 - DSB > 1 strike on food?
 
@@ -49,7 +59,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 ? limit max price rise speed?
 > farmers should eat unsoled goods?
 > refactor invest
-> needs of non-invented goods?
+
 
 
 * tooltip fix
@@ -74,7 +84,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 > random map generator
 
 
-- factory conditions - reopen - upgrade have broken fixed strings?
+
 
 
 

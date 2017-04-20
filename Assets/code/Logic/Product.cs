@@ -7,7 +7,7 @@ public class Product
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
     internal static List<Product> allProducts = new List<Product>();
-    bool storable = true;
+    // bool storable = true;
     private string name;
     internal bool resource = false;
     static int resourceCounter = 0;
@@ -86,14 +86,21 @@ public class Product
     {
         return name;
     }
-    bool isStorable()
+    public bool isInventedByAnyOne()
     {
-        return storable;
+        foreach (var any in Country.allCountries)
+            if (any.isInvented(this))
+                return true;
+        return false;
     }
-    void setStorable(bool isStorable)
-    {
-        this.storable = isStorable;
-    }
+    //bool isStorable()
+    //{
+    //    return storable;
+    //}
+    //void setStorable(bool isStorable)
+    //{
+    //    this.storable = isStorable;
+    //}
     override public string ToString()
     {
         return getName();

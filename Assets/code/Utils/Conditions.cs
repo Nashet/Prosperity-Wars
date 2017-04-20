@@ -87,15 +87,15 @@ public class ConditionsList
     {
         foreach (var item in list)
             if (!item.checkIftrue(forWhom))
-                return true;
-        return false;
+                return false;
+        return true;
     }
     public bool isAllTrue(Country forWhom)
     {
         foreach (var item in list)
             if (!item.checkIftrue(forWhom))
-                return true;
-        return false;
+                return false;
+        return true;
     }
 }
 //public abstract class AbstractConditionString

@@ -53,7 +53,7 @@ abstract public class PopUnit : Producer
         sentToMarket = new Storage(Product.findByName("Food"), 0);
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
-        NeedsFullfilled = new Procent(1f);
+        NeedsFullfilled = new Procent(0.50f);
         province = where;
         modifierStarvation = new Modifier(delegate (Country forWhom) { return NeedsFullfilled.get() < 0.20f; }, "Starvation", false, -0.3f);
         modifierLifeNeedsNotFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() < 0.99f; }, "Life needs are not satisfied", false, -0.2f);
@@ -185,11 +185,12 @@ abstract public class PopUnit : Producer
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in needs)
-        {
-            Storage nStor = new Storage(next.getProduct(), next.get());
-            nStor.multipleInside(multiplier);
-            result.Add(nStor);
-        }
+            if (next.getProduct().isInventedByAnyOne())
+            {
+                Storage nStor = new Storage(next.getProduct(), next.get());
+                nStor.multipleInside(multiplier);
+                result.Add(nStor);
+            }
         result.Sort(delegate (Storage x, Storage y)
         {
             float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
@@ -200,47 +201,17 @@ abstract public class PopUnit : Producer
     }
 
     public List<Storage> getRealLifeNeeds()
-    {
-        //Value multiplier = new Value(this.population / 1000f);
-        //List<Storage> tmp = this.type.getLifeNeedsPer1000();
-        //List<Storage> result = new List<Storage>();
-        //foreach (Storage next in tmp)
-        //{
-        //    Storage nStor = new Storage(next.getProduct(), next.get());
-        //    nStor.multipleInside(multiplier);
-        //    result.Add(nStor);
-        //}
-        //return result;
+    {        
         return getNeedsInCommon(this.type.getLifeNeedsPer1000());
     }
 
     public List<Storage> getRealEveryDayNeeds()
     {
-        //Value multiplier = new Value(this.population / 1000f);
-        //List<Storage> tmp = this.type.getEveryDayNeedsPer1000();
-        //List<Storage> result = new List<Storage>();
-        //foreach (Storage next in tmp)
-        //{
-        //    Storage nStor = new Storage(next.getProduct(), next.get());
-        //    nStor.multipleInside(multiplier);
-        //    result.Add(nStor);
-        //}
-        //return result;
         return getNeedsInCommon(this.type.getEveryDayNeedsPer1000());
     }
 
     public List<Storage> getRealLuxuryNeeds()
-    {
-        //Value multiplier = new Value(this.population / 1000f);
-        //List<Storage> tmp = this.type.getLuxuryNeedsPer1000();
-        //List<Storage> result = new List<Storage>();
-        //foreach (Storage next in tmp)
-        //{
-        //    Storage nStor = new Storage(next.getProduct(), next.get());
-        //    nStor.multipleInside(multiplier);
-        //    result.Add(nStor);
-        //}
-        //return result;
+    {       
         return getNeedsInCommon(this.type.getLuxuryNeedsPer1000());
     }
 
@@ -380,8 +351,10 @@ abstract public class PopUnit : Producer
         float need = NeedsFullfilled.get();
         if (need <= 2f / 3f)
             return new Procent(0f);
+        if (need == 0.999f)
+            return new Procent(1f);
         else
-            return new Procent((NeedsFullfilled.get() - (2f / 3f)) * 3f);
+            return new Procent((NeedsFullfilled.get() - 0.666f) * 3f);
 
     }
     /// <summary>
@@ -436,18 +409,18 @@ abstract public class PopUnit : Producer
             Wallet reserv = new Wallet(0);
             wallet.payWithoutRecord(reserv, wallet.haveMoney.multiple(Game.savePopMoneyReserv));
             lifeNeeds = (getRealEveryDayNeeds());
-            float needsCost = Game.market.getCost(lifeNeeds);
+            Value needsCost = Game.market.getCost(lifeNeeds);
             float moneyWas = wallet.haveMoney.get();
-            float spentMoney;
+            Value spentMoney;
 
             foreach (Storage need in lifeNeeds)
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                 Game.market.Consume(this, need);
             }
-            spentMoney = moneyWas - wallet.haveMoney.get();
-            if (spentMoney != 0f)
-                NeedsFullfilled.add(spentMoney / needsCost / 3f);
+            spentMoney = new Value(moneyWas - wallet.haveMoney.get());
+            if (spentMoney.get() != 0f)
+                NeedsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             if (getEveryDayNeedsFullfilling().get() >= 0.95f)
             {
                 lifeNeeds = (getRealLuxuryNeeds());
@@ -459,9 +432,9 @@ abstract public class PopUnit : Producer
                     //NeedsFullfilled.set(0.66f + Game.market.Consume(this, need).get() / 3f);
 
                 }
-                spentMoney = moneyWas - wallet.haveMoney.get();
-                if (spentMoney != 0f)
-                    NeedsFullfilled.add(spentMoney / needsCost / 3f);
+                spentMoney = new Value(moneyWas - wallet.haveMoney.get());
+                if (spentMoney.get() != 0f)
+                    NeedsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             }
             reserv.payWithoutRecord(wallet, reserv.haveMoney);
         }
@@ -479,7 +452,7 @@ abstract public class PopUnit : Producer
         }
         else
         {//non - market consumption
-            payTaxes();
+            payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive
             foreach (Storage need in needs)
                 if (storageNow.get() > need.get())
                 {
@@ -504,8 +477,7 @@ abstract public class PopUnit : Producer
     public void calcLoyalty()
     {
         float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this.province.owner) / 100f;
-        Mathf.Clamp01(newRes);
-        loyalty.set(newRes);
+        loyalty.set(Mathf.Clamp01(newRes));
         if (daysUpsetByForcedReform > 0)
             daysUpsetByForcedReform--;
     }
