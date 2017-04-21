@@ -74,8 +74,8 @@ public class Game
     public Game()
     {
         Application.runInBackground = true;
-        LoadImages();
-        //generateMapImage();
+        //LoadImages();
+        generateMapImage();
         new Product("Food", false, 0.4f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
@@ -256,7 +256,8 @@ public class Game
         if (Game.devMode)
             amountOfProvince = 10;
         else
-            amountOfProvince = 12 + Game.random.Next(8);
+            //amountOfProvince = 12 + Game.random.Next(8);
+            amountOfProvince = 30 + Game.random.Next(10);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -302,19 +303,18 @@ public class Game
                 { // fill up province's mesh
                     // making mesh by BMP        
                     int stripeLenght = 0;
-                    lastColor = mapImage.GetPixel(0, 0);
+                    //lastColor = mapImage.GetPixel(0, 0);
+                    lastColor = Color.black.setAlphaToZero(); // unexisting color
                     //stripeColor = lastColor;
                     for (int ypos = 0; ypos < mapImage.height; ypos++)
                     {
+                        //lastColor = mapImage.GetPixel(0, 0);
+                        lastColor = Color.black.setAlphaToZero(); // unexisting color
                         for (int xpos = 0; xpos < mapImage.width; xpos++)
                         {
-
                             currentColor = mapImage.GetPixel(xpos, ypos);
-                            if (currentColor == currentProvinceColor)
-                            {
-                                stripeLenght++;
-
-                            }
+                            if (currentColor == currentProvinceColor)                         
+                                stripeLenght++;                         
                             else //place for trangle making
                             {
                                 if (lastColor == currentProvinceColor)
@@ -328,11 +328,12 @@ public class Game
                         if (stripeLenght != 0)
                             if (lastColor == currentProvinceColor)
                             {
-                                makePolygonalStripe((mapImage.width - 1 - stripeLenght) * cellMuliplier, ypos * cellMuliplier, (mapImage.width - 1) * cellMuliplier, (ypos + 1) * cellMuliplier); //should form 2 triangles
+                                makePolygonalStripe((mapImage.width - stripeLenght) * cellMuliplier, ypos * cellMuliplier, (mapImage.width) * cellMuliplier, (ypos + 1) * cellMuliplier); //should form 2 triangles
                                 stripeLenght = 0;
                             }
                         stripeLenght = 0;
                     }
+
                     //finished all map search for currentProvince
 
                     //spawn object
