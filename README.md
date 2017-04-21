@@ -1,9 +1,10 @@
 # Economic simulation
+
+[There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html)
+
 Several years ago I made [Economy analyzer for PDS's Vicoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by (https://github.com/aekrylov))
 
 Making that tool made me disappointed in how Victoria 2 economy made.
-
-http://nashet.github.io/EconomicSimulation/WEBGL/index.html
 
 Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 
