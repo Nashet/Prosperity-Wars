@@ -3,6 +3,8 @@ Several years ago I made [Economy analyzer for PDS's Vicoria 2 game](https://git
 
 Making that tool made me disappointed in how Victoria 2 economy made.
 
+WEBGL/index.html
+
 Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 
 So, main principles of that simulation are:
