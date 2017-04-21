@@ -10,7 +10,7 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public MainTooltip tip;
 
     int counter = 0;
-    internal Func< string> dynamicString;
+    internal Func<string> dynamicString;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -18,13 +18,13 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         //    ;
         //if (counter > 6 && tooltip != "")
         //{
-        //if (tooltip != "")
+        if (tooltip != "" || dynamicString != null)
         {
             if (dynamicString == null)
                 tip.SetTooltip(tooltip);
             else
                 tip.SetTooltip(dynamicString());
-            
+
             counter = 0;
         }
         // }

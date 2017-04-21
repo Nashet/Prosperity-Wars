@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
-public  class ProvinceNameGenerator
+public class ProvinceNameGenerator
 {
     static ChanceBox<string> prefix;
     static ChanceBox<string> postfix;
@@ -56,7 +56,7 @@ public  class ProvinceNameGenerator
         prefix.initiate();
     }
     public string generateProvinceName()
-    {       
+    {
 
         return prefix.getRandom() + UtilsMy.generateWord(Game.random.Next(2, 5)) + postfix.getRandom();
     }
@@ -107,7 +107,7 @@ public class ChanceBox<T>
         for (int i = 1; i < list.Count; i++)
         {
             list[i].weight += list[i - 1].weight;
-        }       
+        }
     }
     /// <summary>Gives random T according element weight  /// </summary>    
     public T getRandom()
@@ -201,9 +201,71 @@ public class LimitedQueue<T> : Queue<T>
 }
 public static class UtilsMy
 {
+    public static Color getRandomColor()
+    {
+        return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+    }
     public static void Clear(this StringBuilder value)
     {
         value.Length = 0;
+    }
+    public static Color setAlphaToZero(this Color color)
+    {
+        color.a = 0f;
+        return color;
+    }
+    public static Color setAlphaToMax(this Color color)
+    {
+        color.a = 1f;
+        return color;
+    }
+    public static void setColor(this Texture2D image, Color color)
+    {
+        for (int j = 0; j < image.height; j++) // cicle by province        
+            for (int i = 0; i < image.width; i++)
+                image.SetPixel(i, j, color);
+    }
+    public static void setAlphaToMax(this Texture2D image)
+    {
+        for (int j = 0; j < image.height; j++) // cicle by province        
+            for (int i = 0; i < image.width; i++)
+               // if (image.GetPixel(i, j) != Color.black)
+                    image.SetPixel(i, j, image.GetPixel(i, j).setAlphaToMax());
+    }
+    static void drawSpot(Texture2D image, int x, int y, Color color)
+    {
+        int straightBorderChance = 5;
+        if (x >= 0 && x < image.width && y >= 0 && y < image.height)
+            if (Game.random.Next(straightBorderChance) != 1)
+                //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
+                if ( image.GetPixel(x, y) == Color.black)
+                    image.SetPixel(x, y, color.setAlphaToZero());
+    }
+    public static void drawRandomSpot(this Texture2D image, int x, int y, Color color)
+    {
+        //draw 4 points around x, y
+        //int chance = 90;
+        drawSpot(image, x - 1, y, color);
+        drawSpot(image, x + 1, y, color);
+        drawSpot(image, x, y - 1, color);
+        drawSpot(image, x, y + 1, color);
+        //if (x - 1 >= 0 && (image.GetPixel(x - 1, y).a != 1f || image.GetPixel(x - 1, y) == Color.black) && )
+        //    image.SetPixel(x - 1, y, color.setAlphaToZero());
+        //if (x + 1 < image.width && (image.GetPixel(x + 1, y).a != 1f || image.GetPixel(x - 1, y) == Color.black) && Game.random.Next(chance) != 1)
+        //    image.SetPixel(x + 1, y, color.setAlphaToZero());
+        //if (y - 1 >= 0 && (image.GetPixel(x, y - 1).a != 1f || image.GetPixel(x - 1, y) == Color.black) && Game.random.Next(chance) != 1)
+        //    image.SetPixel(x, y - 1, color.setAlphaToZero());
+        //if (y + 1 < image.height && (image.GetPixel(x, y + 1).a != 1f || image.GetPixel(x - 1, y) == Color.black) && Game.random.Next(chance) != 1)
+        //    image.SetPixel(x, y + 1, color.setAlphaToZero());
+
+    }
+    public static int getRandomX(this Texture2D image)
+    {
+        return Game.random.Next(0, image.width);
+    }
+    public static int getRandomY(this Texture2D image)
+    {
+        return Game.random.Next(0, image.height);
     }
     public static string FirstLetterToUpper(string str)
     {
@@ -223,15 +285,15 @@ public static class UtilsMy
 
         string result = "";
 
-        if (length == 1)        
-            result = GetRandomLetter(rnd, vowels);        
+        if (length == 1)
+            result = GetRandomLetter(rnd, vowels);
         else
         {
             for (int i = 0; i < length; i += 2)
             {
                 result += GetRandomLetter(rnd, consonants) + GetRandomLetter(rnd, vowels);
                 if (rnd.Next(4) == 1) result += GetRandomLetter(rnd, consonants);
-            }            
+            }
         }
         return FirstLetterToUpper(result);
     }

@@ -17,7 +17,7 @@ public class PopulationPanelTable : MyTable
     protected void AddButton(string text, PopUnit record)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
 
@@ -27,7 +27,7 @@ public class PopulationPanelTable : MyTable
     protected void AddButton(string text, PopUnit record, string toolTip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
 
@@ -36,10 +36,10 @@ public class PopulationPanelTable : MyTable
         newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
-    protected void AddButton(string text, PopUnit record, Func< string> dynamicTooltip)
+    protected void AddButton(string text, PopUnit record, Func<string> dynamicTooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
 
@@ -87,22 +87,16 @@ public class PopulationPanelTable : MyTable
                 ////Adding province
                 AddButton(record.province.ToString(), record.province);
                 ////Adding education
-                AddButton(record.education.ToString(), record);
-                ////Adding storage
-                //if (record.storage != null)
-                //    AddButton(record.storage.ToString(), record);
-                //else AddButton("Administration", record);        
+                AddButton(record.education.ToString(), record);                ////Adding cash
+
                 AddButton(record.wallet.ToString(), record);
 
                 ////Adding needs fulfilling
 
                 PopUnit ert = record;
                 AddButton(record.NeedsFullfilled.ToString(), record,
-                    //() => record.consumedTotal.ToString()
-                    delegate ()
-                    {
-                        return ert.consumedTotal.ToString();
-                    }
+                    () => ert.consumedTotal.ToString()
+                    //delegate () { return ert.consumedTotal.ToString(); }
                     //record.consumedTotal.ToString()
                     );
 

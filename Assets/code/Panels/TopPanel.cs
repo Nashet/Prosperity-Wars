@@ -138,21 +138,21 @@ abstract public class MyTable : MonoBehaviour
     }
     abstract protected void Refresh();
 
-    void Update()
-    {
-        // refresh();
-    }
+    //void Update()
+    //{
+    //    // refresh();
+    //}
     protected void AddButton(string text, Province prov)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, prov);
     }
     protected void AddButton(string text)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, null);
     }

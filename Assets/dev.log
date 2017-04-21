@@ -18,11 +18,11 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + needs of non-invented goods
 
 
-*? factories have no time to rise salary to compete workforce On Reopen
++ random map generator!!
 
-- bugged unemployment data
-- empty tooltip
+- left provinces napolzaut and broken centres
 
+? move panels?
 
 + consumption tooltip
 + make modifiers with mutable description?
@@ -45,7 +45,8 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 * no one build nothing
 
 ///////////////////////////////// demo
-
+*? factories have no time to rise salary to compete workforce On Reopen
+- bugged unemployment data
 > test dynamic strings speed
 > hiring rate shpuld be variable - not fast enough on big population
 > conver 0.333 constants
@@ -82,7 +83,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 ? add cross connection in pop - reform?
 > improve pop opinions on reforms, including isMyStatusEnchanced
 
-> random map generator
+
 
 
 
@@ -357,7 +358,7 @@ spend on previous expences.
 - roundations sucs
 
 > do strong type checks
-- left provinces napolzaut and broken centres
+
 
 ? autoAdd  Aristocrast on attemp to pay them - NO!
 ? Change Needs to one array??

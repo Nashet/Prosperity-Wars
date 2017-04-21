@@ -75,6 +75,7 @@ public class Game
     {
         Application.runInBackground = true;
         LoadImages();
+        //generateMapImage();
         new Product("Food", false, 0.4f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
@@ -245,6 +246,41 @@ public class Game
         trianglesList.Add(0 + triangleCounter);
         trianglesList.Add(3 + triangleCounter);
         triangleCounter += 4;
+    }
+    void generateMapImage()
+    {
+        mapImage = new Texture2D(100, 100);
+        Color emptySpaceColor = Color.black;//.setAlphaToZero();
+        mapImage.setColor(emptySpaceColor);
+        int amountOfProvince;
+        if (Game.devMode)
+            amountOfProvince = 10;
+        else
+            amountOfProvince = 12 + Game.random.Next(8);
+        for (int i = 0; i < amountOfProvince; i++)
+            mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
+
+        uint emptyPixels = uint.MaxValue;
+        Color currentColor = mapImage.GetPixel(0, 0);
+        uint emergencyExit = 0;
+        while (emptyPixels != 0 && emergencyExit < 100)
+        {
+            emergencyExit++;
+            emptyPixels = 0;
+            for (int j = 0; j < mapImage.height; j++) // cicle by province        
+                for (int i = 0; i < mapImage.width; i++)
+                {
+                    currentColor = mapImage.GetPixel(i, j);
+                    if (currentColor == emptySpaceColor)
+                        emptyPixels++;
+                    else if (currentColor.a == 1f)
+                    {
+                        mapImage.drawRandomSpot(i, j, currentColor);
+                    }
+                }
+            mapImage.setAlphaToMax();
+        }
+        mapImage.Apply();
     }
     void MakeMap()
     {
@@ -474,24 +510,7 @@ public class Game
     }
     void LoadImages()
     {
-        ////Loadin images...
-        //BMPLoader loader = new BMPLoader();
-        ////loader.ForceAlphaReadWhenPossible = true; // can be uncomment to read alpha
 
-        ////load the image data
-        //BMPImage img = loader.LoadBMP("assets\\provinces.bmp");
-
-        //// Convert the Color32 array into a Texture2D
-        //mapImage = img.ToTexture2D();
-        //mapImage = (Texture2D)Resources.Load("assets\\provinces");
-
-
-        //byte[] bytes = File.ReadAllBytes("assets/provinces.png");
-
-        //Texture2D texture = new Texture2D(2, 2);
-        //texture.filterMode = FilterMode.Trilinear;
-        //texture.LoadImage(bytes);
-        //var z
         mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
         //Texture2D mapImage = new Texture2D(z.width, z.height);
         //mapImage.SetPixels(z.GetPixels());
@@ -499,9 +518,8 @@ public class Game
         RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
         //Image ri = GameObject.Find("Image").GetComponent<Image>();
         ri.texture = mapImage;
-
-
     }
+
     internal static void stepSimulation()
     {
         date++;
@@ -574,14 +592,14 @@ public class Game
                         pop.getMoneyFromMarket();
 
                     //becouse income come only after consuming, and only after FULL consumption
-                    
-                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes()) 
+
+                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();
 
                     pop.calcLoyalty();
-                  
+
                     pop.calcPromotions();
                     pop.calcDemotions();
                     pop.calcGrowth();

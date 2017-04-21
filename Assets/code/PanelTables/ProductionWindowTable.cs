@@ -21,7 +21,7 @@ public class ProductionWindowTable : MyTable
     protected void AddButton(string text, Factory stor)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text,  this, stor);
     }
