@@ -274,17 +274,31 @@ public class PrimitiveStorageSet
             Game.threadDangerSB.Clear();
             foreach (Storage stor in container)
                 if (stor.get() > 0)
-                    Game.threadDangerSB.AppendLine(stor.ToString());
-            //result += stor.get() + " " + stor.getProduct().ToString() + ";";
-            return Game.threadDangerSB.ToString();
-            //string result = "";
-            //foreach (Storage stor in container)
-            //    if (stor.get() > 0)
-            //        result += stor.get() + " " + stor.getProduct().ToString() + ";";
-            //return result;
+                {                   
+                    Game.threadDangerSB.Append(stor.ToString());
+                    Game.threadDangerSB.Append("; ");
+                }           
+            return Game.threadDangerSB.ToString();         
         }
         else return "none";
     }
+     public string ToStringWithLines()
+    {
+
+        if (container.Count > 0)
+        {
+            Game.threadDangerSB.Clear();
+            foreach (Storage stor in container)
+                if (stor.get() > 0)
+                {
+                    Game.threadDangerSB.AppendLine();
+                    Game.threadDangerSB.Append(stor.ToString());
+                }
+            return Game.threadDangerSB.ToString();
+        }
+        else return "none";
+    }
+
 
     internal void SetZero()
     {

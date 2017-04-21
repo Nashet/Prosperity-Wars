@@ -256,8 +256,8 @@ public class Game
         if (Game.devMode)
             amountOfProvince = 10;
         else
-            //amountOfProvince = 12 + Game.random.Next(8);
-            amountOfProvince = 30 + Game.random.Next(10);
+            amountOfProvince = 12 + Game.random.Next(8);
+            //amountOfProvince = 30 + Game.random.Next(10);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 

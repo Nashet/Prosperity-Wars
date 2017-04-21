@@ -17,18 +17,14 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 * not buing srone for upgrade - bug in conditions check
 + needs of non-invented goods
 
++ add english-style for name generator
++ move panels?
 
 + random map generator!!
-
-- left provinces napolzaut and broken centres
-
-? move panels?
-
+* left provinces broken centres!
 + consumption tooltip
 + make modifiers with mutable description?
 * factory conditions - reopen - upgrade have broken fixed strings?
-
-
 
 * no demotions into capitalists from poors
 * make this day stats in trade
@@ -75,7 +71,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 * money stuck in country wallet
 
 
-> add english-style for name generator
+
 - 2 letter words and syllables
 
 

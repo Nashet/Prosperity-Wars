@@ -11,6 +11,27 @@ public class ProvinceNameGenerator
 {
     static ChanceBox<string> prefix;
     static ChanceBox<string> postfix;
+    static ChanceBox<string> vowels = new ChanceBox<string>();
+    static ChanceBox<string> consonants = new ChanceBox<string>();
+    public static string generateWord(int length)
+    {       
+        Game.threadDangerSB.Clear();
+        if (Game.random.Next(10) == 1)
+        {
+            Game.threadDangerSB.Append(vowels.getRandom());
+            if (Game.random.Next(2) == 1)
+                Game.threadDangerSB.Append(consonants.getRandom());
+        }
+        //if (Game.random.Next(6) == 1)
+        //    Game.threadDangerSB.Append(consonants.getRandom());
+
+        for (int i = 0; i < length; i += 2)
+        {
+            Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
+            if (Game.random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
+        }
+        return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
+    }
     public ProvinceNameGenerator()
     {
         postfix = new ChanceBox<string>();
@@ -18,15 +39,14 @@ public class ProvinceNameGenerator
         postfix.add("bridge", 0.1f);
         postfix.add("coln", 0.2f);
 
-
         postfix.add("field", 2f);
         postfix.add("hill", 1f);
         postfix.add("ford", 0.5f);
-        postfix.add("land", 1f);
+        postfix.add("land", 2.5f);
         postfix.add("landia", 0.3f);
-        postfix.add("lia", 1f);
+        postfix.add("lia", 2.5f);
         postfix.add("mia", 0.1f);
-        postfix.add("stad", 0.2f);
+        postfix.add("stad", 0.3f);
 
         postfix.add("holm", 1f);
         postfix.add("bruck", 0.3f);
@@ -38,7 +58,7 @@ public class ProvinceNameGenerator
         postfix.add("rock", 2f);
         postfix.add("ville", 2f);
         postfix.add("polis", 2f);
-        postfix.add("", 25f);
+        postfix.add("", 10f);
         postfix.initiate();
 
         prefix = new ChanceBox<string>();
@@ -54,11 +74,53 @@ public class ProvinceNameGenerator
         prefix.add("Middle ", 0.1f);
         prefix.add("", 80f);
         prefix.initiate();
+        
+        vowels.add("a", 8.167f);
+        vowels.add("e", 12.702f);
+        vowels.add("i", 6.966f);
+        vowels.add("o", 7.507f);
+        vowels.add("u", 2.758f);
+        vowels.add("a", 8.167f);
+        vowels.initiate();
+
+        consonants.add("b", 1.492f);
+        consonants.add("c", 2.782f);
+        consonants.add("d", 4.253f);
+
+        consonants.add("f", 2.228f);
+        consonants.add("g", 2.015f);
+        consonants.add("h", 0.1f); //IRL -  6.094f);
+
+        consonants.add("j", 0.153f);
+        consonants.add("k", 0.772f);
+        consonants.add("l", 4.025f);
+        consonants.add("m", 2.406f);
+        consonants.add("n", 6.749f);
+
+        consonants.add("p", 1.929f);
+        consonants.add("q", 0.095f);
+        consonants.add("r", 5.987f);
+        consonants.add("s", 6.327f);
+        consonants.add("t", 9.056f);
+
+        consonants.add("v", 0.978f);
+        consonants.add("w", 2.360f);
+        consonants.add("x", 0.150f);
+        consonants.add("y", 1.974f);
+        consonants.add("z", 0.074f);
+        consonants.initiate();
     }
+    StringBuilder result = new StringBuilder();
     public string generateProvinceName()
     {
+        result.Clear();
+        result.Append(prefix.getRandom());
+        if (Game.random.Next(3)==1) result.Append(generateWord(Game.random.Next(2, 5)));
+        else
+            result.Append(generateWord(Game.random.Next(3, 5)));
+        result.Append(postfix.getRandom());
 
-        return prefix.getRandom() + UtilsMy.generateWord(Game.random.Next(2, 5)) + postfix.getRandom();
+        return result.ToString();
     }
 }
 public class ChanceBox<T>
@@ -199,6 +261,10 @@ public class LimitedQueue<T> : Queue<T>
         base.Enqueue(item);
     }
 }
+public static class WordGenerator
+{
+    
+}
 public static class UtilsMy
 {
     public static Color getRandomColor()
@@ -229,8 +295,8 @@ public static class UtilsMy
     {
         for (int j = 0; j < image.height; j++) // cicle by province        
             for (int i = 0; i < image.width; i++)
-               // if (image.GetPixel(i, j) != Color.black)
-                    image.SetPixel(i, j, image.GetPixel(i, j).setAlphaToMax());
+                // if (image.GetPixel(i, j) != Color.black)
+                image.SetPixel(i, j, image.GetPixel(i, j).setAlphaToMax());
     }
     static void drawSpot(Texture2D image, int x, int y, Color color)
     {
@@ -238,7 +304,7 @@ public static class UtilsMy
         if (x >= 0 && x < image.width && y >= 0 && y < image.height)
             if (Game.random.Next(straightBorderChance) != 1)
                 //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
-                if ( image.GetPixel(x, y) == Color.black)
+                if (image.GetPixel(x, y) == Color.black)
                     image.SetPixel(x, y, color.setAlphaToZero());
     }
     public static void drawRandomSpot(this Texture2D image, int x, int y, Color color)
@@ -277,32 +343,9 @@ public static class UtilsMy
 
         return str.ToUpper();
     }
-    public static string generateWord(int length)
-    {
-        var rnd = Game.random;
-        string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z" };
-        string[] vowels = { "a", "e", "i", "o", "u" };
+    
 
-        string result = "";
-
-        if (length == 1)
-            result = GetRandomLetter(rnd, vowels);
-        else
-        {
-            for (int i = 0; i < length; i += 2)
-            {
-                result += GetRandomLetter(rnd, consonants) + GetRandomLetter(rnd, vowels);
-                if (rnd.Next(4) == 1) result += GetRandomLetter(rnd, consonants);
-            }
-        }
-        return FirstLetterToUpper(result);
-    }
-
-    private static string GetRandomLetter(System.Random rnd, string[] letters)
-    {
-        return letters[rnd.Next(0, letters.Length - 1)];
-    }
-
+    
     public static bool isSameColorsWithoutAlpha(Color colorA, Color colorB)
     {
         if (colorA.b == colorB.b && colorA.g == colorB.g && colorA.r == colorB.r)
