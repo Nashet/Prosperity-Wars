@@ -54,7 +54,7 @@ public class PopulationPanelTable : MyTable
         if (Game.popsToShowInPopulationPanel != null)
         {
             // Adding nomber
-            AddButton("Number");
+            //AddButton("Number");
             // Adding PopType
             AddButton("Type");
             ////Adding population
@@ -73,11 +73,13 @@ public class PopulationPanelTable : MyTable
             AddButton("Needs fullfilled");
             ////Adding loyalty
             AddButton("Loyalty");
+            ////Adding loyalty
+            AddButton("Unemployment");
             foreach (PopUnit record in Game.popsToShowInPopulationPanel)
             {
 
                 // Adding nomber
-                AddButton(Convert.ToString(counter), record);
+                //AddButton(Convert.ToString(counter), record);
                 // Adding PopType
                 AddButton(record.type.ToString(), record);
                 ////Adding population
@@ -105,6 +107,8 @@ public class PopulationPanelTable : MyTable
                 record.modifiersLoyaltyChange.getModifier(Game.player, out accu);
                 AddButton(record.loyalty.ToString(), record, accu);
 
+                //Adding Unemployment
+                AddButton(record.getUnemployedProcent().ToString(), record);
                 counter++;
                 //contentPanel.r
             }

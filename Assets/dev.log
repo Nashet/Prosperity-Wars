@@ -7,10 +7,37 @@ Do I need Countre-special needs OR NOT? - Not
 Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, exclude Artisan, Clerics and Goverment), no equal rights (meaning, poor strata gaves tax to Aristocrats ). Farmers are free (Serfdom abolited reform) than they just pay feodal tax to aristocrats. Add special SERf unit.
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
+Economy:
++ min wage reform
++ Unemployment in Panel & fix
++ higher salary growt speed
+> hiring rate shpuld be variable - not fast enough on big population
+- same sallary factories - bugged hiring
 
-> make demo? Without Nat economy, capitalism only. DEv mode
+- strange unemployment bug. fires people with profit. 
+? double control on workforce - by sallary & profit
+- factory circled on not dropping sallaries & drop workforce
+- factory does not drop workforce on unprofit
+
+- demotion reason farmees
+- bugged unemployment data? Like there is full impoyment but pops says he us unemployed
+> bureaucracy
+
+> multicountry support
 
 
+
+> conditions for reforms choise for pops
+? add cross connection in pop - reform?
+> improve pop opinions on reforms, including isMyStatusEnchanced
+
+> always on top panels
+> finince panel
+
+? get rid of PrimitiveStorage?
+? covert Value into struct? For better speed?
+///////////////////////////////// demo done
++ make demo? Without Nat economy, capitalism only. DEv mode
 * 100% consumption for aristocrats and caps
 * loyalty overflow
 * mining
@@ -42,9 +69,9 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 
 ///////////////////////////////// demo
 *? factories have no time to rise salary to compete workforce On Reopen
-- bugged unemployment data
+> upgrade to new Unity?
 > test dynamic strings speed
-> hiring rate shpuld be variable - not fast enough on big population
+
 > conver 0.333 constants
 - factories shows upgrade spendigs as loss
 - DSB > 1 strike on food?
@@ -69,32 +96,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 + make Git description
 * recheck Upgrade Money check
 * money stuck in country wallet
-
-
-
-- 2 letter words and syllables
-
-
-> conditions for reforms choise for pops
-? add cross connection in pop - reform?
-> improve pop opinions on reforms, including isMyStatusEnchanced
-
-
-
-
-
-
-
-
-> always on top panels
-> finince panel
-
-
-
-- aristos cant finish build factories in market?
-
-
-
+* 2 letter words and syllables
 
 > add multiple temporary modifiers for wrong reforms
 
@@ -114,13 +116,7 @@ Slaves & workers pay tax to aristocrats via Factories. Farmers initially are fre
 > add caption for panels
 
 
-
 - disbalance in Food trade?
-
-
-
-
-
 
 - broke nat economy fabric update? No it never was implemented
 - factory upgardes only for money, not for resurces
@@ -138,9 +134,9 @@ ency
 > stop politics reform update on every tick
 
 
-> min wage reform
+
 > restore ToolTip basuc functional
-> beurocracy
+
 > deal with Enumerates
 
 ?? price class?
@@ -250,7 +246,6 @@ ency
 * mess with owner & owner
 
 
-> 3d borders markup
 > Meshs roundation
 
 
@@ -265,7 +260,7 @@ ency
 > change PrimitiveStorage to some dictionary
 > replace all options in Game.
 
-- same sallary factories - bugged hiring
+
 - consumption flactuation based on price change/ May be, if prices are about same then buy both goods?
 - broken buying order for posp. Not really, its just how PrimitiveStotage works
 >? bonuses for resorce factories?
@@ -283,19 +278,10 @@ ency
 * what is factoryWants is negate?
 + build factories not only on unemployment
 
-- strange unemployment bug. fires people with profit. 
-? double control on workforce - by sallary & profit
-- factory circled on not dropping sallaries & drop workforce
-- factory does not drop workforce on unprofit
 
 > NOT ACTUAL WITH NEW DSB price changing basin on DSB procent 
 + in future add level for factories
 * why not work on first sim - initialize everything
-
-
-
-> rich aristos can promote into capitalist too
-
 
 
 * iput factor broken in factories. HowMuchAvailable is broken
@@ -366,7 +352,7 @@ spend on previous expences.
 ? wrong province spawn coused by getRichestDemotionTarget (Onky happened intestting?)
 > check all divisions
 -? might have problems with changing enlisted Storages. Need proper .copy or something, specificly in Set(Storage)
-> work on common scheme
+
 
 + better workforce management
 * lumber unsold at sawmill. Why discapculated? + zavjishen consume fixed with ForceDSBRecalculation

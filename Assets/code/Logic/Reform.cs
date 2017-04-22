@@ -396,64 +396,95 @@ public class MinimalWage : AbstractReform
         }
         internal override bool isAvailable(Country country)
         {
-            LocalReformValue requested = this;
-            //alowed
-            //if ((requested.ID == 4) && country.isInvented(InventionType.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
-            //    return true;
-            //else
-            //if ((requested.ID == 3) && country.isInvented(InventionType.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
-            //    return true;
-            //else
-            //if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
-            //    return true;
-            //else
-            //    if ((requested.ID == 1) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1))
-            //    return true;
-            //else
-            //if ((requested.ID == 0))
-            //    return true;
-            //else
-            //    return false;
             return true;
-
         }
         internal override void onReformEnacted()
         {
 
         }
-        static Procent br = new Procent(0.2f);
-        static Procent al = new Procent(0.1f);
-        static Procent nu = new Procent(0.0f);
-        internal Procent getTax()
+        /// <summary>
+        /// Calculates wage basing on consumption cost for 1000 workers
+        /// </summary>        
+        internal float getWage()
         {
-            if (this == Minimal)
-                return br;
+            if (this == None)
+                return 0f;
+            else if (this == Scanty)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                //result.multipleInside(0.5f);
+                return result.get();
+            }
+            else if(this == Minimal)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.02f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Trinket)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.04f);
+                result.add( everyDayCost);
+                return result.get();
+            }
+            else if (this == Middle)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.06f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Big)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.08f);
+                //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
+                result.add(everyDayCost);
+                //result.add(luxuryCost);
+                return result.get();
+            }
             else
-                if (this == Middle)
-                return al;
-            else
-                return nu;
+                return 0f;
+        }
+        override public string ToString()
+        {
+            return base.ToString() + ", value: " + getWage();
         }
     }
-    internal LocalReformValue status;
-    internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
-    internal static LocalReformValue None = new LocalReformValue("None", "", 0, new ConditionsList(new List<Condition>()
-        {
-            new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true),
-            Condition.IsNotImplemented
-        }));
+    LocalReformValue status;
+    internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();
+    internal static LocalReformValue None = new LocalReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
     internal static LocalReformValue Scanty = new LocalReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
-            new Condition(Economy.LaissezFaire, true),
-            Condition.IsNotImplemented
+            Economy.isNotLF,            
         }));
-    internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, ConditionsList.IsNotImplemented);
-    //internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1);
-    internal static LocalReformValue Middle = new LocalReformValue("Middle", "Plenty good wage", 2, ConditionsList.IsNotImplemented);
-    internal static LocalReformValue Big = new LocalReformValue("Generous", "Can live almost likea king. Almost..", 3, ConditionsList.IsNotImplemented);
-    //internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4);
+    internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Trinket = new LocalReformValue("Trinket", "You can buy some small stuff", 6, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Middle = new LocalReformValue("Middle", "Plenty good wage", 2, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Big = new LocalReformValue("Generous", "Can live almost likea king. Almost..", 3, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
 
 
     public MinimalWage(Country country) : base("Minimal wage", "", country)

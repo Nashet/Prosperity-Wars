@@ -201,7 +201,7 @@ abstract public class PopUnit : Producer
     }
 
     public List<Storage> getRealLifeNeeds()
-    {        
+    {
         return getNeedsInCommon(this.type.getLifeNeedsPer1000());
     }
 
@@ -211,7 +211,7 @@ abstract public class PopUnit : Producer
     }
 
     public List<Storage> getRealLuxuryNeeds()
-    {       
+    {
         return getNeedsInCommon(this.type.getLuxuryNeedsPer1000());
     }
 
@@ -223,7 +223,7 @@ abstract public class PopUnit : Producer
             uint employed = 0;
             foreach (Factory factory in province.allFactories)
                 employed += factory.HowManyEmployed(this);
-            if (population - employed <= 0) //happening due to last turn data on pop population or bugs
+            if ((int)population - (int)employed <= 0) //happening due population change by growth/demotion
                 return new Procent(0);
             return new Procent((population - employed) / (float)population);
         }

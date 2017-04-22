@@ -266,12 +266,11 @@ public class Factory : Producer
     {
         return getMaxWorkforceCapacity() - getWorkForce();
     }
-    internal bool ThereIsSpaceToHireMore()
+    internal bool ThereIsPossibilityToHireMore()
     {
-        //if there is other pops && there is space on shownFactory
-        // uint totalAmountWorkers = province.FindPopulationAmountByType(PopType.workers);
-        uint freeSpace = getMaxWorkforceCapacity() - getWorkForce();
-        if (freeSpace > 0 && IsThereMoreWorkersToHire())
+        //if there is other pops && there is space on factory     
+
+        if (getFreeJobSpace() > 0 && IsThereMoreWorkersToHire())
             return true;
         else
             return false;
@@ -301,6 +300,8 @@ public class Factory : Producer
                     }
                     else
                         salary.set(province.owner.getMinSalary());
+
+
                     //todo else dont pay if there is nothing to pay
                 }
             }
@@ -433,9 +434,9 @@ public class Factory : Producer
         if (isWorking() && Economy.isMarket.checkIftrue(province.owner))
         //        province.owner.isInvented(InventionType.capitalism))
         {
-            // rise salary to entice workforce
-            if (ThereIsSpaceToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
-                salary.add(0.01f);
+            // rise salary to attract  workforce
+            if (ThereIsPossibilityToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
+                salary.add(0.03f);
             //too allocate workers form other popTypes
             if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600
                 && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
@@ -445,15 +446,20 @@ public class Factory : Producer
             //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
             //    salary.set(province.getLocalMinSalary());
             // freshly builded factories should rise salary to concurency with old ones
-            if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
-                salary.add(0.03f);
+            if (getWorkForce() < 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
+                salary.add(0.09f);
 
+            float minSalary = province.owner.getMinSalary();
             // reduce salary on non-profit
             if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople)
-                if (salary.get() - 0.3f >= province.owner.getMinSalary())
+                if (salary.get() - 0.3f >= minSalary)
                     salary.subtract(0.3f);
                 else
-                    salary.set(province.owner.getMinSalary());
+                    salary.set(minSalary);
+            // check if country's min wage changed
+            if (salary.get() < minSalary)
+                salary.set(minSalary);
+
         }
     }
     /// <summary>

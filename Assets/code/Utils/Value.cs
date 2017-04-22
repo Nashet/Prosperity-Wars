@@ -62,16 +62,18 @@ public class Value
             Debug.Log("Value multiple failed");
         return new Value(get() * invalue.get());
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="invalue"></param>
-    /// <returns>Keeps result inside</returns>
+    /// <summary>Keeps result inside</summary>    
     public void multipleInside(Value invalue)
     {
         if (invalue.get() < 0)
             Debug.Log("Value multiple failed");
-        set(this.multiple(invalue));
+        set(invalue.get() * this.get());
+    }
+    public void multipleInside(float invalue)
+    {
+        if (invalue < 0f)
+            Debug.Log("Value multiple failed");
+        set(invalue * this.get());
     }
     /// <summary>
     /// returns new value

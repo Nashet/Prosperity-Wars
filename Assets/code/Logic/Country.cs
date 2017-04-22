@@ -29,7 +29,7 @@ public class Country : Owner
     /// <summary>
     /// per 1000 men
     /// </summary>
-    private Value minSalary = new Value(0.5f);
+    //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
 
     public Country(string iname, Culture iculture)
@@ -49,7 +49,7 @@ public class Country : Owner
         //countryTax = hru.tax;
         culture = iculture;
 
-        if (!Game.devMode)
+        //if (!Game.devMode)
         {
             government.status = Government.Aristocracy;
 
@@ -165,7 +165,8 @@ public class Country : Owner
     }
     internal float getMinSalary()
     {
-        return minSalary.get();
+        return (minimalWage.getValue() as MinimalWage.LocalReformValue).getWage();
+        //return minSalary.get();
     }
     override public string ToString()
     {

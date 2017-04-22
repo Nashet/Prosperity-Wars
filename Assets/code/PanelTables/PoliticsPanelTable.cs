@@ -46,21 +46,22 @@ public class PoliticsPanelTable : MyTable
             //var factoryList = Game.player;
 
             foreach (var next in Game.player.reforms)
-               // if (next.isAvailable(Game.player))
-                {
-                    // Adding shownFactory type
-                    AddButton(next.ToString(), next);
+            // if (next.isAvailable(Game.player))
+            {
+                // Adding reform name
+                AddButton(next.ToString(), next);
 
-                    ////Adding potential output
-                    AddButton(next.getValue().ToString(), next);
-                    ////Adding availability
-                    if (next.canChange())
-                        AddButton("Yep", next);
-                    else
-                        AddButton("Nope", next);
+                ////Adding Status
+                AddButton(next.getValue().ToString(), next);
 
-                    counter++;
-                }
+                ////Adding Can change possibility
+                if (next.canChange())
+                    AddButton("Yep", next);
+                else
+                    AddButton("Nope", next);
+
+                counter++;
+            }
         }
     }
 }
