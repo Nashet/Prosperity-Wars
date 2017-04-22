@@ -56,7 +56,7 @@ public class FactoryPanel : DragPanel//for dragging
         //upgradeButton.interactable = shownFactory.getConditionsForFactoryUpgrade(Game.player,  out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
         upgradeButton.interactable = shownFactory.conditionsUpgrade.isAllTrue(Game.player, out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-        subidize.interactable = shownFactory.getConditionsForFactorySubsidize(Game.player, false, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
+        subidize.interactable = shownFactory.conditionsSubsidize.isAllTrue(Game.player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
         //subidize.interactable = shownFactory.con
         if (shownFactory.isWorking())
             reopenButtonflag = reopenButtonStatus.close;

@@ -471,22 +471,27 @@ public class Factory : Producer
         //if (getLevel() == 0) return 0;
         if (!isWorking()) return 0;
         uint wants = (uint)Mathf.RoundToInt(getMaxWorkforceCapacity());// * getInputFactor());
+
         int difference = (int)wants - (int)getWorkForce();
 
+        // clamp difference in Game.maxFactoryFireHireSpeed []
         if (difference > Game.maxFactoryFireHireSpeed)
             difference = Game.maxFactoryFireHireSpeed;
         else
             if (difference < -1 * Game.maxFactoryFireHireSpeed) difference = -1 * Game.maxFactoryFireHireSpeed;
 
-        //reduce hiring if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
+        //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
         if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0))// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
-        //don't hire more if unprofitable. Even fire some
+
+        //fire people if unprofitable. 
         if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSalaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
+
         // just dont't hire more..
         if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f))
             difference = 0;
+
         //todo optimaze getWorkforce()
         int result = (int)getWorkForce() + difference;
         if (result < 0) return 0;
@@ -795,149 +800,7 @@ public class Factory : Producer
 
     }
 
-    /// <summary>Returns False if something failed</summary>
-    internal bool getConditionsForFactorySubsidize(Country country, bool fastReturn, out string description)
-    {
-        string result = null;
-        bool atLeastOneNoAnswer = false;
-        // - first lines - why we cant
-
-        if (province.owner.economy.status == Economy.LaissezFaire)
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Economy politics is Laissez Faire";
-            atLeastOneNoAnswer = true;
-        }
-        else
-            result += "\n(+) Economy politics is not Laissez Faire";
-        description = result;
-        if (atLeastOneNoAnswer) return false;
-        else
-            return true;
-    }
-
-    internal bool getConditionsForFactoryUpgradeFast(Country country)
-    {
-        return getConditionsForFactoryUpgradeT(country, true, out Game.dumpString);
-    }
-    internal bool getConditionsForFactoryUpgrade(Country country, out string description)
-    {
-        return getConditionsForFactoryUpgradeT(country, false, out description);
-    }
-    /// <summary>Returns False if something failed</summary>
-    bool getConditionsForFactoryUpgradeT(Country country, bool fastReturn, out string description)
-    {
-        string result = null;
-        bool atLeastOneNoAnswer = false;
-        // - first lines - why we cant
-        if (province.owner.economy.status == Economy.LaissezFaire)
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Economy politics is Laissez Faire";
-            atLeastOneNoAnswer = true;
-        }
-        else
-            result += "\n(+) Economy politics is not Laissez Faire";
-
-        if (isUpgrading())
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Already upgrading";
-            atLeastOneNoAnswer = true;
-        }
-
-        if (isBuilding())
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Not builded yet";
-            atLeastOneNoAnswer = true;
-        }
-        if (!isWorking())
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Closed";
-            atLeastOneNoAnswer = true;
-        }
-        if (level == Game.maxFactoryLevel)
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Max level achieved";
-            atLeastOneNoAnswer = true;
-        }
-
-        Value cost = this.getUpgradeCost();
-        if (!country.wallet.canPay(cost))// no money
-        {
-            if (fastReturn) { description = null; return false; }
-            result += "\n(-) Not enough " + (cost.get() - country.wallet.haveMoney.get()) + " money";
-            atLeastOneNoAnswer = true;
-        }
-        else
-            result += "\n(+) Have money " + cost;
-        //if (level == Game.maxFactoryLevel) // no resources
-        //    result += "\nMax level achieved";
-        description = result;
-        if (atLeastOneNoAnswer) return false;
-        else
-            return true;
-    }
-    /// <summary>Return null if there is no obstacles </summary>    
-    internal string whyCantUpgradeFactory(Country country)
-    {
-        string result = null;
-        if (province.owner.economy.status == Economy.LaissezFaire)
-            result += "\n(-) Economy politics - LaissezFaire";
-        if (isUpgrading())
-            result += "\n(-) Already upgrading";
-        if (isBuilding())
-            result += "\n(-) Not builded yet";
-        if (!isWorking())
-            result += "\n(-) Closed";
-        if (level == Game.maxFactoryLevel)
-            result += "\n(-) Max level achieved";
-        //var resourceToBuild = this.type.getUpgradeNeeds();
-        Value cost = this.getUpgradeCost();
-        if (!country.wallet.canPay(cost))// no money
-            //country.wallet.CanAfford()
-            result += "\nNot enough " + (cost.get() - country.wallet.haveMoney.get()) + " money";
-        //if (level == Game.maxFactoryLevel) // no resources
-        //    result += "\nMax level achieved";
-        return result;
-    }
-    /// <summary>Return null if there is no obstacles </summary>    
-    internal string whyCantDestroyFactory()
-    {
-        string result = null;
-        if (province.owner.economy.status == Economy.LaissezFaire)
-            result += "\n(-) Economy politics - LaissezFaire";
-        //if (isUpgrading())
-        //    result += "\n(-) Already constructing";
-        return result;
-    }
-    /// <summary>Return null if there is no obstacles </summary>    
-    internal string whyCantCloseFactory()
-    {
-        string result = null;
-        if (province.owner.economy.status == Economy.LaissezFaire)
-            result += "\n(-) Economy politics - LaissezFaire";
-        if (isBuilding())
-            result += "\n(-) Not opened yet";
-        if (!isWorking())
-            result += "\n(-) Already closed";
-        return result;
-    }
-    /// <summary>Return null if there is no obstacles </summary>    
-    internal string whyCantReopenFactory()
-    {
-        string result = null;
-        if (province.owner.economy.status == Economy.LaissezFaire)
-            result += "\n(-) Economy politics - LaissezFaire";
-        if (isWorking())
-            result += "\n(-) Already opened";
-        if (isBuilding())
-            result += "\n(-) Not builded yet";
-        return result;
-    }
+    
 }
 /// <summary>
 /// ///////////////////////////////////////////////////////////////////****************

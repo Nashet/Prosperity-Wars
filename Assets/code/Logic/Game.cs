@@ -545,10 +545,7 @@ public class Game
                 //Otherwise Arisocrats starts to consume BEFORE they get all what they should
                 {
                     if (pop.type.basicProduction != null)// only Farmers and Tribemen
-                        pop.produce();
-
-                    //if (!country.isInvented(InventionType.capitalism) && pop.ShouldPayAristocratTax())
-                    //    pop.PayTaxToAllAristocrats();
+                        pop.produce();                   
                 }
             }
         //Game.market.ForceDSBRecalculation();
@@ -564,8 +561,7 @@ public class Game
                 foreach (PopUnit pop in province.allPopUnits)
                 {
                     if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.ShouldPayAristocratTax())
-                            //if (!country.isInvented(InventionType.capitalism) && pop.ShouldPayAristocratTax())
+                        if (pop.ShouldPayAristocratTax())                            
                             pop.PayTaxToAllAristocrats();
                 }
                 foreach (PopUnit pop in province.allPopUnits)

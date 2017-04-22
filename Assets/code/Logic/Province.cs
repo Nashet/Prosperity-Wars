@@ -145,10 +145,8 @@ public class Province
             PopUnit.tempPopList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.owner.culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
             return new Value(0);
-
         }
     }
-
     public void BalanceEmployableWorkForce()
     {
         List<PopUnit> workforcList = this.FindAllPopUnits(PopType.workers);
