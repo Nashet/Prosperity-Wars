@@ -545,7 +545,8 @@ public class Game
                 //Otherwise Arisocrats starts to consume BEFORE they get all what they should
                 {
                     if (pop.type.basicProduction != null)// only Farmers and Tribemen
-                        pop.produce();                   
+                        pop.produce();
+                    pop.takeUnemploymentSubsidies();
                 }
             }
         //Game.market.ForceDSBRecalculation();

@@ -19,6 +19,7 @@ public class Country : Owner
     internal Economy economy;
     internal Serfdom serfdom;
     internal MinimalWage minimalWage;
+    internal UnemploymentSubsidies unemploymentSubsidies;
     internal TaxationForPoor taxationForPoor;
     internal TaxationForRich taxationForRich;
     internal List<AbstractReform> reforms = new List<AbstractReform>();
@@ -40,6 +41,7 @@ public class Country : Owner
         serfdom = new Serfdom(this);
 
         minimalWage = new MinimalWage(this);
+        unemploymentSubsidies = new UnemploymentSubsidies(this);
         taxationForPoor = new TaxationForPoor(this);
         taxationForRich = new TaxationForRich(this);
         name = iname;

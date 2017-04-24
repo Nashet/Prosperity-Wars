@@ -11,16 +11,32 @@ Economy:
 + min wage reform
 + Unemployment in Panel & fix
 + higher salary growt speed
-> hiring rate shpuld be variable - not fast enough on big population
-- same sallary factories - bugged hiring
++ Unemployment subsidies!
 
-- strange unemployment bug. fires people with profit. 
+- same sallary factories - bugged hiring
+- factories flush workforce from resource factories.
+> remove workforce flactuation on fabrics
 ? double control on workforce - by sallary & profit
-- factory circled on not dropping sallaries & drop workforce
+
+- pop can't consume anything when food DSB > 1
+- food's price would not growth on dsb > 1
+
 - factory does not drop workforce on unprofit
 
+
+> hiring rate shpuld be variable - not fast enough on big population
+
+> Fix getInput on last turn hiring && fix mess?
+? should factory drop workforce on small input?
+? Should factory cut buying if there is not enough other resources?
+
+-? strange unemployment bug. fires people with profit. 
+-? bugged unemployment data? Like there is full impoyment but pops says he us unemployed
+
+> factory build refinancing from loans?
+
 - demotion reason farmees
-- bugged unemployment data? Like there is full impoyment but pops says he us unemployed
+
 > bureaucracy
 
 > multicountry support
@@ -265,12 +281,7 @@ ency
 - broken buying order for posp. Not really, its just how PrimitiveStotage works
 >? bonuses for resorce factories?
 * people don\t want to buy expensive unproduced goods
-- factories flush workforce from resource factories.
->Fix getInput on last turn hiring && fix mess?
-> should factory drop workforce on small input?
-> Should factory cut buying if there is not enough other resources?
-> remove workforce flactuation on fabrics
-> factory build refinancing from loans?
+
 
 + background running
 * production window does not refresh

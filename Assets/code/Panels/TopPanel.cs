@@ -86,12 +86,18 @@ public class TopPanel : MonoBehaviour
             MainCamera.populationPanel.onShowAllClick();
     }
     public void onPoliticsClick()
-    {
-        //MainCamera.politicsPanel.show(true);
+    {        
         if (MainCamera.politicsPanel.isActiveAndEnabled)
             MainCamera.politicsPanel.hide();
         else
             MainCamera.politicsPanel.show(true);
+    }
+    public void onFinanceClick()
+    {
+        if (MainCamera.financePanel.isActiveAndEnabled)
+            MainCamera.financePanel.hide();
+        else
+            MainCamera.financePanel.show();
     }
     void onbtnStepClick(Button button)
     {

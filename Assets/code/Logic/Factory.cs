@@ -922,7 +922,7 @@ public abstract class Producer : Owner
     /// <summary> /// Return in pieces  /// </summary>    
     abstract internal float getLocalEffectiveDemand(Product product);
     public abstract void simulate();
-    public abstract void produce();
+    public abstract void produce(); 
     public abstract void consume();
     public abstract void payTaxes();
 

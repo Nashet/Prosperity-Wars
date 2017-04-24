@@ -521,6 +521,142 @@ public class MinimalWage : AbstractReform
             return false;
     }
 }
+public class UnemploymentSubsidies : AbstractReform
+{
+    public class LocalReformValue : AbstractReformValue
+    {
+        public LocalReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        {
+            PossibleStatuses.Add(this);
+        }
+        internal override bool isAvailable(Country country)
+        {
+            return true;
+        }
+        internal override void onReformEnacted()
+        {
+
+        }
+        /// <summary>
+        /// Calculates Unemplyment Subsidies basing on consumption cost for 1000 workers
+        /// </summary>        
+        internal float getSubsidiesRate()
+        {
+            if (this == None)
+                return 0f;
+            else if (this == Scanty)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                //result.multipleInside(0.5f);
+                return result.get();
+            }
+            else if (this == Minimal)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.02f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Trinket)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.04f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Middle)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.06f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Big)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.08f);
+                //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
+                result.add(everyDayCost);
+                //result.add(luxuryCost);
+                return result.get();
+            }
+            else
+                return 0f;
+        }
+        override public string ToString()
+        {
+            return base.ToString() + ", value: " + getSubsidiesRate();
+        }
+    }
+    LocalReformValue status;
+    internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();
+    internal static LocalReformValue None = new LocalReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
+    internal static LocalReformValue Scanty = new LocalReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Trinket = new LocalReformValue("Trinket", "You can buy some small stuff", 6, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Middle = new LocalReformValue("Middle", "Plenty good subsidies", 2, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static LocalReformValue Big = new LocalReformValue("Generous", "Can live almost likea king. Almost..", 3, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+
+
+    public UnemploymentSubsidies(Country country) : base("Unemployment Subsidies", "", country)
+    {
+        status = None;
+    }
+    internal override AbstractReformValue getValue()
+    {
+        return status;
+    }
+    internal override AbstractReformValue getValue(int value)
+    {
+        return PossibleStatuses.Find(x => x.ID == value);
+        //return PossibleStatuses[value];
+    }
+    internal override bool canChange()
+    {
+        return true;
+    }
+    public override IEnumerator GetEnumerator()
+    {
+        foreach (LocalReformValue f in PossibleStatuses)
+            yield return f;
+    }
+    internal override void setValue(AbstractReformValue selectedReform)
+    {
+        status = (LocalReformValue)selectedReform;
+    }
+    internal override bool isAvailable(Country country)
+    {
+        if (country.isInvented(InventionType.Welfare))
+            return true;
+        else
+            return false;
+    }
+}
+
 
 public class TaxationForPoor : AbstractReform
 {

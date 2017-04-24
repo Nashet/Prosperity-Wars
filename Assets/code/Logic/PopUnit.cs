@@ -41,6 +41,7 @@ abstract public class PopUnit : Producer
     Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled;
     private uint daysUpsetByForcedReform;
+    private bool dintGetUnemloymentSubsidy;
 
     public PopUnit(uint iamount, PopType ipopType, Culture iculture, Province where)
     {
@@ -524,6 +525,8 @@ abstract public class PopUnit : Producer
                         pop.sentToMarket.set(0f);
                         pop.consumedTotal.SetZero();
                         pop.consumedInMarket.SetZero();
+
+                        pop.dintGetUnemloymentSubsidy = false;
                     }
                     foreach (Factory factory in province.allFactories)
                     {
@@ -608,6 +611,23 @@ abstract public class PopUnit : Producer
             newPop.type = type;
             this.population -= amount;
         }
+    }
+
+    internal void takeUnemploymentSubsidies()
+    {
+        var reform = province.owner.unemploymentSubsidies.getValue();
+        if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
+        {
+            Value subsidy = getUnemployedProcent();
+            subsidy.multipleInside(population / 1000f * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate());
+            //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
+            if (province.owner.wallet.canPay(subsidy))
+                province.owner.wallet.pay(this.wallet, subsidy);
+            else
+                this.dintGetUnemloymentSubsidy = true;
+
+        }
+
     }
 
     public uint getDemotionSize()

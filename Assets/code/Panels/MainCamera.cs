@@ -19,6 +19,7 @@ public class MainCamera : MonoBehaviour
     internal static InventionsPanel inventionsPanel;
     internal static BuildPanel buildPanel;
     internal static PoliticsPanel politicsPanel;
+    internal static FinancePanel financePanel;
 
     // Use this for initialization
     //public Text generalText;
@@ -128,6 +129,7 @@ public class MainCamera : MonoBehaviour
             if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh();
             if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
             if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
+            if (financePanel.isActiveAndEnabled) financePanel.refresh();
         }
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
