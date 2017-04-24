@@ -157,7 +157,7 @@ public class Game
         new PopType(PopType.PopTypes.Workers, null, "Workers");
 
         Culture cul = new Culture("Kocopetji");
-        player = new Country("Kocopia", cul);
+        player = new Country("Kocopia", cul, new CountryWallet(0f));
         player.storageSet.add(new Storage(Product.Food, 200f));
         player.wallet.haveMoney.add(100f);
 

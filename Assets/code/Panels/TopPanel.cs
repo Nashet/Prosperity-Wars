@@ -25,11 +25,9 @@ public class TopPanel : MonoBehaviour
     {
         
         generalText.text = "Date: " + Game.date + " Country: " + Game.player.name
-            + " Population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() + " Wallet: "
-            + Game.player.wallet.haveMoney.ToString() + " income: " + Game.player.wallet.moneyIncomethisTurn.ToString()
-            + " Science points: " + Game.player.sciencePoints
-            + " Bank reservs: " + Game.player.bank.ToString() + " Bank loans: " + Game.player.bank.getGivenLoans()
-            + " Total money: " + Game.getAllMoneyInWorld();
+            + " Population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() + " Money: "
+            + Game.player.wallet.haveMoney
+            + " Science points: " + Game.player.sciencePoints;
     }
     public void onTradeClick()
     {

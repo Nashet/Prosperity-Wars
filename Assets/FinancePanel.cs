@@ -31,16 +31,20 @@ public class FinancePanel : DragPanel
 
         sb.Clear();
         sb.Append("Income:");
-        sb.Append("\n Poor tax:").Append(Game.player.wallet.poorTaxIncome);
-        sb.Append("\n Rich tax:").Append(Game.player.wallet.richTaxIncome);
-        sb.Append("\n Gold mines:").Append(Game.player.wallet.goldMinesIncome);
-        sb.Append("\n Owned interprises:").Append(Game.player.wallet.goldMinesIncome);
+        sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
+        sb.Append("\n Rich tax: ").Append(Game.player.getCountryWallet().getRichTaxIncome());
+        sb.Append("\n Gold mines: ").Append(Game.player.getCountryWallet().getGoldMinesIncome());
+        sb.Append("\n Owned interprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
+        sb.Append("\n TOTAL: ").Append(Game.player.wallet.moneyIncomethisTurn);
         incomeText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Expenses:");
-        sb.Append("\n Unemployment subsidies:").Append(Game.player.wallet.unemploymentSubsidiesExpense);
+        sb.Append("Expenses: ");
+        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
         expensesText.text = sb.ToString();
+
+        //+" Bank reservs: " + Game.player.bank.ToString() + " Bank loans: " + Game.player.bank.getGivenLoans()
+        //    + " Total money: " + Game.getAllMoneyInWorld()
     }
     public void show()
     {

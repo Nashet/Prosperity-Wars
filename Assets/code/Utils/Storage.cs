@@ -2,6 +2,71 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+public class CountryWallet : Wallet
+{
+    public CountryWallet(float inAmount) : base(inAmount)
+    {
+    }
+    Value poorTaxIncome = new Value(0f);
+    Value richTaxIncome = new Value(0f);
+    Value goldMinesIncome = new Value(0f);
+    Value unemploymentSubsidiesExpense = new Value(0f);
+    Value ownedFactoriesIncome = new Value(0f);
+
+    internal void setSatisticToZero()
+    {
+        poorTaxIncome.set(0);
+        richTaxIncome.set(0);
+        goldMinesIncome.set(0);
+        unemploymentSubsidiesExpense.set(0);
+        ownedFactoriesIncome.set(0);
+    }
+    internal float getPoorTaxIncome()
+    {
+        return poorTaxIncome.get();
+    }
+
+    internal float getRichTaxIncome()
+    {
+        return richTaxIncome.get();
+    }
+
+    internal float getGoldMinesIncome()
+    {
+        return goldMinesIncome.get();
+    }
+
+    internal float getOwnedFactoriesIncome()
+    {
+        return ownedFactoriesIncome.get();
+    }
+
+    internal float getUnemploymentSubsidiesExpense()
+    {
+        return unemploymentSubsidiesExpense.get();
+    }
+
+    internal void poorTaxIncomeAdd(Value toAdd)
+    {
+        poorTaxIncome.add(toAdd);        
+    }
+    internal void richTaxIncomeAdd(Value toAdd)
+    {
+        richTaxIncome.add(toAdd);
+    }
+    internal void goldMinesIncomeAdd(Value toAdd)
+    {
+        goldMinesIncome.add(toAdd);
+    }
+    internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
+    {
+        unemploymentSubsidiesExpense.add(toAdd);
+    }
+    internal void ownedFactoriesIncomeAdd(Value toAdd)
+    {
+        ownedFactoriesIncome.add(toAdd);
+    }
+}
 public class Wallet// : Value // : Storage
 {
     /// <summary>

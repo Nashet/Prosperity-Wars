@@ -33,7 +33,7 @@ public class Country : Owner
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
 
-    public Country(string iname, Culture iculture)
+    public Country(string iname, Culture iculture, CountryWallet wallet): base (wallet)
     {
         government = new Government(this);
         

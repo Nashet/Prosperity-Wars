@@ -392,7 +392,9 @@ public class Factory : Producer
                 {
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
-                    wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() * Game.GovernmentTakesShareOfGoldOutput));
+                    Value sentToGovernment = new Value(wallet.moneyIncomethisTurn.get() * Game.GovernmentTakesShareOfGoldOutput);
+                    wallet.pay(province.owner.wallet, sentToGovernment);
+                    province.owner.getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
                 }
                 //else // send all production to owner
                 //    storageNow.sendAll(province.owner.storageSet);
@@ -698,7 +700,13 @@ public class Factory : Producer
             float pay = wallet.haveMoney.get() - saveForYourSelf;
 
             if (pay > 0)
-                wallet.pay(getOwnerWallet(), new Value(pay));
+            {
+                Value sentToGovernment = new Value(pay);
+                wallet.pay(getOwnerWallet(), sentToGovernment);
+                if (factoryOwner is Country)
+                    factoryOwner.getCountryWallet().ownedFactoriesIncomeAdd(sentToGovernment);
+            }
+
             if (getProfit() <= 0) // to avoid iternal zero profit factories
             {
                 daysUnprofitable++;
@@ -800,7 +808,7 @@ public class Factory : Producer
 
     }
 
-    
+
 }
 /// <summary>
 /// ///////////////////////////////////////////////////////////////////****************
@@ -898,7 +906,23 @@ public class Owner
     /// <summary>
     /// money should be here??
     /// </summary>
-    public Wallet wallet = new Wallet(0f);
+    public Wallet wallet; // = new Wallet(0f);
+    public Owner(CountryWallet wallet)
+    {
+        this.wallet = wallet;
+    }
+    public Owner()
+    {
+        this.wallet = new Wallet(0f);
+    }
+    internal CountryWallet getCountryWallet()
+    {
+        if (this is Country)
+            return wallet as CountryWallet;
+        else
+            return null;
+
+    }
 }
 
 public abstract class Producer : Owner
@@ -922,7 +946,7 @@ public abstract class Producer : Owner
     /// <summary> /// Return in pieces  /// </summary>    
     abstract internal float getLocalEffectiveDemand(Product product);
     public abstract void simulate();
-    public abstract void produce(); 
+    public abstract void produce();
     public abstract void consume();
     public abstract void payTaxes();
 

@@ -300,15 +300,35 @@ abstract public class PopUnit : Producer
 
             //taxSize = wallet.moneyIncomethisTurn.multiple(province.owner.countryTax);
             if (this.type.isPoorStrata())
+            {
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                if (wallet.canPay(taxSize))
+                {                    
+                    province.owner.getCountryWallet().poorTaxIncomeAdd(taxSize);
+                    wallet.pay(province.owner.wallet, taxSize);
+                }
+                else
+                {
+                    province.owner.getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
+                    wallet.sendAll(province.owner.wallet);                    
+                }
+            }
             else
             if (this.type.isRichStrata())
+            {
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
-
-            if (wallet.canPay(taxSize))
-                wallet.pay(province.owner.wallet, taxSize);
-            else
-                wallet.sendAll(province.owner.wallet);
+                if (wallet.canPay(taxSize))
+                {
+                    province.owner.getCountryWallet().richTaxIncomeAdd(taxSize);
+                    wallet.pay(province.owner.wallet, taxSize);
+                }
+                else
+                {
+                    province.owner.getCountryWallet().richTaxIncomeAdd(wallet.haveMoney);
+                    wallet.sendAll(province.owner.wallet);
+                }
+            }
+            
         }
         else// non market
         if (this.type != PopType.aristocrats)
@@ -507,6 +527,7 @@ abstract public class PopUnit : Producer
         foreach (Country count in Country.allCountries)
         {
             count.wallet.moneyIncomethisTurn.set(0);
+            count.getCountryWallet().setSatisticToZero();
             //TaxationForPoor.ReformValue hru = count.taxationForPoor.getValue() as TaxationForPoor.ReformValue;
             //count.countryTax = hru.tax;
             count.aristocrstTax = count.serfdom.status.getTax();
@@ -622,7 +643,10 @@ abstract public class PopUnit : Producer
             subsidy.multipleInside(population / 1000f * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
             if (province.owner.wallet.canPay(subsidy))
+            {
                 province.owner.wallet.pay(this.wallet, subsidy);
+                province.owner.getCountryWallet().unemploymentSubsidiesExpenseAdd(subsidy);
+            }
             else
                 this.dintGetUnemloymentSubsidy = true;
 
