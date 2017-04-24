@@ -35,20 +35,20 @@ public class FinancePanel : DragPanel
         sb.Append("\n Rich tax: ").Append(Game.player.getCountryWallet().getRichTaxIncome());
         sb.Append("\n Gold mines: ").Append(Game.player.getCountryWallet().getGoldMinesIncome());
         sb.Append("\n Owned interprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
-        sb.Append("\n Total: ").Append(Game.player.wallet.moneyIncomethisTurn);
+        sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
 
-        sb.Append("\n\n Balance: ").Append(Game.player.wallet.moneyIncomethisTurn.get() - Game.player.getCountryWallet().getAllExpenses().get());
+        sb.Append("\n\nBalance: ").Append(Game.player.wallet.moneyIncomethisTurn.get() - Game.player.getCountryWallet().getAllExpenses().get());
         incomeText.text = sb.ToString();
 
         sb.Clear();
         sb.Append("Expenses: ");
-        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
+        sb.Append("\n Un\n Un\n Un\n Un\n Un\n Un\n Un\n Un\n Un\n Un Un\n Un\n Un\n Un\n Un\n Un\n Un\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
         expensesText.text = sb.ToString();
 
         sb.Clear();
         sb.Append("Auto send extra money to bank - yes");
         sb.Append("\nBank reservs : ").Append(Game.player.bank).Append(" Bank loans: ").Append(Game.player.bank.getGivenLoans());
-        sb.Append(" Total gold in (world): ").Append(Game.getAllMoneyInWorld());
+        sb.Append(" Total gold (in world): ").Append(Game.getAllMoneyInWorld());
         bankText.text = sb.ToString();
     }
     public void show()
