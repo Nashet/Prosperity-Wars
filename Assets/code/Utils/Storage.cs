@@ -48,12 +48,20 @@ public class CountryWallet : Wallet
 
     internal void poorTaxIncomeAdd(Value toAdd)
     {
-        poorTaxIncome.add(toAdd);        
+        poorTaxIncome.add(toAdd);
     }
     internal void richTaxIncomeAdd(Value toAdd)
     {
         richTaxIncome.add(toAdd);
     }
+
+    internal Value getAllExpenses()
+    {
+        Value result = new Value(0f);
+        result.add(unemploymentSubsidiesExpense);
+        return result;
+    }
+
     internal void goldMinesIncomeAdd(Value toAdd)
     {
         goldMinesIncome.add(toAdd);
@@ -339,15 +347,15 @@ public class PrimitiveStorageSet
             Game.threadDangerSB.Clear();
             foreach (Storage stor in container)
                 if (stor.get() > 0)
-                {                   
+                {
                     Game.threadDangerSB.Append(stor.ToString());
                     Game.threadDangerSB.Append("; ");
-                }           
-            return Game.threadDangerSB.ToString();         
+                }
+            return Game.threadDangerSB.ToString();
         }
         else return "none";
     }
-     public string ToStringWithLines()
+    public string ToStringWithLines()
     {
 
         if (container.Count > 0)

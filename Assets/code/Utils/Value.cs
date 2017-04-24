@@ -38,6 +38,16 @@ public class Value
         else
             value -= invalue.value;
     }
+    public Value subtractOutside(Value invalue)
+    {
+        if (invalue.value > value)
+        {
+            Debug.Log("Value subtrackOutside failed");
+            return new Value(0);
+        }
+        else
+            return new Value(this.get() - invalue.get());
+    }
     public void subtract(float invalue)
     {
         if (invalue > value)
