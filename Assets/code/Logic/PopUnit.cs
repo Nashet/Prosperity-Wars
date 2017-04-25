@@ -39,7 +39,7 @@ abstract public class PopUnit : Producer
     public ModifiersList modifiersLoyaltyChange;
 
     Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
-        modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled;
+        modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies;
     private uint daysUpsetByForcedReform;
     private bool dintGetUnemloymentSubsidy;
 
@@ -71,10 +71,11 @@ abstract public class PopUnit : Producer
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
         modifierUpsetByForcedReform = new Modifier(delegate (Country forWhom) { return daysUpsetByForcedReform > 0; }, "Upset by forced reform", false, -0.3f);
+        modifierNotGivenUnemploymentSubsidies = new Modifier((Country x) => dintGetUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", false, -1.0f);
         modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
         {
-           modifierStarvation,modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled,
-            modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform
+           modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled,
+            modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
         });
     }
 
@@ -303,14 +304,14 @@ abstract public class PopUnit : Producer
             {
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                 if (wallet.canPay(taxSize))
-                {                    
+                {
                     province.owner.getCountryWallet().poorTaxIncomeAdd(taxSize);
                     wallet.pay(province.owner.wallet, taxSize);
                 }
                 else
                 {
                     province.owner.getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
-                    wallet.sendAll(province.owner.wallet);                    
+                    wallet.sendAll(province.owner.wallet);
                 }
             }
             else
@@ -328,7 +329,7 @@ abstract public class PopUnit : Producer
                     wallet.sendAll(province.owner.wallet);
                 }
             }
-            
+
         }
         else// non market
         if (this.type != PopType.aristocrats)
@@ -420,7 +421,7 @@ abstract public class PopUnit : Producer
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
                 }
                 else
-                    NeedsFullfilled.set(Game.market.Consume(this, need).get() / 3f);
+                    NeedsFullfilled.set(Game.market.Consume(this, need, null).get() / 3f);
             }
 
         //if (NeedsFullfilled.get() > 0.33f) NeedsFullfilled.set(0.33f);
@@ -437,7 +438,7 @@ abstract public class PopUnit : Producer
             foreach (Storage need in lifeNeeds)
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
-                Game.market.Consume(this, need);
+                Game.market.Consume(this, need, null);
             }
             spentMoney = new Value(moneyWas - wallet.haveMoney.get());
             if (spentMoney.get() != 0f)
@@ -449,7 +450,7 @@ abstract public class PopUnit : Producer
                 moneyWas = wallet.haveMoney.get();
                 foreach (Storage need in lifeNeeds)
                 {
-                    Game.market.Consume(this, need);
+                    Game.market.Consume(this, need, null);
                     //NeedsFullfilled.set(0.66f + Game.market.Consume(this, need).get() / 3f);
 
                 }

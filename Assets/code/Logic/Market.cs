@@ -65,7 +65,7 @@ public class Market : Owner//: PrimitiveStorageSet
         {
             //price = Game.market.findPrice(stor.getProduct()).get();
             //cost += getCost(stor);
-            cost.add( getCost(stor));
+            cost.add(getCost(stor));
         }
         //return new Value(cost);
         return cost;
@@ -110,7 +110,7 @@ public class Market : Owner//: PrimitiveStorageSet
             {
                 result = 0;
                 foreach (Country country in Country.allCountries)
-                    foreach (Province province in country.ownedProvinces)                    
+                    foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province)
                         {
                             //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
@@ -119,7 +119,7 @@ public class Market : Owner//: PrimitiveStorageSet
                                 if (re != null)
                                     result += re.get();
                             }
-                    }
+                        }
                 getBouthBuffer.Set(new Storage(sup.getProduct(), result));
             }
             dateOfgetBouth = Game.date;
@@ -177,7 +177,7 @@ public class Market : Owner//: PrimitiveStorageSet
             {
                 result = 0;
                 foreach (Country country in Country.allCountries)
-                    foreach (Province province in country.ownedProvinces)                    
+                    foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province)
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
@@ -188,7 +188,7 @@ public class Market : Owner//: PrimitiveStorageSet
                             }
                         }
 
-                    
+
                 getTotalConsumptionBuffer.Set(new Storage(sup.getProduct(), result));
             }
             dateOfgetTotalConsumption = Game.date;
@@ -264,11 +264,11 @@ public class Market : Owner//: PrimitiveStorageSet
             {
                 result = 0;
                 foreach (Country country in Country.allCountries)
-                    foreach (Province province in country.ownedProvinces)                    
-                        foreach (Producer producer in province)                        
+                    foreach (Province province in country.ownedProvinces)
+                        foreach (Producer producer in province)
                             if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
-                                result += producer.sentToMarket.get();                        
-                    
+                                result += producer.sentToMarket.get();
+
                 getSupplyBuffer.Set(new Storage(sup.getProduct(), result));
             }
             dateOfgetSupply = Game.date;
@@ -313,7 +313,7 @@ public class Market : Owner//: PrimitiveStorageSet
                         {
                             if (producer.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.gainGoodsThisTurn.get();
-                        }                                            
+                        }
                     }
                 getProductionTotalBuffer.Set(new Storage(sup.getProduct(), result));
             }
@@ -504,7 +504,7 @@ public class Market : Owner//: PrimitiveStorageSet
     /// </summary>   
     internal Storage Buy(Producer buyer, Storage buying)
     {
-       
+
         //Storage storage = findStorage(what.getProduct());
         // float producedThisTurn = 0;
         //float stillHaveOnStorage = 0f;
@@ -572,7 +572,7 @@ public class Market : Owner//: PrimitiveStorageSet
     /// <summary>
     /// return procent of actual buying
     /// </summary>    
-    public Storage Consume(Producer forWhom, Storage need)
+    public Storage Consume(Producer forWhom, Storage need, CountryWallet subsidizer)
     {
         float actuallyNeedsFullfilled = 0f;
         Storage actualConsumption;
@@ -583,7 +583,36 @@ public class Market : Owner//: PrimitiveStorageSet
             forWhom.consumedTotal.add(actualConsumption);
             forWhom.consumedInMarket.add(actualConsumption);
             actuallyNeedsFullfilled = actualConsumption.get() / need.get();
-            //NeedsFullfilled.set(actualConsumption.get() / need.get() / 3f);
+        }
+        else
+
+        if (subsidizer != null)
+        {
+            forWhom.province.owner.getCountryWallet().takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
+            //repeat attempt
+            if (forWhom.wallet.CanAfford(need))
+            {
+                actualConsumption = Game.market.Buy(forWhom, need);
+                // todo connect to Buy,                     
+                forWhom.consumedTotal.add(actualConsumption);
+                forWhom.consumedInMarket.add(actualConsumption);
+                actuallyNeedsFullfilled = actualConsumption.get() / need.get();
+            }
+            else
+            { //todo mirroring
+                Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
+                if (howMuchCanAfford.get() > 0f)
+                {
+                    howMuchCanAfford = Game.market.Buy(forWhom, howMuchCanAfford);
+                    if (howMuchCanAfford.get() > 0f)
+                    {
+                        forWhom.consumedTotal.add(howMuchCanAfford);
+                        forWhom.consumedInMarket.add(howMuchCanAfford);
+                        actuallyNeedsFullfilled = howMuchCanAfford.get() / need.get();
+                    }
+                }
+
+            }
         }
         else
         {
@@ -598,7 +627,7 @@ public class Market : Owner//: PrimitiveStorageSet
                     actuallyNeedsFullfilled = howMuchCanAfford.get() / need.get();
                 }
             }
-            //NeedsFullfilled.set(howMuchCanAfford.get() / need.get() / 3f);
+
         }
         return new Storage(need.getProduct(), actuallyNeedsFullfilled);
     }
@@ -616,7 +645,7 @@ public class Market : Owner//: PrimitiveStorageSet
             // check if buying still have enoth to subtract consumeOnThisEteration
             if (!buying.has(consumeOnThisEteration))
                 consumeOnThisEteration = buying.findStorage(what.getProduct());
-            consumeOnThisEteration.multipleInside(Consume(buyer, consumeOnThisEteration));
+            consumeOnThisEteration.multipleInside(Consume(buyer, consumeOnThisEteration, null));
 
             buying.subtract(consumeOnThisEteration);
 
@@ -624,42 +653,14 @@ public class Market : Owner//: PrimitiveStorageSet
                 buyingIsEmpty = false;
         }
         return buyingIsEmpty;
-        //    foreach (Storage input in buying)
-        //{
-        //    Storage stor = new Storage(input.getProduct(), input.get() * buyInTime.get());
 
-        //    stor.multipleInside(Consume(buyer, stor));
-        //    buying.subtract(stor);
-
-        //}
     }
-    internal void Buy(Producer buyer, PrimitiveStorageSet buying)
+    internal void Buy(Producer buyer, PrimitiveStorageSet buying, CountryWallet subsidizer)
     {
         // Storage actualConsumption;
         foreach (Storage input in buying)
         {
-            Consume(buyer, input);
-
-            //if (Game.market.getSupply(input.getProduct()) > 0f)
-            //    if (buyer.wallet.CanAfford(input))
-            //    {
-            //        actualConsumption = Game.market.Buy(buyer, input);
-            //        // todo connect to Buy,                     
-            //        buyer.consumedTotal.Add(actualConsumption);
-            //        //input.subtract(actualConsumption);
-            //        //actuallyNeedsFullfilled = actualConsumption.get() / input.get();                       
-            //    }
-            //    else
-            //    {
-            //        //Debug.Log("This brancge in POp.consime was not awaited...");
-            //        //No, actually, its okey
-            //        Storage howMuchCanAfford = buyer.wallet.HowMuchCanAfford(input);
-            //        howMuchCanAfford = Game.market.Buy(buyer, howMuchCanAfford);
-            //        buyer.consumedTotal.Add(howMuchCanAfford);
-            //        //input.subtract(howMuchCanAfford);
-            //        //actuallyNeedsFullfilled = howMuchCanAfford.get() / input.get();                       
-            //    }
-            // return actuallyNeedsFullfilled;
+            Consume(buyer, input, subsidizer);
         }
     }
     /// <summary>
@@ -713,7 +714,7 @@ public class Market : Owner//: PrimitiveStorageSet
             return new Storage(result);
 
         //BuyingAmountAvailable = need.get() / DSB;
-        
+
         //float DSB = getDemandSupplyBalance(need.getProduct());
         //float BuyingAmountAvailable = 0;
 
@@ -746,7 +747,7 @@ public class Market : Owner//: PrimitiveStorageSet
         {
 
             foreach (Storage stor in marketPrice)
-            {                
+            {
                 getProductionTotal(pro, false); // for pre-turn initialization
                 getTotalConsumption(pro, false);// for pre-turn initialization
                 float supply = getSupply(stor.getProduct(), false);
@@ -790,7 +791,7 @@ public class Market : Owner//: PrimitiveStorageSet
 
     //        foreach (Storage stor in marketPrice)
     //        {
-               
+
     //            float supply = getSupply(stor.getProduct());
     //            float demand = getBouth(stor.getProduct());
     //            //if (demand == 0) getTotalConsumption(stor.getProduct());
@@ -820,7 +821,7 @@ public class Market : Owner//: PrimitiveStorageSet
     //    else
     //        return tmp.get();
     //}
-  
+
     /// <summary>
     /// Changes price for every product in market
     /// That's firts call for DSB in tick
@@ -845,9 +846,9 @@ public class Market : Owner//: PrimitiveStorageSet
                 priceChangeSpeed = 0;
                 if (balance == 1f) priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
-                    //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
-                    // else
-                    //(0.0001f <= balance &&
+                //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
+                // else
+                //(0.0001f <= balance &&
                 if (balance <= 0.75f)
                     priceChangeSpeed = -0.001f + price.get() * -0.02f;
                 else

@@ -30,7 +30,11 @@ public class Factory : Producer
     internal ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
         conditionsDestroy, conditionsSell, conditionsBuy, conditionsNatinalize,
         conditionsSubsidize, conditionsDontHireOnSubsidies, conditionsChangePriority;
+
     internal ModifiersList modifierEfficiency;
+    internal Modifier modifierHasResourceInProvince, modifierLevelBonus,
+        modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised;
+    internal Condition modifierNotBelongsToCountry;
 
     internal Factory(Province iprovince, Owner inowner, FactoryType intype)
     { //assuming this is level 0 building
@@ -45,6 +49,43 @@ public class Factory : Producer
         sentToMarket = new Storage(type.basicProduction.getProduct());
 
         salary.set(province.getLocalMinSalary());
+
+
+        modifierHasResourceInProvince = new Modifier(delegate (Country forWhom)
+        {
+            return !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput);
+        },
+           "Has input resource in thst province", true, 20f);
+        modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concetration bonus", true, 5f);
+        modifierInventedMiningAndIsShaft = new Modifier(
+           delegate (Country forWhom)
+           {
+               return forWhom.isInvented(InventionType.mining) && type.isShaft();
+           },
+           new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), false, 50f);
+        modifierBelongsToCountry = new Modifier(
+          delegate (Country forWhom)
+          {
+              return factoryOwner is Country;
+          },
+          "Belongs to government", false, -20f);
+
+        modifierNotBelongsToCountry = new Condition(
+          (Country x) => !(factoryOwner is Country),
+          "Doesn't belongs to government", false);
+        modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized", false, -10f);
+        modifierEfficiency = new ModifiersList(new List<Condition>()
+        {
+            new Modifier(InventionType.steamPower, true, 25f),
+            modifierInventedMiningAndIsShaft,
+            new Modifier(Economy.StateCapitalism, true, 10f),
+            new Modifier(Economy.Interventionism, true, 30f),
+            new Modifier(Economy.LaissezFaire, true, 50f),
+            new Modifier(Economy.PlannedEconomy, true, -10f),
+            modifierHasResourceInProvince, modifierLevelBonus,
+            modifierBelongsToCountry, modifierIsSubsidised
+        });
+
         conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
             new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
@@ -87,41 +128,25 @@ public class Factory : Producer
         conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned
 
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-        conditionsNatinalize = ConditionsList.IsNotImplemented; //!LF and ! Inter
+        conditionsNatinalize = new ConditionsList(new List<Condition>()
+        {
+            Economy.isNotLF, Economy.isNotInterventionism, modifierNotBelongsToCountry
+        }); //!LF and ! Inter
 
 
         conditionsSubsidize = new ConditionsList(new List<Condition>()
         {
-            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
+            Economy.isNotLF, Economy.isNotNatural
         });
+
         conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>()
         {
             Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
         });
+
         conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF, Condition.IsNotImplemented });
 
-        Modifier modifierHasResourceInProvince = new Modifier(delegate (Country forWhom)
-        {
-            return !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput);
-        },
-            "Has input resource in thst province", true, 20f);
-        Modifier modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concetration bonus", true, 5f);
-        Modifier conditionInventedMiningAndIsShaft = new Modifier(
-            delegate (Country forWhom)
-            {
-                return forWhom.isInvented(InventionType.mining) && type.isShaft();
-            },
-            new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), false, 50f);
-        modifierEfficiency = new ModifiersList(new List<Condition>()
-        {
-            new Modifier(InventionType.steamPower, true, 25f),
-            conditionInventedMiningAndIsShaft,
-            new Modifier(Economy.StateCapitalism, true, 10f),
-            new Modifier(Economy.Interventionism, true, 30f),
-            new Modifier(Economy.LaissezFaire, true, 50f),
-            new Modifier(Economy.PlannedEconomy, true, -10f),
-            modifierHasResourceInProvince, modifierLevelBonus
-        });
+
     }
 
     internal float getPriority()
@@ -129,7 +154,7 @@ public class Factory : Producer
         return priority;
     }
 
-    internal bool isdontHireOnSubsidies()
+    internal bool isDontHireOnSubsidies()
     {
         return dontHireOnSubsidies;
     }
@@ -256,6 +281,13 @@ public class Factory : Producer
                 result += link.amount;
         return result;
     }
+
+    internal void changeOwner(Owner player)
+    {
+
+        factoryOwner = player;
+    }
+
     internal bool IsThereMoreWorkersToHire()
     {
         uint totalAmountWorkers = province.FindPopulationAmountByType(PopType.workers);
@@ -282,11 +314,7 @@ public class Factory : Producer
         //if (getLevel() > 0)
         if (isWorking())
         {
-            // per 1000 men
-            Storage foodSalary = new Storage(Product.Food, 1f);
-            // Value moneySalary = new Value(0.8f);
-            //if (province.owner.isInvented(InventionType.capitalism))
-            //if (province.owner.economy.isMarket())
+            // per 1000 men            
             if (Economy.isMarket.checkIftrue(province.owner))
             {
                 foreach (PopLinkage link in workForce)
@@ -294,20 +322,25 @@ public class Factory : Producer
                     Value howMuchPay = new Value(0);
                     howMuchPay.set(salary.get() * link.amount / 1000f);
                     if (wallet.canPay(howMuchPay))
-                    {
                         wallet.pay(link.pop.wallet, howMuchPay);
-                        //link.pop.producedLastTurn.add(howMuchPay);
+                    else
+                        if (isSubsidized()) //take maney and try again
+                    {
+                        province.owner.getCountryWallet().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
+                        if (wallet.canPay(howMuchPay))
+                            wallet.pay(link.pop.wallet, howMuchPay);
+                        else
+                            salary.set(province.owner.getMinSalary());
                     }
                     else
                         salary.set(province.owner.getMinSalary());
-
-
                     //todo else dont pay if there is nothing to pay
                 }
             }
             else
             {
                 // non market
+                Storage foodSalary = new Storage(Product.Food, 1f);
                 foreach (PopLinkage link in workForce)
                 {
                     Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.amount / 1000f);
@@ -439,6 +472,7 @@ public class Factory : Producer
             // rise salary to attract  workforce
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
                 salary.add(0.03f);
+
             //too allocate workers form other popTypes
             if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600
                 && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
@@ -453,11 +487,12 @@ public class Factory : Producer
 
             float minSalary = province.owner.getMinSalary();
             // reduce salary on non-profit
-            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople)
+            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
                     salary.subtract(0.3f);
                 else
                     salary.set(minSalary);
+
             // check if country's min wage changed
             if (salary.get() < minSalary)
                 salary.set(minSalary);
@@ -483,15 +518,15 @@ public class Factory : Producer
             if (difference < -1 * Game.maxFactoryFireHireSpeed) difference = -1 * Game.maxFactoryFireHireSpeed;
 
         //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
-        if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0))// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
+        if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
 
         //fire people if unprofitable. 
-        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSalaryCut)// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
+        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !isSubsidized())// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
             difference = -1 * Game.maxFactoryFireHireSpeed;
 
         // just dont't hire more..
-        if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f))
+        if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f) && !isSubsidized())
             difference = 0;
 
         //todo optimaze getWorkforce()
@@ -612,8 +647,10 @@ public class Factory : Producer
             List<Storage> needs = getRealNeeds();
 
             //todo !CAPITALISM part
-
-            Game.market.Buy(this, new PrimitiveStorageSet(needs));
+            if (isSubsidized())
+                Game.market.Buy(this, new PrimitiveStorageSet(needs), province.owner.getCountryWallet());
+            else
+                Game.market.Buy(this, new PrimitiveStorageSet(needs), null);
         }
         if (isUpgrading() || isBuilding())
         {
@@ -710,7 +747,7 @@ public class Factory : Producer
             if (getProfit() <= 0) // to avoid iternal zero profit factories
             {
                 daysUnprofitable++;
-                if (daysUnprofitable == Game.maxDaysUnprofitableBeforeFactoryClosing)
+                if (daysUnprofitable == Game.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
                     this.close();
             }
             else

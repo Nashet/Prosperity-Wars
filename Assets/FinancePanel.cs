@@ -37,18 +37,24 @@ public class FinancePanel : DragPanel
         sb.Append("\n Owned interprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
         sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
 
-        sb.Append("\n\nBalance: ").Append(Game.player.wallet.moneyIncomethisTurn.get() - Game.player.getCountryWallet().getAllExpenses().get());
+        sb.Append("\n\nBalance: ").Append(Game.player.getCountryWallet().getBalance());
+        
+
+        sb.Append("\n\nHave money: ").Append(Game.player.wallet.haveMoney).Append (" + some money in bank");
         incomeText.text = sb.ToString();
+
+
 
         sb.Clear();
         sb.Append("Expenses: ");
-        sb.Append("\n Un\n Un\n Un\n Un\n Un\n Un\n Un\n Un\n Un\n Un Un\n Un\n Un\n Un\n Un\n Un\n Un\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
+        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
+        sb.Append("\n Interprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
         expensesText.text = sb.ToString();
 
         sb.Clear();
         sb.Append("Auto send extra money to bank - yes");
-        sb.Append("\nBank reservs : ").Append(Game.player.bank).Append(" Bank loans: ").Append(Game.player.bank.getGivenLoans());
-        sb.Append(" Total gold (in world): ").Append(Game.getAllMoneyInWorld());
+        sb.Append("\nBank reservs: ").Append(Game.player.bank).Append(" Bank loans: ").Append(Game.player.bank.getGivenLoans());
+        sb.Append("\n\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
         bankText.text = sb.ToString();
     }
     public void show()

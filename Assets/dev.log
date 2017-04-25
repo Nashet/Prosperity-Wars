@@ -13,6 +13,14 @@ Economy:
 + higher salary growt speed
 + Unemployment subsidies!
 
++ factory subsidies + salary 
++ nationalization
+
+- can't buy wood while there is wood on market. Caused by zero last turn consumption
+> Fix getInput on last turn hiring && fix mess?
+
+> move reform values into constructors
+
 - same sallary factories - bugged hiring
 - factories flush workforce from resource factories.
 > remove workforce flactuation on fabrics
@@ -25,13 +33,15 @@ Economy:
 
 ? non-negative Value is a bad Idea?
 
-> pop opinion on current reforms
+> pop opinions on current reforms
 > pop angry on not given subsidies
 > farmer's efficiency modifier
 
+> safety reform
+
 > hiring rate shpuld be variable - not fast enough on big population
 
-> Fix getInput on last turn hiring && fix mess?
+
 ? should factory drop workforce on small input?
 ? Should factory cut buying if there is not enough other resources?
 
@@ -46,7 +56,7 @@ Economy:
 
 > multicountry support
 
-
+> add caption for panels
 
 > conditions for reforms choise for pops
 ? add cross connection in pop - reform?
@@ -99,7 +109,7 @@ Economy:
 
 
 - Aristocrats build only of food. IS IT WAD?
-> move reform values into constructors
+
 
 ? bring farmers to market
 ? limit max price rise speed?
@@ -111,7 +121,8 @@ Economy:
 * tooltip fix
 + payNoRecord for factories income
 * total money
-+ add borders to panels
++ add borers to panels
+* Procent max capacity at production window
 
 * add money startup on factory reopen 
 + make Git description
@@ -122,7 +133,6 @@ Economy:
 > add multiple temporary modifiers for wrong reforms
 
 
-- Procent max capacity at production window
 
 
 ? reduce multiple constructors in Condition?
@@ -134,7 +144,7 @@ Economy:
 
 ? change Func<Country, bool> into Func<Country, T, bool>?
 
-> add caption for panels
+
 
 
 - disbalance in Food trade?

@@ -9,17 +9,39 @@ public class CountryWallet : Wallet
     }
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
-    Value goldMinesIncome = new Value(0f);
-    Value unemploymentSubsidiesExpense = new Value(0f);
+    Value goldMinesIncome = new Value(0f);    
     Value ownedFactoriesIncome = new Value(0f);
+
+    Value unemploymentSubsidiesExpense = new Value(0f);
+    Value factorySubsidiesExpense = new Value(0f);
 
     internal void setSatisticToZero()
     {
-        poorTaxIncome.set(0);
-        richTaxIncome.set(0);
-        goldMinesIncome.set(0);
-        unemploymentSubsidiesExpense.set(0);
-        ownedFactoriesIncome.set(0);
+        poorTaxIncome.set(0f);
+        richTaxIncome.set(0f);
+        goldMinesIncome.set(0f);
+        unemploymentSubsidiesExpense.set(0f);
+        ownedFactoriesIncome.set(0f);
+        factorySubsidiesExpense.set(0f);
+    }
+    internal void takeFactorySubsidies(Producer byWhom, Value howMuch)
+    {
+        if (canPay(howMuch))
+        {
+            payWithoutRecord(byWhom.wallet, howMuch);
+            factorySubsidiesExpense.add(howMuch);
+        }
+        else
+        {
+            //sendAll(byWhom.wallet);
+            payWithoutRecord(byWhom.wallet, byWhom.wallet.haveMoney);
+            factorySubsidiesExpense.add(byWhom.wallet.haveMoney);
+        }
+
+    }
+    internal float getfactorySubsidiesExpense()
+    {
+        return factorySubsidiesExpense.get();
     }
     internal float getPoorTaxIncome()
     {
@@ -34,6 +56,11 @@ public class CountryWallet : Wallet
     internal float getGoldMinesIncome()
     {
         return goldMinesIncome.get();
+    }
+
+    internal float getBalance()
+    {
+        return moneyIncomethisTurn.get() - getAllExpenses().get();
     }
 
     internal float getOwnedFactoriesIncome()
@@ -59,6 +86,7 @@ public class CountryWallet : Wallet
     {
         Value result = new Value(0f);
         result.add(unemploymentSubsidiesExpense);
+        result.add(factorySubsidiesExpense);
         return result;
     }
 
@@ -115,7 +143,10 @@ public class Wallet// : Value // : Storage
     {
         return new Value(Game.market.getCost(need).get() - this.haveMoney.get());
     }
-
+    internal Value HowMuchCanNotAfford(Storage need)
+    {
+        return new Value(Game.market.getCost(need) - this.haveMoney.get());
+    }
     internal Storage HowMuchCanAfford(Storage need)
     {
         float price = Game.market.findPrice(need.getProduct()).get();
@@ -130,7 +161,10 @@ public class Wallet// : Value // : Storage
     //{
     //    throw new NotImplementedException();
     //}
-
+    internal Value HowMuchCanNotPay(Value value)
+    {
+        return new Value(value.get() - this.haveMoney.get());
+    }
     internal bool canPay(Value howMuchPay)
     {
         if (this.haveMoney.get() >= howMuchPay.get())

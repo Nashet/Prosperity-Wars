@@ -95,7 +95,7 @@ public class FactoryPanel : DragPanel//for dragging
 
         priority.value = shownFactory.getPriority();
         subidize.isOn = shownFactory.isSubsidized();
-        dontHireOnSubsidies.isOn = shownFactory.isdontHireOnSubsidies();
+        dontHireOnSubsidies.isOn = shownFactory.isDontHireOnSubsidies();
     }
     public void refresh()
     {
@@ -178,6 +178,7 @@ public class FactoryPanel : DragPanel//for dragging
     public void onSubsidizeValueChanged()
     {
         shownFactory.setSubsidized(subidize.isOn);
+        refresh();
     }
     public void ondontHireOnSubsidiesValueChanged()
     {
@@ -228,7 +229,8 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onNationalizeClick()
     {
-
+        shownFactory.changeOwner(Game.player);
+        refresh();
     }
 
 }
