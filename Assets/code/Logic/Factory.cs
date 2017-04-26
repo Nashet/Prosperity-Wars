@@ -20,6 +20,8 @@ public class Factory : Producer
     protected Value salary = new Value(0);
     internal Owner factoryOwner;
     internal PrimitiveStorageSet needsToUpgrade;
+    internal PrimitiveStorageSet inputReservs = new PrimitiveStorageSet();
+
     protected List<PopLinkage> workForce = new List<PopLinkage>();
     private static int xMoneyReservForResources = 10;
     private uint daysInConstruction;
@@ -409,7 +411,6 @@ public class Factory : Producer
     /// </summary>
     public override void produce()
     {
-        //if (getLevel() > 0)
         if (isWorking())
         {
             uint workers = getWorkForce();
@@ -420,8 +421,9 @@ public class Factory : Producer
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);
+                consumeInputResources(getRealNeeds());
+
                 if (type == FactoryType.GoldMine)
-                //if (province.owner.isInvented(InventionType.capitalism))
                 {
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
@@ -429,8 +431,6 @@ public class Factory : Producer
                     wallet.pay(province.owner.wallet, sentToGovernment);
                     province.owner.getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
                 }
-                //else // send all production to owner
-                //    storageNow.sendAll(province.owner.storageSet);
                 else
                 {
                     sentToMarket.set(gainGoodsThisTurn);
@@ -445,11 +445,20 @@ public class Factory : Producer
                     // its in other files.
                 }
                 else // send all production to owner
-                    ; // write ! capitalism
+                    ; // todo write ! capitalism
                       //storageNow.sendAll(owner.storageSet);
             }
         }
     }
+
+    private void consumeInputResources(List<Storage> list)
+    {
+        foreach (Storage next in list)
+            inputReservs.subtract(next);
+    }
+
+
+
     /// <summary> only make sense if called before HireWorkforce()
     ///  PEr 1000 men!!!
     /// !!! Mirroring PaySalary
@@ -546,7 +555,7 @@ public class Factory : Producer
     {
         float inputFactor = 1;
         List<Storage> realInput = new List<Storage>();
-        Storage available;
+        //Storage available;
 
         // how much we really want
         foreach (Storage input in type.resourceInput)
@@ -564,19 +573,37 @@ public class Factory : Producer
         //}
         foreach (Storage input in realInput)
         {
-            available = consumedLastTurn.findStorage(input.getProduct());
-            if (available == null)
-                ;// do nothing - pretend there is 100%, it fires only on shownFactory start
-            else
-            if (!justHiredPeople && available.get() < input.get())
-                input.set(available);
+            if (!inputReservs.has(input))
+            {
+                Storage found = inputReservs.findStorage(input.getProduct());
+                if (found == null)
+                    input.set(0f);
+                else
+                    input.set(found);
+
+            }
         }
+        //old last turn consumption checking thing
+        //foreach (Storage input in realInput)
+        //{
+
+        //    //if (Game.market.getDemandSupplyBalance(input.getProduct()) >= 1f)
+        //    //available = input
+
+        //    available = consumedLastTurn.findStorage(input.getProduct());
+        //    if (available == null)
+        //        ;// do nothing - pretend there is 100%, it fires only on shownFactory start
+        //    else
+        //    if (!justHiredPeople && available.get() < input.get())
+        //        input.set(available);
+        //}
         // checking if there is enough money to pay for
-        foreach (Storage input in realInput)
-        {
-            Storage howMuchCan = wallet.HowMuchCanAfford(input);
-            input.set(howMuchCan.get());
-        }
+        // doesn't have sense with inputReserv
+        //foreach (Storage input in realInput)
+        //{
+        //    Storage howMuchCan = wallet.HowMuchCanAfford(input);
+        //    input.set(howMuchCan.get());
+        //}
         // searching lowest factor
         foreach (Storage rInput in realInput)//todo optimize - convert into for i
         {
@@ -610,18 +637,30 @@ public class Factory : Producer
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-        {
             result.set(result.get() * (1f + modifierEfficiency.getModifier(province.owner) / 100f));
-            //result.add();
+        return result;
+    }
 
-            //result.add(basicEff * Game.factoryEachLevelEfficiencyBonus);
-            //// if (!type.isResourceGathering() && this.type.resourceInput.findStorage(province.resource) != null)
-            //if (!type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput))
-            //    result.add(basicEff * 0.2f); //Game.factoryHaveResourceInProvinceBonus
+    public List<Storage> getHowMuchReservesWants()
+    {
+        Value multiplier = new Value(getWorkForceFullFilling() * getLevel() * Game.factoryInputReservInDays);
+        
+
+
+        List<Storage> result = new List<Storage>();
+
+        foreach (Storage next in type.resourceInput)
+        {
+            Storage howMuchWantBuy = new Storage(next.getProduct(), next.get());
+            howMuchWantBuy.multipleInside(multiplier);
+            Storage found = inputReservs.findStorage(next.getProduct());
+            if (found != null)
+                howMuchWantBuy.subtract(found);
+            result.Add(howMuchWantBuy);
         }
         return result;
     }
-    // Should remove market assamption since its goes to double- calculation?
+    // Should remove market availability assamption since its goes to double- calculation?
     public List<Storage> getRealNeeds()
     {
         Value multiplier = new Value(getEfficiency(false).get() * getLevel());
@@ -644,7 +683,7 @@ public class Factory : Producer
         //if (getLevel() > 0)
         if (isWorking())
         {
-            List<Storage> needs = getRealNeeds();
+            List<Storage> needs = getHowMuchReservesWants();
 
             //todo !CAPITALISM part
             if (isSubsidized())
@@ -659,8 +698,8 @@ public class Factory : Producer
             bool isMarket = Economy.isMarket.checkIftrue(province.owner);// province.owner.isInvented(InventionType.capitalism);
             if (isMarket)
             {
-                if (isBuilding())
-                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
+                if (isBuilding())                
+                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());                
                 else
                     if (isUpgrading())
                     isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
@@ -677,6 +716,9 @@ public class Factory : Producer
                 upgrading = false;
                 needsToUpgrade.SetZero();
                 daysInConstruction = 0;
+                inputReservs.subtract(type.getBuildNeeds());
+                inputReservs.subtract(type.getUpgradeNeeds());
+
                 reopen(this);
             }
             else if (daysInConstruction == Game.maxDaysBuildingBeforeRemoving)

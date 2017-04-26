@@ -15,16 +15,29 @@ Economy:
 
 + factory subsidies + salary 
 + nationalization
++ version + res
 
-- can't buy wood while there is wood on market. Caused by zero last turn consumption
-> Fix getInput on last turn hiring && fix mess?
+> Meshs roundation
 
-> move reform values into constructors
+- extra tooltips in PopulationTable
 
 - same sallary factories - bugged hiring
 - factories flush workforce from resource factories.
 > remove workforce flactuation on fabrics
 ? double control on workforce - by sallary & profit?
+
+> dont store factory upgrade/building purchases
+
+- factories not always take subsidies
+
++ finince panel
+* can't buy wood while there is wood on market. Caused by zero last turn consumption
+* Fix getInput on last turn hiring && fix mess?
+> describe inputFactor in panel
+
+> move reform values into constructors
+
+
 
 - pop can't consume anything when food DSB > 1
 - food's price would not growth on dsb > 1
@@ -63,7 +76,7 @@ Economy:
 > improve pop opinions on reforms, including isMyStatusEnchanced
 
 > always on top panels
-> finince panel
+
 
 ? get rid of PrimitiveStorage?
 ? covert Value into struct? For better speed?
@@ -277,7 +290,7 @@ ency
 * mess with owner & owner
 
 
-> Meshs roundation
+
 
 
 
@@ -353,9 +366,6 @@ ency
 spend on previous expences.
 
 
-- When loose supplay on food - all consumption is gone. Remove it or make price growh faster? 
-	High price on food doesnt work really.
-	Dont allow food shortage to happen?
 
 > partial table refresh
 

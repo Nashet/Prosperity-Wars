@@ -142,6 +142,8 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nInput required: " + InputRequired
                 + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Costed: " + shownFactory.getConsumedCost().ToString()
                 + "\nConsumed LT: " + shownFactory.consumedLastTurn
+                + "\nInput reservs: " + shownFactory.inputReservs
+                + "\nInput factor: " + shownFactory.getInputFactor()
                 + "\nSalary (per 1000 men):" + shownFactory.getSalary() + " Salary(total):" + shownFactory.getSalaryCost()
                 + "\nOwner: " + shownFactory.factoryOwner.ToString()
                 + upgradeNeeds

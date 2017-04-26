@@ -436,6 +436,11 @@ public class PrimitiveStorageSet
         else
             find.subtract(stor);
     }
+    internal void subtract(PrimitiveStorageSet set)
+    {
+        foreach (Storage stor in set)
+            this.subtract(stor);        
+    }
 
     internal void copyDataFrom(PrimitiveStorageSet consumed)
     {

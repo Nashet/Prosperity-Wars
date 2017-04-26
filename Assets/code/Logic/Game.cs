@@ -70,6 +70,7 @@ public class Game
     internal static Value defaultPriceLimitMultiplier = new Value(5f);
     internal static uint PopDaysUpsetByForcedReform = 30;
     internal static float GovernmentTakesShareOfGoldOutput = 0.5f;
+    internal static byte factoryInputReservInDays = 5;
 
     public Game()
     {
