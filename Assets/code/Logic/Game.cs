@@ -75,8 +75,8 @@ public class Game
     public Game()
     {
         Application.runInBackground = true;
-        LoadImages();
-        //generateMapImage();
+        //LoadImages();
+        generateMapImage();
         new Product("Food", false, 0.4f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
@@ -276,7 +276,7 @@ public class Game
             amountOfProvince = 10;
         else
             amountOfProvince = 12 + Game.random.Next(8);
-        amountOfProvince = 30 + Game.random.Next(10);
+        //amountOfProvince = 30 + Game.random.Next(10);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -327,7 +327,7 @@ public class Game
             //if (editingVertices[i] == sr || editingVertices[i] == sr2)
             if (editingVertices[i] == sr)
             {
-                editingVertices[i].x += cellMuliplier * xMove;
+                editingVertices[i].x += cellMuliplier * xMove / 2;
                 mesh.vertices = editingVertices;
                 mesh.RecalculateBounds();
                 return true;
@@ -348,7 +348,7 @@ public class Game
             //if (editingVertices[i] == sr || editingVertices[i] == sr2)
             if (mesh1Vertices[i] == sr)
             {
-                mesh1Vertices[i].x += cellMuliplier * xMove;
+                mesh1Vertices[i].x += cellMuliplier * xMove / 2;
                 mesh.vertices = mesh1Vertices;
                 mesh.RecalculateBounds();
                 return true;
@@ -356,27 +356,7 @@ public class Game
         }
         return false;
     }
-    private bool movePointLeft2(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
-    {
-        Vector3[] mesh1Vertices = mesh.vertices;
-
-        Mesh mesh2 = getMeshID(xpos + 1, ypos);
-        Vector3[] mesh2Vertices = mesh2.vertices;
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            Vector3 sr = new Vector3((xpos + 1) * cellMuliplier, (ypos + 2) * cellMuliplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * cellMuliplier, (ypos ) * cellMuliplier, 0f);
-            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
-            if (mesh1Vertices[i] == sr)
-            {
-                mesh1Vertices[i].x += cellMuliplier * xMove;
-                mesh.vertices = mesh1Vertices;
-                mesh.RecalculateBounds();
-                return true;
-            }
-        }
-        return false;
-    }
+  
     void roundMesh()
     {
         for (int ypos = 0; ypos < mapImage.height; ypos++)
@@ -394,18 +374,18 @@ public class Game
                     movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos, 1, 0);
                     movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos, 1, 0);
                 }
-                //else
-                //if (mapImage.isLeftBottomCorner(xpos, ypos))
-                //{
-                //    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
-                //    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
-                //}
-                //else
-                //if (mapImage.isRightBottomCorner(xpos, ypos))
-                //{
-                //    movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
-                //    movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
-                //}
+                else
+                if (mapImage.isLeftBottomCorner(xpos, ypos))
+                {
+                    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
+                    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
+                }
+                else
+                if (mapImage.isRightBottomCorner(xpos, ypos))
+                {
+                    movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
+                    movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
+                }
 
 
             }
