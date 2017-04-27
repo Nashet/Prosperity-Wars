@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=ready&title=Ready)](https://waffle.io/Nashet/EconomicSimulation)
 # Economic simulation
 
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html)
