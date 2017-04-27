@@ -75,8 +75,8 @@ public class Game
     public Game()
     {
         Application.runInBackground = true;
-        //LoadImages();
-        generateMapImage();
+        LoadImages();
+        //generateMapImage();
         new Product("Food", false, 0.4f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
@@ -91,7 +91,8 @@ public class Game
         new Product("Fruit", true, 1);
         new Product("Wine", false, 3);
         market.initialize();
-        MakeMap();
+        makeMap();
+        roundMesh();
         var mapWidth = mapImage.width * cellMuliplier;
         var mapHeight = mapImage.height * cellMuliplier;
         //MainCamera.cameraMy.transform.position = GameObject.FindWithTag("mapObject").transform.position;
@@ -223,21 +224,38 @@ public class Game
     /// <summary>
     /// Makes polygonal Stripe and stores it vertices[] and trianglesList[]
     /// </summary>    
-    void makePolygonalStripe(float x, float y, float x2, float y2)
+    void makePolygonalStripe(float x, float y, float x2, float y2, int xpos1, int ypos1, int xpos2, int ypos2)
+    //void makePolygonalStripe(float x, float y, float x2, float y2)
     {
+        //float x = xpos1 * cellMuliplier;
+        //float y = ypos1 * cellMuliplier;
+        //float x2 = xpos2 * cellMuliplier;
+        //float y2 = ypos1 * cellMuliplier;
 
+        //if (mapImage.isLeftTopCorner(xpos1, ypos1))
+        //    x -= cellMuliplier;
+        //if (mapImage.isRightTopCorner(xpos1, ypos1))
+        //    x += cellMuliplier;
+
+        //if (mapImage.isLeftBottomCorner(xpos1, ypos1))
+        //    vertices.Add(new Vector3(x + cellMuliplier, y, 0));
+        //else
         vertices.Add(new Vector3(x, y, 0));
+
+        //if (mapImage.isRightBottomCorner(xpos2 - 1, ypos1))
+        //    vertices.Add(new Vector3(x2 - cellMuliplier, y, 0));
+        //else
         vertices.Add(new Vector3(x2, y, 0));
+
+        //if (mapImage.isRightTopCorner(xpos2 - 1, ypos1))
+        //    vertices.Add(new Vector3(x2 - cellMuliplier, y2, 0));
+        //else
         vertices.Add(new Vector3(x2, y2, 0));
+
+        //if (mapImage.isLeftTopCorner(xpos1, ypos1))
+        //    vertices.Add(new Vector3(x + cellMuliplier, y2, 0));
+        //else
         vertices.Add(new Vector3(x, y2, 0));
-
-        //trianglesList.Add(0 + triangleCounter);
-        //trianglesList.Add(1 + triangleCounter);
-        //trianglesList.Add(2 + triangleCounter);
-
-        //trianglesList.Add(2 + triangleCounter);
-        //trianglesList.Add(3 + triangleCounter);
-        //trianglesList.Add(0 + triangleCounter);
 
         trianglesList.Add(0 + triangleCounter);
         trianglesList.Add(2 + triangleCounter);
@@ -258,7 +276,7 @@ public class Game
             amountOfProvince = 10;
         else
             amountOfProvince = 12 + Game.random.Next(8);
-            //amountOfProvince = 30 + Game.random.Next(10);
+        amountOfProvince = 30 + Game.random.Next(10);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -284,12 +302,123 @@ public class Game
         }
         mapImage.Apply();
     }
-    void MakeMap()
+    Mesh getMeshID(Color color)
+    {
+        foreach (var all in Province.allProvinces)
+            if (color == all.colorID)
+                return all.mesh;
+        return null;
+    }
+    Mesh getMeshID(int xpos, int ypos)
+    {
+        Color color = mapImage.GetPixel(xpos, ypos);
+        foreach (var all in Province.allProvinces)
+            if (color == all.colorID)
+                return all.mesh;
+        return null;
+    }
+    private bool movePointRight(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
+    {
+        Vector3[] editingVertices = mesh.vertices;
+        for (int i = 0; i < mesh.vertices.Length; i++)
+        {
+            Vector3 sr = new Vector3(xpos * cellMuliplier, (ypos + 1) * cellMuliplier, 0f);
+            //Vector3 sr2 = new Vector3(xpos * cellMuliplier, (ypos ) * cellMuliplier, 0f);
+            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
+            if (editingVertices[i] == sr)
+            {
+                editingVertices[i].x += cellMuliplier * xMove;
+                mesh.vertices = editingVertices;
+                mesh.RecalculateBounds();
+                return true;
+            }
+        }
+        return false;
+    }
+    private bool movePointLeft(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
+    {
+        Vector3[] mesh1Vertices = mesh.vertices;
+
+        Mesh mesh2 = getMeshID(xpos + 1, ypos);
+        Vector3[] mesh2Vertices = mesh2.vertices;
+        for (int i = 0; i < mesh.vertices.Length; i++)
+        {
+            Vector3 sr = new Vector3(xpos * cellMuliplier, (ypos + 2) * cellMuliplier, 0f);
+            //Vector3 sr2 = new Vector3(xpos * cellMuliplier, (ypos ) * cellMuliplier, 0f);
+            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
+            if (mesh1Vertices[i] == sr)
+            {
+                mesh1Vertices[i].x += cellMuliplier * xMove;
+                mesh.vertices = mesh1Vertices;
+                mesh.RecalculateBounds();
+                return true;
+            }
+        }
+        return false;
+    }
+    private bool movePointLeft2(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
+    {
+        Vector3[] mesh1Vertices = mesh.vertices;
+
+        Mesh mesh2 = getMeshID(xpos + 1, ypos);
+        Vector3[] mesh2Vertices = mesh2.vertices;
+        for (int i = 0; i < mesh.vertices.Length; i++)
+        {
+            Vector3 sr = new Vector3((xpos + 1) * cellMuliplier, (ypos + 2) * cellMuliplier, 0f);
+            //Vector3 sr2 = new Vector3(xpos * cellMuliplier, (ypos ) * cellMuliplier, 0f);
+            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
+            if (mesh1Vertices[i] == sr)
+            {
+                mesh1Vertices[i].x += cellMuliplier * xMove;
+                mesh.vertices = mesh1Vertices;
+                mesh.RecalculateBounds();
+                return true;
+            }
+        }
+        return false;
+    }
+    void roundMesh()
+    {
+        for (int ypos = 0; ypos < mapImage.height; ypos++)
+        {
+            for (int xpos = 0; xpos < mapImage.width; xpos++)
+            {
+                if (mapImage.isRightTopCorner(xpos, ypos))
+                {
+                    movePointLeft(getMeshID(xpos, ypos), xpos + 1, ypos - 1, -1, 0);
+                    movePointLeft(getMeshID(xpos + 1, ypos), xpos + 1, ypos - 1, -1, 0);
+                }
+                else
+                if (mapImage.isLeftTopCorner(xpos, ypos))
+                {
+                    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos, 1, 0);
+                    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos, 1, 0);
+                }
+                //else
+                //if (mapImage.isLeftBottomCorner(xpos, ypos))
+                //{
+                //    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
+                //    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
+                //}
+                //else
+                //if (mapImage.isRightBottomCorner(xpos, ypos))
+                //{
+                //    movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
+                //    movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
+                //}
+
+
+            }
+        }
+    }
+
+
+
+    void makeMap()
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
         mapObject = GameObject.Find("MapObject");
-        //mapImage = UtilsMy.FlipTexture(mapImage); ;
 
         Color currentProvinceColor = mapImage.GetPixel(0, 0);
         Color currentColor, lastColor, lastprovinceColor = mapImage.GetPixel(0, 0); //, stripeColor;
@@ -297,30 +426,28 @@ public class Game
         for (int j = 0; j < mapImage.height; j++) // cicle by province        
             for (int i = 0; i < mapImage.width; i++)
             {
-                // nextColor = mapImage.GetPixel(i, j);
                 currentProvinceColor = mapImage.GetPixel(i, j);
-                //if (nextColor == currentProvinceColor)
                 if ((lastprovinceColor != currentProvinceColor) && !Province.isProvinceCreated(currentProvinceColor))
                 { // fill up province's mesh
-                    // making mesh by BMP        
+                    // making mesh from texture
                     int stripeLenght = 0;
-                    //lastColor = mapImage.GetPixel(0, 0);
                     lastColor = Color.black.setAlphaToZero(); // unexisting color
-                    //stripeColor = lastColor;
+
                     for (int ypos = 0; ypos < mapImage.height; ypos++)
                     {
-                        //lastColor = mapImage.GetPixel(0, 0);
                         lastColor = Color.black.setAlphaToZero(); // unexisting color
                         for (int xpos = 0; xpos < mapImage.width; xpos++)
                         {
                             currentColor = mapImage.GetPixel(xpos, ypos);
-                            if (currentColor == currentProvinceColor)                         
-                                stripeLenght++;                         
+                            if (currentColor == currentProvinceColor)
+                                stripeLenght++;
                             else //place for trangle making
                             {
                                 if (lastColor == currentProvinceColor)
                                 {
-                                    makePolygonalStripe((xpos - stripeLenght) * cellMuliplier, ypos * cellMuliplier, xpos * cellMuliplier, (ypos + 1) * cellMuliplier); //should form 2 triangles
+                                    makePolygonalStripe((xpos - stripeLenght) * cellMuliplier, ypos * cellMuliplier, xpos * cellMuliplier, (ypos + 1) * cellMuliplier,
+                                        (xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
+                                    //makePolygonalStripe((xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
                                     stripeLenght = 0;
                                 }
                             }
@@ -329,75 +456,62 @@ public class Game
                         if (stripeLenght != 0)
                             if (lastColor == currentProvinceColor)
                             {
-                                makePolygonalStripe((mapImage.width - stripeLenght) * cellMuliplier, ypos * cellMuliplier, (mapImage.width) * cellMuliplier, (ypos + 1) * cellMuliplier); //should form 2 triangles
+                                makePolygonalStripe((mapImage.width - stripeLenght) * cellMuliplier, ypos * cellMuliplier, (mapImage.width) * cellMuliplier, (ypos + 1) * cellMuliplier,
+                                    (mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
+                                //makePolygonalStripe((mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
                                 stripeLenght = 0;
                             }
                         stripeLenght = 0;
                     }
-
                     //finished all map search for currentProvince
-
-                    //spawn object
-                    GameObject objToSpawn = new GameObject(string.Format("{0}", provinceCounter));
-
-                    //Add Components
-                    MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
-                    MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
-
-                    // in case you want the new gameobject to be a child
-                    // of the gameobject that your script is attached to
-                    objToSpawn.transform.parent = mapObject.transform;
-
-                    Mesh mesh = meshFilter.mesh;
-                    mesh.Clear();
-
-                    mesh.vertices = vertices.ToArray(); //map.getGroundVertices3();
-                    mesh.triangles = trianglesList.ToArray();
-                    mesh.RecalculateNormals();
-                    mesh.RecalculateBounds();
-
-                    //Renderer rend = GetComponent<Renderer>();
-                    meshRenderer.material.shader = Shader.Find("Standard");
-                    //meshRenderer.material.SetColor("_SpecColor", currentProvinceColor);
-                    meshRenderer.material.color = currentProvinceColor;
-
-                    MeshCollider groundMeshCollider;
-                    groundMeshCollider = objToSpawn.AddComponent(typeof(MeshCollider)) as MeshCollider;
-                    groundMeshCollider.sharedMesh = mesh;
-
-                    vertices.Clear();
-                    trianglesList.Clear();
-                    triangleCounter = 0;
-
-
-                    mesh.name = provinceCounter.ToString();
-                    //provinceCounter;
-
-                    //Province newProvince = new Province(string.Format("{0}", provinceCounter),
-                    Province newProvince = new Province(nameGenerator.generateProvinceName(),
-                        provinceCounter, currentProvinceColor, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false));
-                    Province.allProvinces.Add(newProvince);
-
-
-
-                    //newProvince.centre = meshRenderer.;
-                    //newProvince.centre = objToSpawn.rigidbody.centerOfMass;
-
-
-
+                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName());
                     provinceCounter++;
 
 
-                }
-                else
-                {
-                    // currentProvinceColor = nextColor;
                 }
                 lastprovinceColor = currentProvinceColor;
             }
     }
 
+    void makeProvince(int provinceID, Color colorID, string name)
+    {//spawn object
+        GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
 
+        //Add Components
+        MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
+
+        // in case you want the new gameobject to be a child
+        // of the gameobject that your script is attached to
+        objToSpawn.transform.parent = mapObject.transform;
+
+        Mesh mesh = meshFilter.mesh;
+        mesh.Clear();
+
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = trianglesList.ToArray();
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+
+        meshRenderer.material.shader = Shader.Find("Standard");
+        meshRenderer.material.color = colorID;
+
+        MeshCollider groundMeshCollider;
+        groundMeshCollider = objToSpawn.AddComponent(typeof(MeshCollider)) as MeshCollider;
+        groundMeshCollider.sharedMesh = mesh;
+
+        vertices.Clear();
+        trianglesList.Clear();
+        triangleCounter = 0;
+
+        mesh.name = provinceID.ToString();
+
+        Province newProvince = new Province(name,
+            provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false));
+        Province.allProvinces.Add(newProvince);
+
+    }
     bool FindProvinceCenters()
     {
         Vector3 accu = new Vector3(0, 0, 0);
@@ -563,7 +677,7 @@ public class Game
                 foreach (PopUnit pop in province.allPopUnits)
                 {
                     if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.ShouldPayAristocratTax())                            
+                        if (pop.ShouldPayAristocratTax())
                             pop.PayTaxToAllAristocrats();
                 }
                 foreach (PopUnit pop in province.allPopUnits)

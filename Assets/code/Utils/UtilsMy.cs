@@ -14,7 +14,7 @@ public class ProvinceNameGenerator
     static ChanceBox<string> vowels = new ChanceBox<string>();
     static ChanceBox<string> consonants = new ChanceBox<string>();
     public static string generateWord(int length)
-    {       
+    {
         Game.threadDangerSB.Clear();
         if (Game.random.Next(10) == 1)
         {
@@ -74,7 +74,7 @@ public class ProvinceNameGenerator
         prefix.add("Middle ", 0.1f);
         prefix.add("", 80f);
         prefix.initiate();
-        
+
         vowels.add("a", 8.167f);
         vowels.add("e", 12.702f);
         vowels.add("i", 6.966f);
@@ -115,7 +115,7 @@ public class ProvinceNameGenerator
     {
         result.Clear();
         result.Append(prefix.getRandom());
-        if (Game.random.Next(3)==1) result.Append(generateWord(Game.random.Next(2, 5)));
+        if (Game.random.Next(3) == 1) result.Append(generateWord(Game.random.Next(2, 5)));
         else
             result.Append(generateWord(Game.random.Next(3, 5)));
         result.Append(postfix.getRandom());
@@ -263,7 +263,7 @@ public class LimitedQueue<T> : Queue<T>
 }
 public static class WordGenerator
 {
-    
+
 }
 public static class UtilsMy
 {
@@ -291,6 +291,7 @@ public static class UtilsMy
             for (int i = 0; i < image.width; i++)
                 image.SetPixel(i, j, color);
     }
+
     public static void setAlphaToMax(this Texture2D image)
     {
         for (int j = 0; j < image.height; j++) // cicle by province        
@@ -301,12 +302,63 @@ public static class UtilsMy
     static void drawSpot(Texture2D image, int x, int y, Color color)
     {
         int straightBorderChance = 5;
-        if (x >= 0 && x < image.width && y >= 0 && y < image.height)
+        //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
+
+        if (image.coordinatesExist(x, y))
             if (Game.random.Next(straightBorderChance) != 1)
                 //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
                 if (image.GetPixel(x, y) == Color.black)
                     image.SetPixel(x, y, color.setAlphaToZero());
     }
+    public static bool coordinatesExist(this Texture2D image, int x, int y)
+    {
+        return (x >= 0 && x < image.width && y >= 0 && y < image.height);
+    }
+    public static bool isRightTopCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    public static bool isRightBottomCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    public static bool isLeftTopCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    public static bool isLeftBottomCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    
     public static void drawRandomSpot(this Texture2D image, int x, int y, Color color)
     {
         //draw 4 points around x, y
@@ -343,9 +395,9 @@ public static class UtilsMy
 
         return str.ToUpper();
     }
-    
 
-    
+
+
     public static bool isSameColorsWithoutAlpha(Color colorA, Color colorB)
     {
         if (colorA.b == colorB.b && colorA.g == colorB.g && colorA.r == colorB.r)
@@ -354,6 +406,7 @@ public static class UtilsMy
             return false;
 
     }
+
     public static float getHumidityRatio(float massVapor, float massDryAir)
     {
         return massVapor / massDryAir;
