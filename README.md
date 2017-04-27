@@ -1,11 +1,11 @@
-[![Stories in Ready](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=Bugs)](https://waffle.io/Nashet/EconomicSimulation) [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Nashet/EconomicSimulation.svg?style=plastic)](https://github.com/Nashet/EconomicSimulation)
+[![Stories in Ready](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Nashet/EconomicSimulation.svg?style=plastic)](https://github.com/Nashet/EconomicSimulation)
 # Economic simulation
 
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html)
 
 Several years ago I made [Economy analyzer for PDS's Vicoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by (https://github.com/aekrylov))
 
-Making that tool made me disappointed in how Victoria 2 economy made.
+Making that tool made me disappointed in how Victoria 2 economy is made.
 
 Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 
