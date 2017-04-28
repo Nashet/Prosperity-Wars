@@ -679,7 +679,7 @@ abstract public class PopUnit : Producer
     }
     public bool WantsDemotion()
     {
-        float demotionLimit = 0.666f;
+        float demotionLimit = 0.333f;
         if (this.NeedsFullfilled.get() < demotionLimit)
             return true;
         else return false;

@@ -93,7 +93,7 @@ public class Game
         market.initialize();
         makeMap();
         roundMesh();
-        findNeigbors();
+        findNeighbors();
         var mapWidth = mapImage.width * cellMuliplier;
         var mapHeight = mapImage.height * cellMuliplier;
         //MainCamera.cameraMy.transform.position = GameObject.FindWithTag("mapObject").transform.position;
@@ -267,7 +267,7 @@ public class Game
         trianglesList.Add(3 + triangleCounter);
         triangleCounter += 4;
     }
-    void checkCoordinate(Province province, int x1, int y1, int x2, int y2)
+    void checkCoordinateForNeighbors(Province province, int x1, int y1, int x2, int y2)
     {
         if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
         {
@@ -276,7 +276,7 @@ public class Game
             province.addNeigbor(found);
         }
     }
-    void findNeigbors()
+    void findNeighbors()
     {
         int f = 0;
         foreach (var province in Province.allProvinces)
@@ -288,10 +288,10 @@ public class Game
                     Color currentColor = mapImage.GetPixel(i, j);
                     if (currentColor == province.colorID)
                     {
-                        checkCoordinate(province, i, j, i + 1, j);
-                        checkCoordinate(province, i, j, i - 1, j);
-                        checkCoordinate(province, i, j, i, j + 1);
-                        checkCoordinate(province, i, j, i, j - 1);
+                        checkCoordinateForNeighbors(province, i, j, i + 1, j);
+                        checkCoordinateForNeighbors(province, i, j, i - 1, j);
+                        checkCoordinateForNeighbors(province, i, j, i, j + 1);
+                        checkCoordinateForNeighbors(province, i, j, i, j - 1);
                     }
                 }
         }
