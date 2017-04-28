@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Text;
 
 public class Province
 {
@@ -23,6 +24,7 @@ public class Province
     public static List<Province> allProvinces = new List<Province>();
     private static uint defaultPopulationSpawn = 10;
     public List<Factory> allFactories = new List<Factory>();
+    private Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
     Product resource;
     internal uint fertileSoil;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
@@ -35,6 +37,7 @@ public class Province
         fertileSoil = 10000;
 
     }
+
     internal int getID()
     { return ID; }
     public void SecedeTo(Country taker)
@@ -80,6 +83,13 @@ public class Province
             if (anyProvince.colorID == color)
                 return true;
         return false;
+    }
+    public static Province findProvince(Color color)
+    {
+        foreach (Province anyProvince in allProvinces)
+            if (anyProvince.colorID == color)
+                return anyProvince;
+        return null;
     }
     public List<PopUnit> FindAllPopUnits(PopType ipopType)
     {
@@ -340,6 +350,24 @@ public class Province
                 }
             return minSalary;
         }
+    }
+
+    internal void addNeigbor(Province found)
+    {
+        if (found != this && !distances.ContainsKey(found))
+            distances.Add(found, 1);  
+
+    }
+    /// <summary>
+    /// for debug reasons
+    /// </summary>
+    /// <returns></returns>
+    internal string getNeigborsList()
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var t in distances)
+            sb.Append("\n").Append(t.Key.ToString());
+        return sb.ToString();
     }
     /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minsalary
     ///</summary>

@@ -93,6 +93,7 @@ public class Game
         market.initialize();
         makeMap();
         roundMesh();
+        findNeigbors();
         var mapWidth = mapImage.width * cellMuliplier;
         var mapHeight = mapImage.height * cellMuliplier;
         //MainCamera.cameraMy.transform.position = GameObject.FindWithTag("mapObject").transform.position;
@@ -266,6 +267,35 @@ public class Game
         trianglesList.Add(3 + triangleCounter);
         triangleCounter += 4;
     }
+    void checkCoordinate(Province province, int x1, int y1, int x2, int y2)
+    {
+        if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
+        {
+            Province found;
+            found = Province.findProvince(mapImage.GetPixel(x2, y2));
+            province.addNeigbor(found);
+        }
+    }
+    void findNeigbors()
+    {
+        int f = 0;
+        foreach (var province in Province.allProvinces)
+        {
+            f++;
+            for (int j = 0; j < mapImage.height; j++)
+                for (int i = 0; i < mapImage.width; i++)
+                {
+                    Color currentColor = mapImage.GetPixel(i, j);
+                    if (currentColor == province.colorID)
+                    {
+                        checkCoordinate(province, i, j, i + 1, j);
+                        checkCoordinate(province, i, j, i - 1, j);
+                        checkCoordinate(province, i, j, i, j + 1);
+                        checkCoordinate(province, i, j, i, j - 1);
+                    }
+                }
+        }
+    }
     void generateMapImage()
     {
         mapImage = new Texture2D(100, 100);
@@ -356,7 +386,7 @@ public class Game
         }
         return false;
     }
-  
+
     void roundMesh()
     {
         for (int ypos = 0; ypos < mapImage.height; ypos++)

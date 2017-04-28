@@ -285,6 +285,13 @@ public static class UtilsMy
         color.a = 1f;
         return color;
     }
+    public static bool isDifferentColor(this Texture2D image, int thisx, int thisy, int x, int y)
+    {        
+        if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))        
+            return true;
+        else
+            return false;
+    }
     public static void setColor(this Texture2D image, Color color)
     {
         for (int j = 0; j < image.height; j++) // cicle by province        
@@ -301,7 +308,7 @@ public static class UtilsMy
     }
     static void drawSpot(Texture2D image, int x, int y, Color color)
     {
-        int straightBorderChance = 5;
+        int straightBorderChance = 4;// 5;
         //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
 
         if (image.coordinatesExist(x, y))
@@ -358,7 +365,7 @@ public static class UtilsMy
         else
             return false;
     }
-    
+
     public static void drawRandomSpot(this Texture2D image, int x, int y, Color color)
     {
         //draw 4 points around x, y
@@ -367,14 +374,6 @@ public static class UtilsMy
         drawSpot(image, x + 1, y, color);
         drawSpot(image, x, y - 1, color);
         drawSpot(image, x, y + 1, color);
-        //if (x - 1 >= 0 && (image.GetPixel(x - 1, y).a != 1f || image.GetPixel(x - 1, y) == Color.black) && )
-        //    image.SetPixel(x - 1, y, color.setAlphaToZero());
-        //if (x + 1 < image.width && (image.GetPixel(x + 1, y).a != 1f || image.GetPixel(x - 1, y) == Color.black) && Game.random.Next(chance) != 1)
-        //    image.SetPixel(x + 1, y, color.setAlphaToZero());
-        //if (y - 1 >= 0 && (image.GetPixel(x, y - 1).a != 1f || image.GetPixel(x - 1, y) == Color.black) && Game.random.Next(chance) != 1)
-        //    image.SetPixel(x, y - 1, color.setAlphaToZero());
-        //if (y + 1 < image.height && (image.GetPixel(x, y + 1).a != 1f || image.GetPixel(x - 1, y) == Color.black) && Game.random.Next(chance) != 1)
-        //    image.SetPixel(x, y + 1, color.setAlphaToZero());
 
     }
     public static int getRandomX(this Texture2D image)

@@ -8,6 +8,22 @@ Non capitalism IS: no capitalists, no trade for everybody (except Aristocrats, e
 Slaves & workers pay tax to aristocrats via Factories. Farmers initially are free 
 
 Economy:
+
+
+
+
+
+
+
+? non-negative Value is a bad Idea?
+> multicountry support
+> farmer's efficiency modifier
+- factories not always take subsidies
+- same sallary factories - bugged hiring
+- extra tooltips in PopulationTable
+> hiring rate shpuld be variable - not fast enough on big population
+- demotion reason farmees
+//////////////////waffle///////////
 + min wage reform
 + Unemployment in Panel & fix
 + higher salary growt speed
@@ -16,24 +32,20 @@ Economy:
 + factory subsidies + salary 
 + nationalization
 + version + res
-
 + Meshs roundation!!!
 
-- extra tooltips in PopulationTable
-
-- same sallary factories - bugged hiring
 - factories flush workforce from resource factories.
 > remove workforce flactuation on fabrics
 ? double control on workforce - by sallary & profit?
 
 > dont store factory upgrade/building purchases
 
-- factories not always take subsidies
+
 
 + finince panel
 * can't buy wood while there is wood on market. Caused by zero last turn consumption
 * Fix getInput on last turn hiring && fix mess?
-> describe inputFactor in panel
+> describe inputFactor in panel?
 
 > move reform values into constructors
 
@@ -44,15 +56,13 @@ Economy:
 
 - factory does not drop workforce on unprofit
 
-? non-negative Value is a bad Idea?
 
 > pop opinions on current reforms
-> pop angry on not given subsidies
-> farmer's efficiency modifier
++ pop angry on not given subsidies
 
-> safety reform
 
-> hiring rate shpuld be variable - not fast enough on big population
+
+
 
 
 ? should factory drop workforce on small input?
@@ -63,11 +73,11 @@ Economy:
 
 > factory build refinancing from loans?
 
-- demotion reason farmees
+
 
 > bureaucracy
 
-> multicountry support
+
 
 > add caption for panels
 
@@ -81,6 +91,7 @@ Economy:
 ? get rid of PrimitiveStorage?
 ? covert Value into struct? For better speed?
 ///////////////////////////////// demo done
+> safety reform
 + make demo? Without Nat economy, capitalism only. DEv mode
 * 100% consumption for aristocrats and caps
 * loyalty overflow
