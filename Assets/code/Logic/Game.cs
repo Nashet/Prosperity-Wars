@@ -77,19 +77,7 @@ public class Game
         Application.runInBackground = true;
         //LoadImages();
         generateMapImage();
-        new Product("Food", false, 0.4f);
-        new Product("Wood", true, 2.7f);
-        new Product("Lumber", false, 8f);
-        new Product("Gold", true, 4f);
-        new Product("Metall ore", true, 3f);
-        new Product("Metall", false, 6f);
-        new Product("Wool", true, 1);
-        new Product("Clothes", false, 3);
-        new Product("Furniture", false, 7);
-        new Product("Stone", true, 1);
-        new Product("Cement", false, 2);
-        new Product("Fruit", true, 1);
-        new Product("Wine", false, 3);
+        makeProducts();
         market.initialize();
         makeMap();
         roundMesh();
@@ -100,10 +88,32 @@ public class Game
         MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
 
         FindProvinceCenters();
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dTextPrefab", typeof(GameObject));
+        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         foreach (Province pro in Province.allProvinces)
             pro.SetLabel();
 
+        //setStartResources();
+
+        makeFactoryTypes();
+        makePopTypes();
+
+        var ser = new CountryNameGenerator();
+        int extraCountries = random.Next(4);
+        
+        for (int i = 0; i < 8 + extraCountries; i++)
+            makeCountry(ser);
+
+        foreach (var pro in Province.allProvinces)
+            if (pro.getOwner() == null)
+                pro.secedeTo(Country.NullCountry);
+        
+        CreateRandomPopulation();
+        Province.allProvinces[0].allPopUnits[0].education.set(1f);
+        MainCamera.topPanel.refresh();
+    }
+
+    private void setStartResources()
+    {
         Province.allProvinces[0].setResource(Product.Gold);
         //Province.allProvinces[0].setResource(Product.Wood;
         Province.allProvinces[1].setResource(Product.Wood);
@@ -111,10 +121,34 @@ public class Game
         Province.allProvinces[3].setResource(Product.Wool);
         Province.allProvinces[4].setResource(Product.Stone);
         Province.allProvinces[5].setResource(Product.MetallOre);
+    }
 
+    private void makePopTypes()
+    {
+        //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribemen");
+        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribemen");
+        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats");
+        new PopType(PopType.PopTypes.Capitalists, null, "Capitalists");
+        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers");
+        //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
+        //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
+        new PopType(PopType.PopTypes.Workers, null, "Workers");
+    }
 
+    void makeCountry(CountryNameGenerator name)
+    {
+        Culture cul = new Culture("Ridvans");
 
+        Province capital = Province.getRandomProvince((x) => x.getOwner() == null);
+        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), capital);
+        player = Country.allCountries[1]; // not wild Tribes
+        capital.secedeTo(count);
 
+        count.storageSet.add(new Storage(Product.Food, 200f));
+        count.wallet.haveMoney.add(100f);
+    }
+    void makeFactoryTypes()
+    {
         new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);
         new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null, true);
         new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null, true);
@@ -147,39 +181,23 @@ public class Game
         resourceInput = new PrimitiveStorageSet();
         resourceInput.Set(new Storage(Product.Fruit, 0.3333f));
         new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
-
-        //new Product("Grain");
-
-        //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribemen");
-        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribemen");
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats");
-        new PopType(PopType.PopTypes.Capitalists, null, "Capitalists");
-        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers");
-        //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
-        //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
-        new PopType(PopType.PopTypes.Workers, null, "Workers");
-        var ser = new CountryNameGenerator();
-        int extraCountries = random.Next(3);
-        for (int i = 0; i < 3 + extraCountries; i++)
-        {
-            makeCountry(ser);
-           
-        }
-
-        player = Country.allCountries[1]; // not wild Tribes
-        CreateRandomPopulation();
-        Province.allProvinces[0].allPopUnits[0].education.set(1f);
-
-        MainCamera.topPanel.refresh();
     }
-    void makeCountry(CountryNameGenerator name)
-    {
-        Culture cul = new Culture("Kocopetji");
-        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f));
-        Province.getRandomProvince().secedeTo(count);
 
-        count.storageSet.add(new Storage(Product.Food, 200f));
-        count.wallet.haveMoney.add(100f);
+    void makeProducts()
+    {
+        new Product("Food", false, 0.4f);
+        new Product("Wood", true, 2.7f);
+        new Product("Lumber", false, 8f);
+        new Product("Gold", true, 4f);
+        new Product("Metall ore", true, 3f);
+        new Product("Metall", false, 6f);
+        new Product("Wool", true, 1);
+        new Product("Clothes", false, 3);
+        new Product("Furniture", false, 7);
+        new Product("Stone", true, 1);
+        new Product("Cement", false, 2);
+        new Product("Fruit", true, 1);
+        new Product("Wine", false, 3);
     }
     internal static float getAllMoneyInWorld()
     {
@@ -202,37 +220,39 @@ public class Game
 
         foreach (Province province in Province.allProvinces)
         {
-            
+
             Culture culture = new Culture(province + "landers");
 
-            Tribemen f = new Tribemen(2000, PopType.tribeMen, Game.player.culture, province);
+            Tribemen f = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
             // f.wallet.haveMoney.set(10);
             province.allPopUnits.Add(f);
-            Aristocrats ar = new Aristocrats(100, PopType.aristocrats, Game.player.culture, province);
-            ar.wallet.haveMoney.set(200);
-            ar.storageNow.add(50f);
-            province.allPopUnits.Add(ar);
-            if (!Game.devMode)
+            if (province.getOwner() != Country.NullCountry)
             {
-                Capitalists ca = new Capitalists(50, PopType.capitalists, Game.player.culture, province);
-                ca.wallet.haveMoney.set(400);
-                province.allPopUnits.Add(ca);
+                Aristocrats ar = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
+                ar.wallet.haveMoney.set(200);
+                ar.storageNow.add(50f);
+                province.allPopUnits.Add(ar);
+                if (!Game.devMode)
+                {
+                    Capitalists ca = new Capitalists(50, PopType.capitalists, province.getOwner().culture, province);
+                    ca.wallet.haveMoney.set(400);
+                    province.allPopUnits.Add(ca);
 
-                Farmers far = new Farmers(590, PopType.farmers, Game.player.culture, province);
-                ca.wallet.haveMoney.set(40);
-                province.allPopUnits.Add(far);
+                    Farmers far = new Farmers(590, PopType.farmers, province.getOwner().culture, province);
+                    ca.wallet.haveMoney.set(40);
+                    province.allPopUnits.Add(far);
+
+                }
+                //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
+
+                //if (Procent.GetChance(chanceForA))
+                //    province.allPopUnits.Add(
+                //    new PopUnit(PopUnit.getRandomPopulationAmount(), PopType.aristocrats, culture, province)
+                //    );
 
             }
-            //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
-
-            //if (Procent.GetChance(chanceForA))
-            //    province.allPopUnits.Add(
-            //    new PopUnit(PopUnit.getRandomPopulationAmount(), PopType.aristocrats, culture, province)
-            //    );
 
         }
-
-
     }
     /// <summary>
     /// Makes polygonal Stripe and stores it vertices[] and trianglesList[]
@@ -298,7 +318,7 @@ public class Game
                 for (int i = 0; i < mapImage.width; i++)
                 {
                     Color currentColor = mapImage.GetPixel(i, j);
-                    if (currentColor == province.colorID)
+                    if (currentColor == province.getColorID())
                     {
                         checkCoordinateForNeighbors(province, i, j, i + 1, j);
                         checkCoordinateForNeighbors(province, i, j, i - 1, j);
@@ -310,7 +330,7 @@ public class Game
     }
     void generateMapImage()
     {
-        mapImage = new Texture2D(100, 100);
+        mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -318,7 +338,7 @@ public class Game
             amountOfProvince = 10;
         else
             amountOfProvince = 12 + Game.random.Next(8);
-        //amountOfProvince = 30 + Game.random.Next(10);
+        amountOfProvince = 30 + Game.random.Next(10);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -347,7 +367,7 @@ public class Game
     Mesh getMeshID(Color color)
     {
         foreach (var all in Province.allProvinces)
-            if (color == all.colorID)
+            if (color == all.getColorID())
                 return all.mesh;
         return null;
     }
@@ -355,7 +375,7 @@ public class Game
     {
         Color color = mapImage.GetPixel(xpos, ypos);
         foreach (var all in Province.allProvinces)
-            if (color == all.colorID)
+            if (color == all.getColorID())
                 return all.mesh;
         return null;
     }
@@ -668,92 +688,96 @@ public class Game
 
         // big PRODUCE circle
         foreach (Country country in Country.allCountries)
-            foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {
-                //Now factories time!               
-                foreach (Factory fact in province.allFactories)
-                {
-                    fact.produce();
-                    fact.payTaxes(); // empty for now
-                    fact.paySalary(); // workers get gold or food here                   
-                }
-                foreach (PopUnit pop in province.allPopUnits)
-                //That placed here to avoid issues with Aristocrts and clerics
-                //Otherwise Arisocrats starts to consume BEFORE they get all what they should
-                {
-                    if (pop.type.basicProduction != null)// only Farmers and Tribemen
-                        pop.produce();
-                    pop.takeUnemploymentSubsidies();
-                }
-            }
+            if (country != Country.NullCountry)
+                if (country != Country.NullCountry)
+                    foreach (Province province in country.ownedProvinces)//Province.allProvinces)
+                    {
+                        //Now factories time!               
+                        foreach (Factory fact in province.allFactories)
+                        {
+                            fact.produce();
+                            fact.payTaxes(); // empty for now
+                            fact.paySalary(); // workers get gold or food here                   
+                        }
+                        foreach (PopUnit pop in province.allPopUnits)
+                        //That placed here to avoid issues with Aristocrts and clerics
+                        //Otherwise Arisocrats starts to consume BEFORE they get all what they should
+                        {
+                            if (pop.type.basicProduction != null)// only Farmers and Tribemen
+                                pop.produce();
+                            pop.takeUnemploymentSubsidies();
+                        }
+                    }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
         foreach (Country country in Country.allCountries)
-            foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
-            {
-                foreach (Factory factory in province.allFactories)
+            if (country != Country.NullCountry)
+                foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
                 {
-                    factory.consume();
-                }
+                    foreach (Factory factory in province.allFactories)
+                    {
+                        factory.consume();
+                    }
 
-                foreach (PopUnit pop in province.allPopUnits)
-                {
-                    if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.ShouldPayAristocratTax())
-                            pop.PayTaxToAllAristocrats();
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
+                            if (pop.ShouldPayAristocratTax())
+                                pop.PayTaxToAllAristocrats();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        pop.consume();
+                    }
                 }
-                foreach (PopUnit pop in province.allPopUnits)
-                {
-                    pop.consume();
-                }
-            }
         // big AFTER all circle
         foreach (Country country in Country.allCountries)
-        {
-            foreach (Province province in country.ownedProvinces)//Province.allProvinces)
+            if (country != Country.NullCountry)
             {
-                //province.BalanceEmployableWorkForce();
-                foreach (Factory factory in province.allFactories)
+                foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                 {
-                    factory.getMoneyFromMarket();
-                    factory.changeSalary();
-                    factory.PayDividend();
+                    //province.BalanceEmployableWorkForce();
+                    foreach (Factory factory in province.allFactories)
+                    {
+                        factory.getMoneyFromMarket();
+                        factory.changeSalary();
+                        factory.PayDividend();
+                    }
+                    province.allFactories.RemoveAll(item => item.isToRemove());
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.getOwner().isInvented(InventionType.capitalism)))
+                        if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
+                            pop.getMoneyFromMarket();
+
+                        //becouse income come only after consuming, and only after FULL consumption
+
+                        if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                            // POps who can't trade will pay tax BEFORE consumption, not after
+                            // Otherwise pops who can't trade avoid tax
+                            pop.payTaxes();
+
+                        pop.calcLoyalty();
+
+                        pop.calcPromotions();
+                        pop.calcDemotions();
+                        pop.calcGrowth();
+
+                        pop.Invest();
+                    }
+
+                    foreach (PopUnit pop in PopUnit.tempPopList)
+                    {
+                        PopUnit targetToMerge = province.FindSimularPopUnit(pop);
+                        if (targetToMerge == null)
+                            province.allPopUnits.Add(pop);
+                        else
+                            targetToMerge.Merge(pop);
+                    }
+                    PopUnit.tempPopList.Clear();
                 }
-                province.allFactories.RemoveAll(item => item.isToRemove());
-                foreach (PopUnit pop in province.allPopUnits)
-                {
-                    //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.getOwner().isInvented(InventionType.capitalism)))
-                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
-                        pop.getMoneyFromMarket();
-
-                    //becouse income come only after consuming, and only after FULL consumption
-
-                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
-                        // POps who can't trade will pay tax BEFORE consumption, not after
-                        // Otherwise pops who can't trade avoid tax
-                        pop.payTaxes();
-
-                    pop.calcLoyalty();
-
-                    pop.calcPromotions();
-                    pop.calcDemotions();
-                    pop.calcGrowth();
-
-                    pop.Invest();
-                }
-
-                foreach (PopUnit pop in PopUnit.tempPopList)
-                {
-                    PopUnit targetToMerge = province.FindSimularPopUnit(pop);
-                    if (targetToMerge == null)
-                        province.allPopUnits.Add(pop);
-                    else
-                        targetToMerge.Merge(pop);
-                }
-                PopUnit.tempPopList.Clear();
+                country.Think();
             }
-            country.Think();
-        }
     }
 
 

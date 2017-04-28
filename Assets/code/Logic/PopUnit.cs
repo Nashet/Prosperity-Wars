@@ -525,45 +525,44 @@ abstract public class PopUnit : Producer
     public static void PrepareForNewTick()
     {
         Game.market.tmpMarketStorage.SetZero();
-        foreach (Country count in Country.allCountries)
-        {
-            count.wallet.moneyIncomethisTurn.set(0);
-            count.getCountryWallet().setSatisticToZero();
-            //TaxationForPoor.ReformValue hru = count.taxationForPoor.getValue() as TaxationForPoor.ReformValue;
-            //count.countryTax = hru.tax;
-            count.aristocrstTax = count.serfdom.status.getTax();
-            foreach (Province province in count.ownedProvinces)
+        foreach (Country country in Country.allCountries)
+            if (country != Country.NullCountry)
             {
-                province.BalanceEmployableWorkForce();
+                country.wallet.moneyIncomethisTurn.set(0);
+                country.getCountryWallet().setSatisticToZero();                
+                country.aristocrstTax = country.serfdom.status.getTax();
+                foreach (Province province in country.ownedProvinces)
                 {
-                    foreach (PopUnit pop in province.allPopUnits)
+                    province.BalanceEmployableWorkForce();
                     {
-                        pop.gainGoodsThisTurn.set(0f);
-                        // pop.storageNow.set(0f);
-                        pop.wallet.moneyIncomethisTurn.set(0f);
+                        foreach (PopUnit pop in province.allPopUnits)
+                        {
+                            pop.gainGoodsThisTurn.set(0f);
+                            // pop.storageNow.set(0f);
+                            pop.wallet.moneyIncomethisTurn.set(0f);
 
-                        pop.consumedLastTurn.copyDataFrom(pop.consumedTotal); // temp
-                        pop.NeedsFullfilled.set(0f);
-                        pop.sentToMarket.set(0f);
-                        pop.consumedTotal.SetZero();
-                        pop.consumedInMarket.SetZero();
+                            pop.consumedLastTurn.copyDataFrom(pop.consumedTotal); // temp
+                            pop.NeedsFullfilled.set(0f);
+                            pop.sentToMarket.set(0f);
+                            pop.consumedTotal.SetZero();
+                            pop.consumedInMarket.SetZero();
 
-                        pop.dintGetUnemloymentSubsidy = false;
-                    }
-                    foreach (Factory factory in province.allFactories)
-                    {
-                        factory.gainGoodsThisTurn.set(0f);
-                        factory.storageNow.set(0f);
-                        factory.wallet.moneyIncomethisTurn.set(0f);
-                        //shownFactory.NeedsFullfilled.set(0);
-                        factory.consumedLastTurn.copyDataFrom(factory.consumedTotal);
-                        factory.sentToMarket.set(0f);
-                        factory.consumedTotal.SetZero();
-                        factory.consumedInMarket.SetZero();
+                            pop.dintGetUnemloymentSubsidy = false;
+                        }
+                        foreach (Factory factory in province.allFactories)
+                        {
+                            factory.gainGoodsThisTurn.set(0f);
+                            factory.storageNow.set(0f);
+                            factory.wallet.moneyIncomethisTurn.set(0f);
+                            
+                            factory.consumedLastTurn.copyDataFrom(factory.consumedTotal);
+                            factory.sentToMarket.set(0f);
+                            factory.consumedTotal.SetZero();
+                            factory.consumedInMarket.SetZero();
+                        }
                     }
                 }
             }
-        }
     }
     public void calcPromotions()
     {

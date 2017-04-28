@@ -6,7 +6,7 @@ using System.Text;
 public class Factory : Producer
 {
     //public enum PopTypes { Forestry, GoldMine, MetalMine };
-    //public PopTypes type;
+
     internal FactoryType type;
     protected static uint workForcePerLevel = 1000;
     protected byte level = 0;
@@ -87,7 +87,7 @@ public class Factory : Producer
             modifierHasResourceInProvince, modifierLevelBonus,
             modifierBelongsToCountry, modifierIsSubsidised
         });
-
+        Condition factoryPlacedInOurCountry = new Condition((Owner forWhom) => province.getOwner() == forWhom, "Enterprise placed in our country", false);
         conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
             new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
@@ -102,6 +102,7 @@ public class Factory : Producer
                     Game.threadDangerSB.Append("Have ").Append(getUpgradeCost()).Append(" coins");
                     return Game.threadDangerSB.ToString();
                 }, true)
+                ,factoryPlacedInOurCountry
         });
 
         conditionsClose = new ConditionsList(new List<Condition>()
@@ -109,6 +110,7 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+            factoryPlacedInOurCountry
         });
         conditionsReopen = new ConditionsList(new List<Condition>()
         {
@@ -120,33 +122,34 @@ public class Factory : Producer
                     Game.threadDangerSB.Clear();
                     Game.threadDangerSB.Append("Have ").Append(getReopenCost()).Append(" coins");
                     return Game.threadDangerSB.ToString();
-                }, true)
+                }, true),
+                factoryPlacedInOurCountry
         });
-        conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF });
+        conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF, factoryPlacedInOurCountry });
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
-        conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State
+        conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State fabricIsOur
 
         //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-        conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned
+        conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned fabricIsOur
 
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
         conditionsNatinalize = new ConditionsList(new List<Condition>()
         {
-            Economy.isNotLF, Economy.isNotInterventionism, modifierNotBelongsToCountry
+            Economy.isNotLF, Economy.isNotInterventionism, modifierNotBelongsToCountry, factoryPlacedInOurCountry
         }); //!LF and ! Inter
 
 
         conditionsSubsidize = new ConditionsList(new List<Condition>()
         {
-            Economy.isNotLF, Economy.isNotNatural
+            Economy.isNotLF, Economy.isNotNatural, factoryPlacedInOurCountry
         });
 
         conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>()
         {
-            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented
+            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented,factoryPlacedInOurCountry
         });
 
-        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF, Condition.IsNotImplemented });
+        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF, Condition.IsNotImplemented, factoryPlacedInOurCountry });
 
 
     }
@@ -644,7 +647,7 @@ public class Factory : Producer
     public List<Storage> getHowMuchReservesWants()
     {
         Value multiplier = new Value(getWorkForceFullFilling() * getLevel() * Game.factoryInputReservInDays);
-        
+
 
 
         List<Storage> result = new List<Storage>();
@@ -698,8 +701,8 @@ public class Factory : Producer
             bool isMarket = Economy.isMarket.checkIftrue(province.getOwner());// province.getOwner().isInvented(InventionType.capitalism);
             if (isMarket)
             {
-                if (isBuilding())                
-                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());                
+                if (isBuilding())
+                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
                 else
                     if (isUpgrading())
                     isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());

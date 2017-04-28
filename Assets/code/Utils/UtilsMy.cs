@@ -7,21 +7,21 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
-public   class CountryNameGenerator
+public class CountryNameGenerator
 {
     static ChanceBox<string> prefix;
     static ChanceBox<string> postfix;
 
 
-    public   CountryNameGenerator()
+    public CountryNameGenerator()
     {
         postfix = new ChanceBox<string>();
         postfix.add("burg", 1.2f);
-        
 
-        
+
+
         postfix.add("hill", 0.31f);
-        
+
         postfix.add("land", 1.0f);
         postfix.add("lands", 1.2f);
         postfix.add("landia", 0.3f);
@@ -38,15 +38,15 @@ public   class CountryNameGenerator
 
         postfix.add("holm", 0.3f);
         postfix.add("bruck", 0.3f);
-        
-        postfix.add("berg", 1f);       
-        
+
+        postfix.add("berg", 1f);
+
         postfix.add("polis", 2f);
         postfix.add("", 10f);
         postfix.initiate();
 
         prefix = new ChanceBox<string>();
-        
+
         prefix.add("South ", 0.3f);
         prefix.add("West ", 0.3f);
         prefix.add("North ", 0.3f);
@@ -66,7 +66,7 @@ public   class CountryNameGenerator
         result.Clear();
         result.Append(prefix.getRandom());
 
-        result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3)+1, true)));
+        result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
         result.Append(postfix.getRandom());
 
         return result.ToString();
@@ -332,24 +332,34 @@ public static class WordGenerator
 }
 public static class EnumerableExtension
 {
-    public static T PickRandom<T>(this IEnumerable<T> source)
-    {
-        return source.PickRandom(1).Single();
-    }
+    //public static T PickRandom<T>(this IEnumerable<T> source)
+    //{
+    //    return source.PickRandom(1).Single();
+    //}
 
-    public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count)
-    {
-        return source.Shuffle().Take(count);
-    }
+    //public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count)
+    //{
+    //    return source.Shuffle().Take(count);
+    //}
 
-    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
+    private static System.Random rng = new System.Random();
+
+    public static void Shuffle<T>(this IList<T> list)
     {
-        return source.OrderBy(x => Guid.NewGuid());
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
     }
 }
 public static class UtilsMy
 {
-    
+
     public static Color getRandomColor()
     {
         return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
@@ -362,6 +372,19 @@ public static class UtilsMy
     {
         color.a = 0f;
         return color;
+    }
+    public static Color getAlmostSameColor(this Color color)
+    {
+        float maxDeviation = 0.02f;//not including
+
+        var result = new Color();
+        float deviation = maxDeviation - UnityEngine.Random.Range(0f, maxDeviation * 2);
+        result.r = color.r + deviation;
+        result.g = color.g + deviation;
+        result.b = color.b + deviation;
+
+
+        return result;
     }
     public static Color setAlphaToMax(this Color color)
     {

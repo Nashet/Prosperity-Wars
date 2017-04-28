@@ -111,11 +111,11 @@ public class ProvincePanel : MonoBehaviour
             + "\nMiddle loyalty" + "\nTax income"
             + "\nResource: " + province.getResource()
             + "\nRural overpopulation: " + province.getOverPopulation()
-            + "\nNeighbors " + province.getNeigborsList()
+            //+ "\nNeighbors " + province.getNeigborsList()
             ;
         Text text = btnOwner.GetComponentInChildren<Text>();
         text.text = "Owner: " + province.getOwner();
         
-        if (Game.devMode) generaltext.text += "\nColor: " + province.colorID;
+        if (Game.devMode) generaltext.text += "\nColor: " + province.getColorID();
     }
 }

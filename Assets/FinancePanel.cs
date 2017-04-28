@@ -34,7 +34,7 @@ public class FinancePanel : DragPanel
         sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
         sb.Append("\n Rich tax: ").Append(Game.player.getCountryWallet().getRichTaxIncome());
         sb.Append("\n Gold mines: ").Append(Game.player.getCountryWallet().getGoldMinesIncome());
-        sb.Append("\n Owned interprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
+        sb.Append("\n Owned enterprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
         sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
 
         sb.Append("\n\nBalance: ").Append(Game.player.getCountryWallet().getBalance());
@@ -48,7 +48,7 @@ public class FinancePanel : DragPanel
         sb.Clear();
         sb.Append("Expenses: ");
         sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
-        sb.Append("\n Interprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
+        sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
         expensesText.text = sb.ToString();
 
         sb.Clear();

@@ -8,11 +8,11 @@ using System.Text;
 public class Province
 {
 
-    public Color colorID;
-
+    Color colorID;
+    Color color;
     public Mesh mesh;
     MeshFilter meshFilter;
-    GameObject gameObject;
+    internal GameObject gameObject;
     public MeshRenderer meshRenderer;
     //public static uint maxTribeMenCapacity = 2000;
     private string name;
@@ -39,23 +39,28 @@ public class Province
     }
     internal Country getOwner()
     {
-        if (owner == null)
-            return Country.NullCountry;
-        else
-            return owner;
+        //if (owner == null)
+        //    return Country.NullCountry;
+        //else
+        return owner;
     }
     internal int getID()
     { return ID; }
     public void secedeTo(Country taker)
     {
-        //this.getOwner() - current owner
+
         if (this.getOwner() != null)
             if (this.getOwner().ownedProvinces != null)
                 this.getOwner().ownedProvinces.Remove(this);
         owner = taker;
+
         if (taker.ownedProvinces == null)
             taker.ownedProvinces = new List<Province>();
         taker.ownedProvinces.Add(this);
+        color = taker.getColor().getAlmostSameColor();
+        meshRenderer.material.color = color;
+        if (taker != Country.NullCountry)
+            taker.redrawCapital();
     }
     public System.Collections.IEnumerator GetEnumerator()
     {
@@ -105,6 +110,15 @@ public class Province
                 result.Add(pop);
         return result;
     }
+
+    internal static Province findByID(int number)
+    {
+        foreach (var pro in allProvinces)
+            if (pro.ID == number)
+                return pro;
+        return null;
+    }
+
     public uint FindPopulationAmountByType(PopType ipopType)
     {
         List<PopUnit> list = FindAllPopUnits(ipopType);
@@ -139,6 +153,15 @@ public class Province
             if (pop.type == target.type && pop.culture == target.culture)
                 return pop;
         return null;
+    }
+
+    internal Color getColorID()
+    {
+        return colorID;
+    }
+    internal Color getColor()
+    {
+        return color;
     }
     public Value getMiddleNeedFullfilling(PopType type)
     {
@@ -235,9 +258,13 @@ public class Province
         return result;
     }
 
-    internal static Province getRandomProvince()
+    internal static Province getRandomProvince(Predicate<Province> predicate)
     {
-        return allProvinces.PickRandom();
+        //todo optimixe shuffling
+        allProvinces.Shuffle();
+
+        //return allProvinces.Find(() => getOwner() == null);
+        return allProvinces.Find(predicate);
     }
 
     internal bool CanBuildNewFactory(FactoryType ft)
@@ -309,8 +336,6 @@ public class Province
         txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
 
-        //TextMesh newText = TextMesh();
-        // gameObject.rigidbody.centerOfMass
     }
 
     internal Factory findFactory(FactoryType proposition)

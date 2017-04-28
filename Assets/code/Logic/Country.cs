@@ -24,6 +24,8 @@ public class Country : Owner
     internal TaxationForRich taxationForRich;
     internal List<AbstractReform> reforms = new List<AbstractReform>();
     public Culture culture;
+    Color nationalColor;
+    Province capital;
 
     public Bank bank = new Bank();
 
@@ -32,12 +34,12 @@ public class Country : Owner
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry = new Country("Wild tribes", null,null);
+    internal static readonly Country NullCountry = new Country("Uncolonised lands", new Culture("Zaoteks"), new CountryWallet(0f), Color.yellow, null);
 
-    public Country(string iname, Culture iculture, CountryWallet wallet): base (wallet)
+    public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
     {
         government = new Government(this);
-        
+
         economy = new Economy(this);
         serfdom = new Serfdom(this);
 
@@ -51,7 +53,8 @@ public class Country : Owner
         //TaxationForPoor.ReformValue hru = taxationForPoor.getValue() as TaxationForPoor.ReformValue;
         //countryTax = hru.tax;
         culture = iculture;
-
+        nationalColor = color;
+        this.capital = capital;
         //if (!Game.devMode)
         {
             government.status = Government.Aristocracy;
@@ -64,9 +67,36 @@ public class Country : Owner
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
-        
+       // if (this != NullCountry)
+            //redrawCapital();
     }
+    //todo move to Province.cs
+    internal void redrawCapital()
+    {
+        Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
+        txtMeshTransform.SetParent(capital.gameObject.transform, false);
 
+
+        Vector3 capitalTextPosition = capital.centre;
+        capitalTextPosition.y += 2f;
+        txtMeshTransform.position = capitalTextPosition;
+
+        TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
+        txtMesh.text = this.ToString();
+        if (this == Game.player)
+        {
+            txtMesh.color = Color.blue;
+            txtMesh.fontSize += txtMesh.fontSize / 2;
+
+        }
+        else
+
+            txtMesh.color = Color.cyan; // Set the text's color to red
+    }
+    internal Color getColor()
+    {
+        return nationalColor;
+    }
     internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
     {
         // calc how much of population wants selected reform
@@ -173,7 +203,10 @@ public class Country : Owner
     }
     override public string ToString()
     {
-        return name;
+        if (this == Game.player)
+            return name + " country (you are)";
+        else
+            return name + " country";
     }
     internal void Think()
     {

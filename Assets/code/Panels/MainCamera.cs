@@ -83,13 +83,13 @@ public class MainCamera : MonoBehaviour
     internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
-            Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.colorID;
+            Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.getColor();
 
         if (number >= 0)
         {
-            if (Province.allProvinces[number] == Game.selectedProvince)// same province selected
+            if (Province.findByID(number) == Game.selectedProvince)// same province selected
             {
-                Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.colorID;
+                Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.getColor();
                 Game.selectedProvince = null;
                 provincePanel.hide();
                 if (buildPanel.isActiveAndEnabled)
@@ -97,9 +97,9 @@ public class MainCamera : MonoBehaviour
             }
             else // new province selected
             {
-                Province.allProvinces[number].meshRenderer.material.color = Color.gray;
+                Province.findByID(number).meshRenderer.material.color = Color.gray;
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
-                Game.selectedProvince = Province.allProvinces[number];
+                Game.selectedProvince = Province.findByID(number);
                 provincePanel.show();
                 if (buildPanel.isActiveAndEnabled)
                     buildPanel.refresh();
