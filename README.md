@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Nashet/EconomicSimulation.svg?style=plastic)](https://github.com/Nashet/EconomicSimulation)
+[![Stories in Ready](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Nashet/EconomicSimulation.svg?style=plastic)](https://waffle.io/Nashet/EconomicSimulation)
 # Economic simulation
 
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html)
