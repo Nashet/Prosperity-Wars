@@ -17,7 +17,7 @@ public class Province
     //public static uint maxTribeMenCapacity = 2000;
     private string name;
     private int ID;
-    public Country owner;
+    Country owner;
     public List<PopUnit> allPopUnits = new List<PopUnit>();
     public Vector3 centre;
 
@@ -37,16 +37,22 @@ public class Province
         fertileSoil = 10000;
 
     }
-
+    internal Country getOwner()
+    {
+        if (owner == null)
+            return Country.NullCountry;
+        else
+            return owner;
+    }
     internal int getID()
     { return ID; }
-    public void SecedeTo(Country taker)
+    public void secedeTo(Country taker)
     {
-        //this.owner - current owner
-        if (this.owner != null)
-            if (this.owner.ownedProvinces != null)
-                this.owner.ownedProvinces.Remove(this);
-        this.owner = taker;
+        //this.getOwner() - current owner
+        if (this.getOwner() != null)
+            if (this.getOwner().ownedProvinces != null)
+                this.getOwner().ownedProvinces.Remove(this);
+        owner = taker;
         if (taker.ownedProvinces == null)
             taker.ownedProvinces = new List<Province>();
         taker.ownedProvinces.Add(this);
@@ -151,8 +157,8 @@ public class Province
         }
         else/// add defualt population
         {
-            //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.owner.culture, this));
-            PopUnit.tempPopList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.owner.culture, this));
+            //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
+            PopUnit.tempPopList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
             return new Value(0);
         }
@@ -207,7 +213,7 @@ public class Province
     }
     internal Product getResource()
     {
-        if (owner.isInvented(resource))
+        if (getOwner().isInvented(resource))
             return resource;
         else
             return null;
@@ -228,11 +234,17 @@ public class Province
                 result.Add(ft);
         return result;
     }
+
+    internal static Province getRandomProvince()
+    {
+        return allProvinces.PickRandom();
+    }
+
     internal bool CanBuildNewFactory(FactoryType ft)
     {
         if (HaveFactory(ft))
             return false;
-        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !owner.isInvented(ft.basicProduction.getProduct()))
+        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !getOwner().isInvented(ft.basicProduction.getProduct()))
             return false;
 
         return true;
@@ -336,7 +348,7 @@ public class Province
     internal float getLocalMinSalary()
     {
         if (allFactories.Count <= 1)
-            return owner.getMinSalary();
+            return getOwner().getMinSalary();
         else
         {
             float minSalary;
@@ -355,7 +367,7 @@ public class Province
     internal void addNeigbor(Province found)
     {
         if (found != this && !distances.ContainsKey(found))
-            distances.Add(found, 1);  
+            distances.Add(found, 1);
 
     }
     /// <summary>
@@ -374,7 +386,7 @@ public class Province
     internal float getLocalMaxSalary()
     {
         if (allFactories.Count <= 1)
-            return owner.getMinSalary();
+            return getOwner().getMinSalary();
         else
         {
             float maxSalary;

@@ -32,6 +32,7 @@ public class Country : Owner
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
+    internal static readonly Country NullCountry = new Country("Wild tribes", null,null);
 
     public Country(string iname, Culture iculture, CountryWallet wallet): base (wallet)
     {
@@ -116,7 +117,7 @@ public class Country : Owner
         uint votersSayedYes = 0;
         Procent procentVotersSayedYes = new Procent(0f);
         Dictionary<PopType, uint> divisionPopulationResult = new Dictionary<PopType, uint>();
-        Dictionary<PopType, uint> divisionVotersResult = Game.player.getYesVotesByType(reform, ref divisionPopulationResult);
+        Dictionary<PopType, uint> divisionVotersResult = this.getYesVotesByType(reform, ref divisionPopulationResult);
         foreach (KeyValuePair<PopType, uint> next in divisionVotersResult)
             votersSayedYes += next.Value;
 
@@ -138,7 +139,7 @@ public class Country : Owner
         {
             divisionVotersResult.Add(type, 0);
             divisionPopulationResult.Add(type, 0);
-            foreach (Province pro in Game.player.ownedProvinces)
+            foreach (Province pro in this.ownedProvinces)
             {
                 var popList = pro.FindAllPopUnits(type);
                 foreach (PopUnit pop in popList)

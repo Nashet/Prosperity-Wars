@@ -158,16 +158,28 @@ public class Game
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
         new PopType(PopType.PopTypes.Workers, null, "Workers");
+        var ser = new CountryNameGenerator();
+        int extraCountries = random.Next(3);
+        for (int i = 0; i < 3 + extraCountries; i++)
+        {
+            makeCountry(ser);
+           
+        }
 
-        Culture cul = new Culture("Kocopetji");
-        player = new Country("Kocopia", cul, new CountryWallet(0f));
-        player.storageSet.add(new Storage(Product.Food, 200f));
-        player.wallet.haveMoney.add(100f);
-
+        player = Country.allCountries[1]; // not wild Tribes
         CreateRandomPopulation();
         Province.allProvinces[0].allPopUnits[0].education.set(1f);
 
         MainCamera.topPanel.refresh();
+    }
+    void makeCountry(CountryNameGenerator name)
+    {
+        Culture cul = new Culture("Kocopetji");
+        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f));
+        Province.getRandomProvince().secedeTo(count);
+
+        count.storageSet.add(new Storage(Product.Food, 200f));
+        count.wallet.haveMoney.add(100f);
     }
     internal static float getAllMoneyInWorld()
     {
@@ -190,7 +202,7 @@ public class Game
 
         foreach (Province province in Province.allProvinces)
         {
-            province.SecedeTo(player);
+            
             Culture culture = new Culture(province + "landers");
 
             Tribemen f = new Tribemen(2000, PopType.tribeMen, Game.player.culture, province);
@@ -710,8 +722,8 @@ public class Game
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.owner.isInvented(InventionType.capitalism)))
-                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.owner)))
+                    //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.getOwner().isInvented(InventionType.capitalism)))
+                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
                         pop.getMoneyFromMarket();
 
                     //becouse income come only after consuming, and only after FULL consumption

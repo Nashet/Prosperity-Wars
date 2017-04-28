@@ -90,7 +90,7 @@ public class Factory : Producer
 
         conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
             new Condition(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
@@ -106,13 +106,13 @@ public class Factory : Producer
 
         conditionsClose = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
         });
         conditionsReopen = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.owner.economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
+            new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
             new Condition(delegate (Owner forWhom) {
@@ -317,7 +317,7 @@ public class Factory : Producer
         if (isWorking())
         {
             // per 1000 men            
-            if (Economy.isMarket.checkIftrue(province.owner))
+            if (Economy.isMarket.checkIftrue(province.getOwner()))
             {
                 foreach (PopLinkage link in workForce)
                 {
@@ -328,14 +328,14 @@ public class Factory : Producer
                     else
                         if (isSubsidized()) //take maney and try again
                     {
-                        province.owner.getCountryWallet().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
+                        province.getOwner().getCountryWallet().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
                         if (wallet.canPay(howMuchPay))
                             wallet.pay(link.pop.wallet, howMuchPay);
                         else
-                            salary.set(province.owner.getMinSalary());
+                            salary.set(province.getOwner().getMinSalary());
                     }
                     else
-                        salary.set(province.owner.getMinSalary());
+                        salary.set(province.getOwner().getMinSalary());
                     //todo else dont pay if there is nothing to pay
                 }
             }
@@ -428,8 +428,8 @@ public class Factory : Producer
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
                     Value sentToGovernment = new Value(wallet.moneyIncomethisTurn.get() * Game.GovernmentTakesShareOfGoldOutput);
-                    wallet.pay(province.owner.wallet, sentToGovernment);
-                    province.owner.getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
+                    wallet.pay(province.getOwner().wallet, sentToGovernment);
+                    province.getOwner().getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
                 }
                 else
                 {
@@ -438,8 +438,8 @@ public class Factory : Producer
                     Game.market.tmpMarketStorage.add(gainGoodsThisTurn);
                 }
 
-                //if (province.owner.isInvented(InventionType.capitalism))
-                if (Economy.isMarket.checkIftrue(province.owner))
+                //if (province.getOwner().isInvented(InventionType.capitalism))
+                if (Economy.isMarket.checkIftrue(province.getOwner()))
                 {
                     // Buyers should come and buy something...
                     // its in other files.
@@ -475,8 +475,8 @@ public class Factory : Producer
     internal void changeSalary()
     {
         //if (getLevel() > 0)
-        if (isWorking() && Economy.isMarket.checkIftrue(province.owner))
-        //        province.owner.isInvented(InventionType.capitalism))
+        if (isWorking() && Economy.isMarket.checkIftrue(province.getOwner()))
+        //        province.getOwner().isInvented(InventionType.capitalism))
         {
             // rise salary to attract  workforce
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
@@ -494,7 +494,7 @@ public class Factory : Producer
             if (getWorkForce() < 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.09f);
 
-            float minSalary = province.owner.getMinSalary();
+            float minSalary = province.getOwner().getMinSalary();
             // reduce salary on non-profit
             if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
@@ -637,7 +637,7 @@ public class Factory : Producer
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-            result.set(result.get() * (1f + modifierEfficiency.getModifier(province.owner) / 100f));
+            result.set(result.get() * (1f + modifierEfficiency.getModifier(province.getOwner()) / 100f));
         return result;
     }
 
@@ -687,7 +687,7 @@ public class Factory : Producer
 
             //todo !CAPITALISM part
             if (isSubsidized())
-                Game.market.Buy(this, new PrimitiveStorageSet(needs), province.owner.getCountryWallet());
+                Game.market.Buy(this, new PrimitiveStorageSet(needs), province.getOwner().getCountryWallet());
             else
                 Game.market.Buy(this, new PrimitiveStorageSet(needs), null);
         }
@@ -695,7 +695,7 @@ public class Factory : Producer
         {
             bool isBuyingComplete = false;
             daysInConstruction++;
-            bool isMarket = Economy.isMarket.checkIftrue(province.owner);// province.owner.isInvented(InventionType.capitalism);
+            bool isMarket = Economy.isMarket.checkIftrue(province.getOwner());// province.getOwner().isInvented(InventionType.capitalism);
             if (isMarket)
             {
                 if (isBuilding())                
@@ -741,12 +741,12 @@ public class Factory : Producer
         toRemove = true;
 
         //return loasns only if banking invented
-        if (province.owner.isInvented(InventionType.banking))
+        if (province.getOwner().isInvented(InventionType.banking))
         {
             Value howMuchToReturn = new Value(loans.get());
             if (howMuchToReturn.get() < wallet.haveMoney.get())
                 howMuchToReturn.set(wallet.haveMoney.get());
-            province.owner.bank.returnLoan(this, howMuchToReturn);
+            province.getOwner().bank.returnLoan(this, howMuchToReturn);
         }
         wallet.pay(getOwnerWallet(), wallet.haveMoney);
         MainCamera.factoryPanel.removeFactory(this);
@@ -803,14 +803,14 @@ public class Factory : Producer
                 markToDestroy();
             else if (Game.random.Next(Game.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
-                if (province.owner.isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
+                if (province.getOwner().isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
                 {
                     float leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver < 0)
                     {
                         Value loanSize = new Value(leftOver * -1f);
-                        if (province.owner.bank.CanITakeThisLoan(loanSize))
-                            province.owner.bank.TakeLoan(this, loanSize);
+                        if (province.getOwner().bank.CanITakeThisLoan(loanSize))
+                            province.getOwner().bank.TakeLoan(this, loanSize);
                     }
                     leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver >= 0f)
@@ -910,16 +910,16 @@ public class Factory : Producer
 //            storageNow.add(producedAmount);
 //            gainGoodsThisTurn.set(producedAmount);
 
-//            if (province.owner.capitalism.Invented())
+//            if (province.getOwner().capitalism.Invented())
 //            {
 
 //                this.wallet.ConvertFromGoldAndAdd(storageNow);
 //                //send 50% to government
 
-//                wallet.pay(province.owner.wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
+//                wallet.pay(province.getOwner().wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
 //            }
 //            else // send all production to owner
-//                storageNow.sendAll(province.owner.storageSet);
+//                storageNow.sendAll(province.getOwner().storageSet);
 //        }
 //    }
 

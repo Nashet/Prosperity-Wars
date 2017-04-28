@@ -63,10 +63,10 @@ abstract public class PopUnit : Producer
         modifierLuxuryNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLuxuryNeedsFullfilling().get() > 0.99f; }, "Luxury needs are satisfied", false, 0.2f);
 
         //Game.threadDangerSB.Clear();
-        //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.owner.government.ToString());
+        //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
         modifierCanVote = new Modifier(delegate (Country forWhom) { return canVote(); }, "Can vote with that government ", false, 0.1f);
         //Game.threadDangerSB.Clear();
-        //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.owner.government.ToString());
+        //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
         modifierCanNotVote = new Modifier(delegate (Country forWhom) { return !canVote(); }, "Can't vote with that government ", false, -0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
@@ -100,7 +100,7 @@ abstract public class PopUnit : Producer
         loyalty = new Procent(ipopUnit.loyalty.get());
         NeedsFullfilled = new Procent(ipopUnit.NeedsFullfilled.get());
 
-        //owner = ipopUnit.owner;
+        //owner = ipopUnit.getOwner();
         province = ipopUnit.province;
         //province.allPopUnits.Add(this);
 
@@ -289,44 +289,44 @@ abstract public class PopUnit : Producer
     ////}
     internal bool hasToPayGovernmentTaxes()
     {
-        if (this.type == PopType.aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((province.owner)))
+        if (this.type == PopType.aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((province.getOwner())))
             return false;
         else return true;
     }
     public override void payTaxes() // should be abstract 
     {
         Value taxSize = new Value(0);
-        if (Economy.isMarket.checkIftrue(province.owner) && type != PopType.tribeMen)
+        if (Economy.isMarket.checkIftrue(province.getOwner()) && type != PopType.tribeMen)
         {
 
-            //taxSize = wallet.moneyIncomethisTurn.multiple(province.owner.countryTax);
+            //taxSize = wallet.moneyIncomethisTurn.multiple(province.getOwner().countryTax);
             if (this.type.isPoorStrata())
             {
-                taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = wallet.moneyIncomethisTurn.multiple((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                 if (wallet.canPay(taxSize))
                 {
-                    province.owner.getCountryWallet().poorTaxIncomeAdd(taxSize);
-                    wallet.pay(province.owner.wallet, taxSize);
+                    province.getOwner().getCountryWallet().poorTaxIncomeAdd(taxSize);
+                    wallet.pay(province.getOwner().wallet, taxSize);
                 }
                 else
                 {
-                    province.owner.getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
-                    wallet.sendAll(province.owner.wallet);
+                    province.getOwner().getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
+                    wallet.sendAll(province.getOwner().wallet);
                 }
             }
             else
             if (this.type.isRichStrata())
             {
-                taxSize = wallet.moneyIncomethisTurn.multiple((province.owner.taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                taxSize = wallet.moneyIncomethisTurn.multiple((province.getOwner().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                 if (wallet.canPay(taxSize))
                 {
-                    province.owner.getCountryWallet().richTaxIncomeAdd(taxSize);
-                    wallet.pay(province.owner.wallet, taxSize);
+                    province.getOwner().getCountryWallet().richTaxIncomeAdd(taxSize);
+                    wallet.pay(province.getOwner().wallet, taxSize);
                 }
                 else
                 {
-                    province.owner.getCountryWallet().richTaxIncomeAdd(wallet.haveMoney);
-                    wallet.sendAll(province.owner.wallet);
+                    province.getOwner().getCountryWallet().richTaxIncomeAdd(wallet.haveMoney);
+                    wallet.sendAll(province.getOwner().wallet);
                 }
             }
 
@@ -334,18 +334,18 @@ abstract public class PopUnit : Producer
         else// non market
         if (this.type != PopType.aristocrats)
         {
-            // taxSize = gainGoodsThisTurn.multiple(province.owner.countryTax);
+            // taxSize = gainGoodsThisTurn.multiple(province.getOwner().countryTax);
 
             if (this.type.isPoorStrata())
-                taxSize = gainGoodsThisTurn.multiple((province.owner.taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = gainGoodsThisTurn.multiple((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
             if (this.type.isRichStrata())
-                taxSize = gainGoodsThisTurn.multiple((province.owner.taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = gainGoodsThisTurn.multiple((province.getOwner().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
 
             if (storageNow.canPay(taxSize))
-                storageNow.pay(province.owner.storageSet, taxSize);
+                storageNow.pay(province.getOwner().storageSet, taxSize);
             else
-                storageNow.sendAll(province.owner.storageSet);
+                storageNow.sendAll(province.getOwner().storageSet);
         }
     }
 
@@ -467,7 +467,7 @@ abstract public class PopUnit : Producer
         //lifeneeds First
         List<Storage> needs = (getRealLifeNeeds());
 
-        //if (province.owner.isInvented(InventionType.capitalism) && type != PopType.tribeMen)
+        //if (province.getOwner().isInvented(InventionType.capitalism) && type != PopType.tribeMen)
         if (canTrade())
         {
             subConsumeOnMarket(needs, false);
@@ -498,7 +498,7 @@ abstract public class PopUnit : Producer
     abstract internal bool canVote();
     public void calcLoyalty()
     {
-        float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this.province.owner) / 100f;
+        float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this.province.getOwner()) / 100f;
         loyalty.set(Mathf.Clamp01(newRes));
         if (daysUpsetByForcedReform > 0)
             daysUpsetByForcedReform--;
@@ -514,7 +514,7 @@ abstract public class PopUnit : Producer
     {
         {
             Value taxSize = new Value(0);
-            taxSize = gainGoodsThisTurn.multiple(province.owner.aristocrstTax);
+            taxSize = gainGoodsThisTurn.multiple(province.getOwner().aristocrstTax);
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
@@ -637,16 +637,16 @@ abstract public class PopUnit : Producer
 
     internal void takeUnemploymentSubsidies()
     {
-        var reform = province.owner.unemploymentSubsidies.getValue();
+        var reform = province.getOwner().unemploymentSubsidies.getValue();
         if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
         {
             Value subsidy = getUnemployedProcent();
             subsidy.multipleInside(population / 1000f * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
-            if (province.owner.wallet.canPay(subsidy))
+            if (province.getOwner().wallet.canPay(subsidy))
             {
-                province.owner.wallet.pay(this.wallet, subsidy);
-                province.owner.getCountryWallet().unemploymentSubsidiesExpenseAdd(subsidy);
+                province.getOwner().wallet.pay(this.wallet, subsidy);
+                province.getOwner().getCountryWallet().unemploymentSubsidiesExpenseAdd(subsidy);
             }
             else
                 this.dintGetUnemloymentSubsidy = true;
@@ -748,8 +748,8 @@ abstract public class PopUnit : Producer
             }
         }
         //if ()
-        //if (province.owner.isInvented(InventionType.capitalism) && type == PopType.capitalists && Game.random.Next(10) == 1)
-        if (Economy.isMarket.checkIftrue(province.owner) && type == PopType.capitalists && Game.random.Next(10) == 1)
+        //if (province.getOwner().isInvented(InventionType.capitalism) && type == PopType.capitalists && Game.random.Next(10) == 1)
+        if (Economy.isMarket.checkIftrue(province.getOwner()) && type == PopType.capitalists && Game.random.Next(10) == 1)
         {
             //should I buld?
             if (//province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
@@ -769,12 +769,12 @@ abstract public class PopUnit : Producer
                             wallet.payWithoutRecord(found.wallet, cost);
                         }
                         else // find money in bank?
-                        if (province.owner.isInvented(InventionType.banking))
+                        if (province.getOwner().isInvented(InventionType.banking))
                         {
                             Value needLoan = new Value(cost.get() - wallet.haveMoney.get());
-                            if (province.owner.bank.CanITakeThisLoan(needLoan))
+                            if (province.getOwner().bank.CanITakeThisLoan(needLoan))
                             {
-                                province.owner.bank.TakeLoan(this, needLoan);
+                                province.getOwner().bank.TakeLoan(this, needLoan);
                                 Factory found = new Factory(province, this, proposition);
                                 wallet.payWithoutRecord(found.wallet, cost);
                             }
@@ -797,12 +797,12 @@ abstract public class PopUnit : Producer
                         if (wallet.canPay(cost))
                             factory.upgrade(this);
                         else // find money in bank?
-                        if (province.owner.isInvented(InventionType.banking))
+                        if (province.getOwner().isInvented(InventionType.banking))
                         {
                             Value needLoan = new Value(cost.get() - wallet.haveMoney.get());
-                            if (province.owner.bank.CanITakeThisLoan(needLoan))
+                            if (province.getOwner().bank.CanITakeThisLoan(needLoan))
                             {
-                                province.owner.bank.TakeLoan(this, needLoan);
+                                province.getOwner().bank.TakeLoan(this, needLoan);
                                 factory.upgrade(this);
                             }
                         }
@@ -827,7 +827,7 @@ public class Tribemen : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -893,7 +893,7 @@ public class Tribemen : PopUnit
 
     internal override bool canVote()
     {
-        Country count = province.owner;
+        Country count = province.getOwner();
         var government = count.government.status;
         if (government == Government.Tribal || government == Government.Democracy)
             return true;
@@ -911,7 +911,7 @@ public class Farmers : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -929,7 +929,7 @@ public class Farmers : PopUnit
             producedAmount = new Value(population * type.basicProduction.get() / 1000 / overpopulation + population * type.basicProduction.get() / 1000 / overpopulation * education.get());
         gainGoodsThisTurn.set(producedAmount);
 
-        if (Economy.isMarket.checkIftrue(province.owner))
+        if (Economy.isMarket.checkIftrue(province.getOwner()))
         {
             sentToMarket.set(gainGoodsThisTurn);
             Game.market.tmpMarketStorage.add(gainGoodsThisTurn);
@@ -939,7 +939,7 @@ public class Farmers : PopUnit
     }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.owner))
+        if (Economy.isMarket.checkIftrue(province.getOwner()))
             return true;
         else
             return false;
@@ -998,7 +998,7 @@ public class Farmers : PopUnit
     }
     internal override bool canVote()
     {
-        Country count = province.owner;
+        Country count = province.getOwner();
         var government = count.government.status;
         if (government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy)
             return true;
@@ -1015,8 +1015,8 @@ public class Aristocrats : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
-            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.owner))
+            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
+            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.getOwner()))
             return false;
         else
             return true;
@@ -1035,7 +1035,7 @@ public class Aristocrats : PopUnit
     { }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.owner))
+        if (Economy.isMarket.checkIftrue(province.getOwner()))
             return true;
         else
             return false;
@@ -1081,7 +1081,7 @@ public class Aristocrats : PopUnit
     }
     internal override bool canVote()
     {
-        Country count = province.owner;
+        Country count = province.getOwner();
         var government = count.government.status;
         if (government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.Aristocracy || government == Government.Tribal)
             return true;
@@ -1098,7 +1098,7 @@ public class Capitalists : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming))
+            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming))
             return false;
         else
             return true;
@@ -1107,7 +1107,7 @@ public class Capitalists : PopUnit
     { }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.owner))
+        if (Economy.isMarket.checkIftrue(province.getOwner()))
             return true;
         else
             return false;
@@ -1153,7 +1153,7 @@ public class Capitalists : PopUnit
     }
     internal override bool canVote()
     {
-        Country count = province.owner;
+        Country count = province.getOwner();
         var government = count.government.status;
         if (government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.BourgeoisDictatorship)
             return true;
@@ -1171,7 +1171,7 @@ public class Workers : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.owner.isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -1182,7 +1182,7 @@ public class Workers : PopUnit
     { }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.owner))
+        if (Economy.isMarket.checkIftrue(province.getOwner()))
             return true;
         else
             return false;
@@ -1228,7 +1228,7 @@ public class Workers : PopUnit
     }
     internal override bool canVote()
     {
-        Country count = province.owner;
+        Country count = province.getOwner();
         var government = count.government.status;
         if (government == Government.Democracy)
             return true;

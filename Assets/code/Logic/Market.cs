@@ -618,7 +618,7 @@ public class Market : Owner//: PrimitiveStorageSet
             actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
         else
         {
-            forWhom.province.owner.getCountryWallet().takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
+            forWhom.province.getOwner().getCountryWallet().takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
             //repeat attempt
             if (forWhom.wallet.CanAfford(need))
                 actuallyNeedsFullfilled = DoFullBuying(forWhom, need);

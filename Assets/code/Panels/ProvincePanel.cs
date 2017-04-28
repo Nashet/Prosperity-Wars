@@ -6,6 +6,7 @@ public class ProvincePanel : MonoBehaviour
 {
     public Text generaltext;
     public GameObject provincePanel;
+    public Button btnOwner;
     // Use this for initialization
     // thisPanel;
     void Start()
@@ -112,6 +113,9 @@ public class ProvincePanel : MonoBehaviour
             + "\nRural overpopulation: " + province.getOverPopulation()
             + "\nNeighbors " + province.getNeigborsList()
             ;
+        Text text = btnOwner.GetComponentInChildren<Text>();
+        text.text = "Owner: " + province.getOwner();
+        
         if (Game.devMode) generaltext.text += "\nColor: " + province.colorID;
     }
 }

@@ -7,6 +7,71 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
+public   class CountryNameGenerator
+{
+    static ChanceBox<string> prefix;
+    static ChanceBox<string> postfix;
+
+
+    public   CountryNameGenerator()
+    {
+        postfix = new ChanceBox<string>();
+        postfix.add("burg", 1.2f);
+        
+
+        
+        postfix.add("hill", 0.31f);
+        
+        postfix.add("land", 1.0f);
+        postfix.add("lands", 1.2f);
+        postfix.add("landia", 0.3f);
+        postfix.add("stan", 0.3f);
+
+        postfix.add("lia", 1.8f);
+        postfix.add("mia", 0.1f);
+        postfix.add("nia", 1.1f);
+        postfix.add("sia", 1.1f);
+        postfix.add("cia", 1.1f);
+        postfix.add("ria", 1.1f);
+
+        postfix.add("stad", 0.3f);
+
+        postfix.add("holm", 0.3f);
+        postfix.add("bruck", 0.3f);
+        
+        postfix.add("berg", 1f);       
+        
+        postfix.add("polis", 2f);
+        postfix.add("", 10f);
+        postfix.initiate();
+
+        prefix = new ChanceBox<string>();
+        
+        prefix.add("South ", 0.3f);
+        prefix.add("West ", 0.3f);
+        prefix.add("North ", 0.3f);
+        prefix.add("East ", 0.3f);
+        prefix.add("Holy ", 0.1f);
+        prefix.add("Great ", 0.8f);
+        prefix.add("Saint ", 0.2f);
+        prefix.add("Dark ", 0.01f);
+        prefix.add("Upper ", 0.2f);
+        prefix.add("Middle ", 0.1f);
+        prefix.add("", 80f);
+        prefix.initiate();
+    }
+    StringBuilder result = new StringBuilder();
+    public string generateCountryName()
+    {
+        result.Clear();
+        result.Append(prefix.getRandom());
+
+        result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3)+1, true)));
+        result.Append(postfix.getRandom());
+
+        return result.ToString();
+    }
+}
 public class ProvinceNameGenerator
 {
     static ChanceBox<string> prefix;
@@ -265,8 +330,26 @@ public static class WordGenerator
 {
 
 }
+public static class EnumerableExtension
+{
+    public static T PickRandom<T>(this IEnumerable<T> source)
+    {
+        return source.PickRandom(1).Single();
+    }
+
+    public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count)
+    {
+        return source.Shuffle().Take(count);
+    }
+
+    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
+    {
+        return source.OrderBy(x => Guid.NewGuid());
+    }
+}
 public static class UtilsMy
 {
+    
     public static Color getRandomColor()
     {
         return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
@@ -286,8 +369,8 @@ public static class UtilsMy
         return color;
     }
     public static bool isDifferentColor(this Texture2D image, int thisx, int thisy, int x, int y)
-    {        
-        if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))        
+    {
+        if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))
             return true;
         else
             return false;
