@@ -71,6 +71,7 @@ public class Game
     internal static uint PopDaysUpsetByForcedReform = 30;
     internal static float GovernmentTakesShareOfGoldOutput = 0.5f;
     internal static byte factoryInputReservInDays = 5;
+    internal static readonly float mobilizationFactor = 0.2f;
 
     public Game()
     {
@@ -143,6 +144,7 @@ public class Game
         Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), capital);
         player = Country.allCountries[1]; // not wild Tribes
         capital.secedeTo(count);
+        count.moveCapitalTo(capital);
 
         count.storageSet.add(new Storage(Product.Food, 200f));
         count.wallet.haveMoney.add(100f);

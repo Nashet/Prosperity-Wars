@@ -22,7 +22,10 @@ Economy:
 - same sallary factories - bugged hiring
 - extra tooltips in PopulationTable
 > hiring rate shpuld be variable - not fast enough on big population
-- demotion reason farmees
+* demotion reason farmees
+? get rid of PrimitiveStorage?
+> dont store factory upgrade/building purchases
+> proper pop unit spawn
 //////////////////waffle///////////
 + min wage reform
 + Unemployment in Panel & fix
@@ -37,9 +40,6 @@ Economy:
 - factories flush workforce from resource factories.
 > remove workforce flactuation on fabrics
 ? double control on workforce - by sallary & profit?
-
-> dont store factory upgrade/building purchases
-
 
 
 + finince panel
@@ -88,7 +88,7 @@ Economy:
 > always on top panels
 
 
-? get rid of PrimitiveStorage?
+
 ? covert Value into struct? For better speed?
 ///////////////////////////////// demo done
 > safety reform
@@ -180,7 +180,7 @@ Economy:
 
 
 - money lick - Caused by tax somehow and by high prices overload with self selling
-> proper pop unit spawn
+
 > education & POp effic
 ency
 

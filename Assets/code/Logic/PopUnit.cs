@@ -28,6 +28,7 @@ abstract public class PopUnit : Producer
 
     public Procent loyalty;
     public uint population;
+    uint mobilized;
     public PopType type;
     public Culture culture;
     public Procent education;
@@ -42,6 +43,7 @@ abstract public class PopUnit : Producer
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies;
     private uint daysUpsetByForcedReform;
     private bool dintGetUnemloymentSubsidy;
+
 
     public PopUnit(uint iamount, PopType ipopType, Culture iculture, Province where)
     {
@@ -77,6 +79,14 @@ abstract public class PopUnit : Producer
            modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled,
             modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
         });
+    }
+
+    internal uint mobilize()
+    {
+        uint howMuchCanMobilize = (uint)(population * loyalty.get() * Game.mobilizationFactor);
+        howMuchCanMobilize -= mobilized;
+        mobilized += howMuchCanMobilize;
+        return howMuchCanMobilize;
     }
 
     internal void addDaysUpsetByForcedReform(uint popDaysUpsetByForcedReform)
@@ -529,7 +539,7 @@ abstract public class PopUnit : Producer
             if (country != Country.NullCountry)
             {
                 country.wallet.moneyIncomethisTurn.set(0);
-                country.getCountryWallet().setSatisticToZero();                
+                country.getCountryWallet().setSatisticToZero();
                 country.aristocrstTax = country.serfdom.status.getTax();
                 foreach (Province province in country.ownedProvinces)
                 {
@@ -554,7 +564,7 @@ abstract public class PopUnit : Producer
                             factory.gainGoodsThisTurn.set(0f);
                             factory.storageNow.set(0f);
                             factory.wallet.moneyIncomethisTurn.set(0f);
-                            
+
                             factory.consumedLastTurn.copyDataFrom(factory.consumedTotal);
                             factory.sentToMarket.set(0f);
                             factory.consumedTotal.SetZero();

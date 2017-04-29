@@ -9,7 +9,7 @@ public class PoliticsPanel : DragPanel
     public Text descriptionText;
     public Button voteButton;
     public Button forceDecisionButton;
-    public Dropdown choise;
+    public Dropdown dropDown;
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
     List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
@@ -20,7 +20,7 @@ public class PoliticsPanel : DragPanel
     {
         MainCamera.politicsPanel = this;
         voteButton.interactable = false;
-        choise.interactable = false;
+        dropDown.interactable = false;
         forceDecisionButton.interactable = false;
         hide();
     }
@@ -85,28 +85,28 @@ public class PoliticsPanel : DragPanel
         //if (!contain)
         {
             //selectedReformValue = selectedReform.getValue(assotiateTable[choise.value]);
-            selectedReformValue = assotiateTable[choise.value];
+            selectedReformValue = assotiateTable[dropDown.value];
             refresh(false);
         }
     }
     void rebuildDropDown()
     {
-        choise.interactable = true;
-        choise.ClearOptions();
+        dropDown.interactable = true;
+        dropDown.ClearOptions();
         byte count = 0;
         assotiateTable.Clear();
         foreach (AbstractReformValue next in selectedReform)
         {
             //if (next.isAvailable(Game.player))
             {
-                choise.options.Add(new Dropdown.OptionData() { text = next.ToString() });
+                dropDown.options.Add(new Dropdown.OptionData() { text = next.ToString() });
                 assotiateTable.Add(next);
                 if (next == selectedReform.getValue())
                 {
                     //selectedReformValue = next;
                     // selecting non empty option
-                    choise.value = count;
-                    choise.RefreshShownValue();
+                    dropDown.value = count;
+                    dropDown.RefreshShownValue();
                 }
                 count++;
             }

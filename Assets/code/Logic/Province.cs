@@ -25,6 +25,7 @@ public class Province
     private static uint defaultPopulationSpawn = 10;
     public List<Factory> allFactories = new List<Factory>();
     private Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+    private List<Province> neighbors = new List<Province>();
     Product resource;
     internal uint fertileSoil;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
@@ -59,8 +60,9 @@ public class Province
         taker.ownedProvinces.Add(this);
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = color;
-        if (taker != Country.NullCountry)
-            taker.redrawCapital();
+        //if (taker != Country.NullCountry)
+        //    taker.redrawCapital();
+        
     }
     public System.Collections.IEnumerator GetEnumerator()
     {
@@ -88,6 +90,9 @@ public class Province
             ;//  result += pop.amount;
         return 0;
     }
+
+    
+
     public static bool isProvinceCreated(Color color)
     {
         foreach (Province anyProvince in allProvinces)
@@ -266,7 +271,14 @@ public class Province
         //return allProvinces.Find(() => getOwner() == null);
         return allProvinces.Find(predicate);
     }
-
+    internal List<Province> getNeigbors(Predicate<Province> predicate)
+    {
+        //List<Province> keyList = new List<Province>(distances.Keys);
+        //distances.SelectMany(d => d.Key).ToList();
+        //List<Province> allItems = distances.Values.SelectMany(c => c.).ToList();
+        //distances.ToList();
+        return neighbors.FindAll(predicate);
+    }
     internal bool CanBuildNewFactory(FactoryType ft)
     {
         if (HaveFactory(ft))
@@ -393,6 +405,8 @@ public class Province
     {
         if (found != this && !distances.ContainsKey(found))
             distances.Add(found, 1);
+        if (!neighbors.Contains(found))
+            neighbors.Add(found);
 
     }
     /// <summary>

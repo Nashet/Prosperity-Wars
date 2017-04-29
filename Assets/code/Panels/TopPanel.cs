@@ -24,8 +24,8 @@ public class TopPanel : MonoBehaviour
     public void refresh()
     {
         
-        generalText.text = "Economic Simulation v8\nDate: " + Game.date + " Country: " + Game.player.name
-            + " Population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() 
+        generalText.text = "Economic Simulation v9\nDate: " + Game.date + " Country: " + Game.player.name
+            + " Men population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() 
             + " Science points: " + Game.player.sciencePoints;
     }
     public void onTradeClick()
@@ -34,6 +34,13 @@ public class TopPanel : MonoBehaviour
             MainCamera.tradeWindow.hide();
         else
             MainCamera.tradeWindow.show(true);
+    }
+    public void onDiplomacyClick()
+    {
+        if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            MainCamera.diplomacyPanel.hide();
+        else
+            MainCamera.diplomacyPanel.show();
     }
     public void onInventionsClick()
     {

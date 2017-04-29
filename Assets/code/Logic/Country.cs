@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-
+using System.Linq;
 
 public class Country : Owner
 {
@@ -26,6 +26,7 @@ public class Country : Owner
     public Culture culture;
     Color nationalColor;
     Province capital;
+    internal Army army = new Army();
 
     public Bank bank = new Bank();
 
@@ -67,8 +68,30 @@ public class Country : Owner
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
-       // if (this != NullCountry)
-            //redrawCapital();
+        // if (this != NullCountry)
+        //redrawCapital();
+    }
+
+    internal void mobilize()
+    {
+        //var recruiters = new Army();
+        foreach (var province in ownedProvinces)
+            foreach (var Pop in province.allPopUnits)
+            {
+                uint recruterAmount = Pop.mobilize();
+                if (recruterAmount > 0)
+                    army.recruitNew(Pop.type, recruterAmount);
+            }        
+    }
+
+    internal List<Province> getNeighborProvinces()
+    {
+        List<Province> result = new List<Province>();
+        foreach (var province in ownedProvinces)
+            result.AddRange(
+                province.getNeigbors(p => p.getOwner() != this && !result.Contains(p))
+                );
+        return result;
     }
     //todo move to Province.cs
     internal void redrawCapital()
@@ -90,8 +113,14 @@ public class Country : Owner
 
         }
         else
-
+        {
             txtMesh.color = Color.cyan; // Set the text's color to red
+            txtMesh.fontSize += txtMesh.fontSize / 3;
+        }
+    }
+    internal void moveCapitalTo(Province pro)
+    {
+        redrawCapital();
     }
     internal Color getColor()
     {
