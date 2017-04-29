@@ -11,6 +11,8 @@ public class DiplomacyPanel : DragPanel
     public GameObject diplomacyPanel;
     public Text allArmySizeText, captionText, sendingArmySizeText;
     StringBuilder sb = new StringBuilder();
+    private Army sendingArmy = new Army();
+
     // Use this for initialization
     void Start()
     {
@@ -36,14 +38,27 @@ public class DiplomacyPanel : DragPanel
 
         allArmySizeText.text = sb.ToString();
 
-
-
         sb.Clear();
-        sb.Append("Expenses: ");
-        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
-        sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
+        sb.Append("Sending army: ").Append(sendingArmy);
+        //sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
+
         sendingArmySizeText.text = sb.ToString();
-        
+
+
+
+        //sb.Clear();
+        //sb.Append("Expenses: ");
+        //sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
+        //sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
+        //sendingArmySizeText.text = sb.ToString();
+
+    }
+    
+    public void onArmyLimitChanged(float value)
+    {
+
+        sendingArmy = Game.player.army.split(value);
+        refresh();
     }
     public void show()
     {
@@ -83,7 +98,7 @@ public class DiplomacyPanel : DragPanel
         {
             //if (next.isAvailable(Game.player))
             {
-                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() });
+                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getOwner()+")" });
                 //assotiateTable.Add(next);
                 
                     //selectedReformValue = next;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 //May be that should be extension
 
 //public static class Ext
@@ -49,10 +50,24 @@ public class Army
     override public string ToString()
     {
         StringBuilder sb = new StringBuilder();
-        
-        foreach (var next in personal)
-            sb.Append(next.Key.ToString()).Append(" ").Append(next.Value).Append(", ");
-        sb.Append("Total size is ").Append(getSize());
+
+        uint size = getSize();
+        if (size > 0)
+        {
+            foreach (var next in personal)
+                sb.Append(next.Key.ToString()).Append(" ").Append(next.Value).Append(", ");
+            sb.Append("Total size is ").Append(getSize());
+        }
+        else
+            sb.Append("None");
         return sb.ToString();
+    }
+
+    internal Army split(float factor)
+    {
+        Army result = new Army();
+        foreach (var next in personal)
+            result.recruitNew(next.Key, (uint)(next.Value * factor));
+        return result;
     }
 }
