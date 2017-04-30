@@ -26,8 +26,9 @@ public class DiplomacyPanel : DragPanel
     {
         //refresh();
     }
-    public void refresh()
+    public void refresh(bool rebuildDropdown)
     {
+        if (rebuildDropdown)
         rebuildDropDown();
         sb.Clear();
         sb.Append("Diplomacy of ").Append(Game.player);
@@ -61,7 +62,7 @@ public class DiplomacyPanel : DragPanel
         diplomacyPanel.SetActive(true);
 
         panelRectTransform.SetAsLastSibling();
-        refresh();
+        refresh(true);
     }
     public void hide()
     {
@@ -74,7 +75,8 @@ public class DiplomacyPanel : DragPanel
     public void onMobilizationClick()
     {
         Game.player.mobilize();
-        refresh();
+        //onArmyLimitChanged(0f);
+        refresh(false);
     }
     public void onDemobilizationClick()
     {
@@ -82,8 +84,8 @@ public class DiplomacyPanel : DragPanel
     }
     public void onSendArmyClick()
     {
-
         Game.player.sendArmy(sendingArmy, availableProvinces[ddProvinceSelect.value]);
+        refresh(false);
     }
     void rebuildDropDown()
     {
@@ -132,7 +134,7 @@ public class DiplomacyPanel : DragPanel
         //if (split != null)
         //{
         //    sendingArmy.add(split);
-            refresh();
+            refresh(false);
         //}
 
     }

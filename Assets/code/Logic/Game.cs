@@ -127,13 +127,13 @@ public class Game
     private void makePopTypes()
     {
         //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribemen");
-        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribemen");
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats");
-        new PopType(PopType.PopTypes.Capitalists, null, "Capitalists");
-        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers");
+        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribemen", 2f);
+        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats",4f);
+        new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f);
+        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers", 1f);
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
-        new PopType(PopType.PopTypes.Workers, null, "Workers");
+        new PopType(PopType.PopTypes.Workers, null, "Workers",1f);
     }
 
     void makeCountry(CountryNameGenerator name)
@@ -241,9 +241,9 @@ public class Game
                     pop = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
                 province.allPopUnits.Add(pop);
 
-                
+
                 if (!Game.devMode)
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(80,100), PopType.aristocrats, province.getOwner().culture, province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(80, 100), PopType.aristocrats, province.getOwner().culture, province);
                 else
                     pop = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
 
@@ -702,6 +702,7 @@ public class Game
         // strongly before PrepareForNewTick
         Game.market.simulatePriceChangeBasingOnLastTurnDate();
 
+        Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
         PopUnit.PrepareForNewTick();
 
         // big PRODUCE circle
@@ -798,5 +799,15 @@ public class Game
             }
     }
 
-
+    private static void calcBattles()
+    {
+        
+        foreach (Country country in Country.allCountries)
+            foreach (var army in country.walkingArmies)
+            {
+                if (army.attack(army.getDestination()))
+                    army.getDestination().secedeTo(country);
+                country.walkingArmies.returnHome(army, country);
+            }
+    }
 }

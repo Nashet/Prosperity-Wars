@@ -621,6 +621,11 @@ public static class MyExtensions
         }
 
     }
+    public static void returnHome(this List<Army> source, Army item, Country country)
+    {
+        country.homeArmy.add(item);
+
+    }
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {
         return source.MinBy(selector, null);

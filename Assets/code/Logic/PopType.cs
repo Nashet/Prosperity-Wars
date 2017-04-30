@@ -22,8 +22,10 @@ public class PopType
     ///<summary> per 1000 men </summary>
     public Storage basicProduction;
     private string name;
-    public PopType(PopTypes itype, Storage iproduces, string iname)
+    private float strenght;
+    public PopType(PopTypes itype, Storage iproduces, string iname, float strenght)
     {
+        this.strenght = strenght;
         type = itype;
         name = iname;
         basicProduction = iproduces;
@@ -165,6 +167,11 @@ public class PopType
     {
         return this == PopType.aristocrats || this == PopType.capitalists;
     }
+
+    internal float getStrenght()
+    {
+        return strenght;
+    }
 }
 public class Corps
 {
@@ -184,5 +191,19 @@ public class Corps
         StringBuilder sb = new StringBuilder();
         sb.Append(getSize()).Append(" ").Append(origin.ToString());
         return sb.ToString();
+    }
+
+    internal float getStrenght()
+    {
+        return getSize() * origin.type.getStrenght();
+    }
+
+    internal void TakeLoss(int loss)
+    {
+        int sum = size - loss;
+        if (sum > 0)
+            size = sum;
+        else
+            size = 0;
     }
 }

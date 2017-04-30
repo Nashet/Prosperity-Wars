@@ -77,7 +77,7 @@ abstract public class PopUnit : Producer
             modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
         });
     }
-    
+
     internal int howMuchCanMobilize()
     {
         int howMuchCanMobilize = (int)(population * loyalty.get() * Game.mobilizationFactor);
@@ -88,8 +88,12 @@ abstract public class PopUnit : Producer
     public Corps mobilize()
     {
         int amount = howMuchCanMobilize();
+
         if (amount > 1)
+        {
             return new Corps(this, amount);
+            mobilized = amount;
+        }
         else
             return null;
     }

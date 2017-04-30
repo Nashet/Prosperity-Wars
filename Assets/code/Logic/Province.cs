@@ -39,10 +39,7 @@ public class Province
 
     }
     internal Country getOwner()
-    {
-        //if (owner == null)
-        //    return Country.NullCountry;
-        //else
+    {        
         return owner;
     }
     internal int getID()

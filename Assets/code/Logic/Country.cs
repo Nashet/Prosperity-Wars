@@ -36,7 +36,7 @@ public class Country : Owner
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry = new Country("Uncolonised lands", new Culture("Zaoteks"), new CountryWallet(0f), Color.yellow, null);
-    private List<Army> armies = new List<Army>();
+    internal List<Army> walkingArmies = new List<Army>();
 
     public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
     {
@@ -76,7 +76,8 @@ public class Country : Owner
     internal void sendArmy(Army sendingArmy, Province province)
     {
         sendingArmy.send(province);
-        armies.Add(sendingArmy);
+        walkingArmies.Add(new Army(sendingArmy));
+        sendingArmy.clear();
     }
 
     internal void mobilize()

@@ -131,7 +131,7 @@ public class MainCamera : MonoBehaviour
             if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
             if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
             if (financePanel.isActiveAndEnabled) financePanel.refresh();
-            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
+            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh(true);
         }
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;

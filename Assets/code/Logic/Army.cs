@@ -10,10 +10,18 @@ using System;
 
 public class Army
 {
-    
-    List<Corps> personal = new List<Corps>();
-
+    List<Corps> personal;
     Province destination;
+    public Army()
+    {
+        personal = new List<Corps>();
+    }
+    public Army(Army army)
+    {
+        personal = new List<Corps>(army.personal);
+        destination = army.destination;
+    }
+
     public void demobilize()
     {
     }
@@ -24,7 +32,7 @@ public class Army
             personal.Add(corps);
 
     }
-    internal void add(Army armyToAdd)
+    public void add(Army armyToAdd)
     {
         this.personal.AddRange(armyToAdd.personal);
     }
@@ -57,7 +65,7 @@ public class Army
         return sb.ToString();
     }
 
-    internal void balance( Army secondArmy, Procent howMuchShouldBeInSecondArmy)
+    internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
         {
@@ -66,38 +74,104 @@ public class Army
         }
         else
         {
-            Army sumArmy = new Army();
-            sumArmy.add(this);
-            sumArmy.add(secondArmy);
-            int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(sumArmy.getSize());
-            
+            //Army sumArmy = new Army();
+            //sumArmy.add(this);
+            this.add(secondArmy);
+            int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+
             secondArmy.clear();
 
             int needToFullFill = secondArmyExpectedSize;
             while (needToFullFill > 0)
             {
-                var corpsToBalance = sumArmy.getBiggestCorpsSmallerThan(needToFullFill);
+                var corpsToBalance = this.getBiggestCorpsSmallerThan(needToFullFill);
                 if (corpsToBalance == null)
                     break;
                 else
-                    sumArmy.personal.move(corpsToBalance, secondArmy.personal);
+                    this.personal.move(corpsToBalance, secondArmy.personal);
                 needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
-            }            
-            this.personal = sumArmy.personal;
+            }
+            // this.personal = sumArmy.personal;
         }
 
     }
+    internal bool attack(Province prov)
+    {
+        return attack(prov.getOwner().homeArmy);
+    }
+    /// <summary>
+    /// returns true if attacker is winner
+    /// </summary>    
+    internal bool attack(Army enemy)
+    {
+        Army winner, loser;
+        bool result;
+        if (this.getStrenght() > enemy.getStrenght())
+        {
+            winner = this;
+            loser = enemy;
+            result = true;
+        }
+        else if (this.getStrenght() == enemy.getStrenght())
+        {
+            //winner = this;
+            //loser = enemy;
 
-    private void clear()
+            this.takeLoss();
+            enemy.takeLoss();
+            return false;
+        }
+        else
+        {
+            winner = enemy;
+            loser = this;
+            result = false;
+        }
+
+
+        float winnerLoss = loser.getStrenght() * loser.getStrenght() / winner.getStrenght();
+
+        winner.takeLoss(winnerLoss);
+        loser.takeLoss();
+        return result;
+    }
+
+    private void takeLoss()
+    {
+        takeLoss(this.getSize());
+    }
+
+    private void takeLoss(int loss)
+    {
+        int totalSize = getSize();
+        foreach (Corps c in personal)
+            c.TakeLoss(Mathf.RoundToInt(c.getSize() / (float)totalSize));
+    }
+    private void takeLoss(float lossStrenght)
+    {
+        float totalStrenght = getStrenght();
+        foreach (Corps c in personal)
+            c.TakeLoss(Mathf.RoundToInt(c.getStrenght() / totalStrenght * lossStrenght));
+    }
+
+    private float getStrenght()
+    {
+        float result = 0;
+        foreach (var c in personal)
+            result += c.getStrenght();
+        return result;
+    }
+
+    internal void clear()
     {
         personal.Clear();
-        
+        destination = null;
     }
 
     private Corps getBiggestCorpsSmallerThan(int secondArmyExpectedSize)
     {
         var smallerCorps = personal.FindAll((x) => x.getSize() < secondArmyExpectedSize);
-        if (smallerCorps == null || smallerCorps.Count == 0)
+        if (smallerCorps.Count == 0)
             return null;
         else
             return smallerCorps.MaxBy(x => x.getSize());
@@ -133,5 +207,8 @@ public class Army
         destination = province;
     }
 
-
+    internal Province getDestination()
+    {
+        return destination;
+    }
 }
