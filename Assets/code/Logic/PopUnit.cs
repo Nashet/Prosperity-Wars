@@ -32,10 +32,7 @@ abstract public class PopUnit : Producer
     public PopType type;
     public Culture culture;
     public Procent education;
-    public Procent NeedsFullfilled;
-
-    public static int minGeneratedPopulation = 100;
-    public static int maxGeneratedPopulation = 2500;
+    public Procent NeedsFullfilled;    
 
     public ModifiersList modifiersLoyaltyChange;
 
@@ -158,7 +155,7 @@ abstract public class PopUnit : Producer
         }
     }
     abstract internal bool getSayingYes(AbstractReformValue reform);
-    public static uint getRandomPopulationAmount()
+    public static uint getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
     {
         uint randomPopulation = (uint)(minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation));
         return randomPopulation;

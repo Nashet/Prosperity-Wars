@@ -100,14 +100,14 @@ public class Game
 
         var ser = new CountryNameGenerator();
         int extraCountries = random.Next(4);
-        
+
         for (int i = 0; i < 8 + extraCountries; i++)
             makeCountry(ser);
 
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
                 pro.secedeTo(Country.NullCountry);
-        
+
         CreateRandomPopulation();
         Province.allProvinces[0].allPopUnits[0].education.set(1f);
         MainCamera.topPanel.refresh();
@@ -225,24 +225,40 @@ public class Game
 
             Culture culture = new Culture(province + "landers");
 
-            Tribemen f = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
-            // f.wallet.haveMoney.set(10);
-            province.allPopUnits.Add(f);
-            if (province.getOwner() != Country.NullCountry)
+
+
+            if (province.getOwner() == Country.NullCountry)
             {
-                Aristocrats ar = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
-                ar.wallet.haveMoney.set(200);
-                ar.storageNow.add(50f);
-                province.allPopUnits.Add(ar);
+                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);
+                province.allPopUnits.Add(f);
+            }
+            else
+            {
+                PopUnit pop;
+                if (!Game.devMode)
+                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), PopType.tribeMen, province.getOwner().culture, province);
+                else
+                    pop = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
+                province.allPopUnits.Add(pop);
+
+                
+                if (!Game.devMode)
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(80,100), PopType.aristocrats, province.getOwner().culture, province);
+                else
+                    pop = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
+
+                pop.wallet.haveMoney.set(200);
+                pop.storageNow.add(50f);
+                province.allPopUnits.Add(pop);
                 if (!Game.devMode)
                 {
-                    Capitalists ca = new Capitalists(50, PopType.capitalists, province.getOwner().culture, province);
-                    ca.wallet.haveMoney.set(400);
-                    province.allPopUnits.Add(ca);
+                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(30, 50), PopType.capitalists, province.getOwner().culture, province);
+                    pop.wallet.haveMoney.set(400);
+                    province.allPopUnits.Add(pop);
 
-                    Farmers far = new Farmers(590, PopType.farmers, province.getOwner().culture, province);
-                    ca.wallet.haveMoney.set(40);
-                    province.allPopUnits.Add(far);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(500, 600), PopType.farmers, province.getOwner().culture, province);
+                    pop.wallet.haveMoney.set(40);
+                    province.allPopUnits.Add(pop);
 
                 }
                 //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
