@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
@@ -12,7 +13,7 @@ public class DiplomacyPanel : DragPanel
     public Text allArmySizeText, captionText, sendingArmySizeText;
     StringBuilder sb = new StringBuilder();
     private Army sendingArmy = new Army();
-
+    List<Province> availableProvinces = new List<Province>();
     // Use this for initialization
     void Start()
     {
@@ -33,7 +34,7 @@ public class DiplomacyPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.player.army);
+        sb.Append("Have army: ").Append(Game.player.homeArmy);
         //sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
 
         allArmySizeText.text = sb.ToString();
@@ -53,13 +54,8 @@ public class DiplomacyPanel : DragPanel
         //sendingArmySizeText.text = sb.ToString();
 
     }
-    
-    public void onArmyLimitChanged(float value)
-    {
 
-        sendingArmy = Game.player.army.split(value);
-        refresh();
-    }
+
     public void show()
     {
         diplomacyPanel.SetActive(true);
@@ -82,30 +78,32 @@ public class DiplomacyPanel : DragPanel
     }
     public void onDemobilizationClick()
     {
-        
+
     }
     public void onSendArmyClick()
     {
-        
+
+        Game.player.sendArmy(sendingArmy, availableProvinces[ddProvinceSelect.value]);
     }
     void rebuildDropDown()
     {
         ddProvinceSelect.interactable = true;
         ddProvinceSelect.ClearOptions();
         byte count = 0;
-        //assotiateTable.Clear();
-        foreach (Province next in Game.player.getNeighborProvinces())
+        availableProvinces.Clear();
+        var list = Game.player.getNeighborProvinces();
+        foreach (Province next in list)
         {
             //if (next.isAvailable(Game.player))
             {
-                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getOwner()+")" });
-                //assotiateTable.Add(next);
-                
-                    //selectedReformValue = next;
-                    // selecting non empty option
-                    ddProvinceSelect.value = count;
-                    ddProvinceSelect.RefreshShownValue();
-                
+                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getOwner() + ")" });
+                availableProvinces.Add(next);
+
+                //selectedReformValue = next;
+                // selecting non empty option
+                ddProvinceSelect.value = count;
+                ddProvinceSelect.RefreshShownValue();
+
                 count++;
             }
         }
@@ -126,5 +124,16 @@ public class DiplomacyPanel : DragPanel
             //refresh(false);
             //refresh();
         }
+    }
+    public void onArmyLimitChanged(float value)
+    {
+       /// Army split = new Army();
+        Game.player.homeArmy.balance( sendingArmy, new Procent(value));
+        //if (split != null)
+        //{
+        //    sendingArmy.add(split);
+            refresh();
+        //}
+
     }
 }

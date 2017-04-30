@@ -26,7 +26,7 @@ public class Country : Owner
     public Culture culture;
     Color nationalColor;
     Province capital;
-    internal Army army = new Army();
+    internal Army homeArmy = new Army();
 
     public Bank bank = new Bank();
 
@@ -36,6 +36,7 @@ public class Country : Owner
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry = new Country("Uncolonised lands", new Culture("Zaoteks"), new CountryWallet(0f), Color.yellow, null);
+    private List<Army> armies = new List<Army>();
 
     public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
     {
@@ -72,16 +73,18 @@ public class Country : Owner
         //redrawCapital();
     }
 
-    internal void mobilize()
+    internal void sendArmy(Army sendingArmy, Province province)
     {
-        //var recruiters = new Army();
+        sendingArmy.send(province);
+        armies.Add(sendingArmy);
+    }
+
+    internal void mobilize()
+    {        
         foreach (var province in ownedProvinces)
-            foreach (var Pop in province.allPopUnits)
-            {
-                uint recruterAmount = Pop.mobilize();
-                if (recruterAmount > 0)
-                    army.recruitNew(Pop.type, recruterAmount);
-            }        
+            foreach (var pop in province.allPopUnits)
+                if (pop.type.canMobilize())
+                    homeArmy.add(pop.mobilize());            
     }
 
     internal List<Province> getNeighborProvinces()

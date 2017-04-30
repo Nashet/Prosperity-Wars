@@ -28,11 +28,11 @@ abstract public class PopUnit : Producer
 
     public Procent loyalty;
     public uint population;
-    uint mobilized;
+    int mobilized;
     public PopType type;
     public Culture culture;
     public Procent education;
-    public Procent NeedsFullfilled;    
+    public Procent NeedsFullfilled;
 
     public ModifiersList modifiersLoyaltyChange;
 
@@ -77,13 +77,21 @@ abstract public class PopUnit : Producer
             modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
         });
     }
-
-    internal uint mobilize()
+    
+    internal int howMuchCanMobilize()
     {
-        uint howMuchCanMobilize = (uint)(population * loyalty.get() * Game.mobilizationFactor);
+        int howMuchCanMobilize = (int)(population * loyalty.get() * Game.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
         mobilized += howMuchCanMobilize;
         return howMuchCanMobilize;
+    }
+    public Corps mobilize()
+    {
+        int amount = howMuchCanMobilize();
+        if (amount > 1)
+            return new Corps(this, amount);
+        else
+            return null;
     }
 
     internal void addDaysUpsetByForcedReform(uint popDaysUpsetByForcedReform)

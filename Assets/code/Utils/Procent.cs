@@ -37,6 +37,10 @@ public class Procent : Value
     {
         return (uint)Mathf.RoundToInt(get() * population);
     }
+    internal int getProcent(int population)
+    {
+        return (int)Mathf.RoundToInt(get() * population);
+    }
     override public void set(float invalue)
     {
         if (invalue < 0f)
