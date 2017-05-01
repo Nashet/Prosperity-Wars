@@ -97,13 +97,16 @@ public class Army
     }
     internal bool attack(Province prov)
     {
-        return attack(prov.getOwner().homeArmy);
+        var enemy = prov.getOwner();
+        enemy.mobilize();
+        return attack(enemy.homeArmy);
     }
     /// <summary>
     /// returns true if attacker is winner
     /// </summary>    
     internal bool attack(Army enemy)
     {
+
         Army winner, loser;
         bool result;
         if (this.getStrenght() > enemy.getStrenght())
@@ -133,6 +136,7 @@ public class Army
 
         winner.takeLoss(winnerLoss);
         loser.takeLoss();
+        //var b = new BattleResult(,destination.getOwner(), this,, enemy,, result);
         return result;
     }
 
@@ -202,7 +206,7 @@ public class Army
 
 
 
-    internal void send(Province province)
+    internal void moveTo(Province province)
     {
         destination = province;
     }
@@ -210,5 +214,23 @@ public class Army
     internal Province getDestination()
     {
         return destination;
+    }
+
+
+}
+public class BattleResult
+{
+    Country attacker, defender;
+    //Army attackerArmy, attackerLoss, defenderArmy, defenderLoss;
+    int attackerArmy, attackerLoss, defenderArmy, defenderLoss;
+    bool result;
+    //public BattleResult(Country attacker, Country defender, Army attackerArmy, Army attackerLoss, Army defenderArmy, Army defenderLoss, bool result)
+    public BattleResult(Country attacker, Country defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss, bool result)
+    {
+        this.attacker = attacker; this.defender = defender;
+        //this.attackerArmy = new Army(attackerArmy); this.attackerLoss = new Army(attackerLoss); this.defenderArmy = new Army(defenderArmy); this.defenderLoss = new Army(defenderLoss);
+        this.attackerArmy = attackerArmy; this.attackerLoss = attackerLoss; this.defenderArmy =  defenderArmy; this.defenderLoss =  defenderLoss;
+        this.result = result;
+        Game.allBattles.Add(this);
     }
 }

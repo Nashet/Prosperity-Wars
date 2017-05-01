@@ -75,7 +75,7 @@ public class Country : Owner
 
     internal void sendArmy(Army sendingArmy, Province province)
     {
-        sendingArmy.send(province);
+        sendingArmy.moveTo(province);
         walkingArmies.Add(new Army(sendingArmy));
         sendingArmy.clear();
     }

@@ -614,16 +614,16 @@ public static class MyExtensions
 {
     public static void move<T>(this List<T> source, T item, List<T> destination)
     {
-        if (source.Contains(item)) // don't remove this
-        {
-            source.Remove(item);
+        if (source.Remove(item)) // don't remove this
             destination.Add(item);
-        }
-
     }
     public static void returnHome(this List<Army> source, Army item, Country country)
     {
-        country.homeArmy.add(item);
+        if (source.Remove(item))
+        {
+            country.homeArmy.add(item);
+            item.moveTo(null);
+        }
 
     }
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)

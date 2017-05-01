@@ -72,11 +72,14 @@ public class Game
     internal static float GovernmentTakesShareOfGoldOutput = 0.5f;
     internal static byte factoryInputReservInDays = 5;
     internal static readonly float mobilizationFactor = 0.2f;
+    internal static List<BattleResult> allBattles = new List<BattleResult>();
+    internal static Stack<Message> MessageQueue = new Stack<Message>();
 
     public Game()
     {
         Application.runInBackground = true;
         //LoadImages();
+        new Message("Спасибо анончик","Ты охуенен","Да");
         generateMapImage();
         makeProducts();
         market.initialize();
@@ -800,14 +803,17 @@ public class Game
     }
 
     private static void calcBattles()
-    {
-        
+    {        
         foreach (Country country in Country.allCountries)
             foreach (var army in country.walkingArmies)
             {
+                new Message(null, army.getDestination() + " is attacked", "Fine");
                 if (army.attack(army.getDestination()))
                     army.getDestination().secedeTo(country);
                 country.walkingArmies.returnHome(army, country);
+
+                
+                
             }
     }
 }

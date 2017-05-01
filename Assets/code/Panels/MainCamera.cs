@@ -7,6 +7,11 @@ public class MainCamera : MonoBehaviour
     public Game game;
     internal static Camera cameraMy;
     static GameObject mapPointer;
+
+    public SimpleObjectPool buttonObjectPool;
+    public Transform panelParent;
+    public GameObject messagePanelPrefab;
+    public Canvas canvas;
     public static TopPanel topPanel;
     public static ProvincePanel provincePanel;
     public static PopulationPanel populationPanel;
@@ -21,12 +26,13 @@ public class MainCamera : MonoBehaviour
     internal static PoliticsPanel politicsPanel;
     internal static FinancePanel financePanel;
     internal static DiplomacyPanel diplomacyPanel;
+    internal static MessagePanel messagePanel;
 
     // Use this for initialization
     //public Text generalText;
     void Start()
     {
-        
+
         GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
         if (gameControllerObject != null)
         {
@@ -138,7 +144,19 @@ public class MainCamera : MonoBehaviour
 
         if (Game.selectedProvince != null)
             provincePanel.UpdateProvinceWindow(Game.selectedProvince);
-
+        if (Game.MessageQueue.Count > 0)
+        {
+            Message mes = Game.MessageQueue.Pop();
+            GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
+            //newObject.transform.SetParent(panelParent, true);
+            //newObject.transform.SetParent(panelParent.transform, true);
+            newObject.transform.SetParent(canvas.transform, true);
+            
+            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
+            mesPanel.Awake();
+            mesPanel.show(mes);
+        }
+        
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
