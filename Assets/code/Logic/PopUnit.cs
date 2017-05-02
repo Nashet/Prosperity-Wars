@@ -77,7 +77,14 @@ abstract public class PopUnit : Producer
             modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
         });
     }
+   
+    public PopUnit(PopUnit popUnit) : this(popUnit.population, popUnit.type, popUnit.culture, popUnit.province)
+    {
 
+        
+
+        tempPopList.Add(this);
+    }
     internal int howMuchCanMobilize()
     {
         int howMuchCanMobilize = (int)(population * loyalty.get() * Game.mobilizationFactor);
@@ -103,28 +110,7 @@ abstract public class PopUnit : Producer
         daysUpsetByForcedReform += popDaysUpsetByForcedReform;
     }
 
-    // todo refactor mirroring above
-    public PopUnit(PopUnit ipopUnit)
-    {
-        population = ipopUnit.population;
-        type = ipopUnit.type;
-        culture = ipopUnit.culture;
 
-
-        storageNow = new Storage(Product.findByName("Food"), 0);
-        gainGoodsThisTurn = new Storage(Product.findByName("Food"), 0);
-        sentToMarket = new Storage(Product.findByName("Food"), 0);
-        education = new Procent(ipopUnit.education.get());
-
-        loyalty = new Procent(ipopUnit.loyalty.get());
-        NeedsFullfilled = new Procent(ipopUnit.NeedsFullfilled.get());
-
-        //owner = ipopUnit.getOwner();
-        province = ipopUnit.province;
-        //province.allPopUnits.Add(this);
-
-        tempPopList.Add(this);
-    }
 
     //internal float getSayYesProcent(AbstractReformValue selectedReformValue)
     //{

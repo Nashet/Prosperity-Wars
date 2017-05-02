@@ -356,6 +356,11 @@ public static class EnumerableExtension
             list[n] = value;
         }
     }
+    public static T PickRandom<T>(this List<T> source)
+    {
+        return source.ElementAt(Game.random.Next(source.Count));
+        
+    }
 }
 public static class UtilsMy
 {
@@ -617,14 +622,7 @@ public static class MyExtensions
         if (source.Remove(item)) // don't remove this
             destination.Add(item);
     }
-    public static void returnHome(this List<Army> source, Army item, Country country)
-    {
-        if (source.Remove(item))
-        {
-            country.homeArmy.add(item);
-            item.moveTo(null);
-        }
-    }
+    
     public static void consolidate(this List<Army> source, Country country)
     {
         foreach (Army next in source)

@@ -272,6 +272,10 @@ public class BattleResult
     {
         return result;
     }
+    internal bool isDefenderWon()
+    {
+        return !result;
+    }
 
     internal void createMessage()
     {
@@ -286,16 +290,16 @@ public class BattleResult
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-        if (defender == Game.player && !isAttackerWon())
+        if (defender == Game.player && isDefenderWon())
         {
-            sb.Append("Out glorius army has been attacked by evil").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Out glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-            if (attacker == Game.player && !isAttackerWon())
+            if (attacker == Game.player && isDefenderWon())
         {
             sb.Append("Out glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
@@ -303,10 +307,10 @@ public class BattleResult
             new Message("We lost a battle!", sb.ToString(), "Fine");
         }
         else
-            if (defender == Game.player && !isAttackerWon())
+            if (defender == Game.player && isAttackerWon())
 
         {
-            sb.Append("Out glorius army has been attacked by evil").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Out glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our home army is destroted, while enemy lost  ").Append(attackerLoss).Append(" men");
@@ -318,5 +322,10 @@ public class BattleResult
     internal Country getDefender()
     {
         return defender;
+    }
+
+    internal Country getAttacker()
+    {
+        return attacker;
     }
 }

@@ -103,6 +103,11 @@ public class Country : Owner
                 );
         return result;
     }
+    private Province getRandomNeighborProvince()
+    {
+        return getNeighborProvinces().PickRandom();
+    }
+
     //todo move to Province.cs
     internal void redrawCapital()
     {
@@ -254,7 +259,22 @@ public class Country : Owner
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));
+        if (isAI())
+            if (Game.random.Next(10) == 1)
+            {
+                mobilize();
+                if (homeArmy.getSize() > 50 + Game.random.Next(100))
+                    sendArmy(homeArmy, getRandomNeighborProvince());
+            }
     }
+
+
+
+    private bool isAI()
+    {
+        return Game.player != this;
+    }
+
     internal uint getMenPopulation()
     {
         uint result = 0;

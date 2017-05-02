@@ -815,11 +815,9 @@ public class Game
                     attackerArmy.getDestination().secedeTo(country);
 
                 }
-                if (attackerArmy.getOwner() == Game.player || result.getDefender() == Game.player)
+                if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
                     result.createMessage();
                 attackerArmy.moveTo(null); // go home
-                //country.allArmies.returnHome(army, country);
-
             }
             country.allArmies.consolidate( country);
         }
