@@ -143,7 +143,7 @@ public class Game
     {
         Culture cul = new Culture("Ridvans");
 
-        Province province = Province.getRandomProvince((x) => x.getOwner() == null);// Country.NullCountry);
+        Province province = Province.getRandomProvinceInWorld((x) => x.getOwner() == null);// Country.NullCountry);
         Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
         player = Country.allCountries[1]; // not wild Tribes
 
@@ -218,7 +218,7 @@ public class Game
             allMoney += co.bank.getReservs();
             foreach (Province pr in co.ownedProvinces)
             {
-                foreach (Producer factory in pr)
+                foreach (Producer factory in pr.allProducers)
                     allMoney += factory.wallet.haveMoney.get();
             }
         }
@@ -721,9 +721,9 @@ public class Game
         PopUnit.PrepareForNewTick();
 
         // big PRODUCE circle
-        foreach (Country country in Country.allCountries)
-            if (country != Country.NullCountry)
-                if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)
+           // if (country != Country.NullCountry)
+                //if (country != Country.NullCountry)
                     foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                     {
                         //Now factories time!               
@@ -744,8 +744,8 @@ public class Game
                     }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
-        foreach (Country country in Country.allCountries)
-            if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)
+           // if (country != Country.NullCountry)
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
                 {
                     foreach (Factory factory in province.allFactories)
@@ -765,8 +765,8 @@ public class Game
                     }
                 }
         // big AFTER all circle
-        foreach (Country country in Country.allCountries)
-            if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)
+         //   if (country != Country.NullCountry)
             {
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                 {
@@ -816,7 +816,7 @@ public class Game
 
     private static void calcBattles()
     {
-        foreach (Country country in Country.allCountries)
+        foreach (Country country in Country.allExisting)
         {
             foreach (var attackerArmy in country.allArmies)
             {

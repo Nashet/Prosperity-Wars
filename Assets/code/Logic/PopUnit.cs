@@ -530,8 +530,8 @@ abstract public class PopUnit : Producer
     public static void PrepareForNewTick()
     {
         Game.market.tmpMarketStorage.SetZero();
-        foreach (Country country in Country.allCountries)
-            if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)
+           // if (country != Country.NullCountry)
             {
                 country.wallet.moneyIncomethisTurn.set(0);
                 country.getCountryWallet().setSatisticToZero();

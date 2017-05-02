@@ -90,9 +90,9 @@ public class Market : Owner//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allCountries)
+            foreach (Country country in Country.allExisting)
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province)
+                    foreach (Producer producer in province.allProducers)
                     {
                         //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
@@ -109,9 +109,9 @@ public class Market : Owner//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allCountries)
+                foreach (Country country in Country.allExisting)
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province)
+                        foreach (Producer producer in province.allProducers)
                         {
                             //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
@@ -157,9 +157,9 @@ public class Market : Owner//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allCountries)
+            foreach (Country country in Country.allExisting)
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province)
+                    foreach (Producer producer in province.allProducers)
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
@@ -176,9 +176,9 @@ public class Market : Owner//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allCountries)
+                foreach (Country country in Country.allExisting)
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province)
+                        foreach (Producer producer in province.allProducers)
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
@@ -221,7 +221,7 @@ public class Market : Owner//: PrimitiveStorageSet
     internal float getGlobalEffectiveDemandOlder(Product pro)
     {
         float result = 0f;
-        foreach (Country country in Country.allCountries)
+        foreach (Country country in Country.allExisting)
             foreach (Province province in country.ownedProvinces)
             {
                 foreach (Factory factory in province.allFactories)
@@ -250,9 +250,9 @@ public class Market : Owner//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allCountries)
+            foreach (Country country in Country.allExisting)
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province)
+                    foreach (Producer producer in province.allProducers)
                         if (producer.sentToMarket.getProduct() == pro) //sup.getProduct()
                             result += producer.sentToMarket.get();
             return result;
@@ -263,9 +263,9 @@ public class Market : Owner//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allCountries)
+                foreach (Country country in Country.allExisting)
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province)
+                        foreach (Producer producer in province.allProducers)
                             if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.sentToMarket.get();
 
@@ -289,10 +289,10 @@ public class Market : Owner//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allCountries)
+            foreach (Country country in Country.allExisting)
                 foreach (Province province in country.ownedProvinces)
                 {
-                    foreach (Producer producer in province)
+                    foreach (Producer producer in province.allProducers)
                     {
                         if (producer.gainGoodsThisTurn.getProduct() == pro) //sup.getProduct()
                             result += producer.gainGoodsThisTurn.get();
@@ -306,10 +306,10 @@ public class Market : Owner//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allCountries)
+                foreach (Country country in Country.allExisting)
                     foreach (Province province in country.ownedProvinces)
                     {
-                        foreach (Producer producer in province)
+                        foreach (Producer producer in province.allProducers)
                         {
                             if (producer.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.gainGoodsThisTurn.get();

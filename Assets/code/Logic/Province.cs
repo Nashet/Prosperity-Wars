@@ -30,6 +30,7 @@ public class Province
     internal uint fertileSoil;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
+        allProducers = getProducers();
         resource = inresource;
         colorID = icolorID; mesh = imesh; name = iname; meshFilter = imeshFilter;
         ID = iID;
@@ -85,23 +86,18 @@ public class Province
     {
         return getOwner().getCapital() == this;
     }
-    internal static Province getRandomProvince(Predicate<Province> predicate)
-    {
-        //todo optimixe shuffling
-        allProvinces.Shuffle();
-
-        //return allProvinces.Find(() => getOwner() == null);
-        return allProvinces.Find(predicate);
+    internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
+    {      
+        return allProvinces.PickRandom(predicate);
     }
     internal List<Province> getNeigbors(Predicate<Province> predicate)
-    {
-        //List<Province> keyList = new List<Province>(distances.Keys);
-        //distances.SelectMany(d => d.Key).ToList();
-        //List<Province> allItems = distances.Values.SelectMany(c => c.).ToList();
-        //distances.ToList();
+    {       
         return neighbors.FindAll(predicate);
+         
     }
-    public System.Collections.IEnumerator GetEnumerator()
+    internal IEnumerable allProducers;
+    System.Collections.IEnumerable getProducers()
+    //public System.Collections.IEnumerator GetEnumerator()
     {
         foreach (Factory f in allFactories)
             yield return f;

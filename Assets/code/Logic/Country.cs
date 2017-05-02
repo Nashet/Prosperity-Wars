@@ -76,11 +76,21 @@ public class Country : Owner
             inventions.MarkInvented(InventionType.banking);
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
-        }
-        // if (this != NullCountry)
-        //redrawCapital();
+        }       
     }
+    public bool isExist()
+    {
+        return ownedProvinces.Count > 0;
+    }
+    internal static IEnumerable allExisting = getExisting();
+    // if (country != Country.NullCountry) ??
+    static IEnumerable getExisting()
+    {
+        foreach (var c in allCountries)
+            if (c.isExist() && c != Country.NullCountry)
+                yield return c;
 
+    }
     internal void killCountry()
     {
         UnityEngine.Object.Destroy(messhCapitalText.gameObject);
@@ -123,14 +133,14 @@ public class Country : Owner
     {
         return getNeighborProvinces().PickRandom();
     }
-    
+
     internal Province getRandomOwnedProvince()
     {
         return ownedProvinces.PickRandom();
     }
     internal Province getRandomOwnedProvince(Predicate<Province> predicate)
     {
-        return ownedProvinces.PickRandom( predicate);
+        return ownedProvinces.PickRandom(predicate);
     }
 
     //todo move to Province.cs
