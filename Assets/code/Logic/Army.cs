@@ -95,7 +95,7 @@ public class Army
                     this.personal.move(corpsToBalance, secondArmy.personal);
                 needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
             }
-            
+
         }
 
     }
@@ -111,69 +111,85 @@ public class Army
     /// <summary>
     /// returns true if attacker is winner
     /// </summary>    
-    internal BattleResult attack(Army enemy)
+    internal BattleResult attack(Army defender)
     {
+        Army attacker = this;
+        int initialAttackerSize = attacker.getSize();
+        int initialDefenderSize = defender.getSize();
 
-        Army winner, loser;
         bool attackerWon;
-        if (this.getStrenght() > enemy.getStrenght())
+        BattleResult result;
+        if (this.getStrenght() > defender.getStrenght())
         {
-            winner = this;
-            loser = enemy;
+
             attackerWon = true;
+            float winnerLossUnConverted = defender.getStrenght() * defender.getStrenght() / attacker.getStrenght();
+            int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted);
+            int loserLoss = defender.takeLoss(defender.getSize());
+
+            result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
+            , initialDefenderSize, loserLoss, attacker.destination, attackerWon);
         }
-        else if (this.getStrenght() == enemy.getStrenght())
+        else if (this.getStrenght() == defender.getStrenght())
         {
-            this.takeLoss();
-            enemy.takeLoss();
-            var r = new BattleResult(this.getOwner(), enemy.getOwner(), this.getSize(), this.getSize(), enemy.getSize(), enemy.getSize(), this.destination, false);
+            attacker.takeLoss(attacker.getSize());
+            defender.takeLoss(defender.getSize());
+            var r = new BattleResult(this.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(), this.destination, false);
             return r;
         }
         else
         {
-            winner = enemy;
-            loser = this;
+
             attackerWon = false;
+
+            float winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / defender.getStrenght();
+            int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted);
+
+            int attackerLoss = attacker.takeLoss(attacker.getSize());
+            result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
+            , initialDefenderSize, defenderLoss, attacker.destination, attackerWon);
         }
 
 
-        float winnerLossUnConverted = loser.getStrenght() * loser.getStrenght() / winner.getStrenght();
 
-        int winnerLoss = winner.takeLoss(winnerLossUnConverted);
-        int loserLoss = loser.getSize();
-        loser.takeLoss();
-
-        var result = new BattleResult(this.getOwner(), enemy.getOwner(), this.getSize(), attackerWon ? winnerLoss : loserLoss
-            , enemy.getSize(), attackerWon ? loserLoss : winnerLoss, this.destination, attackerWon);
         return result;
     }
     public Country getOwner()
     {
         return owner;
     }
-    private void takeLoss()
-    {
-        takeLoss(this.getSize());
-    }
+    //private void takeLoss()
+    //{
+    //    takeLoss(this.getSize());
+    //}
 
-    private void takeLoss(int loss)
-    {
-        int totalSize = getSize();
-        foreach (Corps c in personal)
-            c.TakeLoss(Mathf.RoundToInt(c.getSize() / (float)totalSize));
-    }
-    private int takeLoss(float lossStrenght)
+    private int takeLoss(int loss)
     {
         int totalLoss = 0;
-        int next;
-        float totalStrenght = getStrenght();
-        foreach (Corps c in personal)
+        int totalSize = getSize();
+        int currentLoss;
+        foreach (Corps corp in personal)
         {
-            next = Mathf.RoundToInt(c.getStrenght() / totalStrenght * lossStrenght);
-            c.TakeLoss(next);
-            totalLoss += next;
+            currentLoss = Mathf.RoundToInt(corp.getSize() / (float)totalSize * loss);
+            corp.TakeLoss(currentLoss);
+            totalLoss += currentLoss;
         }
         return totalLoss;
+    }
+    private int takeLossUnconverted(float lossStrenght)
+    {
+        int totalMenLoss = 0;
+        float streghtLoss;
+        int menLoss;
+        float totalStrenght = getStrenght();
+        foreach (Corps corp in personal)
+        {
+            streghtLoss = corp.getStrenght() / totalStrenght * lossStrenght;
+            menLoss = Mathf.RoundToInt(streghtLoss / corp.getType().getStrenght());
+            corp.TakeLoss(menLoss);
+            totalMenLoss += menLoss;
+        }
+        return totalMenLoss;
     }
 
     private float getStrenght()
@@ -199,7 +215,7 @@ public class Army
             return smallerCorps.MaxBy(x => x.getSize());
     }
 
-   
+
     //internal Army split(Procent howMuchShouldBeInSecondArmy)
     //{
     //    if (personal.Count > 0)

@@ -182,6 +182,8 @@ public class Corps
         this.origin = origin;
         this.size = size;
     }
+    public PopType getType()
+    { return origin.type; }
     public int getSize()
     {
         return size;
