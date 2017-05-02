@@ -173,7 +173,11 @@ public class Country : Owner
         if (messhCapitalText == null)
             makeCapitalTextMesh();
         else
-            messhCapitalText.transform.position = pro.centre;
+        {
+            Vector3 capitalTextPosition = pro.centre;
+            capitalTextPosition.y += 2f;
+            messhCapitalText.transform.position = capitalTextPosition;
+        }
     }
     internal Color getColor()
     {

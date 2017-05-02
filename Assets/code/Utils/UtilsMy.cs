@@ -358,7 +358,8 @@ public static class EnumerableExtension
     }
     public static T PickRandom<T>(this List<T> source)
     {
-        return source.ElementAt(Game.random.Next(source.Count));
+        //return source.ElementAt(Game.random.Next(source.Count));
+        return source[Game.random.Next(source.Count)];
 
     }
     public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
