@@ -248,10 +248,11 @@ public class Game
                 else
                     pop = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
                 province.allPopUnits.Add(pop);
+
                 if (province.getOwner() == Game.player)
                 {
-                    pop = new Tribemen(20900, PopType.tribeMen, province.getOwner().culture, province);
-                    province.allPopUnits.Add(pop);
+                    //pop = new Tribemen(20900, PopType.tribeMen, province.getOwner().culture, province);
+                    //province.allPopUnits.Add(pop);
                 }
 
 

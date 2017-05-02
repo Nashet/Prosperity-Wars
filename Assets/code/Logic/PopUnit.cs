@@ -96,10 +96,11 @@ abstract public class PopUnit : Producer
     {
         int amount = howMuchCanMobilize();
 
-        if (amount > 1)
+        if (amount > 0)
         {
-            return new Corps(this, amount);
             mobilized = amount;
+            return new Corps(this, amount);
+            
         }
         else
             return null;

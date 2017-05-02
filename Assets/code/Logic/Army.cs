@@ -10,13 +10,13 @@ using System;
 
 public class Army
 {
-    List<Corps> personal;
+    Dictionary<PopUnit, Corps> personal;
     Province destination;
     Country owner;
 
     public Army(Country owner)
     {
-        personal = new List<Corps>();
+        personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
     }
     //public Army(Army army)
@@ -30,19 +30,26 @@ public class Army
     {
     }
 
-    public void add(Corps corps)
+    public void add(Corps corpsToAdd)
     {
-        if (corps != null)
-            personal.Add(corps);
-
+        if (corpsToAdd != null)
+        {
+            Corps found;
+            if (personal.TryGetValue(corpsToAdd.getPopUnit(), out found)) // Returns true.
+            {
+                found.add(corpsToAdd.getSize());
+            }
+            else
+                personal.Add(corpsToAdd.getPopUnit(), corpsToAdd);
+        }
     }
     public void add(Army armyToAdd)
     {
-        this.personal.AddRange(armyToAdd.personal);
+        this.AddRange(armyToAdd.personal);
     }
     private void remove(Corps corps)
     {
-        personal.Remove(corps);
+        personal.Remove(corps.getPopUnit());
     }
     internal int getSize()
     {
@@ -50,7 +57,7 @@ public class Army
         //foreach (var next in personal)
         //    result += next.getSize();
 
-        return personal.Sum(x => x.getSize());
+        return personal.Sum(x => x.Value.getSize());
         //return result;
     }
     override public string ToString()
@@ -68,12 +75,22 @@ public class Army
             sb.Append("None");
         return sb.ToString();
     }
+    public void AddRange(Dictionary<PopUnit, Corps> source)
+    {
+        Corps found;
+        foreach (var p in source)
+            if (p.Value.getSize() > 0)
+                if (this.personal.TryGetValue(p.Key, out found))
+                    found.add(p.Value.getSize());
+                else
+                    this.personal.Add(p.Key, p.Value);
 
+    }
     internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
         {
-            secondArmy.personal.AddRange(this.personal);
+            secondArmy.AddRange(this.personal);
             this.personal.Clear();
         }
         else
@@ -168,10 +185,10 @@ public class Army
         int totalLoss = 0;
         int totalSize = getSize();
         int currentLoss;
-        foreach (Corps corp in personal)
+        foreach (var corp in personal)
         {
-            currentLoss = Mathf.RoundToInt(corp.getSize() / (float)totalSize * loss);
-            corp.TakeLoss(currentLoss);
+            currentLoss = Mathf.RoundToInt(corp.Value.getSize() / (float)totalSize * loss);
+            corp.Value.TakeLoss(currentLoss);
             totalLoss += currentLoss;
         }
         return totalLoss;
@@ -182,11 +199,11 @@ public class Army
         float streghtLoss;
         int menLoss;
         float totalStrenght = getStrenght();
-        foreach (Corps corp in personal)
+        foreach (var corp in personal)
         {
-            streghtLoss = corp.getStrenght() / totalStrenght * lossStrenght;
-            menLoss = Mathf.RoundToInt(streghtLoss / corp.getType().getStrenght());
-            corp.TakeLoss(menLoss);
+            streghtLoss = corp.Value.getStrenght() / totalStrenght * lossStrenght;
+            menLoss = Mathf.RoundToInt(streghtLoss / corp.Value.getType().getStrenght());
+            corp.Value.TakeLoss(menLoss);
             totalMenLoss += menLoss;
         }
         return totalMenLoss;
@@ -196,7 +213,7 @@ public class Army
     {
         float result = 0;
         foreach (var c in personal)
-            result += c.getStrenght();
+            result += c.Value.getStrenght();
         return result;
     }
 
@@ -208,11 +225,12 @@ public class Army
 
     private Corps getBiggestCorpsSmallerThan(int secondArmyExpectedSize)
     {
-        var smallerCorps = personal.FindAll((x) => x.getSize() < secondArmyExpectedSize);
-        if (smallerCorps.Count == 0)
+
+        var smallerCorps = personal.Where(x => x.Value.getSize() < secondArmyExpectedSize);
+        if (smallerCorps.Count() == 0)
             return null;
         else
-            return smallerCorps.MaxBy(x => x.getSize());
+            return smallerCorps.MaxBy(x => x.Value.getSize()).Value;
     }
 
 

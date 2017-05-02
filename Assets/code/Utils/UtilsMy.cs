@@ -356,6 +356,16 @@ public static class EnumerableExtension
             list[n] = value;
         }
     }
+    //public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
+    //{
+    //    if (target == null)
+    //        throw new ArgumentNullException("target");
+    //    if (source == null)
+    //        throw new ArgumentNullException("source");
+    //    foreach (var element in source)
+    //        //if (target)
+    //        target.Add(element);
+    //}
     public static T PickRandom<T>(this List<T> source)
     {
         //return source.ElementAt(Game.random.Next(source.Count));
@@ -628,8 +638,16 @@ public static class MyExtensions
     {
         if (source.Remove(item)) // don't remove this
             destination.Add(item);
-    }
 
+    }
+    //public static bool Any<TSource>(this IEnumerable<TSource> source);
+    public static void move(this Dictionary<PopUnit, Corps> source, Corps item, Dictionary<PopUnit, Corps> destination)
+    {
+        //if (source.TryGetValue(corpsToAdd.getPopUnit(), out found))
+        
+        if (source.Remove(item.getPopUnit())) // don't remove this
+            destination.Add(item.getPopUnit(), item);
+    }
     public static void consolidate(this List<Army> source, Country country)
     {
         foreach (Army next in source)

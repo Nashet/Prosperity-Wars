@@ -208,4 +208,14 @@ public class Corps
         else
             size = 0;
     }
+
+    internal PopUnit getPopUnit()
+    {
+        return origin;
+    }
+
+    internal void add(int v)
+    {
+        size += v;
+    }
 }
