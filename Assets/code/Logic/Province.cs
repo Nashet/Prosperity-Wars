@@ -39,13 +39,34 @@ public class Province
 
     }
     internal Country getOwner()
-    {        
-        return owner;
+    {
+        //if (owner == null)
+        //    return Country.NullCountry;
+        //else
+            return owner;
     }
     internal int getID()
     { return ID; }
+    public void InitialOwner(Country taker)
+    {
+        if (this.getOwner() != null)
+            if (this.getOwner().ownedProvinces != null)
+                this.getOwner().ownedProvinces.Remove(this);
+        owner = taker;
+
+        if (taker.ownedProvinces == null)
+            taker.ownedProvinces = new List<Province>();
+        taker.ownedProvinces.Add(this);
+        color = taker.getColor().getAlmostSameColor();
+        meshRenderer.material.color = color;
+    }
     public void secedeTo(Country taker)
     {
+        if (getOwner().isOneProvince())
+            ;
+        else
+        if (isCapital())
+            getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince());
 
         if (this.getOwner() != null)
             if (this.getOwner().ownedProvinces != null)
@@ -57,10 +78,14 @@ public class Province
         taker.ownedProvinces.Add(this);
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = color;
-        //if (taker != Country.NullCountry)
-        //    taker.redrawCapital();
-        
+
     }
+
+    internal bool isCapital()
+    {
+        return getOwner().getCapital() == this;
+    }
+
     public System.Collections.IEnumerator GetEnumerator()
     {
         foreach (Factory f in allFactories)

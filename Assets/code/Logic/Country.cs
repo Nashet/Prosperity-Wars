@@ -31,6 +31,7 @@ public class Country : Owner
     internal Army sendingArmy;
     internal List<Army> allArmies = new List<Army>();
 
+    TextMesh messhCapitalText;
 
     public Bank bank = new Bank();
 
@@ -80,6 +81,16 @@ public class Country : Owner
         //redrawCapital();
     }
 
+    internal bool isOneProvince()
+    {
+        return ownedProvinces.Count == 1;
+    }
+
+    internal Province getCapital()
+    {
+        return capital;
+    }
+
     internal void sendArmy(Army sendingArmy, Province province)
     {
         sendingArmy.moveTo(province);
@@ -103,13 +114,17 @@ public class Country : Owner
                 );
         return result;
     }
-    private Province getRandomNeighborProvince()
+    internal Province getRandomNeighborProvince()
     {
         return getNeighborProvinces().PickRandom();
     }
+    internal Province getRandomOwnedProvince()
+    {
+        return ownedProvinces.PickRandom();
+    }
 
     //todo move to Province.cs
-    internal void redrawCapital()
+    internal void makeCapitalTextMesh()
     {
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
         txtMeshTransform.SetParent(capital.gameObject.transform, false);
@@ -119,23 +134,26 @@ public class Country : Owner
         capitalTextPosition.y += 2f;
         txtMeshTransform.position = capitalTextPosition;
 
-        TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-        txtMesh.text = this.ToString();
+        messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
+        messhCapitalText.text = this.ToString();
         if (this == Game.player)
         {
-            txtMesh.color = Color.blue;
-            txtMesh.fontSize += txtMesh.fontSize / 2;
+            messhCapitalText.color = Color.blue;
+            messhCapitalText.fontSize += messhCapitalText.fontSize / 2;
 
         }
         else
         {
-            txtMesh.color = Color.cyan; // Set the text's color to red
-            txtMesh.fontSize += txtMesh.fontSize / 3;
+            messhCapitalText.color = Color.cyan; // Set the text's color to red
+            messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
         }
     }
     internal void moveCapitalTo(Province pro)
     {
-        redrawCapital();
+        if (messhCapitalText == null)
+            makeCapitalTextMesh();
+        else
+            messhCapitalText.transform.position = pro.centre;
     }
     internal Color getColor()
     {

@@ -109,7 +109,7 @@ public class Game
 
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
-                pro.secedeTo(Country.NullCountry);
+                pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
         Province.allProvinces[0].allPopUnits[0].education.set(1f);
@@ -143,11 +143,16 @@ public class Game
     {
         Culture cul = new Culture("Ridvans");
 
-        Province capital = Province.getRandomProvince((x) => x.getOwner() == null);
-        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), capital);
+        Province province = Province.getRandomProvince((x) => x.getOwner() == null);// Country.NullCountry);
+        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
         player = Country.allCountries[1]; // not wild Tribes
-        capital.secedeTo(count);
-        count.moveCapitalTo(capital);
+
+       
+        province.InitialOwner(count);
+
+
+        count.moveCapitalTo(province);
+
 
         count.storageSet.add(new Storage(Product.Food, 200f));
         count.wallet.haveMoney.add(100f);
@@ -243,6 +248,13 @@ public class Game
                 else
                     pop = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
                 province.allPopUnits.Add(pop);
+                if (province.getOwner() == Game.player)
+                {
+                    pop = new Tribemen(20900, PopType.tribeMen, province.getOwner().culture, province);
+                    province.allPopUnits.Add(pop);
+                }
+
+
 
 
                 if (!Game.devMode)
@@ -819,7 +831,7 @@ public class Game
                     result.createMessage();
                 attackerArmy.moveTo(null); // go home
             }
-            country.allArmies.consolidate( country);
+            country.allArmies.consolidate(country);
         }
     }
 }

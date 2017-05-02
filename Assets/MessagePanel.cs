@@ -59,7 +59,7 @@ public class MessagePanel : DragPanel
     {
         
         hide();
-        Destroy(this);
+        Destroy(messagePanel);
     }
 
 
