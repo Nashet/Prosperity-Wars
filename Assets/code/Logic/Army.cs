@@ -283,7 +283,7 @@ public class BattleResult
 
         if (attacker == Game.player && isAttackerWon())
         {
-            sb.Append("Out glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("Our glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is our now!");
@@ -292,7 +292,7 @@ public class BattleResult
         else
         if (defender == Game.player && isDefenderWon())
         {
-            sb.Append("Out glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
@@ -301,19 +301,19 @@ public class BattleResult
         else
             if (attacker == Game.player && isDefenderWon())
         {
-            sb.Append("Out glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("Our glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
-            sb.Append("\n\nWe lost, our invasion army is destroted, while enemy lost ").Append(defenderLoss).Append(" men");
+            sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
             new Message("We lost a battle!", sb.ToString(), "Fine");
         }
         else
             if (defender == Game.player && isAttackerWon())
 
         {
-            sb.Append("Out glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
-            sb.Append("\n\nWe lost, our home army is destroted, while enemy lost  ").Append(attackerLoss).Append(" men");
+            sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
             new Message("We lost a battle!", sb.ToString(), "Not fine really");
         }
