@@ -43,7 +43,7 @@ public class Province
         //if (owner == null)
         //    return Country.NullCountry;
         //else
-            return owner;
+        return owner;
     }
     internal int getID()
     { return ID; }
@@ -63,10 +63,10 @@ public class Province
     public void secedeTo(Country taker)
     {
         if (getOwner().isOneProvince())
-            ;
+            getOwner().killCountry();
         else
-        if (isCapital())
-            getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince());
+            if (isCapital())
+            getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince(x => x != this));
 
         if (this.getOwner() != null)
             if (this.getOwner().ownedProvinces != null)
@@ -85,7 +85,22 @@ public class Province
     {
         return getOwner().getCapital() == this;
     }
+    internal static Province getRandomProvince(Predicate<Province> predicate)
+    {
+        //todo optimixe shuffling
+        allProvinces.Shuffle();
 
+        //return allProvinces.Find(() => getOwner() == null);
+        return allProvinces.Find(predicate);
+    }
+    internal List<Province> getNeigbors(Predicate<Province> predicate)
+    {
+        //List<Province> keyList = new List<Province>(distances.Keys);
+        //distances.SelectMany(d => d.Key).ToList();
+        //List<Province> allItems = distances.Values.SelectMany(c => c.).ToList();
+        //distances.ToList();
+        return neighbors.FindAll(predicate);
+    }
     public System.Collections.IEnumerator GetEnumerator()
     {
         foreach (Factory f in allFactories)
@@ -291,22 +306,7 @@ public class Province
         return result;
     }
 
-    internal static Province getRandomProvince(Predicate<Province> predicate)
-    {
-        //todo optimixe shuffling
-        allProvinces.Shuffle();
 
-        //return allProvinces.Find(() => getOwner() == null);
-        return allProvinces.Find(predicate);
-    }
-    internal List<Province> getNeigbors(Predicate<Province> predicate)
-    {
-        //List<Province> keyList = new List<Province>(distances.Keys);
-        //distances.SelectMany(d => d.Key).ToList();
-        //List<Province> allItems = distances.Values.SelectMany(c => c.).ToList();
-        //distances.ToList();
-        return neighbors.FindAll(predicate);
-    }
     internal bool CanBuildNewFactory(FactoryType ft)
     {
         if (HaveFactory(ft))

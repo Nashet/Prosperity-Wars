@@ -359,7 +359,13 @@ public static class EnumerableExtension
     public static T PickRandom<T>(this List<T> source)
     {
         return source.ElementAt(Game.random.Next(source.Count));
-        
+
+    }
+    public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
+    {
+        return source.FindAll(predicate).PickRandom();
+        //return source.ElementAt(Game.random.Next(source.Count));
+
     }
 }
 public static class UtilsMy
@@ -622,14 +628,14 @@ public static class MyExtensions
         if (source.Remove(item)) // don't remove this
             destination.Add(item);
     }
-    
+
     public static void consolidate(this List<Army> source, Country country)
     {
         foreach (Army next in source)
-            if (next.getDestination() == null)            
-                country.homeArmy.add(next);                
-            
-        source.RemoveAll((x)=>x.getDestination()==null);
+            if (next.getDestination() == null)
+                country.homeArmy.add(next);
+
+        source.RemoveAll((x) => x.getDestination() == null);
     }
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {

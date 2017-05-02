@@ -81,6 +81,11 @@ public class Country : Owner
         //redrawCapital();
     }
 
+    internal void killCountry()
+    {
+        UnityEngine.Object.Destroy(messhCapitalText.gameObject);
+    }
+
     internal bool isOneProvince()
     {
         return ownedProvinces.Count == 1;
@@ -118,9 +123,14 @@ public class Country : Owner
     {
         return getNeighborProvinces().PickRandom();
     }
+    
     internal Province getRandomOwnedProvince()
     {
         return ownedProvinces.PickRandom();
+    }
+    internal Province getRandomOwnedProvince(Predicate<Province> predicate)
+    {
+        return ownedProvinces.PickRandom( predicate);
     }
 
     //todo move to Province.cs
