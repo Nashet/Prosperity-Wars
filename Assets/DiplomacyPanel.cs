@@ -12,13 +12,14 @@ public class DiplomacyPanel : DragPanel
     public GameObject diplomacyPanel;
     public Text allArmySizeText, captionText, sendingArmySizeText;
     StringBuilder sb = new StringBuilder();
-    private Army sendingArmy = new Army();
+    
     List<Province> availableProvinces = new List<Province>();
     // Use this for initialization
     void Start()
     {
         MainCamera.diplomacyPanel = this;
         hide();
+
     }
 
     // Update is called once per frame
@@ -28,8 +29,11 @@ public class DiplomacyPanel : DragPanel
     }
     public void refresh(bool rebuildDropdown)
     {
+
         if (rebuildDropdown)
-        rebuildDropDown();
+        {
+            rebuildDropDown();            
+        }
         sb.Clear();
         sb.Append("Diplomacy of ").Append(Game.player);
         captionText.text = sb.ToString();
@@ -41,7 +45,7 @@ public class DiplomacyPanel : DragPanel
         allArmySizeText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Sending army: ").Append(sendingArmy);
+        sb.Append("Sending army: ").Append(Game.player.sendingArmy);
         //sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
 
         sendingArmySizeText.text = sb.ToString();
@@ -84,7 +88,8 @@ public class DiplomacyPanel : DragPanel
     }
     public void onSendArmyClick()
     {
-        Game.player.sendArmy(sendingArmy, availableProvinces[ddProvinceSelect.value]);
+        Game.player.sendArmy(Game.player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
+        Game.player.sendingArmy = new Army(Game.player);
         refresh(false);
     }
     void rebuildDropDown()
@@ -129,12 +134,12 @@ public class DiplomacyPanel : DragPanel
     }
     public void onArmyLimitChanged(float value)
     {
-       /// Army split = new Army();
-        Game.player.homeArmy.balance( sendingArmy, new Procent(value));
+        /// Army split = new Army();
+        Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(value));
         //if (split != null)
         //{
         //    sendingArmy.add(split);
-            refresh(false);
+        refresh(false);
         //}
 
     }

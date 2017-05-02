@@ -24,7 +24,7 @@ public class MessagePanel : DragPanel
     // Use this for initialization
     void Start()
     {
-        MainCamera.messagePanel = this;
+        //MainCamera.messagePanel = this;
        // hide();
     }
 
@@ -57,7 +57,9 @@ public class MessagePanel : DragPanel
     }
     public void onCloseClick()
     {
+        
         hide();
+        Destroy(this);
     }
 
 

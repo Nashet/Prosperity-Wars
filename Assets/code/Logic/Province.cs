@@ -88,7 +88,13 @@ public class Province
         return 0;
     }
 
-    
+    internal void mobilize()
+    {
+        var army = this.getOwner().homeArmy;
+        foreach (var pop in allPopUnits)
+            if (pop.type.canMobilize())
+                army.add(pop.mobilize());
+    }
 
     public static bool isProvinceCreated(Color color)
     {

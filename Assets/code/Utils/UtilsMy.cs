@@ -624,7 +624,14 @@ public static class MyExtensions
             country.homeArmy.add(item);
             item.moveTo(null);
         }
-
+    }
+    public static void consolidate(this List<Army> source, Country country)
+    {
+        foreach (Army next in source)
+            if (next.getDestination() == null)            
+                country.homeArmy.add(next);                
+            
+        source.RemoveAll((x)=>x.getDestination()==null);
     }
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {

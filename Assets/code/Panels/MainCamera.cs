@@ -26,7 +26,7 @@ public class MainCamera : MonoBehaviour
     internal static PoliticsPanel politicsPanel;
     internal static FinancePanel financePanel;
     internal static DiplomacyPanel diplomacyPanel;
-    internal static MessagePanel messagePanel;
+    //internal static MessagePanel messagePanel;
 
     // Use this for initialization
     //public Text generalText;
@@ -147,9 +147,10 @@ public class MainCamera : MonoBehaviour
         if (Game.MessageQueue.Count > 0)
         {
             Message mes = Game.MessageQueue.Pop();
-            GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
-            //newObject.transform.SetParent(panelParent, true);
-            //newObject.transform.SetParent(panelParent.transform, true);
+            //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
+
+            GameObject  newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
+
             newObject.transform.SetParent(canvas.transform, true);
             
             MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();

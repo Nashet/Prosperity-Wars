@@ -9,8 +9,8 @@ public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
     private Vector2 pointerOffset;
     private RectTransform canvasRectTransform;
     protected RectTransform panelRectTransform;
-
-    public  void Awake()
+    
+    public void Awake()
     {
         Canvas canvas = GetComponentInParent<Canvas>();
         if (canvas != null)
@@ -20,7 +20,7 @@ public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
             panelRectTransform = transform as RectTransform;
         }
     }
-
+   
     public void OnPointerDown(PointerEventData data)
     {
         panelRectTransform.SetAsLastSibling();

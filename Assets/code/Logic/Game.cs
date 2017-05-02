@@ -79,7 +79,7 @@ public class Game
     {
         Application.runInBackground = true;
         //LoadImages();
-        new Message("Спасибо анончик","Ты охуенен","Да");
+        //new Message("Спасибо анончик", "Ты охуенен", "Да");
         generateMapImage();
         makeProducts();
         market.initialize();
@@ -131,12 +131,12 @@ public class Game
     {
         //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribemen");
         new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribemen", 2f);
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats",4f);
+        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f);
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f);
         new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers", 1f);
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
-        new PopType(PopType.PopTypes.Workers, null, "Workers",1f);
+        new PopType(PopType.PopTypes.Workers, null, "Workers", 1f);
     }
 
     void makeCountry(CountryNameGenerator name)
@@ -803,17 +803,25 @@ public class Game
     }
 
     private static void calcBattles()
-    {        
+    {
         foreach (Country country in Country.allCountries)
-            foreach (var army in country.walkingArmies)
+        {
+            foreach (var attackerArmy in country.allArmies)
             {
-                new Message(null, army.getDestination() + " is attacked", "Fine");
-                if (army.attack(army.getDestination()))
-                    army.getDestination().secedeTo(country);
-                country.walkingArmies.returnHome(army, country);
 
-                
-                
+                var result = attackerArmy.attack(attackerArmy.getDestination());
+                if (result.isAttackerWon())
+                {
+                    attackerArmy.getDestination().secedeTo(country);
+
+                }
+                if (attackerArmy.getOwner() == Game.player || result.getDefender() == Game.player)
+                    result.createMessage();
+                attackerArmy.moveTo(null); // go home
+                //country.allArmies.returnHome(army, country);
+
             }
+            country.allArmies.consolidate( country);
+        }
     }
 }

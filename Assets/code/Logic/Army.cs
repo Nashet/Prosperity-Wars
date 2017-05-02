@@ -12,15 +12,19 @@ public class Army
 {
     List<Corps> personal;
     Province destination;
-    public Army()
+    Country owner;
+
+    public Army(Country owner)
     {
         personal = new List<Corps>();
+        this.owner = owner;
     }
-    public Army(Army army)
-    {
-        personal = new List<Corps>(army.personal);
-        destination = army.destination;
-    }
+    //public Army(Army army)
+    //{
+    //    personal = new List<Corps>(army.personal);
+    //    destination = army.destination;
+    //    this.owner = army.owner;
+    //}
 
     public void demobilize()
     {
@@ -91,55 +95,62 @@ public class Army
                     this.personal.move(corpsToBalance, secondArmy.personal);
                 needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
             }
-            // this.personal = sumArmy.personal;
+            
         }
 
     }
-    internal bool attack(Province prov)
+    internal BattleResult attack(Province prov)
     {
         var enemy = prov.getOwner();
-        enemy.mobilize();
+        if (enemy == Country.NullCountry)
+            prov.mobilize();
+        else
+            enemy.mobilize();
         return attack(enemy.homeArmy);
     }
     /// <summary>
     /// returns true if attacker is winner
     /// </summary>    
-    internal bool attack(Army enemy)
+    internal BattleResult attack(Army enemy)
     {
 
         Army winner, loser;
-        bool result;
+        bool attackerWon;
         if (this.getStrenght() > enemy.getStrenght())
         {
             winner = this;
             loser = enemy;
-            result = true;
+            attackerWon = true;
         }
         else if (this.getStrenght() == enemy.getStrenght())
         {
-            //winner = this;
-            //loser = enemy;
-
             this.takeLoss();
             enemy.takeLoss();
-            return false;
+            var r = new BattleResult(this.getOwner(), enemy.getOwner(), this.getSize(), this.getSize(), enemy.getSize(), enemy.getSize(), this.destination, false);
+            return r;
         }
         else
         {
             winner = enemy;
             loser = this;
-            result = false;
+            attackerWon = false;
         }
 
 
-        float winnerLoss = loser.getStrenght() * loser.getStrenght() / winner.getStrenght();
+        float winnerLossUnConverted = loser.getStrenght() * loser.getStrenght() / winner.getStrenght();
 
-        winner.takeLoss(winnerLoss);
+        int winnerLoss = winner.takeLoss(winnerLossUnConverted);
+        int loserLoss = loser.getSize();
         loser.takeLoss();
-        //var b = new BattleResult(,destination.getOwner(), this,, enemy,, result);
+
+        var result = new BattleResult(this.getOwner(), enemy.getOwner(), this.getSize(), attackerWon ? winnerLoss : loserLoss
+            , enemy.getSize(), attackerWon ? loserLoss : winnerLoss, this.destination, attackerWon);
         return result;
     }
-
+    public Country getOwner()
+    {
+        return owner;
+    }
     private void takeLoss()
     {
         takeLoss(this.getSize());
@@ -151,11 +162,18 @@ public class Army
         foreach (Corps c in personal)
             c.TakeLoss(Mathf.RoundToInt(c.getSize() / (float)totalSize));
     }
-    private void takeLoss(float lossStrenght)
+    private int takeLoss(float lossStrenght)
     {
+        int totalLoss = 0;
+        int next;
         float totalStrenght = getStrenght();
         foreach (Corps c in personal)
-            c.TakeLoss(Mathf.RoundToInt(c.getStrenght() / totalStrenght * lossStrenght));
+        {
+            next = Mathf.RoundToInt(c.getStrenght() / totalStrenght * lossStrenght);
+            c.TakeLoss(next);
+            totalLoss += next;
+        }
+        return totalLoss;
     }
 
     private float getStrenght()
@@ -181,28 +199,24 @@ public class Army
             return smallerCorps.MaxBy(x => x.getSize());
     }
 
-    /// <summary>
-    /// Likely not working correctly
-    /// </summary>
-    /// <param name="howMuchShouldBeInSecondArmy"></param>
-    /// <returns></returns>
-    internal Army split(Procent howMuchShouldBeInSecondArmy)
-    {
-        if (personal.Count > 0)
-        {
-            Army newArmy = new Army();
-            int newArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
-            //personal= personal.OrderBy((x) => x.getSize()).ToList();
-            personal.Sort((x, y) => x == null ? (y == null ? 0 : -1)
-                        : (y == null ? 1 : x.getSize().CompareTo(y.getSize())));
+   
+    //internal Army split(Procent howMuchShouldBeInSecondArmy)
+    //{
+    //    if (personal.Count > 0)
+    //    {
+    //        Army newArmy = new Army();
+    //        int newArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+    //        //personal= personal.OrderBy((x) => x.getSize()).ToList();
+    //        personal.Sort((x, y) => x == null ? (y == null ? 0 : -1)
+    //                    : (y == null ? 1 : x.getSize().CompareTo(y.getSize())));
 
-            while (newArmy.getSize() < newArmyExpectedSize)
-                personal.move(this.personal[0], newArmy.personal);
-            return newArmy;
-        }
-        else
-            return null;
-    }
+    //        while (newArmy.getSize() < newArmyExpectedSize)
+    //            personal.move(this.personal[0], newArmy.personal);
+    //        return newArmy;
+    //    }
+    //    else
+    //        return null;
+    //}
 
 
 
@@ -224,13 +238,69 @@ public class BattleResult
     //Army attackerArmy, attackerLoss, defenderArmy, defenderLoss;
     int attackerArmy, attackerLoss, defenderArmy, defenderLoss;
     bool result;
+    Province place;
+    StringBuilder sb = new StringBuilder();
     //public BattleResult(Country attacker, Country defender, Army attackerArmy, Army attackerLoss, Army defenderArmy, Army defenderLoss, bool result)
-    public BattleResult(Country attacker, Country defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss, bool result)
+    public BattleResult(Country attacker, Country defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss, Province place, bool result)
     {
         this.attacker = attacker; this.defender = defender;
         //this.attackerArmy = new Army(attackerArmy); this.attackerLoss = new Army(attackerLoss); this.defenderArmy = new Army(defenderArmy); this.defenderLoss = new Army(defenderLoss);
-        this.attackerArmy = attackerArmy; this.attackerLoss = attackerLoss; this.defenderArmy =  defenderArmy; this.defenderLoss =  defenderLoss;
+        this.attackerArmy = attackerArmy; this.attackerLoss = attackerLoss; this.defenderArmy = defenderArmy; this.defenderLoss = defenderLoss;
         this.result = result;
-        Game.allBattles.Add(this);
+        this.place = place;
+        //Game.allBattles.Add(this);
+
+    }
+
+    internal bool isAttackerWon()
+    {
+        return result;
+    }
+
+    internal void createMessage()
+    {
+        sb.Clear();
+
+        if (attacker == Game.player && isAttackerWon())
+        {
+            sb.Append("Out glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
+            sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
+            sb.Append("\nProvince ").Append(place).Append(" is our now!");
+            new Message("We won a battle!", sb.ToString(), "Fine");
+        }
+        else
+        if (defender == Game.player && !isAttackerWon())
+        {
+            sb.Append("Out glorius army has been attacked by evil").Append(attacker).Append(" in province ").Append(place)
+                .Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
+            sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
+            new Message("We won a battle!", sb.ToString(), "Fine");
+        }
+        else
+            if (attacker == Game.player && !isAttackerWon())
+        {
+            sb.Append("Out glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
+            sb.Append("\n\nWe lost, our invasion army is destroted, while enemy lost ").Append(defenderLoss).Append(" men");
+            new Message("We lost a battle!", sb.ToString(), "Fine");
+        }
+        else
+            if (defender == Game.player && !isAttackerWon())
+
+        {
+            sb.Append("Out glorius army has been attacked by evil").Append(attacker).Append(" in province ").Append(place)
+                .Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
+            sb.Append("\n\nWe lost, our home army is destroted, while enemy lost  ").Append(attackerLoss).Append(" men");
+            sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
+            new Message("We lost a battle!", sb.ToString(), "Not fine really");
+        }
+    }
+
+    internal Country getDefender()
+    {
+        return defender;
     }
 }

@@ -9,33 +9,33 @@ public class SimpleObjectPool : MonoBehaviour
     // collection of currently inactive instances of the prefab
     private Stack<GameObject> inactiveInstances = new Stack<GameObject>();
 
-    public GameObject GetObject(GameObject prefabAnother)
-    {
-        GameObject spawnedGameObject;
+    //public GameObject GetObject(GameObject prefabAnother)
+    //{
+    //    GameObject spawnedGameObject;
 
-        // if there is an inactive instance of the prefab ready to return, return that
-        if (inactiveInstances.Count > 0)
-        {
-            // remove the instance from teh collection of inactive instances
-            spawnedGameObject = inactiveInstances.Pop();
-        }
-        // otherwise, create a new instance
-        else
-        {
-            spawnedGameObject = (GameObject)GameObject.Instantiate(prefabAnother);
+    //    // if there is an inactive instance of the prefab ready to return, return that
+    //    if (inactiveInstances.Count > 0)
+    //    {
+    //        // remove the instance from teh collection of inactive instances
+    //        spawnedGameObject = inactiveInstances.Pop();
+    //    }
+    //    // otherwise, create a new instance
+    //    else
+    //    {
+    //        spawnedGameObject = (GameObject)GameObject.Instantiate(prefabAnother);
 
-            // add the PooledObject component to the prefab so we know it came from this pool
-            PooledObject pooledObject = spawnedGameObject.AddComponent<PooledObject>();
-            pooledObject.pool = this;
-        }
+    //        // add the PooledObject component to the prefab so we know it came from this pool
+    //        PooledObject pooledObject = spawnedGameObject.AddComponent<PooledObject>();
+    //        pooledObject.pool = this;
+    //    }
 
-        // put the instance in the root of the scene and enable it
-        spawnedGameObject.transform.SetParent(null);
-        spawnedGameObject.SetActive(true);
+    //    // put the instance in the root of the scene and enable it
+    //    spawnedGameObject.transform.SetParent(null);
+    //    spawnedGameObject.SetActive(true);
 
-        // return a reference to the instance
-        return spawnedGameObject;
-    }
+    //    // return a reference to the instance
+    //    return spawnedGameObject;
+    //}
     // Returns an instance of the prefab
     public GameObject GetObject()
     {

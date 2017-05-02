@@ -40,7 +40,7 @@ public class InventionType : AbstractCondition
         banking = new InventionType("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100.34f)),
         manufactories = new InventionType("Manufactories", "Allows building manufactories to process raw product\n Testestestestestest Testestestestestest Testestestestestest testestesttestestest testestest testestest", new Value(67.83f)),
         mining = new InventionType("Mining", "Allows resource gathering from holes in ground, increasing it's efficience by 50%", new Value(100f)),
-        religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
+        //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
         metal = new InventionType("Metal", "Allows metal ore and smelting. Metal is good for tools and weapons", new Value(100f)),
         individualRights = new InventionType("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
         collectivism = new InventionType("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
