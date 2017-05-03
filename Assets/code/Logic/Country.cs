@@ -93,6 +93,7 @@ public class Country : Owner
     }
     internal void killCountry()
     {
+        if (messhCapitalText.gameObject!= null) //todo WTF!!
         UnityEngine.Object.Destroy(messhCapitalText.gameObject);
     }
 

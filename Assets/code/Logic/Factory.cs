@@ -438,7 +438,7 @@ public class Factory : Producer
                 {
                     sentToMarket.set(gainGoodsThisTurn);
                     storageNow.set(0f);
-                    Game.market.tmpMarketStorage.add(gainGoodsThisTurn);
+                    Game.market.sentToMarket.add(gainGoodsThisTurn);
                 }
 
                 //if (province.getOwner().isInvented(InventionType.capitalism))
@@ -1045,7 +1045,8 @@ public abstract class Producer : Owner
             if (Game.market.wallet.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {
                 Game.market.wallet.pay(this.wallet, new Value(cost));
-                Game.market.tmpMarketStorage.subtract(realSold);
+
+                //Game.market.sentToMarket.subtract(realSold);
             }
             else
                 Debug.Log("Failed market - producer payment"); // money in market endded... Only first lucky get money

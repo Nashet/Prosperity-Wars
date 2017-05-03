@@ -422,7 +422,7 @@ abstract public class PopUnit : Producer
                 {
                     storageNow.subtract(need);
                     consumedTotal.Set(need);
-                    consumedInMarket.Set(need);
+                    //consumedInMarket.Set(need); are you crazy?
                     NeedsFullfilled.set(1f / 3f);
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
                 }
@@ -530,7 +530,7 @@ abstract public class PopUnit : Producer
 
     public static void PrepareForNewTick()
     {
-        Game.market.tmpMarketStorage.SetZero();
+        Game.market.sentToMarket.SetZero();
         foreach (Country country in Country.allExisting)
            // if (country != Country.NullCountry)
             {
@@ -937,7 +937,7 @@ public class Farmers : PopUnit
         if (Economy.isMarket.checkIftrue(province.getOwner()))
         {
             sentToMarket.set(gainGoodsThisTurn);
-            Game.market.tmpMarketStorage.add(gainGoodsThisTurn);
+            Game.market.sentToMarket.add(gainGoodsThisTurn);
         }
         else
             storageNow.add(gainGoodsThisTurn);
@@ -1033,7 +1033,7 @@ public class Aristocrats : PopUnit
             Storage howMuchSend = new Storage(storageNow.getProduct(), storageNow.get() - Game.aristocratsFoodReserv);
             storageNow.pay(sentToMarket, howMuchSend);
             //sentToMarket.set(howMuchSend);
-            Game.market.tmpMarketStorage.add(howMuchSend);
+            Game.market.sentToMarket.add(howMuchSend);
         }
     }
     public override void produce()

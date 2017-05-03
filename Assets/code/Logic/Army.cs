@@ -68,7 +68,7 @@ public class Army
         if (size > 0)
         {
             foreach (var next in personal)
-                sb.Append(next).Append(", ");
+                sb.Append(next.Value).Append(", ");
             sb.Append("Total size is ").Append(getSize());
         }
         else
