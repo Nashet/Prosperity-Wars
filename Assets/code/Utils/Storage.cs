@@ -143,6 +143,10 @@ public class Wallet// : Value // : Storage
     {
         return new Value(Game.market.getCost(need).get() - this.haveMoney.get());
     }
+    internal Value HowMuchCanNotAfford(float need)
+    {
+        return new Value(need - this.haveMoney.get());
+    }
     internal Value HowMuchCanNotAfford(Storage need)
     {
         return new Value(Game.market.getCost(need) - this.haveMoney.get());

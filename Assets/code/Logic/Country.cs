@@ -76,7 +76,7 @@ public class Country : Owner
             inventions.MarkInvented(InventionType.banking);
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
-        }       
+        }
     }
     public bool isExist()
     {
@@ -93,8 +93,8 @@ public class Country : Owner
     }
     internal void killCountry()
     {
-        if (messhCapitalText.gameObject!= null) //todo WTF!!
-        UnityEngine.Object.Destroy(messhCapitalText.gameObject);
+        if (messhCapitalText != null) //todo WTF!!
+            UnityEngine.Object.Destroy(messhCapitalText.gameObject);
     }
 
     internal bool isOneProvince()

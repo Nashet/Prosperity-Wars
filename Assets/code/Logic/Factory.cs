@@ -1048,7 +1048,6 @@ public abstract class Producer : Owner
 
                 //Game.market.sentToMarket.subtract(realSold);
             }
-            else
                 Debug.Log("Failed market - producer payment"); // money in market endded... Only first lucky get money
         }
     }
