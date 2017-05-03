@@ -147,7 +147,7 @@ public class Game
         Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
         player = Country.allCountries[1]; // not wild Tribes
 
-       
+
         province.InitialOwner(count);
 
 
@@ -723,110 +723,108 @@ public class Game
 
         // big PRODUCE circle
         foreach (Country country in Country.allExisting)
-           // if (country != Country.NullCountry)
-                //if (country != Country.NullCountry)
-                    foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-                    {
-                        //Now factories time!               
-                        foreach (Factory fact in province.allFactories)
-                        {
-                            fact.produce();
-                            fact.payTaxes(); // empty for now
-                            fact.paySalary(); // workers get gold or food here                   
-                        }
-                        foreach (PopUnit pop in province.allPopUnits)
-                        //That placed here to avoid issues with Aristocrts and clerics
-                        //Otherwise Arisocrats starts to consume BEFORE they get all what they should
-                        {
-                            if (pop.type.basicProduction != null)// only Farmers and Tribemen
-                                pop.produce();
-                            pop.takeUnemploymentSubsidies();
-                        }
-                    }
+            // if (country != Country.NullCountry)
+            //if (country != Country.NullCountry)
+            foreach (Province province in country.ownedProvinces)//Province.allProvinces)
+            {
+                //Now factories time!               
+                foreach (Factory fact in province.allFactories)
+                {
+                    fact.produce();
+                    fact.payTaxes(); // empty for now
+                    fact.paySalary(); // workers get gold or food here                   
+                }
+                foreach (PopUnit pop in province.allPopUnits)
+                //That placed here to avoid issues with Aristocrts and clerics
+                //Otherwise Arisocrats starts to consume BEFORE they get all what they should
+                {
+                    if (pop.type.basicProduction != null)// only Farmers and Tribemen
+                        pop.produce();
+                    pop.takeUnemploymentSubsidies();
+                }
+            }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
         foreach (Country country in Country.allExisting)
-           // if (country != Country.NullCountry)
-                foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+            // if (country != Country.NullCountry)
+            foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+            {
+                foreach (Factory factory in province.allFactories)
                 {
-                    foreach (Factory factory in province.allFactories)
-                    {
-                        factory.consume();
-                    }
-
-                    foreach (PopUnit pop in province.allPopUnits)
-                    {
-                        if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                            if (pop.ShouldPayAristocratTax())
-                                pop.PayTaxToAllAristocrats();
-                    }
-                    foreach (PopUnit pop in province.allPopUnits)
-                    {
-                        pop.consume();
-                    }
+                    factory.consume();
                 }
+
+                foreach (PopUnit pop in province.allPopUnits)
+                {
+                    if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
+                        if (pop.ShouldPayAristocratTax())
+                            pop.PayTaxToAllAristocrats();
+                }
+                foreach (PopUnit pop in province.allPopUnits)
+                {
+                    pop.consume();
+                }
+            }
         // big AFTER all circle
         foreach (Country country in Country.allExisting)
-         //   if (country != Country.NullCountry)
+        //   if (country != Country.NullCountry)
+        {
+            foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
-                foreach (Province province in country.ownedProvinces)//Province.allProvinces)
+                //province.BalanceEmployableWorkForce();
+                foreach (Factory factory in province.allFactories)
                 {
-                    //province.BalanceEmployableWorkForce();
-                    foreach (Factory factory in province.allFactories)
-                    {
-                        factory.getMoneyFromMarket();
-                        factory.changeSalary();
-                        factory.PayDividend();
-                    }
-                    province.allFactories.RemoveAll(item => item.isToRemove());
-                    foreach (PopUnit pop in province.allPopUnits)
-                    {
-                        //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.getOwner().isInvented(InventionType.capitalism)))
-                        if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
-                            pop.getMoneyFromMarket();
-
-                        //becouse income come only after consuming, and only after FULL consumption
-
-                        if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
-                            // POps who can't trade will pay tax BEFORE consumption, not after
-                            // Otherwise pops who can't trade avoid tax
-                            pop.payTaxes();
-
-                        pop.calcLoyalty();
-
-                        pop.calcPromotions();
-                        pop.calcDemotions();
-                        pop.calcGrowth();
-
-                        pop.Invest();
-                    }
-
-                    foreach (PopUnit pop in PopUnit.tempPopList)
-                    {
-                        PopUnit targetToMerge = province.FindSimularPopUnit(pop);
-                        if (targetToMerge == null)
-                            province.allPopUnits.Add(pop);
-                        else
-                            targetToMerge.Merge(pop);
-                    }
-                    PopUnit.tempPopList.Clear();
+                    factory.getMoneyFromMarket();
+                    factory.changeSalary();
+                    factory.PayDividend();
                 }
-                country.Think();
+                province.allFactories.RemoveAll(item => item.isToRemove());
+                foreach (PopUnit pop in province.allPopUnits)
+                {
+                    //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.getOwner().isInvented(InventionType.capitalism)))
+                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
+                        pop.getMoneyFromMarket();
+
+                    //becouse income come only after consuming, and only after FULL consumption
+
+                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                        // POps who can't trade will pay tax BEFORE consumption, not after
+                        // Otherwise pops who can't trade avoid tax
+                        pop.payTaxes();
+
+                    pop.calcLoyalty();
+
+                    pop.calcPromotions();
+                    pop.calcDemotions();
+                    pop.calcGrowth();
+
+                    pop.Invest();
+                }
+
+                foreach (PopUnit pop in PopUnit.tempPopList)
+                {
+                    PopUnit targetToMerge = province.FindSimularPopUnit(pop);
+                    if (targetToMerge == null)
+                        province.allPopUnits.Add(pop);
+                    else
+                        targetToMerge.Merge(pop);
+                }
+                PopUnit.tempPopList.Clear();
             }
+            country.Think();
+        }
     }
 
     private static void calcBattles()
     {
         foreach (Country country in Country.allExisting)
         {
-            foreach (var attackerArmy in country.allArmies)
-            {
+            foreach (var attackerArmy in country.allArmies)            {
 
                 var result = attackerArmy.attack(attackerArmy.getDestination());
                 if (result.isAttackerWon())
                 {
                     attackerArmy.getDestination().secedeTo(country);
-
                 }
                 if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
                     result.createMessage();

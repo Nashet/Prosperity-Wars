@@ -45,7 +45,8 @@ public class Army
     }
     public void add(Army armyToAdd)
     {
-        this.AddRange(armyToAdd.personal);
+        if (armyToAdd != this)
+            this.AddRange(armyToAdd.personal);
     }
     private void remove(Corps corps)
     {
@@ -78,12 +79,12 @@ public class Army
     public void AddRange(Dictionary<PopUnit, Corps> source)
     {
         Corps found;
-        foreach (var p in source)
-            if (p.Value.getSize() > 0)
-                if (this.personal.TryGetValue(p.Key, out found))
-                    found.add(p.Value.getSize());
+        foreach (var armyToAdd in source)
+            if (armyToAdd.Value.getSize() > 0)
+                if (this.personal.TryGetValue(armyToAdd.Key, out found))
+                    found.add(armyToAdd.Value.getSize());
                 else
-                    this.personal.Add(p.Key, p.Value);
+                    this.personal.Add(armyToAdd.Key, armyToAdd.Value);
 
     }
     internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)

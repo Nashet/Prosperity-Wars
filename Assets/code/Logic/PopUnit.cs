@@ -77,11 +77,11 @@ abstract public class PopUnit : Producer
             modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
         });
     }
-   
+
     public PopUnit(PopUnit popUnit) : this(popUnit.population, popUnit.type, popUnit.culture, popUnit.province)
     {
 
-        
+
 
         tempPopList.Add(this);
     }
@@ -89,7 +89,8 @@ abstract public class PopUnit : Producer
     {
         int howMuchCanMobilize = (int)(population * loyalty.get() * Game.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
-        mobilized += howMuchCanMobilize;
+        if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
+       
         return howMuchCanMobilize;
     }
     public Corps mobilize()
@@ -98,9 +99,9 @@ abstract public class PopUnit : Producer
 
         if (amount > 0)
         {
-            mobilized = amount;
+            mobilized += amount;
             return new Corps(this, amount);
-            
+
         }
         else
             return null;
@@ -532,43 +533,43 @@ abstract public class PopUnit : Producer
     {
         Game.market.sentToMarket.SetZero();
         foreach (Country country in Country.allExisting)
-           // if (country != Country.NullCountry)
+        // if (country != Country.NullCountry)
+        {
+            country.wallet.moneyIncomethisTurn.set(0);
+            country.getCountryWallet().setSatisticToZero();
+            country.aristocrstTax = country.serfdom.status.getTax();
+            foreach (Province province in country.ownedProvinces)
             {
-                country.wallet.moneyIncomethisTurn.set(0);
-                country.getCountryWallet().setSatisticToZero();
-                country.aristocrstTax = country.serfdom.status.getTax();
-                foreach (Province province in country.ownedProvinces)
+                province.BalanceEmployableWorkForce();
                 {
-                    province.BalanceEmployableWorkForce();
+                    foreach (PopUnit pop in province.allPopUnits)
                     {
-                        foreach (PopUnit pop in province.allPopUnits)
-                        {
-                            pop.gainGoodsThisTurn.set(0f);
-                            // pop.storageNow.set(0f);
-                            pop.wallet.moneyIncomethisTurn.set(0f);
+                        pop.gainGoodsThisTurn.set(0f);
+                        // pop.storageNow.set(0f);
+                        pop.wallet.moneyIncomethisTurn.set(0f);
 
-                            pop.consumedLastTurn.copyDataFrom(pop.consumedTotal); // temp
-                            pop.NeedsFullfilled.set(0f);
-                            pop.sentToMarket.set(0f);
-                            pop.consumedTotal.SetZero();
-                            pop.consumedInMarket.SetZero();
+                        pop.consumedLastTurn.copyDataFrom(pop.consumedTotal); // temp
+                        pop.NeedsFullfilled.set(0f);
+                        pop.sentToMarket.set(0f);
+                        pop.consumedTotal.SetZero();
+                        pop.consumedInMarket.SetZero();
 
-                            pop.dintGetUnemloymentSubsidy = false;
-                        }
-                        foreach (Factory factory in province.allFactories)
-                        {
-                            factory.gainGoodsThisTurn.set(0f);
-                            factory.storageNow.set(0f);
-                            factory.wallet.moneyIncomethisTurn.set(0f);
+                        pop.dintGetUnemloymentSubsidy = false;
+                    }
+                    foreach (Factory factory in province.allFactories)
+                    {
+                        factory.gainGoodsThisTurn.set(0f);
+                        factory.storageNow.set(0f);
+                        factory.wallet.moneyIncomethisTurn.set(0f);
 
-                            factory.consumedLastTurn.copyDataFrom(factory.consumedTotal);
-                            factory.sentToMarket.set(0f);
-                            factory.consumedTotal.SetZero();
-                            factory.consumedInMarket.SetZero();
-                        }
+                        factory.consumedLastTurn.copyDataFrom(factory.consumedTotal);
+                        factory.sentToMarket.set(0f);
+                        factory.consumedTotal.SetZero();
+                        factory.consumedInMarket.SetZero();
                     }
                 }
             }
+        }
     }
     public void calcPromotions()
     {
