@@ -1048,6 +1048,7 @@ public abstract class Producer : Owner
 
                 //Game.market.sentToMarket.subtract(realSold);
             }
+            else if (Game.market.wallet.HowMuchCanNotAfford(cost).get() > 1f)
                 Debug.Log("Failed market - producer payment"); // money in market endded... Only first lucky get money
         }
     }
