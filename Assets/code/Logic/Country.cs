@@ -132,7 +132,18 @@ public class Country : Owner
     }
     internal Province getRandomNeighborProvince()
     {
-        return getNeighborProvinces().PickRandom();
+        if (isOnlyCountry())
+            return null;
+        else
+            return getNeighborProvinces().PickRandom();
+    }
+
+    private bool isOnlyCountry()
+    {
+        foreach (var any in Country.allExisting)
+            if (any != this)
+            return false;
+        return true;
     }
 
     internal Province getRandomOwnedProvince()
@@ -302,7 +313,7 @@ public class Country : Owner
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));
-        if (isAI())
+        if (isAI() && !isOnlyCountry())
             if (Game.random.Next(10) == 1)
             {
                 mobilize();
