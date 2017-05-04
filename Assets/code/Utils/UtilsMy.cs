@@ -644,7 +644,7 @@ public static class MyExtensions
     public static void move(this Dictionary<PopUnit, Corps> source, Corps item, Dictionary<PopUnit, Corps> destination)
     {
         //if (source.TryGetValue(corpsToAdd.getPopUnit(), out found))
-        
+
         if (source.Remove(item.getPopUnit())) // don't remove this
             destination.Add(item.getPopUnit(), item);
     }
@@ -654,7 +654,19 @@ public static class MyExtensions
             if (next.getDestination() == null)
                 country.homeArmy.add(next);
 
-        source.RemoveAll((x) => x.getDestination() == null);
+        source.RemoveAll((x) => x.getDestination() == null && x != country.homeArmy);
+    }
+    public static bool demobilize(this List<Army> source, PopUnit pop)
+    {
+        foreach (Army nextArmy in source)
+            foreach (Corps corps in nextArmy.getCorps())
+                if (corps.getPopUnit() == pop)
+                {
+                    corps.demobilize();
+                    pop.demobilize();
+                    return true;
+                }
+        return false;
     }
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {

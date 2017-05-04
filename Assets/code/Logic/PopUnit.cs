@@ -40,7 +40,7 @@ abstract public class PopUnit : Producer
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies;
     private uint daysUpsetByForcedReform;
     private bool dintGetUnemloymentSubsidy;
-
+    //private Corps corps;
 
     public PopUnit(uint iamount, PopType ipopType, Culture iculture, Province where)
     {
@@ -90,7 +90,7 @@ abstract public class PopUnit : Producer
         int howMuchCanMobilize = (int)(population * loyalty.get() * Game.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
         if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
-       
+
         return howMuchCanMobilize;
     }
     public Corps mobilize()
@@ -100,13 +100,30 @@ abstract public class PopUnit : Producer
         if (amount > 0)
         {
             mobilized += amount;
+            //corps= new Corps(this, amount);
+            //return corps;            
             return new Corps(this, amount);
-
         }
         else
             return null;
     }
-
+    public void demobilize()
+    {
+        mobilized = 0;
+        //corps.demobilize();
+        //corps.destriy();
+    }
+    internal void kill(int loss)
+    {
+        int newPopulation = (int)population - (int)(loss * Game.PopAttritionFactor);
+        if (newPopulation > 0)
+            population = (uint)newPopulation;
+        else
+            //todo pop tatally killed
+            ;
+        mobilized -= loss;
+        if (mobilized < 0) mobilized = 0;
+    }
     internal void addDaysUpsetByForcedReform(uint popDaysUpsetByForcedReform)
     {
         daysUpsetByForcedReform += popDaysUpsetByForcedReform;
@@ -160,6 +177,9 @@ abstract public class PopUnit : Producer
         uint randomPopulation = (uint)(minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation));
         return randomPopulation;
     }
+
+   
+
     /// <summary> /// Return in pieces  /// </summary>    
     override internal float getLocalEffectiveDemand(Product product)
     {

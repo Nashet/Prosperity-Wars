@@ -84,7 +84,8 @@ public class DiplomacyPanel : DragPanel
     }
     public void onDemobilizationClick()
     {
-
+        Game.player.demobilize();
+        refresh(false);
     }
     public void onSendArmyClick()
     {

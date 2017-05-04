@@ -78,6 +78,17 @@ public class Country : Owner
             serfdom.status = Serfdom.Abolished;
         }
     }
+
+    internal void demobilize()
+    {
+        ownedProvinces.ForEach(x => x.demobilize());
+    }
+
+    internal void demobilize(Province province)
+    {
+        province.demobilize();
+    }
+
     public bool isExist()
     {
         return ownedProvinces.Count > 0;

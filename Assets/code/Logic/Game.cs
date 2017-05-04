@@ -74,6 +74,7 @@ public class Game
     internal static readonly float mobilizationFactor = 0.2f;
     internal static List<BattleResult> allBattles = new List<BattleResult>();
     internal static Stack<Message> MessageQueue = new Stack<Message>();
+    internal static float PopAttritionFactor = 0.2f;
 
     public Game()
     {
@@ -107,7 +108,7 @@ public class Game
         for (int i = 0; i < 8 + extraCountries; i++)
             makeCountry(ser);
 
-       
+
 
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
@@ -822,16 +823,19 @@ public class Game
     {
         foreach (Country country in Country.allExisting)
         {
-            foreach (var attackerArmy in country.allArmies)            {
-
-                var result = attackerArmy.attack(attackerArmy.getDestination());
-                if (result.isAttackerWon())
+            foreach (var attackerArmy in country.allArmies)
+            {
+                if (attackerArmy.getDestination() != null)
                 {
-                    attackerArmy.getDestination().secedeTo(country);
+                    var result = attackerArmy.attack(attackerArmy.getDestination());
+                    if (result.isAttackerWon())
+                    {
+                        attackerArmy.getDestination().secedeTo(country);
+                    }
+                    if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
+                        result.createMessage();
+                    attackerArmy.moveTo(null); // go home
                 }
-                if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
-                    result.createMessage();
-                attackerArmy.moveTo(null); // go home
             }
             country.allArmies.consolidate(country);
         }

@@ -18,6 +18,7 @@ public class Army
     {
         personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
+        owner.allArmies.Add(this);
     }
     //public Army(Army army)
     //{
@@ -60,6 +61,12 @@ public class Army
 
         return personal.Sum(x => x.Value.getSize());
         //return result;
+    }
+    internal IEnumerable getCorps()
+    {
+        foreach (var c in personal.Values)            
+                yield return c;
+
     }
     override public string ToString()
     {

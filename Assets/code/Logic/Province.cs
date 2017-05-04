@@ -69,6 +69,9 @@ public class Province
             if (isCapital())
             getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince(x => x != this));
 
+        this.demobilize();
+
+
         if (this.getOwner() != null)
             if (this.getOwner().ownedProvinces != null)
                 this.getOwner().ownedProvinces.Remove(this);
@@ -86,14 +89,22 @@ public class Province
     {
         return getOwner().getCapital() == this;
     }
+
+    internal void demobilize()
+    {
+        allPopUnits.ForEach(x => getOwner().allArmies.demobilize(x));
+    }
+
+
+
     internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
-    {      
+    {
         return allProvinces.PickRandom(predicate);
     }
     internal List<Province> getNeigbors(Predicate<Province> predicate)
-    {       
+    {
         return neighbors.FindAll(predicate);
-         
+
     }
     internal IEnumerable allProducers;
     System.Collections.IEnumerable getProducers()
@@ -280,7 +291,8 @@ public class Province
     }
     internal Product getResource()
     {
-        if (getOwner().isInvented(resource))
+        //if (getOwner().isInvented(resource))
+        if (resource.isInventedByAnyOne())
             return resource;
         else
             return null;
