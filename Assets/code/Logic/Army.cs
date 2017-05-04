@@ -34,7 +34,8 @@ public class Army
             personal.Remove(corps.getPopUnit());
             corps.demobilize();
         }
-        owner.allArmies.Remove(this);
+        if (this != getOwner().homeArmy && this != getOwner().sendingArmy)
+            owner.allArmies.Remove(this);
         //personal.ForEach((pop, corps) =>
         //{
 
@@ -206,11 +207,12 @@ public class Army
         int totalSize = getSize();
         int currentLoss;
         foreach (var corp in personal)
-        {
-            currentLoss = Mathf.RoundToInt(corp.Value.getSize() / (float)totalSize * loss);
-            corp.Value.TakeLoss(currentLoss);
-            totalLoss += currentLoss;
-        }
+            if (totalSize > 0)
+            {
+                currentLoss = Mathf.RoundToInt(corp.Value.getSize() * loss / (float)totalSize);
+                corp.Value.TakeLoss(currentLoss);
+                totalLoss += currentLoss;
+            }
         return totalLoss;
     }
     private int takeLossUnconverted(float lossStrenght)
@@ -219,13 +221,16 @@ public class Army
         float streghtLoss;
         int menLoss;
         float totalStrenght = getStrenght();
-        foreach (var corp in personal)
-        {
-            streghtLoss = corp.Value.getStrenght() / totalStrenght * lossStrenght;
-            menLoss = Mathf.RoundToInt(streghtLoss / corp.Value.getType().getStrenght());
-            corp.Value.TakeLoss(menLoss);
-            totalMenLoss += menLoss;
-        }
+        if (totalStrenght > 0f)
+
+            foreach (var corp in personal)
+                if (corp.Value.getType().getStrenght() > 0f)
+                {
+                    streghtLoss = corp.Value.getStrenght() * lossStrenght / totalStrenght;
+                    menLoss = Mathf.RoundToInt(streghtLoss / corp.Value.getType().getStrenght());
+                    corp.Value.TakeLoss(menLoss);
+                    totalMenLoss += menLoss;
+                }
         return totalMenLoss;
     }
 
