@@ -107,6 +107,8 @@ public class Game
         for (int i = 0; i < 8 + extraCountries; i++)
             makeCountry(ser);
 
+       
+
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
                 pro.InitialOwner(Country.NullCountry);
@@ -145,8 +147,8 @@ public class Game
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getOwner() == null);// Country.NullCountry);
         Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
-        player = Country.allCountries[1]; // not wild Tribes
 
+        player = Country.allCountries[1]; // not wild Tribes
 
         province.InitialOwner(count);
 
@@ -263,17 +265,17 @@ public class Game
                 else
                     pop = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
 
-                pop.wallet.haveMoney.set(200);
-                pop.storageNow.add(50f);
+                pop.wallet.haveMoney.set(9000);
+                pop.storageNow.add(60f);
                 province.allPopUnits.Add(pop);
                 if (!Game.devMode)
                 {
                     pop = new Capitalists(PopUnit.getRandomPopulationAmount(30, 50), PopType.capitalists, province.getOwner().culture, province);
-                    pop.wallet.haveMoney.set(400);
+                    pop.wallet.haveMoney.set(9000);
                     province.allPopUnits.Add(pop);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(500, 600), PopType.farmers, province.getOwner().culture, province);
-                    pop.wallet.haveMoney.set(40);
+                    pop.wallet.haveMoney.set(20);
                     province.allPopUnits.Add(pop);
 
                 }
@@ -373,6 +375,7 @@ public class Game
         else
             amountOfProvince = 12 + Game.random.Next(8);
         amountOfProvince = 30 + Game.random.Next(10);
+        amountOfProvince = 40 + Game.random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 

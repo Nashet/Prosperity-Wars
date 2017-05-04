@@ -27,7 +27,7 @@ public class PopUnitPanel : DragPanel
         if (pop != null)
         {
             string demotionText;
-            //temp here
+           
             if (pop.WantsDemotion())
                 demotionText = pop.getRichestDemotionTarget() + " " + pop.getDemotionSize();
             else
