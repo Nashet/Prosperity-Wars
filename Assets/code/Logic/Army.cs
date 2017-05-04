@@ -34,7 +34,7 @@ public class Army
             personal.Remove(corps.getPopUnit());
             corps.demobilize();
         }
-        
+        owner.allArmies.Remove(this);
         //personal.ForEach((pop, corps) =>
         //{
 

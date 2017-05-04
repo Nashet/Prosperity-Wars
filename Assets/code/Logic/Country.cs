@@ -124,7 +124,7 @@ public class Country : Owner
     {
         sendingArmy.moveTo(province);
         //walkingArmies.Add(new Army(sendingArmy));
-        allArmies.Add(sendingArmy);
+        //allArmies.Add(sendingArmy);
         //sendingArmy.clear();
     }
 

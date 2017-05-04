@@ -661,7 +661,7 @@ public static class MyExtensions
             if (next.getDestination() == null)
                 country.homeArmy.add(next);
 
-        source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy);
+        source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
     }
     public static bool demobilize(this List<Army> source, PopUnit pop)
     {
