@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DesignPattern.Objectpool;
 /// <summary>
 ///     Clears the contents of the string builder.
 /// </summary>
@@ -101,8 +102,10 @@ abstract public class PopUnit : Producer
         {
             mobilized += amount;
             //corps= new Corps(this, amount);
-            //return corps;            
-            return new Corps(this, amount);
+            //return corps;           
+            //ObjectPool<Corps>.Get();
+            return Pool.GetObject(this, amount);
+           // return new Corps(this, amount);
         }
         else
             return null;

@@ -13,7 +13,7 @@ public class Army
     Dictionary<PopUnit, Corps> personal;
     Province destination;
     Country owner;
-
+    //List<Army> allArmies = new List<Army>();
     public Army(Country owner)
     {
         personal = new Dictionary<PopUnit, Corps>();
@@ -29,6 +29,19 @@ public class Army
 
     public void demobilize()
     {
+        foreach (var corps in personal.Values.ToList())
+        {
+            personal.Remove(corps.getPopUnit());
+            corps.demobilize();
+        }
+        
+        //personal.ForEach((pop, corps) =>
+        //{
+
+        //    personal.Remove(corps.getPopUnit());
+        //    corps.demobilize();
+        //}
+        //);
     }
 
     public void add(Corps corpsToAdd)
@@ -49,7 +62,7 @@ public class Army
         if (armyToAdd != this)
             this.AddRange(armyToAdd.personal);
     }
-    private void remove(Corps corps)
+    internal void remove(Corps corps)
     {
         personal.Remove(corps.getPopUnit());
     }
@@ -64,9 +77,8 @@ public class Army
     }
     internal IEnumerable getCorps()
     {
-        foreach (var c in personal.Values)            
-                yield return c;
-
+        foreach (Corps corps in personal.Values)
+            yield return corps;
     }
     override public string ToString()
     {

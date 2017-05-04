@@ -81,7 +81,8 @@ public class Country : Owner
 
     internal void demobilize()
     {
-        ownedProvinces.ForEach(x => x.demobilize());
+        //ownedProvinces.ForEach(x => x.demobilize());
+        allArmies.ForEach(x => x.demobilize());
     }
 
     internal void demobilize(Province province)
@@ -106,6 +107,7 @@ public class Country : Owner
     {
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
+        //demobilize();
     }
 
     internal bool isOneProvince()

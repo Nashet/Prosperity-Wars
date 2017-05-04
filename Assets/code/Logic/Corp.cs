@@ -4,21 +4,15 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using DesignPattern.Objectpool;
+
+
+
+
 namespace DesignPattern.Objectpool
 {
     // The PooledObject class is the type that is expensive or slow to instantiate,
     // or that has limited availability, so is to be held in the object pool.
-    public class MyPooledObject
-    {
-        DateTime _createdAt = DateTime.Now;
 
-        public DateTime CreatedAt
-        {
-            get { return _createdAt; }
-        }
-
-        public string TempData { get; set; }
-    }
 
     // The Pool class is the most important class in the object pool design pattern. It controls access to the
     // pooled objects, maintaining a list of available objects and a collection of objects that have already been
@@ -26,32 +20,34 @@ namespace DesignPattern.Objectpool
     // are returned to a suitable state, ready for the next time they are requested. 
     public static class Pool
     {
-        private static List<MyPooledObject> _available = new List<MyPooledObject>();
-        private static List<MyPooledObject> _inUse = new List<MyPooledObject>();
+        private static List<Corps> _available = new List<Corps>();
+        private static List<Corps> _inUse = new List<Corps>();
 
-        public static MyPooledObject GetObject()
+        public static Corps GetObject(PopUnit origin, int size)
         {
             lock (_available)
             {
                 if (_available.Count != 0)
                 {
-                    MyPooledObject po = _available[0];
+                    Corps po = _available[0];
+                    po.initialize(origin, size);
                     _inUse.Add(po);
                     _available.RemoveAt(0);
                     return po;
                 }
                 else
                 {
-                    MyPooledObject po = new MyPooledObject();
+                    Corps po = new Corps(origin, size);
                     _inUse.Add(po);
                     return po;
                 }
             }
         }
 
-        public static void ReleaseObject(MyPooledObject po)
+        public static void ReleaseObject(Corps po)
         {
-            CleanUp(po);
+            //CleanUp(po);
+            po.deleteData();
 
             lock (_available)
             {
@@ -59,27 +55,33 @@ namespace DesignPattern.Objectpool
                 _inUse.Remove(po);
             }
         }
-
-        private static void CleanUp(MyPooledObject po)
+        public static System.Collections.IEnumerable existing()
+        //public System.Collections.IEnumerator GetEnumerator()
         {
-            po.TempData = null;
+            foreach (Corps f in _inUse)
+                yield return f;
+            //_inUse.ForEach(x=> { yield return x; });            
         }
     }
 
 }
 public class Corps
-{
+{ 
     PopUnit origin;
     int size;
-    static List<Corps> allCorps = new List<Corps>();
-    //Pool.;
+    //static List<Corps> allCorps = new List<Corps>();
 
-
-    public Corps(PopUnit origin, int size)
+    internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
         this.size = size;
-        allCorps.Add(this);
+    }
+
+    public Corps(PopUnit origin, int size)
+    {
+        initialize(origin, size);
+
+        //allCorps.Add(this);
     }
     public PopType getType()
     { return origin.type; }
@@ -123,10 +125,20 @@ public class Corps
 
     internal void demobilize()
     {
+        origin.demobilize();
+        Pool.ReleaseObject(this);
+        
+    }
+    Army army;
+    internal void deleteData()
+    {
         size = 0;
         origin = null;
-        dfdf
+        //here - delete all links on that object
+        //army.demobilize(this);
 
-            // need to destroy this object
+        //jk
     }
+
+   
 }

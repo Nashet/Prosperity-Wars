@@ -634,6 +634,13 @@ public static class UtilsMy
 
 public static class MyExtensions
 {
+    public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
+    {
+        foreach (var keyValue in dictionary)
+        {
+            invokeMe(keyValue.Key, keyValue.Value);
+        }
+    }
     public static void move<T>(this List<T> source, T item, List<T> destination)
     {
         if (source.Remove(item)) // don't remove this
@@ -654,7 +661,7 @@ public static class MyExtensions
             if (next.getDestination() == null)
                 country.homeArmy.add(next);
 
-        source.RemoveAll((x) => x.getDestination() == null && x != country.homeArmy);
+        source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy);
     }
     public static bool demobilize(this List<Army> source, PopUnit pop)
     {
@@ -662,8 +669,9 @@ public static class MyExtensions
             foreach (Corps corps in nextArmy.getCorps())
                 if (corps.getPopUnit() == pop)
                 {
+                    nextArmy.remove(corps);
                     corps.demobilize();
-                    pop.demobilize();
+                    //pop.demobilize();
                     return true;
                 }
         return false;
