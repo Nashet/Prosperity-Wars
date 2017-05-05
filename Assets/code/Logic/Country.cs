@@ -103,11 +103,13 @@ public class Country : Owner
                 yield return c;
 
     }
-    internal void killCountry()
+    internal void killCountry(Country byWhom)
     {
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
         getCountryWallet().setSatisticToZero();
+        //take all money from bank
+        byWhom.bank.add(this.bank);
     }
 
     internal bool isOneProvince()

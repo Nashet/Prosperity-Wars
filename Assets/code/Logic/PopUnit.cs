@@ -351,7 +351,7 @@ abstract public class PopUnit : Producer
         else
             if (type == PopType.farmers || type == PopType.tribeMen)
         {
-            float overPopulation = province.getOverPopulation();
+            float overPopulation = province.getOverpopulation();
             if (overPopulation <= 1f)
                 return new Procent(0);
             else
@@ -961,7 +961,7 @@ public class Tribemen : PopUnit
     public override void produce()
     {
         Value producedAmount;
-        float overpopulation = province.getOverPopulation();
+        float overpopulation = province.getOverpopulation();
         if (overpopulation <= 1) // all is ok
             producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000f);
         else
@@ -1046,7 +1046,7 @@ public class Farmers : PopUnit
     public override void produce()
     {
         Value producedAmount;
-        float overpopulation = province.getOverPopulation();
+        float overpopulation = province.getOverpopulation();
         if (overpopulation <= 1) // all is ok
             producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000 + getPopulation() * type.basicProduction.get() / 1000 * education.get());
         else

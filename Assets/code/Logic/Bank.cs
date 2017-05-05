@@ -16,9 +16,7 @@ public class Bank
     }
     /// <summary>
     /// checks are outside
-    /// </summary>
-    /// <param name="taker"></param>
-    /// <param name="howMuch"></param>
+    /// </summary>   
     internal void TakeLoan(Producer taker, Value howMuch)
     {
         reservs.pay(taker.wallet, howMuch);
@@ -63,5 +61,17 @@ public class Bank
         return reservs.ToString();
     }
 
-    
+    internal void defaultLoaner(Producer producer)
+    {
+        givenLoans.subtract(producer.loans);
+        producer.loans.set(0);
+    }
+    /// <summary>
+    /// Assuming all clients already defaulted theirs loans
+    /// </summary>    
+    internal void add(Bank annexingBank)
+    {
+        annexingBank.reservs.sendAll(this.reservs);
+        annexingBank.givenLoans.sendAll(this.givenLoans);        
+    }
 }

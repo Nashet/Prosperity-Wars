@@ -110,7 +110,7 @@ public class ProvincePanel : MonoBehaviour
             + "\nPopulation (+/-): " + province.getFamilyPopulation()
             + "\nMiddle loyalty" + "\nTax income"
             + "\nResource: " + province.getResource()
-            + "\nRural overpopulation: " + province.getOverPopulation()
+            + "\nRural overpopulation: " + province.getOverpopulation()
             //+ "\nNeighbors " + province.getNeigborsList()
             ;
         Text text = btnOwner.GetComponentInChildren<Text>();

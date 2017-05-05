@@ -63,14 +63,21 @@ public class Province
     }
     public void secedeTo(Country taker)
     {
+        //refuse loans to old country bank
+        foreach (var producer in allProducers)
+            if (producer.loans.get() != 0f)
+                getOwner().bank.defaultLoaner(producer);
+
         if (getOwner().isOneProvince())
-            getOwner().killCountry();
+            getOwner().killCountry(taker);
         else
             if (isCapital())
             getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince(x => x != this));
 
         this.demobilize();
-        //allProducers.ForEach(x=>x.GetType()) ;
+
+
+
 
         if (this.getOwner() != null)
             if (this.getOwner().ownedProvinces != null)
@@ -203,7 +210,7 @@ public class Province
     }
     ///<summary> Simular by popType & culture</summary>    
     public PopUnit FindSimularPopUnit(PopUnit target)
-    {        
+    {
         foreach (PopUnit pop in allPopUnits)
             if (pop.type == target.type && pop.culture == target.culture)
                 return pop;
@@ -401,7 +408,7 @@ public class Province
                     return true;
         return false;
     }
-    internal float getOverPopulation()
+    internal float getOverpopulation()
     {
         float usedLand = 0f;
         foreach (PopUnit pop in allPopUnits)
