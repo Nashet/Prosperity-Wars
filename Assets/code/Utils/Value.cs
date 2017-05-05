@@ -88,7 +88,7 @@ public class Value
     /// <summary>
     /// returns new value
     /// </summary>
-    internal Value multiple(uint invalue)
+    internal Value multiple(int invalue)
     {
         //if (invalue.get() < 0)
         //  Debug.Log("Value multiple failed");
@@ -104,7 +104,7 @@ public class Value
 
 
     /// <summary>returns new value </summary>
-    internal Value divide(uint invalue)
+    internal Value divide(int invalue)
     {
         if (invalue == 0) Debug.Log("Value ivide by zero");
 

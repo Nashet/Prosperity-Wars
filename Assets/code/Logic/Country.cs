@@ -211,10 +211,10 @@ public class Country : Owner
     internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
     {
         // calc how much of population wants selected reform
-        uint totalPopulation = this.getMenPopulation();
-        uint votingPopulation = 0;
-        uint populationSayedYes = 0;
-        uint votersSayedYes = 0;
+        int totalPopulation = this.getMenPopulation();
+        int votingPopulation = 0;
+        int populationSayedYes = 0;
+        int votersSayedYes = 0;
         Procent procentVotersSayedYes = new Procent(0);
         //Procent procentPopulationSayedYes = new Procent(0f);
         foreach (Province pro in ownedProvinces)
@@ -224,15 +224,15 @@ public class Country : Owner
                 {
                     if (pop.getSayingYes(reform))
                     {
-                        votersSayedYes += pop.population;
-                        populationSayedYes += pop.population;
+                        votersSayedYes += pop.getPopulation();
+                        populationSayedYes += pop.getPopulation();
                     }
-                    votingPopulation += pop.population;
+                    votingPopulation += pop.getPopulation();
                 }
                 else
                 {
                     if (pop.getSayingYes(reform))
-                        populationSayedYes += pop.population;
+                        populationSayedYes += pop.getPopulation();
                 }
             }
         if (totalPopulation != 0)
@@ -252,14 +252,14 @@ public class Country : Owner
     /// <param name="reform"></param>   
     internal Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
     {
-        uint totalPopulation = this.getMenPopulation();
-        uint votingPopulation = 0;
-        uint populationSayedYes = 0;
-        uint votersSayedYes = 0;
+        int totalPopulation = this.getMenPopulation();
+        int votingPopulation = 0;
+        int populationSayedYes = 0;
+        int votersSayedYes = 0;
         Procent procentVotersSayedYes = new Procent(0f);
-        Dictionary<PopType, uint> divisionPopulationResult = new Dictionary<PopType, uint>();
-        Dictionary<PopType, uint> divisionVotersResult = this.getYesVotesByType(reform, ref divisionPopulationResult);
-        foreach (KeyValuePair<PopType, uint> next in divisionVotersResult)
+        Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
+        Dictionary<PopType, int> divisionVotersResult = this.getYesVotesByType(reform, ref divisionPopulationResult);
+        foreach (KeyValuePair<PopType, int> next in divisionVotersResult)
             votersSayedYes += next.Value;
 
         if (totalPopulation != 0)
@@ -273,9 +273,9 @@ public class Country : Owner
             procentVotersSayedYes.set((float)votersSayedYes / votingPopulation);
         return procentVotersSayedYes;
     }
-    internal Dictionary<PopType, uint> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, uint> divisionPopulationResult)
+    internal Dictionary<PopType, int> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, int> divisionPopulationResult)
     {  // division by pop types
-        Dictionary<PopType, uint> divisionVotersResult = new Dictionary<PopType, uint>();
+        Dictionary<PopType, int> divisionVotersResult = new Dictionary<PopType, int>();
         foreach (PopType type in PopType.allPopTypes)
         {
             divisionVotersResult.Add(type, 0);
@@ -286,9 +286,9 @@ public class Country : Owner
                 foreach (PopUnit pop in popList)
                     if (pop.getSayingYes(reform))
                     {
-                        divisionPopulationResult[type] += pop.population;
+                        divisionPopulationResult[type] += pop.getPopulation();
                         if (pop.canVote())
-                            divisionVotersResult[type] += pop.population;
+                            divisionVotersResult[type] += pop.getPopulation();
                     }
             }
         }
@@ -342,16 +342,16 @@ public class Country : Owner
         return Game.player != this;
     }
 
-    internal uint getMenPopulation()
+    internal int getMenPopulation()
     {
-        uint result = 0;
+        int result = 0;
         foreach (Province pr in ownedProvinces)
             result += pr.getMenPopulation();
         return result;
     }
-    public uint FindPopulationAmountByType(PopType ipopType)
+    public int FindPopulationAmountByType(PopType ipopType)
     {
-        uint result = 0;
+        int result = 0;
         foreach (Province pro in ownedProvinces)
             result += pro.FindPopulationAmountByType(ipopType);
         return result;

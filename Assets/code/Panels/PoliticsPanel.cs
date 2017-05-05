@@ -136,8 +136,8 @@ public class PoliticsPanel : DragPanel
             Procent procentPopulationSayedYes = new Procent(0f);
             Procent procentVotersSayedYes = Game.player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 
-            Dictionary<PopType, uint> divisionPopulationResult = new Dictionary<PopType, uint>();
-            Dictionary<PopType, uint> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
+            Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
+            Dictionary<PopType, int> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
 
             if (selectedReformValue != selectedReform.getValue())
             {

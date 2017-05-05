@@ -25,25 +25,27 @@ abstract public class PopUnit : Producer
     public static Procent promotionSpeed = new Procent(0.01f);
 
     ///<summary>buffer popList of demoter. To avoid iteration breaks</summary>
-    public static List<PopUnit> tempPopList = new List<PopUnit>();
+    public static List<PopUnit> PopListToAddInGeneralList = new List<PopUnit>();
 
     public Procent loyalty;
-    public uint population;
+    int population;
     int mobilized;
     public PopType type;
     public Culture culture;
     public Procent education;
     public Procent NeedsFullfilled;
 
+    private int daysUpsetByForcedReform;
+    private bool dintGetUnemloymentSubsidy;
+
     public ModifiersList modifiersLoyaltyChange;
 
     Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies;
-    private uint daysUpsetByForcedReform;
-    private bool dintGetUnemloymentSubsidy;
+
     //private Corps corps;
 
-    public PopUnit(uint iamount, PopType ipopType, Culture iculture, Province where)
+    public PopUnit(int iamount, PopType ipopType, Culture iculture, Province where)
     {
         population = iamount;
         type = ipopType;
@@ -56,6 +58,7 @@ abstract public class PopUnit : Producer
         loyalty = new Procent(0.50f);
         NeedsFullfilled = new Procent(0.50f);
         province = where;
+
         modifierStarvation = new Modifier(delegate (Country forWhom) { return NeedsFullfilled.get() < 0.20f; }, "Starvation", false, -0.3f);
         modifierLifeNeedsNotFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() < 0.99f; }, "Life needs are not satisfied", false, -0.2f);
         modifierLifeNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() > 0.99f; }, "Life needs are satisfied", false, 0.1f);
@@ -79,16 +82,16 @@ abstract public class PopUnit : Producer
         });
     }
 
-    public PopUnit(PopUnit popUnit) : this(popUnit.population, popUnit.type, popUnit.culture, popUnit.province)
+    public PopUnit(PopUnit popUnit) : this(popUnit.getPopulation(), popUnit.type, popUnit.culture, popUnit.province)
     {
-
-
-
-        tempPopList.Add(this);
+        // here shuld be carefull copying of popUnit data
+        PopListToAddInGeneralList.Add(this);
     }
+    public int getPopulation()
+    { return population; }
     internal int howMuchCanMobilize()
     {
-        int howMuchCanMobilize = (int)(population * loyalty.get() * Game.mobilizationFactor);
+        int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Game.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
         if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
 
@@ -105,7 +108,7 @@ abstract public class PopUnit : Producer
             //return corps;           
             //ObjectPool<Corps>.Get();
             return Pool.GetObject(this, amount);
-           // return new Corps(this, amount);
+            // return new Corps(this, amount);
         }
         else
             return null;
@@ -113,20 +116,20 @@ abstract public class PopUnit : Producer
     public void demobilize()
     {
         mobilized = 0;
-       
+
     }
     internal void kill(int loss)
     {
-        int newPopulation = (int)population - (int)(loss * Game.PopAttritionFactor);
+        int newPopulation = getPopulation() - (int)(loss * Game.PopAttritionFactor);
         if (newPopulation > 0)
-            population = (uint)newPopulation;
+            this.setPopulation(newPopulation);
         else
             //todo pop tatally killed
             ;
         mobilized -= loss;
         if (mobilized < 0) mobilized = 0;
     }
-    internal void addDaysUpsetByForcedReform(uint popDaysUpsetByForcedReform)
+    internal void addDaysUpsetByForcedReform(int popDaysUpsetByForcedReform)
     {
         daysUpsetByForcedReform += popDaysUpsetByForcedReform;
     }
@@ -135,7 +138,7 @@ abstract public class PopUnit : Producer
 
     //internal float getSayYesProcent(AbstractReformValue selectedReformValue)
     //{
-    //    return (uint)Mathf.RoundToInt(getSayingYes(selectedReformValue) / (float)population);
+    //    return (int)Mathf.RoundToInt(getSayingYes(selectedReformValue) / (float)population);
     //}
 
     public static PopUnit Instantiate(PopType type, PopUnit pop)
@@ -155,7 +158,7 @@ abstract public class PopUnit : Producer
             return null;
         }
     }
-    public static PopUnit Instantiate(uint iamount, PopType ipopType, Culture iculture, Province where)
+    public static PopUnit Instantiate(int iamount, PopType ipopType, Culture iculture, Province where)
     {
 
         if (ipopType == PopType.tribeMen) return new Tribemen(iamount, ipopType, iculture, where);
@@ -174,13 +177,13 @@ abstract public class PopUnit : Producer
         }
     }
     abstract internal bool getSayingYes(AbstractReformValue reform);
-    public static uint getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
+    public static int getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
     {
-        uint randomPopulation = (uint)(minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation));
+        int randomPopulation = minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation);
         return randomPopulation;
     }
 
-   
+
 
     /// <summary> /// Return in pieces  /// </summary>    
     override internal float getLocalEffectiveDemand(Product product)
@@ -212,7 +215,7 @@ abstract public class PopUnit : Producer
     }
     private List<Storage> getNeedsInCommon(List<Storage> needs)
     {
-        Value multiplier = new Value(this.population / 1000f);
+        Value multiplier = new Value(this.getPopulation() / 1000f);
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in needs)
@@ -251,12 +254,12 @@ abstract public class PopUnit : Producer
         if (type == PopType.workers)
         //return new Procent(0);
         {
-            uint employed = 0;
+            int employed = 0;
             foreach (Factory factory in province.allFactories)
                 employed += factory.HowManyEmployed(this);
-            if ((int)population - (int)employed <= 0) //happening due population change by growth/demotion
+            if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
                 return new Procent(0);
-            return new Procent((population - employed) / (float)population);
+            return new Procent((getPopulation() - employed) / (float)getPopulation());
         }
         else
             if (type == PopType.farmers || type == PopType.tribeMen)
@@ -282,7 +285,7 @@ abstract public class PopUnit : Producer
     ////                producedAmount = new Value(population * type.basicProduction.value.get() / 1000f);
     ////            else
     ////            {
-    ////                uint overPopulation = province.getMenPopulation() - province.maxTribeMenCapacity;
+    ////                int overPopulation = province.getMenPopulation() - province.maxTribeMenCapacity;
     ////                float over = (float)(overPopulation / (float)province.maxTribeMenCapacity);
     ////                producedAmount = new Value(population * type.basicProduction.value.get() / 1000f); //TODO fix shit
 
@@ -607,20 +610,21 @@ abstract public class PopUnit : Producer
     //        return true;
     //    return false;
     //}
-    //public void Growth(uint size)
+    //public void Growth(int size)
     //{
 
     //}
     public void calcGrowth()
     {
-        //uint growthSize = getGrowthSize();
-        population = (uint)(population + getGrowthSize());
+        //int growthSize = getGrowthSize();
+        addPopulation(getGrowthSize());
+        //population = population + getGrowthSize();
     }
     public void calcDemotions()
     {
-        uint demotionSize = getDemotionSize();
+        int demotionSize = getDemotionSize();
         //&& CanDemote()
-        if (WantsDemotion() && demotionSize > 0 && this.population > demotionSize)
+        if (WantsDemotion() && demotionSize > 0 && this.getPopulation() > demotionSize)
             Demote(getRichestDemotionTarget(), demotionSize);
     }
     public List<PopType> getPossibeDemotionsList()
@@ -651,25 +655,36 @@ abstract public class PopUnit : Producer
     }
     abstract public bool CanThisDemoteInto(PopType popType);
 
-    private void Demote(PopType type, uint amount)
+    private void Demote(PopType type, int amount)
     {
         //PopUnit newPop = new PopUnit(this);
         if (type != null)
         {
             PopUnit newPop = PopUnit.Instantiate(type, this);
-            newPop.population = amount;
+            newPop.setPopulation(amount);
             newPop.type = type;
-            this.population -= amount;
+            this.subtractPopulation(amount);
         }
     }
-
+    private void setPopulation(int newPopulation)
+    {
+        population = newPopulation;
+    }
+    private void subtractPopulation(int subtract)
+    {
+        population -= subtract; ;
+    }
+    private void addPopulation(int adding)
+    {
+        population += adding ;
+    }
     internal void takeUnemploymentSubsidies()
     {
         var reform = province.getOwner().unemploymentSubsidies.getValue();
         if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
         {
             Value subsidy = getUnemployedProcent();
-            subsidy.multipleInside(population / 1000f * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate());
+            subsidy.multipleInside(getPopulation() / 1000f * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
             if (province.getOwner().wallet.canPay(subsidy))
             {
@@ -683,27 +698,27 @@ abstract public class PopUnit : Producer
 
     }
 
-    public uint getDemotionSize()
+    public int getDemotionSize()
     {
-        return (uint)Mathf.RoundToInt(this.population * PopUnit.demotionSpeed.get());
+        return Mathf.RoundToInt(this.getPopulation() * PopUnit.demotionSpeed.get());
     }
     public int getGrowthSize()
     {
         int result = 0;
         if (this.NeedsFullfilled.get() >= 0.33f) // positive grotwh
-            result = Mathf.RoundToInt(PopUnit.growthSpeed.get() * population);
+            result = Mathf.RoundToInt(PopUnit.growthSpeed.get() * getPopulation());
         else
             if (this.NeedsFullfilled.get() >= 0.20f) // zero grotwh
             result = 0;
         else if (type != PopType.farmers) //starvation  
         {
-            result = Mathf.RoundToInt(PopUnit.starvationSpeed.get() * population * -1);
-            if (result * -1 >= population) // total starvation
+            result = Mathf.RoundToInt(PopUnit.starvationSpeed.get() * getPopulation() * -1);
+            if (result * -1 >= getPopulation()) // total starvation
                 result = 0;
         }
 
         return result;
-        //return (uint)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
+        //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
     }
     public bool WantsDemotion()
     {
@@ -715,7 +730,8 @@ abstract public class PopUnit : Producer
 
     internal void Merge(PopUnit pop)
     {
-        population = population + pop.population;
+        addPopulation(pop.getPopulation());
+        //population = population + ;
         //storage.value.add(pop.storage.value);
         //produced = new Storage(Product.findByName("Food"), 0);
         //education = new Procent(0.01f);
@@ -849,7 +865,7 @@ public class Tribemen : PopUnit
     public Tribemen(PopUnit pop) : base(pop)
     {
     }
-    public Tribemen(uint iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
+    public Tribemen(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     {
     }
     public override bool CanThisDemoteInto(PopType targetType)
@@ -867,9 +883,9 @@ public class Tribemen : PopUnit
         Value producedAmount;
         float overpopulation = province.getOverPopulation();
         if (overpopulation <= 1) // all is ok
-            producedAmount = new Value(population * type.basicProduction.get() / 1000f);
+            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000f);
         else
-            producedAmount = new Value(population * type.basicProduction.get() / 1000f / overpopulation);
+            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000f / overpopulation);
         storageNow.add(producedAmount);
         gainGoodsThisTurn.set(producedAmount);
     }
@@ -933,7 +949,7 @@ public class Farmers : PopUnit
 {
     public Farmers(PopUnit pop) : base(pop)
     { }
-    public Farmers(uint iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
+    public Farmers(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
 
     public override bool CanThisDemoteInto(PopType targetType)
@@ -952,9 +968,9 @@ public class Farmers : PopUnit
         Value producedAmount;
         float overpopulation = province.getOverPopulation();
         if (overpopulation <= 1) // all is ok
-            producedAmount = new Value(population * type.basicProduction.get() / 1000 + population * type.basicProduction.get() / 1000 * education.get());
+            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000 + getPopulation() * type.basicProduction.get() / 1000 * education.get());
         else
-            producedAmount = new Value(population * type.basicProduction.get() / 1000 / overpopulation + population * type.basicProduction.get() / 1000 / overpopulation * education.get());
+            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000 / overpopulation + getPopulation() * type.basicProduction.get() / 1000 / overpopulation * education.get());
         gainGoodsThisTurn.set(producedAmount);
 
         if (Economy.isMarket.checkIftrue(province.getOwner()))
@@ -1038,7 +1054,7 @@ public class Aristocrats : PopUnit
 {
     public Aristocrats(PopUnit pop) : base(pop)
     { }
-    public Aristocrats(uint iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
+    public Aristocrats(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
     public override bool CanThisDemoteInto(PopType targetType)
     {
@@ -1121,7 +1137,7 @@ public class Capitalists : PopUnit
 {
     public Capitalists(PopUnit pop) : base(pop)
     { }
-    public Capitalists(uint iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
+    public Capitalists(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
     public override bool CanThisDemoteInto(PopType targetType)
     {
@@ -1193,7 +1209,7 @@ public class Workers : PopUnit
 {
     public Workers(PopUnit pop) : base(pop)
     { }
-    public Workers(uint iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
+    public Workers(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
 
     public override bool CanThisDemoteInto(PopType targetType)

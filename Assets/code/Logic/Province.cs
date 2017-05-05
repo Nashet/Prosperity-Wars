@@ -14,7 +14,7 @@ public class Province
     MeshFilter meshFilter;
     internal GameObject gameObject;
     public MeshRenderer meshRenderer;
-    //public static uint maxTribeMenCapacity = 2000;
+    //public static int maxTribeMenCapacity = 2000;
     private string name;
     private int ID;
     Country owner;
@@ -22,12 +22,12 @@ public class Province
     public Vector3 centre;
 
     public static List<Province> allProvinces = new List<Province>();
-    private static uint defaultPopulationSpawn = 10;
+    private static int defaultPopulationSpawn = 10;
     public List<Factory> allFactories = new List<Factory>();
     private Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
     private List<Province> neighbors = new List<Province>();
     Product resource;
-    internal uint fertileSoil;
+    internal int fertileSoil;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
         allProducers = getProducers();
@@ -116,18 +116,18 @@ public class Province
             //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
             yield return f;
     }
-    public uint getMenPopulation()
+    public int getMenPopulation()
     {
-        uint result = 0;
+        int result = 0;
         foreach (PopUnit pop in allPopUnits)
-            result += pop.population;
+            result += pop.getPopulation();
         return result;
     }
-    public uint getFamilyPopulation()
+    public int getFamilyPopulation()
     {
         return getMenPopulation() * Game.familySize;
     }
-    public uint getMiddleLoyalty()
+    public int getMiddleLoyalty()
     {
         //Procent result = 0;
         foreach (PopUnit pop in allPopUnits)
@@ -174,25 +174,25 @@ public class Province
         return null;
     }
 
-    public uint FindPopulationAmountByType(PopType ipopType)
+    public int FindPopulationAmountByType(PopType ipopType)
     {
         List<PopUnit> list = FindAllPopUnits(ipopType);
-        uint result = 0;
+        int result = 0;
         foreach (PopUnit pop in list)
             if (pop.type == ipopType)
-                result += pop.population;
+                result += pop.getPopulation();
         return result;
     }
     //not called with capitalism
     internal void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
     {
         List<PopUnit> allAristocratsInProvince = FindAllPopUnits(PopType.aristocrats);
-        uint aristoctratAmount = 0;
+        int aristoctratAmount = 0;
         foreach (PopUnit pop in allAristocratsInProvince)
-            aristoctratAmount += pop.population;
+            aristoctratAmount += pop.getPopulation();
         foreach (Aristocrats aristocrat in allAristocratsInProvince)
         {
-            Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.population / (float)aristoctratAmount);
+            Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
             fromWho.pay(aristocrat.storageNow, howMuch);
             aristocrat.gainGoodsThisTurn.add(howMuch);
             aristocrat.dealWithMarket();
@@ -202,8 +202,7 @@ public class Province
     }
     ///<summary> Simular by popType & culture</summary>    
     public PopUnit FindSimularPopUnit(PopUnit target)
-    {
-        //PopUnit result = null;
+    {        
         foreach (PopUnit pop in allPopUnits)
             if (pop.type == target.type && pop.culture == target.culture)
                 return pop;
@@ -221,22 +220,22 @@ public class Province
     public Value getMiddleNeedFullfilling(PopType type)
     {
         Value result = new Value(0);
-        uint allPopulation = 0;
+        int allPopulation = 0;
         List<PopUnit> localPops = FindAllPopUnits(type);
         if (localPops.Count > 0)
         {
             foreach (PopUnit pop in localPops)
             // get middle needs fullfiling according to pop weight            
             {
-                allPopulation += pop.population;
-                result.add(pop.NeedsFullfilled.multiple(pop.population));
+                allPopulation += pop.getPopulation();
+                result.add(pop.NeedsFullfilled.multiple(pop.getPopulation()));
             }
             return result.divide(allPopulation); ;
         }
         else/// add defualt population
         {
             //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
-            PopUnit.tempPopList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
+            PopUnit.PopListToAddInGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
             return new Value(0);
         }
@@ -244,13 +243,13 @@ public class Province
     public void BalanceEmployableWorkForce()
     {
         List<PopUnit> workforcList = this.FindAllPopUnits(PopType.workers);
-        uint totalWorkForce = 0; // = this.FindPopulationAmountByType(PopType.workers);
-        uint factoryWants = 0;
-        uint factoryWantsTotal = 0;
+        int totalWorkForce = 0; // = this.FindPopulationAmountByType(PopType.workers);
+        int factoryWants = 0;
+        int factoryWantsTotal = 0;
 
         foreach (PopUnit pop in workforcList)
-            totalWorkForce += pop.population;
-        uint popsLeft = totalWorkForce;
+            totalWorkForce += pop.getPopulation();
+        int popsLeft = totalWorkForce;
         if (totalWorkForce > 0)
         {
             // workforcList = workforcList.OrderByDescending(o => o.population).ToList();
@@ -344,15 +343,15 @@ public class Province
     {
         return name;
     }
-    internal uint getUnemployed()
+    internal int getUnemployed()
     {
-        //uint result = 0;
+        //int result = 0;
         //List<PopUnit> list = this.FindAllPopUnits(PopType.workers);
         //foreach (PopUnit pop in list)
         //    result += pop.getUnemployed();
-        uint totalWorkforce = this.FindPopulationAmountByType(PopType.workers);
+        int totalWorkforce = this.FindPopulationAmountByType(PopType.workers);
         if (totalWorkforce == 0) return 0;
-        uint employed = 0;
+        int employed = 0;
 
         foreach (Factory factory in allFactories)
             employed += factory.getWorkForce();
@@ -408,10 +407,10 @@ public class Province
             switch (pop.type.type)
             {
                 case PopType.PopTypes.Tribemen:
-                    usedLand += pop.population * Game.minLandForTribemen;
+                    usedLand += pop.getPopulation() * Game.minLandForTribemen;
                     break;
                 case PopType.PopTypes.Farmers:
-                    usedLand += pop.population * Game.minLandForFarmers;
+                    usedLand += pop.getPopulation() * Game.minLandForFarmers;
                     break;
             }
         return usedLand / fertileSoil;
@@ -478,8 +477,8 @@ public class Province
     }
     internal float getMiddleFactoryWorkforceFullfilling()
     {
-        uint workForce = 0;
-        uint capacity = 0;
+        int workForce = 0;
+        int capacity = 0;
         foreach (Factory fact in allFactories)
             if (fact.isWorking())
             {

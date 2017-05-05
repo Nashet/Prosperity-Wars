@@ -10,12 +10,12 @@ public class Market : Owner//: PrimitiveStorageSet
 {
 
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
-    uint dateOfDSB = uint.MaxValue;
+    int dateOfDSB = int.MaxValue;
     PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
-    uint dateOfgetSupply = uint.MaxValue;
-    uint dateOfgetProductionTotal = uint.MaxValue;
-    uint dateOfgetTotalConsumption = uint.MaxValue;
-    uint dateOfgetBouth = uint.MaxValue;
+    int dateOfgetSupply = int.MaxValue;
+    int dateOfgetProductionTotal = int.MaxValue;
+    int dateOfgetTotalConsumption = int.MaxValue;
+    int dateOfgetBouth = int.MaxValue;
     PrimitiveStorageSet getSupplyBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getProductionTotalBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getTotalConsumptionBuffer = new PrimitiveStorageSet();

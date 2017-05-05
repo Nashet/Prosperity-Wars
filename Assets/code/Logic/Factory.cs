@@ -8,7 +8,7 @@ public class Factory : Producer
     //public enum PopTypes { Forestry, GoldMine, MetalMine };
 
     internal FactoryType type;
-    protected static uint workForcePerLevel = 1000;
+    protected static int workForcePerLevel = 1000;
     protected byte level = 0;
     /// <summary>shownFactory in a process of building - level 1 </summary>
     private bool building = true;
@@ -24,9 +24,9 @@ public class Factory : Producer
 
     protected List<PopLinkage> workForce = new List<PopLinkage>();
     private static int xMoneyReservForResources = 10;
-    private uint daysInConstruction;
-    private uint daysUnprofitable;
-    private uint daysClosed;
+    private int daysInConstruction;
+    private int daysUnprofitable;
+    private int daysClosed;
     internal bool justHiredPeople;
     private int hiredLastTurn;
     internal ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
@@ -227,36 +227,36 @@ public class Factory : Producer
     /// Should optimize? Seek for changes..
     /// </summary>
     /// <returns></returns>
-    public uint getWorkForce()
+    public int getWorkForce()
     {
-        uint result = 0;
+        int result = 0;
         foreach (PopLinkage pop in workForce)
             result += pop.amount;
         return result;
     }
-    public void HireWorkforce(uint amount, List<PopUnit> popList)
+    public void HireWorkforce(int amount, List<PopUnit> popList)
     {
         //check on no too much workers?
         //if (amount > HowMuchWorkForceWants())
         //    amount = HowMuchWorkForceWants();
-        uint wasWorkforce = getWorkForce();
+        int wasWorkforce = getWorkForce();
         workForce.Clear();
         if (amount > 0)
         {
 
-            uint leftToHire = amount;
+            int leftToHire = amount;
             foreach (PopUnit pop in popList)
             {
-                if (pop.population >= leftToHire) // satisfied demand
+                if (pop.getPopulation() >= leftToHire) // satisfied demand
                 {
                     workForce.Add(new PopLinkage(pop, leftToHire));
-                    hiredLastTurn = (int)getWorkForce() - (int)wasWorkforce;
+                    hiredLastTurn = getWorkForce() - wasWorkforce;
                     break;
                 }
                 else
                 {
-                    workForce.Add(new PopLinkage(pop, pop.population)); // hire as we can
-                    leftToHire -= pop.population;
+                    workForce.Add(new PopLinkage(pop, pop.getPopulation())); // hire as we can
+                    leftToHire -= pop.getPopulation();
                 }
             }
             hiredLastTurn = (int)getWorkForce() - (int)wasWorkforce;
@@ -278,9 +278,9 @@ public class Factory : Producer
         priority = value;
     }
 
-    internal uint HowManyEmployed(PopUnit pop)
+    internal int HowManyEmployed(PopUnit pop)
     {
-        uint result = 0;
+        int result = 0;
         foreach (PopLinkage link in workForce)
             if (link.pop == pop)
                 result += link.amount;
@@ -295,11 +295,11 @@ public class Factory : Producer
 
     internal bool IsThereMoreWorkersToHire()
     {
-        uint totalAmountWorkers = province.FindPopulationAmountByType(PopType.workers);
-        uint result = totalAmountWorkers - getWorkForce();
+        int totalAmountWorkers = province.FindPopulationAmountByType(PopType.workers);
+        int result = totalAmountWorkers - getWorkForce();
         return (result > 0);
     }
-    internal uint getFreeJobSpace()
+    internal int getFreeJobSpace()
     {
         return getMaxWorkforceCapacity() - getWorkForce();
     }
@@ -416,7 +416,7 @@ public class Factory : Producer
     {
         if (isWorking())
         {
-            uint workers = getWorkForce();
+            int workers = getWorkForce();
             if (workers > 0)
             {
                 Value producedAmount;
@@ -470,9 +470,9 @@ public class Factory : Producer
     {
         return salary.get();
     }
-    public uint getMaxWorkforceCapacity()
+    public int getMaxWorkforceCapacity()
     {
-        uint cantakeMax = level * workForcePerLevel;
+        int cantakeMax = level * workForcePerLevel;
         return cantakeMax;
     }
     internal void changeSalary()
@@ -515,13 +515,13 @@ public class Factory : Producer
     /// max - max capacity
     /// </summary>
     /// <returns></returns>
-    public uint HowMuchWorkForceWants()
+    public int HowMuchWorkForceWants()
     {
         //if (getLevel() == 0) return 0;
         if (!isWorking()) return 0;
-        uint wants = (uint)Mathf.RoundToInt(getMaxWorkforceCapacity());// * getInputFactor());
+        int wants = Mathf.RoundToInt(getMaxWorkforceCapacity());// * getInputFactor());
 
-        int difference = (int)wants - (int)getWorkForce();
+        int difference = wants - getWorkForce();
 
         // clamp difference in Game.maxFactoryFireHireSpeed []
         if (difference > Game.maxFactoryFireHireSpeed)
@@ -542,9 +542,9 @@ public class Factory : Producer
             difference = 0;
 
         //todo optimaze getWorkforce()
-        int result = (int)getWorkForce() + difference;
+        int result = getWorkForce() + difference;
         if (result < 0) return 0;
-        return (uint)result;
+        return result;
     }
     internal int getHowMuchHiredLastTurn()
     {
@@ -873,16 +873,16 @@ public class Factory : Producer
         byWhom.wallet.payWithoutRecord(wallet, getUpgradeCost());
     }
 
-    internal uint getDaysInConstruction()
+    internal int getDaysInConstruction()
     {
         return daysInConstruction;
     }
 
-    internal uint getDaysUnprofitable()
+    internal int getDaysUnprofitable()
     {
         return daysUnprofitable;
     }
-    internal uint getDaysClosed()
+    internal int getDaysClosed()
     {
         return daysClosed;
 
@@ -905,7 +905,7 @@ public class Factory : Producer
 //    public override void produce()
 //    {
 //       
-//        uint workers = getWorkForce();
+//        int workers = getWorkForce();
 //        if (workers > 0)
 //        {
 //            Value producedAmount;
@@ -976,8 +976,8 @@ public class Factory : Producer
 public class PopLinkage
 {
     public PopUnit pop;
-    public uint amount;
-    internal PopLinkage(PopUnit p, uint a)
+    public int amount;
+    internal PopLinkage(PopUnit p, int a)
     {
         pop = p;
         amount = a;
@@ -1022,7 +1022,7 @@ public abstract class Producer : Owner
     public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
 
-    //protected Country owner; //TODO Could be any Country or POP
+    //protected Country owner; //Could be any Country or POP
     public Province province;
 
     /// <summary> /// Return in pieces  /// </summary>    

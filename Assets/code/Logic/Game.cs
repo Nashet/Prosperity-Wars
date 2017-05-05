@@ -29,11 +29,11 @@ public class Game
 
     internal static float minPrice = 0.001f;
     internal static float maxPrice = 999.99f;
-    internal static uint familySize = 5;
+    internal static int familySize = 5;
 
     internal static StringBuilder threadDangerSB = new StringBuilder();
 
-    public static uint date;
+    public static int date;
     internal static bool devMode = false;
 
 
@@ -47,10 +47,10 @@ public class Game
     internal static float minMarginToUpgrade = 0.005f;
     internal static float minLandForTribemen = 1f;
     internal static float minLandForFarmers = 0.25f;
-    internal static uint maxDaysUnprofitableBeforeFactoryClosing = 180;
-    internal static uint maxDaysBuildingBeforeRemoving = 180; // 180;
-    internal static uint maxDaysClosedBeforeRemovingFactory = 180;
-    internal static uint minDaysBeforeSalaryCut = 2;
+    internal static int maxDaysUnprofitableBeforeFactoryClosing = 180;
+    internal static int maxDaysBuildingBeforeRemoving = 180; // 180;
+    internal static int maxDaysClosedBeforeRemovingFactory = 180;
+    internal static int minDaysBeforeSalaryCut = 2;
     internal static int howOftenCheckForFactoryReopenning = 30;
     internal static Procent savePopMoneyReserv = new Procent(0.66666f);
     internal static float factoryMoneyReservPerLevel = 20f;
@@ -60,7 +60,7 @@ public class Game
     internal static int maxFactoryFireHireSpeed = 50;
     internal static float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
     internal static float defaultSciencePointMultiplier = 0.001f; //0.00001f;
-    internal static uint fabricConstructionTimeWithoutCapitalism = 20;
+    internal static int fabricConstructionTimeWithoutCapitalism = 20;
     internal static float aristocratsFoodReserv = 50;
     internal static float votingPassBillLimit = 0.5f;
     internal static float votingForcedReformPenalty = 0.5f;
@@ -68,7 +68,7 @@ public class Game
     internal static string dumpString;
     internal static GameObject r3dTextPrefab;
     internal static Value defaultPriceLimitMultiplier = new Value(5f);
-    internal static uint PopDaysUpsetByForcedReform = 30;
+    internal static int PopDaysUpsetByForcedReform = 30;
     internal static float GovernmentTakesShareOfGoldOutput = 0.5f;
     internal static byte factoryInputReservInDays = 5;
     internal static readonly float mobilizationFactor = 0.2f;
@@ -229,7 +229,7 @@ public class Game
     }
     void CreateRandomPopulation()
     {
-        uint chanceForA = 85;
+        int chanceForA = 85;
 
         foreach (Province province in Province.allProvinces)
         {
@@ -380,9 +380,9 @@ public class Game
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
-        uint emptyPixels = uint.MaxValue;
+        int emptyPixels = int.MaxValue;
         Color currentColor = mapImage.GetPixel(0, 0);
-        uint emergencyExit = 0;
+        int emergencyExit = 0;
         while (emptyPixels != 0 && emergencyExit < 100)
         {
             emergencyExit++;
@@ -805,7 +805,7 @@ public class Game
                     pop.Invest();
                 }
 
-                foreach (PopUnit pop in PopUnit.tempPopList)
+                foreach (PopUnit pop in PopUnit.PopListToAddInGeneralList)
                 {
                     PopUnit targetToMerge = province.FindSimularPopUnit(pop);
                     if (targetToMerge == null)
@@ -813,7 +813,7 @@ public class Game
                     else
                         targetToMerge.Merge(pop);
                 }
-                PopUnit.tempPopList.Clear();
+                PopUnit.PopListToAddInGeneralList.Clear();
             }
             country.Think();
         }

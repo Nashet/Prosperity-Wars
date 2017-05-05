@@ -83,7 +83,7 @@ public class PopulationPanelTable : MyTable
                 // Adding PopType
                 AddButton(record.type.ToString(), record);
                 ////Adding population
-                AddButton(System.Convert.ToString(record.population), record);
+                AddButton(System.Convert.ToString(record.getPopulation()), record);
                 ////Adding culture
                 AddButton(record.culture.name, record);
                 ////Adding province

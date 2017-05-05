@@ -57,7 +57,7 @@ public class PopUnitPanel : DragPanel
             if (pop.loans.get() > 0f)
                 loans = "\nLoan: " + pop.loans.ToString();
 
-            generaltext.text = pop + "\n" + "Population: " + pop.population + "\nStorage: " + pop.storageNow.ToString()
+            generaltext.text = pop + "\n" + "Population: " + pop.getPopulation() + "\nStorage: " + pop.storageNow.ToString()
                 + "\nGain goods: " + pop.gainGoodsThisTurn.ToString()
                 + "\nSent to market: " + pop.sentToMarket
                 + "\nCash: " + pop.wallet.ToString()

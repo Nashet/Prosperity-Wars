@@ -239,7 +239,7 @@ public class Wallet// : Value // : Storage
 }
 public class CountryStorage : PrimitiveStorageSet
 {
-    static uint reserveMultiplier = 10;
+    static int reserveMultiplier = 10;
     Value consumedLastTurn = new Value(0);
     Value wantedConsumeLastTurn = new Value(0);
     public Value HowMuchWantsToBuy()
