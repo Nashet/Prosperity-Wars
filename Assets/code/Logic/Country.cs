@@ -311,7 +311,7 @@ public class Country : Owner
     }
     internal float getMinSalary()
     {
-        return (minimalWage.getValue() as MinimalWage.LocalReformValue).getWage();
+        return (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
         //return minSalary.get();
     }
     override public string ToString()

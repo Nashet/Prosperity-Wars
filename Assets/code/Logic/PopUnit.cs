@@ -773,7 +773,7 @@ abstract public class PopUnit : Producer
         if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
         {
             Value subsidy = getUnemployedProcent();
-            subsidy.multipleInside(getPopulation() / 1000f * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate());
+            subsidy.multipleInside(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
             if (province.getOwner().wallet.canPay(subsidy))
             {

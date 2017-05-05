@@ -12,9 +12,6 @@ Economy:
 
 
 
-
-
-
 ? non-negative Value is a bad Idea?
 > multicountry support
 > farmer's efficiency modifier
@@ -47,7 +44,7 @@ Economy:
 * Fix getInput on last turn hiring && fix mess?
 > describe inputFactor in panel?
 
-> move reform values into constructors
+> move reform values into constructors DONT DO IT!!!
 
 
 
@@ -62,9 +59,6 @@ Economy:
 
 
 
-
-
-
 ? should factory drop workforce on small input?
 ? Should factory cut buying if there is not enough other resources?
 
@@ -72,7 +66,6 @@ Economy:
 -? bugged unemployment data? Like there is full impoyment but pops says he us unemployed
 
 > factory build refinancing from loans?
-
 
 
 > bureaucracy
@@ -90,7 +83,7 @@ Economy:
 
 
 ? covert Value into struct? For better speed?
-///////////////////////////////// demo done
+^^^^^^^MOVED TO WAFFLE.IO^^^^^^^^^^^^///////////////////////////////// demo done
 > safety reform
 + make demo? Without Nat economy, capitalism only. DEv mode
 * 100% consumption for aristocrats and caps
