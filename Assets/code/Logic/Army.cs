@@ -99,12 +99,15 @@ public class Army
     public void AddRange(Dictionary<PopUnit, Corps> source)
     {
         Corps found;
-        foreach (var armyToAdd in source)
-            if (armyToAdd.Value.getSize() > 0)
-                if (this.personal.TryGetValue(armyToAdd.Key, out found))
-                    found.add(armyToAdd.Value.getSize());
+        foreach (var corpsToAdd in source)
+            if (corpsToAdd.Value.getSize() > 0)
+                if (this.personal.TryGetValue(corpsToAdd.Key, out found))
+                    found.add(corpsToAdd.Value.getSize());
                 else
-                    this.personal.Add(armyToAdd.Key, armyToAdd.Value);
+                    this.personal.Add(corpsToAdd.Key, corpsToAdd.Value);
+
+            else
+                corpsToAdd.Value.demobilize();
 
     }
     internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)

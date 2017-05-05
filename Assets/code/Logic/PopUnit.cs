@@ -113,8 +113,7 @@ abstract public class PopUnit : Producer
     public void demobilize()
     {
         mobilized = 0;
-        //corps.demobilize();
-        //corps.destriy();
+       
     }
     internal void kill(int loss)
     {
