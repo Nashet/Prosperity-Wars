@@ -228,14 +228,14 @@ public class Province
             // get middle needs fullfiling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.NeedsFullfilled.multiple(pop.getPopulation()));
+                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));
             }
             return result.divide(allPopulation); ;
         }
         else/// add defualt population
         {
             //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
-            PopUnit.PopListToAddInGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
+            PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
             return new Value(0);
         }

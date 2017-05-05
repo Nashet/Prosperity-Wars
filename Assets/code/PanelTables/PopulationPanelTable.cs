@@ -96,7 +96,7 @@ public class PopulationPanelTable : MyTable
                 ////Adding needs fulfilling
 
                 PopUnit ert = record;
-                AddButton(record.NeedsFullfilled.ToString(), record,
+                AddButton(record.needsFullfilled.ToString(), record,
                     () => ert.consumedTotal.ToStringWithLines()
                     //delegate () { return ert.consumedTotal.ToString(); }
                     //record.consumedTotal.ToString()

@@ -109,7 +109,7 @@ public class Corps
             size = sum;
         else
             size = 0;
-        origin.kill(loss);
+        origin.takeLoss(loss);
 
     }
 
@@ -129,15 +129,13 @@ public class Corps
         Pool.ReleaseObject(this);
         
     }
-    Army army;
+    //Army army;
     internal void deleteData()
     {
         size = 0;
         origin = null;
         //here - delete all links on that object
-        //army.demobilize(this);
-
-        //jk
+        //army.demobilize(this);        
     }
 
    

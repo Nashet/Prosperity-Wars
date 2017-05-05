@@ -4,7 +4,6 @@ using System;
 
 public class Bank
 {
-
     Wallet reservs = new Wallet(0);
     Value givenLoans = new Value(0);
     internal void PutOnDeposit(Wallet fromWho, Value howMuch)

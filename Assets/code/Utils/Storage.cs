@@ -305,6 +305,14 @@ public class PrimitiveStorageSet
         else
             find.add(need);
     }
+    /// <summary>
+    /// If duplicated than adds
+    /// </summary>
+    internal void add(PrimitiveStorageSet need)
+    {
+        foreach (Storage n in need)
+            this.add(n);
+    }
     public System.Collections.IEnumerator GetEnumerator()
     {
         for (int i = 0; i < container.Count; i++)
@@ -563,16 +571,14 @@ public class Storage : Value
     }
     /// <summary>
     /// checks inside
-    /// </summary>
-    /// <param name="another"></param>
-    /// <param name="amount"></param>
-    public void pay(Storage another, Value amount)
+    /// </summary>    
+    public void pay(Storage toWhom, Value amount)
     {
-        if (this.getProduct() != another.getProduct())
+        if (this.getProduct() != toWhom.getProduct())
             Debug.Log("Attemp to give wrong product");
         if (this.get() >= amount.get())
         {
-            another.add(amount);
+            toWhom.add(amount);
             this.subtract(amount);
 
         }

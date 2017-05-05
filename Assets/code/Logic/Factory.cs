@@ -1011,7 +1011,7 @@ public abstract class Producer : Owner
 {    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
     public Storage storageNow;
 
-    /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in POpunit.produce and Factore.Produce </summary>
+    /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
 
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>

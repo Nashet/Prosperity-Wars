@@ -805,15 +805,15 @@ public class Game
                     pop.Invest();
                 }
 
-                foreach (PopUnit pop in PopUnit.PopListToAddInGeneralList)
+                foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
                     PopUnit targetToMerge = province.FindSimularPopUnit(pop);
                     if (targetToMerge == null)
                         province.allPopUnits.Add(pop);
                     else
-                        targetToMerge.Merge(pop);
+                        targetToMerge.merge(pop);
                 }
-                PopUnit.PopListToAddInGeneralList.Clear();
+                PopUnit.PopListToAddToGeneralList.Clear();
             }
             country.Think();
         }
