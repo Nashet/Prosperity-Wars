@@ -322,14 +322,14 @@ public class PrimitiveStorageSet
         }
     }
     //// Implementing the enumerable pattern
-    //public System.Collections.IEnumerable SampleIterator(int start, int end)
+    //public IEnumerable SampleIterator(int start, int end)
     //{
     //    for (int i = start; i <= end; i++)
     //    {
     //        yield return i;
     //    }
     //}
-    //public System.Collections.IEnumerator GetEnumerator2()
+    //public IEnumerator GetEnumerator2()
     //{
     //    yield return "With an iterator, ";
     //    yield return "more than one ";

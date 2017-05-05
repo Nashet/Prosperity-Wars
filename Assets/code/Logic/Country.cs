@@ -94,9 +94,9 @@ public class Country : Owner
     {
         return ownedProvinces.Count > 0;
     }
-    internal static IEnumerable allExisting = getExisting();
-    // if (country != Country.NullCountry) ??
-    static IEnumerable getExisting()
+    internal static IEnumerable<Country> allExisting = getExisting();
+   
+    static IEnumerable<Country> getExisting()
     {
         foreach (var c in allCountries)
             if (c.isExist() && c != Country.NullCountry)

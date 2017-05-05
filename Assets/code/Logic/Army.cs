@@ -76,7 +76,7 @@ public class Army
         return personal.Sum(x => x.Value.getSize());
         //return result;
     }
-    internal IEnumerable getCorps()
+    internal IEnumerable<Corps> getCorps()
     {
         foreach (Corps corps in personal.Values)
             yield return corps;

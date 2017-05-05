@@ -221,7 +221,7 @@ public class Game
             allMoney += co.bank.getReservs();
             foreach (Province pr in co.ownedProvinces)
             {
-                foreach (Producer factory in pr.allProducers)
+                foreach (var factory in pr.allProducers)
                     allMoney += factory.wallet.haveMoney.get();
             }
         }

@@ -55,8 +55,7 @@ namespace DesignPattern.Objectpool
                 _inUse.Remove(po);
             }
         }
-        public static System.Collections.IEnumerable existing()
-        //public System.Collections.IEnumerator GetEnumerator()
+        public static IEnumerable<Corps> existing()      
         {
             foreach (Corps f in _inUse)
                 yield return f;

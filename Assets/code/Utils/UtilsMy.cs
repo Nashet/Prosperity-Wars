@@ -331,17 +331,7 @@ public static class WordGenerator
 
 }
 public static class EnumerableExtension
-{
-    //public static T PickRandom<T>(this IEnumerable<T> source)
-    //{
-    //    return source.PickRandom(1).Single();
-    //}
-
-    //public static IEnumerable<T> PickRandom<T>(this IEnumerable<T> source, int count)
-    //{
-    //    return source.Shuffle().Take(count);
-    //}
-
+{   
     private static System.Random rng = new System.Random();
 
     public static void Shuffle<T>(this IList<T> list)

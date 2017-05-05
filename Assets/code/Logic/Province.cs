@@ -70,7 +70,7 @@ public class Province
             getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince(x => x != this));
 
         this.demobilize();
-
+        //allProducers.ForEach(x=>x.GetType()) ;
 
         if (this.getOwner() != null)
             if (this.getOwner().ownedProvinces != null)
@@ -80,6 +80,7 @@ public class Province
         if (taker.ownedProvinces == null)
             taker.ownedProvinces = new List<Province>();
         taker.ownedProvinces.Add(this);
+
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = color;
 
@@ -106,8 +107,8 @@ public class Province
         return neighbors.FindAll(predicate);
 
     }
-    internal IEnumerable allProducers;
-    System.Collections.IEnumerable getProducers()
+    internal IEnumerable<Producer> allProducers;
+    IEnumerable<Producer> getProducers()
     //public System.Collections.IEnumerator GetEnumerator()
     {
         foreach (Factory f in allFactories)
