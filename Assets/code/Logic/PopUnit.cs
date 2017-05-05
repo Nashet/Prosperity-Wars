@@ -647,7 +647,7 @@ abstract public class PopUnit : Producer
         foreach (Country country in Country.allExisting)
         // if (country != Country.NullCountry)
         {
-            country.wallet.moneyIncomethisTurn.set(0);
+            //country.wallet.moneyIncomethisTurn.set(0);
             country.getCountryWallet().setSatisticToZero();
             country.aristocrstTax = country.serfdom.status.getTax();
             foreach (Province province in country.ownedProvinces)

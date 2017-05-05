@@ -23,6 +23,7 @@ public class CountryWallet : Wallet
         unemploymentSubsidiesExpense.set(0f);
         ownedFactoriesIncome.set(0f);
         factorySubsidiesExpense.set(0f);
+        moneyIncomethisTurn.set(0f);
     }
     internal void takeFactorySubsidies(Producer byWhom, Value howMuch)
     {

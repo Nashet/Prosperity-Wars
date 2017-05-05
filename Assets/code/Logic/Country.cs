@@ -107,7 +107,7 @@ public class Country : Owner
     {
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
-        //demobilize();
+        getCountryWallet().setSatisticToZero();
     }
 
     internal bool isOneProvince()
