@@ -23,6 +23,7 @@ Economy:
 ? get rid of PrimitiveStorage?
 > dont store factory upgrade/building purchases
 > proper pop unit spawn
+
 //////////////////waffle///////////
 + min wage reform
 + Unemployment in Panel & fix
@@ -44,7 +45,7 @@ Economy:
 * Fix getInput on last turn hiring && fix mess?
 > describe inputFactor in panel?
 
-> move reform values into constructors DONT DO IT!!!
+> move reform values into constructors No, still DO IT
 
 
 
@@ -83,7 +84,7 @@ Economy:
 
 
 ? covert Value into struct? For better speed?
-^^^^^^^MOVED TO WAFFLE.IO^^^^^^^^^^^^///////////////////////////////// demo done
+///////////////////////////////// demo done
 > safety reform
 + make demo? Without Nat economy, capitalism only. DEv mode
 * 100% consumption for aristocrats and caps

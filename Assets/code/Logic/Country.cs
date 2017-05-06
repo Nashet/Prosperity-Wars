@@ -195,16 +195,17 @@ public class Country : Owner
             messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
         }
     }
-    internal void moveCapitalTo(Province pro)
+    internal void moveCapitalTo(Province newCapital)
     {
         if (messhCapitalText == null)
             makeCapitalTextMesh();
         else
         {
-            Vector3 capitalTextPosition = pro.centre;
+            Vector3 capitalTextPosition = newCapital.centre;
             capitalTextPosition.y += 2f;
             messhCapitalText.transform.position = capitalTextPosition;
         }
+        capital = newCapital;
     }
     internal Color getColor()
     {
