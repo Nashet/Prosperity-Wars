@@ -1,20 +1,17 @@
 ﻿using UnityEngine;
-
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using System.IO;
-using System;
 using System.Text;
-
 public class Game
 {
     Texture2D mapImage;
     GameObject mapObject;
-    
+    internal static GameObject r3dTextPrefab;
+
     List<int> trianglesList = new List<int>();
     List<Vector3> vertices = new List<Vector3>();
     int triangleCounter = 0;
+
     public static Country player;
     internal InventionType inventions = new InventionType();
     internal static bool haveToRunSimulation;
@@ -27,20 +24,14 @@ public class Game
 
     internal static List<BattleResult> allBattles = new List<BattleResult>();
     internal static Stack<Message> MessageQueue = new Stack<Message>();
-
-
     public static Market market = new Market();
 
     internal static StringBuilder threadDangerSB = new StringBuilder();
 
     public static int date;
     internal static bool devMode = false;
-    internal static GameObject r3dTextPrefab;
-
-
     public Game()
     {
-       
         Application.runInBackground = true;
         //LoadImages();
         //new Message("Спасибо анончик", "Ты охуенен", "Да");
@@ -50,19 +41,19 @@ public class Game
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         makeProvinces();
         roundMesh();
-        findNeighbors();
+        findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
-        var mapHeight = mapImage.height * Options.cellMultiplier;        
-        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);       
+        var mapHeight = mapImage.height * Options.cellMultiplier;
+        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
         //setStartResources();
         makeFactoryTypes();
         makePopTypes();
 
-        var ser = new CountryNameGenerator();
+        var countryNameGenerator = new CountryNameGenerator();
         int extraCountries = random.Next(6);
         for (int i = 0; i < 16 + extraCountries; i++)
-            makeCountry(ser);
-        
+            makeCountry(countryNameGenerator);
+
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
                 pro.InitialOwner(Country.NullCountry);
@@ -181,11 +172,7 @@ public class Game
 
         foreach (Province province in Province.allProvinces)
         {
-
             Culture culture = new Culture(province + "landers");
-
-
-
             if (province.getOwner() == Country.NullCountry)
             {
                 Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);
@@ -205,10 +192,6 @@ public class Game
                     //pop = new Tribemen(20900, PopType.tribeMen, province.getOwner().culture, province);
                     //province.allPopUnits.Add(pop);
                 }
-
-
-
-
                 if (!Game.devMode)
                     pop = new Aristocrats(PopUnit.getRandomPopulationAmount(80, 100), PopType.aristocrats, province.getOwner().culture, province);
                 else
@@ -293,7 +276,7 @@ public class Game
             province.addNeigbor(found);
         }
     }
-    void findNeighbors()
+    void findNeighborprovinces()
     {
         int f = 0;
         foreach (var province in Province.allProvinces)
@@ -434,13 +417,9 @@ public class Game
                     movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
                     movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
                 }
-
-
             }
         }
     }
-
-
 
     void makeProvinces()
     {
@@ -494,8 +473,6 @@ public class Game
                     //finished all map search for currentProvince
                     makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName());
                     provinceCounter++;
-
-
                 }
                 lastprovinceColor = currentProvinceColor;
             }
@@ -521,7 +498,6 @@ public class Game
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
-
         meshRenderer.material.shader = Shader.Find("Standard");
         meshRenderer.material.color = colorID;
 
@@ -542,16 +518,17 @@ public class Game
     }
     bool FindProvinceCenters()
     {
-        Vector3 accu = new Vector3(0, 0, 0);
-        foreach (Province pro in Province.allProvinces)
-        {
-            accu.Set(0, 0, 0);
-            foreach (var c in pro.mesh.vertices)
-                accu += c;
-            accu = accu / pro.mesh.vertices.Length;
-            pro.centre = accu;
-        }
+        //Vector3 accu = new Vector3(0, 0, 0);
+        //foreach (Province pro in Province.allProvinces)
+        //{
+        //    accu.Set(0, 0, 0);
+        //    foreach (var c in pro.mesh.vertices)
+        //        accu += c;
+        //    accu = accu / pro.mesh.vertices.Length;
+        //    pro.centre = accu;
+        //}
         return true;
+
         //short[,] bordersMarkers = new short[mapImage.width, mapImage.height];
 
         //int foundedProvinces = 0;
@@ -654,16 +631,31 @@ public class Game
     }
     void LoadImages()
     {
-
-        mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
-        //Texture2D mapImage = new Texture2D(z.width, z.height);
-        //mapImage.SetPixels(z.GetPixels());
-        //mapImage = mapImage.c
-        RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
-        //Image ri = GameObject.Find("Image").GetComponent<Image>();
+        mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
+        RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();        
         ri.texture = mapImage;
     }
-
+    private static void calcBattles()
+    {
+        foreach (Country country in Country.allExisting)
+        {
+            foreach (var attackerArmy in country.allArmies)
+            {
+                if (attackerArmy.getDestination() != null)
+                {
+                    var result = attackerArmy.attack(attackerArmy.getDestination());
+                    if (result.isAttackerWon())
+                    {
+                        attackerArmy.getDestination().secedeTo(country);
+                    }
+                    if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
+                        result.createMessage();
+                    attackerArmy.moveTo(null); // go home
+                }
+            }
+            country.allArmies.consolidate(country);
+        }
+    }
     internal static void stepSimulation()
     {
         date++;
@@ -674,9 +666,7 @@ public class Game
         PopUnit.PrepareForNewTick();
 
         // big PRODUCE circle
-        foreach (Country country in Country.allExisting)
-            // if (country != Country.NullCountry)
-            //if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)            
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 //Now factories time!               
@@ -697,8 +687,7 @@ public class Game
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
-        foreach (Country country in Country.allExisting)
-            // if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)         
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {
                 foreach (Factory factory in province.allFactories)
@@ -718,12 +707,10 @@ public class Game
                 }
             }
         // big AFTER all circle
-        foreach (Country country in Country.allExisting)
-        //   if (country != Country.NullCountry)
+        foreach (Country country in Country.allExisting)        
         {
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {
-                //province.BalanceEmployableWorkForce();
+            {               
                 foreach (Factory factory in province.allFactories)
                 {
                     factory.getMoneyFromMarket();
@@ -732,27 +719,22 @@ public class Game
                 }
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
-                {
-                    //if (pop.type != PopType.tribeMen && !(pop.type == PopType.farmers && !province.getOwner().isInvented(InventionType.capitalism)))
+                {                    
                     if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
                         pop.getMoneyFromMarket();
 
                     //becouse income come only after consuming, and only after FULL consumption
-
                     if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();
 
                     pop.calcLoyalty();
-
                     pop.calcPromotions();
                     pop.calcDemotions();
                     pop.calcGrowth();
-
                     pop.Invest();
                 }
-
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
                     PopUnit targetToMerge = province.FindSimularPopUnit(pop);
@@ -764,28 +746,6 @@ public class Game
                 PopUnit.PopListToAddToGeneralList.Clear();
             }
             country.Think();
-        }
-    }
-
-    private static void calcBattles()
-    {
-        foreach (Country country in Country.allExisting)
-        {
-            foreach (var attackerArmy in country.allArmies)
-            {
-                if (attackerArmy.getDestination() != null)
-                {
-                    var result = attackerArmy.attack(attackerArmy.getDestination());
-                    if (result.isAttackerWon())
-                    {
-                        attackerArmy.getDestination().secedeTo(country);
-                    }
-                    if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
-                        result.createMessage();
-                    attackerArmy.moveTo(null); // go home
-                }
-            }
-            country.allArmies.consolidate(country);
         }
     }
 }
