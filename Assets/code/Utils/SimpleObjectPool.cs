@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 // A very simple object pooling class
 public class SimpleObjectPool : MonoBehaviour
@@ -73,6 +74,15 @@ public class SimpleObjectPool : MonoBehaviour
         // if the instance came from this pool, return it to the pool
         if (pooledObject != null && pooledObject.pool == this)
         {
+            ToolTipHandler s = toReturn.GetComponent<ToolTipHandler>();
+            // s.GetComponent<ToolTipHandler>().tooltip = "";
+            s.tooltip = "";
+            s.dynamicString = null;
+            //if (s.tip != null)
+            //    s.tip.HideTooltip();
+            //s.tip = null;
+            toReturn.GetComponentInChildren<Text>().text = "notext";
+
             // make the instance a child of this and disable it
             toReturn.transform.SetParent(transform);
             toReturn.SetActive(false);
