@@ -656,10 +656,18 @@ public class Factory : Producer
         {
             Storage howMuchWantBuy = new Storage(next.getProduct(), next.get());
             howMuchWantBuy.multipleInside(multiplier);
-            Storage found = inputReservs.findStorage(next.getProduct());
-            if (found != null)
-                howMuchWantBuy.subtract(found);
-            result.Add(howMuchWantBuy);
+            Storage reserv = inputReservs.findStorage(next.getProduct());
+            if (reserv == null)
+                result.Add(howMuchWantBuy);
+            else
+                if (howMuchWantBuy.canPay(reserv))
+            {
+                howMuchWantBuy.subtract(reserv);
+                result.Add(howMuchWantBuy);
+            }//else  - there is enough reservs, don't buy that
+
+
+
         }
         return result;
     }
@@ -686,13 +694,13 @@ public class Factory : Producer
         //if (getLevel() > 0)
         if (isWorking())
         {
-            List<Storage> needs = getHowMuchReservesWants();
+            List<Storage> shoppingList = getHowMuchReservesWants();
 
             //todo !CAPITALISM part
             if (isSubsidized())
-                Game.market.Buy(this, new PrimitiveStorageSet(needs), province.getOwner().getCountryWallet());
+                Game.market.Buy(this, new PrimitiveStorageSet(shoppingList), province.getOwner().getCountryWallet());
             else
-                Game.market.Buy(this, new PrimitiveStorageSet(needs), null);
+                Game.market.Buy(this, new PrimitiveStorageSet(shoppingList), null);
         }
         if (isUpgrading() || isBuilding())
         {
@@ -1048,8 +1056,8 @@ public abstract class Producer : Owner
 
                 //Game.market.sentToMarket.subtract(realSold);
             }
-            else if (Game.market.wallet.HowMuchCanNotAfford(cost).get() > 1f)
-                Debug.Log("Failed market - producer payment"); // money in market endded... Only first lucky get money
+            else if (Game.market.wallet.HowMuchCanNotAfford(cost).get() > 10f)
+                Debug.Log("Failed market - producer payment: " + Game.market.wallet.HowMuchCanNotAfford(cost)); // money in market endded... Only first lucky get money
         }
     }
 }

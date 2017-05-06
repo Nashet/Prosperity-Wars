@@ -76,7 +76,8 @@ public class Province
 
         this.demobilize();
 
-
+        // add loyalty penalty for conquired province // temp
+        allPopUnits.ForEach(x=>x.loyalty.set(0f));
 
 
         if (this.getOwner() != null)

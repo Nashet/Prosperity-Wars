@@ -65,8 +65,9 @@ public class CountryNameGenerator
     {
         result.Clear();
         result.Append(prefix.getRandom());
-
-        result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
+        
+        //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
+        result.Append(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5)));
         result.Append(postfix.getRandom());
 
         return result.ToString();

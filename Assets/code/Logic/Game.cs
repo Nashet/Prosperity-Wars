@@ -103,9 +103,9 @@ public class Game
         makePopTypes();
 
         var ser = new CountryNameGenerator();
-        int extraCountries = random.Next(4);
+        int extraCountries = random.Next(6);
 
-        for (int i = 0; i < 8 + extraCountries; i++)
+        for (int i = 0; i < 16 + extraCountries; i++)
             makeCountry(ser);
 
 
