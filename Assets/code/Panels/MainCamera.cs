@@ -122,6 +122,7 @@ public class MainCamera : MonoBehaviour
             //found something correct            
             SelectProvince(meshNumber);
         }
+        if (Game.haveToStepSimulation || Game.haveToRunSimulation && Game.howMuchPausedWindowsOpen == 0)
         {
             Game.stepSimulation();
 

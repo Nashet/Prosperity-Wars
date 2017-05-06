@@ -108,6 +108,12 @@ public class Country : Owner
         getCountryWallet().setSatisticToZero();
         //take all money from bank
         byWhom.bank.add(this.bank);
+
+        //byWhom.storageSet.
+        storageSet.send(byWhom.storageSet);
+
+        if (this == Game.player)
+            new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
     }
 
     internal bool isOneProvince()

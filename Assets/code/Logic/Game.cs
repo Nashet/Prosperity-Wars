@@ -17,6 +17,7 @@ public class Game
 
     internal static bool haveToRunSimulation;
     internal static bool haveToStepSimulation;
+    internal static int howMuchPausedWindowsOpen = 0;
 
     public static System.Random random = new System.Random();
 

@@ -462,6 +462,13 @@ public class PrimitiveStorageSet
             this.Set(stor);
         // SetZero();
     }
+        
+
+    internal void send(PrimitiveStorageSet toWhom)
+    {
+        toWhom.add(this);
+        this.SetZero();
+    }
 
 
 
