@@ -24,9 +24,11 @@ public class TopPanel : MonoBehaviour
     public void refresh()
     {
         
-        generalText.text = "Economic Simulation v9\nDate: " + Game.date + " Country: " + Game.player.name
-            + " Men population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() 
-            + " Science points: " + Game.player.sciencePoints;
+        generalText.text = "Economic Simulation v9 Date: " + Game.date + " Country: " + Game.player.name            
+            + "\nMoney: " + Game.player.wallet.haveMoney            
+            + " Science points: " + Game.player.sciencePoints
+            + " Men: " + Game.player.getMenPopulation()
+            + " Storage: " + Game.player.storageSet.ToString();
     }
     public void onTradeClick()
     {
