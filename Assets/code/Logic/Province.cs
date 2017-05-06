@@ -77,7 +77,7 @@ public class Province
         this.demobilize();
 
         // add loyalty penalty for conquired province // temp
-        allPopUnits.ForEach(x=>x.loyalty.set(0f));
+        allPopUnits.ForEach(x => x.loyalty.set(0f));
 
 
         if (this.getOwner() != null)
@@ -136,12 +136,24 @@ public class Province
     {
         return getMenPopulation() * Game.familySize;
     }
-    public int getMiddleLoyalty()
+
+    internal float getIncomeTax()
     {
-        //Procent result = 0;
+        float res = 0f;
+        allPopUnits.ForEach(x => res += x.incomeTaxPayed.get());
+        return res;
+    }
+
+    public Procent getMiddleLoyalty()
+    {
+        Procent result = new Procent(0f);
+        int calculatedPopulation = 0;
         foreach (PopUnit pop in allPopUnits)
-            ;//  result += pop.amount;
-        return 0;
+        {
+            result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.loyalty);
+            calculatedPopulation += pop.getPopulation();
+        }
+        return result;
     }
 
     internal void mobilize()

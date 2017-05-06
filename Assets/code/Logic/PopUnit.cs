@@ -41,6 +41,9 @@ abstract public class PopUnit : Producer
 
     Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies;
+
+    public Value incomeTaxPayed = new Value(0);
+
     //if add new fiedls make sure it's implemented in second constructor and in merge()   
 
 
@@ -100,6 +103,8 @@ abstract public class PopUnit : Producer
         consumedTotal = new PrimitiveStorageSet();
         consumedLastTurn = new PrimitiveStorageSet();
         consumedInMarket = new PrimitiveStorageSet();
+
+        incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
 
         province = source.province;
     }
@@ -416,21 +421,22 @@ abstract public class PopUnit : Producer
     {
         Value taxSize = new Value(0);
         if (Economy.isMarket.checkIftrue(province.getOwner()) && type != PopType.tribeMen)
-        {
-
-            //taxSize = wallet.moneyIncomethisTurn.multiple(province.getOwner().countryTax);
+        {           
             if (this.type.isPoorStrata())
             {
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                 if (wallet.canPay(taxSize))
                 {
+                    incomeTaxPayed = taxSize;
                     province.getOwner().getCountryWallet().poorTaxIncomeAdd(taxSize);
-                    wallet.pay(province.getOwner().wallet, taxSize);
+                    wallet.pay(province.getOwner().wallet, taxSize);                    
                 }
                 else
                 {
+                    incomeTaxPayed.set(wallet.haveMoney);
                     province.getOwner().getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
                     wallet.sendAll(province.getOwner().wallet);
+                    
                 }
             }
             else
@@ -656,6 +662,7 @@ abstract public class PopUnit : Producer
                 {
                     foreach (PopUnit pop in province.allPopUnits)
                     {
+                        pop.incomeTaxPayed.set(0); // need it because pop could stop paying taxes due to reforms for example
                         pop.gainGoodsThisTurn.set(0f);
                         // pop.storageNow.set(0f);
                         pop.wallet.moneyIncomethisTurn.set(0f);
