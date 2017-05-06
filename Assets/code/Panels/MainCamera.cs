@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class MainCamera : MonoBehaviour
 {
-    public Game game;
     internal static Camera cameraMy;
     static GameObject mapPointer;
 
@@ -49,7 +48,6 @@ public class MainCamera : MonoBehaviour
         }
         //topPanel = transform.FindChild("TopPanel").gameObject;
         //.GetComponent<Panel>()
-        game = new Game();
     }
     int GetRayCastMeshNumber()
     {

@@ -883,10 +883,10 @@ public class Market : Owner//: PrimitiveStorageSet
     private void ChangePrice(Storage price, float HowMuch)
     {
         float newValue = HowMuch + price.get();
-        if (newValue <= 0) newValue = Game.minPrice;
-        if (newValue >= Game.maxPrice)
+        if (newValue <= 0) newValue = Options.minPrice;
+        if (newValue >= Options.maxPrice)
         {
-            newValue = Game.maxPrice;
+            newValue = Options.maxPrice;
             //if (getBouth(price.getProduct()) != 0) newValue = Game.maxPrice / 20f;
         }
         price.set(newValue);

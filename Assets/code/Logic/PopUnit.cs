@@ -182,7 +182,7 @@ abstract public class PopUnit : Producer
     { return population; }
     internal int howMuchCanMobilize()
     {
-        int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Game.mobilizationFactor);
+        int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
         if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
 
@@ -211,7 +211,7 @@ abstract public class PopUnit : Producer
     }
     internal void takeLoss(int loss)
     {
-        int newPopulation = getPopulation() - (int)(loss * Game.PopAttritionFactor);
+        int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
 
         //if (newPopulation > 0)
         this.setPopulation(newPopulation);
@@ -554,7 +554,7 @@ abstract public class PopUnit : Producer
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
             Wallet reserv = new Wallet(0);
-            wallet.payWithoutRecord(reserv, wallet.haveMoney.multiple(Game.savePopMoneyReserv));
+            wallet.payWithoutRecord(reserv, wallet.haveMoney.multiple(Options.savePopMoneyReserv));
             lifeNeeds = (getRealEveryDayNeeds());
             Value needsCost = Game.market.getCost(lifeNeeds);
             float moneyWas = wallet.haveMoney.get();
@@ -829,7 +829,7 @@ abstract public class PopUnit : Producer
     {
         if (type == PopType.aristocrats)
         {
-            if (!province.isThereMoreThanFactoriesInUpgrade(Game.maximumFactoriesInUpgradeToBuildNew))
+            if (!province.isThereMoreThanFactoriesInUpgrade(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 if (province.getResource() != null)
                 {
@@ -868,8 +868,8 @@ abstract public class PopUnit : Producer
                             //&& !factory.isUpgrading()
                             //&& !factory.isBuilding()
                             && factory.conditionsUpgrade.isAllTrue(this)
-                            && factory.getWorkForceFullFilling() > Game.minWorkforceFullfillingToUpgradeFactory
-                            && factory.getMargin().get() >= Game.minMarginToUpgrade)
+                            && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory
+                            && factory.getMargin().get() >= Options.minMarginToUpgrade)
                         {
                             factory.upgrade(this);
                             //wallet.pay(factory.wallet, cost); // upgrade
@@ -884,16 +884,16 @@ abstract public class PopUnit : Producer
         {
             //should I buld?
             if (//province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
-                !province.isThereMoreThanFactoriesInUpgrade(Game.maximumFactoriesInUpgradeToBuildNew))
+                !province.isThereMoreThanFactoriesInUpgrade(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
                 if (proposition != null)
                     if (province.CanBuildNewFactory(proposition) &&
-                        (province.getUnemployed() > Game.minUnemploymentToBuldFactory || province.getMiddleFactoryWorkforceFullfilling() > Game.minFactoryWorkforceFullfillingToBuildNew))
+                        (province.getUnemployed() > Options.minUnemploymentToBuldFactory || province.getMiddleFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                     {
                         PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
                         Value cost = Game.market.getCost(resourceToBuild);
-                        cost.add(Game.factoryMoneyReservPerLevel);
+                        cost.add(Options.factoryMoneyReservPerLevel);
                         if (wallet.canPay(cost))
                         {
                             Factory found = new Factory(province, this, proposition);
@@ -919,8 +919,8 @@ abstract public class PopUnit : Producer
                     //Factory f = province.findFactory(proposition);
                     if (factory != null
                         && factory.canUpgrade()
-                        && factory.getMargin().get() >= Game.minMarginToUpgrade
-                        && factory.getWorkForceFullFilling() > Game.minWorkforceFullfillingToUpgradeFactory)
+                        && factory.getMargin().get() >= Options.minMarginToUpgrade
+                        && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory)
                     {
                         //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
                         //Value cost = Game.market.getCost(resourceToBuild);
@@ -991,31 +991,31 @@ public class Tribemen : PopUnit
             var baseOpinion = new Procent(1f);
             baseOpinion.add(this.loyalty);
             //return baseOpinion.getProcent(this.population);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.8f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.2f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else
             return false;
@@ -1087,31 +1087,31 @@ public class Farmers : PopUnit
             {
                 var baseOpinion = new Procent(0f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Game.votingPassBillLimit;
+                return baseOpinion.get() > Options.votingPassBillLimit;
             }
             else if (reform == Government.Aristocracy)
             {
                 var baseOpinion = new Procent(0.2f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Game.votingPassBillLimit;
+                return baseOpinion.get() > Options.votingPassBillLimit;
             }
             else if (reform == Government.Democracy)
             {
                 var baseOpinion = new Procent(1f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Game.votingPassBillLimit;
+                return baseOpinion.get() > Options.votingPassBillLimit;
             }
             else if (reform == Government.Despotism)
             {
                 var baseOpinion = new Procent(0.2f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Game.votingPassBillLimit;
+                return baseOpinion.get() > Options.votingPassBillLimit;
             }
             else if (reform == Government.ProletarianDictatorship)
             {
                 var baseOpinion = new Procent(0.3f);
                 baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Game.votingPassBillLimit;
+                return baseOpinion.get() > Options.votingPassBillLimit;
             }
             else
                 return false;
@@ -1122,7 +1122,7 @@ public class Farmers : PopUnit
             var baseOpinion = new Procent(1f);
             baseOpinion.set(baseOpinion.get() - taxReform.tax.get() * 2);
             baseOpinion.set(baseOpinion.get() + loyalty.get() - 0.5f);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else
             return false;
@@ -1154,9 +1154,9 @@ public class Aristocrats : PopUnit
     }
     internal void dealWithMarket()
     {
-        if (storageNow.get() > Game.aristocratsFoodReserv)
+        if (storageNow.get() > Options.aristocratsFoodReserv)
         {
-            Storage howMuchSend = new Storage(storageNow.getProduct(), storageNow.get() - Game.aristocratsFoodReserv);
+            Storage howMuchSend = new Storage(storageNow.getProduct(), storageNow.get() - Options.aristocratsFoodReserv);
             storageNow.pay(sentToMarket, howMuchSend);
             //sentToMarket.set(howMuchSend);
             Game.market.sentToMarket.add(howMuchSend);
@@ -1181,31 +1181,31 @@ public class Aristocrats : PopUnit
         {
             var baseOpinion = new Procent(0.4f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.6f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else
             return false;
@@ -1253,31 +1253,31 @@ public class Capitalists : PopUnit
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.8f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.3f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.1f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else
             return false;
@@ -1328,31 +1328,31 @@ public class Workers : PopUnit
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Aristocracy)
         {
             var baseOpinion = new Procent(0f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Democracy)
         {
             var baseOpinion = new Procent(0.6f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.Despotism)
         {
             var baseOpinion = new Procent(0.3f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else if (reform == Government.ProletarianDictatorship)
         {
             var baseOpinion = new Procent(0.8f);
             baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Game.votingPassBillLimit;
+            return baseOpinion.get() > Options.votingPassBillLimit;
         }
         else
             return false;

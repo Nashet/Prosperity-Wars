@@ -11,7 +11,7 @@ public class Game
 {
     Texture2D mapImage;
     GameObject mapObject;
-    //Mesh mapMesh;
+    
     List<int> trianglesList = new List<int>();
     List<Vector3> vertices = new List<Vector3>();
     int triangleCounter = 0;
@@ -25,97 +25,50 @@ public class Game
     public static List<PopUnit> popsToShowInPopulationPanel;
     public static List<Factory> factoriesToShowInProductionPanel;
 
-    public static Market market = new Market();
+    internal static List<BattleResult> allBattles = new List<BattleResult>();
+    internal static Stack<Message> MessageQueue = new Stack<Message>();
 
-    internal static float minPrice = 0.001f;
-    internal static float maxPrice = 999.99f;
-    internal static int familySize = 5;
+
+    public static Market market = new Market();
 
     internal static StringBuilder threadDangerSB = new StringBuilder();
 
     public static int date;
     internal static bool devMode = false;
-
-
-    float cellMuliplier = 2f;
-    internal static float goldToCoinsConvert = 10f;
-    internal static float minWorkforceFullfillingToUpgradeFactory = 0.75f;
-    internal static Procent BuyInTimeFactoryUpgradeNeeds = new Procent(0.1f);
-    internal static int minUnemploymentToBuldFactory = 10;
-    internal static int maximumFactoriesInUpgradeToBuildNew = 2;
-    internal static byte maxFactoryLevel = 255;
-    internal static float minMarginToUpgrade = 0.005f;
-    internal static float minLandForTribemen = 1f;
-    internal static float minLandForFarmers = 0.25f;
-    internal static int maxDaysUnprofitableBeforeFactoryClosing = 180;
-    internal static int maxDaysBuildingBeforeRemoving = 180; // 180;
-    internal static int maxDaysClosedBeforeRemovingFactory = 180;
-    internal static int minDaysBeforeSalaryCut = 2;
-    internal static int howOftenCheckForFactoryReopenning = 30;
-    internal static Procent savePopMoneyReserv = new Procent(0.66666f);
-    internal static float factoryMoneyReservPerLevel = 20f;
-    internal static float minMarginToRiseSalary = 0.1f;
-    internal static float factoryEachLevelEfficiencyBonus = 0.05f;
-    //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
-    internal static int maxFactoryFireHireSpeed = 50;
-    internal static float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
-    internal static float defaultSciencePointMultiplier = 0.001f; //0.00001f;
-    internal static int fabricConstructionTimeWithoutCapitalism = 20;
-    internal static float aristocratsFoodReserv = 50;
-    internal static float votingPassBillLimit = 0.5f;
-    internal static float votingForcedReformPenalty = 0.5f;
-    // just to store temporeal junk
-    internal static string dumpString;
     internal static GameObject r3dTextPrefab;
-    internal static Value defaultPriceLimitMultiplier = new Value(5f);
-    internal static int PopDaysUpsetByForcedReform = 30;
-    internal static float GovernmentTakesShareOfGoldOutput = 0.5f;
-    internal static byte factoryInputReservInDays = 5;
-    internal static readonly float mobilizationFactor = 0.2f;
-    internal static List<BattleResult> allBattles = new List<BattleResult>();
-    internal static Stack<Message> MessageQueue = new Stack<Message>();
-    internal static float PopAttritionFactor = 0.2f;
+
 
     public Game()
     {
+       
         Application.runInBackground = true;
         //LoadImages();
         //new Message("Спасибо анончик", "Ты охуенен", "Да");
         generateMapImage();
         makeProducts();
         market.initialize();
-        makeMap();
+        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        makeProvinces();
         roundMesh();
         findNeighbors();
-        var mapWidth = mapImage.width * cellMuliplier;
-        var mapHeight = mapImage.height * cellMuliplier;
-        //MainCamera.cameraMy.transform.position = GameObject.FindWithTag("mapObject").transform.position;
-        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
-
-        FindProvinceCenters();
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-        foreach (Province pro in Province.allProvinces)
-            pro.SetLabel();
-
+        var mapWidth = mapImage.width * Options.cellMultiplier;
+        var mapHeight = mapImage.height * Options.cellMultiplier;        
+        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);       
         //setStartResources();
-
         makeFactoryTypes();
         makePopTypes();
 
         var ser = new CountryNameGenerator();
         int extraCountries = random.Next(6);
-
         for (int i = 0; i < 16 + extraCountries; i++)
             makeCountry(ser);
-
-
-
+        
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
                 pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
-        Province.allProvinces[0].allPopUnits[0].education.set(1f);
+        //Province.allProvinces[0].allPopUnits[0].education.set(1f);
         MainCamera.topPanel.refresh();
     }
 
@@ -148,14 +101,9 @@ public class Game
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getOwner() == null);// Country.NullCountry);
         Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
-
-        player = Country.allCountries[1]; // not wild Tribes
-
+        player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
-
-
         count.moveCapitalTo(province);
-
 
         count.storageSet.add(new Storage(Product.Food, 200f));
         count.wallet.haveMoney.add(100f);
@@ -297,33 +245,33 @@ public class Game
     void makePolygonalStripe(float x, float y, float x2, float y2, int xpos1, int ypos1, int xpos2, int ypos2)
     //void makePolygonalStripe(float x, float y, float x2, float y2)
     {
-        //float x = xpos1 * cellMuliplier;
-        //float y = ypos1 * cellMuliplier;
-        //float x2 = xpos2 * cellMuliplier;
-        //float y2 = ypos1 * cellMuliplier;
+        //float x = xpos1 * Options.cellMuliplier;
+        //float y = ypos1 * Options.cellMuliplier;
+        //float x2 = xpos2 * Options.cellMuliplier;
+        //float y2 = ypos1 * Options.cellMuliplier;
 
         //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-        //    x -= cellMuliplier;
+        //    x -= Options.cellMuliplier;
         //if (mapImage.isRightTopCorner(xpos1, ypos1))
-        //    x += cellMuliplier;
+        //    x += Options.cellMuliplier;
 
         //if (mapImage.isLeftBottomCorner(xpos1, ypos1))
-        //    vertices.Add(new Vector3(x + cellMuliplier, y, 0));
+        //    vertices.Add(new Vector3(x + Options.cellMuliplier, y, 0));
         //else
         vertices.Add(new Vector3(x, y, 0));
 
         //if (mapImage.isRightBottomCorner(xpos2 - 1, ypos1))
-        //    vertices.Add(new Vector3(x2 - cellMuliplier, y, 0));
+        //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y, 0));
         //else
         vertices.Add(new Vector3(x2, y, 0));
 
         //if (mapImage.isRightTopCorner(xpos2 - 1, ypos1))
-        //    vertices.Add(new Vector3(x2 - cellMuliplier, y2, 0));
+        //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y2, 0));
         //else
         vertices.Add(new Vector3(x2, y2, 0));
 
         //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-        //    vertices.Add(new Vector3(x + cellMuliplier, y2, 0));
+        //    vertices.Add(new Vector3(x + Options.cellMuliplier, y2, 0));
         //else
         vertices.Add(new Vector3(x, y2, 0));
 
@@ -422,12 +370,12 @@ public class Game
         Vector3[] editingVertices = mesh.vertices;
         for (int i = 0; i < mesh.vertices.Length; i++)
         {
-            Vector3 sr = new Vector3(xpos * cellMuliplier, (ypos + 1) * cellMuliplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * cellMuliplier, (ypos ) * cellMuliplier, 0f);
+            Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier, 0f);
+            //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
             //if (editingVertices[i] == sr || editingVertices[i] == sr2)
             if (editingVertices[i] == sr)
             {
-                editingVertices[i].x += cellMuliplier * xMove / 2;
+                editingVertices[i].x += Options.cellMultiplier * xMove / 2;
                 mesh.vertices = editingVertices;
                 mesh.RecalculateBounds();
                 return true;
@@ -443,12 +391,12 @@ public class Game
         Vector3[] mesh2Vertices = mesh2.vertices;
         for (int i = 0; i < mesh.vertices.Length; i++)
         {
-            Vector3 sr = new Vector3(xpos * cellMuliplier, (ypos + 2) * cellMuliplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * cellMuliplier, (ypos ) * cellMuliplier, 0f);
+            Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 2) * Options.cellMultiplier, 0f);
+            //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
             //if (editingVertices[i] == sr || editingVertices[i] == sr2)
             if (mesh1Vertices[i] == sr)
             {
-                mesh1Vertices[i].x += cellMuliplier * xMove / 2;
+                mesh1Vertices[i].x += Options.cellMultiplier * xMove / 2;
                 mesh.vertices = mesh1Vertices;
                 mesh.RecalculateBounds();
                 return true;
@@ -494,7 +442,7 @@ public class Game
 
 
 
-    void makeMap()
+    void makeProvinces()
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
@@ -525,7 +473,7 @@ public class Game
                             {
                                 if (lastColor == currentProvinceColor)
                                 {
-                                    makePolygonalStripe((xpos - stripeLenght) * cellMuliplier, ypos * cellMuliplier, xpos * cellMuliplier, (ypos + 1) * cellMuliplier,
+                                    makePolygonalStripe((xpos - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
                                         (xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
                                     //makePolygonalStripe((xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
                                     stripeLenght = 0;
@@ -536,7 +484,7 @@ public class Game
                         if (stripeLenght != 0)
                             if (lastColor == currentProvinceColor)
                             {
-                                makePolygonalStripe((mapImage.width - stripeLenght) * cellMuliplier, ypos * cellMuliplier, (mapImage.width) * cellMuliplier, (ypos + 1) * cellMuliplier,
+                                makePolygonalStripe((mapImage.width - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, (mapImage.width) * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
                                     (mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
                                 //makePolygonalStripe((mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
                                 stripeLenght = 0;
@@ -659,7 +607,7 @@ public class Game
         //            //if (currentColor.a == borderDeepLevel)
         //            if (currentColor == pro.colorID && bordersMarkers[i, j] == borderDeepLevel - 1)
         //            {
-        //                pro.centre = new Vector3((i + 0.5f) * cellMuliplier, (j + 0.5f) * cellMuliplier, 0f);
+        //                pro.centre = new Vector3((i + 0.5f) * Options.cellMuliplier, (j + 0.5f) * Options.cellMuliplier, 0f);
         //                wroteResult = true;
         //            }
         //        }

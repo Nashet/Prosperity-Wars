@@ -63,7 +63,7 @@ public class FactoryType
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());
-        result.add(Game.factoryMoneyReservPerLevel);
+        result.add(Options.factoryMoneyReservPerLevel);
         return result;
     }
     internal PrimitiveStorageSet getBuildNeeds()
@@ -112,7 +112,7 @@ public class FactoryType
     internal Procent getPossibleMargin(Province province)
     {
         Value cost = Game.market.getCost(getBuildNeeds());
-        cost.add(Game.factoryMoneyReservPerLevel);
+        cost.add(Options.factoryMoneyReservPerLevel);
         //if (cost.get() > 0)
         return new Procent(getPossibleProfit(province) / cost.get());
     }

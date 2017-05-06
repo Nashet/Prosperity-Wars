@@ -94,7 +94,7 @@ public class Factory : Producer
             new Condition(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
             new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
             new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
-            new Condition(delegate (Owner forWhom) { return level != Game.maxFactoryLevel; }, "Max level not achieved", false),
+            new Condition(delegate (Owner forWhom) { return level != Options.maxFactoryLevel; }, "Max level not achieved", false),
             new Condition(delegate (Owner forWhom) {
                  Value cost = this.getUpgradeCost();
                 return forWhom.wallet.canPay(cost);}, delegate () {
@@ -392,13 +392,13 @@ public class Factory : Producer
     }
     internal Value getReopenCost()
     {
-        return new Value(Game.factoryMoneyReservPerLevel);
+        return new Value(Options.factoryMoneyReservPerLevel);
 
     }
     internal Value getUpgradeCost()
     {
         Value result = Game.market.getCost(type.getUpgradeNeeds());
-        result.add(Game.factoryMoneyReservPerLevel);
+        result.add(Options.factoryMoneyReservPerLevel);
         return result;
         //return Game.market.getCost(type.getUpgradeNeeds());
     }
@@ -430,7 +430,7 @@ public class Factory : Producer
                 {
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
-                    Value sentToGovernment = new Value(wallet.moneyIncomethisTurn.get() * Game.GovernmentTakesShareOfGoldOutput);
+                    Value sentToGovernment = new Value(wallet.moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
                     wallet.pay(province.getOwner().wallet, sentToGovernment);
                     province.getOwner().getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
                 }
@@ -482,12 +482,12 @@ public class Factory : Producer
         //        province.getOwner().isInvented(InventionType.capitalism))
         {
             // rise salary to attract  workforce
-            if (ThereIsPossibilityToHireMore() && getMargin().get() > Game.minMarginToRiseSalary)// && getInputFactor() == 1)
+            if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
                 salary.add(0.03f);
 
             //too allocate workers form other popTypes
             if (getFreeJobSpace() > 100 && province.FindPopulationAmountByType(PopType.workers) < 600
-                && getMargin().get() > Game.minMarginToRiseSalary && getInputFactor() == 1)
+                && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)
                 salary.add(0.01f);
 
             // to help factories catch up other factories salaries
@@ -499,7 +499,7 @@ public class Factory : Producer
 
             float minSalary = province.getOwner().getMinSalary();
             // reduce salary on non-profit
-            if (getProfit() < 0 && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
+            if (getProfit() < 0 && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
                     salary.subtract(0.3f);
                 else
@@ -523,19 +523,19 @@ public class Factory : Producer
 
         int difference = wants - getWorkForce();
 
-        // clamp difference in Game.maxFactoryFireHireSpeed []
-        if (difference > Game.maxFactoryFireHireSpeed)
-            difference = Game.maxFactoryFireHireSpeed;
+        // clamp difference in Options.maxFactoryFireHireSpeed []
+        if (difference > Options.maxFactoryFireHireSpeed)
+            difference = Options.maxFactoryFireHireSpeed;
         else
-            if (difference < -1 * Game.maxFactoryFireHireSpeed) difference = -1 * Game.maxFactoryFireHireSpeed;
+            if (difference < -1 * Options.maxFactoryFireHireSpeed) difference = -1 * Options.maxFactoryFireHireSpeed;
 
         //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
-        if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
-            difference = -1 * Game.maxFactoryFireHireSpeed;
+        if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+            difference = -1 * Options.maxFactoryFireHireSpeed;
 
         //fire people if unprofitable. 
-        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Game.minDaysBeforeSalaryCut && !isSubsidized())// && getWorkForce() >= Game.maxFactoryFireHireSpeed)
-            difference = -1 * Game.maxFactoryFireHireSpeed;
+        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+            difference = -1 * Options.maxFactoryFireHireSpeed;
 
         // just dont't hire more..
         if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f) && !isSubsidized())
@@ -646,7 +646,7 @@ public class Factory : Producer
 
     public List<Storage> getHowMuchReservesWants()
     {
-        Value multiplier = new Value(getWorkForceFullFilling() * getLevel() * Game.factoryInputReservInDays);
+        Value multiplier = new Value(getWorkForceFullFilling() * getLevel() * Options.factoryInputReservInDays);
 
 
 
@@ -710,17 +710,17 @@ public class Factory : Producer
             if (isMarket)
             {
                 if (isBuilding())
-                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
+                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
                 else
                     if (isUpgrading())
-                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Game.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
+                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
                 // what if not enough money to complete buildinG?
                 float minimalFond = wallet.haveMoney.get() - 50f;
 
                 if (minimalFond < 0 && getOwnerWallet().canPay(minimalFond * -1f))
                     getOwnerWallet().payWithoutRecord(this.wallet, new Value(minimalFond * -1f));
             }
-            if (isBuyingComplete || (!isMarket && daysInConstruction == Game.fabricConstructionTimeWithoutCapitalism))
+            if (isBuyingComplete || (!isMarket && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
             {
                 level++;
                 building = false;
@@ -732,7 +732,7 @@ public class Factory : Producer
 
                 reopen(this);
             }
-            else if (daysInConstruction == Game.maxDaysBuildingBeforeRemoving)
+            else if (daysInConstruction == Options.maxDaysBuildingBeforeRemoving)
                 if (isBuilding())
                     markToDestroy();
                 else // upgrading
@@ -779,7 +779,7 @@ public class Factory : Producer
 
     float wantsMinMoneyReserv()
     {
-        return getExpences() * Factory.xMoneyReservForResources + Game.factoryMoneyReservPerLevel * level;
+        return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservPerLevel * level;
     }
     internal void PayDividend()
     {
@@ -800,7 +800,7 @@ public class Factory : Producer
             if (getProfit() <= 0) // to avoid iternal zero profit factories
             {
                 daysUnprofitable++;
-                if (daysUnprofitable == Game.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
+                if (daysUnprofitable == Options.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
                     this.close();
             }
             else
@@ -810,9 +810,9 @@ public class Factory : Producer
         if (!isBuilding())
         {
             daysClosed++;
-            if (daysClosed == Game.maxDaysClosedBeforeRemovingFactory)
+            if (daysClosed == Options.maxDaysClosedBeforeRemovingFactory)
                 markToDestroy();
-            else if (Game.random.Next(Game.howOftenCheckForFactoryReopenning) == 1)
+            else if (Game.random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
                 if (province.getOwner().isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
                 {
@@ -872,7 +872,7 @@ public class Factory : Producer
 
     internal bool canUpgrade()
     {
-        return !isUpgrading() && !isBuilding() && level < Game.maxFactoryLevel && isWorking();
+        return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && isWorking();
     }
     internal void upgrade(Owner byWhom)
     {

@@ -226,7 +226,7 @@ public class Wallet// : Value // : Storage
     }
     public void ConvertFromGoldAndAdd(Value gold)
     {
-        float coins = gold.get() * Game.goldToCoinsConvert;
+        float coins = gold.get() * Options.goldToCoinsConvert;
         this.haveMoney.add(coins);
         this.moneyIncomethisTurn.add(coins);
         gold.set(0);

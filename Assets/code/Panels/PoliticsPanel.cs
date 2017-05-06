@@ -66,8 +66,8 @@ public class PoliticsPanel : DragPanel
                 if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
                 {
                     //votersSayedYes = pop.getSayingYes(selectedReformValue);
-                    //if (pop.getSayYesProcent(selectedReformValue) < Game.votingPassBillLimit)
-                    pop.addDaysUpsetByForcedReform(Game.PopDaysUpsetByForcedReform);
+                    //if (pop.getSayYesProcent(selectedReformValue) < Options.votingPassBillLimit)
+                    pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                 }
             }
         setNewReform();
@@ -167,7 +167,7 @@ public class PoliticsPanel : DragPanel
 
             if (selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
-                if (procentVotersSayedYes.get() >= Game.votingPassBillLimit || Game.player.government.status == Government.Despotism)
+                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.player.government.status == Government.Despotism)
                 { // has enough voters
                     voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;

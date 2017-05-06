@@ -30,6 +30,7 @@ public class Province
     internal int fertileSoil;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
+       
         allProducers = getProducers();
         resource = inresource;
         colorID = icolorID; mesh = imesh; name = iname; meshFilter = imeshFilter;
@@ -37,7 +38,8 @@ public class Province
         gameObject = igameObject;
         meshRenderer = imeshRenderer;
         fertileSoil = 10000;
-
+        setProvinceCenter();
+        SetLabel();
     }
     internal Country getOwner()
     {
@@ -125,6 +127,18 @@ public class Province
             //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
             yield return f;
     }
+    public void setProvinceCenter()
+    {
+        Vector3 accu = new Vector3(0, 0, 0);
+        //foreach (Province pro in Province.allProvinces)
+        //{
+        //e accu.Set(0, 0, 0);
+        foreach (var c in this.mesh.vertices)
+            accu += c;
+        accu = accu / this.mesh.vertices.Length;
+        this.centre = accu;
+        // }
+    }
     public int getMenPopulation()
     {
         int result = 0;
@@ -134,7 +148,7 @@ public class Province
     }
     public int getFamilyPopulation()
     {
-        return getMenPopulation() * Game.familySize;
+        return getMenPopulation() * Options.familySize;
     }
 
     internal float getIncomeTax()
@@ -428,10 +442,10 @@ public class Province
             switch (pop.type.type)
             {
                 case PopType.PopTypes.Tribemen:
-                    usedLand += pop.getPopulation() * Game.minLandForTribemen;
+                    usedLand += pop.getPopulation() * Options.minLandForTribemen;
                     break;
                 case PopType.PopTypes.Farmers:
-                    usedLand += pop.getPopulation() * Game.minLandForFarmers;
+                    usedLand += pop.getPopulation() * Options.minLandForFarmers;
                     break;
             }
         return usedLand / fertileSoil;

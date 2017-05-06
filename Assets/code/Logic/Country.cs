@@ -59,9 +59,7 @@ public class Country : Owner
         taxationForRich = new TaxationForRich(this);
         name = iname;
         allCountries.Add(this);
-        //countryTax = new Procent(0.1f);
-        //TaxationForPoor.ReformValue hru = taxationForPoor.getValue() as TaxationForPoor.ReformValue;
-        //countryTax = hru.tax;
+       
         culture = iculture;
         nationalColor = color;
         this.capital = capital;
@@ -184,6 +182,7 @@ public class Country : Owner
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
         messhCapitalText.text = this.ToString();
         if (this == Game.player)
+        
         {
             messhCapitalText.color = Color.blue;
             messhCapitalText.fontSize += messhCapitalText.fontSize / 2;
@@ -324,7 +323,7 @@ public class Country : Owner
     }
     internal void Think()
     {
-        sciencePoints.add(this.getMenPopulation() * Game.defaultSciencePointMultiplier);
+        sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
         if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 1000f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else

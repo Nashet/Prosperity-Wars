@@ -47,7 +47,7 @@ public class BuildPanel : DragPanel
             //have money /resourse
             {
                 Value cost = Game.market.getCost(resourceToBuild);
-                cost.add(Game.factoryMoneyReservPerLevel);
+                cost.add(Options.factoryMoneyReservPerLevel);
                 if (Game.player.wallet.canPay(cost))
                 {
                     var f = new Factory(Game.selectedProvince, Game.player, selectedFactoryType);
@@ -114,7 +114,7 @@ public class BuildPanel : DragPanel
             //    {
             //        // todo refactor mirroring
             //        Value cost = Game.market.getCost(resourceToBuild);
-            //        cost.add(Game.factoryMoneyReservPerLevel);
+            //        cost.add(Options.factoryMoneyReservPerLevel);
             //        if (Game.player.wallet.canPay(cost))
             //        {
             //            buildButton.interactable = true;
