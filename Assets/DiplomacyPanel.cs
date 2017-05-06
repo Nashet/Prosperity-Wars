@@ -11,6 +11,8 @@ public class DiplomacyPanel : DragPanel
     public Dropdown ddProvinceSelect;
     public GameObject diplomacyPanel;
     public Text allArmySizeText, captionText, sendingArmySizeText;
+    public Slider armySendLimit;
+    public Button sendArmy;
     StringBuilder sb = new StringBuilder();
     
     List<Province> availableProvinces = new List<Province>();
@@ -29,9 +31,11 @@ public class DiplomacyPanel : DragPanel
     }
     public void refresh(bool rebuildDropdown)
     {
-
+        
         if (rebuildDropdown)
         {
+            //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
+            //armySendLimit.value = 0; //rtrt cause extra mobilization
             rebuildDropDown();            
         }
         sb.Clear();
@@ -45,19 +49,12 @@ public class DiplomacyPanel : DragPanel
         allArmySizeText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Sending army: ").Append(Game.player.sendingArmy);
-        //sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
+        sb.Append("Sending army: ").Append(Game.player.sendingArmy);        
 
         sendingArmySizeText.text = sb.ToString();
 
-
-
-        //sb.Clear();
-        //sb.Append("Expenses: ");
-        //sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
-        //sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
-        //sendingArmySizeText.text = sb.ToString();
-
+        sendArmy.interactable = Game.player.sendingArmy.getSize() > 0 ? true : false;
+        //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
     }
 
 
@@ -119,29 +116,14 @@ public class DiplomacyPanel : DragPanel
     }
     public void onddProvinceSelectValueChanged()
     {
-        ////if current reform does not contain reform value
-        //bool contain = false;
-        //foreach (AbstractReformValue reformValue in selectedReform)
-        //{
-        //    if (reformValue == selectedReformValue) contain = true;
-        //}
-        //if (!contain)
-        {
-            //selectedReformValue = selectedReform.getValue(assotiateTable[choise.value]);
-            //selectedReformValue = assotiateTable[ddProvinceSelect.value];
-            //refresh(false);
-            //refresh();
-        }
+      
     }
     public void onArmyLimitChanged(float value)
     {
-        /// Army split = new Army();
-        Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(value));
-        //if (split != null)
-        //{
-        //    sendingArmy.add(split);
+      
+        Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(value));      
         refresh(false);
-        //}
+       
 
     }
 }

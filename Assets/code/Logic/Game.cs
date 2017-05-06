@@ -14,8 +14,10 @@ public class Game
 
     public static Country player;
     internal InventionType inventions = new InventionType();
+
     internal static bool haveToRunSimulation;
     internal static bool haveToStepSimulation;
+
     public static System.Random random = new System.Random();
 
     public static Province selectedProvince;

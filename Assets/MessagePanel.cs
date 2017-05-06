@@ -43,7 +43,7 @@ public class MessagePanel : DragPanel
 
     public void show(Message mess)
     {
-        
+        Game.howMuchPausedWindowsOpen++;
         messagePanel.SetActive(true);
         //this.pa
         //panelRectTransform = GetComponent<RectTransform>();
@@ -57,7 +57,7 @@ public class MessagePanel : DragPanel
     }
     public void onCloseClick()
     {
-        
+        Game.howMuchPausedWindowsOpen --;
         hide();
         Destroy(messagePanel);
     }

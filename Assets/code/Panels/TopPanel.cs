@@ -23,9 +23,9 @@ public class TopPanel : MonoBehaviour
     }
     public void refresh()
     {
-        
-        generalText.text = "Economic Simulation v9 Date: " + Game.date + " Country: " + Game.player.name            
-            + "\nMoney: " + Game.player.wallet.haveMoney            
+
+        generalText.text = "Economic Simulation v9 Date: " + Game.date + " Country: " + Game.player.name
+            + "\nMoney: " + Game.player.wallet.haveMoney
             + " Science points: " + Game.player.sciencePoints
             + " Men: " + Game.player.getMenPopulation()
             + " Storage: " + Game.player.storageSet.ToString();
@@ -92,7 +92,7 @@ public class TopPanel : MonoBehaviour
             MainCamera.populationPanel.onShowAllClick();
     }
     public void onPoliticsClick()
-    {        
+    {
         if (MainCamera.politicsPanel.isActiveAndEnabled)
             MainCamera.politicsPanel.hide();
         else
@@ -107,8 +107,15 @@ public class TopPanel : MonoBehaviour
     }
     void onbtnStepClick(Button button)
     {
-
-        Game.haveToStepSimulation = true;
+        if (Game.haveToRunSimulation)
+        {
+            Game.haveToRunSimulation = false;
+            button.image.color = Color.grey;
+            Text text = button.GetComponentInChildren<Text>();
+            text.text = "Pause";
+        }
+        else
+            Game.haveToStepSimulation = true;
     }
     void onbtnPlayClick(Button button)
     {

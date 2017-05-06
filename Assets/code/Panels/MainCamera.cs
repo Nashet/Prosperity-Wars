@@ -122,7 +122,6 @@ public class MainCamera : MonoBehaviour
             //found something correct            
             SelectProvince(meshNumber);
         }
-        if (Game.haveToStepSimulation || Game.haveToRunSimulation)
         {
             Game.stepSimulation();
 
@@ -149,15 +148,15 @@ public class MainCamera : MonoBehaviour
             Message mes = Game.MessageQueue.Pop();
             //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
 
-            GameObject  newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
+            GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
 
             newObject.transform.SetParent(canvas.transform, true);
-            
+
             MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
             mesPanel.Awake();
             mesPanel.show(mes);
         }
-        
+
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
