@@ -9,7 +9,7 @@ public class PopulationPanelTable : MyTable
 {
 
     override protected void Refresh()
-    {
+    {        
         base.RemoveButtons();
         AddButtons();
         contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
