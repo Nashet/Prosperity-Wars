@@ -81,7 +81,7 @@ public class Game
     private void makePopTypes()
     {
         //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribemen");
-        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribemen", 2f);
+        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f);
         new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f);
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f);
         new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers", 1f);
@@ -638,6 +638,7 @@ public class Game
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \ntechnologies \nbasic reforms (voting is not implemented fully)"
+            + "\n\nYou play as " + Game.player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             , "Ok");
     }
     void LoadImages()
