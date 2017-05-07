@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
+using System;
+
 public class Game
 {
     Texture2D mapImage;
@@ -44,10 +46,11 @@ public class Game
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         makeProvinces();
         roundMesh();
+        deleteEdgeProvinces();
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
-        MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
+
         //setStartResources();
         makeFactoryTypes();
         makePopTypes();
@@ -65,6 +68,32 @@ public class Game
         //Province.allProvinces[0].allPopUnits[0].education.set(1f);
         MainCamera.topPanel.refresh();
         makeHelloMessage();
+        //MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
+        MainCamera.cameraMy.transform.position = new Vector3(Game.player.getCapital().centre.x, Game.player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z); 
+    }
+
+    private void deleteEdgeProvinces()
+    {
+        for (int x = 0; x < mapImage.width; x++)
+        {
+            removeProvince(x, 0);
+            removeProvince(x, mapImage.height - 1);
+        }
+        for (int y = 0; y < mapImage.height; y++)
+        {
+            removeProvince(0, y);
+            removeProvince(mapImage.width - 1, y);
+        }
+
+    }
+    void removeProvince(int x, int y)
+    {
+        var toremove = Province.findProvince(mapImage.GetPixel(x, y));
+        if (Province.allProvinces.Contains(toremove))
+        {
+            UnityEngine.Object.Destroy(toremove.gameObject);
+            Province.allProvinces.Remove(toremove);
+        }
     }
 
     private void setStartResources()
@@ -277,7 +306,8 @@ public class Game
         {
             Province found;
             found = Province.findProvince(mapImage.GetPixel(x2, y2));
-            province.addNeigbor(found);
+            if (found != null) // for remove edge provinces
+                province.addNeigbor(found);
         }
     }
     void findNeighborprovinces()
@@ -302,6 +332,7 @@ public class Game
     }
     void generateMapImage()
     {
+        //mapImage = new Texture2D(200, 100);
         mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
@@ -310,8 +341,8 @@ public class Game
             amountOfProvince = 10;
         else
             amountOfProvince = 12 + Game.random.Next(8);
-        amountOfProvince = 30 + Game.random.Next(10);
-        amountOfProvince = 40 + Game.random.Next(20);
+        amountOfProvince = 60 + Game.random.Next(20);
+        //amountOfProvince = 160 + Game.random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
