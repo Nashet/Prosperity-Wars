@@ -153,8 +153,14 @@ public class MainCamera : MonoBehaviour
 
             newObject.transform.SetParent(canvas.transform, true);
 
+
             MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
             mesPanel.Awake();
+
+            Vector3 position = Vector3.zero;
+            position.Set(position.x - 10f * Game.MessageQueue.Count, position.y - 10f * Game.MessageQueue.Count, 0);
+            newObject.transform.localPosition = position;
+            ;
             mesPanel.show(mes);
         }
 

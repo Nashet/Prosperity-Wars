@@ -333,6 +333,7 @@ public class BattleResult
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is our now!");
+            sb.Append("\nDate is ").Append(Game.date);
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
@@ -342,6 +343,7 @@ public class BattleResult
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
+            sb.Append("\nDate is ").Append(Game.date);
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
@@ -350,6 +352,7 @@ public class BattleResult
             sb.Append("Our glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
+            sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Fine");
         }
         else
@@ -361,6 +364,7 @@ public class BattleResult
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
+            sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Not fine really");
         }
     }

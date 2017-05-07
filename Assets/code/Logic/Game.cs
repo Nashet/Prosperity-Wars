@@ -64,6 +64,7 @@ public class Game
         CreateRandomPopulation();
         //Province.allProvinces[0].allPopUnits[0].education.set(1f);
         MainCamera.topPanel.refresh();
+        makeHelloMessage();
     }
 
     private void setStartResources()
@@ -632,10 +633,17 @@ public class Game
         if (mapImage.GetPixel(x, y + 1) != color || bordersMarkers[x, y + 1] != borderDeepLevel) return true;
         return false;
     }
+    void makeHelloMessage()
+    {
+        new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
+            "\n\nCurently there is: "
+            + "\n\npopulation agents \nbasic trade & production \nbasic warfare \ntechnologies \nbasic reforms (voting is not implemented fully)"
+            , "Ok");
+    }
     void LoadImages()
     {
         mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
-        RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();        
+        RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
         ri.texture = mapImage;
     }
     private static void calcBattles()
@@ -652,7 +660,12 @@ public class Game
                         attackerArmy.getDestination().secedeTo(country);
                     }
                     if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
+                    {
                         result.createMessage();
+                        //new Message("2th message","","");
+                        //new Message("3th message", "", "");
+                        //new Message("4th message", "", "");
+                    }
                     attackerArmy.moveTo(null); // go home
                 }
             }
@@ -669,7 +682,7 @@ public class Game
         PopUnit.PrepareForNewTick();
 
         // big PRODUCE circle
-        foreach (Country country in Country.allExisting)            
+        foreach (Country country in Country.allExisting)
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 //Now factories time!               
@@ -690,7 +703,7 @@ public class Game
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
-        foreach (Country country in Country.allExisting)         
+        foreach (Country country in Country.allExisting)
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {
                 foreach (Factory factory in province.allFactories)
@@ -710,10 +723,10 @@ public class Game
                 }
             }
         // big AFTER all circle
-        foreach (Country country in Country.allExisting)        
+        foreach (Country country in Country.allExisting)
         {
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {               
+            {
                 foreach (Factory factory in province.allFactories)
                 {
                     factory.getMoneyFromMarket();
@@ -722,7 +735,7 @@ public class Game
                 }
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
-                {                    
+                {
                     if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
                         pop.getMoneyFromMarket();
 
