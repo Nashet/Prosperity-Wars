@@ -44,7 +44,7 @@ public class InventionType : AbstractCondition
         metal = new InventionType("Metal", "Allows metal ore and smelting. Metal is good for tools and weapons", new Value(100f)),
         individualRights = new InventionType("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
         collectivism = new InventionType("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
-        steamPower = new InventionType("Steam Power", "Increases efficiency of all entrprises by 25%", new Value(100f)),
+        steamPower = new InventionType("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new InventionType("Welfare", "Allows min wage and.. other", new Value(100f))
         ;
     internal InventionType(string name, string description, Value cost)

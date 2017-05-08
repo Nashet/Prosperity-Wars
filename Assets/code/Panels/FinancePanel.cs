@@ -38,7 +38,7 @@ public class FinancePanel : DragPanel
         sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
 
         sb.Append("\n\nBalance: ").Append(Game.player.getCountryWallet().getBalance());
-        
+        sb.Append("\nScreen resolition: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
         sb.Append("\n\nHave money: ").Append(Game.player.wallet.haveMoney).Append (" + some money in bank");
         incomeText.text = sb.ToString();
