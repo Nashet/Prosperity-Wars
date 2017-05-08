@@ -59,7 +59,7 @@ public class Country : Owner
         taxationForRich = new TaxationForRich(this);
         name = iname;
         allCountries.Add(this);
-       
+
         culture = iculture;
         nationalColor = color;
         this.capital = capital;
@@ -93,7 +93,7 @@ public class Country : Owner
         return ownedProvinces.Count > 0;
     }
     internal static IEnumerable<Country> allExisting = getExisting();
-   
+
     static IEnumerable<Country> getExisting()
     {
         foreach (var c in allCountries)
@@ -161,7 +161,7 @@ public class Country : Owner
     {
         foreach (var any in Country.allExisting)
             if (any != this)
-            return false;
+                return false;
         return true;
     }
 
@@ -188,7 +188,7 @@ public class Country : Owner
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
         messhCapitalText.text = this.ToString();
         if (this == Game.player)
-        
+
         {
             messhCapitalText.color = Color.blue;
             messhCapitalText.fontSize += messhCapitalText.fontSize / 2;
@@ -337,13 +337,33 @@ public class Country : Owner
         if (isAI() && !isOnlyCountry())
             if (Game.random.Next(10) == 1)
             {
-                mobilize();
-                if (homeArmy.getSize() > 50 + Game.random.Next(100))
-                    sendArmy(homeArmy, getRandomNeighborProvince());
+                var possibleTarget = getRandomNeighborProvince();
+                if ((this.getStreght() * 1.5f > possibleTarget.getOwner().getStreght() && possibleTarget.getOwner() == Game.player) || possibleTarget.getOwner() == NullCountry
+                    || possibleTarget.getOwner() != Game.player && this.getStreght() < possibleTarget.getOwner().getStreght() * 0.5f)
+                {
+                    mobilize();
+                    sendArmy(homeArmy, possibleTarget);
+                }
+                //mobilize();
+                //if (homeArmy.getSize() > 50 + Game.random.Next(100))
+                //    sendArmy(homeArmy, getRandomNeighborProvince());
             }
     }
 
+    private float getStreght()
+    {
+        return howMuchCanMobilize();
+    }
 
+    private float howMuchCanMobilize()
+    {
+        float result = 0f;
+        foreach (var pr in ownedProvinces)
+            foreach (var po in pr.allPopUnits)
+                if (po.type.canMobilize())
+                    result += po.howMuchCanMobilize();
+        return result;
+    }
 
     private bool isAI()
     {

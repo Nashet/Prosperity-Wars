@@ -45,4 +45,5 @@ public static class Options
     internal static readonly float mobilizationFactor = 0.2f;
 
     internal static float PopAttritionFactor = 0.2f;
+    internal static float armyDefenceBonus = 0.5f;
 }

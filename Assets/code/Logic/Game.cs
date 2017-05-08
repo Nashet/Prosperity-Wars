@@ -332,8 +332,8 @@ public class Game
     }
     void generateMapImage()
     {
-        //mapImage = new Texture2D(200, 100);
-        mapImage = new Texture2D(100, 50);
+        mapImage = new Texture2D(200, 100);
+        //mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -342,7 +342,7 @@ public class Game
         else
             amountOfProvince = 12 + Game.random.Next(8);
         amountOfProvince = 60 + Game.random.Next(20);
-        //amountOfProvince = 160 + Game.random.Next(20);
+        amountOfProvince = 160 + Game.random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -670,6 +670,7 @@ public class Game
             "\n\nCurently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \ntechnologies \nbasic reforms (voting is not implemented fully)"
             + "\n\nYou play as " + Game.player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            +"\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             , "Ok");
     }
     void LoadImages()
@@ -694,7 +695,7 @@ public class Game
                     if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
                     {
                         result.createMessage();
-                        //new Message("2th message","","");
+                        //new Message("2th message", "", "");
                         //new Message("3th message", "", "");
                         //new Message("4th message", "", "");
                     }

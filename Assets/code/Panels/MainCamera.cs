@@ -145,31 +145,28 @@ public class MainCamera : MonoBehaviour
         if (Game.selectedProvince != null)
             provincePanel.UpdateProvinceWindow(Game.selectedProvince);
         if (Game.MessageQueue.Count > 0)
-        {
-            Message mes = Game.MessageQueue.Pop();
-            //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
+            showMessageBox();
+    }
+    void showMessageBox()
+    {
+        Message mes = Game.MessageQueue.Pop();
+        //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
 
-            GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
+        GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
+        newObject.transform.SetParent(canvas.transform, true);
 
-            newObject.transform.SetParent(canvas.transform, true);
-
-
-            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
-            mesPanel.Awake();
-
-            Vector3 position = Vector3.zero;
-            position.Set(position.x - 10f * Game.MessageQueue.Count, position.y - 10f * Game.MessageQueue.Count, 0);
-            newObject.transform.localPosition = position;
-            ;
-            mesPanel.show(mes);
-        }
-
+        MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
+        mesPanel.Awake();
+        //Vector3 position = Vector3.zero;
+        //position.Set(position.x - 10f * Game.MessageQueue.Count, position.y - 10f * Game.MessageQueue.Count, 0);
+        //newObject.transform.localPosition = position;
+        mesPanel.show(mes);
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
     {
         float xyCameraSpeed = 10f;
-        float zCameraSpeed = 250f;
+        float zCameraSpeed = 150f;
         float xMove = Input.GetAxis("Horizontal");
         float yMove = Input.GetAxis("Vertical");
         float zMove = Input.GetAxis("Mouse ScrollWheel");

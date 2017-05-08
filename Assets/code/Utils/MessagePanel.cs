@@ -16,7 +16,7 @@ public class Message
 }
 public class MessagePanel : DragPanel
 {
-
+    static Vector3 lastDragPosition;
     public Text caption, message, closeText;
     public GameObject messagePanel;
 
@@ -24,8 +24,16 @@ public class MessagePanel : DragPanel
     // Use this for initialization
     void Start()
     {
-        //MainCamera.messagePanel = this;
-       // hide();
+        Vector3 position = Vector3.zero;
+        position.Set(lastDragPosition.x - 10f, lastDragPosition.y - 10f, 0);
+        transform.localPosition = position;
+        lastDragPosition = transform.localPosition;
+    }
+
+    override public void OnDrag(PointerEventData data)
+    {
+        base.OnDrag(data);        
+        lastDragPosition = transform.localPosition;
     }
 
     // Update is called once per frame
@@ -43,6 +51,8 @@ public class MessagePanel : DragPanel
 
     public void show(Message mess)
     {
+        
+
         Game.howMuchPausedWindowsOpen++;
         messagePanel.SetActive(true);
         //this.pa
@@ -57,7 +67,7 @@ public class MessagePanel : DragPanel
     }
     public void onCloseClick()
     {
-        Game.howMuchPausedWindowsOpen --;
+        Game.howMuchPausedWindowsOpen--;
         hide();
         Destroy(messagePanel);
     }

@@ -160,9 +160,8 @@ public class Army
 
         bool attackerWon;
         BattleResult result;
-        if (this.getStrenght() > defender.getStrenght())
+        if (attacker.getStrenght() > defender.getStrenght())
         {
-
             attackerWon = true;
             float winnerLossUnConverted = defender.getStrenght() * defender.getStrenght() / attacker.getStrenght();
             int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted);
@@ -171,11 +170,11 @@ public class Army
             result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
             , initialDefenderSize, loserLoss, attacker.destination, attackerWon);
         }
-        else if (this.getStrenght() == defender.getStrenght())
+        else if (attacker.getStrenght() == defender.getStrenght())
         {
             attacker.takeLoss(attacker.getSize());
             defender.takeLoss(defender.getSize());
-            var r = new BattleResult(this.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(), this.destination, false);
+            var r = new BattleResult(attacker.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(), attacker.destination, false);
             return r;
         }
         else
@@ -240,8 +239,21 @@ public class Army
     private float getStrenght()
     {
         float result = 0;
+        float modifier = 0f;
         foreach (var c in personal)
-            result += c.Value.getStrenght();
+        {
+            //modifier = Options.armyDefenceBonus + UnityEngine.Random.Range(-0.1f, 01f);
+            if (destination == null) // army at home
+            {
+                modifier = 1f;// + Options.armyDefenceBonus + UnityEngine.Random.Range(-0.1f, 01f);
+                result += c.Value.getStrenght() * modifier;
+            }
+            else
+            {
+                modifier = 1f;// + UnityEngine.Random.Range(-0.1f, 01f);
+                result += c.Value.getStrenght() * modifier;
+            }
+        }
         return result;
     }
 
@@ -333,7 +345,7 @@ public class BattleResult
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is our now!");
-           // sb.Append("\nDate is ").Append(Game.date);
+            // sb.Append("\nDate is ").Append(Game.date);
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
@@ -343,7 +355,7 @@ public class BattleResult
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
-           // sb.Append("\nDate is ").Append(Game.date);
+            // sb.Append("\nDate is ").Append(Game.date);
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
@@ -352,7 +364,7 @@ public class BattleResult
             sb.Append("Our glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
-           // sb.Append("\nDate is ").Append(Game.date);
+            // sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Fine");
         }
         else
@@ -364,7 +376,7 @@ public class BattleResult
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
-           // sb.Append("\nDate is ").Append(Game.date);
+            // sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Not fine really");
         }
     }
