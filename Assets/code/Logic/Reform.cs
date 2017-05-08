@@ -214,7 +214,7 @@ public class Economy : AbstractReform
         {
             InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented
         }));
-    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "not dirty pants", 3, capitalism);
+    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 3, capitalism);
 
     /// ////////////
 
