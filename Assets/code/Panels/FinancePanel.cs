@@ -38,7 +38,7 @@ public class FinancePanel : DragPanel
         sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
 
         sb.Append("\n\nBalance: ").Append(Game.player.getCountryWallet().getBalance());
-        //sb.Append("\nScreen resolition: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
+        //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
         sb.Append("\n\nHave money: ").Append(Game.player.wallet.haveMoney).Append (" + some money in bank");
         incomeText.text = sb.ToString();
@@ -53,7 +53,7 @@ public class FinancePanel : DragPanel
 
         sb.Clear();
         sb.Append("Auto send extra money to bank - yes");
-        sb.Append("\nBank reservs: ").Append(Game.player.bank).Append(" Bank loans: ").Append(Game.player.bank.getGivenLoans());
+        sb.Append("\nBank reserves: ").Append(Game.player.bank).Append(" Bank loans: ").Append(Game.player.bank.getGivenLoans());
         sb.Append("\n\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
         bankText.text = sb.ToString();
     }

@@ -44,7 +44,7 @@ public class Bank
 
     internal bool CanITakeThisLoan(Value loan)
     {
-        //if there is enough money and enough reservs
+        //if there is enough money and enough reserves
         if (reservs.haveMoney.get() - loan.get() >= getMinimalReservs().get())
             return true;
         return false;
@@ -52,7 +52,7 @@ public class Bank
 
     private Value getMinimalReservs()
     {
-        //todo improve reservs
+        //todo improve reserves
         return new Value(100f);
     }
 

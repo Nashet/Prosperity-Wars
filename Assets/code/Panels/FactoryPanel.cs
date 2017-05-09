@@ -108,7 +108,7 @@ public class FactoryPanel : DragPanel//for dragging
             //var temp = shownFactory.getLifeNeeds();
             //foreach (Storage next in temp)
             //    lifeNeeds += next.ToString() + "; ";
-            //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fullfilled";
+            //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fulfilled";
             string InputRequired = "";
             //var temp = shownFactory.getLifeNeeds();
             
@@ -140,9 +140,9 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nMoney income: " + shownFactory.wallet.moneyIncomethisTurn
                 + "\nProfit: " + shownFactory.getProfit()
                 + "\nInput required: " + InputRequired
-                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Costed: " + shownFactory.getConsumedCost().ToString()
+                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + shownFactory.getConsumedCost().ToString()
                 + "\nConsumed LT: " + shownFactory.consumedLastTurn
-                + "\nInput reservs: " + shownFactory.inputReservs
+                + "\nInput reserves: " + shownFactory.inputReservs
                 + "\nInput factor: " + shownFactory.getInputFactor()
                 + "\nSalary (per 1000 men):" + shownFactory.getSalary() + " Salary(total):" + shownFactory.getSalaryCost()
                 + "\nOwner: " + shownFactory.factoryOwner.ToString()

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-// represen each opunit record in table
+// represent each opunit record in table
 
 public class InventionsPanelTable : MyTable
 {

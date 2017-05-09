@@ -32,7 +32,7 @@ public class Value
     {
         if (invalue.value > value)
         {
-            Debug.Log("Value subtrack failed");
+            Debug.Log("Value subtract failed");
             set(0);
         }
         else
@@ -51,7 +51,7 @@ public class Value
     public void subtract(float invalue)
     {
         if (invalue > value)
-            Debug.Log("Value subtrack failed");
+            Debug.Log("Value subtract failed");
         value -= (uint)Mathf.RoundToInt(invalue * precision);
     }
     //public void multiple(Value invalue)
@@ -106,14 +106,14 @@ public class Value
     /// <summary>returns new value </summary>
     internal Value divide(int invalue)
     {
-        if (invalue == 0) Debug.Log("Value ivide by zero");
+        if (invalue == 0) Debug.Log("Value divide by zero");
 
         return new Value(get() / invalue);
     }
     /// <summary>returns new value </summary>
     internal Value divide(Value invalue)
     {
-        if (invalue.get() == 0) Debug.Log("Value ivide by zero");
+        if (invalue.get() == 0) Debug.Log("Value divide by zero");
 
         return new Value(get() / invalue.get());
     }

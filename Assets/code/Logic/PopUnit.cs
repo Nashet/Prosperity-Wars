@@ -17,13 +17,13 @@ abstract public class PopUnit : Producer
     public static Procent growthSpeed = new Procent(0.002f);
     public static Procent starvationSpeed = new Procent(0.01f);
 
-    ///<summary> demotion  - when popUnit can't fullfill needs</summary>
+    ///<summary> demotion  - when popUnit can't fulfill needs</summary>
     public static Procent demotionSpeed = new Procent(0.01f);
 
-    ///<summary> promotion  - when popUnit has chance to get better place in ierarhy</summary>
+    ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
     public static Procent promotionSpeed = new Procent(0.01f);
 
-    ///<summary>buffer popList of demoter. To avoid iteration breaks</summary>
+    ///<summary>buffer popList of demoted. To avoid iteration breaks</summary>
     public static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
 
     public Procent loyalty;
@@ -71,7 +71,7 @@ abstract public class PopUnit : Producer
         makeModifiers();
 
         // here shuld be carefull copying of popUnit data
-        //And carefull editing of old unit
+        //And careful editing of old unit
         Procent newPopShare = Procent.makeProcent(sizeOfNewPop, source.getPopulation());
 
         //Own PopUnit fields:
@@ -247,7 +247,7 @@ abstract public class PopUnit : Producer
             if (type == PopType.capitalists) return new Capitalists(source, sizeOfNewPop);
         else
         {
-            Debug.Log("Unknow pop type!");
+            Debug.Log("Unknown pop type!");
             return null;
         }
     }
@@ -265,7 +265,7 @@ abstract public class PopUnit : Producer
             if (ipopType == PopType.capitalists) return new Capitalists(iamount, ipopType, iculture, where);
         else
         {
-            Debug.Log("Unknow pop type!");
+            Debug.Log("Unknown pop type!");
             return null;
         }
     }

@@ -61,8 +61,8 @@ public class Product
         if (inName == "Lumber") Lumber = this;
         if (inName == "Furniture") Furniture = this;
         if (inName == "Gold") Gold = this;
-        if (inName == "Metall") Metal = this;
-        if (inName == "Metall ore") MetallOre = this;
+        if (inName == "Metal") Metal = this;
+        if (inName == "Metal ore") MetallOre = this;
         if (inName == "Wool") Wool = this;
         if (inName == "Clothes") Clothes = this;
         if (inName == "Stone") Stone = this;

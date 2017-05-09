@@ -551,7 +551,7 @@ public class Storage : Value
     public void sendAll(Storage another)
     {
         if (this.getProduct() != another.getProduct())
-            Debug.Log("Attemp to give wrong product");
+            Debug.Log("Attempt to give wrong product");
         this.pay(another, this);
 
     }
@@ -567,7 +567,7 @@ public class Storage : Value
     public void pay(Storage another, float amount)
     {
         if (this.getProduct() != another.getProduct())
-            Debug.Log("Attemp to give wrong product");
+            Debug.Log("Attempt to give wrong product");
         if (this.get() >= amount)
         {
             another.add(amount);
@@ -583,7 +583,7 @@ public class Storage : Value
     public void pay(Storage toWhom, Value amount)
     {
         if (this.getProduct() != toWhom.getProduct())
-            Debug.Log("Attemp to give wrong product");
+            Debug.Log("Attempt to give wrong product");
         if (this.get() >= amount.get())
         {
             toWhom.add(amount);

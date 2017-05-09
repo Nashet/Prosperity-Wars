@@ -70,7 +70,7 @@ public class PopulationPanelTable : MyTable
             AddButton("Cash");
             //else AddButton("Administration");
             ////Adding needs fulfilling
-            AddButton("Needs fullfilled");
+            AddButton("Needs fulfilled");
             ////Adding loyalty
             AddButton("Loyalty");
             ////Adding loyalty

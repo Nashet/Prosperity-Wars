@@ -44,7 +44,7 @@ public class BuildPanel : DragPanel
             var resourceToBuild = selectedFactoryType.getBuildNeeds();
             if (Economy.isMarket.checkIftrue(Game.player))
             //if (Game.player.economy.status == Economy.StateCapitalism)
-            //have money /resourse
+            //have money /resource
             {
                 Value cost = Game.market.getCost(resourceToBuild);
                 cost.add(Options.factoryMoneyReservPerLevel);
@@ -91,12 +91,12 @@ public class BuildPanel : DragPanel
         {
             Game.threadDangerSB.Clear();
             Game.threadDangerSB.Append("Build ").Append(selectedFactoryType);
-            Game.threadDangerSB.Append("\n\nResouces to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(selectedFactoryType.getBuildCost());            
+            Game.threadDangerSB.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(selectedFactoryType.getBuildCost());            
             Game.threadDangerSB.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
 
             descriptionText.text = Game.threadDangerSB.ToString();
             //descriptionText.text = "Build " + selectedFactoryType
-            //    + "\n\nResouces to build: " + selectedFactoryType.getBuildNeeds()
+            //    + "\n\nResources to build: " + selectedFactoryType.getBuildNeeds()
             //    + "\nEveryday resource input: " + selectedFactoryType.resourceInput
             //    ;
 
@@ -136,7 +136,7 @@ public class BuildPanel : DragPanel
             //        else
             //        {
             //            buildButton.interactable = false;
-            //            buildButton.GetComponentInChildren<Text>().text = "Not enough materails";
+            //            buildButton.GetComponentInChildren<Text>().text = "Not enough materials";
             //        }
 
             //    }

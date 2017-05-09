@@ -341,7 +341,7 @@ public class BattleResult
 
         if (attacker == Game.player && isAttackerWon())
         {
-            sb.Append("Our glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("Our glorious army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is our now!");
@@ -351,7 +351,7 @@ public class BattleResult
         else
         if (defender == Game.player && isDefenderWon())
         {
-            sb.Append("Our glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorious army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
@@ -361,7 +361,7 @@ public class BattleResult
         else
             if (attacker == Game.player && isDefenderWon())
         {
-            sb.Append("Our glorius army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("Our glorious army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
             // sb.Append("\nDate is ").Append(Game.date);
@@ -371,7 +371,7 @@ public class BattleResult
             if (defender == Game.player && isAttackerWon())
 
         {
-            sb.Append("Our glorius army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorious army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
             sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");

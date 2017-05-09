@@ -20,7 +20,7 @@ public class ConditionsList
         list = inlist;
     }
 
-    //short constructor, allowing predicats of several types to be checked
+    //short constructor, allowing predicates of several types to be checked
     public ConditionsList(List<AbstractCondition> inlist)
     {
         list = new List<Condition>();
@@ -417,7 +417,7 @@ public class ModifiersList : ConditionsList
     {
 
     }
-    //short constructor, allowing predicats of several types to be checked
+    //short constructor, allowing predicates of several types to be checked
     public ModifiersList(List<AbstractCondition> inlist) : base(inlist)
     {
 

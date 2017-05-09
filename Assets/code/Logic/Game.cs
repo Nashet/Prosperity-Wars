@@ -108,7 +108,7 @@ public class Game
 
     private void makePopTypes()
     {
-        //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribemen");
+        //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribesmen");
         new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f);
         new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f);
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f);
@@ -173,8 +173,8 @@ public class Game
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
         new Product("Gold", true, 4f);
-        new Product("Metall ore", true, 3f);
-        new Product("Metall", false, 6f);
+        new Product("Metal ore", true, 3f);
+        new Product("Metal", false, 6f);
         new Product("Wool", true, 1);
         new Product("Clothes", false, 3);
         new Product("Furniture", false, 7);
@@ -221,7 +221,7 @@ public class Game
 
                 if (province.getOwner() == Game.player)
                 {
-                    //pop = new Tribemen(20900, PopType.tribeMen, province.getOwner().culture, province);
+                    //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                     //province.allPopUnits.Add(pop);
                 }
                 if (!Game.devMode)
@@ -331,8 +331,8 @@ public class Game
     }
     void generateMapImage()
     {
-        mapImage = new Texture2D(200, 100);
-        //mapImage = new Texture2D(100, 50);
+        //mapImage = new Texture2D(200, 100);
+        mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -341,7 +341,7 @@ public class Game
         else
             amountOfProvince = 12 + Game.random.Next(8);
         amountOfProvince = 60 + Game.random.Next(20);
-        amountOfProvince = 160 + Game.random.Next(20);
+        //amountOfProvince = 160 + Game.random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -352,7 +352,7 @@ public class Game
         {
             emergencyExit++;
             emptyPixels = 0;
-            for (int j = 0; j < mapImage.height; j++) // cicle by province        
+            for (int j = 0; j < mapImage.height; j++) // circle by province        
                 for (int i = 0; i < mapImage.width; i++)
                 {
                     currentColor = mapImage.GetPixel(i, j);
@@ -666,7 +666,7 @@ public class Game
     void makeHelloMessage()
     {
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
-            "\n\nCurently there is: "
+            "\n\nCurrently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \ntechnologies \nbasic reforms (voting is not implemented)"
             + "\n\nYou play as " + Game.player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"            

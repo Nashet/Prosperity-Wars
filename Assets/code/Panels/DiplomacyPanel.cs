@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
 
+class badGrsdamis{ }
+
 public class DiplomacyPanel : DragPanel
 {
 

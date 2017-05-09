@@ -37,21 +37,21 @@ public class PopUnitPanel : DragPanel
             var temp = pop.getRealLifeNeeds();
             foreach (Storage next in temp)
                 lifeNeeds += next.ToString() + "; ";
-            lifeNeeds += pop.getLifeNeedsFullfilling().ToString() + " fullfilled";
+            lifeNeeds += pop.getLifeNeedsFullfilling().ToString() + " fulfilled";
 
             temp = pop.getRealEveryDayNeeds();
             foreach (Storage next in temp)
                 everyDayNeeds += next.ToString() + "; ";
-            everyDayNeeds += pop.getEveryDayNeedsFullfilling().ToString() + " fullfilled";
+            everyDayNeeds += pop.getEveryDayNeedsFullfilling().ToString() + " fulfilled";
 
             temp = pop.getRealLuxuryNeeds();
             foreach (Storage next in temp)
                 luxuryNeeds += next.ToString() + "; ";
-            luxuryNeeds += pop.getLuxuryNeedsFullfilling().ToString() + " fullfilled";
+            luxuryNeeds += pop.getLuxuryNeedsFullfilling().ToString() + " fulfilled";
 
             //foreach (Storage next in pop.consumedTotal)
             //    consumedTotal+= next.ToString() + "; ";
-            //luxuryNeeds += pop.getLuxuryNeedsFullfilling().ToString() + " fullfilled";
+            //luxuryNeeds += pop.getLuxuryNeedsFullfilling().ToString() + " fulfilled";
 
             string loans = "";
             if (pop.loans.get() > 0f)
@@ -62,14 +62,14 @@ public class PopUnitPanel : DragPanel
                 + "\nSent to market: " + pop.sentToMarket
                 + "\nCash: " + pop.wallet.ToString()
                 + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
-                + "\nConsumed: " + pop.consumedTotal + " costed: " + Game.market.getCost(pop.consumedTotal)
+                + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\nDemotion: " + demotionText + "\nGrowth: " + pop.getGrowthSize()
                 + "\nUnemployment: " + pop.getUnemployedProcent() + loans
                 + "\n\nLife needs: " + lifeNeeds + "\n\nEveryday needs: " + everyDayNeeds + "\n\nLuxury needs: " + luxuryNeeds
                 ;
             if (Game.devMode)
-                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " costed: " + Game.market.getCost(pop.consumedLastTurn)
-                + "\nConsumedIM: " + pop.consumedInMarket + " costed: " + Game.market.getCost(pop.consumedInMarket);
+                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
+                + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
 
             //+ "\nExpenses:"
         }

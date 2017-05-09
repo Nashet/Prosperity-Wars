@@ -105,7 +105,7 @@ public class PopType
 
                 break;
             default:
-                Debug.Log("Unnown PopType");
+                Debug.Log("Unknown PopType");
                 break;
         }
 

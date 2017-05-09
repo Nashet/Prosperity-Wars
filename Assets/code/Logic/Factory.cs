@@ -57,8 +57,8 @@ public class Factory : Producer
         {
             return !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput);
         },
-           "Has input resource in thst province", true, 20f);
-        modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concetration bonus", true, 5f);
+           "Has input resource in this province", true, 20f);
+        modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concentration bonus", true, 5f);
         modifierInventedMiningAndIsShaft = new Modifier(
            delegate (Country forWhom)
            {
@@ -1057,7 +1057,7 @@ public abstract class Producer : Owner
                 //Game.market.sentToMarket.subtract(realSold);
             }
             else if (Game.market.wallet.HowMuchCanNotAfford(cost).get() > 10f)
-                Debug.Log("Failed market - producer payment: " + Game.market.wallet.HowMuchCanNotAfford(cost)); // money in market endded... Only first lucky get money
+                Debug.Log("Failed market - producer payment: " + Game.market.wallet.HowMuchCanNotAfford(cost)); // money in market ended... Only first lucky get money
         }
     }
 }
