@@ -95,6 +95,7 @@ public class Army
     public void transfertCorpsFrom(Army sourceArmy)
     {
         Corps found;
+        foreach (var corpsToTransfert in sourceArmy.personal.ToList())
             // here null exception
             if (corpsToTransfert.Value.getSize() > 0)
                 if (this.personal.TryGetValue(corpsToTransfert.Key, out found))
