@@ -646,11 +646,14 @@ public static class MyExtensions
         if (source.Remove(item.getPopUnit())) // don't remove this
             destination.Add(item.getPopUnit(), item);
     }
+    /// <summary>
+    /// Unites all armies in one
+    /// </summary>
     public static void consolidate(this List<Army> source, Country country)
     {
         foreach (Army next in source)
             if (next.getDestination() == null)
-                country.homeArmy.add(next);
+                country.homeArmy.join(next);
 
         source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
     }
@@ -660,8 +663,8 @@ public static class MyExtensions
             foreach (Corps corps in nextArmy.getCorps())
                 if (corps.getPopUnit() == pop)
                 {
-                    nextArmy.remove(corps);
-                    corps.demobilize();
+                    //nextArmy.remove(corps);
+                    corps.demobilizeFrom(nextArmy);
                     //pop.demobilize();
                     return true;
                 }

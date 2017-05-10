@@ -727,10 +727,10 @@ public class Game
                     fact.paySalary(); // workers get gold or food here                   
                 }
                 foreach (PopUnit pop in province.allPopUnits)
-                //That placed here to avoid issues with Aristocrts and clerics
-                //Otherwise Arisocrats starts to consume BEFORE they get all what they should
+                //That placed here to avoid issues with Aristocrats and clerics
+                //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.type.basicProduction != null)// only Farmers and Tribemen
+                    if (pop.type.basicProduction != null)// only Farmers and Tribesmen
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
                 }

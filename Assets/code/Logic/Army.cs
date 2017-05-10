@@ -31,8 +31,8 @@ public class Army
     {
         foreach (var corps in personal.Values.ToList())
         {
-            personal.Remove(corps.getPopUnit());
-            corps.demobilize();
+            //personal.Remove(corps.getPopUnit());
+            corps.demobilizeFrom(this);
         }
         if (this != getOwner().homeArmy && this != getOwner().sendingArmy)
             owner.allArmies.Remove(this);
@@ -58,23 +58,18 @@ public class Army
                 personal.Add(corpsToAdd.getPopUnit(), corpsToAdd);
         }
     }
-    public void add(Army armyToAdd)
+    public void join(Army armyToAdd)
     {
         if (armyToAdd != this)
-            this.AddRange(armyToAdd.personal);
+            this.transfertCorpsFrom(armyToAdd);
     }
     internal void remove(Corps corps)
     {
         personal.Remove(corps.getPopUnit());
     }
     internal int getSize()
-    {
-        //uint result = 0;
-        //foreach (var next in personal)
-        //    result += next.getSize();
-
-        return personal.Sum(x => x.Value.getSize());
-        //return result;
+    {        
+        return personal.Sum(x => x.Value.getSize());       
     }
     internal IEnumerable<Corps> getCorps()
     {
@@ -96,32 +91,33 @@ public class Army
             sb.Append("None");
         return sb.ToString();
     }
-    public void AddRange(Dictionary<PopUnit, Corps> source)
+    //public void transfertCorpsFrom(Dictionary<PopUnit, Corps> source)
+    public void transfertCorpsFrom(Army sourceArmy)
     {
         Corps found;
-        foreach (var corpsToAdd in source)
-            if (corpsToAdd.Value.getSize() > 0)
-                if (this.personal.TryGetValue(corpsToAdd.Key, out found))
-                    found.add(corpsToAdd.Value.getSize());
+            // here null exception
+            if (corpsToTransfert.Value.getSize() > 0)
+                if (this.personal.TryGetValue(corpsToTransfert.Key, out found))
+                    found.add(corpsToTransfert.Value.getSize());
                 else
-                    this.personal.Add(corpsToAdd.Key, corpsToAdd.Value);
+                    this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
 
             else
-                corpsToAdd.Value.demobilize();
+                corpsToTransfert.Value.demobilizeFrom(sourceArmy);
 
     }
     internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
         {
-            secondArmy.AddRange(this.personal);
+            secondArmy.transfertCorpsFrom(this);
             this.personal.Clear();
         }
         else
         {
             //Army sumArmy = new Army();
             //sumArmy.add(this);
-            this.add(secondArmy);
+            this.join(secondArmy);
             int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
 
             secondArmy.clear();

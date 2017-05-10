@@ -59,7 +59,6 @@ public class DiplomacyPanel : DragPanel
         //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
     }
 
-
     public void show()
     {
         diplomacyPanel.SetActive(true);

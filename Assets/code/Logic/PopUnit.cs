@@ -195,12 +195,8 @@ abstract public class PopUnit : Producer
 
         if (amount > 0)
         {
-            mobilized += amount;
-            //corps= new Corps(this, amount);
-            //return corps;           
-            //ObjectPool<Corps>.Get();
-            return Pool.GetObject(this, amount);
-            // return new Corps(this, amount);
+            mobilized += amount;            
+            return Pool.GetObject(this, amount);            
         }
         else
             return null;

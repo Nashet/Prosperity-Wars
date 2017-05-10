@@ -27,7 +27,13 @@ namespace DesignPattern.Objectpool
         {
             lock (_available)
             {
-                if (_available.Count != 0)
+                if (_available.Count == 0)
+                {
+                    Corps po = new Corps(origin, size);
+                    _inUse.Add(po);
+                    return po;                    
+                }
+                else
                 {
                     Corps po = _available[0];
                     po.initialize(origin, size);
@@ -35,32 +41,23 @@ namespace DesignPattern.Objectpool
                     _available.RemoveAt(0);
                     return po;
                 }
-                else
-                {
-                    Corps po = new Corps(origin, size);
-                    _inUse.Add(po);
-                    return po;
-                }
             }
         }
 
         public static void ReleaseObject(Corps po)
-        {
-            //CleanUp(po);
+        {            
             po.deleteData();
-
             lock (_available)
             {
                 _available.Add(po);
                 _inUse.Remove(po);
             }
         }
-        public static IEnumerable<Corps> existing()      
-        {
-            foreach (Corps f in _inUse)
-                yield return f;
-            //_inUse.ForEach(x=> { yield return x; });            
-        }
+        //public static IEnumerable<Corps> existing()      
+        //{
+        //    foreach (Corps f in _inUse)
+        //        yield return f;                      
+        //}
     }
 
 }
@@ -68,8 +65,7 @@ public class Corps
 { 
     PopUnit origin;
     int size;
-    //static List<Corps> allCorps = new List<Corps>();
-
+   
     internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
@@ -79,11 +75,11 @@ public class Corps
     public Corps(PopUnit origin, int size)
     {
         initialize(origin, size);
-
-        //allCorps.Add(this);
     }
     public PopType getType()
-    { return origin.type; }
+    {
+        return origin.type;
+    }
     public int getSize()
     {
         return size;
@@ -102,14 +98,12 @@ public class Corps
 
     internal void TakeLoss(int loss)
     {
-
         int sum = size - loss;
         if (sum > 0)
             size = sum;
         else
             size = 0;
         origin.takeLoss(loss);
-
     }
 
     internal PopUnit getPopUnit()
@@ -122,8 +116,10 @@ public class Corps
         size += v;
     }
 
-    internal void demobilize()
+    internal void demobilizeFrom(Army  army)
     {
+        army.remove(this);
+
         origin.demobilize();
         Pool.ReleaseObject(this);
         
