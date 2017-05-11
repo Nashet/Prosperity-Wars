@@ -9,7 +9,7 @@ public class Factory : Producer
 
     internal FactoryType type;
     protected static int workForcePerLevel = 1000;
-    protected byte level = 0;
+    protected int level = 0;
     /// <summary>shownFactory in a process of building - level 1 </summary>
     private bool building = true;
     private bool upgrading = false;
@@ -58,7 +58,7 @@ public class Factory : Producer
             return !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput);
         },
            "Has input resource in this province", true, 20f);
-        modifierLevelBonus = new Modifier(delegate () { return this.getLevel(); }, "High production concentration bonus", true, 5f);
+        modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", true, 1f);
         modifierInventedMiningAndIsShaft = new Modifier(
            delegate (Country forWhom)
            {
@@ -173,7 +173,7 @@ public class Factory : Producer
     {
         return new Procent(getInputFactor());
     }
-    internal byte getLevel()
+    internal int getLevel()
     {
         return level;
     }

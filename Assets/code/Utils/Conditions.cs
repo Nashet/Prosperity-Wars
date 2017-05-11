@@ -296,7 +296,7 @@ public class Modifier : Condition
     //}
     bool isMultiplier;
     float value;
-    Func<byte> multiplierModifierFunction;
+    Func<int> multiplierModifierFunction;
 
     /// <summary>You better use shorter constructor, if possible </summary>
     public Modifier(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(myMethodName, conditionIsTrue, true)
@@ -305,7 +305,7 @@ public class Modifier : Condition
     }
 
     /// <summary></summary>
-    public Modifier(Func<byte> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, showAchievedConditionDescribtion)
+    public Modifier(Func<int> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, showAchievedConditionDescribtion)
     {
         check2 = null;
         multiplierModifierFunction = myMethodName;

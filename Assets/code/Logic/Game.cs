@@ -98,7 +98,7 @@ public class Game
 
     private void setStartResources()
     {
-        //Country.allCountries[0] is nyll country
+        //Country.allCountries[0] is null country
         Country.allCountries[1].getCapital().setResource(Product.Fruit);
         
         //Country.allCountries[0].getCapital().setResource(Product.Wood;

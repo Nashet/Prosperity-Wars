@@ -798,10 +798,10 @@ abstract public class PopUnit : Producer
     public int getGrowthSize()
     {
         int result = 0;
-        if (this.needsFullfilled.get() >= 0.33f) // positive grotwh
+        if (this.needsFullfilled.get() >= 0.33f) // positive growth
             result = Mathf.RoundToInt(PopUnit.growthSpeed.get() * getPopulation());
         else
-            if (this.needsFullfilled.get() >= 0.20f) // zero grotwh
+            if (this.needsFullfilled.get() >= 0.20f) // zero growth
             result = 0;
         else if (type != PopType.farmers) //starvation  
         {
