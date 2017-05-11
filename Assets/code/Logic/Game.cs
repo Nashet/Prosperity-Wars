@@ -50,7 +50,7 @@ public class Game
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
 
-        //setStartResources();
+        
         makeFactoryTypes();
         makePopTypes();
 
@@ -65,6 +65,7 @@ public class Game
 
         CreateRandomPopulation();
         //Province.allProvinces[0].allPopUnits[0].education.set(1f);
+        setStartResources();
         MainCamera.topPanel.refresh();
         makeHelloMessage();
         //MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
@@ -97,13 +98,14 @@ public class Game
 
     private void setStartResources()
     {
-        Province.allProvinces[0].setResource(Product.Gold);
-        //Province.allProvinces[0].setResource(Product.Wood;
-        Province.allProvinces[1].setResource(Product.Wood);
-        Province.allProvinces[2].setResource(Product.Fruit);
-        Province.allProvinces[3].setResource(Product.Wool);
-        Province.allProvinces[4].setResource(Product.Stone);
-        Province.allProvinces[5].setResource(Product.MetallOre);
+       
+        Country.allCountries[0].getCapital().setResource(Product.Gold);
+        //Country.allCountries[0].getCapital().setResource(Product.Wood;
+        Country.allCountries[1].getCapital().setResource(Product.Wood);
+        Country.allCountries[2].getCapital().setResource(Product.Fruit);
+        Country.allCountries[3].getCapital().setResource(Product.Wool);
+        Country.allCountries[4].getCapital().setResource(Product.Stone);
+        Country.allCountries[5].getCapital().setResource(Product.MetallOre);
     }
 
     private void makePopTypes()

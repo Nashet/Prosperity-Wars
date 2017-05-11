@@ -757,6 +757,8 @@ public class Market : Owner//: PrimitiveStorageSet
                 //else
 
                 if (supply == 0)
+                    balance = 999f;
+                else
                     balance = demand / supply;
 
                 //if (balance > 1f) balance = 1f;
@@ -764,6 +766,7 @@ public class Market : Owner//: PrimitiveStorageSet
                 if (demand == 0) balance = 0f; // otherwise - furniture bag
                                                // else
                 if (supply == 0)
+                    balance = 999f;
 
                 DSBbuffer.Set(new Storage(stor.getProduct(), balance));
             }
