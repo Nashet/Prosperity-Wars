@@ -49,26 +49,25 @@ public class Game
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
-
         
         makeFactoryTypes();
         makePopTypes();
 
         var countryNameGenerator = new CountryNameGenerator();
+        var cultureNameGenerator = new CultureNameGenerator();
         int extraCountries = random.Next(6);
         for (int i = 0; i < 16 + extraCountries; i++)
-            makeCountry(countryNameGenerator);
+            makeCountry(countryNameGenerator, cultureNameGenerator);
 
         foreach (var pro in Province.allProvinces)
             if (pro.getOwner() == null)
                 pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
-        //Province.allProvinces[0].allPopUnits[0].education.set(1f);
+        
         setStartResources();
         MainCamera.topPanel.refresh();
-        makeHelloMessage();
-        //MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
+        makeHelloMessage();        
         MainCamera.cameraMy.transform.position = new Vector3(Game.player.getCapital().centre.x, Game.player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
 
@@ -121,12 +120,12 @@ public class Game
         new PopType(PopType.PopTypes.Workers, null, "Workers", 1f);
     }
 
-    void makeCountry(CountryNameGenerator name)
+    void makeCountry(CountryNameGenerator countryName, CultureNameGenerator cultureName)
     {
-        Culture cul = new Culture("Ridvans");
+        Culture cul = new Culture(cultureName.generateCultureName());
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getOwner() == null);// Country.NullCountry);
-        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
+        Country count = new Country(countryName.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
         player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
         count.moveCapitalTo(province);
@@ -207,7 +206,7 @@ public class Game
 
         foreach (Province province in Province.allProvinces)
         {
-            Culture culture = new Culture(province + "landers");
+            //Culture culture = new Culture(province + "landers");
             if (province.getOwner() == Country.NullCountry)
             {
                 Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);

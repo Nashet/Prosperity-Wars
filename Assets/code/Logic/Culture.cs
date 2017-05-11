@@ -12,4 +12,8 @@ public class Culture
         allCultures.Add(this);
 
     }
+    public override string ToString()
+    {
+        return name;
+    }
 }

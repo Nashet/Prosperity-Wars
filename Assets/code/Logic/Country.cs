@@ -40,7 +40,7 @@ public class Country : Owner
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Zaoteks"), new CountryWallet(0f), Color.yellow, null);
+    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), new CountryWallet(0f), Color.yellow, null);
 
 
     public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)

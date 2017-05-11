@@ -7,6 +7,53 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
+public class CultureNameGenerator
+{
+    static ChanceBox<string> prefix;
+    static ChanceBox<string> postfix;
+    public CultureNameGenerator()
+    {
+        postfix = new ChanceBox<string>();
+        postfix.add("nian", 1.6f);
+        postfix.add("rian", 1f);
+        postfix.add("man", 3.0f);
+        postfix.add("men", 2.2f);
+        postfix.add("tian", 1f);
+        postfix.add("sian", 1.5f);
+
+        postfix.add("pian", 1f);
+        postfix.add("vian", 1f);
+        postfix.add("lian", 1.8f);
+        
+        
+        postfix.add("", 5f);
+        postfix.initiate();
+
+        prefix = new ChanceBox<string>();
+
+        prefix.add("South ", 0.3f);
+        prefix.add("West ", 0.3f);
+        prefix.add("North ", 0.3f);
+        prefix.add("East ", 0.3f);        
+        prefix.add("Great ", 0.8f);
+        prefix.add("Upper ", 0.2f);
+        prefix.add("Middle ", 0.1f);
+        prefix.add("", 40f);
+        prefix.initiate();
+    }
+    StringBuilder result = new StringBuilder();
+    public string generateCultureName()
+    {
+        result.Clear();
+        result.Append(prefix.getRandom());
+
+        //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
+        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5))));
+        result.Append(postfix.getRandom());
+
+        return (result.ToString());
+    }
+}
 public class CountryNameGenerator
 {
     static ChanceBox<string> prefix;
@@ -17,8 +64,6 @@ public class CountryNameGenerator
     {
         postfix = new ChanceBox<string>();
         postfix.add("burg", 1.2f);
-
-
 
         postfix.add("hill", 0.31f);
 
@@ -58,9 +103,6 @@ public class CountryNameGenerator
         prefix.add("Upper ", 0.2f);
         prefix.add("Middle ", 0.1f);
 
-        
-
-
         prefix.add("", 80f);
         prefix.initiate();
     }
@@ -69,12 +111,12 @@ public class CountryNameGenerator
     {
         result.Clear();
         result.Append(prefix.getRandom());
-        
+
         //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-        result.Append(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5)));
+        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5))));
         result.Append(postfix.getRandom());
 
-        return UtilsMy.FirstLetterToUpper(result.ToString());
+        return (result.ToString());
     }
 }
 public class ProvinceNameGenerator
@@ -100,8 +142,8 @@ public class ProvinceNameGenerator
             Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
             if (Game.random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
         }
-        //return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
-        return Game.threadDangerSB.ToString();
+        return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
+        //return Game.threadDangerSB.ToString();
     }
     public ProvinceNameGenerator()
     {
@@ -164,20 +206,20 @@ public class ProvinceNameGenerator
         prefix.add("Middle ", 0.1f);
 
         prefix.add("Gate ", 0.2f);
-        prefix.add("King ", 0.3f);
-        prefix.add("Knock", 0.6f);
-        prefix.add("Ling", 0.6f);
-        prefix.add("Weald", 0.6f);
+        prefix.add("Kings ", 0.3f);
+        //prefix.add("Knock", 0.6f);
+        //prefix.add("Ling", 0.6f);
+        //prefix.add("Weald", 0.6f);
 
-        prefix.add("Kirk", 0.6f);
-        prefix.add("Brad", 0.6f);
-        prefix.add("Inner ", 0.6f);
-        prefix.add("Lang", 0.6f);
-        prefix.add("Nor", 0.6f);
+        //prefix.add("Kirk", 0.6f);
+        //prefix.add("Brad", 0.6f);
+        //prefix.add("Inner ", 0.6f);
+        //prefix.add("Lang", 0.6f);
+        //prefix.add("Nor", 0.6f);
 
-        prefix.add("Pen", 0.6f);
-        prefix.add("Sud", 0.6f);
-     
+        //prefix.add("Pen", 0.6f);
+        //prefix.add("Sud", 0.6f);
+
 
         prefix.add("", 60f);
         prefix.initiate();
@@ -213,7 +255,7 @@ public class ProvinceNameGenerator
         consonants.add("v", 0.978f);
         consonants.add("w", 2.360f);
         consonants.add("x", 0.150f);
-        consonants.add("y", 1.974f);
+        consonants.add("y", 0.174f); //IRL 1.974f
         consonants.add("z", 0.074f);
         consonants.initiate();
     }
@@ -369,49 +411,8 @@ public class LimitedQueue<T> : Queue<T>
         base.Enqueue(item);
     }
 }
-public static class WordGenerator
-{
 
-}
-public static class EnumerableExtension
-{   
-    private static System.Random rng = new System.Random();
 
-    public static void Shuffle<T>(this IList<T> list)
-    {
-        int n = list.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = rng.Next(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-    }
-    //public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
-    //{
-    //    if (target == null)
-    //        throw new ArgumentNullException("target");
-    //    if (source == null)
-    //        throw new ArgumentNullException("source");
-    //    foreach (var element in source)
-    //        //if (target)
-    //        target.Add(element);
-    //}
-    public static T PickRandom<T>(this List<T> source)
-    {
-        //return source.ElementAt(Game.random.Next(source.Count));
-        return source[Game.random.Next(source.Count)];
-
-    }
-    public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
-    {
-        return source.FindAll(predicate).PickRandom();
-        //return source.ElementAt(Game.random.Next(source.Count));
-
-    }
-}
 public static class UtilsMy
 {
 
@@ -665,7 +666,7 @@ public static class UtilsMy
     }
 }
 
-public static class MyExtensions
+public static class MyIEnumerableExtensions
 {
     public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
     {
@@ -673,6 +674,13 @@ public static class MyExtensions
         {
             invokeMe(keyValue.Key, keyValue.Value);
         }
+    }
+    public static void AddMy(this Dictionary<System.Object, int> dictionary, System.Object what, int size)
+    {
+        if (dictionary.ContainsKey(what))
+            dictionary[what] += size;
+        else
+            dictionary.Add(what, size);
     }
     public static void move<T>(this List<T> source, T item, List<T> destination)
     {
@@ -798,5 +806,41 @@ public static class MyExtensions
             }
             return max;
         }
+    }
+    private static System.Random rng = new System.Random();
+
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
+    //public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
+    //{
+    //    if (target == null)
+    //        throw new ArgumentNullException("target");
+    //    if (source == null)
+    //        throw new ArgumentNullException("source");
+    //    foreach (var element in source)
+    //        //if (target)
+    //        target.Add(element);
+    //}
+    public static T PickRandom<T>(this List<T> source)
+    {
+        //return source.ElementAt(Game.random.Next(source.Count));
+        return source[Game.random.Next(source.Count)];
+
+    }
+    public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
+    {
+        return source.FindAll(predicate).PickRandom();
+        //return source.ElementAt(Game.random.Next(source.Count));
+
     }
 }

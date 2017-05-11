@@ -139,6 +139,21 @@ public class Province
         this.centre = accu;
         // }
     }
+
+    internal Culture getMajorCulture()
+    {
+        Dictionary<System.Object, int> cultures = new Dictionary<System.Object, int>();
+
+        foreach (var pop in allPopUnits)
+            //if (cultures.ContainsKey(pop.culture))
+            //    cultures[pop.culture] += pop.getPopulation();
+            //else
+            //    cultures.Add(pop.culture, pop.getPopulation());
+            cultures.AddMy(pop.culture, pop.getPopulation());
+        ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.getPopulation()));
+        return cultures.MaxBy(y=>y.Value).Key as Culture;
+    }
+
     public int getMenPopulation()
     {
         int result = 0;

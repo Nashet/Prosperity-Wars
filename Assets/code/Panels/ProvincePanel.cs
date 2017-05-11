@@ -109,6 +109,7 @@ public class ProvincePanel : MonoBehaviour
             + "\nID: " + province.getID()
             + "\nPopulation (with families): " + province.getFamilyPopulation()
             + "\nMiddle loyalty: " + province.getMiddleLoyalty()
+            + "\nMajor culture: " + province.getMajorCulture()
             + "\nTax income: " + province.getIncomeTax()
             + "\nResource: " + province.getResource()
             + "\nRural overpopulation: " + province.getOverpopulation()
