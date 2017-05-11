@@ -734,7 +734,7 @@ public class Market : Owner//: PrimitiveStorageSet
         return need;
     }
     /// <summary>
-    /// Result > 1 mean demand is hier, price should go up   Result feuwer 1 mean supply is hier, price should go down
+    /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
     /// based on last turn data    
     internal float getDemandSupplyBalance(Product pro)
     {
@@ -756,15 +756,15 @@ public class Market : Owner//: PrimitiveStorageSet
                 //if (supply == 0) balance = 2f;
                 //else
 
-                balance = demand / supply;
+                if (supply == 0)
+                    balance = demand / supply;
 
                 //if (balance > 1f) balance = 1f;
                 //&& supply == 0
-                if (demand == 0) balance = 0f; // overwise - furniture bag
+                if (demand == 0) balance = 0f; // otherwise - furniture bag
                                                // else
-                if (supply == 0) balance = float.MaxValue;
-                //if (float.IsInfinity(balance)) // if divided by zero, s = zero
-                //    balance = float.NaN;
+                if (supply == 0)
+
                 DSBbuffer.Set(new Storage(stor.getProduct(), balance));
             }
             dateOfDSB = Game.date;
@@ -777,7 +777,7 @@ public class Market : Owner//: PrimitiveStorageSet
             return tmp.get();
     }
     /// <summary>
-    /// Result > 1 mean demand is hier, price should go up   Result fiwer 1 mean supply is hier, price should go down
+    /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
     /// based on last turn data    
     //internal float getDemandSupplyBalanceOldNOLder(Product pro)
     //{
@@ -802,7 +802,7 @@ public class Market : Owner//: PrimitiveStorageSet
 
     //            //if (balance > 1f) balance = 1f;
     //            //&& supply == 0
-    //            if (demand == 0) balance = 0f; // overwise - furniture bag
+    //            if (demand == 0) balance = 0f; // otherwise - furniture bag
     //                                           // else
     //            if (supply == 0) balance = float.MaxValue;
     //            //if (float.IsInfinity(balance)) // if divided by zero, s = zero
@@ -821,7 +821,7 @@ public class Market : Owner//: PrimitiveStorageSet
 
     /// <summary>
     /// Changes price for every product in market
-    /// That's firts call for DSB in tick
+    /// That's first call for DSB in tick
     /// </summary>
     public void simulatePriceChangeBasingOnLastTurnDate()
     {
@@ -834,8 +834,8 @@ public class Market : Owner//: PrimitiveStorageSet
             if (price.getProduct() != Product.findByName("Gold"))
             {
                 balance = getDemandSupplyBalance(price.getProduct());
-                /// Result > 1 mean demand is hier, price should go up  
-                /// Result fiwer 1 mean supply is hier, price should go down               
+                /// Result > 1 mean demand is higher, price should go up  
+                /// Result fewer 1 mean supply is higher, price should go down               
                 //if (getSupply(price.getProduct()) == 0)
                 //    balance = 1;
                 //if (balance < 1f) antiBalance = 1 / balance;
