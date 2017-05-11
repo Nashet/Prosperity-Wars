@@ -57,6 +57,10 @@ public class CountryNameGenerator
         prefix.add("Dark ", 0.01f);
         prefix.add("Upper ", 0.2f);
         prefix.add("Middle ", 0.1f);
+
+        
+
+
         prefix.add("", 80f);
         prefix.initiate();
     }
@@ -70,7 +74,7 @@ public class CountryNameGenerator
         result.Append(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5)));
         result.Append(postfix.getRandom());
 
-        return result.ToString();
+        return UtilsMy.FirstLetterToUpper(result.ToString());
     }
 }
 public class ProvinceNameGenerator
@@ -96,7 +100,8 @@ public class ProvinceNameGenerator
             Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
             if (Game.random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
         }
-        return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
+        //return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
+        return Game.threadDangerSB.ToString();
     }
     public ProvinceNameGenerator()
     {
@@ -124,6 +129,25 @@ public class ProvinceNameGenerator
         postfix.add("rock", 2f);
         postfix.add("ville", 2f);
         postfix.add("polis", 2f);
+
+        postfix.add("lyn", 2f);
+        postfix.add("minster", 0.1f);
+        postfix.add("ton", 2f);
+        postfix.add("bury", 2f);
+        postfix.add("wich", 2f);
+
+        postfix.add("caster", 0.1f);
+        postfix.add("ham", 2f);
+        postfix.add("mouth", 2f);
+
+        postfix.add("ness", 2f);
+        postfix.add("pool", 2f);
+        postfix.add("stead", 2f);
+        postfix.add("wick", 2f);
+
+        postfix.add("worth", 2f);
+
+
         postfix.add("", 10f);
         postfix.initiate();
 
@@ -138,7 +162,24 @@ public class ProvinceNameGenerator
         prefix.add("Dark ", 0.01f);
         prefix.add("Upper ", 0.2f);
         prefix.add("Middle ", 0.1f);
-        prefix.add("", 80f);
+
+        prefix.add("Gate ", 0.2f);
+        prefix.add("King ", 0.3f);
+        prefix.add("Knock", 0.6f);
+        prefix.add("Ling", 0.6f);
+        prefix.add("Weald", 0.6f);
+
+        prefix.add("Kirk", 0.6f);
+        prefix.add("Brad", 0.6f);
+        prefix.add("Inner ", 0.6f);
+        prefix.add("Lang", 0.6f);
+        prefix.add("Nor", 0.6f);
+
+        prefix.add("Pen", 0.6f);
+        prefix.add("Sud", 0.6f);
+     
+
+        prefix.add("", 60f);
         prefix.initiate();
 
         vowels.add("a", 8.167f);
@@ -146,7 +187,7 @@ public class ProvinceNameGenerator
         vowels.add("i", 6.966f);
         vowels.add("o", 7.507f);
         vowels.add("u", 2.758f);
-        vowels.add("a", 8.167f);
+        //vowels.add("a", 8.167f);
         vowels.initiate();
 
         consonants.add("b", 1.492f);
@@ -186,7 +227,7 @@ public class ProvinceNameGenerator
             result.Append(generateWord(Game.random.Next(3, 5)));
         result.Append(postfix.getRandom());
 
-        return result.ToString();
+        return UtilsMy.FirstLetterToUpper(result.ToString());
     }
 }
 public class ChanceBox<T>
@@ -208,6 +249,7 @@ public class ChanceBox<T>
     }
     //SortedDictionary
     //SortedDictionary<T, float> list = new SortedDictionary<T, float>();
+    //todo make it dictionary
     List<Mean> list = new List<Mean>();
     public void add(T obj, float chance)
     {

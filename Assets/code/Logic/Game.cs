@@ -334,8 +334,8 @@ public class Game
     }
     void generateMapImage()
     {
-        mapImage = new Texture2D(200, 100);
-        //mapImage = new Texture2D(100, 50);
+        //mapImage = new Texture2D(200, 100);
+        mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -344,7 +344,7 @@ public class Game
         else
             amountOfProvince = 12 + Game.random.Next(8);
         amountOfProvince = 60 + Game.random.Next(20);
-        amountOfProvince = 160 + Game.random.Next(20);
+        //amountOfProvince = 160 + Game.random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
