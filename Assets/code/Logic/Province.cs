@@ -3,52 +3,123 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Text;
 
 public class Province
 {
 
-    public Color colorID;
-
+    Color colorID;
+    Color color;
     public Mesh mesh;
     MeshFilter meshFilter;
-    GameObject gameObject;
+    internal GameObject gameObject;
     public MeshRenderer meshRenderer;
-    //public static uint maxTribeMenCapacity = 2000;
+    //public static int maxTribeMenCapacity = 2000;
     private string name;
     private int ID;
-    public Country owner;
+    Country owner;
     public List<PopUnit> allPopUnits = new List<PopUnit>();
     public Vector3 centre;
 
     public static List<Province> allProvinces = new List<Province>();
-    private static uint defaultPopulationSpawn = 10;
+    private static int defaultPopulationSpawn = 10;
     public List<Factory> allFactories = new List<Factory>();
+    private Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+    private List<Province> neighbors = new List<Province>();
     Product resource;
-    internal uint fertileSoil;
+    internal int fertileSoil;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
+       
+        allProducers = getProducers();
         resource = inresource;
         colorID = icolorID; mesh = imesh; name = iname; meshFilter = imeshFilter;
         ID = iID;
         gameObject = igameObject;
         meshRenderer = imeshRenderer;
         fertileSoil = 10000;
-
+        setProvinceCenter();
+        SetLabel();
+    }
+    internal Country getOwner()
+    {
+        //if (owner == null)
+        //    return Country.NullCountry;
+        //else
+        return owner;
     }
     internal int getID()
     { return ID; }
-    public void SecedeTo(Country taker)
+    public void InitialOwner(Country taker)
     {
-        //this.owner - current owner
-        if (this.owner != null)
-            if (this.owner.ownedProvinces != null)
-                this.owner.ownedProvinces.Remove(this);
-        this.owner = taker;
+        if (this.getOwner() != null)
+            if (this.getOwner().ownedProvinces != null)
+                this.getOwner().ownedProvinces.Remove(this);
+        owner = taker;
+
         if (taker.ownedProvinces == null)
             taker.ownedProvinces = new List<Province>();
         taker.ownedProvinces.Add(this);
+        color = taker.getColor().getAlmostSameColor();
+        meshRenderer.material.color = color;
     }
-    public System.Collections.IEnumerator GetEnumerator()
+    public void secedeTo(Country taker)
+    {
+        //refuse loans to old country bank
+        foreach (var producer in allProducers)
+            if (producer.loans.get() != 0f)
+                getOwner().bank.defaultLoaner(producer);
+
+        if (getOwner().isOneProvince())
+            getOwner().killCountry(taker);
+        else
+            if (isCapital())
+            getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince(x => x != this));
+
+        this.demobilize();
+
+        // add loyalty penalty for conquired province // temp
+        allPopUnits.ForEach(x => x.loyalty.set(0f));
+
+
+        if (this.getOwner() != null)
+            if (this.getOwner().ownedProvinces != null)
+                this.getOwner().ownedProvinces.Remove(this);
+        owner = taker;
+
+        if (taker.ownedProvinces == null)
+            taker.ownedProvinces = new List<Province>();
+        taker.ownedProvinces.Add(this);
+
+        color = taker.getColor().getAlmostSameColor();
+        meshRenderer.material.color = color;
+
+    }
+
+    internal bool isCapital()
+    {
+        return getOwner().getCapital() == this;
+    }
+
+    internal void demobilize()
+    {
+        allPopUnits.ForEach(x => getOwner().allArmies.demobilize(x));
+    }
+
+
+
+    internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
+    {
+        return allProvinces.PickRandom(predicate);
+    }
+    internal List<Province> getNeigbors(Predicate<Province> predicate)
+    {
+        return neighbors.FindAll(predicate);
+
+    }
+    internal IEnumerable<Producer> allProducers;
+    IEnumerable<Producer> getProducers()
+    //public System.Collections.IEnumerator GetEnumerator()
     {
         foreach (Factory f in allFactories)
             yield return f;
@@ -56,30 +127,70 @@ public class Province
             //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
             yield return f;
     }
-    public uint getMenPopulation()
+    public void setProvinceCenter()
     {
-        uint result = 0;
+        Vector3 accu = new Vector3(0, 0, 0);
+        //foreach (Province pro in Province.allProvinces)
+        //{
+        //e accu.Set(0, 0, 0);
+        foreach (var c in this.mesh.vertices)
+            accu += c;
+        accu = accu / this.mesh.vertices.Length;
+        this.centre = accu;
+        // }
+    }
+    public int getMenPopulation()
+    {
+        int result = 0;
         foreach (PopUnit pop in allPopUnits)
-            result += pop.population;
+            result += pop.getPopulation();
         return result;
     }
-    public uint getFamilyPopulation()
+    public int getFamilyPopulation()
     {
-        return getMenPopulation() * Game.familySize;
+        return getMenPopulation() * Options.familySize;
     }
-    public uint getMiddleLoyalty()
+
+    internal float getIncomeTax()
     {
-        //Procent result = 0;
+        float res = 0f;
+        allPopUnits.ForEach(x => res += x.incomeTaxPayed.get());
+        return res;
+    }
+
+    public Procent getMiddleLoyalty()
+    {
+        Procent result = new Procent(0f);
+        int calculatedPopulation = 0;
         foreach (PopUnit pop in allPopUnits)
-            ;//  result += pop.amount;
-        return 0;
+        {
+            result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.loyalty);
+            calculatedPopulation += pop.getPopulation();
+        }
+        return result;
     }
+
+    internal void mobilize()
+    {
+        var army = this.getOwner().homeArmy;
+        foreach (var pop in allPopUnits)
+            if (pop.type.canMobilize())
+                army.add(pop.mobilize());
+    }
+
     public static bool isProvinceCreated(Color color)
     {
         foreach (Province anyProvince in allProvinces)
             if (anyProvince.colorID == color)
                 return true;
         return false;
+    }
+    public static Province findProvince(Color color)
+    {
+        foreach (Province anyProvince in allProvinces)
+            if (anyProvince.colorID == color)
+                return anyProvince;
+        return null;
     }
     public List<PopUnit> FindAllPopUnits(PopType ipopType)
     {
@@ -89,25 +200,34 @@ public class Province
                 result.Add(pop);
         return result;
     }
-    public uint FindPopulationAmountByType(PopType ipopType)
+
+    internal static Province findByID(int number)
+    {
+        foreach (var pro in allProvinces)
+            if (pro.ID == number)
+                return pro;
+        return null;
+    }
+
+    public int FindPopulationAmountByType(PopType ipopType)
     {
         List<PopUnit> list = FindAllPopUnits(ipopType);
-        uint result = 0;
+        int result = 0;
         foreach (PopUnit pop in list)
             if (pop.type == ipopType)
-                result += pop.population;
+                result += pop.getPopulation();
         return result;
     }
     //not called with capitalism
     internal void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
     {
         List<PopUnit> allAristocratsInProvince = FindAllPopUnits(PopType.aristocrats);
-        uint aristoctratAmount = 0;
+        int aristoctratAmount = 0;
         foreach (PopUnit pop in allAristocratsInProvince)
-            aristoctratAmount += pop.population;
+            aristoctratAmount += pop.getPopulation();
         foreach (Aristocrats aristocrat in allAristocratsInProvince)
         {
-            Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.population / (float)aristoctratAmount);
+            Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
             fromWho.pay(aristocrat.storageNow, howMuch);
             aristocrat.gainGoodsThisTurn.add(howMuch);
             aristocrat.dealWithMarket();
@@ -118,47 +238,53 @@ public class Province
     ///<summary> Simular by popType & culture</summary>    
     public PopUnit FindSimularPopUnit(PopUnit target)
     {
-        //PopUnit result = null;
         foreach (PopUnit pop in allPopUnits)
             if (pop.type == target.type && pop.culture == target.culture)
                 return pop;
         return null;
     }
+
+    internal Color getColorID()
+    {
+        return colorID;
+    }
+    internal Color getColor()
+    {
+        return color;
+    }
     public Value getMiddleNeedFullfilling(PopType type)
     {
         Value result = new Value(0);
-        uint allPopulation = 0;
+        int allPopulation = 0;
         List<PopUnit> localPops = FindAllPopUnits(type);
         if (localPops.Count > 0)
         {
             foreach (PopUnit pop in localPops)
             // get middle needs fullfiling according to pop weight            
             {
-                allPopulation += pop.population;
-                result.add(pop.NeedsFullfilled.multiple(pop.population));
+                allPopulation += pop.getPopulation();
+                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));
             }
             return result.divide(allPopulation); ;
         }
         else/// add defualt population
         {
-            //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.owner.culture, this));
-            PopUnit.tempPopList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.owner.culture, this));
+            //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
+            PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
             return new Value(0);
-
         }
     }
-
     public void BalanceEmployableWorkForce()
     {
         List<PopUnit> workforcList = this.FindAllPopUnits(PopType.workers);
-        uint totalWorkForce = 0; // = this.FindPopulationAmountByType(PopType.workers);
-        uint factoryWants = 0;
-        uint factoryWantsTotal = 0;
+        int totalWorkForce = 0; // = this.FindPopulationAmountByType(PopType.workers);
+        int factoryWants = 0;
+        int factoryWantsTotal = 0;
 
         foreach (PopUnit pop in workforcList)
-            totalWorkForce += pop.population;
-        uint popsLeft = totalWorkForce;
+            totalWorkForce += pop.getPopulation();
+        int popsLeft = totalWorkForce;
         if (totalWorkForce > 0)
         {
             // workforcList = workforcList.OrderByDescending(o => o.population).ToList();
@@ -199,7 +325,8 @@ public class Province
     }
     internal Product getResource()
     {
-        if (owner.isInvented(resource))
+        //if (getOwner().isInvented(resource))
+        if (resource.isInventedByAnyOne())
             return resource;
         else
             return null;
@@ -220,11 +347,13 @@ public class Province
                 result.Add(ft);
         return result;
     }
+
+
     internal bool CanBuildNewFactory(FactoryType ft)
     {
         if (HaveFactory(ft))
             return false;
-        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !owner.isInvented(ft.basicProduction.getProduct()))
+        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !getOwner().isInvented(ft.basicProduction.getProduct()))
             return false;
 
         return true;
@@ -249,15 +378,15 @@ public class Province
     {
         return name;
     }
-    internal uint getUnemployed()
+    internal int getUnemployed()
     {
-        //uint result = 0;
+        //int result = 0;
         //List<PopUnit> list = this.FindAllPopUnits(PopType.workers);
         //foreach (PopUnit pop in list)
         //    result += pop.getUnemployed();
-        uint totalWorkforce = this.FindPopulationAmountByType(PopType.workers);
+        int totalWorkforce = this.FindPopulationAmountByType(PopType.workers);
         if (totalWorkforce == 0) return 0;
-        uint employed = 0;
+        int employed = 0;
 
         foreach (Factory factory in allFactories)
             employed += factory.getWorkForce();
@@ -289,8 +418,6 @@ public class Province
         txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
 
-        //TextMesh newText = TextMesh();
-        // gameObject.rigidbody.centerOfMass
     }
 
     internal Factory findFactory(FactoryType proposition)
@@ -308,17 +435,17 @@ public class Province
                     return true;
         return false;
     }
-    internal float getOverPopulation()
+    internal float getOverpopulation()
     {
         float usedLand = 0f;
         foreach (PopUnit pop in allPopUnits)
             switch (pop.type.type)
             {
                 case PopType.PopTypes.Tribemen:
-                    usedLand += pop.population * Game.minLandForTribemen;
+                    usedLand += pop.getPopulation() * Options.minLandForTribemen;
                     break;
                 case PopType.PopTypes.Farmers:
-                    usedLand += pop.population * Game.minLandForFarmers;
+                    usedLand += pop.getPopulation() * Options.minLandForFarmers;
                     break;
             }
         return usedLand / fertileSoil;
@@ -328,7 +455,7 @@ public class Province
     internal float getLocalMinSalary()
     {
         if (allFactories.Count <= 1)
-            return owner.getMinSalary();
+            return getOwner().getMinSalary();
         else
         {
             float minSalary;
@@ -343,12 +470,32 @@ public class Province
             return minSalary;
         }
     }
+
+    internal void addNeigbor(Province found)
+    {
+        if (found != this && !distances.ContainsKey(found))
+            distances.Add(found, 1);
+        if (!neighbors.Contains(found))
+            neighbors.Add(found);
+
+    }
+    /// <summary>
+    /// for debug reasons
+    /// </summary>
+    /// <returns></returns>
+    internal string getNeigborsList()
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var t in distances)
+            sb.Append("\n").Append(t.Key.ToString());
+        return sb.ToString();
+    }
     /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minsalary
     ///</summary>
     internal float getLocalMaxSalary()
     {
         if (allFactories.Count <= 1)
-            return owner.getMinSalary();
+            return getOwner().getMinSalary();
         else
         {
             float maxSalary;
@@ -365,8 +512,8 @@ public class Province
     }
     internal float getMiddleFactoryWorkforceFullfilling()
     {
-        uint workForce = 0;
-        uint capacity = 0;
+        int workForce = 0;
+        int capacity = 0;
         foreach (Factory fact in allFactories)
             if (fact.isWorking())
             {

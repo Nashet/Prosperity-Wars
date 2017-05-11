@@ -49,14 +49,14 @@ public class FactoryPanel : DragPanel//for dragging
     }
     void setGUIElementsAccesability()
     {
-        var economy = shownFactory.province.owner.economy;
+        var economy = shownFactory.province.getOwner().economy;
 
         //upgradeButton.interactable = economy.allowsFactoryUpgradeByGovernment();
         //setButtonTooltip(upgradeButton, shownFactory.whyCantUpgradeFactory(Game.player));
         //upgradeButton.interactable = shownFactory.getConditionsForFactoryUpgrade(Game.player,  out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
         upgradeButton.interactable = shownFactory.conditionsUpgrade.isAllTrue(Game.player, out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-        subidize.interactable = shownFactory.getConditionsForFactorySubsidize(Game.player, false, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
+        subidize.interactable = shownFactory.conditionsSubsidize.isAllTrue(Game.player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
         //subidize.interactable = shownFactory.con
         if (shownFactory.isWorking())
             reopenButtonflag = reopenButtonStatus.close;
@@ -95,7 +95,7 @@ public class FactoryPanel : DragPanel//for dragging
 
         priority.value = shownFactory.getPriority();
         subidize.isOn = shownFactory.isSubsidized();
-        dontHireOnSubsidies.isOn = shownFactory.isdontHireOnSubsidies();
+        dontHireOnSubsidies.isOn = shownFactory.isDontHireOnSubsidies();
     }
     public void refresh()
     {
@@ -108,10 +108,10 @@ public class FactoryPanel : DragPanel//for dragging
             //var temp = shownFactory.getLifeNeeds();
             //foreach (Storage next in temp)
             //    lifeNeeds += next.ToString() + "; ";
-            //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fullfilled";
+            //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fulfilled";
             string InputRequired = "";
             //var temp = shownFactory.getLifeNeeds();
-            //todo anti-mirorring
+            
             string construction = "";
             if (shownFactory.getDaysInConstruction() > 0)
                 construction = "\nDays in construction: " + shownFactory.getDaysInConstruction();
@@ -140,8 +140,10 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nMoney income: " + shownFactory.wallet.moneyIncomethisTurn
                 + "\nProfit: " + shownFactory.getProfit()
                 + "\nInput required: " + InputRequired
-                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Costed: " + shownFactory.getConsumedCost().ToString()
+                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + shownFactory.getConsumedCost().ToString()
                 + "\nConsumed LT: " + shownFactory.consumedLastTurn
+                + "\nInput reserves: " + shownFactory.inputReservs
+                + "\nInput factor: " + shownFactory.getInputFactor()
                 + "\nSalary (per 1000 men):" + shownFactory.getSalary() + " Salary(total):" + shownFactory.getSalaryCost()
                 + "\nOwner: " + shownFactory.factoryOwner.ToString()
                 + upgradeNeeds
@@ -178,6 +180,7 @@ public class FactoryPanel : DragPanel//for dragging
     public void onSubsidizeValueChanged()
     {
         shownFactory.setSubsidized(subidize.isOn);
+        refresh();
     }
     public void ondontHireOnSubsidiesValueChanged()
     {
@@ -198,6 +201,7 @@ public class FactoryPanel : DragPanel//for dragging
             shownFactory.reopen(Game.player);
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
+        MainCamera.topPanel.refresh();
     }
     public void onUpgradeClick()
     {
@@ -227,7 +231,8 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onNationalizeClick()
     {
-
+        shownFactory.changeOwner(Game.player);
+        refresh();
     }
 
 }

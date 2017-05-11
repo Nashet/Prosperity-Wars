@@ -10,7 +10,7 @@ public class ProductionWindow : DragPanel
     // public GameObject ScrollViewMy;
     public ScrollRect table;
     // Use this for initialization
-    bool showAll;
+    //bool showAll;
     public Province showingProvince;
     void Start()
     {
@@ -28,7 +28,7 @@ public class ProductionWindow : DragPanel
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
         showingProvince = inn;
-        if (showingProvince != null)
+        if (showingProvince != null && Game.selectedProvince != null)
         {
             Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
         }
@@ -36,7 +36,8 @@ public class ProductionWindow : DragPanel
     public void onCloseClick()
     {
         hide();
-        showAll = false;
+        //showAll = false;
+        //showingProvince
     }
     //internal void setShowAll()
     //{
@@ -56,14 +57,16 @@ public class ProductionWindow : DragPanel
     {
         hide();
         SetAllFactoriesToShow();
-        showAll = true;
+        //showAll = true;
+        showingProvince = null;
         show(null, true);
     }
     public void refresh()
     {
 
         hide();
-        if (showAll)
+        //if (showAll)
+        if (showingProvince ==null)
         {
             SetAllFactoriesToShow();
             show(null, false);

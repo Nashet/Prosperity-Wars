@@ -4,7 +4,6 @@ using System;
 
 public class Bank
 {
-
     Wallet reservs = new Wallet(0);
     Value givenLoans = new Value(0);
     internal void PutOnDeposit(Wallet fromWho, Value howMuch)
@@ -17,9 +16,7 @@ public class Bank
     }
     /// <summary>
     /// checks are outside
-    /// </summary>
-    /// <param name="taker"></param>
-    /// <param name="howMuch"></param>
+    /// </summary>   
     internal void TakeLoan(Producer taker, Value howMuch)
     {
         reservs.pay(taker.wallet, howMuch);
@@ -47,7 +44,7 @@ public class Bank
 
     internal bool CanITakeThisLoan(Value loan)
     {
-        //if there is enough money and enough reservs
+        //if there is enough money and enough reserves
         if (reservs.haveMoney.get() - loan.get() >= getMinimalReservs().get())
             return true;
         return false;
@@ -55,7 +52,7 @@ public class Bank
 
     private Value getMinimalReservs()
     {
-        //todo improve reservs
+        //todo improve reserves
         return new Value(100f);
     }
 
@@ -64,5 +61,17 @@ public class Bank
         return reservs.ToString();
     }
 
-    
+    internal void defaultLoaner(Producer producer)
+    {
+        givenLoans.subtract(producer.loans);
+        producer.loans.set(0);
+    }
+    /// <summary>
+    /// Assuming all clients already defaulted theirs loans
+    /// </summary>    
+    internal void add(Bank annexingBank)
+    {
+        annexingBank.reservs.sendAll(this.reservs);
+        annexingBank.givenLoans.sendAll(this.givenLoans);        
+    }
 }

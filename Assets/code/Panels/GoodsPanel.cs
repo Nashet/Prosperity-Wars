@@ -30,7 +30,7 @@ public class GoodsPanel : DragPanel
         if (product != null)
         {
             generaltext.text = product.ToString()
-                + "\n price: " + Game.market.findPrice(product) + " supply: " + Game.market.getSupply(product) + " consumption: " + Game.market.getBouth(product);
+                + "\n price: " + Game.market.findPrice(product) + " supply: " + Game.market.getSupply(product, true) + " consumption: " + Game.market.getBouth(product, true);
 
 
             //            graphTexture.

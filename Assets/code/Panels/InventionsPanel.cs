@@ -68,7 +68,7 @@ public class InventionsPanel : DragPanel
             {
                 inventButton.interactable = false;
                 if (Game.player.inventions.isInvented(selectedInvention))
-                    inventButton.GetComponentInChildren<Text>().text = "Alredy invented " + selectedInvention.ToString();
+                    inventButton.GetComponentInChildren<Text>().text = "Already invented " + selectedInvention.ToString();
                 else
                     inventButton.GetComponentInChildren<Text>().text = "Not enough SP to invent " + selectedInvention.ToString();
 

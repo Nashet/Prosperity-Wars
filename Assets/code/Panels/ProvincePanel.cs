@@ -6,6 +6,7 @@ public class ProvincePanel : MonoBehaviour
 {
     public Text generaltext;
     public GameObject provincePanel;
+    public Button btnOwner;
     // Use this for initialization
     // thisPanel;
     void Start()
@@ -104,13 +105,18 @@ public class ProvincePanel : MonoBehaviour
     }
     public void UpdateProvinceWindow(Province province)
     {
-        generaltext.text = "name: " + province 
-            + "\nID: " + province.getID()            
-            + "\nPopulation (+/-): " + province.getFamilyPopulation()
-            + "\nMiddle loyalty" + "\nTax income"
+        generaltext.text = "name: " + province
+            + "\nID: " + province.getID()
+            + "\nPopulation (with families): " + province.getFamilyPopulation()
+            + "\nMiddle loyalty: " + province.getMiddleLoyalty()
+            + "\nTax income: " + province.getIncomeTax()
             + "\nResource: " + province.getResource()
-            + "\nRural overpopulation: " + province.getOverPopulation()
+            + "\nRural overpopulation: " + province.getOverpopulation()
+            //+ "\nNeighbors " + province.getNeigborsList()
             ;
-        if (Game.devMode) generaltext.text += "\nColor: " + province.colorID;
+        Text text = btnOwner.GetComponentInChildren<Text>();
+        text.text = "Owner: " + province.getOwner();
+
+        if (Game.devMode) generaltext.text += "\nColor: " + province.getColorID();
     }
 }

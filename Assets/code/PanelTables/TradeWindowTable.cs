@@ -22,7 +22,7 @@ public class TradeWindowTable : MyTable
     protected void AddButton(string text, Storage stor)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         if (stor==null)
             sampleButton.Setup(text, this, null);
@@ -34,44 +34,44 @@ public class TradeWindowTable : MyTable
         int counter = 0;
 
         // Adding product name 
-        AddButton("Product", null);
+        AddButton("Product");
         ////Adding production
-        AddButton("Production", null);
+        AddButton("Production");
         ////Adding On market
-        AddButton("On market", null);
+        AddButton("On market");
         ////Adding abstract Demand
         //AddButton(Game.market.get(pro).ToString().name, null);
         ////Adding effective Demand
-        AddButton("Consumption", null);
+        AddButton("Consumption");
         ////Adding bought
-        AddButton("Bought", null);
+        AddButton("Bought");
         ////Adding effective Demand/Supply
-        AddButton("D/S Balance", null);
+        AddButton("D/S Balance");
         ////Adding price
-        AddButton("Price", null);
+        AddButton("Price");
         ////Adding price Change
         //AddButton(null.loyalty.ToString(), null);
         foreach (Storage next in Game.market.marketPrice)
 
         {
             Product product = next.getProduct();
-            if (product != Product.Gold)
+            if (product != Product.Gold && product.isInventedByAnyOne())
             {
                 // Adding product name 
                 AddButton(product.getName(), next);
                 ////Adding production
-                AddButton(Game.market.getProductionTotal(product).ToString(), next);
+                AddButton(Game.market.getProductionTotal(product, !Game.devMode).ToString(), next);
                 ////Adding abstract Demand
                 //AddButton(Game.market.get(pro).ToString().name, next);
 
                 ////Adding On market
-                AddButton(Game.market.getSupply(product).ToString(), next);
+                AddButton(Game.market.getSupply(product, !Game.devMode).ToString(), next);
                 
                 ////Adding total consumption
-                AddButton(Game.market.getTotalConsumption(product).ToString(), next);
+                AddButton(Game.market.getTotalConsumption(product, !Game.devMode).ToString(), next);
 
                 ////Adding Bought
-                AddButton(Game.market.getBouth(product).ToString(), next);
+                AddButton(Game.market.getBouth(product, !Game.devMode).ToString(), next);
 
                 ////Adding effective Demand/Supply
                 AddButton(Game.market.getDemandSupplyBalance(product).ToString(), next);

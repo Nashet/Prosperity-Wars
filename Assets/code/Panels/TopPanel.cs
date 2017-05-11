@@ -23,13 +23,12 @@ public class TopPanel : MonoBehaviour
     }
     public void refresh()
     {
-        
-        generalText.text = "Date: " + Game.date + " Country: " + Game.player.name
-            + " Population: " + Game.player.getMenPopulation() + " Storage: " + Game.player.storageSet.ToString() + " Wallet: "
-            + Game.player.wallet.haveMoney.ToString() + " income: " + Game.player.wallet.moneyIncomethisTurn.ToString()
+
+        generalText.text = "Economic Simulation v9 Date: " + Game.date + " Country: " + Game.player.name
+            + "\nMoney: " + Game.player.wallet.haveMoney
             + " Science points: " + Game.player.sciencePoints
-            + " Bank reservs: " + Game.player.bank.ToString() + " Bank loans: " + Game.player.bank.getGivenLoans()
-            + " Total money: " + Game.getAllMoneyInWorld();
+            + " Men: " + Game.player.getMenPopulation()
+            + " Storage: " + Game.player.storageSet.ToString();
     }
     public void onTradeClick()
     {
@@ -37,6 +36,13 @@ public class TopPanel : MonoBehaviour
             MainCamera.tradeWindow.hide();
         else
             MainCamera.tradeWindow.show(true);
+    }
+    public void onDiplomacyClick()
+    {
+        if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            MainCamera.diplomacyPanel.hide();
+        else
+            MainCamera.diplomacyPanel.show();
     }
     public void onInventionsClick()
     {
@@ -87,16 +93,29 @@ public class TopPanel : MonoBehaviour
     }
     public void onPoliticsClick()
     {
-        //MainCamera.politicsPanel.show(true);
         if (MainCamera.politicsPanel.isActiveAndEnabled)
             MainCamera.politicsPanel.hide();
         else
             MainCamera.politicsPanel.show(true);
     }
+    public void onFinanceClick()
+    {
+        if (MainCamera.financePanel.isActiveAndEnabled)
+            MainCamera.financePanel.hide();
+        else
+            MainCamera.financePanel.show();
+    }
     void onbtnStepClick(Button button)
     {
-
-        Game.haveToStepSimulation = true;
+        if (Game.haveToRunSimulation)
+        {
+            Game.haveToRunSimulation = false;
+            button.image.color = Color.grey;
+            Text text = button.GetComponentInChildren<Text>();
+            text.text = "Pause";
+        }
+        else
+            Game.haveToStepSimulation = true;
     }
     void onbtnPlayClick(Button button)
     {
@@ -114,92 +133,4 @@ public class TopPanel : MonoBehaviour
             text.text = "Pause";
         }
     }
-}
-abstract public class MyTable : MonoBehaviour
-{
-    //public List<Record> recordList;
-    public Transform contentPanel; // myself
-    public SimpleObjectPool buttonObjectPool;
-    //public GameObject parentPanel;
-    //public ShopScrollList otherShop;
-    protected int rowHeight = 20;
-    public int columnsAmount;
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-    // here magic is going
-    void OnEnable()
-    {
-        //if (Game.date !=0)
-        Refresh();
-    }
-    abstract protected void Refresh();
-
-    void Update()
-    {
-        // refresh();
-    }
-    protected void AddButton(string text, Province prov)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, prov);
-    }
-    protected void AddButton(string text)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, null);
-    }
-    protected void RemoveButtons()
-    {
-        int count = contentPanel.childCount;
-        for (int i = 0; i < count; i++)
-        {
-            GameObject toRemove = contentPanel.GetChild(0).gameObject;
-            buttonObjectPool.ReturnObject(toRemove);
-        }
-    }
-
-    abstract protected void AddButtons();
-    //abstract protected void AddButton(string text, PopUnit record);
-
-    //public void TryTransferItemToOtherShop(Item item)
-    //{
-    //    if (otherShop.gold >= item.price)
-    //    {
-    //        gold += item.price;
-    //        otherShop.gold -= item.price;
-
-    //        AddItem(item, otherShop);
-    //        RemoveItem(item, this);
-
-    //        RefreshDisplay();
-    //        otherShop.RefreshDisplay();
-    //        Debug.Log("enough gold");
-
-    //    }
-    //    Debug.Log("attempted");
-    //}
-
-    //void AddItem(Record itemToAdd, ShopScrollList shopList)
-    //{
-    //    shopList.recordList.Add(itemToAdd);
-    //}
-
-    //private void RemoveItem(Record itemToRemove, ShopScrollList shopList)
-    //{
-    //    for (int i = shopList.recordList.Count - 1; i >= 0; i--)
-    //    {
-    //        if (shopList.recordList[i] == itemToRemove)
-    //        {
-    //            shopList.recordList.RemoveAt(i);
-    //        }
-    //    }
-    //}
 }

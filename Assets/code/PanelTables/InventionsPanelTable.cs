@@ -4,10 +4,10 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-// represen each opunit record in table
+// represent each opunit record in table
 
 public class InventionsPanelTable : MyTable
-{    
+{
     override protected void Refresh()
     {
         ////if (Game.date != 0)
@@ -20,23 +20,23 @@ public class InventionsPanelTable : MyTable
     protected void AddButton(string text, InventionType inventionType)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);
         //else
-            sampleButton.Setup(text, this, inventionType);
+        sampleButton.Setup(text, this, inventionType);
     }
     override protected void AddButtons()
     {
         int counter = 0;
 
         // Adding invention name 
-        AddButton("Invention", null);
+        AddButton("Invention");
         ////Adding possibleStatues
-        AddButton("Status", null);
+        AddButton("Status");
         ////Adding invention price
-        AddButton("Science points", null);
+        AddButton("Science points");
         if (Game.player != null)
             foreach (var next in Game.player.inventions.list)
             {

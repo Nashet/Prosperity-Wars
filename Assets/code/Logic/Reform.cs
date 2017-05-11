@@ -46,7 +46,7 @@ public abstract class AbstractReform
         country = incountry;
     }
     abstract internal bool isAvailable(Country country);
-    abstract public System.Collections.IEnumerator GetEnumerator();
+    abstract public IEnumerator GetEnumerator();
     internal abstract bool canChange();
     internal abstract void setValue(AbstractReformValue selectedReformValue);
 
@@ -69,7 +69,8 @@ public class Government : AbstractReform
     {
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
-            PossibleStatuses.Add(this);
+            // (!PossibleStatuses.Contains(this))
+                PossibleStatuses.Add(this);
         }
 
         internal override bool isAvailable(Country country)
@@ -97,7 +98,7 @@ public class Government : AbstractReform
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
     internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
     internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "Only Aristocrats and Clerics can vote", 1, ConditionsList.AlwaysYes);
-    internal static ReformValue AnticRespublic = new ReformValue("Antique respublic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
+    internal static ReformValue AnticRespublic = new ReformValue("Antique republic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
     internal static ReformValue Despotism = new ReformValue("Despotism", "Despot does what he wants", 2, ConditionsList.AlwaysYes);
     internal static ReformValue Theocracy = new ReformValue("Theocracy", "Only Clerics have power", 5, ConditionsList.AlwaysYes);
 
@@ -108,7 +109,7 @@ public class Government : AbstractReform
 
     internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.AlwaysYes);
 
-   
+
     public Government(Country country) : base("Government", "Form of government", country)
     {
         status = Tribal;
@@ -145,6 +146,22 @@ public class Government : AbstractReform
 }
 public class Economy : AbstractReform
 {
+    internal static Condition isNotLF = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
+    internal static Condition isNotNatural = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true);
+
+    internal static Condition isNotState = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.StateCapitalism; }, "Economy policy is not State Capitalism", true);
+    internal static Condition isNotInterventionism = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.Interventionism; }, "Economy policy is not Limited Interventionism", true);
+    internal static Condition isNotPlanned = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.PlannedEconomy; }, "Economy policy is not Planned Economy", true);
+
+
+
+    internal static Condition isNotMarket = new Condition(delegate (Country forWhom) { return forWhom.economy.status == Economy.NaturalEconomy || forWhom.economy.status == Economy.PlannedEconomy; },
+      "Economy is not market economy", true);
+    internal static Condition isMarket = new Condition(delegate (Country forWhom)
+        {
+            return forWhom.economy.status == Economy.StateCapitalism || forWhom.economy.status == Economy.Interventionism
+        || forWhom.economy.status == Economy.LaissezFaire;
+        }, "Economy is market economy", true);
     public class ReformValue : AbstractReformValue
     {
 
@@ -185,7 +202,8 @@ public class Economy : AbstractReform
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
             new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true)
+            new Condition(InventionType.banking, true),
+            Serfdom.IsAbolishedInAnyWay
         });
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
@@ -194,22 +212,12 @@ public class Economy : AbstractReform
     internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
     internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<AbstractCondition>()
         {
-            //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.collectivism); }, InventionType.collectivism.getInventedPhrase(), true),
-            //new ConditionString(InventionType.collectivism, true),
-            //new ConditionString(delegate (Country forWhom) { return forWhom.government.status == Government.ProletarianDictatorship; }, "Government is Proletarian Dictatorship", true)
-            //new ConditionString(Government.ProletarianDictatorship, true)
             InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented
         }));
-    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "not dirty pants", 3, capitalism);
+    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 3, capitalism);
 
     /// ////////////
 
-    internal static Condition isNotLF = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
-    internal static Condition isNotNatural = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true);
-
-    internal static Condition isNotState = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.StateCapitalism; }, "Economy policy is not State Capitalism", true);
-    internal static Condition isNotInterventionism = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.Interventionism; }, "Economy policy is not Limited Interventionism", true);
-    internal static Condition isNotPlanned = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.PlannedEconomy; }, "Economy policy is not Planned Economy", true);
 
     /// ////////////
     public Economy(Country country) : base("Economy", "Your economy policy", country)
@@ -239,84 +247,32 @@ public class Economy : AbstractReform
         status = (ReformValue)selectedReform;
     }
 
-    internal bool isMarket()
-    {
-        if (status == Economy.NaturalEconomy || status == Economy.PlannedEconomy)
-            return false;
-        else
-            return true;
-    }
+    //internal bool isMarket()
+    //{
+    //    if (status == Economy.NaturalEconomy || status == Economy.PlannedEconomy)
+    //        return false;
+    //    else
+    //        return true;
+    //}
     internal override bool isAvailable(Country country)
     {
         return true;
     }
-
-    //internal bool allowsFactoryUpgradeByGovernment()
-    //{
-    //    if (status == Economy.LaissezFaire)
-    //        return false;
-    //    else return true;
-    //}
-    //internal bool allowsFactoryCloseByGovernment()
-    //{
-    //    if (status != Economy.LaissezFaire)
-    //        return true;
-    //    else return false;
-    //}
-    //internal bool allowsFactoryReopenByGovernment()
-    //{
-    //    if (status != Economy.LaissezFaire)
-    //        return true;
-    //    else return false;
-    //}
-    //internal bool allowsFactoryDestroyByGovernment()
-    //{
-    //    if (status == Economy.StateCapitalism || status == Economy.PlannedEconomy || status == Economy.NaturalEconomy)
-    //        //if (status != Economy.LaissezFaire ||)
-    //        return true;
-    //    else return false;
-    //}
-    //internal bool allowsFactorySellByGovernment()
-    //{
-    //    if (status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-    //        return true;
-    //    else return false;
-    //}
-    //internal bool allowsFactoryBuyByGovernment()
-    //{
-    //    if (status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-    //        return true;
-    //    else return false;
-    //}
-    //internal bool allowsFactoryNatonalizeByGovernment()
-    //{
-    //    if (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-    //        return true;
-    //    else return false;
-    //}
-
-    //internal bool allowsFactoryBuildingByGovernment()
-    //{
-    //    if (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-    //        return true;
-    //    else return false;
-    //}
-
-
 }
 
 public class Serfdom : AbstractReform
 {
-    public class LocalReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformValue
     {
-        public LocalReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
-            PossibleStatuses.Add(this);
-            this.allowed = condition;
+            //if (!PossibleStatuses.Contains(this))
+                PossibleStatuses.Add(this);
+           // this.allowed = condition;
         }
         internal override bool isAvailable(Country country)
         {
-            LocalReformValue requested = this;
+            ReformValue requested = this;
             //alowed
             if ((requested.ID == 4) && country.isInvented(InventionType.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
@@ -354,31 +310,46 @@ public class Serfdom : AbstractReform
                 return nu;
         }
 
+
     }
-    internal LocalReformValue status;
-    internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
-    internal static LocalReformValue Allowed = new LocalReformValue("Allowed", "Peasants and other plebs pay 10% of income to Aristocrats", 0, ConditionsList.AlwaysYes);
-    internal static LocalReformValue Brutal = new LocalReformValue("Brutal", "Peasants and other plebs pay 20% of income to Aristocrats", 1, ConditionsList.AlwaysYes);
-    internal static LocalReformValue Abolished = new LocalReformValue("Abolished", "Abolished with no obligations", 2,
+    internal ReformValue status;
+    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
+    internal static ReformValue Allowed;
+    internal static ReformValue Brutal;
+    internal static ReformValue Abolished = new ReformValue("Abolished", "Abolished with no obligations", 2,
         new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.individualRights, true)
         }));
-    internal static LocalReformValue AbolishedWithLandPayment = new LocalReformValue("Abolished with land payment", "Peasants are personally free now but they have to pay debt for land", 3,
+    internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "Peasants are personally free now but they have to pay debt for land", 3,
         new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true)
+            new Condition(InventionType.banking, true), Condition.IsNotImplemented
         }));
-    internal static LocalReformValue AbolishedAndNationalizated = new LocalReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4,
+    internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
         {
-            new Condition( Government.ProletarianDictatorship, true)
+            new Condition( Government.ProletarianDictatorship, true), Condition.IsNotImplemented
         }));
 
 
-    public Serfdom(Country country) : base("Serfdom", "Aristocrats privilegies", country)
+
+    public Serfdom(Country country) : base("Serfdom", "Aristocrats privileges", country)
     {
+        if (Allowed == null)
+        Allowed = new ReformValue("Allowed", "Peasants and other plebes pay 10% of income to Aristocrats", 0,
+            new ConditionsList(new List<Condition>()
+            {
+            Economy.isNotMarket
+            }));
+        if (Brutal == null)
+            Brutal = new ReformValue("Brutal", "Peasants and other plebes pay 20% of income to Aristocrats", 1,
+            new ConditionsList(new List<Condition>()
+            {
+            Economy.isNotMarket
+            }));
+
         status = Allowed;
     }
     internal override AbstractReformValue getValue()
@@ -387,8 +358,8 @@ public class Serfdom : AbstractReform
     }
     internal override AbstractReformValue getValue(int value)
     {
-        return PossibleStatuses.Find(x => x.ID == value);
-        //return PossibleStatuses[value];
+        //return PossibleStatuses.Find(x => x.ID == value);
+        return PossibleStatuses[value];
     }
     internal override bool canChange()
     {
@@ -396,84 +367,131 @@ public class Serfdom : AbstractReform
     }
     public override IEnumerator GetEnumerator()
     {
-        foreach (LocalReformValue f in PossibleStatuses)
+        foreach (ReformValue f in PossibleStatuses)
             yield return f;
     }
+
     internal override void setValue(AbstractReformValue selectedReform)
     {
-        status = (LocalReformValue)selectedReform;
+        status = (ReformValue)selectedReform;
     }
     internal override bool isAvailable(Country country)
     {
         return true;
     }
+    internal static Condition IsAbolishedInAnyWay = new Condition(delegate (Country forWhom)
+    {
+        return forWhom.serfdom.status == Serfdom.Abolished
+    || forWhom.serfdom.status == Serfdom.AbolishedAndNationalizated || forWhom.serfdom.status == Serfdom.AbolishedWithLandPayment;
+    },
+        "Serfdom is abolished", true);
+    internal static Condition IsNotAbolishedInAnyWay = new Condition(delegate (Country forWhom)
+    {
+        return forWhom.serfdom.status == Serfdom.Allowed
+    || forWhom.serfdom.status == Serfdom.Brutal;
+    },
+        "Serfdom is in power", true);
 }
 public class MinimalWage : AbstractReform
 {
-    public class LocalReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformValue
     {
-        public LocalReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
-            PossibleStatuses.Add(this);
+           // if (!PossibleStatuses.Contains(this))
+                PossibleStatuses.Add(this);
         }
         internal override bool isAvailable(Country country)
         {
-            LocalReformValue requested = this;
-            //alowed
-            //if ((requested.ID == 4) && country.isInvented(InventionType.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
-            //    return true;
-            //else
-            //if ((requested.ID == 3) && country.isInvented(InventionType.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
-            //    return true;
-            //else
-            //if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
-            //    return true;
-            //else
-            //    if ((requested.ID == 1) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1))
-            //    return true;
-            //else
-            //if ((requested.ID == 0))
-            //    return true;
-            //else
-            //    return false;
             return true;
-
         }
         internal override void onReformEnacted()
         {
 
         }
-        static Procent br = new Procent(0.2f);
-        static Procent al = new Procent(0.1f);
-        static Procent nu = new Procent(0.0f);
-        internal Procent getTax()
+        /// <summary>
+        /// Calculates wage basing on consumption cost for 1000 workers
+        /// </summary>        
+        internal float getWage()
         {
-            if (this == Minimal)
-                return br;
+            if (this == None)
+                return 0f;
+            else if (this == Scanty)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                //result.multipleInside(0.5f);
+                return result.get();
+            }
+            else if (this == Minimal)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.02f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Trinket)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.04f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Middle)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.06f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Big)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.08f);
+                //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
+                result.add(everyDayCost);
+                //result.add(luxuryCost);
+                return result.get();
+            }
             else
-                if (this == Middle)
-                return al;
-            else
-                return nu;
+                return 0f;
+        }
+        override public string ToString()
+        {
+            return base.ToString() + ", value: " + getWage();
         }
     }
-    internal LocalReformValue status;
-    internal static List<LocalReformValue> PossibleStatuses = new List<LocalReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
-    internal static LocalReformValue None = new LocalReformValue("None", "", 0, new ConditionsList(new List<Condition>()
-        {
-            new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true)
-        }));
-    internal static LocalReformValue Scanty = new LocalReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
+    ReformValue status;
+    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
+    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
-            new Condition(Economy.LaissezFaire, true)
+            Economy.isNotLF,
         }));
-    internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1, ConditionsList.AlwaysYes);
-    //internal static LocalReformValue Minimal = new LocalReformValue("Minimal", "Just enough to feed yourself", 1);
-    internal static LocalReformValue Middle = new LocalReformValue("Middle", "Plenty good wage", 2, ConditionsList.AlwaysYes);
-    internal static LocalReformValue Big = new LocalReformValue("Generous", "Can live almost likea king. Almost..", 3, ConditionsList.AlwaysYes);
-    //internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalizated land", "Aristocrats loose property", 4);
+    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 1, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 6, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good wage", 2, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 3, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
 
 
     public MinimalWage(Country country) : base("Minimal wage", "", country)
@@ -495,12 +513,12 @@ public class MinimalWage : AbstractReform
     }
     public override IEnumerator GetEnumerator()
     {
-        foreach (LocalReformValue f in PossibleStatuses)
+        foreach (ReformValue f in PossibleStatuses)
             yield return f;
     }
     internal override void setValue(AbstractReformValue selectedReform)
     {
-        status = (LocalReformValue)selectedReform;
+        status = (ReformValue)selectedReform;
     }
     internal override bool isAvailable(Country country)
     {
@@ -510,6 +528,143 @@ public class MinimalWage : AbstractReform
             return false;
     }
 }
+public class UnemploymentSubsidies : AbstractReform
+{
+    public class ReformValue : AbstractReformValue
+    {
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        {
+            //if (!PossibleStatuses.Contains(this))
+                PossibleStatuses.Add(this);
+        }
+        internal override bool isAvailable(Country country)
+        {
+            return true;
+        }
+        internal override void onReformEnacted()
+        {
+
+        }
+        /// <summary>
+        /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
+        /// </summary>        
+        internal float getSubsidiesRate()
+        {
+            if (this == None)
+                return 0f;
+            else if (this == Scanty)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                //result.multipleInside(0.5f);
+                return result.get();
+            }
+            else if (this == Minimal)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.02f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Trinket)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.04f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Middle)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.06f);
+                result.add(everyDayCost);
+                return result.get();
+            }
+            else if (this == Big)
+            {
+                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                everyDayCost.multipleInside(0.08f);
+                //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
+                result.add(everyDayCost);
+                //result.add(luxuryCost);
+                return result.get();
+            }
+            else
+                return 0f;
+        }
+        override public string ToString()
+        {
+            return base.ToString() + ", value: " + getSubsidiesRate();
+        }
+    }
+    ReformValue status;
+    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
+    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 1, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 6, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good subsidies", 2, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 3, new ConditionsList(new List<Condition>()
+        {
+            new Condition(InventionType.Welfare, true),
+            Economy.isNotLF,
+        }));
+
+
+    public UnemploymentSubsidies(Country country) : base("Unemployment Subsidies", "", country)
+    {
+        status = None;
+    }
+    internal override AbstractReformValue getValue()
+    {
+        return status;
+    }
+    internal override AbstractReformValue getValue(int value)
+    {
+        return PossibleStatuses.Find(x => x.ID == value);
+        //return PossibleStatuses[value];
+    }
+    internal override bool canChange()
+    {
+        return true;
+    }
+    public override IEnumerator GetEnumerator()
+    {
+        foreach (ReformValue f in PossibleStatuses)
+            yield return f;
+    }
+    internal override void setValue(AbstractReformValue selectedReform)
+    {
+        status = (ReformValue)selectedReform;
+    }
+    internal override bool isAvailable(Country country)
+    {
+        if (country.isInvented(InventionType.Welfare))
+            return true;
+        else
+            return false;
+    }
+}
+
 
 public class TaxationForPoor : AbstractReform
 {
@@ -571,20 +726,63 @@ public class TaxationForPoor : AbstractReform
     }
 }
 
-
-
-
-public class Needs
+public class TaxationForRich : AbstractReform
 {
-    //Product product;
-    public PopType popType;
-    //*For 1000 population*//
-    //public Value needs;
-    public Storage needs;
-    public Needs(PopType ipopType, Product iproduct, uint iamount)
+    public class ReformValue : AbstractReformValue
     {
-        //product = iproduct;
-        popType = ipopType;
-        needs = new Storage(iproduct, iamount);
+        internal Procent tax;
+        public ReformValue(string inname, string indescription, Procent intarrif, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        {
+            tax = intarrif;
+        }
+        override public string ToString()
+        {
+            return tax.ToString() + base.ToString();
+        }
+        internal override bool isAvailable(Country country)
+        {
+            //if (ID == 2 && !country.isInvented(InventionType.collectivism))
+            //    return false;
+            //else
+            return true;
+        }
+        internal override void onReformEnacted()
+        {
+
+        }
+    }
+    ReformValue status;
+    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
+    public TaxationForRich(Country country) : base("Taxation for rich", "", country)
+    {
+        for (int i = 0; i <= 10; i++)
+            PossibleStatuses.Add(new ReformValue(" tax", "", new Procent(i * 0.1f), i, ConditionsList.AlwaysYes));
+        status = PossibleStatuses[1];
+    }
+    internal override AbstractReformValue getValue()
+    {
+        return status;
+    }
+    internal override AbstractReformValue getValue(int value)
+    {
+        return PossibleStatuses[value];
+    }
+    internal override bool canChange()
+    {
+        return true;
+    }
+    public override IEnumerator GetEnumerator()
+    {
+        foreach (ReformValue f in PossibleStatuses)
+            yield return f;
+    }
+    internal override void setValue(AbstractReformValue selectedReform)
+    {
+        status = (ReformValue)selectedReform;
+    }
+    internal override bool isAvailable(Country country)
+    {
+        return true;
     }
 }
+

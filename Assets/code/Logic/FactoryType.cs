@@ -36,12 +36,11 @@ public class FactoryType
         else
             resourceInput = iresourceInput;
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
-        upgradeResource.Set(new Storage(Product.Stone, 10f));
-        //internal ConditionsList conditionsBuild;
+        upgradeResource.Set(new Storage(Product.Stone, 10f));        
         enoughMoneyOrResourcesToBuild = new Condition(
           (delegate (Country forWhom)
           {
-              if (forWhom.economy.isMarket())
+              if (Economy.isMarket.checkIftrue(forWhom))
                   return forWhom.wallet.canPay(getBuildCost());
               else
               {
@@ -51,6 +50,8 @@ public class FactoryType
 
           }), "Have enough money or resources to build", true
           );
+        //Condition factoryPlacedInOurCountry = new Condition((Owner forWhom) => province.getOwner() == forWhom, "Enterprise placed in our country", false);
+        //, factoryPlacedInOurCountry
         conditionsBuild = new ConditionsList(new List<AbstractCondition>() {
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
@@ -62,7 +63,7 @@ public class FactoryType
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());
-        result.add(Game.factoryMoneyReservPerLevel);
+        result.add(Options.factoryMoneyReservPerLevel);
         return result;
     }
     internal PrimitiveStorageSet getBuildNeeds()
@@ -111,7 +112,7 @@ public class FactoryType
     internal Procent getPossibleMargin(Province province)
     {
         Value cost = Game.market.getCost(getBuildNeeds());
-        cost.add(Game.factoryMoneyReservPerLevel);
+        cost.add(Options.factoryMoneyReservPerLevel);
         //if (cost.get() > 0)
         return new Procent(getPossibleProfit(province) / cost.get());
     }

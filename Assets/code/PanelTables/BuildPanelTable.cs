@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-// represen each opunit record in table
+// represent each opunit record in table
 
 public class BuildPanelTable : MyTable
 {
@@ -20,7 +20,7 @@ public class BuildPanelTable : MyTable
     protected void AddButton(string text, FactoryType type)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, false);
+        newButton.transform.SetParent(contentPanel, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);
@@ -32,19 +32,19 @@ public class BuildPanelTable : MyTable
         int counter = 0;
 
         // Adding shownFactory type
-        AddButton("Name", null);
+        AddButton("Name");
 
         ////Adding cost
-        AddButton("Cost", null);
+        AddButton("Cost");
 
         ////Adding resource needed
         //AddButton("Input", null);
 
         ////Adding potential output
-        AddButton("Output", null);
+        AddButton("Output");
 
         ////Adding potential profit
-        AddButton("Potential margin", null);
+        AddButton("Potential margin");
         if (Game.selectedProvince != null)
         {
             var factoryList = Game.selectedProvince.WhatFactoriesCouldBeBuild();
@@ -56,7 +56,7 @@ public class BuildPanelTable : MyTable
 
                 ////Adding cost
                 //if (Game.player.isInvented(InventionType.capitalism))
-                if (Game.player.economy.isMarket())
+                if (Economy.isMarket.checkIftrue(Game.player))
                     AddButton(Game.market.getCost(next.getBuildNeeds()).ToString(), next);
                 else
                     AddButton(next.getBuildNeeds().ToString(), next);

@@ -37,14 +37,14 @@ public class InventionType : AbstractCondition
     string inventedPhrase;
     public static InventionType farming = new InventionType("Farming", "Allows farming and farmers", new Value(100f)),
         //capitalism = new InventionType("Capitalism", "", new Value(50f)),
-        banking = new InventionType("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100.34f)),
-        manufactories = new InventionType("Manufactories", "Allows building manufactories to process raw product\n Testestestestestest Testestestestestest Testestestestestest testestesttestestest testestest testestest", new Value(67.83f)),
-        mining = new InventionType("Mining", "Allows resource gathering from holes in ground, increasing it's efficience by 50%", new Value(100f)),
-        religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
+        banking = new InventionType("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
+        manufactories = new InventionType("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
+        mining = new InventionType("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
+        //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
         metal = new InventionType("Metal", "Allows metal ore and smelting. Metal is good for tools and weapons", new Value(100f)),
         individualRights = new InventionType("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
         collectivism = new InventionType("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
-        steamPower = new InventionType("Steam Power", "Increases efficiency of all entrprises by 25%", new Value(100f)),
+        steamPower = new InventionType("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new InventionType("Welfare", "Allows min wage and.. other", new Value(100f))
         ;
     internal InventionType(string name, string description, Value cost)

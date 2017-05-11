@@ -32,16 +32,26 @@ public class Value
     {
         if (invalue.value > value)
         {
-            Debug.Log("Value subtrack failed");
+            Debug.Log("Value subtract failed");
             set(0);
         }
         else
             value -= invalue.value;
     }
+    public Value subtractOutside(Value invalue)
+    {
+        if (invalue.value > value)
+        {
+            Debug.Log("Value subtrackOutside failed");
+            return new Value(0);
+        }
+        else
+            return new Value(this.get() - invalue.get());
+    }
     public void subtract(float invalue)
     {
         if (invalue > value)
-            Debug.Log("Value subtrack failed");
+            Debug.Log("Value subtract failed");
         value -= (uint)Mathf.RoundToInt(invalue * precision);
     }
     //public void multiple(Value invalue)
@@ -62,21 +72,23 @@ public class Value
             Debug.Log("Value multiple failed");
         return new Value(get() * invalue.get());
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="invalue"></param>
-    /// <returns>Keeps result inside</returns>
+    /// <summary>Keeps result inside</summary>    
     public void multipleInside(Value invalue)
     {
         if (invalue.get() < 0)
             Debug.Log("Value multiple failed");
-        set(this.multiple(invalue));
+        set(invalue.get() * this.get());
+    }
+    public void multipleInside(float invalue)
+    {
+        if (invalue < 0f)
+            Debug.Log("Value multiple failed");
+        set(invalue * this.get());
     }
     /// <summary>
     /// returns new value
     /// </summary>
-    internal Value multiple(uint invalue)
+    internal Value multiple(int invalue)
     {
         //if (invalue.get() < 0)
         //  Debug.Log("Value multiple failed");
@@ -92,16 +104,16 @@ public class Value
 
 
     /// <summary>returns new value </summary>
-    internal Value divide(uint invalue)
+    internal Value divide(int invalue)
     {
-        if (invalue == 0) Debug.Log("Value ivide by zero");
+        if (invalue == 0) Debug.Log("Value divide by zero");
 
         return new Value(get() / invalue);
     }
     /// <summary>returns new value </summary>
     internal Value divide(Value invalue)
     {
-        if (invalue.get() == 0) Debug.Log("Value ivide by zero");
+        if (invalue.get() == 0) Debug.Log("Value divide by zero");
 
         return new Value(get() / invalue.get());
     }

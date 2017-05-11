@@ -9,7 +9,7 @@ public class PoliticsPanel : DragPanel
     public Text descriptionText;
     public Button voteButton;
     public Button forceDecisionButton;
-    public Dropdown choise;
+    public Dropdown dropDown;
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
     List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
@@ -20,7 +20,7 @@ public class PoliticsPanel : DragPanel
     {
         MainCamera.politicsPanel = this;
         voteButton.interactable = false;
-        choise.interactable = false;
+        dropDown.interactable = false;
         forceDecisionButton.interactable = false;
         hide();
     }
@@ -66,8 +66,8 @@ public class PoliticsPanel : DragPanel
                 if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
                 {
                     //votersSayedYes = pop.getSayingYes(selectedReformValue);
-                    //if (pop.getSayYesProcent(selectedReformValue) < Game.votingPassBillLimit)
-                    pop.addDaysUpsetByForcedReform(Game.PopDaysUpsetByForcedReform);
+                    //if (pop.getSayYesProcent(selectedReformValue) < Options.votingPassBillLimit)
+                    pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                 }
             }
         setNewReform();
@@ -85,28 +85,28 @@ public class PoliticsPanel : DragPanel
         //if (!contain)
         {
             //selectedReformValue = selectedReform.getValue(assotiateTable[choise.value]);
-            selectedReformValue = assotiateTable[choise.value];
+            selectedReformValue = assotiateTable[dropDown.value];
             refresh(false);
         }
     }
     void rebuildDropDown()
     {
-        choise.interactable = true;
-        choise.ClearOptions();
+        dropDown.interactable = true;
+        dropDown.ClearOptions();
         byte count = 0;
         assotiateTable.Clear();
         foreach (AbstractReformValue next in selectedReform)
         {
             //if (next.isAvailable(Game.player))
             {
-                choise.options.Add(new Dropdown.OptionData() { text = next.ToString() });
+                dropDown.options.Add(new Dropdown.OptionData() { text = next.ToString() });
                 assotiateTable.Add(next);
                 if (next == selectedReform.getValue())
                 {
                     //selectedReformValue = next;
                     // selecting non empty option
-                    choise.value = count;
-                    choise.RefreshShownValue();
+                    dropDown.value = count;
+                    dropDown.RefreshShownValue();
                 }
                 count++;
             }
@@ -136,8 +136,8 @@ public class PoliticsPanel : DragPanel
             Procent procentPopulationSayedYes = new Procent(0f);
             Procent procentVotersSayedYes = Game.player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 
-            Dictionary<PopType, uint> divisionPopulationResult = new Dictionary<PopType, uint>();
-            Dictionary<PopType, uint> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
+            Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
+            Dictionary<PopType, int> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
 
             if (selectedReformValue != selectedReform.getValue())
             {
@@ -167,7 +167,7 @@ public class PoliticsPanel : DragPanel
 
             if (selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
-                if (procentVotersSayedYes.get() >= Game.votingPassBillLimit || Game.player.government.status == Government.Despotism)
+                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.player.government.status == Government.Despotism)
                 { // has enough voters
                     voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;

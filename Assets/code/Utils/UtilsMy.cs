@@ -7,10 +7,97 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
-public  class ProvinceNameGenerator
+public class CountryNameGenerator
 {
     static ChanceBox<string> prefix;
     static ChanceBox<string> postfix;
+
+
+    public CountryNameGenerator()
+    {
+        postfix = new ChanceBox<string>();
+        postfix.add("burg", 1.2f);
+
+
+
+        postfix.add("hill", 0.31f);
+
+        postfix.add("land", 1.0f);
+        postfix.add("lands", 1.2f);
+        postfix.add("landia", 0.3f);
+        postfix.add("stan", 0.3f);
+
+        postfix.add("lia", 1.8f);
+        postfix.add("mia", 0.1f);
+        postfix.add("nia", 1.1f);
+        postfix.add("sia", 1.1f);
+        postfix.add("cia", 1.1f);
+        postfix.add("ria", 1.1f);
+
+        postfix.add("stad", 0.3f);
+
+        postfix.add("holm", 0.3f);
+        postfix.add("bruck", 0.3f);
+
+        postfix.add("berg", 1f);
+
+        postfix.add("polis", 2f);
+        postfix.add("", 10f);
+        postfix.initiate();
+
+        prefix = new ChanceBox<string>();
+
+        prefix.add("South ", 0.3f);
+        prefix.add("West ", 0.3f);
+        prefix.add("North ", 0.3f);
+        prefix.add("East ", 0.3f);
+        prefix.add("Holy ", 0.1f);
+        prefix.add("Great ", 0.8f);
+        prefix.add("Saint ", 0.2f);
+        prefix.add("Dark ", 0.01f);
+        prefix.add("Upper ", 0.2f);
+        prefix.add("Middle ", 0.1f);
+        prefix.add("", 80f);
+        prefix.initiate();
+    }
+    StringBuilder result = new StringBuilder();
+    public string generateCountryName()
+    {
+        result.Clear();
+        result.Append(prefix.getRandom());
+        
+        //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
+        result.Append(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5)));
+        result.Append(postfix.getRandom());
+
+        return result.ToString();
+    }
+}
+public class ProvinceNameGenerator
+{
+    static ChanceBox<string> prefix;
+    static ChanceBox<string> postfix;
+    static ChanceBox<string> vowels = new ChanceBox<string>();
+    static ChanceBox<string> consonants = new ChanceBox<string>();
+    public static string generateWord(int length)
+    {
+        Game.threadDangerSB.Clear();
+        if (Game.random.Next(10) == 1)
+        {
+            Game.threadDangerSB.Append(vowels.getRandom());
+            if (Game.random.Next(2) == 1)
+                Game.threadDangerSB.Append(consonants.getRandom());
+        }
+        //if (Game.random.Next(6) == 1)
+        //    Game.threadDangerSB.Append(consonants.getRandom());
+
+        for (int i = 0; i < length; i += 2)
+        {
+            Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
+            if (Game.random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
+        }
+        return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
+    }
     public ProvinceNameGenerator()
     {
         postfix = new ChanceBox<string>();
@@ -18,15 +105,14 @@ public  class ProvinceNameGenerator
         postfix.add("bridge", 0.1f);
         postfix.add("coln", 0.2f);
 
-
         postfix.add("field", 2f);
         postfix.add("hill", 1f);
         postfix.add("ford", 0.5f);
-        postfix.add("land", 1f);
+        postfix.add("land", 2.5f);
         postfix.add("landia", 0.3f);
-        postfix.add("lia", 1f);
+        postfix.add("lia", 2.5f);
         postfix.add("mia", 0.1f);
-        postfix.add("stad", 0.2f);
+        postfix.add("stad", 0.3f);
 
         postfix.add("holm", 1f);
         postfix.add("bruck", 0.3f);
@@ -38,7 +124,7 @@ public  class ProvinceNameGenerator
         postfix.add("rock", 2f);
         postfix.add("ville", 2f);
         postfix.add("polis", 2f);
-        postfix.add("", 25f);
+        postfix.add("", 10f);
         postfix.initiate();
 
         prefix = new ChanceBox<string>();
@@ -54,11 +140,53 @@ public  class ProvinceNameGenerator
         prefix.add("Middle ", 0.1f);
         prefix.add("", 80f);
         prefix.initiate();
-    }
-    public string generateProvinceName()
-    {       
 
-        return prefix.getRandom() + UtilsMy.generateWord(Game.random.Next(2, 5)) + postfix.getRandom();
+        vowels.add("a", 8.167f);
+        vowels.add("e", 12.702f);
+        vowels.add("i", 6.966f);
+        vowels.add("o", 7.507f);
+        vowels.add("u", 2.758f);
+        vowels.add("a", 8.167f);
+        vowels.initiate();
+
+        consonants.add("b", 1.492f);
+        consonants.add("c", 2.782f);
+        consonants.add("d", 4.253f);
+
+        consonants.add("f", 2.228f);
+        consonants.add("g", 2.015f);
+        consonants.add("h", 0.1f); //IRL -  6.094f);
+
+        consonants.add("j", 0.153f);
+        consonants.add("k", 0.772f);
+        consonants.add("l", 4.025f);
+        consonants.add("m", 2.406f);
+        consonants.add("n", 6.749f);
+
+        consonants.add("p", 1.929f);
+        consonants.add("q", 0.095f);
+        consonants.add("r", 5.987f);
+        consonants.add("s", 6.327f);
+        consonants.add("t", 9.056f);
+
+        consonants.add("v", 0.978f);
+        consonants.add("w", 2.360f);
+        consonants.add("x", 0.150f);
+        consonants.add("y", 1.974f);
+        consonants.add("z", 0.074f);
+        consonants.initiate();
+    }
+    StringBuilder result = new StringBuilder();
+    public string generateProvinceName()
+    {
+        result.Clear();
+        result.Append(prefix.getRandom());
+        if (Game.random.Next(3) == 1) result.Append(generateWord(Game.random.Next(2, 5)));
+        else
+            result.Append(generateWord(Game.random.Next(3, 5)));
+        result.Append(postfix.getRandom());
+
+        return result.ToString();
     }
 }
 public class ChanceBox<T>
@@ -107,7 +235,7 @@ public class ChanceBox<T>
         for (int i = 1; i < list.Count; i++)
         {
             list[i].weight += list[i - 1].weight;
-        }       
+        }
     }
     /// <summary>Gives random T according element weight  /// </summary>    
     public T getRandom()
@@ -199,11 +327,181 @@ public class LimitedQueue<T> : Queue<T>
         base.Enqueue(item);
     }
 }
+public static class WordGenerator
+{
+
+}
+public static class EnumerableExtension
+{   
+    private static System.Random rng = new System.Random();
+
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
+    //public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
+    //{
+    //    if (target == null)
+    //        throw new ArgumentNullException("target");
+    //    if (source == null)
+    //        throw new ArgumentNullException("source");
+    //    foreach (var element in source)
+    //        //if (target)
+    //        target.Add(element);
+    //}
+    public static T PickRandom<T>(this List<T> source)
+    {
+        //return source.ElementAt(Game.random.Next(source.Count));
+        return source[Game.random.Next(source.Count)];
+
+    }
+    public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
+    {
+        return source.FindAll(predicate).PickRandom();
+        //return source.ElementAt(Game.random.Next(source.Count));
+
+    }
+}
 public static class UtilsMy
 {
+
+    public static Color getRandomColor()
+    {
+        return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+    }
     public static void Clear(this StringBuilder value)
     {
         value.Length = 0;
+    }
+    public static Color setAlphaToZero(this Color color)
+    {
+        color.a = 0f;
+        return color;
+    }
+    public static Color getAlmostSameColor(this Color color)
+    {
+        float maxDeviation = 0.02f;//not including
+
+        var result = new Color();
+        float deviation = maxDeviation - UnityEngine.Random.Range(0f, maxDeviation * 2);
+        result.r = color.r + deviation;
+        result.g = color.g + deviation;
+        result.b = color.b + deviation;
+
+
+        return result;
+    }
+    public static Color setAlphaToMax(this Color color)
+    {
+        color.a = 1f;
+        return color;
+    }
+    public static bool isDifferentColor(this Texture2D image, int thisx, int thisy, int x, int y)
+    {
+        if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))
+            return true;
+        else
+            return false;
+    }
+    public static void setColor(this Texture2D image, Color color)
+    {
+        for (int j = 0; j < image.height; j++) // cicle by province        
+            for (int i = 0; i < image.width; i++)
+                image.SetPixel(i, j, color);
+    }
+
+    public static void setAlphaToMax(this Texture2D image)
+    {
+        for (int j = 0; j < image.height; j++) // cicle by province        
+            for (int i = 0; i < image.width; i++)
+                // if (image.GetPixel(i, j) != Color.black)
+                image.SetPixel(i, j, image.GetPixel(i, j).setAlphaToMax());
+    }
+    static void drawSpot(Texture2D image, int x, int y, Color color)
+    {
+        int straightBorderChance = 4;// 5;
+        //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
+
+        if (image.coordinatesExist(x, y))
+            if (Game.random.Next(straightBorderChance) != 1)
+                //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
+                if (image.GetPixel(x, y) == Color.black)
+                    image.SetPixel(x, y, color.setAlphaToZero());
+    }
+    public static bool coordinatesExist(this Texture2D image, int x, int y)
+    {
+        return (x >= 0 && x < image.width && y >= 0 && y < image.height);
+    }
+    public static bool isRightTopCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    public static bool isRightBottomCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    public static bool isLeftTopCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+    public static bool isLeftBottomCorner(this Texture2D image, int x, int y)
+    {
+        if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) != image.GetPixel(x, y)
+            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) == image.GetPixel(x, y)
+            && image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) == image.GetPixel(x, y)
+            )
+            return true;
+        else
+            return false;
+    }
+
+    public static void drawRandomSpot(this Texture2D image, int x, int y, Color color)
+    {
+        //draw 4 points around x, y
+        //int chance = 90;
+        drawSpot(image, x - 1, y, color);
+        drawSpot(image, x + 1, y, color);
+        drawSpot(image, x, y - 1, color);
+        drawSpot(image, x, y + 1, color);
+
+    }
+    public static int getRandomX(this Texture2D image)
+    {
+        return Game.random.Next(0, image.width);
+    }
+    public static int getRandomY(this Texture2D image)
+    {
+        return Game.random.Next(0, image.height);
     }
     public static string FirstLetterToUpper(string str)
     {
@@ -215,31 +513,8 @@ public static class UtilsMy
 
         return str.ToUpper();
     }
-    public static string generateWord(int length)
-    {
-        var rnd = Game.random;
-        string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z" };
-        string[] vowels = { "a", "e", "i", "o", "u" };
 
-        string result = "";
 
-        if (length == 1)        
-            result = GetRandomLetter(rnd, vowels);        
-        else
-        {
-            for (int i = 0; i < length; i += 2)
-            {
-                result += GetRandomLetter(rnd, consonants) + GetRandomLetter(rnd, vowels);
-                if (rnd.Next(4) == 1) result += GetRandomLetter(rnd, consonants);
-            }            
-        }
-        return FirstLetterToUpper(result);
-    }
-
-    private static string GetRandomLetter(System.Random rnd, string[] letters)
-    {
-        return letters[rnd.Next(0, letters.Length - 1)];
-    }
 
     public static bool isSameColorsWithoutAlpha(Color colorA, Color colorB)
     {
@@ -249,6 +524,7 @@ public static class UtilsMy
             return false;
 
     }
+
     public static float getHumidityRatio(float massVapor, float massDryAir)
     {
         return massVapor / massDryAir;
@@ -344,5 +620,141 @@ public static class UtilsMy
         flipped.Apply();
 
         return flipped;
+    }
+}
+
+public static class MyExtensions
+{
+    public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
+    {
+        foreach (var keyValue in dictionary)
+        {
+            invokeMe(keyValue.Key, keyValue.Value);
+        }
+    }
+    public static void move<T>(this List<T> source, T item, List<T> destination)
+    {
+        if (source.Remove(item)) // don't remove this
+            destination.Add(item);
+
+    }
+    //public static bool Any<TSource>(this IEnumerable<TSource> source);
+    public static void move(this Dictionary<PopUnit, Corps> source, Corps item, Dictionary<PopUnit, Corps> destination)
+    {
+        //if (source.TryGetValue(corpsToAdd.getPopUnit(), out found))
+
+        if (source.Remove(item.getPopUnit())) // don't remove this
+            destination.Add(item.getPopUnit(), item);
+    }
+    /// <summary>
+    /// Unites all armies in one
+    /// </summary>
+    public static void consolidate(this List<Army> source, Country country)
+    {
+        foreach (Army next in source)
+            if (next.getDestination() == null)
+                country.homeArmy.join(next);
+
+        source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
+    }
+    public static bool demobilize(this List<Army> source, PopUnit pop)
+    {
+        foreach (Army nextArmy in source)
+            foreach (Corps corps in nextArmy.getCorps())
+                if (corps.getPopUnit() == pop)
+                {
+                    //nextArmy.remove(corps);
+                    corps.demobilizeFrom(nextArmy);
+                    //pop.demobilize();
+                    return true;
+                }
+        return false;
+    }
+    public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+    {
+        return source.MinBy(selector, null);
+    }
+
+    public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
+        Func<TSource, TKey> selector, IComparer<TKey> comparer)
+    {
+        if (source == null) throw new ArgumentNullException("source");
+        if (selector == null) throw new ArgumentNullException("selector");
+        comparer = comparer ?? Comparer<TKey>.Default;
+
+        using (var sourceIterator = source.GetEnumerator())
+        {
+            if (!sourceIterator.MoveNext())
+            {
+                throw new InvalidOperationException("Sequence contains no elements");
+            }
+            var min = sourceIterator.Current;
+            var minKey = selector(min);
+            while (sourceIterator.MoveNext())
+            {
+                var candidate = sourceIterator.Current;
+                var candidateProjected = selector(candidate);
+                if (comparer.Compare(candidateProjected, minKey) < 0)
+                {
+                    min = candidate;
+                    minKey = candidateProjected;
+                }
+            }
+            return min;
+        }
+    }
+    public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+           Func<TSource, TKey> selector)
+    {
+        return source.MaxBy(selector, null);
+    }
+
+    /// <summary>
+    /// Returns the maximal element of the given sequence, based on
+    /// the given projection and the specified comparer for projected values. 
+    /// </summary>
+    /// <remarks>
+    /// If more than one element has the maximal projected value, the first
+    /// one encountered will be returned. This operator uses immediate execution, but
+    /// only buffers a single result (the current maximal element).
+    /// </remarks>
+    /// <typeparam name="TSource">Type of the source sequence</typeparam>
+    /// <typeparam name="TKey">Type of the projected element</typeparam>
+    /// <param name="source">Source sequence</param>
+    /// <param name="selector">Selector to use to pick the results to compare</param>
+    /// <param name="comparer">Comparer to use to compare projected values</param>
+    /// <returns>The maximal element, according to the projection.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
+    /// or <paramref name="comparer"/> is null</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
+
+    public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
+        Func<TSource, TKey> selector, IComparer<TKey> comparer)
+    {
+        //if (source == null) throw new ArgumentNullException(nameof(source)); //todo fix exception
+        //if (selector == null) throw new ArgumentNullException(nameof(selector)); 
+        //todo fix exception
+        comparer = comparer ?? Comparer<TKey>.Default;
+
+        using (var sourceIterator = source.GetEnumerator())
+        {
+            if (!sourceIterator.MoveNext())
+            {
+                throw new InvalidOperationException("Sequence contains no elements");
+            }
+            var max = sourceIterator.Current;
+            var maxKey = selector(max);
+            while (sourceIterator.MoveNext())
+            {
+                var candidate = sourceIterator.Current;
+                var candidateProjected = selector(candidate);
+                if (comparer.Compare(candidateProjected, maxKey) > 0)
+                {
+                    max = candidate;
+                    maxKey = candidateProjected;
+                }
+            }
+            return max;
+        }
     }
 }

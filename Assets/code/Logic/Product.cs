@@ -7,7 +7,7 @@ public class Product
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
     internal static List<Product> allProducts = new List<Product>();
-    bool storable = true;
+    // bool storable = true;
     private string name;
     internal bool resource = false;
     static int resourceCounter = 0;
@@ -61,8 +61,8 @@ public class Product
         if (inName == "Lumber") Lumber = this;
         if (inName == "Furniture") Furniture = this;
         if (inName == "Gold") Gold = this;
-        if (inName == "Metall") Metal = this;
-        if (inName == "Metall ore") MetallOre = this;
+        if (inName == "Metal") Metal = this;
+        if (inName == "Metal ore") MetallOre = this;
         if (inName == "Wool") Wool = this;
         if (inName == "Clothes") Clothes = this;
         if (inName == "Stone") Stone = this;
@@ -86,14 +86,21 @@ public class Product
     {
         return name;
     }
-    bool isStorable()
+    public bool isInventedByAnyOne()
     {
-        return storable;
+        foreach (var any in Country.allCountries)
+            if (any.isInvented(this))
+                return true;
+        return false;
     }
-    void setStorable(bool isStorable)
-    {
-        this.storable = isStorable;
-    }
+    //bool isStorable()
+    //{
+    //    return storable;
+    //}
+    //void setStorable(bool isStorable)
+    //{
+    //    this.storable = isStorable;
+    //}
     override public string ToString()
     {
         return getName();
@@ -103,17 +110,17 @@ public class Product
     {
         if (isResource())
         {
-            return defaultPrice.multiple(Game.defaultPriceLimitMultiplier);
+            return defaultPrice.multiple(Options.defaultPriceLimitMultiplier);
         }
         else
         {
             var type = FactoryType.whoCanProduce(this);
             if (type == null)
-                return defaultPrice.multiple(Game.defaultPriceLimitMultiplier);
+                return defaultPrice.multiple(Options.defaultPriceLimitMultiplier);
             else
             {
                 Value res = Game.market.getCost(type.resourceInput);
-                res.multipleInside(Game.defaultPriceLimitMultiplier);
+                res.multipleInside(Options.defaultPriceLimitMultiplier);
                 res.divideInside(type.basicProduction);
                 return res;
             }

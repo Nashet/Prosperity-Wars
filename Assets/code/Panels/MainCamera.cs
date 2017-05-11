@@ -4,9 +4,14 @@ using UnityEngine.UI;
 
 public class MainCamera : MonoBehaviour
 {
-    public Game game;
+    public Game Game;
     internal static Camera cameraMy;
     static GameObject mapPointer;
+
+    public SimpleObjectPool buttonObjectPool;
+    public Transform panelParent;
+    public GameObject messagePanelPrefab;
+    public Canvas canvas;
     public static TopPanel topPanel;
     public static ProvincePanel provincePanel;
     public static PopulationPanel populationPanel;
@@ -19,12 +24,15 @@ public class MainCamera : MonoBehaviour
     internal static InventionsPanel inventionsPanel;
     internal static BuildPanel buildPanel;
     internal static PoliticsPanel politicsPanel;
+    internal static FinancePanel financePanel;
+    internal static DiplomacyPanel diplomacyPanel;
+    //internal static MessagePanel messagePanel;
 
     // Use this for initialization
     //public Text generalText;
     void Start()
     {
-        
+
         GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
         if (gameControllerObject != null)
         {
@@ -41,7 +49,7 @@ public class MainCamera : MonoBehaviour
         }
         //topPanel = transform.FindChild("TopPanel").gameObject;
         //.GetComponent<Panel>()
-        game = new Game();
+        Game = new Game();
     }
     int GetRayCastMeshNumber()
     {
@@ -82,13 +90,13 @@ public class MainCamera : MonoBehaviour
     internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
-            Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.colorID;
+            Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.getColor();
 
         if (number >= 0)
         {
-            if (Province.allProvinces[number] == Game.selectedProvince)// same province selected
+            if (Province.findByID(number) == Game.selectedProvince)// same province selected
             {
-                Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.colorID;
+                Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.getColor();
                 Game.selectedProvince = null;
                 provincePanel.hide();
                 if (buildPanel.isActiveAndEnabled)
@@ -96,9 +104,9 @@ public class MainCamera : MonoBehaviour
             }
             else // new province selected
             {
-                Province.allProvinces[number].meshRenderer.material.color = Color.gray;
+                Province.findByID(number).meshRenderer.material.color = Color.gray;
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
-                Game.selectedProvince = Province.allProvinces[number];
+                Game.selectedProvince = Province.findByID(number);
                 provincePanel.show();
                 if (buildPanel.isActiveAndEnabled)
                     buildPanel.refresh();
@@ -114,7 +122,7 @@ public class MainCamera : MonoBehaviour
             //found something correct            
             SelectProvince(meshNumber);
         }
-        if (Game.haveToStepSimulation || Game.haveToRunSimulation)
+        if (Game.haveToStepSimulation || Game.haveToRunSimulation && Game.howMuchPausedWindowsOpen == 0)
         {
             Game.stepSimulation();
 
@@ -128,19 +136,37 @@ public class MainCamera : MonoBehaviour
             if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh();
             if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
             if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
+            if (financePanel.isActiveAndEnabled) financePanel.refresh();
+            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh(true);
         }
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
 
         if (Game.selectedProvince != null)
             provincePanel.UpdateProvinceWindow(Game.selectedProvince);
+        if (Game.MessageQueue.Count > 0)
+            showMessageBox();
+    }
+    void showMessageBox()
+    {
+        Message mes = Game.MessageQueue.Pop();
+        //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
 
+        GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
+        newObject.transform.SetParent(canvas.transform, true);
+
+        MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
+        mesPanel.Awake();
+        //Vector3 position = Vector3.zero;
+        //position.Set(position.x - 10f * Game.MessageQueue.Count, position.y - 10f * Game.MessageQueue.Count, 0);
+        //newObject.transform.localPosition = position;
+        mesPanel.show(mes);
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
     void FixedUpdate()
     {
         float xyCameraSpeed = 10f;
-        float zCameraSpeed = 250f;
+        float zCameraSpeed = 150f;
         float xMove = Input.GetAxis("Horizontal");
         float yMove = Input.GetAxis("Vertical");
         float zMove = Input.GetAxis("Mouse ScrollWheel");

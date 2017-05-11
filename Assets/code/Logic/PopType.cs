@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
 
-public class PopType  {
+public class PopType
+{
     ///<summary> per 1000 men </summary>    
     protected PrimitiveStorageSet lifeNeeds = new PrimitiveStorageSet();
     protected PrimitiveStorageSet everyDayNeeds = new PrimitiveStorageSet();
@@ -20,13 +22,16 @@ public class PopType  {
     ///<summary> per 1000 men </summary>
     public Storage basicProduction;
     private string name;
-    public PopType(PopTypes itype, Storage iproduces, string iname)
+    private float strenght;
+    public PopType(PopTypes itype, Storage iproduces, string iname, float strenght)
     {
+        this.strenght = strenght;
         type = itype;
         name = iname;
         basicProduction = iproduces;
         allPopTypes.Add(this);
-        switch (itype){
+        switch (itype)
+        {
             case PopTypes.Tribemen:
                 tribeMen = this;
                 lifeNeeds.Set(new Storage(Product.Food, 1));
@@ -38,7 +43,7 @@ public class PopType  {
                 lifeNeeds.Set(new Storage(Product.Food, 1));
 
                 everyDayNeeds.Set(new Storage(Product.Fruit, 1));
-               
+
 
                 luxuryNeeds.Set(new Storage(Product.Clothes, 1));
                 luxuryNeeds.Set(new Storage(Product.Furniture, 1));
@@ -52,7 +57,7 @@ public class PopType  {
                 lifeNeeds.Set(new Storage(Product.Food, 1));
 
                 luxuryNeeds.Set(new Storage(Product.Fruit, 1));
-               
+
                 everyDayNeeds.Set(new Storage(Product.Clothes, 1));
                 everyDayNeeds.Set(new Storage(Product.Furniture, 1));
 
@@ -93,19 +98,25 @@ public class PopType  {
 
                 everyDayNeeds.Set(new Storage(Product.Clothes, 1));
                 everyDayNeeds.Set(new Storage(Product.Furniture, 1));
-                
+
                 luxuryNeeds.Set(new Storage(Product.Wine, 2));
                 everyDayNeeds.Set(new Storage(Product.Metal, 1));
-               
-                
+
+
                 break;
             default:
-                Debug.Log("Unnown PopType");
+                Debug.Log("Unknown PopType");
                 break;
         }
 
     }
-
+    public bool canMobilize()
+    {
+        if (this == PopType.capitalists)
+            return false;
+        else
+            return true;
+    }
     /////<summary> per 1000 men </summary>
     //public Storage getLifeNeedsPer1000(PopType popType)
     //{
@@ -120,7 +131,7 @@ public class PopType  {
         List<Storage> result = new List<Storage>();
         foreach (Storage next in lifeNeeds)
             //if (next.popType == this)
-                result.Add(next);
+            result.Add(next);
         return result;
     }
     ///<summary> per 1000 men </summary>
@@ -129,7 +140,7 @@ public class PopType  {
         List<Storage> result = new List<Storage>();
         foreach (Storage next in everyDayNeeds)
             // (next.popType == this)
-                result.Add(next);
+            result.Add(next);
         return result;
     }
     ///<summary> per 1000 men </summary>
@@ -137,13 +148,28 @@ public class PopType  {
     {
         List<Storage> result = new List<Storage>();
         foreach (Storage next in luxuryNeeds)
-           // if (next.popType == this)
-                result.Add(next);
+            // if (next.popType == this)
+            result.Add(next);
         return result;
-       // Needs
+        // Needs
     }
     override public string ToString()
     {
         return name;
+    }
+
+    internal bool isPoorStrata()
+    {
+        return this == PopType.farmers || this == PopType.workers || this == PopType.tribeMen;
+    }
+
+    internal bool isRichStrata()
+    {
+        return this == PopType.aristocrats || this == PopType.capitalists;
+    }
+
+    internal float getStrenght()
+    {
+        return strenght;
     }
 }
