@@ -6,7 +6,7 @@ public class ProvincePanel : MonoBehaviour
 {
     public Text generaltext;
     public GameObject provincePanel;
-    public Button btnOwner;
+    public Button btnOwner, btnBuild;
     // Use this for initialization
     // thisPanel;
     void Start()
@@ -116,6 +116,17 @@ public class ProvincePanel : MonoBehaviour
             ;
         Text text = btnOwner.GetComponentInChildren<Text>();
         text.text = "Owner: " + province.getOwner();
+
+        if (province.getOwner() == Game.player)
+        {
+            btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+            btnBuild.interactable = true;
+        }
+        else
+        {
+            btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "That isn't your province, right?";
+            btnBuild.interactable = false;
+        }
 
         if (Game.devMode) generaltext.text += "\nColor: " + province.getColorID();
     }
