@@ -790,7 +790,7 @@ public static class MyIEnumerableExtensions
         {
             if (!sourceIterator.MoveNext())
             {
-                throw new InvalidOperationException("Sequence contains no elements");
+                return default(TSource);
             }
             var max = sourceIterator.Current;
             var maxKey = selector(max);

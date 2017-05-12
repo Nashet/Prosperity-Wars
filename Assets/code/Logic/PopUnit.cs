@@ -839,19 +839,25 @@ abstract public class PopUnit : Producer
     {
         int migrationSize = getMigrationSize();
         if (wantsToMigrate() && migrationSize > 0 && this.getPopulation() > migrationSize)
-            migrate(getMigrationTarget(), migrationSize);
+            migrate(getRichestMigrationTarget(), migrationSize);
     }
-
-    private Province getMigrationTarget()
+    /// <summary>
+    /// return null if there is no better place to live
+    /// </summary>
+    /// <returns></returns>
+    public Province getRichestMigrationTarget()
     {
         Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
         foreach (var pro in province.getOwner().ownedProvinces)
-        {
             //if (provinces.ContainsKey(pro))
             //    provinces[pro] = size;
             //else
-            provinces.Add(pro, pro.getMiddleNeedsFulfilling(this.type));
-        }
+            if (pro != this.province)
+            {
+                var needsInProvince = pro.getMiddleNeedsFulfilling(this.type);
+                if (needsInProvince.get() > needsFullfilled.get())
+                    provinces.Add(pro, needsInProvince);
+            }
         return provinces.MaxBy(x => x.Value.get()).Key;
     }
 
@@ -863,7 +869,7 @@ abstract public class PopUnit : Producer
         }
     }
 
-    private bool wantsToMigrate()
+    public bool wantsToMigrate()
     {
 
         if (this.needsFullfilled.get() < Options.PopNeedsMigrationLimit.get())
@@ -871,7 +877,7 @@ abstract public class PopUnit : Producer
         else return false;
     }
 
-    private int getMigrationSize()
+    public int getMigrationSize()
     {
         return Mathf.RoundToInt(this.getPopulation() * Options.migrationSpeed.get());
     }

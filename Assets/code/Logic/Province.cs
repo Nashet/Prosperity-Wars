@@ -284,11 +284,11 @@ public class Province
             return result.divide(allPopulation); ;
         }
         else/// add default population
-        {
-            //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
-            PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
+        {          
+
+            //PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
-            return new Value(0);
+            return new Value(1f);
         }
     }
     public void BalanceEmployableWorkForce()

@@ -46,7 +46,7 @@ public static class Options
 
     internal static readonly float PopAttritionFactor = 0.2f;
     internal static readonly float armyDefenceBonus = 0.5f;
-    internal static readonly Procent migrationSpeed = new Procent(0.001f);
+    internal static readonly Procent migrationSpeed = new Procent(0.01f);
     public static readonly Procent growthSpeed = new Procent(0.002f);
     public static readonly Procent starvationSpeed = new Procent(0.01f);
 

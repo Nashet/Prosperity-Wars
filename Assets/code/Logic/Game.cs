@@ -227,7 +227,7 @@ public class Game
                     //province.allPopUnits.Add(pop);
                 }
                 if (!Game.devMode)
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(80, 100), PopType.aristocrats, province.getOwner().culture, province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), PopType.aristocrats, province.getOwner().culture, province);
                 else
                     pop = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
 
@@ -236,11 +236,11 @@ public class Game
                 province.allPopUnits.Add(pop);
                 if (!Game.devMode)
                 {
-                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(30, 50), PopType.capitalists, province.getOwner().culture, province);
+                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), PopType.capitalists, province.getOwner().culture, province);
                     pop.wallet.haveMoney.set(9000);
                     province.allPopUnits.Add(pop);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(500, 600), PopType.farmers, province.getOwner().culture, province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), PopType.farmers, province.getOwner().culture, province);
                     pop.wallet.haveMoney.set(20);
                     province.allPopUnits.Add(pop);
 
@@ -784,15 +784,16 @@ public class Game
                     pop.calcLoyalty();
                     pop.calcPromotions();
                     pop.calcDemotions();
-                    pop.calcGrowth();
                     pop.calcMigrations();
+                    pop.calcGrowth();
+                    
                     pop.Invest();
                 }
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
-                    PopUnit targetToMerge = province.FindSimularPopUnit(pop);
+                    PopUnit targetToMerge = pop.province.FindSimularPopUnit(pop);
                     if (targetToMerge == null)
-                        province.allPopUnits.Add(pop);
+                        pop.province.allPopUnits.Add(pop);
                     else
                         targetToMerge.merge(pop);
                 }

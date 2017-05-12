@@ -27,11 +27,18 @@ public class PopUnitPanel : DragPanel
         if (pop != null)
         {
             string demotionText;
-           
-            if (pop.wantsToDemote())
-                demotionText = pop.getRichestDemotionTarget() + " " + pop.getDemotionSize();
+            var target = pop.getRichestDemotionTarget();
+            if (pop.wantsToDemote() && target != null && pop.getDemotionSize() > 0)
+                demotionText = target + " " + pop.getDemotionSize();
             else
                 demotionText = "none";
+            string migrationText;
+            var targetM = pop.getRichestMigrationTarget();
+            if (pop.wantsToMigrate() && targetM != null && pop.getMigrationSize() > 0)
+                migrationText = targetM + " " + pop.getDemotionSize();
+            else
+                migrationText = "none";
+
             string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";
 
             var temp = pop.getRealLifeNeeds();
@@ -63,7 +70,9 @@ public class PopUnitPanel : DragPanel
                 + "\nCash: " + pop.wallet.ToString()
                 + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
                 + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
-                + "\nDemotion: " + demotionText + "\nGrowth: " + pop.getGrowthSize()
+                + "\nDemotion: " + demotionText 
+                + "\nMigration: " + migrationText
+                + "\nGrowth: " + pop.getGrowthSize()
                 + "\nUnemployment: " + pop.getUnemployedProcent() + loans
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
                 ;
