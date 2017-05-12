@@ -48,6 +48,7 @@ public class PopulationPanelTable : MyTable
         newButton.GetComponentInChildren<ToolTipHandler>().dynamicString = dynamicTooltip;
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
+   
     override protected void AddButtons()
     {
         int counter = 0;
@@ -76,9 +77,7 @@ public class PopulationPanelTable : MyTable
             ////Adding loyalty
             AddButton("Unemployment");
             foreach (PopUnit record in Game.popsToShowInPopulationPanel)
-            {
-
-                // Adding nomber
+            {               
                 //AddButton(Convert.ToString(counter), record);
                 // Adding PopType
                 AddButton(record.type.ToString(), record);
@@ -87,10 +86,11 @@ public class PopulationPanelTable : MyTable
                 ////Adding culture
                 AddButton(record.culture.name, record);
                 ////Adding province
-                AddButton(record.province.ToString(), record.province);
+                AddButton(record.province.ToString(), record.province, "Click to select this province");
                 ////Adding education
-                AddButton(record.education.ToString(), record);                ////Adding cash
-
+                AddButton(record.education.ToString(), record);   
+                
+                ////Adding cash
                 AddButton(record.wallet.ToString(), record);
 
                 ////Adding needs fulfilling

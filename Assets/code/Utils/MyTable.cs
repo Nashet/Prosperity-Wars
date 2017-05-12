@@ -36,6 +36,15 @@ abstract public class MyTable : MonoBehaviour
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, prov);
     }
+    protected void AddButton(string text, Province prov, string tooltip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(contentPanel, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, prov);
+        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+    }
     protected void AddButton(string text)
     {
         GameObject newButton = buttonObjectPool.GetObject();
