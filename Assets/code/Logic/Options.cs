@@ -58,4 +58,5 @@ public static class Options
 
     public static readonly Procent PopNeedsDemotionLimit = new Procent(0.5f);
     public static readonly Procent PopNeedsMigrationLimit = new Procent(0.4f);
+    internal static readonly Procent AssimilationSpeed = new Procent(0.01f);
 }

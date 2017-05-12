@@ -785,6 +785,7 @@ public class Game
                     pop.calcPromotions();
                     pop.calcDemotions();
                     pop.calcMigrations();
+                    pop.calcAssimilations();
                     pop.calcGrowth();
                     
                     pop.Invest();

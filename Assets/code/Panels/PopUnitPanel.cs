@@ -39,6 +39,11 @@ public class PopUnitPanel : DragPanel
             else
                 migrationText = "none";
 
+            string assimilationText;            
+            if (pop.culture != pop.province.getOwner().culture && pop.getMigrationSize() > 0)
+                assimilationText = pop.province.getOwner().culture + " " + pop.getDemotionSize();
+            else
+                assimilationText = "none";
             string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";
 
             var temp = pop.getRealLifeNeeds();
@@ -70,8 +75,9 @@ public class PopUnitPanel : DragPanel
                 + "\nCash: " + pop.wallet.ToString()
                 + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
                 + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
-                + "\nDemotion: " + demotionText 
+                + "\nDemotion: " + demotionText
                 + "\nMigration: " + migrationText
+                + "\nAssimilation: " + assimilationText
                 + "\nGrowth: " + pop.getGrowthSize()
                 + "\nUnemployment: " + pop.getUnemployedProcent() + loans
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
