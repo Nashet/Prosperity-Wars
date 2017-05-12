@@ -775,7 +775,7 @@ public class Game
                     if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
                         pop.getMoneyFromMarket();
 
-                    //becouse income come only after consuming, and only after FULL consumption
+                    //because income come only after consuming, and only after FULL consumption
                     if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
@@ -785,6 +785,7 @@ public class Game
                     pop.calcPromotions();
                     pop.calcDemotions();
                     pop.calcGrowth();
+                    pop.calcMigrations();
                     pop.Invest();
                 }
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)

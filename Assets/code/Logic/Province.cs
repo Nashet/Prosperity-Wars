@@ -267,7 +267,8 @@ public class Province
     {
         return color;
     }
-    public Value getMiddleNeedFullfilling(PopType type)
+    
+    public Value getMiddleNeedsFulfilling(PopType type)
     {
         Value result = new Value(0);
         int allPopulation = 0;
@@ -275,14 +276,14 @@ public class Province
         if (localPops.Count > 0)
         {
             foreach (PopUnit pop in localPops)
-            // get middle needs fullfiling according to pop weight            
+            // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
                 result.add(pop.needsFullfilled.multiple(pop.getPopulation()));
             }
             return result.divide(allPopulation); ;
         }
-        else/// add defualt population
+        else/// add default population
         {
             //PopUnit.tempPopList.Add(new PopUnit(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));

@@ -14,14 +14,7 @@ using DesignPattern.Objectpool;
 
 abstract public class PopUnit : Producer
 {
-    public static Procent growthSpeed = new Procent(0.002f);
-    public static Procent starvationSpeed = new Procent(0.01f);
 
-    ///<summary> demotion  - when popUnit can't fulfill needs</summary>
-    public static Procent demotionSpeed = new Procent(0.01f);
-
-    ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
-    public static Procent promotionSpeed = new Procent(0.01f);
 
     ///<summary>buffer popList of demoted. To avoid iteration breaks</summary>
     public static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
@@ -44,7 +37,7 @@ abstract public class PopUnit : Producer
 
     public Value incomeTaxPayed = new Value(0);
 
-    //if add new fiedls make sure it's implemented in second constructor and in merge()   
+    //if add new fields make sure it's implemented in second constructor and in merge()   
 
 
     public PopUnit(int iamount, PopType ipopType, Culture iculture, Province where)
@@ -62,15 +55,15 @@ abstract public class PopUnit : Producer
         province = where;
         makeModifiers();
     }
-    /// <summary> Creats PopUnit basing on part of other PopUnit. Usually called from demote() and calcDemote()
+    /// <summary> Creates PopUnit basing on part of other PopUnit. Usually called from demote() and calcDemote()
     /// And transfers sizeOfNewPop population.
     /// Assuming that new pop created in same country /// </summary>    
-    public PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType) : this(source.getPopulation(), source.type, source.culture, source.province)
+    public PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where)// : this(source.getPopulation(), source.type, source.culture, source.province)
     {
         PopListToAddToGeneralList.Add(this);
         makeModifiers();
 
-        // here shuld be carefull copying of popUnit data
+        // here should be careful copying of popUnit data
         //And careful editing of old unit
         Procent newPopShare = Procent.makeProcent(sizeOfNewPop, source.getPopulation());
 
@@ -86,7 +79,7 @@ abstract public class PopUnit : Producer
         daysUpsetByForcedReform = 0;
         didntGetPromisedUnemloymentSubsidy = false;
 
-        //Owner's fiels:
+        //Owner's fields:
         wallet = new Wallet(0f);
         source.wallet.pay(wallet, source.wallet.haveMoney.multiple(newPopShare));
         //wallet = newPopShare.sendProcentToNew(source.wallet.haveMoney);
@@ -106,7 +99,7 @@ abstract public class PopUnit : Producer
 
         incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
 
-        province = source.province;
+        province = where;//source.province;
     }
     /// <summary>
     /// assuming that both pops are in same province, and type & culture are same
@@ -119,8 +112,8 @@ abstract public class PopUnit : Producer
         //Own PopUnit fields:
         loyalty.addPoportionally(this.getPopulation(), source.getPopulation(), source.loyalty);
         addPopulation(source.getPopulation());
-       
-        
+
+
         mobilized += source.mobilized;
         //type = newPopType; don't change that
         //culture = source.culture; don't change that
@@ -182,7 +175,7 @@ abstract public class PopUnit : Producer
     { return population; }
     internal int howMuchCanMobilize()
     {
-        
+
         int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
         if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
@@ -195,8 +188,8 @@ abstract public class PopUnit : Producer
 
         if (amount > 0)
         {
-            mobilized += amount;            
-            return Pool.GetObject(this, amount);            
+            mobilized += amount;
+            return Pool.GetObject(this, amount);
         }
         else
             return null;
@@ -229,24 +222,47 @@ abstract public class PopUnit : Producer
     //{
     //    return (int)Mathf.RoundToInt(getSayingYes(selectedReformValue) / (float)population);
     //}
-
-    public static PopUnit Instantiate(PopType type, PopUnit source, int sizeOfNewPop)
+    /// <summary>
+    /// Creates Pop in PopListToAddToGeneralList, later in will go to proper List
+    /// </summary>    
+    //public static PopUnit Instantiate(PopType type, PopUnit source, int sizeOfNewPop)
+    //{
+    //    if (type == PopType.tribeMen) return new Tribemen(source, sizeOfNewPop);
+    //    else
+    //    if (type == PopType.farmers) return new Farmers(source, sizeOfNewPop);
+    //    else
+    //    if (type == PopType.aristocrats) return new Aristocrats(source, sizeOfNewPop);
+    //    else
+    //    if (type == PopType.workers) return new Workers(source, sizeOfNewPop);
+    //    else
+    //        if (type == PopType.capitalists) return new Capitalists(source, sizeOfNewPop);
+    //    else
+    //    {
+    //        Debug.Log("Unknown pop type!");
+    //        return null;
+    //    }
+    //}
+    /// <summary>
+    /// Creates Pop in PopListToAddToGeneralList, later in will go to proper List
+    /// </summary>    
+    public static PopUnit Instantiate(PopType type, PopUnit source, int sizeOfNewPop, Province Where)
     {
-        if (type == PopType.tribeMen) return new Tribemen(source, sizeOfNewPop);
+        if (type == PopType.tribeMen) return new Tribemen(source, sizeOfNewPop, Where);
         else
-        if (type == PopType.farmers) return new Farmers(source, sizeOfNewPop);
+        if (type == PopType.farmers) return new Farmers(source, sizeOfNewPop, Where);
         else
-        if (type == PopType.aristocrats) return new Aristocrats(source, sizeOfNewPop);
+        if (type == PopType.aristocrats) return new Aristocrats(source, sizeOfNewPop, Where);
         else
-        if (type == PopType.workers) return new Workers(source, sizeOfNewPop);
+        if (type == PopType.workers) return new Workers(source, sizeOfNewPop, Where);
         else
-            if (type == PopType.capitalists) return new Capitalists(source, sizeOfNewPop);
+            if (type == PopType.capitalists) return new Capitalists(source, sizeOfNewPop, Where);
         else
         {
             Debug.Log("Unknown pop type!");
             return null;
         }
     }
+    //todo delete it
     public static PopUnit Instantiate(int iamount, PopType ipopType, Culture iculture, Province where)
     {
 
@@ -418,7 +434,7 @@ abstract public class PopUnit : Producer
     {
         Value taxSize = new Value(0);
         if (Economy.isMarket.checkIftrue(province.getOwner()) && type != PopType.tribeMen)
-        {           
+        {
             if (this.type.isPoorStrata())
             {
                 taxSize = wallet.moneyIncomethisTurn.multiple((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
@@ -426,14 +442,14 @@ abstract public class PopUnit : Producer
                 {
                     incomeTaxPayed = taxSize;
                     province.getOwner().getCountryWallet().poorTaxIncomeAdd(taxSize);
-                    wallet.pay(province.getOwner().wallet, taxSize);                    
+                    wallet.pay(province.getOwner().wallet, taxSize);
                 }
                 else
                 {
                     incomeTaxPayed.set(wallet.haveMoney);
                     province.getOwner().getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
                     wallet.sendAll(province.getOwner().wallet);
-                    
+
                 }
             }
             else
@@ -705,54 +721,8 @@ abstract public class PopUnit : Producer
     //{
 
     //}
-    public void calcGrowth()
-    {
-        //int growthSize = getGrowthSize();
-        addPopulation(getGrowthSize());
-        //population = population + getGrowthSize();
-    }
-    public void calcDemotions()
-    {
-        int demotionSize = getDemotionSize();
-        //&& CanDemote()
-        if (WantsDemotion() && demotionSize > 0 && this.getPopulation() > demotionSize)
-            Demote(getRichestDemotionTarget(), demotionSize);
-    }
-    public List<PopType> getPossibeDemotionsList()
-    {
-        List<PopType> result = new List<PopType>();
-        foreach (PopType type in PopType.allPopTypes)
-            if (CanThisDemoteInto(this.type))
-                result.Add(type);
-        return result;
-    }
 
-    //abstract public PopType getRichestDemotionTarget();
-    public PopType getRichestDemotionTarget()
-    {
-        List<PopLinkageValue> list = new List<PopLinkageValue>();
-        foreach (PopType nextType in PopType.allPopTypes)
-            if (CanThisDemoteInto(nextType))
-                list.Add(new PopLinkageValue(nextType,
-                    province.getMiddleNeedFullfilling(nextType)
-                    ));
-        list = list.OrderByDescending(o => o.amount.get()).ToList();
-        if (list.Count == 0)
-            return null;
-        else
-            if (list[0].amount.get() > this.needsFullfilled.get())
-            return list[0].type;
-        else return null;
-    }
-    abstract public bool CanThisDemoteInto(PopType popType);
 
-    private void Demote(PopType type, int amount)
-    {
-        if (type != null)
-        {
-            PopUnit newPop = PopUnit.Instantiate(type, this, amount);
-        }
-    }
     private void setPopulation(int newPopulation)
     {
         if (newPopulation > 0)
@@ -790,22 +760,21 @@ abstract public class PopUnit : Producer
         }
 
     }
-
-    public int getDemotionSize()
+    public void calcGrowth()
     {
-        return Mathf.RoundToInt(this.getPopulation() * PopUnit.demotionSpeed.get());
+        addPopulation(getGrowthSize());
     }
     public int getGrowthSize()
     {
         int result = 0;
         if (this.needsFullfilled.get() >= 0.33f) // positive growth
-            result = Mathf.RoundToInt(PopUnit.growthSpeed.get() * getPopulation());
+            result = Mathf.RoundToInt(Options.growthSpeed.get() * getPopulation());
         else
             if (this.needsFullfilled.get() >= 0.20f) // zero growth
             result = 0;
         else if (type != PopType.farmers) //starvation  
         {
-            result = Mathf.RoundToInt(PopUnit.starvationSpeed.get() * getPopulation() * -1);
+            result = Mathf.RoundToInt(Options.starvationSpeed.get() * getPopulation() * -1);
             if (result * -1 >= getPopulation()) // total starvation
                 result = 0;
         }
@@ -813,14 +782,99 @@ abstract public class PopUnit : Producer
         return result;
         //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
     }
-    public bool WantsDemotion()
+    public void calcDemotions()
     {
-        float demotionLimit = 0.50f;
-        if (this.needsFullfilled.get() < demotionLimit)
+        int demotionSize = getDemotionSize();
+        if (wantsToDemote() && demotionSize > 0 && this.getPopulation() > demotionSize)
+            demote(getRichestDemotionTarget(), demotionSize);
+    }
+    public int getDemotionSize()
+    {
+        return Mathf.RoundToInt(this.getPopulation() * Options.demotionSpeed.get());
+    }
+
+    public bool wantsToDemote()
+    {
+        //float demotionLimit = 0.50f;
+        if (this.needsFullfilled.get() < Options.PopNeedsDemotionLimit.get())
+            return true;
+        else return false;
+    }
+    public List<PopType> getPossibeDemotionsList()
+    {
+        List<PopType> result = new List<PopType>();
+        foreach (PopType type in PopType.allPopTypes)
+            if (CanThisDemoteInto(this.type))
+                result.Add(type);
+        return result;
+    }
+
+    //abstract public PopType getRichestDemotionTarget();
+    public PopType getRichestDemotionTarget()
+    {
+        List<PopLinkageValue> list = new List<PopLinkageValue>();
+        foreach (PopType nextType in PopType.allPopTypes)
+            if (CanThisDemoteInto(nextType))
+                list.Add(new PopLinkageValue(nextType,
+                    province.getMiddleNeedsFulfilling(nextType)
+                    ));
+        list = list.OrderByDescending(o => o.amount.get()).ToList();
+        if (list.Count == 0)
+            return null;
+        else
+            if (list[0].amount.get() > this.needsFullfilled.get())
+            return list[0].type;
+        else return null;
+    }
+    abstract public bool CanThisDemoteInto(PopType popType);
+
+    private void demote(PopType targetType, int amount)
+    {
+        if (targetType != null)
+        {
+            PopUnit newPop = PopUnit.Instantiate(targetType, this, amount, this.province);
+        }
+    }
+    internal void calcMigrations()
+    {
+        int migrationSize = getMigrationSize();
+        if (wantsToMigrate() && migrationSize > 0 && this.getPopulation() > migrationSize)
+            migrate(getMigrationTarget(), migrationSize);
+    }
+
+    private Province getMigrationTarget()
+    {
+        Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
+        foreach (var pro in province.getOwner().ownedProvinces)
+        {
+            //if (provinces.ContainsKey(pro))
+            //    provinces[pro] = size;
+            //else
+            provinces.Add(pro, pro.getMiddleNeedsFulfilling(this.type));
+        }
+        return provinces.MaxBy(x => x.Value.get()).Key;
+    }
+
+    private void migrate(Province where, int migrationSize)
+    {
+        if (where != null)
+        {
+            PopUnit newPop = PopUnit.Instantiate(type, this, migrationSize, where);
+        }
+    }
+
+    private bool wantsToMigrate()
+    {
+
+        if (this.needsFullfilled.get() < Options.PopNeedsMigrationLimit.get())
             return true;
         else return false;
     }
 
+    private int getMigrationSize()
+    {
+        return Mathf.RoundToInt(this.getPopulation() * Options.migrationSpeed.get());
+    }
 
     internal void Invest()
     {
@@ -939,6 +993,9 @@ abstract public class PopUnit : Producer
             }
         }
     }
+
+
+
     override public string ToString()
     {
         return type + " from " + province;
@@ -946,7 +1003,7 @@ abstract public class PopUnit : Producer
 }
 public class Tribemen : PopUnit
 {
-    public Tribemen(PopUnit pop, int sizeOfNewPop) : base(pop, sizeOfNewPop, PopType.tribeMen)
+    public Tribemen(PopUnit pop, int sizeOfNewPop, Province where) : base(pop, sizeOfNewPop, PopType.tribeMen, where)//base(pop, sizeOfNewPop, PopType.tribeMen)
     {
     }
     public Tribemen(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
@@ -1031,7 +1088,7 @@ public class Tribemen : PopUnit
 }
 public class Farmers : PopUnit
 {
-    public Farmers(PopUnit pop, int sizeOfNewPop) : base(pop, sizeOfNewPop, PopType.farmers)
+    public Farmers(PopUnit pop, int sizeOfNewPop, Province where) : base(pop, sizeOfNewPop, PopType.farmers, where)
     { }
     public Farmers(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
@@ -1136,7 +1193,7 @@ public class Farmers : PopUnit
 }
 public class Aristocrats : PopUnit
 {
-    public Aristocrats(PopUnit pop, int sizeOfNewPop) : base(pop, sizeOfNewPop, PopType.aristocrats)
+    public Aristocrats(PopUnit pop, int sizeOfNewPop, Province where) : base(pop, sizeOfNewPop, PopType.aristocrats, where)
     { }
     public Aristocrats(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
@@ -1219,7 +1276,7 @@ public class Aristocrats : PopUnit
 }
 public class Capitalists : PopUnit
 {
-    public Capitalists(PopUnit pop, int sizeOfNewPop) : base(pop, sizeOfNewPop, PopType.capitalists)
+    public Capitalists(PopUnit pop, int sizeOfNewPop, Province where) : base(pop, sizeOfNewPop, PopType.capitalists, where)
     { }
     public Capitalists(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
@@ -1291,7 +1348,7 @@ public class Capitalists : PopUnit
 }
 public class Workers : PopUnit
 {
-    public Workers(PopUnit pop, int sizeOfNewPop) : base(pop, sizeOfNewPop, PopType.workers)
+    public Workers(PopUnit pop, int sizeOfNewPop, Province where) : base(pop, sizeOfNewPop, PopType.workers, where)
     { }
     public Workers(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }

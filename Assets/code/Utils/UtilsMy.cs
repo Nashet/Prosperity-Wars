@@ -176,7 +176,7 @@ public class ProvinceNameGenerator
         postfix.add("minster", 0.1f);
         postfix.add("ton", 2f);
         postfix.add("bury", 2f);
-        postfix.add("wich", 2f);
+        postfix.add("wich", 1f);
 
         postfix.add("caster", 0.1f);
         postfix.add("ham", 2f);
@@ -185,7 +185,7 @@ public class ProvinceNameGenerator
         postfix.add("ness", 2f);
         postfix.add("pool", 2f);
         postfix.add("stead", 2f);
-        postfix.add("wick", 2f);
+        postfix.add("wick", 1f);
 
         postfix.add("worth", 2f);
 
@@ -240,7 +240,7 @@ public class ProvinceNameGenerator
         consonants.add("g", 2.015f);
         consonants.add("h", 0.1f); //IRL -  6.094f);
 
-        consonants.add("j", 0.153f);
+        consonants.add("j", 0.03f);//0.153f);
         consonants.add("k", 0.772f);
         consonants.add("l", 4.025f);
         consonants.add("m", 2.406f);

@@ -28,7 +28,7 @@ public class PopUnitPanel : DragPanel
         {
             string demotionText;
            
-            if (pop.WantsDemotion())
+            if (pop.wantsToDemote())
                 demotionText = pop.getRichestDemotionTarget() + " " + pop.getDemotionSize();
             else
                 demotionText = "none";
@@ -65,7 +65,7 @@ public class PopUnitPanel : DragPanel
                 + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\nDemotion: " + demotionText + "\nGrowth: " + pop.getGrowthSize()
                 + "\nUnemployment: " + pop.getUnemployedProcent() + loans
-                + "\n\nLife needs: " + lifeNeeds + "\n\nEveryday needs: " + everyDayNeeds + "\n\nLuxury needs: " + luxuryNeeds
+                + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
                 ;
             if (Game.devMode)
                 generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
