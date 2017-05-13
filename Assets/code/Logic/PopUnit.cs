@@ -147,8 +147,8 @@ abstract public class PopUnit : Producer
     {
         population = 0;
         province.allPopUnits.Remove(this);
-       // if (Game.popsToShowInPopulationPanel != null)
-            Game.popsToShowInPopulationPanel.Remove(this);
+        // if (Game.popsToShowInPopulationPanel != null)
+        Game.popsToShowInPopulationPanel.Remove(this);
         if (MainCamera.popUnitPanel.whomShowing() == this)
             MainCamera.popUnitPanel.Hide();
         //remove from population panel.. Would do it automatically
@@ -745,7 +745,7 @@ abstract public class PopUnit : Producer
             population = newPopulation;
         else
             this.deleteData();
-            //throw new NotImplementedException();
+        //throw new NotImplementedException();
         //because pool aren't implemented yet
         //Pool.ReleaseObject(this);
     }
@@ -829,19 +829,31 @@ abstract public class PopUnit : Producer
     //abstract public PopType getRichestDemotionTarget();
     public PopType getRichestDemotionTarget()
     {
-        List<PopLinkageValue> list = new List<PopLinkageValue>();
+        Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
+
         foreach (PopType nextType in PopType.allPopTypes)
             if (CanThisDemoteInto(nextType))
-                list.Add(new PopLinkageValue(nextType,
-                    province.getMiddleNeedsFulfilling(nextType)
-                    ));
-        list = list.OrderByDescending(o => o.amount.get()).ToList();
-        if (list.Count == 0)
-            return null;
+                list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
+        var result = list.MaxBy(x => x.Value.get());
+        if (result.Value.get() > this.needsFullfilled.get())
+            return result.Key;
         else
-            if (list[0].amount.get() > this.needsFullfilled.get())
-            return list[0].type;
-        else return null;
+            return null;
+        
+        
+        //List<PopLinkageValue> list = new List<PopLinkageValue>();
+        //foreach (PopType nextType in PopType.allPopTypes)
+        //    if (CanThisDemoteInto(nextType))
+        //        list.Add(new PopLinkageValue(nextType,
+        //            province.getMiddleNeedsFulfilling(nextType)
+        //            ));
+        //list = list.OrderByDescending(o => o.amount.get()).ToList();
+        //if (list.Count == 0)
+        //    return null;
+        //else
+        //    if (list[0].amount.get() > this.needsFullfilled.get())
+        //    return list[0].type;
+        //else return null;
     }
     abstract public bool CanThisDemoteInto(PopType popType);
 
@@ -1464,13 +1476,13 @@ public class Workers : PopUnit
             return false;
     }
 }
-public class PopLinkageValue
-{
-    public PopType type;
-    public Value amount;
-    internal PopLinkageValue(PopType p, Value a)
-    {
-        type = p;
-        amount = a;
-    }
-}
+//public class PopLinkageValue
+//{
+//    public PopType type;
+//    public Value amount;
+//    internal PopLinkageValue(PopType p, Value a)
+//    {
+//        type = p;
+//        amount = a;
+//    }
+//}

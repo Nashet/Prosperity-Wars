@@ -279,13 +279,12 @@ public class Province
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));
+                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));                
             }
             return result.divide(allPopulation); ;
         }
-        else/// add default population
+        else/// add default population - no, don't, we now fixed it
         {
-
             //PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
             //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
             return new Value(1f);
