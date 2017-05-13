@@ -47,7 +47,7 @@ public static class Options
     internal static readonly float PopAttritionFactor = 0.2f;
     internal static readonly float armyDefenceBonus = 0.5f;
 
-    public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
+    
     public static readonly Procent PopGrowthSpeed = new Procent(0.002f);
     public static readonly Procent PopStarvationSpeed = new Procent(0.01f);
 
@@ -57,9 +57,11 @@ public static class Options
     ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
     public static readonly Procent PopPromotionSpeed = new Procent(0.01f);
     public static readonly Procent PopAssimilationSpeed = new Procent(0.005f);
+    public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
 
     public static readonly Procent PopNeedsDemotionLimit = new Procent(0.5f);
     public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
     public static readonly int PopSizeConsolidationLimit = 100;
-
+    /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\assimilate\migrate</summary>
+    internal static readonly int PopAgeLimitToWipeOut = 50;
 }

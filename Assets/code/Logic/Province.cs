@@ -279,7 +279,7 @@ public class Province
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));                
+                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));
             }
             return result.divide(allPopulation); ;
         }
@@ -576,4 +576,18 @@ public class Province
         return allPopUnits.PickRandom();
     }
 
+    internal bool hasAnotherPop(PopType type)
+    {
+        int result = 0;
+        foreach (PopUnit pop in allPopUnits)
+        {
+            if (pop.type == type)
+            {
+                result++;
+                if (result == 2)
+                    return true;
+            }
+        }
+        return false;
+    }
 }

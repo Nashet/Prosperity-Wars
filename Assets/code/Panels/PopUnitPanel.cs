@@ -43,7 +43,7 @@ public class PopUnitPanel : DragPanel
                 migrationText = "none";
 
             string assimilationText;            
-            if (pop.culture != pop.province.getOwner().culture && pop.getMigrationSize() > 0)
+            if (pop.culture != pop.province.getOwner().culture && pop.getAssimilationSize() > 0)
                 assimilationText = pop.province.getOwner().culture + " " + pop.getAssimilationSize();
             else
                 assimilationText = "none";
@@ -84,6 +84,7 @@ public class PopUnitPanel : DragPanel
                 + "\nGrowth: " + pop.getGrowthSize()
                 + "\nUnemployment: " + pop.getUnemployedProcent() + loans
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
+                + "\nAge: " + pop.getAge()
                 ;
             if (Game.devMode)
                 generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)

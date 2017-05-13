@@ -783,16 +783,16 @@ public class Game
                         pop.payTaxes();
 
                     pop.calcLoyalty();
-                    pop.calcPromotions();
-                    pop.calcDemotions();
+                    pop.calcGrowth();
+                    //pop.calcPromotions();
+                    pop.calcDemotions();                    
                     pop.calcMigrations();
                     pop.calcAssimilations();
-                    pop.calcGrowth();
 
                     pop.Invest();
                 }
-                if (Game.random.Next(3) == 0)
-                    province.consolidatePops();
+                //if (Game.random.Next(3) == 0)
+                //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
                     PopUnit targetToMerge = pop.province.getSimilarPopUnit(pop);
@@ -801,6 +801,7 @@ public class Game
                     else
                         targetToMerge.mergeIn(pop);
                 }
+                province.allPopUnits.RemoveAll(x => x.getPopulation() == 0);
                 PopUnit.PopListToAddToGeneralList.Clear();
             }
             country.Think();
