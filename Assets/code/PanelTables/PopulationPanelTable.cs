@@ -54,7 +54,7 @@ public class PopulationPanelTable : MyTable
         int counter = 0;
         if (Game.popsToShowInPopulationPanel != null)
         {
-            // Adding nomber
+            // Adding number
             //AddButton("Number");
             // Adding PopType
             AddButton("Type");

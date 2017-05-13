@@ -24,7 +24,7 @@ public class Game
     public static System.Random random = new System.Random();
 
     public static Province selectedProvince;
-    public static List<PopUnit> popsToShowInPopulationPanel;
+    public static List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
     public static List<Factory> factoriesToShowInProductionPanel;
 
     internal static List<BattleResult> allBattles = new List<BattleResult>();
@@ -49,7 +49,7 @@ public class Game
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
-        
+
         makeFactoryTypes();
         makePopTypes();
 
@@ -64,10 +64,10 @@ public class Game
                 pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
-        
+
         setStartResources();
         MainCamera.topPanel.refresh();
-        makeHelloMessage();        
+        makeHelloMessage();
         MainCamera.cameraMy.transform.position = new Vector3(Game.player.getCapital().centre.x, Game.player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
 
@@ -99,7 +99,7 @@ public class Game
     {
         //Country.allCountries[0] is null country
         Country.allCountries[1].getCapital().setResource(Product.Fruit);
-        
+
         //Country.allCountries[0].getCapital().setResource(Product.Wood;
         Country.allCountries[2].getCapital().setResource(Product.Wood);
         Country.allCountries[3].getCapital().setResource(Product.Gold);
@@ -670,8 +670,9 @@ public class Game
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurrently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \ntechnologies \nbasic reforms (voting is not implemented)"
+            + " \ndemotion \nmigration (inside country) \nassimilation"
             + "\n\nYou play as " + Game.player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
-            + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"            
+            + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             , "Ok");
         ;
 
@@ -787,16 +788,18 @@ public class Game
                     pop.calcMigrations();
                     pop.calcAssimilations();
                     pop.calcGrowth();
-                    
+
                     pop.Invest();
                 }
+                if (Game.random.Next(3) == 0)
+                    province.consolidatePops();
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
-                    PopUnit targetToMerge = pop.province.FindSimularPopUnit(pop);
+                    PopUnit targetToMerge = pop.province.getSimilarPopUnit(pop);
                     if (targetToMerge == null)
                         pop.province.allPopUnits.Add(pop);
                     else
-                        targetToMerge.merge(pop);
+                        targetToMerge.mergeIn(pop);
                 }
                 PopUnit.PopListToAddToGeneralList.Clear();
             }

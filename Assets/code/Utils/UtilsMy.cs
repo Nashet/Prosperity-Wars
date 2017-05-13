@@ -834,6 +834,8 @@ public static class MyIEnumerableExtensions
     public static T PickRandom<T>(this List<T> source)
     {
         //return source.ElementAt(Game.random.Next(source.Count));
+        if (source == null || source.Count == 0)
+            return default(T);
         return source[Game.random.Next(source.Count)];
 
     }

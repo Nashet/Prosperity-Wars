@@ -290,7 +290,7 @@ public class Country : Owner
             divisionPopulationResult.Add(type, 0);
             foreach (Province pro in this.ownedProvinces)
             {
-                var popList = pro.FindAllPopUnits(type);
+                var popList = pro.getAllPopUnits(type);
                 foreach (PopUnit pop in popList)
                     if (pop.getSayingYes(reform))
                     {
@@ -385,7 +385,7 @@ public class Country : Owner
     {
         int result = 0;
         foreach (Province pro in ownedProvinces)
-            result += pro.FindPopulationAmountByType(ipopType);
+            result += pro.getPopulationAmountByType(ipopType);
         return result;
     }
 

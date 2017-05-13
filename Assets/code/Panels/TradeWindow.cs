@@ -32,17 +32,7 @@ public class TradeWindow  : DragPanel //: MonoBehaviour//
     {
         hide();
     }
-    public void onShowAllClick()
-    {
-        hide();
-        List<PopUnit> er = new List<PopUnit>();        
-        foreach (Province province in Game.player.ownedProvinces)
-            foreach (PopUnit popUnit in province.allPopUnits)                
-                er.Add(popUnit);
-        Game.popsToShowInPopulationPanel = er;
-        show(true);
-
-    }
+   
     public void Refresh()
     {
         hide();

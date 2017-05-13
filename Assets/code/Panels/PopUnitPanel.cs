@@ -16,7 +16,10 @@ public class PopUnitPanel : DragPanel
         MainCamera.popUnitPanel = this;
         Hide();
     }
-
+    public PopUnit whomShowing()
+    {
+        return pop;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -41,7 +44,7 @@ public class PopUnitPanel : DragPanel
 
             string assimilationText;            
             if (pop.culture != pop.province.getOwner().culture && pop.getMigrationSize() > 0)
-                assimilationText = pop.province.getOwner().culture + " " + pop.getDemotionSize();
+                assimilationText = pop.province.getOwner().culture + " " + pop.getAssimilationSize();
             else
                 assimilationText = "none";
             string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";

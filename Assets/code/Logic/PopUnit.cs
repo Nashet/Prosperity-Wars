@@ -102,9 +102,11 @@ abstract public class PopUnit : Producer
         province = where;//source.province;
     }
     /// <summary>
-    /// assuming that both pops are in same province, and type & culture are same
+    /// Merging source into this pop
+    /// assuming that both pops are in same province, and has same type
+    /// culture defaults to this.culture
     /// </summary>    
-    internal void merge(PopUnit source)
+    internal void mergeIn(PopUnit source)
     {
         //addPopulation(pop.getPopulation());
         //carefully summing 2 pops..                
@@ -122,7 +124,7 @@ abstract public class PopUnit : Producer
         //daysUpsetByForcedReform = 0; don't change that
         //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
-        //Owner's fiels:        
+        //Owner's fields:        
         source.wallet.sendAll(this.wallet);
 
         //Producer's fields:
@@ -137,13 +139,22 @@ abstract public class PopUnit : Producer
         consumedLastTurn.add(source.consumedLastTurn);
 
         //province = source.province; don't change that
-        // basicly, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
+        // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
         source.deleteData();
     }
 
     private void deleteData()
     {
         population = 0;
+        province.allPopUnits.Remove(this);
+       // if (Game.popsToShowInPopulationPanel != null)
+            Game.popsToShowInPopulationPanel.Remove(this);
+        if (MainCamera.popUnitPanel.whomShowing() == this)
+            MainCamera.popUnitPanel.Hide();
+        //remove from population panel.. Would do it automatically
+
+
+
         //etc
     }
 
@@ -487,6 +498,11 @@ abstract public class PopUnit : Producer
         }
     }
 
+    internal bool isStateCulture()
+    {
+        return this.culture == this.province.getOwner().culture;
+    }
+
     public Procent getLifeNeedsFullfilling()
     {
         float need = needsFullfilled.get();
@@ -728,8 +744,9 @@ abstract public class PopUnit : Producer
         if (newPopulation > 0)
             population = newPopulation;
         else
-            throw new NotImplementedException();
-        //because poool aren't implemented yet
+            this.deleteData();
+            //throw new NotImplementedException();
+        //because pool aren't implemented yet
         //Pool.ReleaseObject(this);
     }
     private void subtractPopulation(int subtract)
@@ -768,13 +785,13 @@ abstract public class PopUnit : Producer
     {
         int result = 0;
         if (this.needsFullfilled.get() >= 0.33f) // positive growth
-            result = Mathf.RoundToInt(Options.growthSpeed.get() * getPopulation());
+            result = Mathf.RoundToInt(Options.PopGrowthSpeed.get() * getPopulation());
         else
             if (this.needsFullfilled.get() >= 0.20f) // zero growth
             result = 0;
         else if (type != PopType.farmers) //starvation  
         {
-            result = Mathf.RoundToInt(Options.starvationSpeed.get() * getPopulation() * -1);
+            result = Mathf.RoundToInt(Options.PopStarvationSpeed.get() * getPopulation() * -1);
             if (result * -1 >= getPopulation()) // total starvation
                 result = 0;
         }
@@ -790,7 +807,7 @@ abstract public class PopUnit : Producer
     }
     public int getDemotionSize()
     {
-        return Mathf.RoundToInt(this.getPopulation() * Options.demotionSpeed.get());
+        return Mathf.RoundToInt(this.getPopulation() * Options.PopDemotionSpeed.get());
     }
 
     public bool wantsToDemote()
@@ -864,7 +881,7 @@ abstract public class PopUnit : Producer
     {
         if (where != null)
         {
-            PopUnit newPop = PopUnit.Instantiate(type, this, migrationSize, where,this.culture);
+            PopUnit newPop = PopUnit.Instantiate(type, this, migrationSize, where, this.culture);
         }
     }
 
@@ -877,7 +894,7 @@ abstract public class PopUnit : Producer
     }
     public int getMigrationSize()
     {
-        return Mathf.RoundToInt(this.getPopulation() * Options.migrationSpeed.get());
+        return Mathf.RoundToInt(this.getPopulation() * Options.PopMigrationSpeed.get());
     }
     internal void calcAssimilations()
     {
@@ -893,13 +910,13 @@ abstract public class PopUnit : Producer
     {
         //if (toWhom != null)
         //{
-            PopUnit newPop = PopUnit.Instantiate(type, this, assimilationSize, this.province, toWhom);
+        PopUnit newPop = PopUnit.Instantiate(type, this, assimilationSize, this.province, toWhom);
         //}
     }
 
-    private int getAssimilationSize()
+    public int getAssimilationSize()
     {
-        return Mathf.RoundToInt(this.getPopulation() * Options.AssimilationSpeed.get());
+        return Mathf.RoundToInt(this.getPopulation() * Options.PopAssimilationSpeed.get());
     }
 
     internal void Invest()

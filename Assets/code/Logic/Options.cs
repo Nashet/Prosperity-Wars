@@ -36,8 +36,8 @@ public static class Options
     internal static readonly float aristocratsFoodReserv = 50;
     internal static readonly float votingPassBillLimit = 0.5f;
     internal static readonly float votingForcedReformPenalty = 0.5f;
-   
-    
+
+
     internal static readonly Value defaultPriceLimitMultiplier = new Value(5f);
     internal static readonly int PopDaysUpsetByForcedReform = 30;
     internal static readonly float GovernmentTakesShareOfGoldOutput = 0.5f;
@@ -46,17 +46,20 @@ public static class Options
 
     internal static readonly float PopAttritionFactor = 0.2f;
     internal static readonly float armyDefenceBonus = 0.5f;
-    internal static readonly Procent migrationSpeed = new Procent(0.01f);
-    public static readonly Procent growthSpeed = new Procent(0.002f);
-    public static readonly Procent starvationSpeed = new Procent(0.01f);
+
+    public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
+    public static readonly Procent PopGrowthSpeed = new Procent(0.002f);
+    public static readonly Procent PopStarvationSpeed = new Procent(0.01f);
 
     ///<summary> demotion  - when popUnit can't fulfill needs</summary>
-    public static readonly Procent demotionSpeed = new Procent(0.01f);
+    public static readonly Procent PopDemotionSpeed = new Procent(0.01f);
 
     ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
-    public static readonly Procent promotionSpeed = new Procent(0.01f);
+    public static readonly Procent PopPromotionSpeed = new Procent(0.01f);
+    public static readonly Procent PopAssimilationSpeed = new Procent(0.005f);
 
     public static readonly Procent PopNeedsDemotionLimit = new Procent(0.5f);
-    public static readonly Procent PopNeedsMigrationLimit = new Procent(0.4f);
-    internal static readonly Procent AssimilationSpeed = new Procent(0.01f);
+    public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
+    public static readonly int PopSizeConsolidationLimit = 100;
+
 }
