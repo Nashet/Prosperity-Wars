@@ -342,12 +342,13 @@ public class Country : Owner
             if (Game.random.Next(10) == 1)
             {
                 var possibleTarget = getRandomNeighborProvince();
-                if ((this.getStreght() * 1.5f > possibleTarget.getOwner().getStreght() && possibleTarget.getOwner() == Game.player) || possibleTarget.getOwner() == NullCountry
-                    || possibleTarget.getOwner() != Game.player && this.getStreght() < possibleTarget.getOwner().getStreght() * 0.5f)
-                {
-                    mobilize();
-                    sendArmy(homeArmy, possibleTarget);
-                }
+                if (possibleTarget != null)
+                    if ((this.getStreght() * 1.5f > possibleTarget.getOwner().getStreght() && possibleTarget.getOwner() == Game.player) || possibleTarget.getOwner() == NullCountry
+                        || possibleTarget.getOwner() != Game.player && this.getStreght() < possibleTarget.getOwner().getStreght() * 0.5f)
+                    {
+                        mobilize();
+                        sendArmy(homeArmy, possibleTarget);
+                    }
                 //mobilize();
                 //if (homeArmy.getSize() > 50 + Game.random.Next(100))
                 //    sendArmy(homeArmy, getRandomNeighborProvince());

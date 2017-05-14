@@ -24,7 +24,7 @@ public class TopPanel : MonoBehaviour
     public void refresh()
     {
 
-        generalText.text = "Economic Simulation v9 Date: " + Game.date + " Country: " + Game.player.name
+        generalText.text = "Economic Simulation v10 Date: " + Game.date + " Country: " + Game.player.name
             + "\nMoney: " + Game.player.wallet.haveMoney
             + " Science points: " + Game.player.sciencePoints
             + " Men: " + Game.player.getMenPopulation()
