@@ -63,5 +63,5 @@ public static class Options
     public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
     public static readonly int PopSizeConsolidationLimit = 100;
     /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\assimilate\migrate</summary>
-    internal static readonly int PopAgeLimitToWipeOut = 50;
+    internal static readonly int PopAgeLimitToWipeOut = 250;
 }

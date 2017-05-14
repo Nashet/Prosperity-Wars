@@ -40,7 +40,7 @@ public class FinancePanel : DragPanel
         sb.Append("\n\nBalance: ").Append(Game.player.getCountryWallet().getBalance());
         //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
-        sb.Append("\n\nHave money: ").Append(Game.player.wallet.haveMoney).Append (" + some money in bank");
+        sb.Append("\n\nHave money: ").Append(Game.player.wallet.haveMoney).Append(" + some money in bank");
         incomeText.text = sb.ToString();
 
 
@@ -73,5 +73,29 @@ public class FinancePanel : DragPanel
         hide();
     }
 
-
+    public void findNoonesEterprises()
+    {
+        foreach (var item in Province.allProvinces)
+        {
+            foreach (var fact in item.allFactories)
+            {
+                if (fact.factoryOwner == null)
+                    new Message("", "Null owner in " + item + " " + fact, "Got it");
+                else
+                if (fact.factoryOwner is PopUnit)
+                {
+                    var c = fact.factoryOwner as PopUnit;
+                    if (c.getPopulation() == 0)
+                        new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
+                }
+                else
+                if (fact.factoryOwner is Country)
+                {
+                    var c = fact.factoryOwner as Country;
+                    if (!c.isExist())
+                        new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
+                }
+            }
+        }
+    }
 }

@@ -57,7 +57,7 @@ abstract public class PopUnit : Producer
         province = where;
         makeModifiers();
     }
-    /// <summary> Creates PopUnit basing on part of other PopUnit.
+    /// <summary> Creates new PopUnit basing on part of other PopUnit.
     /// And transfers sizeOfNewPop population.
     /// </summary>    
     public PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture)// : this(source.getPopulation(), source.type, source.culture, source.province)
@@ -73,6 +73,11 @@ abstract public class PopUnit : Producer
         //Own PopUnit fields:
         loyalty = new Procent(source.loyalty.get());
         population = sizeOfNewPop;
+        if (source.population - sizeOfNewPop <= 0 && this.type == PopType.aristocrats || this.type == PopType.capitalists)
+            // if source pop is gonna be dead..
+            //secede property... to new pop.. what is new pop in migration - OK; or changed type - fixed.
+            //todo - can optimize it, double run on List
+            source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
         source.subtractPopulation(sizeOfNewPop);
         mobilized = 0; ;
         type = newPopType;
@@ -142,6 +147,14 @@ abstract public class PopUnit : Producer
         consumedLastTurn.add(source.consumedLastTurn);
 
         //province = source.province; don't change that
+
+        //if (source.population - sizeOfNewPop <= 0)// if source pop is gonna be dead..It gonna be, for sure
+        //secede property... to new pop.. 
+        //todo - can optimize it, double run on List. Also have point only in Consolidation, not for PopUnit.PopListToAddToGeneralList
+        //that check in not really needed as it this pop supposed to be same type as source
+        //if (this.type == PopType.aristocrats || this.type == PopType.capitalists)
+            source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
+
         // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
         source.deleteData();
     }
@@ -156,6 +169,21 @@ abstract public class PopUnit : Producer
         if (MainCamera.popUnitPanel.whomShowing() == this)
             MainCamera.popUnitPanel.Hide();
         //remove from population panel.. Would do it automatically        
+        //secede property... to government
+        getOwnedFactories().ForEach(x => x.factoryOwner = province.getOwner());
+    }
+    public List<Factory> getOwnedFactories()
+    {
+        List<Factory> result = new List<Factory>();
+        if (type == PopType.aristocrats || type == PopType.capitalists)
+        {
+            foreach (var item in province.allFactories)
+                if (item.factoryOwner == this)
+                    result.Add(item);
+            return result;
+        }
+        else //return empty list
+            return result;
     }
     public int getAge()
     {
@@ -215,10 +243,10 @@ abstract public class PopUnit : Producer
     }
     internal void takeLoss(int loss)
     {
-        int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
+        //int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
 
         //if (newPopulation > 0)
-        this.setPopulation(newPopulation);
+        this.subtractPopulation((int)(loss * Options.PopAttritionFactor));
         //else
         //pop totally killed
         ;
@@ -815,7 +843,7 @@ abstract public class PopUnit : Producer
             return result;
         else
         if (province.hasAnotherPop(this.type) && getAge() > Options.PopAgeLimitToWipeOut)
-            return this.getPopulation();
+            return this.getPopulation();// wipe-out
         else
             return 0;
     }
@@ -921,7 +949,7 @@ abstract public class PopUnit : Producer
             return result;
         else
         if (province.hasAnotherPop(this.type) && getAge() > Options.PopAgeLimitToWipeOut)
-            return this.getPopulation();
+            return this.getPopulation();// wipe-out
         else
             return 0;
     }
@@ -949,9 +977,10 @@ abstract public class PopUnit : Producer
         if (result > 0)
             return result;
         else if (getAge() > Options.PopAgeLimitToWipeOut)
-            return 0;
+            return this.getPopulation(); // wipe-out
         else
-            return this.getPopulation();
+            return 0;
+
     }
 
     internal void Invest()

@@ -9,7 +9,7 @@ public class Value
     {
         if (number < 0f)
             number = 0;
-        set(number); // set allready have multiplier
+        set(number); // set already have multiplier
     }
 
     //TODO overflow checks?
