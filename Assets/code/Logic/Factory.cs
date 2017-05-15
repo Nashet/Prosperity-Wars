@@ -22,7 +22,7 @@ public class Factory : Producer
     internal PrimitiveStorageSet needsToUpgrade;
     internal PrimitiveStorageSet inputReservs = new PrimitiveStorageSet();
 
-    protected List<PopLinkage> workForce = new List<PopLinkage>();
+    protected List<PopLinkage> hiredWorkForce = new List<PopLinkage>();
     private static int xMoneyReservForResources = 10;
     private int daysInConstruction;
     private int daysUnprofitable;
@@ -230,37 +230,42 @@ public class Factory : Producer
     public int getWorkForce()
     {
         int result = 0;
-        foreach (PopLinkage pop in workForce)
+        foreach (PopLinkage pop in hiredWorkForce)
             result += pop.amount;
         return result;
     }
-    public void HireWorkforce(int amount, List<PopUnit> popList)
+    /// <summary>
+    /// returns how much factory hired in reality
+    /// </summary>    
+    public int hireWorkforce(int amount, List<PopUnit> popList)
     {
         //check on no too much workers?
         //if (amount > HowMuchWorkForceWants())
         //    amount = HowMuchWorkForceWants();
         int wasWorkforce = getWorkForce();
-        workForce.Clear();
+        hiredWorkForce.Clear();
         if (amount > 0)
         {
-
             int leftToHire = amount;
             foreach (PopUnit pop in popList)
             {
                 if (pop.getPopulation() >= leftToHire) // satisfied demand
                 {
-                    workForce.Add(new PopLinkage(pop, leftToHire));
+                    hiredWorkForce.Add(new PopLinkage(pop, leftToHire));
                     hiredLastTurn = getWorkForce() - wasWorkforce;
-                    break;
+                    return hiredLastTurn;
+                    //break;
                 }
                 else
                 {
-                    workForce.Add(new PopLinkage(pop, pop.getPopulation())); // hire as we can
+                    hiredWorkForce.Add(new PopLinkage(pop, pop.getPopulation())); // hire as we can
                     leftToHire -= pop.getPopulation();
                 }
             }
-            hiredLastTurn = (int)getWorkForce() - (int)wasWorkforce;
+            hiredLastTurn = getWorkForce() - wasWorkforce;
+            return hiredLastTurn;
         }
+        else return 0;
     }
 
     internal void setDontHireOnSubsidies(bool isOn)
@@ -281,7 +286,7 @@ public class Factory : Producer
     internal int HowManyEmployed(PopUnit pop)
     {
         int result = 0;
-        foreach (PopLinkage link in workForce)
+        foreach (PopLinkage link in hiredWorkForce)
             if (link.pop == pop)
                 result += link.amount;
         return result;
@@ -322,7 +327,7 @@ public class Factory : Producer
             // per 1000 men            
             if (Economy.isMarket.checkIftrue(province.getOwner()))
             {
-                foreach (PopLinkage link in workForce)
+                foreach (PopLinkage link in hiredWorkForce)
                 {
                     Value howMuchPay = new Value(0);
                     howMuchPay.set(salary.get() * link.amount / 1000f);
@@ -346,7 +351,7 @@ public class Factory : Producer
             {
                 // non market
                 Storage foodSalary = new Storage(Product.Food, 1f);
-                foreach (PopLinkage link in workForce)
+                foreach (PopLinkage link in hiredWorkForce)
                 {
                     Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.amount / 1000f);
                     if (factoryOwner is Country)

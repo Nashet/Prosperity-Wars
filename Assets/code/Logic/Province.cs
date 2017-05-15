@@ -292,24 +292,24 @@ public class Province
     }
     public void BalanceEmployableWorkForce()
     {
-        List<PopUnit> workforcList = this.getAllPopUnits(PopType.workers);
-        int totalWorkForce = 0; // = this.FindPopulationAmountByType(PopType.workers);
+        List<PopUnit> workforceList = this.getAllPopUnits(PopType.workers);
+        int totalWorkForce = workforceList.Sum(x => x.getPopulation());
         int factoryWants = 0;
-        int factoryWantsTotal = 0;
+        //int factoryWantsTotal = 0;
 
-        foreach (PopUnit pop in workforcList)
-            totalWorkForce += pop.getPopulation();
+        //foreach (PopUnit pop in workforceList)
+        //    totalWorkForce += pop.getPopulation();
+        
         int popsLeft = totalWorkForce;
         if (totalWorkForce > 0)
         {
-            // workforcList = workforcList.OrderByDescending(o => o.population).ToList();
+            // workforceList = workforceList.OrderByDescending(o => o.population).ToList();
             allFactories = allFactories.OrderByDescending(o => o.getSalary()).ToList();
             //foreach (Factory shownFactory in allFactories)
             //    factoryWantsTotal += shownFactory.HowMuchWorkForceWants();
             //if (factoryWantsTotal > 0)
             foreach (Factory factory in allFactories)
             {
-                //if (shownFactory.getLevel() > 0)
                 if (factory.isWorking())
                 {
                     factoryWants = factory.HowMuchWorkForceWants();
@@ -317,19 +317,19 @@ public class Province
                         factoryWants = popsLeft;
 
                     //if (factoryWants > 0)
-                    //shownFactory.HireWorkforce(totalWorkForce * factoryWants / factoryWantsTotal, workforcList);
+                    //shownFactory.HireWorkforce(totalWorkForce * factoryWants / factoryWantsTotal, workforceList);
                     if (factoryWants > 0 && factory.getWorkForce() == 0)
                         factory.justHiredPeople = true;
                     else
                         factory.justHiredPeople = false;
-                    factory.HireWorkforce(factoryWants, workforcList);
-
-                    popsLeft -= factoryWants;
+                    //popsLeft -= factoryWants;                    
+                    popsLeft -= factory.hireWorkforce(factoryWants, workforceList);          
+                    
                     //if (popsLeft <= 0) break;
                 }
                 else
                 {
-                    factory.HireWorkforce(0, null);
+                    factory.hireWorkforce(0, null);
                 }
             }
         }

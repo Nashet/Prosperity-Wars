@@ -24,6 +24,8 @@ Economy:
 > dont store factory upgrade/building purchases
 > proper pop unit spawn
 > pop opinions on current reforms
+> improve pop opinions on reforms, including isMyStatusEnchanced
+
 //////////////////waffle///////////
 + min wage reform
 + Unemployment in Panel & fix
@@ -47,7 +49,7 @@ Economy:
 
 > move reform values into constructors No, still DO IT
 
-
+> conditions for reforms choise for pops
 
 - pop can't consume anything when food DSB > 1
 - food's price would not growth on dsb > 1
@@ -75,9 +77,8 @@ Economy:
 
 > add caption for panels
 
-> conditions for reforms choise for pops
 ? add cross connection in pop - reform?
-> improve pop opinions on reforms, including isMyStatusEnchanced
+
 
 > always on top panels
 
@@ -118,7 +119,7 @@ Economy:
 
 ///////////////////////////////// demo
 *? factories have no time to rise salary to compete workforce On Reopen
-> upgrade to new Unity?
++ upgrade to new Unity?
 > test dynamic strings speed
 
 > conver 0.333 constants
