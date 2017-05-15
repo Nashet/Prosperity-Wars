@@ -393,7 +393,7 @@ public class Province
     {
         return name;
     }
-    internal int getUnemployed()
+    internal int getUnemployedWorkers()
     {
         //int result = 0;
         //List<PopUnit> list = this.FindAllPopUnits(PopType.workers);

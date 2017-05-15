@@ -1040,14 +1040,14 @@ abstract public class PopUnit : Producer
         //if (province.getOwner().isInvented(InventionType.capitalism) && type == PopType.capitalists && Game.random.Next(10) == 1)
         if (Economy.isMarket.checkIftrue(province.getOwner()) && type == PopType.capitalists && Game.random.Next(10) == 1)
         {
-            //should I buld?
+            //should I build?
             if (//province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
                 !province.isThereMoreThanFactoriesInUpgrade(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
                 if (proposition != null)
                     if (province.CanBuildNewFactory(proposition) &&
-                        (province.getUnemployed() > Options.minUnemploymentToBuldFactory || province.getMiddleFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
+                        (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getMiddleFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                     {
                         PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
                         Value cost = Game.market.getCost(resourceToBuild);

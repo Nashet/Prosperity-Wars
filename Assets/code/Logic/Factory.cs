@@ -498,8 +498,8 @@ public class Factory : Producer
             // to help factories catch up other factories salaries
             //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
             //    salary.set(province.getLocalMinSalary());
-            // freshly builded factories should rise salary to concurency with old ones
-            if (getWorkForce() < 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
+            // freshly built factories should rise salary to concurrency with old ones
+            if (getWorkForce() < 100 && province.getUnemployedWorkers() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.09f);
 
             float minSalary = province.getOwner().getMinSalary();
