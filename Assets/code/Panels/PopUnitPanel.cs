@@ -35,6 +35,14 @@ public class PopUnitPanel : DragPanel
                 demotionText = target + " " + pop.getDemotionSize();
             else
                 demotionText = "none";
+
+            string promotionText;
+            var targetPro = pop.getRichestPromotionTarget();
+            if (pop.wantsToPromote() && targetPro != null && pop.getPromotionSize() > 0)
+                promotionText = targetPro + " " + pop.getPromotionSize();
+            else
+                promotionText = "none";
+
             string migrationText;
             var targetM = pop.getRichestMigrationTarget();
             if (pop.wantsToMigrate() && targetM != null && pop.getMigrationSize() > 0)
@@ -81,6 +89,7 @@ public class PopUnitPanel : DragPanel
                 + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
                 + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\nDemotion: " + demotionText
+                + "\nPromotion: " + promotionText
                 + "\nMigration: " + migrationText
                 + "\nAssimilation: " + assimilationText
                 + "\nGrowth: " + pop.getGrowthSize()

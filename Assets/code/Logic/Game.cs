@@ -784,7 +784,7 @@ public class Game
 
                     pop.calcLoyalty();
                     pop.calcGrowth();
-                    //pop.calcPromotions();
+                    pop.calcPromotions();
                     pop.calcDemotions();                    
                     pop.calcMigrations();
                     pop.calcAssimilations();

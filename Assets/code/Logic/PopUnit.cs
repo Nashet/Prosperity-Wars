@@ -153,7 +153,7 @@ abstract public class PopUnit : Producer
         //todo - can optimize it, double run on List. Also have point only in Consolidation, not for PopUnit.PopListToAddToGeneralList
         //that check in not really needed as it this pop supposed to be same type as source
         //if (this.type == PopType.aristocrats || this.type == PopType.capitalists)
-            source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
+        source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
 
         // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
         source.deleteData();
@@ -287,7 +287,7 @@ abstract public class PopUnit : Producer
     /// <summary>
     /// Creates Pop in PopListToAddToGeneralList, later in will go to proper List
     /// </summary>    
-    public static PopUnit Instantiate(PopType type, PopUnit source, int sizeOfNewPop, Province where, Culture culture)
+    public static PopUnit makeVirtualPop(PopType type, PopUnit source, int sizeOfNewPop, Province where, Culture culture)
     {
         if (type == PopType.tribeMen) return new Tribemen(source, sizeOfNewPop, where, culture);
         else
@@ -750,11 +750,54 @@ abstract public class PopUnit : Producer
             }
         }
     }
+
     public void calcPromotions()
     {
-
+        int promotionSize = getPromotionSize();
+        if (wantsToPromote() && promotionSize > 0 && this.getPopulation() >= promotionSize)
+            promote(getRichestPromotionTarget(), promotionSize);
+    }
+    public int getPromotionSize()
+    {
+        int result = (int)(this.getPopulation() * Options.PopPromotionSpeed.get());
+        if (result > 0)
+            return result;
+        else
+        if (province.hasAnotherPop(this.type) && getAge() > Options.PopAgeLimitToWipeOut)
+            return this.getPopulation();// wipe-out
+        else
+            return 0;
     }
 
+    public bool wantsToPromote()
+    {
+        if (this.needsFullfilled.get() > Options.PopNeedsPromotionLimit.get())
+            return true;
+        else return false;
+    }
+
+    //abstract public PopType getRichestDemotionTarget();
+    public PopType getRichestPromotionTarget()
+    {
+        Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
+        foreach (PopType nextType in PopType.allPopTypes)
+            if (canThisPromoteInto(nextType))
+                list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
+        var result = list.MaxBy(x => x.Value.get());
+        if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
+            return result.Key;
+        else
+            return null;
+    }
+    abstract public bool canThisPromoteInto(PopType popType);
+
+    private void promote(PopType targetType, int amount)
+    {
+        if (targetType != null)
+        {
+            PopUnit.makeVirtualPop(targetType, this, amount, this.province, this.culture);
+        }
+    }
     //private bool CanDemote()
     //{
     //    if (popType == PopType.aristocrats)
@@ -873,7 +916,7 @@ abstract public class PopUnit : Producer
             if (CanThisDemoteInto(nextType))
                 list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
-        if (result.Value.get() > this.needsFullfilled.get())
+        if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
             return result.Key;
         else
             return null;
@@ -899,7 +942,7 @@ abstract public class PopUnit : Producer
     {
         if (targetType != null)
         {
-            PopUnit newPop = PopUnit.Instantiate(targetType, this, amount, this.province, this.culture);
+            PopUnit.makeVirtualPop(targetType, this, amount, this.province, this.culture);
         }
     }
     internal void calcMigrations()
@@ -931,7 +974,7 @@ abstract public class PopUnit : Producer
     {
         if (where != null)
         {
-            PopUnit newPop = PopUnit.Instantiate(type, this, migrationSize, where, this.culture);
+            PopUnit.makeVirtualPop(type, this, migrationSize, where, this.culture);
         }
     }
 
@@ -967,7 +1010,7 @@ abstract public class PopUnit : Producer
     {
         //if (toWhom != null)
         //{
-        PopUnit newPop = PopUnit.Instantiate(type, this, assimilationSize, this.province, toWhom);
+        PopUnit.makeVirtualPop(type, this, assimilationSize, this.province, toWhom);
         //}
     }
 
@@ -1126,6 +1169,15 @@ public class Tribemen : PopUnit
         else
             return true;
     }
+    public override bool canThisPromoteInto(PopType targetType)
+    {
+        if (targetType == this.type
+            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
+            || targetType == PopType.workers)
+            return false;
+        else
+            return true;
+    }
     public override void produce()
     {
         Value producedAmount;
@@ -1203,14 +1255,21 @@ public class Farmers : PopUnit
     public override bool CanThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
         else
             return true;
     }
-
+    public override bool canThisPromoteInto(PopType targetType)
+    {
+        if (targetType == this.type
+            || targetType == PopType.tribeMen
+            || targetType == PopType.workers)
+            return false;
+        else
+            return true;
+    }
     public override void produce()
     {
         Value producedAmount;
@@ -1313,6 +1372,10 @@ public class Aristocrats : PopUnit
         else
             return true;
     }
+    public override bool canThisPromoteInto(PopType targetType)
+    {
+        return false;
+    }
     internal void dealWithMarket()
     {
         if (storageNow.get() > Options.aristocratsFoodReserv)
@@ -1380,6 +1443,8 @@ public class Aristocrats : PopUnit
         else
             return false;
     }
+
+
 }
 public class Capitalists : PopUnit
 {
@@ -1394,6 +1459,10 @@ public class Capitalists : PopUnit
             return false;
         else
             return true;
+    }
+    public override bool canThisPromoteInto(PopType targetType)
+    {
+        return false;
     }
     public override void produce()
     { }
@@ -1466,6 +1535,15 @@ public class Workers : PopUnit
             || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
+            return false;
+        else
+            return true;
+    }
+    public override bool canThisPromoteInto(PopType targetType)
+    {
+        if (targetType == this.type
+            || targetType == PopType.farmers
+            || targetType == PopType.tribeMen)
             return false;
         else
             return true;
