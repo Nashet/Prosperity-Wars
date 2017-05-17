@@ -338,6 +338,7 @@ public class Country : Owner
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));
+        allArmies.ForEach(x => x.consume());
         if (isAI() && !isOnlyCountry())
             if (Game.random.Next(10) == 1)
             {

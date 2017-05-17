@@ -10,6 +10,8 @@ public class PopType
     protected PrimitiveStorageSet lifeNeeds = new PrimitiveStorageSet();
     protected PrimitiveStorageSet everyDayNeeds = new PrimitiveStorageSet();
     protected PrimitiveStorageSet luxuryNeeds = new PrimitiveStorageSet();
+
+    private PrimitiveStorageSet militaryNeeds = new PrimitiveStorageSet();
     //List<Needs> lifeNeeds = new List<Needs>();
     //List<Needs> everyDayNeeds = new List<Needs>();
     //List<Needs> luxuryNeeds = new List<Needs>();
@@ -23,8 +25,9 @@ public class PopType
     public Storage basicProduction;
     private string name;
     private float strenght;
-    public PopType(PopTypes itype, Storage iproduces, string iname, float strenght)
+    public PopType(PopTypes itype, Storage iproduces, string iname, float strenght, PrimitiveStorageSet militaryNeeds)
     {
+        this.militaryNeeds = militaryNeeds;
         this.strenght = strenght;
         type = itype;
         name = iname;
@@ -116,6 +119,10 @@ public class PopType
             return false;
         else
             return true;
+    }
+    public PrimitiveStorageSet getMilitaryNeedsPer1000()
+    {
+        return militaryNeeds;
     }
     /////<summary> per 1000 men </summary>
     //public Storage getLifeNeedsPer1000(PopType popType)

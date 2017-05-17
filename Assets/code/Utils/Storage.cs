@@ -314,7 +314,7 @@ public class PrimitiveStorageSet
         foreach (Storage n in need)
             this.add(n);
     }
-    public System.Collections.IEnumerator GetEnumerator()
+    public IEnumerator<Storage> GetEnumerator()
     {
         for (int i = 0; i < container.Count; i++)
         {
@@ -378,7 +378,11 @@ public class PrimitiveStorageSet
                 return false;
         return true;
     }
-
+    internal Procent HowMuchHaveOf(PrimitiveStorageSet need)
+    {
+        PrimitiveStorageSet shortage = this.subtractOuside(need);
+        return Procent.makeProcent(shortage, need);        
+    }
     internal Storage findStorage(Product whom)
     {
         foreach (Storage stor in container)
@@ -449,10 +453,25 @@ public class PrimitiveStorageSet
         else
             find.subtract(stor);
     }
+    internal Storage subtractOutside(Storage stor)
+    {
+        Storage find = this.findStorage(stor.getProduct());
+        if (find == null)
+            return new Storage (stor);
+        else
+            return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+    }
     internal void subtract(PrimitiveStorageSet set)
     {
         foreach (Storage stor in set)
             this.subtract(stor);        
+    }
+    internal PrimitiveStorageSet subtractOuside(PrimitiveStorageSet substracting)
+    {
+        PrimitiveStorageSet result = new PrimitiveStorageSet();
+        foreach (Storage stor in substracting)
+            result.add(this.subtractOutside(stor));
+        return result;
     }
 
     internal void copyDataFrom(PrimitiveStorageSet consumed)
@@ -468,6 +487,15 @@ public class PrimitiveStorageSet
     {
         toWhom.add(this);
         this.SetZero();
+    }
+
+    internal float sum()
+    {
+        float result = 0f;
+        foreach (var item in container)        
+            result += item.get();
+        return result;
+        
     }
 
 

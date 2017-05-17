@@ -45,8 +45,8 @@ public class DiplomacyPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.player.homeArmy);
-        //sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
+        sb.Append("Have army: ").Append(Game.player.homeArmy.getShortName());
+        
 
         allArmySizeText.text = sb.ToString();
 

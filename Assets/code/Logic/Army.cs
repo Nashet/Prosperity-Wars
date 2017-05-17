@@ -44,7 +44,28 @@ public class Army
         //}
         //);
     }
+    public void consume()
+    {
+        //foreach (var corps in personal)
+        //{
+        //    corps.Value.consume(getOwner());
+        //}
+        personal.ForEach((x, corps) => corps.consume(getOwner()));
+    }
 
+
+
+    public Procent getMoral()
+    {
+        Procent result = new Procent(0);
+        int calculatedSize = 0;
+        foreach (var item in personal)
+        {
+            result.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getMoral());
+            calculatedSize += item.Value.getSize();
+        }
+        return result;
+    }
     public void add(Corps corpsToAdd)
     {
         if (corpsToAdd != null)
@@ -68,8 +89,8 @@ public class Army
         personal.Remove(corps.getPopUnit());
     }
     internal int getSize()
-    {        
-        return personal.Sum(x => x.Value.getSize());       
+    {
+        return personal.Sum(x => x.Value.getSize());
     }
     internal IEnumerable<Corps> getCorps()
     {
@@ -90,6 +111,53 @@ public class Army
         else
             sb.Append("None");
         return sb.ToString();
+    }
+    internal string getShortName()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        int size = getSize();
+        if (size > 0)
+        {            
+            foreach (var next in getAmountByTypes())
+                sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
+            sb.Append("Total size: ").Append(getSize());
+            sb.Append(" Moral: ").Append(getMoral());
+            sb.Append(" Provision: ").Append(getConsumption());
+        }
+        else
+            sb.Append("None");
+        return sb.ToString();
+    }
+
+    private Procent getConsumption()
+    {
+        Procent res = new Procent(0f);
+        int calculatedSize = 0;
+        foreach (var item in personal)
+        { 
+            res.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getConsumption(getOwner()));
+            calculatedSize += item.Value.getSize();
+        }
+        return res;
+    }
+
+    public Dictionary<PopType, int> getAmountByTypes()
+    {
+        Dictionary<PopType, int> res = new Dictionary<PopType, int>();
+        int test;
+        foreach (var next in personal)
+        {
+            //if (res.TryGetValue(next.Key.type, out test))
+            //    test += next.Value.getSize();
+            //else
+            //    res.Add(next.Key.type, next.Value.getSize());
+            if (res.ContainsKey(next.Key.type))
+                res[next.Key.type] += next.Value.getSize();
+            else
+                res.Add(next.Key.type, next.Value.getSize());
+        }
+        return res;
     }
     //public void transfertCorpsFrom(Dictionary<PopUnit, Corps> source)
     public void transfertCorpsFrom(Army sourceArmy)

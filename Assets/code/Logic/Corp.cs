@@ -31,7 +31,7 @@ namespace DesignPattern.Objectpool
                 {
                     Corps po = new Corps(origin, size);
                     _inUse.Add(po);
-                    return po;                    
+                    return po;
                 }
                 else
                 {
@@ -45,7 +45,7 @@ namespace DesignPattern.Objectpool
         }
 
         public static void ReleaseObject(Corps po)
-        {            
+        {
             po.deleteData();
             lock (_available)
             {
@@ -62,19 +62,94 @@ namespace DesignPattern.Objectpool
 
 }
 public class Corps
-{ 
+{
     PopUnit origin;
     int size;
-   
+    Procent moral = new Procent(0f);
+    Procent consumption = new Procent(0f);
     internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
         this.size = size;
+        this.moral.set(0f);
+        consumption.set(0f);
     }
-
     public Corps(PopUnit origin, int size)
     {
         initialize(origin, size);
+    }
+    internal void deleteData()
+    {
+        size = 0;
+        origin = null;
+        moral.set(0);
+        //here - delete all links on that object        
+    }
+    internal void demobilizeFrom(Army army)
+    {
+        army.remove(this);
+        origin.demobilize();
+        Pool.ReleaseObject(this);
+    }
+    public void consume(Country owner)
+    {
+        //Procent consumption = getConsumption(owner);
+        var needs = getRealNeeds();
+        float allNeedsAmount = needs.sum();
+        if (allNeedsAmount == 0f)
+        {
+            consumption.set(1f);
+        }
+        else
+        {
+            float shortage = 0f;
+            foreach (var item in needs)
+            {
+                if (owner.storageSet.has(item))
+                    owner.storageSet.subtract(item);
+                else
+                    shortage += item.get();
+            }
+            if (shortage == 0f)
+                consumption.set(1f);
+            else
+                consumption.set(shortage / allNeedsAmount);
+        }
+        float moralChange = consumption.get() - moral.get();
+        moralChange = Mathf.Clamp(moralChange, Options.MaxMoralChangePerTic * -1f, Options.MaxMoralChangePerTic);
+        if (moral.get() + moralChange < 0)
+            moral.set(0f);
+        else
+            moral.add(moralChange);
+    }
+    public Procent getConsumption(Country owner)
+    {
+        return consumption;
+        //return owner.storageSet.HowMuchHaveOf(getRealNeeds());
+    }
+    public PrimitiveStorageSet getRealNeeds()
+    {
+        Value multiplier = new Value(this.getSize() / 1000f);
+
+        List<Storage> result = new List<Storage>();
+        foreach (Storage next in origin.type.getMilitaryNeedsPer1000())
+            if (next.getProduct().isInventedByAnyOne())
+            {
+                Storage nStor = new Storage(next.getProduct(), next.get());
+                nStor.multipleInside(multiplier);
+                result.Add(nStor);
+            }
+        //result.Sort(delegate (Storage x, Storage y)
+        //{
+        //    float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
+        //    float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
+        //    return sumX.CompareTo(sumY);
+        //});
+        return new PrimitiveStorageSet(result);
+    }
+    public Procent getMoral()
+    {
+        return moral;
     }
     public PopType getType()
     {
@@ -116,22 +191,4 @@ public class Corps
         size += v;
     }
 
-    internal void demobilizeFrom(Army  army)
-    {
-        army.remove(this);
-
-        origin.demobilize();
-        Pool.ReleaseObject(this);
-        
-    }
-    //Army army;
-    internal void deleteData()
-    {
-        size = 0;
-        origin = null;
-        //here - delete all links on that object
-        //army.demobilize(this);        
-    }
-
-   
 }
