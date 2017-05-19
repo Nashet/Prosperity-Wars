@@ -118,7 +118,7 @@ public class Army
 
         int size = getSize();
         if (size > 0)
-        {            
+        {
             foreach (var next in getAmountByTypes())
                 sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
             sb.Append("Total size: ").Append(getSize());
@@ -135,7 +135,7 @@ public class Army
         Procent res = new Procent(0f);
         int calculatedSize = 0;
         foreach (var item in personal)
-        { 
+        {
             res.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getConsumption(getOwner()));
             calculatedSize += item.Value.getSize();
         }
@@ -247,26 +247,19 @@ public class Army
 
             attackerWon = false;
 
-            float winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / defender.getStrenght();
+            float winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / (defender.getStrenght() / defender.getStrenghtModifier());
             int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted);
 
             int attackerLoss = attacker.takeLoss(attacker.getSize());
             result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
             , initialDefenderSize, defenderLoss, attacker.destination, attackerWon);
         }
-
-
-
         return result;
     }
     public Country getOwner()
     {
         return owner;
     }
-    //private void takeLoss()
-    //{
-    //    takeLoss(this.getSize());
-    //}
 
     private int takeLoss(int loss)
     {
@@ -282,6 +275,9 @@ public class Army
             }
         return totalLoss;
     }
+    /// <summary>
+    /// argument is NOT men, but they strength
+    /// </summary>    
     private int takeLossUnconverted(float lossStrenght)
     {
         int totalMenLoss = 0;
@@ -289,35 +285,31 @@ public class Army
         int menLoss;
         float totalStrenght = getStrenght();
         if (totalStrenght > 0f)
-
             foreach (var corp in personal)
-                if (corp.Value.getType().getStrenght() > 0f)
+                if (corp.Value.getType().getStrenght() * getStrenghtModifier() > 0)//(corp.Value.getType().getStrenght() > 0f)
                 {
-                    streghtLoss = corp.Value.getStrenght() * lossStrenght / totalStrenght;
-                    menLoss = Mathf.RoundToInt(streghtLoss / corp.Value.getType().getStrenght());
+                    streghtLoss = corp.Value.getStrenght(this) / totalStrenght * lossStrenght;
+                    menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght() * getStrenghtModifier())); // corp.Value.getType().getStrenght());
                     corp.Value.TakeLoss(menLoss);
                     totalMenLoss += menLoss;
                 }
         return totalMenLoss;
     }
-
+    public float getStrenghtModifier()
+    {
+        if (destination == null) // army at home
+            return 1f + Options.armyDefenceBonus;
+        else
+            return 1f;
+    }
     private float getStrenght()
     {
         float result = 0;
         float modifier = 0f;
         foreach (var c in personal)
         {
-            //modifier = Options.armyDefenceBonus + UnityEngine.Random.Range(-0.1f, 01f);
-            if (destination == null) // army at home
-            {
-                modifier = 1f;// + Options.armyDefenceBonus + UnityEngine.Random.Range(-0.1f, 01f);
-                result += c.Value.getStrenght() * modifier;
-            }
-            else
-            {
-                modifier = 1f;// + UnityEngine.Random.Range(-0.1f, 01f);
-                result += c.Value.getStrenght() * modifier;
-            }
+            //todo optimize            
+            result += c.Value.getStrenght(this);
         }
         return result;
     }
