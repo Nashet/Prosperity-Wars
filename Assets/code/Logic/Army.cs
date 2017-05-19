@@ -247,7 +247,7 @@ public class Army
 
             attackerWon = false;
 
-            float winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / (defender.getStrenght() / defender.getStrenghtModifier());
+            float winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / (defender.getStrenght());
             int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted);
 
             int attackerLoss = attacker.takeLoss(attacker.getSize());
