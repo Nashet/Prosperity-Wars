@@ -36,7 +36,7 @@ public class FactoryType
         else
             resourceInput = iresourceInput;
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
-        upgradeResource.Set(new Storage(Product.Stone, 10f));        
+        upgradeResource.set(new Storage(Product.Stone, 10f));        
         enoughMoneyOrResourcesToBuild = new Condition(
           (delegate (Country forWhom)
           {
@@ -70,7 +70,7 @@ public class FactoryType
     {
         //return new Storage(Product.Food, 40f);
         PrimitiveStorageSet result = new PrimitiveStorageSet();
-        result.Set(new Storage(Product.Food, 40f));
+        result.set(new Storage(Product.Food, 40f));
         //TODO!has connection in pop.invest!!
         //if (whoCanProduce(Product.Gold) == this)
         //        result.Set(new Storage(Product.Wood, 40f));

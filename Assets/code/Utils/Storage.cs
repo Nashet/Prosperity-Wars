@@ -9,7 +9,7 @@ public class CountryWallet : Wallet
     }
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
-    Value goldMinesIncome = new Value(0f);    
+    Value goldMinesIncome = new Value(0f);
     Value ownedFactoriesIncome = new Value(0f);
 
     Value unemploymentSubsidiesExpense = new Value(0f);
@@ -287,7 +287,7 @@ public class PrimitiveStorageSet
     /// If duplicated than overwrites
     /// </summary>
     /// <param name="inn"></param>
-    public void Set(Storage inn)
+    public void set(Storage inn)
     {
         Storage find = this.findStorage(inn.getProduct());
         if (find == null)
@@ -329,22 +329,14 @@ public class PrimitiveStorageSet
     //        yield return i;
     //    }
     //}
-    //public IEnumerator GetEnumerator2()
-    //{
-    //    yield return "With an iterator, ";
-    //    yield return "more than one ";
-    //    yield return "value can be returned";
-    //    yield return ".";
-    //}
+
     /// <summary>
     /// Do checks outside
-    /// </summary>
-    /// <param name="whom"></param>
-    /// <param name="howMuchPay"></param>
-    public void pay(Storage whom, Value howMuchPay)
+    /// </summary>   
+    public bool send(Producer whom, Storage what)
     {
-        Storage storage = findStorage(whom.getProduct());
-        storage.pay(whom, howMuchPay);
+        Storage storage = findStorage(what.getProduct());
+        return storage.send(whom, what);
     }
 
     public void take(Storage fromHhom, Value howMuch)
@@ -356,7 +348,7 @@ public class PrimitiveStorageSet
             container.Add(stor);
         }
 
-        fromHhom.pay(stor, howMuch);
+        fromHhom.send(stor, howMuch);
         //fromHhom.
 
 
@@ -381,7 +373,7 @@ public class PrimitiveStorageSet
     internal Procent HowMuchHaveOf(PrimitiveStorageSet need)
     {
         PrimitiveStorageSet shortage = this.subtractOuside(need);
-        return Procent.makeProcent(shortage, need);        
+        return Procent.makeProcent(shortage, need);
     }
     internal Storage findStorage(Product whom)
     {
@@ -389,6 +381,13 @@ public class PrimitiveStorageSet
             if (stor.getProduct() == whom)
                 return stor;
         return null;
+    }
+    internal Value getStorage(Product whom)
+    {
+        foreach (Storage stor in container)
+            if (stor.getProduct() == whom)
+                return stor;
+        return new Value(0f);
     }
     override public string ToString()
     {
@@ -441,30 +440,30 @@ public class PrimitiveStorageSet
     {
         PrimitiveStorageSet result = new PrimitiveStorageSet();
         foreach (Storage stor in container)
-            result.Set(new Storage(stor.getProduct(), stor.get() / v));
+            result.set(new Storage(stor.getProduct(), stor.get() / v));
         return result;
     }
 
-    internal void subtract(Storage stor)
+    internal bool subtract(Storage stor)
     {
         Storage find = this.findStorage(stor.getProduct());
         if (find == null)
-            ;//container.Add(value);
+            return false;//container.Add(value);
         else
-            find.subtract(stor);
+            return find.subtract(stor);
     }
     internal Storage subtractOutside(Storage stor)
     {
         Storage find = this.findStorage(stor.getProduct());
         if (find == null)
-            return new Storage (stor);
+            return new Storage(stor);
         else
             return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
     }
     internal void subtract(PrimitiveStorageSet set)
     {
         foreach (Storage stor in set)
-            this.subtract(stor);        
+            this.subtract(stor);
     }
     internal PrimitiveStorageSet subtractOuside(PrimitiveStorageSet substracting)
     {
@@ -478,12 +477,12 @@ public class PrimitiveStorageSet
     {
         foreach (Storage stor in consumed)
             //if (stor.get() > 0f)
-            this.Set(stor);
+            this.set(stor);
         // SetZero();
     }
-        
 
-    internal void send(PrimitiveStorageSet toWhom)
+
+    internal void sendAll(PrimitiveStorageSet toWhom)
     {
         toWhom.add(this);
         this.SetZero();
@@ -492,10 +491,10 @@ public class PrimitiveStorageSet
     internal float sum()
     {
         float result = 0f;
-        foreach (var item in container)        
+        foreach (var item in container)
             result += item.get();
         return result;
-        
+
     }
 
 
@@ -580,19 +579,17 @@ public class Storage : Value
     {
         if (this.getProduct() != another.getProduct())
             Debug.Log("Attempt to give wrong product");
-        this.pay(another, this);
+        this.send(another, this);
 
     }
-    public void pay(PrimitiveStorageSet whom, Value HowMuch)
+    public void send(PrimitiveStorageSet whom, Value HowMuch)
     {
         whom.take(this, HowMuch);
     }
     /// <summary>
     /// Checks inside
-    /// </summary>
-    /// <param name="another"></param>
-    /// <param name="amount"></param>
-    public void pay(Storage another, float amount)
+    /// </summary>   
+    public void send(Storage another, float amount)
     {
         if (this.getProduct() != another.getProduct())
             Debug.Log("Attempt to give wrong product");
@@ -606,19 +603,50 @@ public class Storage : Value
             Debug.Log("value payment failed");
     }
     /// <summary>
-    /// checks inside
+    /// checks inside, returns true if succeeded
     /// </summary>    
-    public void pay(Storage toWhom, Value amount)
+    public bool send(Producer toWhom, Storage what)
+    {      
+        if (this.getProduct() != toWhom.storageNow.getProduct())
+        {
+            Debug.Log("Attempt to give wrong product in bool send(Producer toWhom, Storage what)");
+            return false;
+        }
+        if (this.get() >= what.get())
+        {
+            toWhom.storageNow.add(what);
+            this.subtract(what);
+            return true;
+        }
+        else
+        {
+            Debug.Log("value payment failed");
+            return false;
+        }
+
+    }
+    /// <summary>
+    /// checks inside, returns true if succeeded
+    /// </summary>    
+    public bool send(Storage toWhom, Value amount)
     {
         if (this.getProduct() != toWhom.getProduct())
+        {
             Debug.Log("Attempt to give wrong product");
+            return false;
+        }
         if (this.get() >= amount.get())
         {
             toWhom.add(amount);
             this.subtract(amount);
-
+            return true;
         }
-        else Debug.Log("value payment failed");
+        else
+        {
+            Debug.Log("value payment failed");
+            return false;
+        }
+
     }
 
     //public void pay(Storage another, float amount)

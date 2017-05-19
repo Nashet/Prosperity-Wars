@@ -3,14 +3,171 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 
+public class DontUseThatMethod : Exception
+{
+    /// <summary>
+    /// Just create the exception
+    /// </summary>
+    public DontUseThatMethod()
+      : base()
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    public DontUseThatMethod(String message)
+      : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description and inner cause
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    /// <param name="innerException">Exception inner cause</param>
+    public DontUseThatMethod(String message, Exception innerException)
+      : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception from serialized data.
+    /// Usual scenario is when exception is occured somewhere on the remote workstation
+    /// and we have to re-create/re-throw the exception on the local machine
+    /// </summary>
+    /// <param name="info">Serialization info</param>
+    /// <param name="context">Serialization context</param>
+    protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
+    }
+}
+public class CountryStorageSet : PrimitiveStorageSet
+{
+    PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+
+    internal Value getConsumption(Product whom)
+    {
+        foreach (Storage stor in consumedLastTurn)
+            if (stor.getProduct() == whom)
+                return stor;
+        return new Value(0f);
+    }
+    internal void setStatisticToZero()
+    {
+        consumedLastTurn.SetZero();
+    }
+
+    /// / next - inherited
+    
+
+    public void set(Storage inn)
+    {
+        base.set(inn);
+        throw new DontUseThatMethod();
+    }
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(Storage need)
+    //{
+    //    base.add(need);
+    //    consumedLastTurn.add(need)
+    //}
+
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(PrimitiveStorageSet need)
+    //{ }
+
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, Storage what)
+    {
+        if (base.send(whom, what))
+        {
+            consumedLastTurn.add(what);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public void take(Storage fromHhom, Value howMuch)
+    {
+        base.take(fromHhom, howMuch);
+        throw new DontUseThatMethod();
+    }
+    /// <summary>
+    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
+    /// </summary>    
+    internal Value getStorage(Product whom)
+    {
+        return base.getStorage(whom); 
+    }
+    
+    internal void SetZero()
+    {
+        base.SetZero();
+        throw new DontUseThatMethod();
+    }
+    //internal PrimitiveStorageSet Divide(float v)
+    //{
+    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
+    //    foreach (Storage stor in container)
+    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
+    //    return result;
+    //}
+
+    internal bool subtract(Storage stor)
+    {
+        if (base.subtract(stor))
+        {
+            consumedLastTurn.add(stor);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    //internal Storage subtractOutside(Storage stor)
+    //{
+    //    Storage find = this.findStorage(stor.getProduct());
+    //    if (find == null)
+    //        return new Storage(stor);
+    //    else
+    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+    //}
+    internal void subtract(PrimitiveStorageSet set)
+    {
+        base.subtract(set);
+        throw new DontUseThatMethod();
+    }
+    internal void copyDataFrom(PrimitiveStorageSet consumed)
+    {
+        base.copyDataFrom(consumed);
+        throw new DontUseThatMethod();
+    }
+    internal void sendAll(PrimitiveStorageSet toWhom)
+    {
+        consumedLastTurn.add(this);
+        base.sendAll(toWhom);
+    }
+
+}
 public class Country : Owner
 {
     public string name;
     public static List<Country> allCountries = new List<Country>();
     public List<Province> ownedProvinces = new List<Province>();
 
-    public PrimitiveStorageSet storageSet = new PrimitiveStorageSet();
+    public CountryStorageSet storageSet = new CountryStorageSet();
     //public Procent countryTax;
     public Procent aristocrstTax;//= new Procent(0.10f);
     public InventionsList inventions = new InventionsList();
@@ -110,7 +267,7 @@ public class Country : Owner
         byWhom.bank.add(this.bank);
 
         //byWhom.storageSet.
-        storageSet.send(byWhom.storageSet);
+        storageSet.sendAll(byWhom.storageSet);
 
         if (this == Game.player)
             new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");

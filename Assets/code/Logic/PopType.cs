@@ -37,54 +37,54 @@ public class PopType
         {
             case PopTypes.Tribemen:
                 tribeMen = this;
-                lifeNeeds.Set(new Storage(Product.Food, 1));
-                everyDayNeeds.Set(new Storage(Product.Food, 2));
-                luxuryNeeds.Set(new Storage(Product.Food, 3));
+                lifeNeeds.set(new Storage(Product.Food, 1));
+                everyDayNeeds.set(new Storage(Product.Food, 2));
+                luxuryNeeds.set(new Storage(Product.Food, 3));
                 break;
             case PopTypes.Aristocrats:
                 aristocrats = this;
-                lifeNeeds.Set(new Storage(Product.Food, 1));
+                lifeNeeds.set(new Storage(Product.Food, 1));
 
-                everyDayNeeds.Set(new Storage(Product.Fruit, 1));
+                everyDayNeeds.set(new Storage(Product.Fruit, 1));
 
 
-                luxuryNeeds.Set(new Storage(Product.Clothes, 1));
-                luxuryNeeds.Set(new Storage(Product.Furniture, 1));
+                luxuryNeeds.set(new Storage(Product.Clothes, 1));
+                luxuryNeeds.set(new Storage(Product.Furniture, 1));
 
-                luxuryNeeds.Set(new Storage(Product.Wine, 2));
-                luxuryNeeds.Set(new Storage(Product.Metal, 1));
-                luxuryNeeds.Set(new Storage(Product.Cement, 0.5f));
+                luxuryNeeds.set(new Storage(Product.Wine, 2));
+                luxuryNeeds.set(new Storage(Product.Metal, 1));
+                luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
                 break;
             case PopTypes.Capitalists:
                 capitalists = this;
-                lifeNeeds.Set(new Storage(Product.Food, 1));
+                lifeNeeds.set(new Storage(Product.Food, 1));
 
-                luxuryNeeds.Set(new Storage(Product.Fruit, 1));
+                luxuryNeeds.set(new Storage(Product.Fruit, 1));
 
-                everyDayNeeds.Set(new Storage(Product.Clothes, 1));
-                everyDayNeeds.Set(new Storage(Product.Furniture, 1));
+                everyDayNeeds.set(new Storage(Product.Clothes, 1));
+                everyDayNeeds.set(new Storage(Product.Furniture, 1));
 
-                everyDayNeeds.Set(new Storage(Product.Wine, 2));
-                everyDayNeeds.Set(new Storage(Product.Metal, 1));
-                everyDayNeeds.Set(new Storage(Product.Cement, 0.5f));
+                everyDayNeeds.set(new Storage(Product.Wine, 2));
+                everyDayNeeds.set(new Storage(Product.Metal, 1));
+                everyDayNeeds.set(new Storage(Product.Cement, 0.5f));
                 break;
             case PopTypes.Farmers:
                 farmers = this;
-                lifeNeeds.Set(new Storage(Product.Food, 1f));
+                lifeNeeds.set(new Storage(Product.Food, 1f));
 
                 //everyDayNeeds.Set(new Storage(Product.Fruit, 1));
-                everyDayNeeds.Set(new Storage(Product.Stone, 1));
-                everyDayNeeds.Set(new Storage(Product.Wood, 1));
-                everyDayNeeds.Set(new Storage(Product.Wool, 1));
-                everyDayNeeds.Set(new Storage(Product.Lumber, 1));
-                everyDayNeeds.Set(new Storage(Product.MetallOre, 1));
+                everyDayNeeds.set(new Storage(Product.Stone, 1));
+                everyDayNeeds.set(new Storage(Product.Wood, 1));
+                everyDayNeeds.set(new Storage(Product.Wool, 1));
+                everyDayNeeds.set(new Storage(Product.Lumber, 1));
+                everyDayNeeds.set(new Storage(Product.MetallOre, 1));
 
-                luxuryNeeds.Set(new Storage(Product.Clothes, 1));
-                luxuryNeeds.Set(new Storage(Product.Furniture, 1));
+                luxuryNeeds.set(new Storage(Product.Clothes, 1));
+                luxuryNeeds.set(new Storage(Product.Furniture, 1));
 
-                luxuryNeeds.Set(new Storage(Product.Wine, 2));
-                luxuryNeeds.Set(new Storage(Product.Metal, 1));
-                luxuryNeeds.Set(new Storage(Product.Cement, 0.5f));
+                luxuryNeeds.set(new Storage(Product.Wine, 2));
+                luxuryNeeds.set(new Storage(Product.Metal, 1));
+                luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
 
                 break;
             case PopTypes.Artisans:
@@ -95,15 +95,15 @@ public class PopType
                 break;
             case PopTypes.Workers:
                 workers = this;
-                lifeNeeds.Set(new Storage(Product.Food, 1));
+                lifeNeeds.set(new Storage(Product.Food, 1));
 
-                everyDayNeeds.Set(new Storage(Product.Fruit, 1));
+                everyDayNeeds.set(new Storage(Product.Fruit, 1));
 
-                everyDayNeeds.Set(new Storage(Product.Clothes, 1));
-                everyDayNeeds.Set(new Storage(Product.Furniture, 1));
+                everyDayNeeds.set(new Storage(Product.Clothes, 1));
+                everyDayNeeds.set(new Storage(Product.Furniture, 1));
 
-                luxuryNeeds.Set(new Storage(Product.Wine, 2));
-                everyDayNeeds.Set(new Storage(Product.Metal, 1));
+                luxuryNeeds.set(new Storage(Product.Wine, 2));
+                everyDayNeeds.set(new Storage(Product.Metal, 1));
 
 
                 break;

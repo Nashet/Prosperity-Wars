@@ -120,7 +120,7 @@ public class Market : Owner//: PrimitiveStorageSet
                                     result += re.get();
                             }
                         }
-                getBouthBuffer.Set(new Storage(sup.getProduct(), result));
+                getBouthBuffer.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetBouth = Game.date;
         }
@@ -189,7 +189,7 @@ public class Market : Owner//: PrimitiveStorageSet
                         }
 
 
-                getTotalConsumptionBuffer.Set(new Storage(sup.getProduct(), result));
+                getTotalConsumptionBuffer.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetTotalConsumption = Game.date;
         }
@@ -269,7 +269,7 @@ public class Market : Owner//: PrimitiveStorageSet
                             if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.sentToMarket.get();
 
-                getSupplyBuffer.Set(new Storage(sup.getProduct(), result));
+                getSupplyBuffer.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetSupply = Game.date;
         }
@@ -315,7 +315,7 @@ public class Market : Owner//: PrimitiveStorageSet
                                 result += producer.gainGoodsThisTurn.get();
                         }
                     }
-                getProductionTotalBuffer.Set(new Storage(sup.getProduct(), result));
+                getProductionTotalBuffer.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetProductionTotal = Game.date;
         }
@@ -339,7 +339,7 @@ public class Market : Owner//: PrimitiveStorageSet
     //Value defaultPrice = new Value(2f);
     public void SetDefaultPrice(Product pro, float inprice)
     {
-        marketPrice.Set(new Storage(pro, inprice));
+        marketPrice.set(new Storage(pro, inprice));
     }/// <summary>
      /// returns how much was sold de-facto
      /// contains pre-seller code & pre Market storage code with long circle on all sellers
@@ -768,7 +768,7 @@ public class Market : Owner//: PrimitiveStorageSet
                 if (supply == 0)
                     balance = 999f;
 
-                DSBbuffer.Set(new Storage(stor.getProduct(), balance));
+                DSBbuffer.set(new Storage(stor.getProduct(), balance));
             }
             dateOfDSB = Game.date;
         }

@@ -243,7 +243,7 @@ public class Province
         foreach (Aristocrats aristocrat in allAristocratsInProvince)
         {
             Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
-            fromWho.pay(aristocrat.storageNow, howMuch);
+            fromWho.send(aristocrat.storageNow, howMuch);
             aristocrat.gainGoodsThisTurn.add(howMuch);
             aristocrat.dealWithMarket();
             //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);

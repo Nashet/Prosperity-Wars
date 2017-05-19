@@ -360,11 +360,11 @@ public class Factory : Producer
 
                         if (payer.storageSet.has(howMuchPay))
                         {
-                            payer.storageSet.pay(link.pop.storageNow, howMuchPay);
+                            payer.storageSet.send(link.pop, howMuchPay);
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
-                        //todo no resiuces tio pay salary
+                        //todo no salary cuts yet
                         //else salary.set(0);
                     }
                     else // assuming - PopUnit
@@ -373,7 +373,7 @@ public class Factory : Producer
 
                         if (payer.storageNow.canPay(link.pop.storageNow, howMuchPay))
                         {
-                            payer.storageNow.pay(link.pop.storageNow, howMuchPay);
+                            payer.storageNow.send(link.pop.storageNow, howMuchPay);
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }

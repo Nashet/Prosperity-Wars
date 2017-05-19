@@ -69,13 +69,13 @@ public class Procent : Value
     {
 
         Value result = new Value(0f);
-        source.pay(result, source.multiple(this));
+        source.send(result, source.multiple(this));
         return result;
     }
     public Storage sendProcentToNew(Storage source)
     {
         Storage result = new Storage(source.getProduct(), 0f);
-        source.pay(result, source.multiple(this));
+        source.send(result, source.multiple(this));
         return result;
     }
 

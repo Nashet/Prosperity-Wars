@@ -123,7 +123,7 @@ public class Game
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
         new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));        
     }
 
     void makeCountry(CountryNameGenerator countryName, CultureNameGenerator cultureName)
@@ -149,29 +149,29 @@ public class Game
         new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null, false);
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Lumber, 1f));
+        resourceInput.set(new Storage(Product.Lumber, 1f));
         new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wood, 1f));
+        resourceInput.set(new Storage(Product.Wood, 1f));
         new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wood, 0.5f));
-        resourceInput.Set(new Storage(Product.MetallOre, 2f));
+        resourceInput.set(new Storage(Product.Wood, 0.5f));
+        resourceInput.set(new Storage(Product.MetallOre, 2f));
         new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wool, 1f));
+        resourceInput.set(new Storage(Product.Wool, 1f));
         new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wood, 0.5f));
-        resourceInput.Set(new Storage(Product.Stone, 1f));
+        resourceInput.set(new Storage(Product.Wood, 0.5f));
+        resourceInput.set(new Storage(Product.Stone, 1f));
         new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Fruit, 0.3333f));
+        resourceInput.set(new Storage(Product.Fruit, 0.3333f));
         new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
     }
 

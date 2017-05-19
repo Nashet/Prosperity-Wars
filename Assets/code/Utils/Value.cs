@@ -31,15 +31,19 @@ public class Value
         else
             value += (uint)Mathf.RoundToInt(invalue * precision);
     }
-    public void subtract(Value invalue)
+    public bool subtract(Value invalue)
     {
         if (invalue.value > value)
         {
             Debug.Log("Value subtract failed");
             set(0);
+            return false;
         }
         else
+        {
             value -= invalue.value;
+            return true;
+        }
     }
     public Value subtractOutside(Value invalue)
     {
@@ -129,7 +133,7 @@ public class Value
         else
             return Procent.makeProcent((int)this.value, (int)need.value);
     }
-    public void pay(Value another, uint amount)
+    public void send(Value another, uint amount)
     {
         if (this.get() >= amount)
         {
@@ -138,7 +142,7 @@ public class Value
         }
         else Debug.Log("value payment failed");
     }
-    public void pay(Value another, float amount)
+    public void send(Value another, float amount)
     {
         if (this.get() >= amount)
         {
@@ -147,7 +151,7 @@ public class Value
         }
         else Debug.Log("value payment failed");
     }
-    public void pay(Value another, Value amount)
+    public void send(Value another, Value amount)
     {
         if (this.get() >= amount.get())
         {

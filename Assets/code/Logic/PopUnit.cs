@@ -523,7 +523,7 @@ abstract public class PopUnit : Producer
                 taxSize = gainGoodsThisTurn.multiple((province.getOwner().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
 
             if (storageNow.canPay(taxSize))
-                storageNow.pay(province.getOwner().storageSet, taxSize);
+                storageNow.send(province.getOwner().storageSet, taxSize);
             else
                 storageNow.sendAll(province.getOwner().storageSet);
         }
@@ -600,7 +600,7 @@ abstract public class PopUnit : Producer
                 if (storageNow.canPay(need))// dont need to buy on market
                 {
                     storageNow.subtract(need);
-                    consumedTotal.Set(need);
+                    consumedTotal.set(need);
                     //consumedInMarket.Set(need); are you crazy?
                     needsFullfilled.set(1f / 3f);
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
@@ -664,14 +664,14 @@ abstract public class PopUnit : Producer
                 if (storageNow.get() > need.get())
                 {
                     storageNow.subtract(need);
-                    consumedTotal.Set(need);
+                    consumedTotal.set(need);
                     needsFullfilled.set(1f / 3f);
                     consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2f / 3f, 2);
                 }
                 else
                 {
                     float canConsume = storageNow.get();
-                    consumedTotal.Set(storageNow);
+                    consumedTotal.set(storageNow);
                     storageNow.set(0);
                     needsFullfilled.set(canConsume / need.get() / 3f);
                 }
@@ -714,6 +714,7 @@ abstract public class PopUnit : Producer
         // if (country != Country.NullCountry)
         {
             //country.wallet.moneyIncomethisTurn.set(0);
+            country.storageSet.setStatisticToZero();
             country.getCountryWallet().setSatisticToZero();
             country.aristocrstTax = country.serfdom.status.getTax();
             foreach (Province province in country.ownedProvinces)
@@ -1381,7 +1382,7 @@ public class Aristocrats : PopUnit
         if (storageNow.get() > Options.aristocratsFoodReserv)
         {
             Storage howMuchSend = new Storage(storageNow.getProduct(), storageNow.get() - Options.aristocratsFoodReserv);
-            storageNow.pay(sentToMarket, howMuchSend);
+            storageNow.send(sentToMarket, howMuchSend);
             //sentToMarket.set(howMuchSend);
             Game.market.sentToMarket.add(howMuchSend);
         }
