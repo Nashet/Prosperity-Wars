@@ -123,7 +123,7 @@ public class Corps
         return sb.ToString();
     }
 
-    
+
 
     internal void TakeLoss(int loss)
     {
@@ -140,9 +140,11 @@ public class Corps
         return origin;
     }
 
-    internal void add(int v)
+    internal void add(int howMuch)
     {
-        size += v;
+        size += howMuch;
+        moral.addPoportionally(getSize(), howMuch, Procent.ZeroProcent);
+        
     }
 
 }

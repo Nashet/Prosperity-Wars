@@ -459,6 +459,7 @@ public class Country : Consumer
 
         allArmies.ForEach(x => x.consume());
         buyNeeds(); // Should go After all Armies consumption
+
         if (isAI() && !isOnlyCountry())
             if (Game.random.Next(10) == 1)
             {

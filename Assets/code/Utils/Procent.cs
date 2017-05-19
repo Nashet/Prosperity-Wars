@@ -6,7 +6,8 @@ using System.Collections.Generic;
 
 public class Procent : Value
 {
-    private int v;
+    
+    internal static readonly Procent ZeroProcent = new Procent(0f);
 
     //uint value;
     public static bool GetChance(uint procent)

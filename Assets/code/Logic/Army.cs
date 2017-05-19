@@ -297,10 +297,12 @@ public class Army
     }
     public float getStrenghtModifier()
     {
+        float res = 1f;
         if (destination == null) // army at home
-            return 1f + Options.armyDefenceBonus;
-        else
-            return 1f;
+            res += Options.armyDefenceBonus;
+        res += getMoral().get();
+        if (res == 0f) res = 0.01f;
+        return res;
     }
     private float getStrenght()
     {
