@@ -606,7 +606,7 @@ abstract public class PopUnit : Producer
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
                 }
                 else
-                    needsFullfilled.set(Game.market.Consume(this, need, null).get() / 3f);
+                    needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
             }
 
         //if (NeedsFullfilled.get() > 0.33f) NeedsFullfilled.set(0.33f);
@@ -623,7 +623,7 @@ abstract public class PopUnit : Producer
             foreach (Storage need in lifeNeeds)
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
-                Game.market.Consume(this, need, null);
+                Game.market.buy(this, need, null);
             }
             spentMoney = new Value(moneyWas - wallet.haveMoney.get());
             if (spentMoney.get() != 0f)
@@ -635,7 +635,7 @@ abstract public class PopUnit : Producer
                 moneyWas = wallet.haveMoney.get();
                 foreach (Storage need in lifeNeeds)
                 {
-                    Game.market.Consume(this, need, null);
+                    Game.market.buy(this, need, null);
                     //NeedsFullfilled.set(0.66f + Game.market.Consume(this, need).get() / 3f);
 
                 }
@@ -647,7 +647,7 @@ abstract public class PopUnit : Producer
         }
     }
     /// <summary> </summary>
-    public override void consume()
+    public override void buyNeeds()
     {
         //lifeneeds First
         List<Storage> needs = (getRealLifeNeeds());

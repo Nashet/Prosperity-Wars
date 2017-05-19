@@ -40,7 +40,7 @@ public class TradeWindowCountryMarketTable   : MyTable
         AddButton("Govern.Need");
         
         
-        AddButton("Produce");
+        AddButton("Production");
         
         AddButton("Consumption?");
        

@@ -49,6 +49,7 @@ public class FinancePanel : DragPanel
         sb.Append("Expenses: ");
         sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
         sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
+        sb.Append("\n Storage buying: ").Append(Game.player.getCountryWallet().getStorageBuyingExpense());
         expensesText.text = sb.ToString();
 
         sb.Clear();

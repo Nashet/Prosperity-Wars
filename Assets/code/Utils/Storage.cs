@@ -14,6 +14,19 @@ public class CountryWallet : Wallet
 
     Value unemploymentSubsidiesExpense = new Value(0f);
     Value factorySubsidiesExpense = new Value(0f);
+    Value storageBuyingExpense = new Value(0f);
+    internal Value getAllExpenses()
+    {
+        Value result = new Value(0f);
+        result.add(unemploymentSubsidiesExpense);
+        result.add(factorySubsidiesExpense);
+        result.add(storageBuyingExpense);
+        return result;
+    }
+    internal float getBalance()
+    {
+        return moneyIncomethisTurn.get() - getAllExpenses().get();
+    }
 
     internal void setSatisticToZero()
     {
@@ -24,8 +37,10 @@ public class CountryWallet : Wallet
         ownedFactoriesIncome.set(0f);
         factorySubsidiesExpense.set(0f);
         moneyIncomethisTurn.set(0f);
+        storageBuyingExpense.set(0f);
     }
-    internal void takeFactorySubsidies(Producer byWhom, Value howMuch)
+
+    internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
     {
         if (canPay(howMuch))
         {
@@ -59,11 +74,7 @@ public class CountryWallet : Wallet
         return goldMinesIncome.get();
     }
 
-    internal float getBalance()
-    {
-        return moneyIncomethisTurn.get() - getAllExpenses().get();
-    }
-
+   
     internal float getOwnedFactoriesIncome()
     {
         return ownedFactoriesIncome.get();
@@ -72,6 +83,10 @@ public class CountryWallet : Wallet
     internal float getUnemploymentSubsidiesExpense()
     {
         return unemploymentSubsidiesExpense.get();
+    }
+    internal float getStorageBuyingExpense()
+    {
+        return storageBuyingExpense.get();
     }
 
     internal void poorTaxIncomeAdd(Value toAdd)
@@ -83,13 +98,7 @@ public class CountryWallet : Wallet
         richTaxIncome.add(toAdd);
     }
 
-    internal Value getAllExpenses()
-    {
-        Value result = new Value(0f);
-        result.add(unemploymentSubsidiesExpense);
-        result.add(factorySubsidiesExpense);
-        return result;
-    }
+   
 
     internal void goldMinesIncomeAdd(Value toAdd)
     {
@@ -98,6 +107,10 @@ public class CountryWallet : Wallet
     internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
     {
         unemploymentSubsidiesExpense.add(toAdd);
+    }
+    internal void storageBuyingExpenseAdd(Value toAdd)
+    {
+        storageBuyingExpense.add(toAdd);
     }
     internal void ownedFactoriesIncomeAdd(Value toAdd)
     {
@@ -375,6 +388,7 @@ public class PrimitiveStorageSet
         PrimitiveStorageSet shortage = this.subtractOuside(need);
         return Procent.makeProcent(shortage, need);
     }
+    //keep it both
     internal Storage findStorage(Product whom)
     {
         foreach (Storage stor in container)
@@ -382,6 +396,7 @@ public class PrimitiveStorageSet
                 return stor;
         return null;
     }
+    //keep it both
     internal Value getStorage(Product whom)
     {
         foreach (Storage stor in container)

@@ -751,7 +751,7 @@ public class Game
             {
                 foreach (Factory factory in province.allFactories)
                 {
-                    factory.consume();
+                    factory.buyNeeds();
                 }
 
                 foreach (PopUnit pop in province.allPopUnits)
@@ -762,7 +762,7 @@ public class Game
                 }
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    pop.consume();
+                    pop.buyNeeds();
                 }
             }
         // big AFTER all circle

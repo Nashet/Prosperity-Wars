@@ -209,7 +209,7 @@ public class Factory : Producer
     override internal float getLocalEffectiveDemand(Product product)
     {
 
-        // need to know huw much i Consumed inside my needs
+        // need to know how much i Consumed inside my needs
         Storage need = type.resourceInput.findStorage(product);
         if (need != null)
         {
@@ -694,7 +694,7 @@ public class Factory : Producer
     /// <summary>
     /// Now includes workforce/efficineneece. Here also happening buying dor upgrading\building
     /// </summary>
-    override public void consume()
+    override public void buyNeeds()
     {
         //if (getLevel() > 0)
         if (isWorking())
@@ -1019,8 +1019,16 @@ public class Owner
 
     }
 }
-
-public abstract class Producer : Owner
+public abstract class Consumer : Owner
+{
+    public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
+    public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+    public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
+    public abstract void buyNeeds();
+    public Consumer() : base() { }
+    public Consumer(CountryWallet wallet) : base(wallet) { }
+}
+public abstract class Producer : Consumer
 {    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
     public Storage storageNow;
 
@@ -1031,18 +1039,16 @@ public abstract class Producer : Owner
     public Storage sentToMarket;
 
     internal Value loans = new Value(0);
-    public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
+
 
     //protected Country owner; //Could be any Country or POP
     public Province province;
 
     /// <summary> /// Return in pieces  /// </summary>    
     abstract internal float getLocalEffectiveDemand(Product product);
-    public abstract void simulate();
+    public abstract void simulate(); ///!!!
     public abstract void produce();
-    public abstract void consume();
+
     public abstract void payTaxes();
 
     public void getMoneyFromMarket()

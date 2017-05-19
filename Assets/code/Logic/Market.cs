@@ -502,7 +502,7 @@ public class Market : Owner//: PrimitiveStorageSet
     /// returns how much was sold de-facto
     /// new version of byy-old
     /// </summary>   
-    internal Storage Buy(Producer buyer, Storage buying)
+    internal Storage Buy(Consumer buyer, Storage buying)
     {
 
         //Storage storage = findStorage(what.getProduct());
@@ -578,35 +578,43 @@ public class Market : Owner//: PrimitiveStorageSet
 
     }
 
-    float DoPartialBuying(Producer forWhom, Storage need)
+    float DoPartialBuying(Consumer forWhom, Storage need)
     {
-        Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
-        if (howMuchCanAfford.get() > 0f)
+        if (need.get() > 0f)
         {
-            howMuchCanAfford = Game.market.Buy(forWhom, howMuchCanAfford);
+            Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
             if (howMuchCanAfford.get() > 0f)
             {
-                forWhom.consumedTotal.add(howMuchCanAfford);
-                forWhom.consumedInMarket.add(howMuchCanAfford);
-                //actuallyNeedsFullfilled = howMuchCanAfford.get() / need.get();
-                return howMuchCanAfford.get() / need.get();
+                howMuchCanAfford = Game.market.Buy(forWhom, howMuchCanAfford);
+                if (howMuchCanAfford.get() > 0f)
+                {
+                    forWhom.consumedTotal.add(howMuchCanAfford);
+                    forWhom.consumedInMarket.add(howMuchCanAfford);
+                    //actuallyNeedsFullfilled = howMuchCanAfford.get() / need.get();
+                    return howMuchCanAfford.get() / need.get();
+                }
             }
+            return 0f;
         }
-        return 0f;
+        else return 0f;
     }
-    float DoFullBuying(Producer forWhom, Storage need)
+    float DoFullBuying(Consumer forWhom, Storage need)
     {
-        var actualConsumption = Game.market.Buy(forWhom, need);
-        // todo connect to Buy,                     
-        forWhom.consumedTotal.add(actualConsumption);
-        forWhom.consumedInMarket.add(actualConsumption);
-        //actuallyNeedsFullfilled = actualConsumption.get() / need.get();
-        return actualConsumption.get() / need.get();
+        if (need.get() > 0f)
+        {
+            var actualConsumption = Game.market.Buy(forWhom, need);
+            // todo connect to Buy,                     
+            forWhom.consumedTotal.add(actualConsumption);
+            forWhom.consumedInMarket.add(actualConsumption);
+            //actuallyNeedsFullfilled = actualConsumption.get() / need.get();
+            return actualConsumption.get() / need.get();
+        }
+        else return 0f;
     }
     /// <summary>
-    /// return procent of actual buying
+    /// returns PROCENT actual buying
     /// </summary>    
-    public Storage Consume(Producer forWhom, Storage need, CountryWallet subsidizer)
+    public Storage buy(Consumer forWhom, Storage need, CountryWallet subsidizer)
     {
         float actuallyNeedsFullfilled = 0f;
         //Storage actualConsumption;
@@ -614,11 +622,11 @@ public class Market : Owner//: PrimitiveStorageSet
         if (forWhom.wallet.CanAfford(need))
             actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
         else
-        if (subsidizer == null)
+            if (subsidizer == null)
             actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
         else
         {
-            forWhom.province.getOwner().getCountryWallet().takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
+            subsidizer.takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
             //repeat attempt
             if (forWhom.wallet.CanAfford(need))
                 actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
@@ -642,7 +650,7 @@ public class Market : Owner//: PrimitiveStorageSet
             // check if buying still have enoth to subtract consumeOnThisEteration
             if (!buying.has(consumeOnThisEteration))
                 consumeOnThisEteration = buying.findStorage(what.getProduct());
-            consumeOnThisEteration.multipleInside(Consume(buyer, consumeOnThisEteration, null));
+            consumeOnThisEteration.multipleInside(buy(buyer, consumeOnThisEteration, null));
 
             buying.subtract(consumeOnThisEteration);
 
@@ -657,7 +665,7 @@ public class Market : Owner//: PrimitiveStorageSet
         // Storage actualConsumption;
         foreach (Storage input in buying)
         {
-            Consume(buyer, input, subsidizer);
+            buy(buyer, input, subsidizer);
         }
     }
     /// <summary>

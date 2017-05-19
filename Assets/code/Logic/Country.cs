@@ -5,47 +5,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-public class DontUseThatMethod : Exception
-{
-    /// <summary>
-    /// Just create the exception
-    /// </summary>
-    public DontUseThatMethod()
-      : base()
-    {
-    }
 
-    /// <summary>
-    /// Create the exception with description
-    /// </summary>
-    /// <param name="message">Exception description</param>
-    public DontUseThatMethod(String message)
-      : base(message)
-    {
-    }
-
-    /// <summary>
-    /// Create the exception with description and inner cause
-    /// </summary>
-    /// <param name="message">Exception description</param>
-    /// <param name="innerException">Exception inner cause</param>
-    public DontUseThatMethod(String message, Exception innerException)
-      : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Create the exception from serialized data.
-    /// Usual scenario is when exception is occured somewhere on the remote workstation
-    /// and we have to re-create/re-throw the exception on the local machine
-    /// </summary>
-    /// <param name="info">Serialization info</param>
-    /// <param name="context">Serialization context</param>
-    protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
-      : base(info, context)
-    {
-    }
-}
 public class CountryStorageSet : PrimitiveStorageSet
 {
     PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
@@ -63,7 +23,7 @@ public class CountryStorageSet : PrimitiveStorageSet
     }
 
     /// / next - inherited
-    
+
 
     public void set(Storage inn)
     {
@@ -109,9 +69,9 @@ public class CountryStorageSet : PrimitiveStorageSet
     /// </summary>    
     internal Value getStorage(Product whom)
     {
-        return base.getStorage(whom); 
+        return base.getStorage(whom);
     }
-    
+
     internal void SetZero()
     {
         base.SetZero();
@@ -161,7 +121,7 @@ public class CountryStorageSet : PrimitiveStorageSet
     }
 
 }
-public class Country : Owner
+public class Country : Consumer
 {
     public string name;
     public static List<Country> allCountries = new List<Country>();
@@ -375,7 +335,7 @@ public class Country : Owner
     }
     internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
     {
-        // calc how much of population wants selected reform
+        // calculate how much of population wants selected reform
         int totalPopulation = this.getMenPopulation();
         int votingPopulation = 0;
         int populationSayedYes = 0;
@@ -495,7 +455,10 @@ public class Country : Owner
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));
+
+
         allArmies.ForEach(x => x.consume());
+        buyNeeds(); // Should go After all Armies consumption
         if (isAI() && !isOnlyCountry())
             if (Game.random.Next(10) == 1)
             {
@@ -511,6 +474,26 @@ public class Country : Owner
                 //if (homeArmy.getSize() > 50 + Game.random.Next(100))
                 //    sendArmy(homeArmy, getRandomNeighborProvince());
             }
+    }
+
+    public override void buyNeeds()
+    {
+        foreach (var pro in Product.allProducts)
+        {
+            // if I want to buy
+            if (storageSet.getStorage(pro).get() > storageSet.getConsumption(pro).get() * 10)
+                ;
+            else
+            {
+                Storage toBuy = new Storage(pro, storageSet.getConsumption(pro).get() * 10 - storageSet.getStorage(pro).get());
+                toBuy.multiple(Game.market.buy(this, toBuy, null));
+                storageSet.add(toBuy);
+                getCountryWallet().storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
+
+
+            }
+
+        }
     }
 
     private float getStreght()
@@ -548,4 +531,46 @@ public class Country : Owner
         return result;
     }
 
+
+}
+public class DontUseThatMethod : Exception
+{
+    /// <summary>
+    /// Just create the exception
+    /// </summary>
+    public DontUseThatMethod()
+      : base()
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    public DontUseThatMethod(String message)
+      : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description and inner cause
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    /// <param name="innerException">Exception inner cause</param>
+    public DontUseThatMethod(String message, Exception innerException)
+      : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception from serialized data.
+    /// Usual scenario is when exception is occured somewhere on the remote workstation
+    /// and we have to re-create/re-throw the exception on the local machine
+    /// </summary>
+    /// <param name="info">Serialization info</param>
+    /// <param name="context">Serialization context</param>
+    protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
+    }
 }
