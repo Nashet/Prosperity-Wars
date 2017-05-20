@@ -652,7 +652,7 @@ public class Factory : Producer
         foreach (Storage next in type.resourceInput)
         {
             Storage howMuchWantBuy = new Storage(next.getProduct(), next.get());
-            howMuchWantBuy.multipleInside(multiplier);
+            howMuchWantBuy.multiple(multiplier);
             Storage reserv = inputReservs.findStorage(next.getProduct());
             if (reserv == null)
                 result.Add(howMuchWantBuy);
@@ -678,7 +678,7 @@ public class Factory : Producer
         foreach (Storage next in type.resourceInput)
         {
             Storage nStor = new Storage(next.getProduct(), next.get());
-            nStor.multipleInside(multiplier);
+            nStor.multiple(multiplier);
             result.Add(nStor);
         }
         return result;
@@ -1050,7 +1050,7 @@ public abstract class Producer : Consumer
             Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
             if (DSB.get() > 1f) DSB.set(1f);
             Storage realSold = new Storage(sentToMarket);
-            realSold.multipleInside(DSB);
+            realSold.multiple(DSB);
             float cost = Game.market.getCost(realSold);
             storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
             if (Game.market.wallet.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 

@@ -279,9 +279,9 @@ public class Province
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multiple(pop.getPopulation()));
+                result.add(pop.needsFullfilled.multipleOutside(pop.getPopulation()));
             }
-            return result.divide(allPopulation); ;
+            return result.divideOutside(allPopulation); ;
         }
         else/// add default population - no, don't, we now fixed it
         {

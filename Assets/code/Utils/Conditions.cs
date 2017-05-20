@@ -219,10 +219,10 @@ public class Condition : AbstractCondition
     {
         check3 = x => (x as Country).isInvented(invention);
 
-    //    delegate (Country forWhom)
-    //{
-    //    return forWhom.isInvented(invention);
-    //};
+        //    delegate (Country forWhom)
+        //{
+        //    return forWhom.isInvented(invention);
+        //};
         this.text = invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
@@ -327,10 +327,10 @@ public class Modifier : Condition
     //{
 
     //}
-    bool isMultiplier;
+    //bool isMultiplier;
     float value;
     Func<int> multiplierModifierFunction;
-
+    Func<System.Object, float> floatModifierFunction;
 
 
     /// <summary>You better use shorter constructor, if possible </summary>
@@ -342,13 +342,18 @@ public class Modifier : Condition
     {
         this.value = value;
     }
+    public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, true)
+    {
+        this.value = value;
+        floatModifierFunction = myMethodName;
+    }
     /// <summary></summary>
     public Modifier(Func<int> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, showAchievedConditionDescribtion)
     {
         check3 = null;
         multiplierModifierFunction = myMethodName;
 
-        isMultiplier = true;
+        //isMultiplier = true;
         this.value = value;
     }
 
@@ -385,7 +390,16 @@ public class Modifier : Condition
     override internal bool checkIftrue(Country forWhom, out string description)
     {
         bool answer = false;
-        if (isMultiplier)
+        if (floatModifierFunction != null)
+        {
+            StringBuilder str = new StringBuilder("\n(+) ");
+            str.Append(getDescription());
+            str.Append(": ").Append(floatModifierFunction(forWhom) * getValue());
+            description = str.ToString();
+            answer = true;
+        }
+        else
+        if (multiplierModifierFunction != null)
         {
             StringBuilder str = new StringBuilder("\n(+) ");
             str.Append(getDescription());
@@ -409,17 +423,25 @@ public class Modifier : Condition
         }
         return answer;
     }
-    internal float getModifier(Country forWhom, out string description)
+    internal float getModifier(System.Object forWhom, out string description)
     {
         float result;
-        if (isMultiplier)
+        if (floatModifierFunction != null)
+        {
+            StringBuilder str = new StringBuilder("\n(+) ");
+            str.Append(getDescription());
+            result = floatModifierFunction(forWhom) * getValue();
+            str.Append(": ").Append(result);
+            description = str.ToString();
+        }
+        else
+        if (multiplierModifierFunction != null)
         {
             StringBuilder str = new StringBuilder("\n(+) ");
             str.Append(getDescription());
             result = multiplierModifierFunction() * getValue();
             str.Append(": ").Append(result);
             description = str.ToString();
-
         }
         else
         if (check3(forWhom))
@@ -439,10 +461,13 @@ public class Modifier : Condition
         }
         return result;
     }
-    internal float getModifier(Country forWhom)
+    internal float getModifier(System.Object forWhom)
     {
         float result;
-        if (isMultiplier)
+        if (floatModifierFunction != null)
+            result = floatModifierFunction(forWhom) * getValue();
+        else
+        if (multiplierModifierFunction != null)
             result = multiplierModifierFunction() * getValue();
         else
         if (check3(forWhom))
@@ -468,7 +493,7 @@ public class ModifiersList : ConditionsList
     //internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
     //internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
 
-    internal float getModifier(Country forWhom, out string description)
+    internal float getModifier(System.Object forWhom, out string description)
     {
         StringBuilder text = new StringBuilder();
         float summ = 0f;
@@ -487,7 +512,7 @@ public class ModifiersList : ConditionsList
         description = text.ToString();
         return summ;
     }
-    internal float getModifier(Country forWhom)
+    internal float getModifier(System.Object forWhom)
     {
         float summ = 0f;
         foreach (Modifier item in list)

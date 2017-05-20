@@ -110,18 +110,18 @@ public class Product
     {
         if (isResource())
         {
-            return defaultPrice.multiple(Options.defaultPriceLimitMultiplier);
+            return defaultPrice.multipleOuside(Options.defaultPriceLimitMultiplier);
         }
         else
         {
             var type = FactoryType.whoCanProduce(this);
             if (type == null)
-                return defaultPrice.multiple(Options.defaultPriceLimitMultiplier);
+                return defaultPrice.multipleOuside(Options.defaultPriceLimitMultiplier);
             else
             {
                 Value res = Game.market.getCost(type.resourceInput);
-                res.multipleInside(Options.defaultPriceLimitMultiplier);
-                res.divideInside(type.basicProduction);
+                res.multiple(Options.defaultPriceLimitMultiplier);
+                res.divide(type.basicProduction);
                 return res;
             }
         }

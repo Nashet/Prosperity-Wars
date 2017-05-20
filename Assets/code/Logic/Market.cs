@@ -522,7 +522,7 @@ public class Market : Owner//: PrimitiveStorageSet
         //cost = Game.market.getCost(buying);
         if (Game.market.sentToMarket.has(buying))
         {
-            cost = buying.multiple(price);
+            cost = buying.multipleOuside(price);
             if (buyer.wallet.canPay(cost))
             {
                 buyer.wallet.pay(Game.market.wallet, cost);
@@ -536,7 +536,7 @@ public class Market : Owner//: PrimitiveStorageSet
                 float val = buyer.wallet.haveMoney.get() / price.get();
                 val = Mathf.Floor(val * Value.precision) / Value.precision;
                 howMuchCanConsume = new Storage(price.getProduct(), val);
-                buyer.wallet.pay(Game.market.wallet, howMuchCanConsume.multiple(price));
+                buyer.wallet.pay(Game.market.wallet, howMuchCanConsume.multipleOuside(price));
                 Game.market.sentToMarket.subtract(howMuchCanConsume);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(howMuchCanConsume);
@@ -549,7 +549,7 @@ public class Market : Owner//: PrimitiveStorageSet
             Storage available = Game.market.HowMuchAvailable(buying);
             if (available.get() > 0f)
             {
-                cost = available.multiple(price);
+                cost = available.multipleOuside(price);
 
                 if (buyer.wallet.canPay(cost))
                 {
@@ -650,7 +650,7 @@ public class Market : Owner//: PrimitiveStorageSet
             // check if buying still have enoth to subtract consumeOnThisEteration
             if (!buying.has(consumeOnThisEteration))
                 consumeOnThisEteration = buying.findStorage(what.getProduct());
-            consumeOnThisEteration.multipleInside(buy(buyer, consumeOnThisEteration, null));
+            consumeOnThisEteration.multiple(buy(buyer, consumeOnThisEteration, null));
 
             buying.subtract(consumeOnThisEteration);
 

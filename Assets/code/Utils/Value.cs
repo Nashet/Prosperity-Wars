@@ -73,20 +73,20 @@ public class Value
     /// </summary>
     /// <param name="invalue"></param>
     /// <returns>new Value</returns>
-    public Value multiple(Value invalue)
+    public Value multipleOuside(Value invalue)
     {
         if (invalue.get() < 0)
             Debug.Log("Value multiple failed");
         return new Value(get() * invalue.get());
     }
     /// <summary>Keeps result inside</summary>    
-    public void multipleInside(Value invalue)
+    public void multiple(Value invalue)
     {
         if (invalue.get() < 0)
             Debug.Log("Value multiple failed");
         set(invalue.get() * this.get());
     }
-    public void multipleInside(float invalue)
+    public void multiple(float invalue)
     {
         if (invalue < 0f)
             Debug.Log("Value multiple failed");
@@ -95,30 +95,30 @@ public class Value
     /// <summary>
     /// returns new value
     /// </summary>
-    internal Value multiple(int invalue)
+    internal Value multipleOutside(int invalue)
     {
         //if (invalue.get() < 0)
         //  Debug.Log("Value multiple failed");
         return new Value(get() * invalue);
     }
-    public void divideInside(Value invalue)
+    public void divide(Value invalue)
     {
         if (invalue.get() < 0)
             Debug.Log("Value multiple failed");
-        set(this.divide(invalue));
+        set(this.divideOutside(invalue));
     }
 
 
 
     /// <summary>returns new value </summary>
-    internal Value divide(int invalue)
+    internal Value divideOutside(int invalue)
     {
         if (invalue == 0) Debug.Log("Value divide by zero");
 
         return new Value(get() / invalue);
     }
     /// <summary>returns new value </summary>
-    internal Value divide(Value invalue)
+    internal Value divideOutside(Value invalue)
     {
         if (invalue.get() == 0) Debug.Log("Value divide by zero");
 

@@ -13,11 +13,11 @@ public class Army
     Dictionary<PopUnit, Corps> personal;
     Province destination;
     Country owner;
-    static Modifier  modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
-    static Modifier modifierMoral = new Modifier(delegate () { return x.getMoral().get(); }, "Moral", true, 1f);
-    ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
+    static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
+    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", true, 1f);
+    static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            modifierInDefense
+            modifierInDefense, modifierMoral
         });
     public Army(Country owner)
     {
@@ -129,6 +129,9 @@ public class Army
             sb.Append("Total size: ").Append(getSize());
             sb.Append(" Moral: ").Append(getMoral());
             sb.Append(" Provision: ").Append(getConsumption());
+            //string str;
+            //modifierStrenght.getModifier(this, out str);
+            //sb.Append(" Bonuses: ").Append(str);
         }
         else
             sb.Append("None");
@@ -230,6 +233,10 @@ public class Army
 
         bool attackerWon;
         BattleResult result;
+        string attackerBonus;
+        Army.modifierStrenght.getModifier(attacker, out attackerBonus);
+        string defenderBonus;
+        Army.modifierStrenght.getModifier(defender, out defenderBonus);
         if (attacker.getStrenght() > defender.getStrenght())
         {
             attackerWon = true;
@@ -238,13 +245,15 @@ public class Army
             int loserLoss = defender.takeLoss(defender.getSize());
 
             result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
-            , initialDefenderSize, loserLoss, attacker.destination, attackerWon);
+            , initialDefenderSize, loserLoss, attacker.destination, attackerWon, attackerBonus, defenderBonus);
         }
         else if (attacker.getStrenght() == defender.getStrenght())
         {
             attacker.takeLoss(attacker.getSize());
             defender.takeLoss(defender.getSize());
-            var r = new BattleResult(attacker.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(), attacker.destination, false);
+
+            var r = new BattleResult(attacker.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(),
+                attacker.destination, false, attackerBonus, defenderBonus);
             return r;
         }
         else
@@ -257,7 +266,7 @@ public class Army
 
             int attackerLoss = attacker.takeLoss(attacker.getSize());
             result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
-            , initialDefenderSize, defenderLoss, attacker.destination, attackerWon);
+            , initialDefenderSize, defenderLoss, attacker.destination, attackerWon, attackerBonus, defenderBonus);
         }
         return result;
     }
@@ -306,12 +315,13 @@ public class Army
     }
     public float getStrenghtModifier()
     {
-        float res = 1f;
-        if (isInDefense()) // army at home
-            res += Options.armyDefenceBonus;
-        res += getMoral().get();
-        if (res == 0f) res = 0.01f;
-        return res;
+        //float res = 1f;
+        //if (isInDefense()) // army at home
+        //    res += Options.armyDefenceBonus;
+        //res += getMoral().get();
+        //if (res == 0f) res = 0.01f;
+        //return res;
+        return 1f + modifierStrenght.getModifier(this);
     }
     private float getStrenght()
     {
@@ -382,14 +392,18 @@ public class BattleResult
     bool result;
     Province place;
     StringBuilder sb = new StringBuilder();
+    string attackerBonus; string defenderBonus;
     //public BattleResult(Country attacker, Country defender, Army attackerArmy, Army attackerLoss, Army defenderArmy, Army defenderLoss, bool result)
-    public BattleResult(Country attacker, Country defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss, Province place, bool result)
+    public BattleResult(Country attacker, Country defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss,
+        Province place, bool result, string attackerBonus, string defenderBonus)
     {
         this.attacker = attacker; this.defender = defender;
         //this.attackerArmy = new Army(attackerArmy); this.attackerLoss = new Army(attackerLoss); this.defenderArmy = new Army(defenderArmy); this.defenderLoss = new Army(defenderLoss);
         this.attackerArmy = attackerArmy; this.attackerLoss = attackerLoss; this.defenderArmy = defenderArmy; this.defenderLoss = defenderLoss;
         this.result = result;
         this.place = place;
+        this.defenderBonus = defenderBonus;
+        this.attackerBonus = attackerBonus;
         //Game.allBattles.Add(this);
 
     }
@@ -409,8 +423,9 @@ public class BattleResult
 
         if (attacker == Game.player && isAttackerWon())
         {
-            sb.Append("Our glorious army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
-            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
+            sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men.");
+            sb.Append(" Modifiers: ").Append(attackerBonus);
+            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is our now!");
             // sb.Append("\nDate is ").Append(Game.date);
@@ -419,9 +434,10 @@ public class BattleResult
         else
         if (defender == Game.player && isDefenderWon())
         {
-            sb.Append("Our glorious army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
-                .Append(" with army of ").Append(attackerArmy).Append(" men");
-            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
+            sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+                .Append(" with army of ").Append(attackerArmy).Append(" men.");
+            sb.Append(" Modifiers: ").Append(attackerBonus);
+            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
             // sb.Append("\nDate is ").Append(Game.date);
             new Message("We won a battle!", sb.ToString(), "Fine");
@@ -429,8 +445,9 @@ public class BattleResult
         else
             if (attacker == Game.player && isDefenderWon())
         {
-            sb.Append("Our glorious army has attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
-            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men");
+            sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append(" Modifiers: ").Append(attackerBonus);
+            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
             // sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Fine");
@@ -439,9 +456,10 @@ public class BattleResult
             if (defender == Game.player && isAttackerWon())
 
         {
-            sb.Append("Our glorious army has been attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
-            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men");
+            sb.Append(" Modifiers: ").Append(attackerBonus);
+            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
             // sb.Append("\nDate is ").Append(Game.date);

@@ -83,7 +83,7 @@ public class Corps
             if (next.getProduct().isInventedByAnyOne())
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
-                nStor.multipleInside(multiplier);
+                nStor.multiple(multiplier);
                 result.Add(nStor);
             }
         //result.Sort(delegate (Storage x, Storage y)

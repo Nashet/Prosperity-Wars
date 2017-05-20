@@ -89,7 +89,7 @@ abstract public class PopUnit : Producer
 
         //Owner's fields:
         wallet = new Wallet(0f);
-        source.wallet.pay(wallet, source.wallet.haveMoney.multiple(newPopShare));
+        source.wallet.pay(wallet, source.wallet.haveMoney.multipleOuside(newPopShare));
         //wallet = newPopShare.sendProcentToNew(source.wallet.haveMoney);
 
         //Producer's fields:
@@ -369,7 +369,7 @@ abstract public class PopUnit : Producer
             if (next.getProduct().isInventedByAnyOne())
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
-                nStor.multipleInside(multiplier);
+                nStor.multiple(multiplier);
                 result.Add(nStor);
             }
         result.Sort(delegate (Storage x, Storage y)
@@ -479,7 +479,7 @@ abstract public class PopUnit : Producer
         {
             if (this.type.isPoorStrata())
             {
-                taxSize = wallet.moneyIncomethisTurn.multiple((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = wallet.moneyIncomethisTurn.multipleOuside((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                 if (wallet.canPay(taxSize))
                 {
                     incomeTaxPayed = taxSize;
@@ -497,7 +497,7 @@ abstract public class PopUnit : Producer
             else
             if (this.type.isRichStrata())
             {
-                taxSize = wallet.moneyIncomethisTurn.multiple((province.getOwner().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                taxSize = wallet.moneyIncomethisTurn.multipleOuside((province.getOwner().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                 if (wallet.canPay(taxSize))
                 {
                     province.getOwner().getCountryWallet().richTaxIncomeAdd(taxSize);
@@ -517,10 +517,10 @@ abstract public class PopUnit : Producer
             // taxSize = gainGoodsThisTurn.multiple(province.getOwner().countryTax);
 
             if (this.type.isPoorStrata())
-                taxSize = gainGoodsThisTurn.multiple((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = gainGoodsThisTurn.multipleOuside((province.getOwner().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
             if (this.type.isRichStrata())
-                taxSize = gainGoodsThisTurn.multiple((province.getOwner().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = gainGoodsThisTurn.multipleOuside((province.getOwner().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
 
             if (storageNow.canPay(taxSize))
                 storageNow.send(province.getOwner().storageSet, taxSize);
@@ -614,7 +614,7 @@ abstract public class PopUnit : Producer
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
             Wallet reserv = new Wallet(0);
-            wallet.payWithoutRecord(reserv, wallet.haveMoney.multiple(Options.savePopMoneyReserv));
+            wallet.payWithoutRecord(reserv, wallet.haveMoney.multipleOuside(Options.savePopMoneyReserv));
             lifeNeeds = (getRealEveryDayNeeds());
             Value needsCost = Game.market.getCost(lifeNeeds);
             float moneyWas = wallet.haveMoney.get();
@@ -699,7 +699,7 @@ abstract public class PopUnit : Producer
     {
         {
             Value taxSize = new Value(0);
-            taxSize = gainGoodsThisTurn.multiple(province.getOwner().aristocrstTax);
+            taxSize = gainGoodsThisTurn.multipleOuside(province.getOwner().aristocrstTax);
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
@@ -839,7 +839,7 @@ abstract public class PopUnit : Producer
         if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
         {
             Value subsidy = getUnemployedProcent();
-            subsidy.multipleInside(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
+            subsidy.multiple(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
             if (province.getOwner().wallet.canPay(subsidy))
             {

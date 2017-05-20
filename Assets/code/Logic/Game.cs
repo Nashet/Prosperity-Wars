@@ -98,10 +98,10 @@ public class Game
     private void setStartResources()
     {
         //Country.allCountries[0] is null country
-        Country.allCountries[1].getCapital().setResource(Product.Fruit);
+        Country.allCountries[1].getCapital().setResource(Product.Wood);
 
         //Country.allCountries[0].getCapital().setResource(Product.Wood;
-        Country.allCountries[2].getCapital().setResource(Product.Wood);
+        Country.allCountries[2].getCapital().setResource(Product.Fruit);
         Country.allCountries[3].getCapital().setResource(Product.Gold);
         Country.allCountries[4].getCapital().setResource(Product.Wool);
         Country.allCountries[5].getCapital().setResource(Product.Stone);

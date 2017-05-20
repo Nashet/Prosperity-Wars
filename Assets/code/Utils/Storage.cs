@@ -258,7 +258,7 @@ public class CountryStorage : PrimitiveStorageSet
     Value wantedConsumeLastTurn = new Value(0);
     public Value HowMuchWantsToBuy()
     {
-        return wantedConsumeLastTurn.multiple(reserveMultiplier);
+        return wantedConsumeLastTurn.multipleOutside(reserveMultiplier);
     }
     //public CountryStorage(Product inProduct, float inAmount) : base(inProduct, inAmount)
     //{
