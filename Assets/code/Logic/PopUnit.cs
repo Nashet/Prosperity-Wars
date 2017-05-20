@@ -191,22 +191,22 @@ abstract public class PopUnit : Producer
     }
     private void makeModifiers()
     {
-        modifierStarvation = new Modifier(delegate (Country forWhom) { return needsFullfilled.get() < 0.20f; }, "Starvation", false, -0.3f);
-        modifierLifeNeedsNotFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() < 0.99f; }, "Life needs are not satisfied", false, -0.2f);
-        modifierLifeNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLifeNeedsFullfilling().get() > 0.99f; }, "Life needs are satisfied", false, 0.1f);
-        modifierEverydayNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getEveryDayNeedsFullfilling().get() > 0.99f; }, "Everyday needs are satisfied", false, 0.15f);
-        modifierLuxuryNeedsFulfilled = new Modifier(delegate (Country forWhom) { return getLuxuryNeedsFullfilling().get() > 0.99f; }, "Luxury needs are satisfied", false, 0.2f);
+        modifierStarvation = new Modifier(x => needsFullfilled.get() < 0.20f, "Starvation", false, -0.3f);
+        modifierLifeNeedsNotFulfilled = new Modifier(x=>  getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", false, -0.2f);
+        modifierLifeNeedsFulfilled = new Modifier(x=>  getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", false, 0.1f);
+        modifierEverydayNeedsFulfilled = new Modifier(x=>  getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", false, 0.15f);
+        modifierLuxuryNeedsFulfilled = new Modifier(x=>  getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", false, 0.2f);
 
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanVote = new Modifier(delegate (Country forWhom) { return canVote(); }, "Can vote with that government ", false, 0.1f);
+        modifierCanVote = new Modifier(x => canVote(), "Can vote with that government ", false, 0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanNotVote = new Modifier(delegate (Country forWhom) { return !canVote(); }, "Can't vote with that government ", false, -0.1f);
+        modifierCanNotVote = new Modifier(x => !canVote(), "Can't vote with that government ", false, -0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
-        modifierUpsetByForcedReform = new Modifier(delegate (Country forWhom) { return daysUpsetByForcedReform > 0; }, "Upset by forced reform", false, -0.3f);
-        modifierNotGivenUnemploymentSubsidies = new Modifier((Country x) => didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", false, -1.0f);
+        modifierUpsetByForcedReform = new Modifier(forWhom => daysUpsetByForcedReform > 0, "Upset by forced reform", false, -0.3f);
+        modifierNotGivenUnemploymentSubsidies = new Modifier(x => didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", false, -1.0f);
         modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
         {
            modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled,

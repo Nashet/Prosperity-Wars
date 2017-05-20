@@ -70,7 +70,7 @@ public class Government : AbstractReform
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             // (!PossibleStatuses.Contains(this))
-                PossibleStatuses.Add(this);
+            PossibleStatuses.Add(this);
         }
 
         internal override bool isAvailable(Country country)
@@ -146,22 +146,20 @@ public class Government : AbstractReform
 }
 public class Economy : AbstractReform
 {
-    internal static Condition isNotLF = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
-    internal static Condition isNotNatural = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.NaturalEconomy; }, "Economy policy is not Natural Economy", true);
+    internal static Condition isNotLF = new Condition(delegate (System.Object forWhom) { return (forWhom as Country).economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
+    internal static Condition isNotNatural = new Condition(x => (x as Country).economy.status != Economy.NaturalEconomy, "Economy policy is not Natural Economy", true);
 
-    internal static Condition isNotState = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.StateCapitalism; }, "Economy policy is not State Capitalism", true);
-    internal static Condition isNotInterventionism = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.Interventionism; }, "Economy policy is not Limited Interventionism", true);
-    internal static Condition isNotPlanned = new Condition(delegate (Country forWhom) { return forWhom.economy.status != Economy.PlannedEconomy; }, "Economy policy is not Planned Economy", true);
+    internal static Condition isNotState = new Condition(x => (x as Country).economy.status != Economy.StateCapitalism, "Economy policy is not State Capitalism", true);
+    internal static Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Economy.Interventionism, "Economy policy is not Limited Interventionism", true);
+    internal static Condition isNotPlanned = new Condition(x => (x as Country).economy.status != Economy.PlannedEconomy, "Economy policy is not Planned Economy", true);
 
 
 
-    internal static Condition isNotMarket = new Condition(delegate (Country forWhom) { return forWhom.economy.status == Economy.NaturalEconomy || forWhom.economy.status == Economy.PlannedEconomy; },
+    internal static Condition isNotMarket = new Condition(x => (x as Country).economy.status == Economy.NaturalEconomy || (x as Country).economy.status == Economy.PlannedEconomy,
       "Economy is not market economy", true);
-    internal static Condition isMarket = new Condition(delegate (Country forWhom)
-        {
-            return forWhom.economy.status == Economy.StateCapitalism || forWhom.economy.status == Economy.Interventionism
-        || forWhom.economy.status == Economy.LaissezFaire;
-        }, "Economy is market economy", true);
+    internal static Condition isMarket = new Condition(x => (x as Country).economy.status == Economy.StateCapitalism || (x as Country).economy.status == Economy.Interventionism
+        || (x as Country).economy.status == Economy.LaissezFaire
+        , "Economy is market economy", true);
     public class ReformValue : AbstractReformValue
     {
 
@@ -267,8 +265,8 @@ public class Serfdom : AbstractReform
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             //if (!PossibleStatuses.Contains(this))
-                PossibleStatuses.Add(this);
-           // this.allowed = condition;
+            PossibleStatuses.Add(this);
+            // this.allowed = condition;
         }
         internal override bool isAvailable(Country country)
         {
@@ -338,11 +336,11 @@ public class Serfdom : AbstractReform
     public Serfdom(Country country) : base("Serfdom", "Aristocrats privileges", country)
     {
         if (Allowed == null)
-        Allowed = new ReformValue("Allowed", "Peasants and other plebes pay 10% of income to Aristocrats", 0,
-            new ConditionsList(new List<Condition>()
-            {
+            Allowed = new ReformValue("Allowed", "Peasants and other plebes pay 10% of income to Aristocrats", 0,
+                new ConditionsList(new List<Condition>()
+                {
             Economy.isNotMarket
-            }));
+                }));
         if (Brutal == null)
             Brutal = new ReformValue("Brutal", "Peasants and other plebes pay 20% of income to Aristocrats", 1,
             new ConditionsList(new List<Condition>()
@@ -379,17 +377,11 @@ public class Serfdom : AbstractReform
     {
         return true;
     }
-    internal static Condition IsAbolishedInAnyWay = new Condition(delegate (Country forWhom)
-    {
-        return forWhom.serfdom.status == Serfdom.Abolished
-    || forWhom.serfdom.status == Serfdom.AbolishedAndNationalizated || forWhom.serfdom.status == Serfdom.AbolishedWithLandPayment;
-    },
+    internal static Condition IsAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Serfdom.Abolished
+    || (x as Country).serfdom.status == Serfdom.AbolishedAndNationalizated || (x as Country).serfdom.status == Serfdom.AbolishedWithLandPayment,
         "Serfdom is abolished", true);
-    internal static Condition IsNotAbolishedInAnyWay = new Condition(delegate (Country forWhom)
-    {
-        return forWhom.serfdom.status == Serfdom.Allowed
-    || forWhom.serfdom.status == Serfdom.Brutal;
-    },
+    internal static Condition IsNotAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Serfdom.Allowed
+    || (x as Country).serfdom.status == Serfdom.Brutal,
         "Serfdom is in power", true);
 }
 public class MinimalWage : AbstractReform
@@ -398,8 +390,8 @@ public class MinimalWage : AbstractReform
     {
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
-           // if (!PossibleStatuses.Contains(this))
-                PossibleStatuses.Add(this);
+            // if (!PossibleStatuses.Contains(this))
+            PossibleStatuses.Add(this);
         }
         internal override bool isAvailable(Country country)
         {
@@ -535,7 +527,7 @@ public class UnemploymentSubsidies : AbstractReform
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             //if (!PossibleStatuses.Contains(this))
-                PossibleStatuses.Add(this);
+            PossibleStatuses.Add(this);
         }
         internal override bool isAvailable(Country country)
         {

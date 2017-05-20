@@ -13,7 +13,12 @@ public class Army
     Dictionary<PopUnit, Corps> personal;
     Province destination;
     Country owner;
-    //List<Army> allArmies = new List<Army>();
+    static Modifier  modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
+    static Modifier modifierMoral = new Modifier(delegate () { return x.getMoral().get(); }, "Moral", true, 1f);
+    ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
+        {
+            modifierInDefense
+        });
     public Army(Country owner)
     {
         personal = new Dictionary<PopUnit, Corps>();
@@ -73,7 +78,7 @@ public class Army
             Corps found;
             if (personal.TryGetValue(corpsToAdd.getPopUnit(), out found)) // Returns true.
             {
-                found.add(corpsToAdd.getSize());
+                found.add(corpsToAdd);
             }
             else
                 personal.Add(corpsToAdd.getPopUnit(), corpsToAdd);
@@ -167,7 +172,7 @@ public class Army
             // here null exception
             if (corpsToTransfert.Value.getSize() > 0)
                 if (this.personal.TryGetValue(corpsToTransfert.Key, out found))
-                    found.add(corpsToTransfert.Value.getSize());
+                    found.add(corpsToTransfert.Value);
                 else
                     this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
 
@@ -295,10 +300,14 @@ public class Army
                 }
         return totalMenLoss;
     }
+    public bool isInDefense()
+    {
+        return destination == null;
+    }
     public float getStrenghtModifier()
     {
         float res = 1f;
-        if (destination == null) // army at home
+        if (isInDefense()) // army at home
             res += Options.armyDefenceBonus;
         res += getMoral().get();
         if (res == 0f) res = 0.01f;

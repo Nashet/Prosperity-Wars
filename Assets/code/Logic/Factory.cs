@@ -53,32 +53,22 @@ public class Factory : Producer
         salary.set(province.getLocalMinSalary());
 
 
-        modifierHasResourceInProvince = new Modifier(delegate (Country forWhom)
-        {
-            return !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput);
-        },
+        modifierHasResourceInProvince = new Modifier(x => !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput),
            "Has input resource in this province", true, 20f);
         modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", true, 1f);
         modifierInventedMiningAndIsShaft = new Modifier(
-           delegate (Country forWhom)
-           {
-               return forWhom.isInvented(InventionType.mining) && type.isShaft();
-           },
+             forWhom => (forWhom as Country).isInvented(InventionType.mining) && type.isShaft(),
            new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), false, 50f);
-        modifierBelongsToCountry = new Modifier(
-          delegate (Country forWhom)
-          {
-              return factoryOwner is Country;
-          },
-          "Belongs to government", false, -20f);
+        modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government", false, -20f);
 
         modifierNotBelongsToCountry = new Condition(
-          (Country x) => !(factoryOwner is Country),
+           x => !(factoryOwner is Country),
           "Doesn't belongs to government", false);
         modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized", false, -10f);
         modifierEfficiency = new ModifiersList(new List<Condition>()
         {
-            new Modifier(InventionType.steamPower, true, 25f),
+            //x=>(x as Country).isInvented(InventionType.steamPower)
+            new Modifier(InventionType.SteamPowerInvented , 25f),
             modifierInventedMiningAndIsShaft,
             new Modifier(Economy.StateCapitalism, true, 10f),
             new Modifier(Economy.Interventionism, true, 30f),
@@ -87,38 +77,40 @@ public class Factory : Producer
             modifierHasResourceInProvince, modifierLevelBonus,
             modifierBelongsToCountry, modifierIsSubsidised
         });
-        Condition factoryPlacedInOurCountry = new Condition((Owner forWhom) => province.getOwner() == forWhom, "Enterprise placed in our country", false);
+        Condition factoryPlacedInOurCountry = new Condition((forWhom) => province.getOwner() == forWhom, "Enterprise placed in our country", false);
         conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
-            new Condition(delegate (Owner forWhom) { return !isUpgrading(); }, "Not upgrading", false),
-            new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
-            new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
-            new Condition(delegate (Owner forWhom) { return level != Options.maxFactoryLevel; }, "Max level not achieved", false),
-            new Condition(delegate (Owner forWhom) {
-                 Value cost = this.getUpgradeCost();
-                return forWhom.wallet.canPay(cost);}, delegate () {
-                    Game.threadDangerSB.Clear();
-                    Game.threadDangerSB.Append("Have ").Append(getUpgradeCost()).Append(" coins");
-                    return Game.threadDangerSB.ToString();
-                }, true)
+            new Condition(x=>  province.getOwner().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            new Condition(x=> !isUpgrading() , "Not upgrading", false),
+            new Condition(x=>  !isBuilding(), "Not building", false),
+            new Condition(x=> isWorking(), "Open", false),
+            new Condition(x=> level != Options.maxFactoryLevel, "Max level not achieved", false),
+            new Condition(delegate (System.Object forWhom)
+            {
+                Value cost = this.getUpgradeCost();
+                return (forWhom as Owner).wallet.canPay(cost);
+            }, delegate ()
+            {
+                Game.threadDangerSB.Clear();
+                Game.threadDangerSB.Append("Have ").Append(getUpgradeCost()).Append(" coins");
+                return Game.threadDangerSB.ToString();
+            }, true)
                 ,factoryPlacedInOurCountry
         });
 
         conditionsClose = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
-            new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
-            new Condition(delegate (Owner forWhom) { return isWorking(); }, "Open", false),
+            new Condition(x=>  province.getOwner().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            new Condition(x=>  !isBuilding(),  "Not building", false),
+            new Condition(x=>   isWorking(),  "Open", false),
             factoryPlacedInOurCountry
         });
         conditionsReopen = new ConditionsList(new List<Condition>()
         {
-            new Condition(delegate (Owner forWhom) { return province.getOwner().economy.status != Economy.LaissezFaire || forWhom is PopUnit; }, "Economy policy is not Laissez Faire", true),
-            new Condition(delegate (Owner forWhom) { return !isBuilding(); }, "Not building", false),
-            new Condition(delegate (Owner forWhom) { return !isWorking(); }, "Close", false),
-            new Condition(delegate (Owner forWhom) {
-                return forWhom.wallet.canPay(getReopenCost());},  delegate () {
+            new Condition(x=>  province.getOwner().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            new Condition(x=>  !isBuilding(), "Not building", false),
+            new Condition(x=> !isWorking(), "Close", false),
+            new Condition(x=>  (x as Owner).wallet.canPay(getReopenCost()),  delegate () {
                     Game.threadDangerSB.Clear();
                     Game.threadDangerSB.Append("Have ").Append(getReopenCost()).Append(" coins");
                     return Game.threadDangerSB.ToString();

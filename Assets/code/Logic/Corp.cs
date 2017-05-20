@@ -7,8 +7,6 @@ using DesignPattern.Objectpool;
 
 
 
-
-
 public class Corps
 {
     PopUnit origin;
@@ -140,10 +138,10 @@ public class Corps
         return origin;
     }
 
-    internal void add(int howMuch)
+    internal void add(Corps another)
     {
-        size += howMuch;
-        moral.addPoportionally(getSize(), howMuch, Procent.ZeroProcent);
+        size += another.getSize();
+        moral.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
         
     }
 

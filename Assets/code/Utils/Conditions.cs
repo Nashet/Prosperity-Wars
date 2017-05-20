@@ -40,10 +40,10 @@ public class ConditionsList
 
 
 
-    internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
+    internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(x => 2 == 2, "Always Yes condition", true) });
     internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented });
     //private List<Modifier> inlist;
-    
+
 
     /// <summary>Return false if any of conditions is false</summary>    
     public bool isAllTrue(Owner forWhom, out string description)
@@ -148,66 +148,99 @@ public class ConditionsList
 //        return check(forWhom);
 //    }
 //}
-public class Condition: AbstractCondition
+public class Condition : AbstractCondition
 {
     string text; //, conditionIsFalse;
-    protected Func<Owner, bool> check;
-    protected Func<Country, bool> check2;
+    //protected Func<Owner, bool> check;
+    //protected Func<Country, bool> check2;
+    protected Func<System.Object, bool> check3;
     /// <summary>to hide juncky info /// </summary>
     bool showAchievedConditionDescribtion;
     Func<string> dynamicString;
-    internal static Condition IsNotImplemented = new Condition(delegate (Country forWhom) { return 2 == 0 || Game.devMode; }, "Feature is implemented", true);
-    /// <summary></summary>
-    public Condition(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
+
+
+    internal static Condition IsNotImplemented = new Condition(delegate (System.Object forWhom) { return 2 == 0 || Game.devMode; }, "Feature is implemented", true);
+
+
+    public Condition(Func<System.Object, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
-        check = myMethodName;
+        check3 = myMethodName;
         this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
-    public Condition(Func<Owner, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion)
+    public Condition(Func<System.Object, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion)
     {
-        check = myMethodName;
+        check3 = myMethodName;
         this.dynamicString = dynamicString;
         //this.conditionDescription = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
+
+    public Condition(Condition another)
+    {
+        text = another.text;
+        check3 = another.check3;
+        showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
+        dynamicString = another.dynamicString;
+    }
+
+    /// <summary></summary>
+    //public Condition(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
+    //{
+    //    check = myMethodName;
+    //    this.text = conditionIsTrue;
+    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    //}
+    //public Condition(Func<Owner, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion)
+    //{
+    //    check = myMethodName;
+    //    this.dynamicString = dynamicString;
+    //    //this.conditionDescription = conditionIsTrue;
+    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    //}
+
+    ////used in tax-like modifiers
     public Condition(string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
         this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
     /// <summary>You better use shorter constructor, if possible </summary>
-    public Condition(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
-    {
-        check2 = myMethodName;
-        this.text = conditionIsTrue;
-        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-        //this.conditionIsFalse = conditionIsFalse;
-    }
+    //public Condition(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
+    //{
+    //    check2 = myMethodName;
+    //    this.text = conditionIsTrue;
+    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    //    //this.conditionIsFalse = conditionIsFalse;
+    //}
 
     /// <summary>Checks if invention is invented</summary>    
     public Condition(InventionType invention, bool showAchievedConditionDescribtion)
     {
-        check2 = delegate (Country forWhom)
-        {
-            return forWhom.isInvented(invention);
-        };
+        check3 = x => (x as Country).isInvented(invention);
+
+    //    delegate (Country forWhom)
+    //{
+    //    return forWhom.isInvented(invention);
+    //};
         this.text = invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //this.conditionIsFalse = conditionIsFalse;
     }
-    /// <summary>Checks if government == CheckingCountry.government</summary>    
+    ///// <summary>Checks if government == CheckingCountry.government</summary>    
     public Condition(Government.ReformValue government, bool showAchievedConditionDescribtion)
     {
-        check2 = government.isGovernmentEqualsThat;
+        //check3 = government.isGovernmentEqualsThat;
+        check3 = x => (x as Country).government.status == government;
         this.text = "Government is " + government.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-        //this.conditionIsFalse = conditionIsFalse;
+
     }
-    /// <summary>Checks if economy == CheckingCountry.economy</summary>    
+    ///// <summary>Checks if economy == CheckingCountry.economy</summary>    
     public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion)
     {
-        check2 = economy.isEconomyEqualsThat;
+        //check2 = economy.isEconomyEqualsThat;
+        check3 = x => (x as Country).economy.status == economy;
         this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
@@ -229,7 +262,7 @@ public class Condition: AbstractCondition
     {
         string result = null;
         bool answer = false;
-        if (check(forWhom))
+        if (check3(forWhom))
         {
             if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
             answer = true;
@@ -245,29 +278,15 @@ public class Condition: AbstractCondition
     /// <summary>Fast version, without description</summary>    
     internal bool checkIftrue(Owner forWhom)
     {
-        return check(forWhom);
+        return check3(forWhom);
     }
     /// <summary>Returns bool result and description in out description</summary>    
     virtual internal bool checkIftrue(Country forWhom, out string description)
     {
         string result = null;
         bool answer = false;
-        if (check2 == null)
-        {
-            if (check(forWhom))
-            {
-                if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
-                answer = true;
-            }
-            else
-            {
-                result += "\n(-) " + getDescription();
-                answer = false;
-            }
-            description = result;
-            return answer;
-        }
-        if (check2(forWhom))
+
+        if (check3(forWhom))
         {
             if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
             answer = true;
@@ -279,11 +298,25 @@ public class Condition: AbstractCondition
         }
         description = result;
         return answer;
+
+
+        //if (check2(forWhom))
+        //{
+        //    if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
+        //    answer = true;
+        //}
+        //else
+        //{
+        //    result += "\n(-) " + getDescription();
+        //    answer = false;
+        //}
+        //description = result;
+        //return answer;
     }
     /// <summary>Fast version, without description</summary>    
     internal bool checkIftrue(Country forWhom)
     {
-        return check2(forWhom);
+        return check3(forWhom);
     }
 
 }
@@ -298,34 +331,45 @@ public class Modifier : Condition
     float value;
     Func<int> multiplierModifierFunction;
 
+
+
     /// <summary>You better use shorter constructor, if possible </summary>
-    public Modifier(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(myMethodName, conditionIsTrue, true)
+    //public Modifier(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(myMethodName, conditionIsTrue, true)
+    //{
+    //    this.value = value;
+    //}
+    public Modifier(Func<System.Object, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(myMethodName, conditionIsTrue, true)
     {
         this.value = value;
     }
-
     /// <summary></summary>
     public Modifier(Func<int> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, showAchievedConditionDescribtion)
     {
-        check2 = null;
+        check3 = null;
         multiplierModifierFunction = myMethodName;
 
         isMultiplier = true;
         this.value = value;
     }
 
+    public Modifier(Condition condition, float value) : base(condition)
+    {
+        this.value = value;
+    }
 
-    /// <summary>Checks if invention is invented</summary>    
+
+    /// <summary>Checks if invention is invented.
+    /// depreciated</summary>    
     public Modifier(InventionType invention, bool showAchievedConditionDescribtion, float value) : base(invention, true)
     {
         this.value = value;
     }
-    /// <summary>Checks if government == CheckingCountry.government</summary>    
+    /// <summary>Checks if government == CheckingCountry.government/// depreciated</summary>  
     public Modifier(Government.ReformValue government, bool showAchievedConditionDescribtion, float value) : base(government, true)
     {
         this.value = value;
     }
-    /// <summary>Checks if economy == CheckingCountry.economy</summary>    
+    /// <summary>Checks if economy == CheckingCountry.economy/// depreciated</summary>  
     public Modifier(Economy.ReformValue economy, bool showAchievedConditionDescribtion, float value) : base(economy, true)
     {
         this.value = value;
@@ -334,7 +378,6 @@ public class Modifier : Condition
     {
         return getDescription();
     }
-
 
     internal float getValue()
     { return value; }
@@ -346,12 +389,12 @@ public class Modifier : Condition
         {
             StringBuilder str = new StringBuilder("\n(+) ");
             str.Append(getDescription());
-            str.Append(" ").Append(multiplierModifierFunction() * getValue());            
+            str.Append(" ").Append(multiplierModifierFunction() * getValue());
             description = str.ToString();
             answer = true;
         }
         else
-        if (check2(forWhom))
+        if (check3(forWhom))
         {
             answer = true;
             StringBuilder str = new StringBuilder("\n(+) ");
@@ -376,15 +419,15 @@ public class Modifier : Condition
             result = multiplierModifierFunction() * getValue();
             str.Append(": ").Append(result);
             description = str.ToString();
-           
+
         }
         else
-        if (check2(forWhom))
+        if (check3(forWhom))
         {
-            
+
             StringBuilder str = new StringBuilder("\n(+) ");
             str.Append(getDescription());
-            result =  getValue();
+            result = getValue();
             str.Append(": ").Append(result);
 
             description = str.ToString();
@@ -402,7 +445,7 @@ public class Modifier : Condition
         if (isMultiplier)
             result = multiplierModifierFunction() * getValue();
         else
-        if (check2(forWhom))
+        if (check3(forWhom))
             result = getValue();
         else
             result = 0;
@@ -437,7 +480,7 @@ public class ModifiersList : ConditionsList
             //if (item.checkIftrue(forWhom, out accu))
             if (accu != "")
             {
-                text.Append(accu);                 
+                text.Append(accu);
             }
         }
         text.Append("\nTotal: ").Append(summ);
@@ -445,8 +488,8 @@ public class ModifiersList : ConditionsList
         return summ;
     }
     internal float getModifier(Country forWhom)
-    {        
-        float summ = 0f;        
+    {
+        float summ = 0f;
         foreach (Modifier item in list)
             summ += item.getModifier(forWhom);
         return summ;

@@ -38,15 +38,13 @@ public class FactoryType
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
         upgradeResource.set(new Storage(Product.Stone, 10f));        
         enoughMoneyOrResourcesToBuild = new Condition(
-          (delegate (Country forWhom)
+          (delegate (System.Object forWhom)
           {
-              if (Economy.isMarket.checkIftrue(forWhom))
-                  return forWhom.wallet.canPay(getBuildCost());
-              else
-              {
-
-                  return forWhom.storageSet.has(getBuildNeeds());
-              }
+              Country who = forWhom as Country;
+              if (Economy.isMarket.checkIftrue(who))
+                  return who.wallet.canPay(getBuildCost());
+              else              
+                  return who.storageSet.has(getBuildNeeds());              
 
           }), "Have enough money or resources to build", true
           );
