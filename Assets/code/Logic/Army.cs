@@ -39,6 +39,7 @@ public class Army
             //personal.Remove(corps.getPopUnit());
             corps.demobilizeFrom(this);
         }
+        //is it here problem with #83?
         if (this != getOwner().homeArmy && this != getOwner().sendingArmy)
             owner.allArmies.Remove(this);
         //personal.ForEach((pop, corps) =>
@@ -57,9 +58,6 @@ public class Army
         //}
         personal.ForEach((x, corps) => corps.consume(getOwner()));
     }
-
-
-
     public Procent getMoral()
     {
         Procent result = new Procent(0);
@@ -84,10 +82,20 @@ public class Army
                 personal.Add(corpsToAdd.getPopUnit(), corpsToAdd);
         }
     }
-    public void join(Army armyToAdd)
+    public void add(Army armyToAdd)
     {
         if (armyToAdd != this)
-            this.transfertCorpsFrom(armyToAdd);
+        {
+            Corps found;
+            foreach (var corpsToTransfert in armyToAdd.personal.ToList())
+                if (corpsToTransfert.Value.getSize() > 0)
+                    if (this.personal.TryGetValue(corpsToTransfert.Key, out found))
+                        found.add(corpsToTransfert.Value);
+                    else
+                        this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
+                else
+                    corpsToTransfert.Value.demobilizeFrom(armyToAdd);
+        }
     }
     internal void remove(Corps corps)
     {
@@ -166,35 +174,20 @@ public class Army
                 res.Add(next.Key.type, next.Value.getSize());
         }
         return res;
-    }
-    //public void transfertCorpsFrom(Dictionary<PopUnit, Corps> source)
-    public void transfertCorpsFrom(Army sourceArmy)
-    {
-        Corps found;
-        foreach (var corpsToTransfert in sourceArmy.personal.ToList())
-            // here null exception
-            if (corpsToTransfert.Value.getSize() > 0)
-                if (this.personal.TryGetValue(corpsToTransfert.Key, out found))
-                    found.add(corpsToTransfert.Value);
-                else
-                    this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
-
-            else
-                corpsToTransfert.Value.demobilizeFrom(sourceArmy);
-
-    }
+    }   
+  
     internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
         {
-            secondArmy.transfertCorpsFrom(this);
+            secondArmy.add(this);
             this.personal.Clear();
         }
         else
         {
             //Army sumArmy = new Army();
             //sumArmy.add(this);
-            this.join(secondArmy);
+            this.add(secondArmy);
             int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
 
             secondArmy.clear();
@@ -240,7 +233,11 @@ public class Army
         if (attacker.getStrenght() > defender.getStrenght())
         {
             attackerWon = true;
-            float winnerLossUnConverted = defender.getStrenght() * defender.getStrenght() / attacker.getStrenght();
+            float winnerLossUnConverted;
+            if (attacker.getStrenght() > 0f)
+                winnerLossUnConverted = defender.getStrenght() * defender.getStrenght() / attacker.getStrenght();
+            else
+                winnerLossUnConverted = 0f;
             int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted);
             int loserLoss = defender.takeLoss(defender.getSize());
 
@@ -256,12 +253,15 @@ public class Army
                 attacker.destination, false, attackerBonus, defenderBonus);
             return r;
         }
-        else
+        else //defender.getStrenght() > attacker.getStrenght()  
         {
 
             attackerWon = false;
-
-            float winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / (defender.getStrenght());
+            float winnerLossUnConverted;
+            if (defender.getStrenght() > 0f)
+                winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / (defender.getStrenght());
+            else
+                winnerLossUnConverted = 0f;
             int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted);
 
             int attackerLoss = attacker.takeLoss(attacker.getSize());
@@ -278,15 +278,18 @@ public class Army
     private int takeLoss(int loss)
     {
         int totalLoss = 0;
-        int totalSize = getSize();
-        int currentLoss;
-        foreach (var corp in personal)
-            if (totalSize > 0)
-            {
-                currentLoss = Mathf.RoundToInt(corp.Value.getSize() * loss / (float)totalSize);
-                corp.Value.TakeLoss(currentLoss);
-                totalLoss += currentLoss;
-            }
+        if (loss > 0)
+        {
+            int totalSize = getSize();
+            int currentLoss;
+            foreach (var corp in personal)
+                if (totalSize > 0)
+                {
+                    currentLoss = Mathf.RoundToInt(corp.Value.getSize() * loss / (float)totalSize);
+                    corp.Value.TakeLoss(currentLoss);
+                    totalLoss += currentLoss;
+                }
+        }
         return totalLoss;
     }
     /// <summary>
@@ -295,18 +298,22 @@ public class Army
     private int takeLossUnconverted(float lossStrenght)
     {
         int totalMenLoss = 0;
-        float streghtLoss;
-        int menLoss;
-        float totalStrenght = getStrenght();
-        if (totalStrenght > 0f)
-            foreach (var corp in personal)
-                if (corp.Value.getType().getStrenght() * getStrenghtModifier() > 0)//(corp.Value.getType().getStrenght() > 0f)
-                {
-                    streghtLoss = corp.Value.getStrenght(this) / totalStrenght * lossStrenght;
-                    menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght() * getStrenghtModifier())); // corp.Value.getType().getStrenght());
-                    corp.Value.TakeLoss(menLoss);
-                    totalMenLoss += menLoss;
-                }
+        if (lossStrenght > 0f)
+        {
+
+            float streghtLoss;
+            int menLoss;
+            float totalStrenght = getStrenght();
+            if (totalStrenght > 0f)
+                foreach (var corp in personal)
+                    if (corp.Value.getType().getStrenght() * getStrenghtModifier() > 0)//(corp.Value.getType().getStrenght() > 0f)
+                    {
+                        streghtLoss = corp.Value.getStrenght(this) * (lossStrenght / totalStrenght);
+                        menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght() * getStrenghtModifier())); // corp.Value.getType().getStrenght());
+                        
+                        totalMenLoss += corp.Value.TakeLoss(menLoss);
+                    }
+        }
         return totalMenLoss;
     }
     public bool isInDefense()
@@ -314,13 +321,7 @@ public class Army
         return destination == null;
     }
     public float getStrenghtModifier()
-    {
-        //float res = 1f;
-        //if (isInDefense()) // army at home
-        //    res += Options.armyDefenceBonus;
-        //res += getMoral().get();
-        //if (res == 0f) res = 0.01f;
-        //return res;
+    {      
         return 1f + modifierStrenght.getModifier(this);
     }
     private float getStrenght()

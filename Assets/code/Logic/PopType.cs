@@ -24,6 +24,9 @@ public class PopType
     ///<summary> per 1000 men </summary>
     public Storage basicProduction;
     private string name;
+    /// <summary>
+    /// SHOULD not be zero!
+    /// </summary>
     private float strenght;
     public PopType(PopTypes itype, Storage iproduces, string iname, float strenght, PrimitiveStorageSet militaryNeeds)
     {

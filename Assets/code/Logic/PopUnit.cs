@@ -79,7 +79,7 @@ abstract public class PopUnit : Producer
             //todo - can optimize it, double run on List
             source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
         source.subtractPopulation(sizeOfNewPop);
-        mobilized = 0; ;
+        mobilized = 0;
         type = newPopType;
         this.culture = culture;
         education = new Procent(source.education.get());
@@ -217,17 +217,14 @@ abstract public class PopUnit : Producer
     { return population; }
     internal int howMuchCanMobilize()
     {
-
         int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
         if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
-
         return howMuchCanMobilize;
     }
     public Corps mobilize()
     {
         int amount = howMuchCanMobilize();
-
         if (amount > 0)
         {
             mobilized += amount;
@@ -239,17 +236,12 @@ abstract public class PopUnit : Producer
     public void demobilize()
     {
         mobilized = 0;
-
     }
     internal void takeLoss(int loss)
     {
         //int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
-
-        //if (newPopulation > 0)
-        this.subtractPopulation((int)(loss * Options.PopAttritionFactor));
-        //else
-        //pop totally killed
-        ;
+        
+        this.subtractPopulation((int)(loss * Options.PopAttritionFactor));      
         mobilized -= loss;
         if (mobilized < 0) mobilized = 0;
     }

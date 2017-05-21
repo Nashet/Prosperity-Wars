@@ -121,16 +121,22 @@ public class Corps
         return sb.ToString();
     }
 
-
-
-    internal void TakeLoss(int loss)
+    internal int TakeLoss(int loss)
     {
         int sum = size - loss;
         if (sum > 0)
+        {
             size = sum;
-        else
+            origin.takeLoss(loss);
+            return loss;
+        }
+        else 
+        {
+            int wasSize = size;
+            origin.takeLoss(size);
             size = 0;
-        origin.takeLoss(loss);
+            return wasSize;
+        }
     }
 
     internal PopUnit getPopUnit()
@@ -141,10 +147,8 @@ public class Corps
     internal void add(Corps another)
     {
         size += another.getSize();
-        moral.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
-        
+        moral.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);        
     }
-
 }
 namespace DesignPattern.Objectpool
 {

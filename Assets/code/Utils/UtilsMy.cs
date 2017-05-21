@@ -567,11 +567,7 @@ public static class UtilsMy
             return false;
 
     }
-
-    public static float getHumidityRatio(float massVapor, float massDryAir)
-    {
-        return massVapor / massDryAir;
-    }
+   
     public static GameObject CreateButton(Transform parent, float x, float y,
                                         float w, float h, string message,
                                         UnityAction eventListner)
@@ -703,7 +699,7 @@ public static class MyIEnumerableExtensions
     {
         foreach (Army next in source)
             if (next.getDestination() == null)
-                country.homeArmy.join(next);
+                country.homeArmy.add(next);
 
         source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
     }
