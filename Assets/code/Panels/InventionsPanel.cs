@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class InventionsPanel : DragPanel
-{
-    public GameObject inventionsPanel;
+{  
     public ScrollRect table;
     public Text descriptionText;
     public Button inventButton;
@@ -16,24 +15,20 @@ public class InventionsPanel : DragPanel
         inventButton.interactable = false;
         hide();
     }
-    public void hide()
-    {
-        inventionsPanel.SetActive(false);
-        //todo add button removal?      
-    }
+    
+    
+    //public void hide()
+    //{
+    //    inventionsPanel.SetActive(false);
+    //    //todo add button removal?      
+    //}
     public void show(bool bringOnTop)
     {
-        inventionsPanel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
-        panelRectTransform.SetAsLastSibling();
+            panelRectTransform.SetAsLastSibling();
     }
-    public void onCloseClick()
-    {
-        hide();
 
-    }
-   
-   
     public void onInventClick()
     {
         if (!Game.player.inventions.isInvented(selectedInvention) && Game.player.sciencePoints.get() >= selectedInvention.cost.get())

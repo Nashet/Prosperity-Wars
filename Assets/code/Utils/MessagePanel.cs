@@ -17,8 +17,7 @@ public class Message
 public class MessagePanel : DragPanel
 {
     static Vector3 lastDragPosition;
-    public Text caption, message, closeText;
-    public GameObject messagePanel;
+    public Text caption, message, closeText;   
 
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
@@ -54,22 +53,19 @@ public class MessagePanel : DragPanel
         
 
         Game.howMuchPausedWindowsOpen++;
-        messagePanel.SetActive(true);
+        gameObject.SetActive(true);
         //this.pa
         //panelRectTransform = GetComponent<RectTransform>();
         //canvasRectTransform = GetComponent<RectTransform>();
         panelRectTransform.SetAsLastSibling();
         refresh(mess);
     }
-    public void hide()
+   
+    override public void onCloseClick()
     {
-        messagePanel.SetActive(false);
-    }
-    public void onCloseClick()
-    {
-        Game.howMuchPausedWindowsOpen--;
-        hide();
-        Destroy(messagePanel);
+        base.onCloseClick();
+        Game.howMuchPausedWindowsOpen--;       
+        Destroy(gameObject);
     }
 
 

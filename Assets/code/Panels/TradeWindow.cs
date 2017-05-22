@@ -3,9 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class TradeWindow  : DragPanel //: MonoBehaviour//
-{
-    public GameObject tradeWindow;
-    // public GameObject ScrollViewMy;
+{       
     public ScrollRect table;
     // Use this for initialization
     void Start()
@@ -14,24 +12,21 @@ public class TradeWindow  : DragPanel //: MonoBehaviour//
         hide();
 
     }
-    public void hide()
-    {
-        tradeWindow.SetActive(false);
-        //todo add button removal?      
-    }
+    //public void hide()
+    //{
+    //    tradeWindow.SetActive(false);
+    //    //todo add button removal?      
+    //}
 
     public void show(bool bringOnTop)
     {
 
-        tradeWindow.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
         panelRectTransform.SetAsLastSibling();
 
     }
-    public void onCloseClick()
-    {
-        hide();
-    }
+    
    
     public void Refresh()
     {

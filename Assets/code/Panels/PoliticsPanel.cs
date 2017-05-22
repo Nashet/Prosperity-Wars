@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class PoliticsPanel : DragPanel
-{
-    public GameObject politicsPanel;
+{   
     public ScrollRect table;
     public Text descriptionText;
     public Button voteButton;
@@ -24,22 +23,19 @@ public class PoliticsPanel : DragPanel
         forceDecisionButton.interactable = false;
         hide();
     }
-    public void hide()
-    {
-        politicsPanel.SetActive(false);
-        //todo add button removal?      
-    }
+    //public void hide()
+    //{
+    //    politicsPanel.SetActive(false);
+    //    //todo add button removal?      
+    //}
     public void show(bool bringOnTop)
     {
-        politicsPanel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
 
     }
-    public void onCloseClick()
-    {
-        hide();
-    }
+    
 
     void setNewReform()
     {

@@ -9,9 +9,7 @@ using System.Text;
 
 public class DiplomacyPanel : DragPanel
 {
-
-    public Dropdown ddProvinceSelect;
-    public GameObject diplomacyPanel;
+    public Dropdown ddProvinceSelect;   
     public Text allArmySizeText, captionText, sendingArmySizeText;
     public Slider armySendLimit;
     public Button sendArmy;
@@ -61,19 +59,12 @@ public class DiplomacyPanel : DragPanel
 
     public void show()
     {
-        diplomacyPanel.SetActive(true);
+        gameObject.SetActive(true);
 
         panelRectTransform.SetAsLastSibling();
         refresh(true);
     }
-    public void hide()
-    {
-        diplomacyPanel.SetActive(false);
-    }
-    public void onCloseClick()
-    {
-        hide();
-    }
+  
     public void onMobilizationClick()
     {
         Game.player.mobilize();

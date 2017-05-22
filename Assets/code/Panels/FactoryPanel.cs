@@ -11,8 +11,6 @@ public class FactoryPanel : DragPanel//for dragging
     public Button upgradeButton, reopenButton, destroyButton, buyButton, sellButton, nationalizeButton;
     public Toggle subidize, dontHireOnSubsidies;
     public Slider priority;
-    public GameObject panel;
-
     public Text generaltext;
 
     private Factory shownFactory;
@@ -156,7 +154,7 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void Show(Factory fact)
     {
-        panel.SetActive(true);
+        gameObject.SetActive(true);
         shownFactory = fact;
         panelRectTransform.SetAsLastSibling();
         refresh();
@@ -171,12 +169,9 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void Hide()
     {
-        panel.SetActive(false);
+        gameObject.SetActive(false);
     }
-    public void onCloseClick()
-    {
-        Hide();
-    }
+   
     public void onSubsidizeValueChanged()
     {
         shownFactory.setSubsidized(subidize.isOn);

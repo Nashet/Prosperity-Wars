@@ -119,6 +119,10 @@ public class TopPanel : MonoBehaviour
     }
     void onbtnPlayClick(Button button)
     {
+        switchHaveToRunSimulation(button);
+    }
+    public void switchHaveToRunSimulation(Button button)
+    {
         Game.haveToRunSimulation = !Game.haveToRunSimulation;
         if (Game.haveToRunSimulation)
         {

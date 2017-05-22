@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class BuildPanel : DragPanel
-{
-    public GameObject buildPanel;
+{   
     public ScrollRect table;
     public Text descriptionText;
     public Button buildButton;
@@ -17,23 +16,15 @@ public class BuildPanel : DragPanel
         buildButton.interactable = false;
         hide();
     }
-    public void hide()
-    {
-        buildPanel.SetActive(false);
-        //todo add button removal?      
-    }
+    
     public void show(bool bringOnTop)
     {
-        buildPanel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
 
     }
-    public void onCloseClick()
-    {
-        hide();
-
-    }
+   
 
 
     public void onBuildClick()

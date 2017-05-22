@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
+abstract public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
 
     private Vector2 pointerOffset;
@@ -60,5 +60,17 @@ public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
 
         Vector2 newPointerPosition = new Vector2(clampedX, clampedY);
         return newPointerPosition;
+        
     }
+    
+    public void hide()
+    {
+        gameObject.SetActive(false);
+    }    
+    virtual public void onCloseClick()
+    {
+        panelRectTransform.SetAsFirstSibling();
+        hide();
+    }
+
 }

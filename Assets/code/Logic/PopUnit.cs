@@ -167,7 +167,7 @@ abstract public class PopUnit : Producer
         //province.allPopUnits.Remove(this); // gives exception        
         //Game.popsToShowInPopulationPanel.Remove(this);
         if (MainCamera.popUnitPanel.whomShowing() == this)
-            MainCamera.popUnitPanel.Hide();
+            MainCamera.popUnitPanel.hide();
         //remove from population panel.. Would do it automatically        
         //secede property... to government
         getOwnedFactories().ForEach(x => x.factoryOwner = province.getOwner());

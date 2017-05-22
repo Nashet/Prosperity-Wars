@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class MainCamera : MonoBehaviour
 {
@@ -122,6 +123,10 @@ public class MainCamera : MonoBehaviour
             //found something correct            
             SelectProvince(meshNumber);
         }
+        if (Input.GetKeyUp(KeyCode.Space))
+            topPanel.switchHaveToRunSimulation(topPanel.btnPlay);
+        if (Input.GetKeyUp(KeyCode.Return))
+            closeToppestPanel();
         if (Game.haveToStepSimulation || Game.haveToRunSimulation && Game.howMuchPausedWindowsOpen == 0)
         {
             Game.stepSimulation();
@@ -147,6 +152,16 @@ public class MainCamera : MonoBehaviour
         if (Game.MessageQueue.Count > 0)
             showMessageBox();
     }
+
+    private void closeToppestPanel()
+    {
+        //canvas.GetComponentInChildren<DragPanel>();
+        var lastChild = canvas.transform.GetChild(canvas.transform.childCount - 1);
+        var panel = lastChild.GetComponent<DragPanel>();
+        if (panel != null)
+            panel.onCloseClick();
+    }
+
     void showMessageBox()
     {
         Message mes = Game.MessageQueue.Pop();

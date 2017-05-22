@@ -5,16 +5,13 @@ using UnityEngine.EventSystems;
 
 public class PopUnitPanel : DragPanel
 {
-
-
-    public GameObject popUnitPanel;
     public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText;
     private PopUnit pop;
     // Use this for initialization
     void Start()
     {
         MainCamera.popUnitPanel = this;
-        Hide();
+        hide();
     }
     public PopUnit whomShowing()
     {
@@ -106,18 +103,8 @@ public class PopUnitPanel : DragPanel
     }
     public void show(PopUnit ipopUnit)
     {
-        popUnitPanel.SetActive(true);
+        gameObject.SetActive(true);
         pop = ipopUnit;
         panelRectTransform.SetAsLastSibling();
     }
-    public void Hide()
-    {
-        popUnitPanel.SetActive(false);
-    }
-    public void onCloseClick()
-    {
-        Hide();
-    }
-
-
 }

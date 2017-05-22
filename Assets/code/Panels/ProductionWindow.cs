@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System;
 
 public class ProductionWindow : DragPanel
-{
-    public GameObject panel;
+{    
     // public GameObject ScrollViewMy;
     public ScrollRect table;
     // Use this for initialization
@@ -17,14 +16,14 @@ public class ProductionWindow : DragPanel
         MainCamera.productionWindow = this;
         hide();
     }
-    public void hide()
-    {
-        panel.SetActive(false);
-        //todo add button removal?      
-    }
+    //public void hide()
+    //{
+    //    panel.SetActive(false);
+    //    //todo add button removal?      
+    //}
     public void show(Province inn, bool bringOnTop)
     {
-        panel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
         showingProvince = inn;
@@ -33,12 +32,7 @@ public class ProductionWindow : DragPanel
             Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
         }
     }
-    public void onCloseClick()
-    {
-        hide();
-        //showAll = false;
-        //showingProvince
-    }
+    
     //internal void setShowAll()
     //{
     //    showAll = true;

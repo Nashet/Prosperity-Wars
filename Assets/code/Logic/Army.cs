@@ -15,9 +15,10 @@ public class Army
     Country owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
     static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", true, 1f);
+    static Modifier modifierDefault = new Modifier(x=>x==x, "Default", true, 1f);
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            modifierInDefense, modifierMoral
+            modifierDefault, modifierInDefense, modifierMoral
         });
     public Army(Country owner)
     {
@@ -161,7 +162,7 @@ public class Army
     public Dictionary<PopType, int> getAmountByTypes()
     {
         Dictionary<PopType, int> res = new Dictionary<PopType, int>();
-        int test;
+        //int test;
         foreach (var next in personal)
         {
             //if (res.TryGetValue(next.Key.type, out test))
@@ -323,7 +324,7 @@ public class Army
     }
     public float getStrenghtModifier()
     {      
-        return 1f + modifierStrenght.getModifier(this);
+        return  modifierStrenght.getModifier(this);
     }
     private float getStrenght()
     {
@@ -427,7 +428,7 @@ public class BattleResult
         {
             sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
-            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
+            sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is our now!");
             // sb.Append("\nDate is ").Append(Game.date);
@@ -439,7 +440,7 @@ public class BattleResult
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
-            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
+            sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
             // sb.Append("\nDate is ").Append(Game.date);
             new Message("We won a battle!", sb.ToString(), "Fine");
@@ -449,7 +450,7 @@ public class BattleResult
         {
             sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append(" Modifiers: ").Append(attackerBonus);
-            sb.Append("\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
+            sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
             // sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Fine");
@@ -461,7 +462,7 @@ public class BattleResult
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append(" Modifiers: ").Append(attackerBonus);
-            sb.Append("\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
+            sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");
             sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
             // sb.Append("\nDate is ").Append(Game.date);

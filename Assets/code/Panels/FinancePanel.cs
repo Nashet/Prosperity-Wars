@@ -5,10 +5,7 @@ using UnityEngine.EventSystems;
 using System.Text;
 
 public class FinancePanel : DragPanel
-{
-
-
-    public GameObject financePanel;
+{   
     public Text expensesText, captionText, incomeText, bankText;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
@@ -60,19 +57,12 @@ public class FinancePanel : DragPanel
     }
     public void show()
     {
-        financePanel.SetActive(true);
-
+        gameObject.SetActive(true);
         panelRectTransform.SetAsLastSibling();
         refresh();
     }
-    public void hide()
-    {
-        financePanel.SetActive(false);
-    }
-    public void onCloseClick()
-    {
-        hide();
-    }
+    
+   
 
     public void findNoonesEterprises()
     {

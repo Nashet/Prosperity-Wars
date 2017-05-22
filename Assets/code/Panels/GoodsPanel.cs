@@ -4,8 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class GoodsPanel : DragPanel
-{
-    public GameObject panel;
+{    
     public Text generaltext;
     Product product;
     RawImage priceGraph;
@@ -17,7 +16,7 @@ public class GoodsPanel : DragPanel
         graphTexture = new Texture2D(textureWidth, textureHeight);
         priceGraph = GameObject.Find("PriceGraph").GetComponent<RawImage>();
         MainCamera.goodsPanel = this;
-        Hide();
+        hide();
     }
 
     // Update is called once per frame
@@ -97,19 +96,12 @@ public class GoodsPanel : DragPanel
     //{ }
     public void Show(Product inn, bool bringOnTop)
     {
-        panel.SetActive(true);
+        gameObject.SetActive(true);
         product = inn;
         if (bringOnTop)
         panelRectTransform.SetAsLastSibling();
     }
-
-    public void Hide()
-    {
-        panel.SetActive(false);
-    }
-    public void onCloseClick()
-    {
-        Hide();
-    }
+    
+   
 
 }

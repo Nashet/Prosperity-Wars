@@ -2,33 +2,29 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-public class PopulationPanel :  DragPanel
+public class PopulationPanel : DragPanel
 {
-    public GameObject populationPanel;
-   // public GameObject ScrollViewMy;
+    // public GameObject ScrollViewMy;
     public ScrollRect table;
     public bool showAll;
     internal Province showingProvince;
 
     // Use this for initialization
-    void Start () {
-        MainCamera.populationPanel = this;
-        hide();        
-    }
-    public void hide()
+    void Start()
     {
-        populationPanel.SetActive(false);
-        //todo add button removal?      
-    }   
+        MainCamera.populationPanel = this;
+        hide();
+    }
+
     public void show(bool bringOnTop)
     {
-        populationPanel.SetActive(true);
-        if ( bringOnTop)
-        panelRectTransform.SetAsLastSibling();
+        gameObject.SetActive(true);
+        if (bringOnTop)
+            panelRectTransform.SetAsLastSibling();
     }
-    public void onCloseClick()
+    override public void onCloseClick()
     {
-        hide();
+        base.onCloseClick();
         showAll = false;
     }
     internal void SetAllPopsToShow()
@@ -46,7 +42,7 @@ public class PopulationPanel :  DragPanel
         hide();
         SetAllPopsToShow();
         showAll = true;
-        show(true);            
+        show(true);
     }
     public void refresh()
     {
@@ -56,7 +52,7 @@ public class PopulationPanel :  DragPanel
         show(false);
     }
     // Update is called once per frame
- //   void Update () {
-	
-	//}
+    //   void Update () {
+
+    //}
 }

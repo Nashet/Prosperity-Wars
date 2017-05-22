@@ -4,11 +4,9 @@ using UnityEngine.UI;
 
 public class ProvincePanel : MonoBehaviour
 {
-    public Text generaltext;
-    public GameObject provincePanel;
+    public Text generaltext;   
     public Button btnOwner, btnBuild;
-    // Use this for initialization
-    // thisPanel;
+    // Use this for initialization    
     void Start()
     {
         //generaltext = transform.FindChild("GeneralText").gameObject.GetComponent<Text>();
@@ -23,11 +21,11 @@ public class ProvincePanel : MonoBehaviour
     }
     public void hide()
     {
-        provincePanel.SetActive(false);
+        gameObject.SetActive(false);
     }
     public void show()
     {
-        provincePanel.SetActive(true);
+        gameObject.SetActive(true);
     }
     public void onCloseClick()
     {
