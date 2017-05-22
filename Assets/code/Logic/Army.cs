@@ -230,6 +230,7 @@ public class Army
         Army.modifierStrenght.getModifier(attacker, out attackerBonus);
         string defenderBonus;
         Army.modifierStrenght.getModifier(defender, out defenderBonus);
+
         if (attacker.getStrenght() > defender.getStrenght())
         {
             attackerWon = true;
@@ -309,7 +310,7 @@ public class Army
                     if (corp.Value.getType().getStrenght() * getStrenghtModifier() > 0)//(corp.Value.getType().getStrenght() > 0f)
                     {
                         streghtLoss = corp.Value.getStrenght(this) * (lossStrenght / totalStrenght);
-                        menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght() * getStrenghtModifier())); // corp.Value.getType().getStrenght());
+                        menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght()));// * getStrenghtModifier())); // corp.Value.getType().getStrenght());
                         
                         totalMenLoss += corp.Value.TakeLoss(menLoss);
                     }
@@ -327,7 +328,7 @@ public class Army
     private float getStrenght()
     {
         float result = 0;
-        float modifier = 0f;
+        //float modifier = 0f;
         foreach (var c in personal)
         {
             //todo optimize            
