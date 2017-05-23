@@ -111,10 +111,10 @@ public class Game
     private void makePopTypes()
     {
         //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribesmen");
-        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen",1f,// 2f,
+        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f,
             new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
 
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 1f,// 4f,
+        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats",  4f,
             new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
             new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
