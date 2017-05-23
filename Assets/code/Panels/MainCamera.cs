@@ -160,6 +160,11 @@ public class MainCamera : MonoBehaviour
         var panel = lastChild.GetComponent<DragPanel>();
         if (panel != null)
             panel.onCloseClick();
+        else
+        {
+            lastChild.SetAsFirstSibling();
+            closeToppestPanel();
+        }
     }
 
     void showMessageBox()
@@ -185,7 +190,9 @@ public class MainCamera : MonoBehaviour
         float xMove = Input.GetAxis("Horizontal");
         float yMove = Input.GetAxis("Vertical");
         float zMove = Input.GetAxis("Mouse ScrollWheel");
-        transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove * zCameraSpeed);
+        float newZ = zMove * zCameraSpeed;
+        if (this.transform.position.z + newZ > -40f) newZ = 0f;
+        transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, newZ);
     }
 
 }

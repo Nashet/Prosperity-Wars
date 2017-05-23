@@ -4,9 +4,6 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 using System;
-//May be that should be extension
-
-
 
 public class Army
 {
@@ -15,7 +12,7 @@ public class Army
     Country owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
     static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", true, 1f);
-    static Modifier modifierDefault = new Modifier(x=>x==x, "Default", true, 1f);
+    static Modifier modifierDefault = new Modifier(x => x == x, "Default", true, 1f);
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
             modifierDefault, modifierInDefense, modifierMoral
@@ -175,8 +172,8 @@ public class Army
                 res.Add(next.Key.type, next.Value.getSize());
         }
         return res;
-    }   
-  
+    }
+
     internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
@@ -302,7 +299,6 @@ public class Army
         int totalMenLoss = 0;
         if (lossStrenght > 0f)
         {
-
             float streghtLoss;
             int menLoss;
             float totalStrenght = getStrenght();
@@ -311,8 +307,8 @@ public class Army
                     if (corp.Value.getType().getStrenght() * getStrenghtModifier() > 0)//(corp.Value.getType().getStrenght() > 0f)
                     {
                         streghtLoss = corp.Value.getStrenght(this) * (lossStrenght / totalStrenght);
-                        menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght()));// * getStrenghtModifier())); // corp.Value.getType().getStrenght());
-                        
+                        menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght() * getStrenghtModifier())); // corp.Value.getType().getStrenght());
+
                         totalMenLoss += corp.Value.TakeLoss(menLoss);
                     }
         }
@@ -323,8 +319,8 @@ public class Army
         return destination == null;
     }
     public float getStrenghtModifier()
-    {      
-        return  modifierStrenght.getModifier(this);
+    {
+        return modifierStrenght.getModifier(this);
     }
     private float getStrenght()
     {
