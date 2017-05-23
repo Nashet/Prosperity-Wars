@@ -3,7 +3,7 @@
 ## Demo
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
 ## Description
-Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by (https://github.com/aekrylov))
+Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
 
 Making that tool made me disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 So, main principles of that simulation are:
@@ -25,6 +25,9 @@ So, main principles of that simulation are:
  
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           
 ## Screenshots
+![Image of Yaktocat](http://i.imgur.com/Wm0vhz2.png)
+![Imgur](http://i.imgur.com/KevTH51.png)
+![Imgur](http://i.imgur.com/uzEJCvM.png)
 ## Contributing
 I would love to have other people providing both ideas and code.  You can either:
 - Create Tickets on the tracker - https://waffle.io/Nashet/EconomicSimulation
