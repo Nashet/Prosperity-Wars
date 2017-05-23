@@ -29,9 +29,9 @@ Map is generated randomly, you play as some country yet there is no much gamepla
 ![Imgur](http://i.imgur.com/KevTH51.png)
 ![Imgur](http://i.imgur.com/uzEJCvM.png)
 ## Contributing
-I would love to have other people providing both ideas and code.  You can either:
+I would love to have other people providing ideas, code or questions.  You may:
 - Create Tickets on the tracker - https://waffle.io/Nashet/EconomicSimulation
 - Open a Pull Request and I will check it
-- Ask to be a Contributor and I'll add you
+License is GPL-3.0
 ## How to build
 Project is build with Unity 5.4.2f2 - Unity 5.6.1f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene
