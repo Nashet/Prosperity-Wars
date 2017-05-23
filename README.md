@@ -32,6 +32,7 @@ Map is generated randomly, you play as some country yet there is no much gamepla
 I would love to have other people providing ideas, code or questions.  You may:
 - Create Tickets on the tracker - https://waffle.io/Nashet/EconomicSimulation
 - Open a Pull Request and I will check it
+
 License is GPL-3.0
 ## How to build
 Project is build with Unity 5.4.2f2 - Unity 5.6.1f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene
