@@ -30,7 +30,7 @@ abstract public class AbstractReformValue : AbstractCondition
     }
     abstract internal bool isAvailable(Country country);
     abstract internal void onReformEnacted();
-
+    
 }
 public abstract class AbstractReform
 {
@@ -61,7 +61,7 @@ public abstract class AbstractReform
     }
     abstract internal AbstractReformValue getValue();
     abstract internal AbstractReformValue getValue(int value);
-
+    internal abstract Procent howIsItGoodForPop(PopUnit pop);
 }
 public class Government : AbstractReform
 {
@@ -142,6 +142,27 @@ public class Government : AbstractReform
     {
         return true;
     }
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+            result = new Procent(0.5f);
+        }
+        else
+        {
+            result = new Procent(0.5f);
+        }
+        return result;
+    }
 }
 public class Economy : AbstractReform
 {
@@ -159,11 +180,11 @@ public class Economy : AbstractReform
         , "Economy is market economy", true);
     public class ReformValue : AbstractReformValue
     {
-
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
         {
             PossibleStatuses.Add(this);
-        }
+        }    
+
         internal override bool isAvailable(Country country)
         {
             ReformValue requested = this;
@@ -191,6 +212,7 @@ public class Economy : AbstractReform
         {
 
         }
+        
     }
     static ConditionsList capitalism = new ConditionsList(new List<Condition>()
         {
@@ -201,22 +223,20 @@ public class Economy : AbstractReform
             Serfdom.IsAbolishedInAnyWay
         });
     internal ReformValue status;
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
-    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, ConditionsList.IsNotImplemented);
-    internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 1, capitalism);
-    internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
-    // codacy testing
-    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<AbstractCondition>() { InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
-    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 3, capitalism);
-
-    /// ////////////
-
+    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 0,
+        new ConditionsList(new List<AbstractCondition> {
+            InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
+    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 1, ConditionsList.IsNotImplemented);
+    internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 2, capitalism);
+    internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 3, capitalism);        
+    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, capitalism);    
+    
 
     /// ////////////
     public Economy(Country country) : base("Economy", "Your economy policy", country)
     {
         status = NaturalEconomy;
-
     }
     internal override AbstractReformValue getValue()
     {
@@ -239,17 +259,29 @@ public class Economy : AbstractReform
     {
         status = (ReformValue)selectedReform;
     }
-
-    //internal bool isMarket()
-    //{
-    //    if (status == Economy.NaturalEconomy || status == Economy.PlannedEconomy)
-    //        return false;
-    //    else
-    //        return true;
-    //}
     internal override bool isAvailable(Country country)
     {
         return true;
+    }
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+        }        
+        else 
+        {         
+                result = new Procent(0.5f);
+        }
+        return result;
     }
 }
 
@@ -325,13 +357,13 @@ public class Serfdom : AbstractReform
     public Serfdom(Country country) : base("Serfdom", "Aristocrats privileges", country)
     {
         if (Allowed == null)
-            Allowed = new ReformValue("Allowed", "Peasants and other plebes pay 10% of income to Aristocrats", 0,
+            Allowed = new ReformValue("Allowed", "Peasants and other plebes pay 10% of income to Aristocrats", 1,
                 new ConditionsList(new List<Condition>()
                 {
             Economy.isNotMarket
                 }));
         if (Brutal == null)
-            Brutal = new ReformValue("Brutal", "Peasants and other plebes pay 20% of income to Aristocrats", 1,
+            Brutal = new ReformValue("Brutal", "Peasants and other plebes pay 20% of income to Aristocrats", 0,
             new ConditionsList(new List<Condition>()
             {
             Economy.isNotMarket
@@ -372,6 +404,27 @@ public class Serfdom : AbstractReform
     internal static Condition IsNotAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Serfdom.Allowed
     || (x as Country).serfdom.status == Serfdom.Brutal,
         "Serfdom is in power", true);
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+            result = new Procent(0.5f);
+        }
+        else
+        {
+            result = new Procent(0.5f);
+        }
+        return result;
+    }
 }
 public class MinimalWage : AbstractReform
 {
@@ -446,29 +499,33 @@ public class MinimalWage : AbstractReform
         }
     }
     ReformValue status;
+    Modifier wantsReform;
+    static Modifier loyalty = new Modifier(Condition.IsNotImplemented, 0f);
+    static Modifier education = new Modifier(Condition.IsNotImplemented, 0f);
+    public ModifiersList modVoting;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
-    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
+    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 1, new ConditionsList(new List<Condition>()
+    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 6, new ConditionsList(new List<Condition>()
+    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good wage", 2, new ConditionsList(new List<Condition>()
+    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good wage", 4, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 3, new ConditionsList(new List<Condition>()
+    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
@@ -478,6 +535,12 @@ public class MinimalWage : AbstractReform
     public MinimalWage(Country country) : base("Minimal wage", "", country)
     {
         status = None;
+        //wantsReform = new Modifier(x => (x as PopUnit).howIsItGoodForMe(status).get(),
+        wantsReform = new Modifier(x => this.howIsItGoodForPop(x as PopUnit).get(),
+           "How much is it good for population", true, 1f);
+        modVoting = new ModifiersList(new List<Condition>(){
+        wantsReform, loyalty,education
+        });
     }
     internal override AbstractReformValue getValue()
     {
@@ -507,6 +570,35 @@ public class MinimalWage : AbstractReform
             return true;
         else
             return false;
+    }
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.workers)
+        {
+            //positive - reform will be better for worker, [-5..+5]
+            int change = pop.getCountry().minimalWage.status.ID - this.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+        }
+        else if (pop.type.isPoorStrata())
+            result = new Procent(0.5f);
+        else // rich strata
+        {
+            //positive - reform will be better for rich strata, [-5..+5]
+            int change = this.status.ID - pop.getCountry().minimalWage.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+        }
+        return result;
     }
 }
 public class UnemploymentSubsidies : AbstractReform
@@ -584,27 +676,27 @@ public class UnemploymentSubsidies : AbstractReform
     ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
-    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 5, new ConditionsList(new List<Condition>()
+    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 1, new ConditionsList(new List<Condition>()
+    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 6, new ConditionsList(new List<Condition>()
+    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good subsidies", 2, new ConditionsList(new List<Condition>()
+    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 3, new ConditionsList(new List<Condition>()
+    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
@@ -643,6 +735,27 @@ public class UnemploymentSubsidies : AbstractReform
             return true;
         else
             return false;
+    }
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+            result = new Procent(0.5f);
+        }
+        else
+        {
+            result = new Procent(0.5f);
+        }
+        return result;
     }
 }
 
@@ -705,6 +818,27 @@ public class TaxationForPoor : AbstractReform
     {
         return true;
     }
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+            result = new Procent(0.5f);
+        }
+        else
+        {
+            result = new Procent(0.5f);
+        }
+        return result;
+    }
 }
 
 public class TaxationForRich : AbstractReform
@@ -765,6 +899,27 @@ public class TaxationForRich : AbstractReform
     {
         return true;
     }
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+            result = new Procent(0.5f);
+        }
+        else
+        {
+            result = new Procent(0.5f);
+        }
+        return result;
+    }
 }
 
 public class MinorityPolicy : AbstractReform
@@ -820,7 +975,7 @@ public class MinorityPolicy : AbstractReform
     internal static ReformValue Residency; // state culture only can vote
                                            //todo add no-individual rights condition check?
     internal static ReformValue NoRights = new ReformValue("NoRights", "Slavery?", 2, ConditionsList.AlwaysYes);
-    
+
     //internal static Condition IsResidencyPop;
     public MinorityPolicy(Country country) : base("Minority Policy", "Minority Policy", country)
     {
@@ -833,7 +988,7 @@ public class MinorityPolicy : AbstractReform
         status = NoRights;
         //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
         //Residency.getDescription(), true);
-    }    
+    }
     internal override AbstractReformValue getValue()
     {
         return status;
@@ -860,10 +1015,31 @@ public class MinorityPolicy : AbstractReform
     {
         return true;
     }
-    
+
     //internal static Condition IsResidency = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Residency,
     //    Residency.getDescription(), true);
-     
+
     //internal static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
     //    Equality.getDescription(), true);
+    internal override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        Procent result;
+        if (pop.type == PopType.capitalists)
+        {
+            //possitive - more liberal
+            int change = this.status.ID - pop.getCountry().economy.status.ID;
+            //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
+            if (change > 0)
+                result = new Procent(1f);
+            else
+                //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
+                result = new Procent(0f);
+            result = new Procent(0.5f);
+        }
+        else
+        {
+            result = new Procent(0.5f);
+        }
+        return result;
+    }
 }

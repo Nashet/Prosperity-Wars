@@ -182,6 +182,7 @@ abstract public class PopUnit : Producer
         didntGetPromisedUnemloymentSubsidy = false;
         // pop.storageNow.set(0f);
     }
+    //abstract public Procent howIsItGoodForMe(AbstractReformValue reform);
     public List<Factory> getOwnedFactories()
     {
         List<Factory> result = new List<Factory>();
@@ -428,6 +429,11 @@ abstract public class PopUnit : Producer
                 return new Procent(1f - (1f / overPopulation));
         }
         else return new Procent(0);
+    }
+
+    internal Country getCountry()
+    {
+        return province.getOwner();
     }
 
     ////abstract public override void produce();
@@ -717,7 +723,7 @@ abstract public class PopUnit : Producer
     abstract public bool ShouldPayAristocratTax();
 
 
-    
+
 
     public void calcPromotions()
     {
@@ -1207,7 +1213,8 @@ public class Tribemen : PopUnit
     {
         Country count = province.getOwner();
         var government = count.government.status;
-        if (government == Government.Tribal || government == Government.Democracy)
+        if ((government == Government.Tribal || government == Government.Democracy)
+            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -1319,7 +1326,8 @@ public class Farmers : PopUnit
     {
         Country count = province.getOwner();
         var government = count.government.status;
-        if (government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy)
+        if ((government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy)
+            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -1406,7 +1414,8 @@ public class Aristocrats : PopUnit
     {
         Country count = province.getOwner();
         var government = count.government.status;
-        if (government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.Aristocracy || government == Government.Tribal)
+        if ((government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.Aristocracy || government == Government.Tribal)
+            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -1484,7 +1493,8 @@ public class Capitalists : PopUnit
     {
         Country count = province.getOwner();
         var government = count.government.status;
-        if (government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.BourgeoisDictatorship)
+        if ((government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.BourgeoisDictatorship)
+            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -1531,6 +1541,9 @@ public class Workers : PopUnit
     }
     internal override bool getSayingYes(AbstractReformValue reform)
     {
+        if (reform is MinimalWage.ReformValue)
+            return (reform as MinimalWage.ReformValue).modVoting.getModifier(this) > Options.votingPassBillLimit;
+
         if (reform == Government.Tribal)
         {
             var baseOpinion = new Procent(0f);
@@ -1568,11 +1581,24 @@ public class Workers : PopUnit
     {
         Country count = province.getOwner();
         var government = count.government.status;
-        if (government == Government.Democracy)
+        if ((government == Government.Democracy)
+            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
     }
+    public class UnknownReform : Exception
+    {
+    }
+    //public override Procent howIsItGoodForMe(AbstractReformValue reform)
+    //{
+    //    return reform.howIsItGoodForPop(this);
+    //    //if (reform == Economy.Interventionism)
+    //    //    ;
+    //    //else
+    //    //    throw new UnknownReform();
+    //    //return false;
+    //}
 }
 //public class PopLinkageValue
 //{
