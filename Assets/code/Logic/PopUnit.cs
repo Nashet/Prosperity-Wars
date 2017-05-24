@@ -174,6 +174,14 @@ abstract public class PopUnit : Producer
         //secede property... to government
         getOwnedFactories().ForEach(x => x.factoryOwner = province.getOwner());
     }
+    override public void setStatisticToZero()
+    {
+        base.setStatisticToZero();
+        incomeTaxPayed.set(0); // need it because pop could stop paying taxes due to reforms for example
+        needsFullfilled.set(0f);
+        didntGetPromisedUnemloymentSubsidy = false;
+        // pop.storageNow.set(0f);
+    }
     public List<Factory> getOwnedFactories()
     {
         List<Factory> result = new List<Factory>();
@@ -709,50 +717,7 @@ abstract public class PopUnit : Producer
     abstract public bool ShouldPayAristocratTax();
 
 
-    public static void PrepareForNewTick()
-    {
-        Game.market.sentToMarket.SetZero();
-        foreach (Country country in Country.allExisting)
-        // if (country != Country.NullCountry)
-        {
-            //country.wallet.moneyIncomethisTurn.set(0);
-            country.storageSet.setStatisticToZero();
-            country.getCountryWallet().setSatisticToZero();
-            country.aristocrstTax = country.serfdom.status.getTax();
-            foreach (Province province in country.ownedProvinces)
-            {
-                province.BalanceEmployableWorkForce();
-                {
-                    foreach (PopUnit pop in province.allPopUnits)
-                    {
-                        pop.incomeTaxPayed.set(0); // need it because pop could stop paying taxes due to reforms for example
-                        pop.gainGoodsThisTurn.set(0f);
-                        // pop.storageNow.set(0f);
-                        pop.wallet.moneyIncomethisTurn.set(0f);
-
-                        pop.consumedLastTurn.copyDataFrom(pop.consumedTotal); // temp
-                        pop.needsFullfilled.set(0f);
-                        pop.sentToMarket.set(0f);
-                        pop.consumedTotal.SetZero();
-                        pop.consumedInMarket.SetZero();
-
-                        pop.didntGetPromisedUnemloymentSubsidy = false;
-                    }
-                    foreach (Factory factory in province.allFactories)
-                    {
-                        factory.gainGoodsThisTurn.set(0f);
-                        factory.storageNow.set(0f);
-                        factory.wallet.moneyIncomethisTurn.set(0f);
-
-                        factory.consumedLastTurn.copyDataFrom(factory.consumedTotal);
-                        factory.sentToMarket.set(0f);
-                        factory.consumedTotal.SetZero();
-                        factory.consumedInMarket.SetZero();
-                    }
-                }
-            }
-        }
-    }
+    
 
     public void calcPromotions()
     {
@@ -905,7 +870,7 @@ abstract public class PopUnit : Producer
     {
         List<PopType> result = new List<PopType>();
         foreach (PopType type in PopType.allPopTypes)
-            if (CanThisDemoteInto(this.type))
+            if (canThisDemoteInto(this.type))
                 result.Add(type);
         return result;
     }
@@ -916,7 +881,7 @@ abstract public class PopUnit : Producer
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
 
         foreach (PopType nextType in PopType.allPopTypes)
-            if (CanThisDemoteInto(nextType))
+            if (canThisDemoteInto(nextType))
                 list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
         if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
@@ -939,7 +904,7 @@ abstract public class PopUnit : Producer
         //    return list[0].type;
         //else return null;
     }
-    abstract public bool CanThisDemoteInto(PopType popType);
+    abstract public bool canThisDemoteInto(PopType popType);
 
     private void demote(PopType targetType, int amount)
     {
@@ -1162,7 +1127,7 @@ public class Tribemen : PopUnit
     public Tribemen(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     {
     }
-    public override bool CanThisDemoteInto(PopType targetType)
+    public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
@@ -1255,7 +1220,7 @@ public class Farmers : PopUnit
     public Farmers(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
 
-    public override bool CanThisDemoteInto(PopType targetType)
+    public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
             || targetType == PopType.capitalists
@@ -1366,7 +1331,7 @@ public class Aristocrats : PopUnit
     { }
     public Aristocrats(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
-    public override bool CanThisDemoteInto(PopType targetType)
+    public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
@@ -1455,7 +1420,7 @@ public class Capitalists : PopUnit
     { }
     public Capitalists(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
-    public override bool CanThisDemoteInto(PopType targetType)
+    public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming))
@@ -1532,7 +1497,7 @@ public class Workers : PopUnit
     public Workers(int iamount, PopType ipopType, Culture iculture, Province where) : base(iamount, ipopType, iculture, where)
     { }
 
-    public override bool CanThisDemoteInto(PopType targetType)
+    public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
             || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)

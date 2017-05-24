@@ -259,7 +259,11 @@ public class Factory : Producer
         }
         else return 0;
     }
-
+    override public void setStatisticToZero()
+    {
+        base.setStatisticToZero();
+        storageNow.set(0f);
+    }
     internal void setDontHireOnSubsidies(bool isOn)
     {
         dontHireOnSubsidies = isOn;
@@ -1042,7 +1046,15 @@ public abstract class Producer : Consumer
     public abstract void produce();
 
     public abstract void payTaxes();
-
+    virtual public void setStatisticToZero()
+    {       
+        gainGoodsThisTurn.set(0f);      
+        wallet.moneyIncomethisTurn.set(0f);
+        consumedLastTurn.copyDataFrom(consumedTotal); // temp        
+        sentToMarket.set(0f);
+        consumedTotal.SetZero();
+        consumedInMarket.SetZero();        
+    }
     public void getMoneyFromMarket()
     {
         if (sentToMarket.get() > 0f)

@@ -114,7 +114,7 @@ public class Game
         new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f,
             new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
 
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats",  4f,
+        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f,
             new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
             new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
@@ -123,7 +123,7 @@ public class Game
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
         new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));        
+            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
     }
 
     void makeCountry(CountryNameGenerator countryName, CultureNameGenerator cultureName)
@@ -671,6 +671,38 @@ public class Game
         if (mapImage.GetPixel(x, y + 1) != color || bordersMarkers[x, y + 1] != borderDeepLevel) return true;
         return false;
     }
+    public static void PrepareForNewTick()
+    {
+        Game.market.sentToMarket.SetZero();
+        foreach (Country country in Country.allExisting)
+        // if (country != Country.NullCountry)
+        {
+            //country.wallet.moneyIncomethisTurn.set(0);
+            country.storageSet.setStatisticToZero();
+            country.getCountryWallet().setSatisticToZero();
+            country.aristocrstTax = country.serfdom.status.getTax();
+            foreach (Province province in country.ownedProvinces)
+            {
+                province.BalanceEmployableWorkForce();
+                {
+                    foreach (var item in province.allProducers)
+                        item.setStatisticToZero();
+
+                    //    foreach (PopUnit pop in province.allPopUnits)
+                    //{
+
+                    //    pop.setStatisticToZero();
+
+                    //}
+                    //foreach (Factory factory in province.allFactories)
+                    //{   
+
+                    //    factory.setStatisticToZero();                        
+                    //}
+                }
+            }
+        }
+    }
     void makeHelloMessage()
     {
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
@@ -723,7 +755,7 @@ public class Game
         Game.market.simulatePriceChangeBasingOnLastTurnDate();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-        PopUnit.PrepareForNewTick();
+        PrepareForNewTick();
 
         // big PRODUCE circle
         foreach (Country country in Country.allExisting)
