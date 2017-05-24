@@ -139,6 +139,7 @@ public class Country : Consumer
     internal UnemploymentSubsidies unemploymentSubsidies;
     internal TaxationForPoor taxationForPoor;
     internal TaxationForRich taxationForRich;
+    internal MinorityPolicy minorityPolicy;
     internal List<AbstractReform> reforms = new List<AbstractReform>();
     public Culture culture;
     Color nationalColor;
@@ -159,10 +160,8 @@ public class Country : Consumer
     public Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), new CountryWallet(0f), Color.yellow, null);
 
-
     public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
     {
-
         homeArmy = new Army(this);
         sendingArmy = new Army(this);
         government = new Government(this);
@@ -174,6 +173,7 @@ public class Country : Consumer
         unemploymentSubsidies = new UnemploymentSubsidies(this);
         taxationForPoor = new TaxationForPoor(this);
         taxationForRich = new TaxationForRich(this);
+        minorityPolicy = new MinorityPolicy(this);
         name = iname;
         allCountries.Add(this);
 

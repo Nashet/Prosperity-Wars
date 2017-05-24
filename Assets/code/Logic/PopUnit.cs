@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DesignPattern.Objectpool;
+using System.Linq.Expressions;
 /// <summary>
 ///     Clears the contents of the string builder.
 /// </summary>
@@ -32,8 +33,9 @@ abstract public class PopUnit : Producer
 
     public ModifiersList modifiersLoyaltyChange;
 
-    Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
-        modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies;
+    static Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
+        modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies,
+        modifierMinorityPolicy;
 
     public Value incomeTaxPayed = new Value(0);
 
@@ -191,27 +193,35 @@ abstract public class PopUnit : Producer
     }
     private void makeModifiers()
     {
-        modifierStarvation = new Modifier(x => needsFullfilled.get() < 0.20f, "Starvation", false, -0.3f);
-        modifierLifeNeedsNotFulfilled = new Modifier(x=>  getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", false, -0.2f);
-        modifierLifeNeedsFulfilled = new Modifier(x=>  getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", false, 0.1f);
-        modifierEverydayNeedsFulfilled = new Modifier(x=>  getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", false, 0.15f);
-        modifierLuxuryNeedsFulfilled = new Modifier(x=>  getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", false, 0.2f);
+        modifierStarvation = new Modifier(x => (x as PopUnit).needsFullfilled.get() < 0.20f, "Starvation", false, -0.3f);
+        modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", false, -0.2f);
+        modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", false, 0.1f);
+        modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", false, 0.15f);
+        modifierLuxuryNeedsFulfilled = new Modifier(x => (x as PopUnit).getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", false, 0.2f);
 
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanVote = new Modifier(x => canVote(), "Can vote with that government ", false, 0.1f);
+        modifierCanVote = new Modifier(x => (x as PopUnit).canVote(), "Can vote with that government ", false, 0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanNotVote = new Modifier(x => !canVote(), "Can't vote with that government ", false, -0.1f);
+        modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ", false, -0.1f);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
-        modifierUpsetByForcedReform = new Modifier(forWhom => daysUpsetByForcedReform > 0, "Upset by forced reform", false, -0.3f);
-        modifierNotGivenUnemploymentSubsidies = new Modifier(x => didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", false, -1.0f);
+        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", false, -0.3f);
+        modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", false, -1.0f);
+        modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
+        new Modifier(x => !(x as PopUnit).isStateCulture()
+        && ((x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency
+        || (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", false, -0.1f);
+
+
+        //MinorityPolicy.IsResidency
         modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
         {
-           modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled, modifierLuxuryNeedsFulfilled,
-            modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies
-        });
+           modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled,
+        modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
+            modifierMinorityPolicy
+});
     }
     public int getPopulation()
     { return population; }
@@ -240,8 +250,8 @@ abstract public class PopUnit : Producer
     internal void takeLoss(int loss)
     {
         //int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
-        
-        this.subtractPopulation((int)(loss * Options.PopAttritionFactor));      
+
+        this.subtractPopulation((int)(loss * Options.PopAttritionFactor));
         mobilized -= loss;
         if (mobilized < 0) mobilized = 0;
     }
@@ -675,7 +685,7 @@ abstract public class PopUnit : Producer
     abstract internal bool canVote();
     public void calcLoyalty()
     {
-        float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this.province.getOwner()) / 100f;
+        float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this) / 100f;
         loyalty.set(Mathf.Clamp01(newRes));
         if (daysUpsetByForcedReform > 0)
             daysUpsetByForcedReform--;

@@ -47,7 +47,8 @@ public class InventionType : AbstractCondition
         steamPower = new InventionType("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new InventionType("Welfare", "Allows min wage and.. other", new Value(100f))
         ;
-    public static Condition SteamPowerInvented = new Condition(x=>(x as Country).isInvented(InventionType.steamPower), "Steam Power is invented", true);
+    readonly public static Condition SteamPowerInvented = new Condition(x=>(x as Country).isInvented(InventionType.steamPower), "Steam Power is invented", true);
+    readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(InventionType.individualRights), "Individual Rights are invented", true);
     internal InventionType(string name, string description, Value cost)
     {
         this.name = name;

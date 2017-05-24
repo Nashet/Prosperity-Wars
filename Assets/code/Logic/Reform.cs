@@ -9,10 +9,10 @@ public interface AbstractCondition { }
 
 abstract public class AbstractReformValue : AbstractCondition
 {
-    string name;
-    string description;
-    internal int ID;
-    internal ConditionsList allowed;
+    readonly string name;
+    readonly string description;
+    readonly internal int ID;
+    readonly internal ConditionsList allowed;
     internal AbstractReformValue(string inname, string indescription, int IDin, ConditionsList condition)
     {
         ID = IDin;
@@ -34,19 +34,19 @@ abstract public class AbstractReformValue : AbstractCondition
 }
 public abstract class AbstractReform
 {
-    string name;
-    string description;
-    internal Country country;
+    readonly string name;
+    readonly string description;
+    //internal Country country;
 
     internal AbstractReform(string inname, string indescription, Country incountry)
     {
         name = inname;
         description = indescription;
         incountry.reforms.Add(this);
-        country = incountry;
+        //country = incountry;
     }
-    abstract internal bool isAvailable(Country country);
-    abstract public IEnumerator GetEnumerator();
+    internal abstract bool isAvailable(Country country);
+    public abstract IEnumerator GetEnumerator();
     internal abstract bool canChange();
     internal abstract void setValue(AbstractReformValue selectedReformValue);
 
@@ -84,7 +84,6 @@ public class Government : AbstractReform
         {
 
         }
-
         internal bool isGovernmentEqualsThat(Country forWhom)
         {
             return forWhom.government.status == this;
@@ -95,19 +94,19 @@ public class Government : AbstractReform
     //    return this.status.ToString();
     //}
     internal ReformValue status;
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
-    internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
-    internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "Only Aristocrats and Clerics can vote", 1, ConditionsList.AlwaysYes);
-    internal static ReformValue AnticRespublic = new ReformValue("Antique republic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
-    internal static ReformValue Despotism = new ReformValue("Despotism", "Despot does what he wants", 2, ConditionsList.AlwaysYes);
-    internal static ReformValue Theocracy = new ReformValue("Theocracy", "Only Clerics have power", 5, ConditionsList.AlwaysYes);
+    readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
+    readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "Only Aristocrats and Clerics can vote", 1, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue AnticRespublic = new ReformValue("Antique republic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Despotism = new ReformValue("Despotism", "Despot does what he wants", 2, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "Only Clerics have power", 5, ConditionsList.AlwaysYes);
 
-    internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes", 9, ConditionsList.AlwaysYes);
-    internal static ReformValue Democracy = new ReformValue("Universal Democracy", "Everyone can vote; each vote is equal", 3, ConditionsList.AlwaysYes);
-    internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "Only capitalists have power", 6, ConditionsList.AlwaysYes);
-    internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "Only military guys have power", 7, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes", 9, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "Everyone can vote; each vote is equal", 3, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "Only capitalists have power", 6, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "Only military guys have power", 7, ConditionsList.AlwaysYes);
 
-    internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.AlwaysYes);
 
 
     public Government(Country country) : base("Government", "Form of government", country)
@@ -152,8 +151,6 @@ public class Economy : AbstractReform
     internal static Condition isNotState = new Condition(x => (x as Country).economy.status != Economy.StateCapitalism, "Economy policy is not State Capitalism", true);
     internal static Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Economy.Interventionism, "Economy policy is not Limited Interventionism", true);
     internal static Condition isNotPlanned = new Condition(x => (x as Country).economy.status != Economy.PlannedEconomy, "Economy policy is not Planned Economy", true);
-
-
 
     internal static Condition isNotMarket = new Condition(x => (x as Country).economy.status == Economy.NaturalEconomy || (x as Country).economy.status == Economy.PlannedEconomy,
       "Economy is not market economy", true);
@@ -208,10 +205,8 @@ public class Economy : AbstractReform
     internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " SSS", 0, ConditionsList.IsNotImplemented);
     internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "dddd", 1, capitalism);
     internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "zz", 1, capitalism);
-    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<AbstractCondition>()
-        {
-            InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented
-        }));
+    // codacy testing
+    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "dirty pants", 2, new ConditionsList(new List<AbstractCondition>() { InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
     internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 3, capitalism);
 
     /// ////////////
@@ -288,7 +283,6 @@ public class Serfdom : AbstractReform
                 return true;
             else
                 return false;
-
         }
         internal override void onReformEnacted()
         {
@@ -307,8 +301,6 @@ public class Serfdom : AbstractReform
             else
                 return nu;
         }
-
-
     }
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
@@ -330,9 +322,6 @@ public class Serfdom : AbstractReform
         {
             new Condition( Government.ProletarianDictatorship, true), Condition.IsNotImplemented
         }));
-
-
-
     public Serfdom(Country country) : base("Serfdom", "Aristocrats privileges", country)
     {
         if (Allowed == null)
@@ -778,3 +767,103 @@ public class TaxationForRich : AbstractReform
     }
 }
 
+public class MinorityPolicy : AbstractReform
+{
+    public class ReformValue : AbstractReformValue
+    {
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        {
+            PossibleStatuses.Add(this);
+        }
+        internal override bool isAvailable(Country country)
+        {
+            ReformValue requested = this;
+            //alowed
+            if ((requested.ID == 4) && country.isInvented(InventionType.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+                return true;
+            else
+            if ((requested.ID == 3) && country.isInvented(InventionType.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+                return true;
+            else
+            if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
+                return true;
+            else
+                if ((requested.ID == 1) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1))
+                return true;
+            else
+            if ((requested.ID == 0))
+                return true;
+            else
+                return false;
+        }
+        internal override void onReformEnacted()
+        {
+
+        }
+        static Procent br = new Procent(0.2f);
+        static Procent al = new Procent(0.1f);
+        static Procent nu = new Procent(0.0f);
+        internal Procent getTax()
+        {
+            if (this == Residency)
+                return br;
+            else
+                if (this == Equality)
+                return al;
+            else
+                return nu;
+        }
+    }
+    internal ReformValue status;
+    readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal static ReformValue Equality; // all can vote
+    internal static ReformValue Residency; // state culture only can vote
+                                           //todo add no-individual rights condition check?
+    internal static ReformValue NoRights = new ReformValue("NoRights", "Slavery?", 2, ConditionsList.AlwaysYes);
+    
+    //internal static Condition IsResidencyPop;
+    public MinorityPolicy(Country country) : base("Minority Policy", "Minority Policy", country)
+    {
+        if (Equality == null)
+            Equality = new ReformValue("Equality", "All cultures have same riights", 0,
+                new ConditionsList(new List<Condition>() { InventionType.IndividualRightsInvented }));
+        if (Residency == null)
+            Residency = new ReformValue("Residency", "Only state culture can vote", 1, ConditionsList.AlwaysYes);
+
+        status = NoRights;
+        //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
+        //Residency.getDescription(), true);
+    }    
+    internal override AbstractReformValue getValue()
+    {
+        return status;
+    }
+    internal override AbstractReformValue getValue(int value)
+    {
+        return PossibleStatuses[value];
+    }
+    internal override bool canChange()
+    {
+        return true;
+    }
+    public override IEnumerator GetEnumerator()
+    {
+        foreach (ReformValue f in PossibleStatuses)
+            yield return f;
+    }
+
+    internal override void setValue(AbstractReformValue selectedReform)
+    {
+        status = (ReformValue)selectedReform;
+    }
+    internal override bool isAvailable(Country country)
+    {
+        return true;
+    }
+    
+    //internal static Condition IsResidency = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Residency,
+    //    Residency.getDescription(), true);
+     
+    //internal static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
+    //    Equality.getDescription(), true);
+}

@@ -104,7 +104,7 @@ public class PopulationPanelTable : MyTable
 
                 ////Adding loyalty
                 string accu;
-                record.modifiersLoyaltyChange.getModifier(Game.player, out accu);
+                record.modifiersLoyaltyChange.getModifier(record, out accu);
                 AddButton(record.loyalty.ToString(), record, accu);
 
                 //Adding Unemployment
