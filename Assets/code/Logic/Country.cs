@@ -349,15 +349,15 @@ public class Country : Consumer
                 {
                     if (pop.getSayingYes(reform))
                     {
-                        votersSayedYes += pop.getPopulation();
-                        populationSayedYes += pop.getPopulation();
+                        votersSayedYes += pop.getPopulation();// * pop.getVotingPower();
+                        populationSayedYes += pop.getPopulation();// * pop.getVotingPower();
                     }
-                    votingPopulation += pop.getPopulation();
+                    votingPopulation += pop.getPopulation();// * pop.getVotingPower();
                 }
                 else
                 {
                     if (pop.getSayingYes(reform))
-                        populationSayedYes += pop.getPopulation();
+                        populationSayedYes += pop.getPopulation();// * pop.getVotingPower();
                 }
             }
         if (totalPopulation != 0)
@@ -411,9 +411,9 @@ public class Country : Consumer
                 foreach (PopUnit pop in popList)
                     if (pop.getSayingYes(reform))
                     {
-                        divisionPopulationResult[type] += pop.getPopulation();
+                        divisionPopulationResult[type] += pop.getPopulation();// * pop.getVotingPower();
                         if (pop.canVote())
-                            divisionVotersResult[type] += pop.getPopulation();
+                            divisionVotersResult[type] += pop.getPopulation();// * pop.getVotingPower();
                     }
             }
         }

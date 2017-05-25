@@ -125,18 +125,18 @@ public class Government : AbstractReform
    
     internal ReformValue status;
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
-    readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "Only Aristocrats and Clerics can vote", 1, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue AnticRespublic = new ReformValue("Antique republic", "Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue Despotism = new ReformValue("Despotism", "Despot does what he wants", 2, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "Only Clerics have power", 5, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue AnticRespublic = new ReformValue("Antique republic", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Despotism = new ReformValue("Despotism", "- Despot does what he wants", 2, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- Only Clerics have power", 5, ConditionsList.AlwaysYes);
 
-    readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "Everyone can vote; each vote is equal", 3, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "Only capitalists have power", 6, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "Only military guys have power", 7, ConditionsList.IsNotImplemented);
+    readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9, ConditionsList.IsNotImplemented);
+    readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "- Everyone can vote; each vote is equal", 3, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "- Only capitalists have power", 6, ConditionsList.AlwaysYes);
+    readonly internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "- Only military guys have power", 7, ConditionsList.IsNotImplemented);
 
-    readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.IsNotImplemented);
+    readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.IsNotImplemented);
 
 
     public Government(Country country) : base("Government", "Form of government", country)
@@ -374,32 +374,32 @@ public class Serfdom : AbstractReform
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
     internal static ReformValue Allowed;
     internal static ReformValue Brutal;
-    internal static ReformValue Abolished = new ReformValue("Abolished", "Abolished with no obligations", 2,
+    internal static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
         new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.individualRights, true)
         }));
-    internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "Peasants are personally free now but they have to pay debt for land", 3,
+    internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
         new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.individualRights, true),
             new Condition(InventionType.banking, true), Condition.IsNotImplemented
         }));
-    internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "Aristocrats loose property", 4,
+    internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "- Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
         {
             new Condition( Government.ProletarianDictatorship, true), Condition.IsNotImplemented
         }));
-    public Serfdom(Country country) : base("Serfdom", "Aristocrats privileges", country)
+    public Serfdom(Country country) : base("Serfdom", "- Aristocrats privileges", country)
     {
         if (Allowed == null)
-            Allowed = new ReformValue("Allowed", "Peasants and other plebes pay 10% of income to Aristocrats", 1,
+            Allowed = new ReformValue("Allowed", "- Peasants and other plebes pay 10% of income to Aristocrats", 1,
                 new ConditionsList(new List<Condition>()
                 {
             Economy.isNotMarket
                 }));
         if (Brutal == null)
-            Brutal = new ReformValue("Brutal", "Peasants and other plebes pay 20% of income to Aristocrats", 0,
+            Brutal = new ReformValue("Brutal", "- Peasants and other plebes pay 20% of income to Aristocrats", 0,
             new ConditionsList(new List<Condition>()
             {
             Economy.isNotMarket
@@ -550,27 +550,27 @@ public class MinimalWage : AbstractReform
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
 
-    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 1, new ConditionsList(new List<Condition>
+    internal static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
+    internal static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 3, new ConditionsList(new List<Condition>
+    internal static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good wage", 4, new ConditionsList(new List<Condition>
+    internal static ReformValue Middle = new ReformValue("Middle", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
+    internal static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
@@ -578,7 +578,7 @@ public class MinimalWage : AbstractReform
 
     public MinimalWage(Country country) : base("Minimal wage", "", country)
     {
-        status = Minimal;
+        status = None;
     }
     internal override AbstractReformValue getValue()
     {
@@ -707,27 +707,27 @@ public class UnemploymentSubsidies : AbstractReform
     ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
-    internal static ReformValue Scanty = new ReformValue("Scanty", "Half-hungry", 1, new ConditionsList(new List<Condition>()
+    internal static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Minimal = new ReformValue("Minimal", "Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
+    internal static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Trinket = new ReformValue("Trinket", "You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
+    internal static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Middle = new ReformValue("Middle", "Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
+    internal static ReformValue Middle = new ReformValue("Middle", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Big = new ReformValue("Generous", "Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
+    internal static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(InventionType.Welfare, true),
             Economy.isNotLF,
@@ -1002,16 +1002,16 @@ public class MinorityPolicy : AbstractReform
     internal static ReformValue Equality; // all can vote
     internal static ReformValue Residency; // state culture only can vote
                                            //todo add no-individual rights condition check?
-    internal static ReformValue NoRights = new ReformValue("No rights for minorities", "Slavery?",0, ConditionsList.AlwaysYes);
+    internal static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, ConditionsList.AlwaysYes);
 
     //internal static Condition IsResidencyPop;
-    public MinorityPolicy(Country country) : base("Minority Policy", "Minority Policy", country)
+    public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)
     {
         if (Equality == null)
-            Equality = new ReformValue("Equality", "All cultures have same rights", 2,
+            Equality = new ReformValue("Equality", "- All cultures have same rights", 2,
                 new ConditionsList(new List<Condition>() { InventionType.IndividualRightsInvented }));
         if (Residency == null)
-            Residency = new ReformValue("Restricted rights", "Only state culture can vote", 1, ConditionsList.AlwaysYes);
+            Residency = new ReformValue("Restricted rights", "- Only state culture can vote", 1, ConditionsList.AlwaysYes);
 
         status = NoRights;
         //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,

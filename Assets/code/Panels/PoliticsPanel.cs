@@ -13,7 +13,7 @@ public class PoliticsPanel : DragPanel
     public AbstractReformValue selectedReformValue;
     List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
    
-    //Province province;
+    
     // Use this for initialization
     void Start()
     {
@@ -117,13 +117,13 @@ public class PoliticsPanel : DragPanel
             if (callRebuildDropDown) // meaning changed whole reform            
                 rebuildDropDown();
 
-            descriptionText.text = selectedReform + " reforms - " + selectedReform.getDescription()
-           + "\n\nCurrently: " + selectedReform.getValue() + " - " + selectedReform.getValue().getDescription()
+            descriptionText.text = selectedReform + " reforms " + selectedReform.getDescription()
+           + "\n\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
            + "\n\nSelected: ";
 
             //if (selectedReformValue != null)
             if (selectedReformValue != selectedReform.getValue())
-                descriptionText.text += selectedReformValue + " - " + selectedReformValue.getDescription();
+                descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
             else
                 descriptionText.text += "current";     
 
@@ -168,7 +168,7 @@ public class PoliticsPanel : DragPanel
                     voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     forceDecisionButton.interactable = false;
-                    voteButton.GetComponentInChildren<Text>().text = "Vote " + selectedReformValue;
+                    voteButton.GetComponentInChildren<Text>().text = "Vote for" + selectedReformValue;
                 }
                 else // not enough voters
                 {
@@ -185,7 +185,7 @@ public class PoliticsPanel : DragPanel
                 forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
                 voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
             }
-        } //didnt selected reform
+        } //didn't selected reform
         else
         {
             voteButton.interactable = false;
