@@ -15,8 +15,6 @@ using System.Linq.Expressions;
 
 abstract public class PopUnit : Producer
 {
-
-
     ///<summary>buffer popList of demoted. To avoid iteration breaks</summary>
     public static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
 
@@ -334,7 +332,10 @@ abstract public class PopUnit : Producer
     //        return null;
     //    }
     //}
-    abstract internal bool getSayingYes(AbstractReformValue reform);
+    internal bool getSayingYes(AbstractReformValue reform)
+    {
+        return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
+    }
     public static int getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
     {
         int randomPopulation = minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation);
@@ -1171,43 +1172,43 @@ public class Tribemen : PopUnit
     {
         return true;
     }
-    internal override bool getSayingYes(AbstractReformValue reform)
-    {
-        if (reform == Government.Tribal)
-        {
-            var baseOpinion = new Procent(1f);
-            baseOpinion.add(this.loyalty);
-            //return baseOpinion.getProcent(this.population);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Aristocracy)
-        {
-            var baseOpinion = new Procent(0f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Democracy)
-        {
-            var baseOpinion = new Procent(0.8f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Despotism)
-        {
-            var baseOpinion = new Procent(0.1f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.ProletarianDictatorship)
-        {
-            var baseOpinion = new Procent(0.2f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else
-            return false;
+    //internal override bool getSayingYes(AbstractReformValue reform)
+    //{
+    //    if (reform == Government.Tribal)
+    //    {
+    //        var baseOpinion = new Procent(1f);
+    //        baseOpinion.add(this.loyalty);
+    //        //return baseOpinion.getProcent(this.population);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Aristocracy)
+    //    {
+    //        var baseOpinion = new Procent(0f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Democracy)
+    //    {
+    //        var baseOpinion = new Procent(0.8f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Despotism)
+    //    {
+    //        var baseOpinion = new Procent(0.1f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.ProletarianDictatorship)
+    //    {
+    //        var baseOpinion = new Procent(0.2f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else
+    //        return false;
 
-    }
+    //}
 
     internal override bool canVote()
     {
@@ -1274,54 +1275,54 @@ public class Farmers : PopUnit
     {
         return true;
     }
-    internal override bool getSayingYes(AbstractReformValue reform)
-    {
-        if (reform is Government.ReformValue)
-        {
-            if (reform == Government.Tribal)
-            {
-                var baseOpinion = new Procent(0f);
-                baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Options.votingPassBillLimit;
-            }
-            else if (reform == Government.Aristocracy)
-            {
-                var baseOpinion = new Procent(0.2f);
-                baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Options.votingPassBillLimit;
-            }
-            else if (reform == Government.Democracy)
-            {
-                var baseOpinion = new Procent(1f);
-                baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Options.votingPassBillLimit;
-            }
-            else if (reform == Government.Despotism)
-            {
-                var baseOpinion = new Procent(0.2f);
-                baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Options.votingPassBillLimit;
-            }
-            else if (reform == Government.ProletarianDictatorship)
-            {
-                var baseOpinion = new Procent(0.3f);
-                baseOpinion.add(this.loyalty);
-                return baseOpinion.get() > Options.votingPassBillLimit;
-            }
-            else
-                return false;
-        }
-        else if (reform is TaxationForPoor.ReformValue)
-        {
-            TaxationForPoor.ReformValue taxReform = reform as TaxationForPoor.ReformValue;
-            var baseOpinion = new Procent(1f);
-            baseOpinion.set(baseOpinion.get() - taxReform.tax.get() * 2);
-            baseOpinion.set(baseOpinion.get() + loyalty.get() - 0.5f);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else
-            return false;
-    }
+    //internal override bool getSayingYes(AbstractReformValue reform)
+    //{
+    //    if (reform is Government.ReformValue)
+    //    {
+    //        if (reform == Government.Tribal)
+    //        {
+    //            var baseOpinion = new Procent(0f);
+    //            baseOpinion.add(this.loyalty);
+    //            return baseOpinion.get() > Options.votingPassBillLimit;
+    //        }
+    //        else if (reform == Government.Aristocracy)
+    //        {
+    //            var baseOpinion = new Procent(0.2f);
+    //            baseOpinion.add(this.loyalty);
+    //            return baseOpinion.get() > Options.votingPassBillLimit;
+    //        }
+    //        else if (reform == Government.Democracy)
+    //        {
+    //            var baseOpinion = new Procent(1f);
+    //            baseOpinion.add(this.loyalty);
+    //            return baseOpinion.get() > Options.votingPassBillLimit;
+    //        }
+    //        else if (reform == Government.Despotism)
+    //        {
+    //            var baseOpinion = new Procent(0.2f);
+    //            baseOpinion.add(this.loyalty);
+    //            return baseOpinion.get() > Options.votingPassBillLimit;
+    //        }
+    //        else if (reform == Government.ProletarianDictatorship)
+    //        {
+    //            var baseOpinion = new Procent(0.3f);
+    //            baseOpinion.add(this.loyalty);
+    //            return baseOpinion.get() > Options.votingPassBillLimit;
+    //        }
+    //        else
+    //            return false;
+    //    }
+    //    else if (reform is TaxationForPoor.ReformValue)
+    //    {
+    //        TaxationForPoor.ReformValue taxReform = reform as TaxationForPoor.ReformValue;
+    //        var baseOpinion = new Procent(1f);
+    //        baseOpinion.set(baseOpinion.get() - taxReform.tax.get() * 2);
+    //        baseOpinion.set(baseOpinion.get() + loyalty.get() - 0.5f);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else
+    //        return false;
+    //}
     internal override bool canVote()
     {
         Country count = province.getOwner();
@@ -1375,41 +1376,41 @@ public class Aristocrats : PopUnit
     {
         return false;
     }
-    internal override bool getSayingYes(AbstractReformValue reform)
-    {
-        if (reform == Government.Tribal)
-        {
-            var baseOpinion = new Procent(0.4f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Aristocracy)
-        {
-            var baseOpinion = new Procent(1f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Democracy)
-        {
-            var baseOpinion = new Procent(0.6f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Despotism)
-        {
-            var baseOpinion = new Procent(0.1f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.ProletarianDictatorship)
-        {
-            var baseOpinion = new Procent(0.0f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else
-            return false;
-    }
+    //internal override bool getSayingYes(AbstractReformValue reform)
+    //{
+    //    if (reform == Government.Tribal)
+    //    {
+    //        var baseOpinion = new Procent(0.4f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Aristocracy)
+    //    {
+    //        var baseOpinion = new Procent(1f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Democracy)
+    //    {
+    //        var baseOpinion = new Procent(0.6f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Despotism)
+    //    {
+    //        var baseOpinion = new Procent(0.1f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.ProletarianDictatorship)
+    //    {
+    //        var baseOpinion = new Procent(0.0f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else
+    //        return false;
+    //}
     internal override bool canVote()
     {
         Country count = province.getOwner();
@@ -1454,41 +1455,41 @@ public class Capitalists : PopUnit
     {
         return false;
     }
-    internal override bool getSayingYes(AbstractReformValue reform)
-    {
-        if (reform == Government.Tribal)
-        {
-            var baseOpinion = new Procent(0f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Aristocracy)
-        {
-            var baseOpinion = new Procent(0f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Democracy)
-        {
-            var baseOpinion = new Procent(0.8f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Despotism)
-        {
-            var baseOpinion = new Procent(0.3f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.ProletarianDictatorship)
-        {
-            var baseOpinion = new Procent(0.1f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else
-            return false;
-    }
+    //internal override bool getSayingYes(AbstractReformValue reform)
+    //{
+    //    if (reform == Government.Tribal)
+    //    {
+    //        var baseOpinion = new Procent(0f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Aristocracy)
+    //    {
+    //        var baseOpinion = new Procent(0f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Democracy)
+    //    {
+    //        var baseOpinion = new Procent(0.8f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.Despotism)
+    //    {
+    //        var baseOpinion = new Procent(0.3f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else if (reform == Government.ProletarianDictatorship)
+    //    {
+    //        var baseOpinion = new Procent(0.1f);
+    //        baseOpinion.add(this.loyalty);
+    //        return baseOpinion.get() > Options.votingPassBillLimit;
+    //    }
+    //    else
+    //        return false;
+    //}
     internal override bool canVote()
     {
         Country count = province.getOwner();
@@ -1539,44 +1540,44 @@ public class Workers : PopUnit
     {
         return true;
     }
-    internal override bool getSayingYes(AbstractReformValue reform)
-    {
-        if (reform is MinimalWage.ReformValue)
-            return (reform as MinimalWage.ReformValue).modVoting.getModifier(this) > Options.votingPassBillLimit;
+    //internal override bool getSayingYes(AbstractReform reform)
+    //{
+    //    return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
 
-        if (reform == Government.Tribal)
-        {
-            var baseOpinion = new Procent(0f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Aristocracy)
-        {
-            var baseOpinion = new Procent(0f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Democracy)
-        {
-            var baseOpinion = new Procent(0.6f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.Despotism)
-        {
-            var baseOpinion = new Procent(0.3f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else if (reform == Government.ProletarianDictatorship)
-        {
-            var baseOpinion = new Procent(0.8f);
-            baseOpinion.add(this.loyalty);
-            return baseOpinion.get() > Options.votingPassBillLimit;
-        }
-        else
-            return false;
-    }
+
+        //if (reform == Government.Tribal)
+        //{
+        //    var baseOpinion = new Procent(0f);
+        //    baseOpinion.add(this.loyalty);
+        //    return baseOpinion.get() > Options.votingPassBillLimit;
+        //}
+        //else if (reform == Government.Aristocracy)
+        //{
+        //    var baseOpinion = new Procent(0f);
+        //    baseOpinion.add(this.loyalty);
+        //    return baseOpinion.get() > Options.votingPassBillLimit;
+        //}
+        //else if (reform == Government.Democracy)
+        //{
+        //    var baseOpinion = new Procent(0.6f);
+        //    baseOpinion.add(this.loyalty);
+        //    return baseOpinion.get() > Options.votingPassBillLimit;
+        //}
+        //else if (reform == Government.Despotism)
+        //{
+        //    var baseOpinion = new Procent(0.3f);
+        //    baseOpinion.add(this.loyalty);
+        //    return baseOpinion.get() > Options.votingPassBillLimit;
+        //}
+        //else if (reform == Government.ProletarianDictatorship)
+        //{
+        //    var baseOpinion = new Procent(0.8f);
+        //    baseOpinion.add(this.loyalty);
+        //    return baseOpinion.get() > Options.votingPassBillLimit;
+        //}
+        //else
+        //    return false;
+   // }
     internal override bool canVote()
     {
         Country count = province.getOwner();

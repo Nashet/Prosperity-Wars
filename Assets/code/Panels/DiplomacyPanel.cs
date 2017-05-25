@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
 
-
-
 public class DiplomacyPanel : DragPanel
 {
     public Dropdown ddProvinceSelect;   
