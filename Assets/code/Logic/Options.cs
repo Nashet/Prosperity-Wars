@@ -67,4 +67,5 @@ public static class Options
     /// <summary> Pops richer than that would promote</summary>
     internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.4f); //0.5f);
     internal static readonly float MaxMoralChangePerTic = 0.05f;
+    internal static readonly int PopRichStrataVotePower = 5;
 }

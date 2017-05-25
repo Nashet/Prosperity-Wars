@@ -109,6 +109,13 @@ abstract public class PopUnit : Producer
 
         province = where;//source.province;
     }
+
+    internal abstract int getVotingPower(Government.ReformValue reformValue);
+    internal int getVotingPower()
+    {
+        return getVotingPower(getCountry().government.getTypedValue());
+    }
+
     /// <summary>
     /// Merging source into this pop
     /// assuming that both pops are in same province, and has same type
@@ -697,7 +704,11 @@ abstract public class PopUnit : Producer
         }
     }
     abstract internal bool canTrade();
-    abstract internal bool canVote();
+    internal bool canVote()
+    {
+        return canVote(getCountry().government.getTypedValue());
+    }
+    abstract internal bool canVote(Government.ReformValue reform);
     public void calcLoyalty()
     {
         float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this) / 100f;
@@ -1210,15 +1221,21 @@ public class Tribemen : PopUnit
 
     //}
 
-    internal override bool canVote()
+    internal override bool canVote(Government.ReformValue reform)
     {
-        Country count = province.getOwner();
-        var government = count.government.status;
-        if ((government == Government.Tribal || government == Government.Democracy)
-            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
+        if ((reform == Government.Tribal || reform == Government.Democracy)
+            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
+    }
+
+    internal override int getVotingPower(Government.ReformValue reformValue)
+    {
+        if (canVote(reformValue))
+            return 1;
+        else
+            return 0;
     }
 }
 public class Farmers : PopUnit
@@ -1323,15 +1340,21 @@ public class Farmers : PopUnit
     //    else
     //        return false;
     //}
-    internal override bool canVote()
+    internal override bool canVote(Government.ReformValue reform)
     {
-        Country count = province.getOwner();
-        var government = count.government.status;
-        if ((government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy)
-            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
+        if ((reform == Government.Democracy || reform == Government.AnticRespublic || reform == Government.WealthDemocracy)
+            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
+    }
+
+    internal override int getVotingPower(Government.ReformValue reformValue)
+    {
+        if (canVote(reformValue))
+            return 1;
+        else
+            return 0;
     }
 }
 public class Aristocrats : PopUnit
@@ -1411,17 +1434,25 @@ public class Aristocrats : PopUnit
     //    else
     //        return false;
     //}
-    internal override bool canVote()
+    internal override bool canVote(Government.ReformValue reform)
     {
-        Country count = province.getOwner();
-        var government = count.government.status;
-        if ((government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.Aristocracy || government == Government.Tribal)
-            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
+        if ((reform == Government.Democracy || reform == Government.AnticRespublic || reform == Government.WealthDemocracy 
+            || reform == Government.Aristocracy || reform == Government.Tribal)
+            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
     }
-
+    internal override int getVotingPower(Government.ReformValue reformValue)
+    {
+        if (canVote(reformValue))
+            if (reformValue == Government.WealthDemocracy)
+                return 5;
+            else
+                return 1;
+        else
+            return 0;
+    }
 
 }
 public class Capitalists : PopUnit
@@ -1490,15 +1521,24 @@ public class Capitalists : PopUnit
     //    else
     //        return false;
     //}
-    internal override bool canVote()
+    internal override bool canVote(Government.ReformValue reform)
     {
-        Country count = province.getOwner();
-        var government = count.government.status;
-        if ((government == Government.Democracy || government == Government.AnticRespublic || government == Government.WealthDemocracy || government == Government.BourgeoisDictatorship)
-            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
+        if ((reform == Government.Democracy || reform == Government.AnticRespublic || reform == Government.WealthDemocracy 
+            || reform == Government.BourgeoisDictatorship)
+            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
+    }
+    internal override int getVotingPower(Government.ReformValue reformValue)
+    {
+        if (canVote(reformValue))
+            if (reformValue == Government.WealthDemocracy)
+                return Options.PopRichStrataVotePower;
+            else
+                return 1;
+        else
+            return 0;
     }
 }
 public class Workers : PopUnit
@@ -1545,45 +1585,43 @@ public class Workers : PopUnit
     //    return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
 
 
-        //if (reform == Government.Tribal)
-        //{
-        //    var baseOpinion = new Procent(0f);
-        //    baseOpinion.add(this.loyalty);
-        //    return baseOpinion.get() > Options.votingPassBillLimit;
-        //}
-        //else if (reform == Government.Aristocracy)
-        //{
-        //    var baseOpinion = new Procent(0f);
-        //    baseOpinion.add(this.loyalty);
-        //    return baseOpinion.get() > Options.votingPassBillLimit;
-        //}
-        //else if (reform == Government.Democracy)
-        //{
-        //    var baseOpinion = new Procent(0.6f);
-        //    baseOpinion.add(this.loyalty);
-        //    return baseOpinion.get() > Options.votingPassBillLimit;
-        //}
-        //else if (reform == Government.Despotism)
-        //{
-        //    var baseOpinion = new Procent(0.3f);
-        //    baseOpinion.add(this.loyalty);
-        //    return baseOpinion.get() > Options.votingPassBillLimit;
-        //}
-        //else if (reform == Government.ProletarianDictatorship)
-        //{
-        //    var baseOpinion = new Procent(0.8f);
-        //    baseOpinion.add(this.loyalty);
-        //    return baseOpinion.get() > Options.votingPassBillLimit;
-        //}
-        //else
-        //    return false;
-   // }
-    internal override bool canVote()
-    {
-        Country count = province.getOwner();
-        var government = count.government.status;
-        if ((government == Government.Democracy)
-            && (isStateCulture() || count.minorityPolicy.status == MinorityPolicy.Equality))
+    //if (reform == Government.Tribal)
+    //{
+    //    var baseOpinion = new Procent(0f);
+    //    baseOpinion.add(this.loyalty);
+    //    return baseOpinion.get() > Options.votingPassBillLimit;
+    //}
+    //else if (reform == Government.Aristocracy)
+    //{
+    //    var baseOpinion = new Procent(0f);
+    //    baseOpinion.add(this.loyalty);
+    //    return baseOpinion.get() > Options.votingPassBillLimit;
+    //}
+    //else if (reform == Government.Democracy)
+    //{
+    //    var baseOpinion = new Procent(0.6f);
+    //    baseOpinion.add(this.loyalty);
+    //    return baseOpinion.get() > Options.votingPassBillLimit;
+    //}
+    //else if (reform == Government.Despotism)
+    //{
+    //    var baseOpinion = new Procent(0.3f);
+    //    baseOpinion.add(this.loyalty);
+    //    return baseOpinion.get() > Options.votingPassBillLimit;
+    //}
+    //else if (reform == Government.ProletarianDictatorship)
+    //{
+    //    var baseOpinion = new Procent(0.8f);
+    //    baseOpinion.add(this.loyalty);
+    //    return baseOpinion.get() > Options.votingPassBillLimit;
+    //}
+    //else
+    //    return false;
+    // }
+    internal override bool canVote(Government.ReformValue reform)
+    { 
+        if ((reform == Government.Democracy)
+            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -1591,15 +1629,13 @@ public class Workers : PopUnit
     public class UnknownReform : Exception
     {
     }
-    //public override Procent howIsItGoodForMe(AbstractReformValue reform)
-    //{
-    //    return reform.howIsItGoodForPop(this);
-    //    //if (reform == Economy.Interventionism)
-    //    //    ;
-    //    //else
-    //    //    throw new UnknownReform();
-    //    //return false;
-    //}
+    internal override int getVotingPower(Government.ReformValue reformValue)
+    {
+        if (canVote(reformValue))
+            return 1;
+        else
+            return 0;
+    }
 }
 //public class PopLinkageValue
 //{

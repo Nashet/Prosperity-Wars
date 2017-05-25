@@ -22,6 +22,9 @@ public class Procent : Value
 
     public Procent(float number) : base(number)
     {
+    }
+    public Procent(Procent number) : base(number.get())
+    {
 
     }
     //check it
@@ -56,6 +59,12 @@ public class Procent : Value
         }
         return new Procent(result);
     }
+
+    internal float get50Centre()
+    {
+        return get() - 0.5f;
+    }
+
     public static Procent makeProcent(int numerator, int denominator)
     {
         if (denominator == 0)
