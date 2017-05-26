@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
 
-public class DiplomacyPanel : DragPanel
+public class MilitaryPanel : DragPanel
 {
     public Dropdown ddProvinceSelect;   
     public Text allArmySizeText, captionText, sendingArmySizeText;
@@ -17,7 +17,7 @@ public class DiplomacyPanel : DragPanel
     // Use this for initialization
     void Start()
     {
-        MainCamera.diplomacyPanel = this;
+        MainCamera.militaryPanel = this;
         hide();
 
     }
@@ -33,11 +33,11 @@ public class DiplomacyPanel : DragPanel
         if (rebuildDropdown)
         {
             //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
-            //armySendLimit.value = 0; //rtrt cause extra mobilization
+            //armySendLimit.value = 0; // cause extra mobilization
             rebuildDropDown();            
         }
         sb.Clear();
-        sb.Append("Diplomacy of ").Append(Game.player);
+        sb.Append("Military of ").Append(Game.player);
         captionText.text = sb.ToString();
 
         sb.Clear();

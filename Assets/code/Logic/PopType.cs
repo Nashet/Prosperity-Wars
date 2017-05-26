@@ -187,4 +187,11 @@ public class PopType
     {
         return this == PopType.farmers || this == PopType.workers || this == PopType.tribeMen;
     }
+    /// <summary>
+    /// Returns true if can produce something by himself
+    /// </summary>    
+    internal bool isProducer()
+    {
+        return this == PopType.farmers || this == PopType.tribeMen;
+    }
 }

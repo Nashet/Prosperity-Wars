@@ -37,12 +37,12 @@ public class TopPanel : MonoBehaviour
         else
             MainCamera.tradeWindow.show(true);
     }
-    public void onDiplomacyClick()
+    public void onMilitaryClick()
     {
-        if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-            MainCamera.diplomacyPanel.hide();
+        if (MainCamera.militaryPanel.isActiveAndEnabled)
+            MainCamera.militaryPanel.hide();
         else
-            MainCamera.diplomacyPanel.show();
+            MainCamera.militaryPanel.show();
     }
     public void onInventionsClick()
     {

@@ -526,8 +526,8 @@ public class Country : Consumer
                         result.add(Game.market.getCost(prod.gainGoodsThisTurn) - Game.market.getCost(prod.consumedTotal).get());
                     
             foreach (var pop in prov.allPopUnits)
-                if (pop.gainGoodsThisTurn.get() > 0f)
-                    if (pop is Factory)                        
+                if (pop.type.isProducer())
+                    if (pop.gainGoodsThisTurn.get() > 0f)                
                         result.add(Game.market.getCost(pop.gainGoodsThisTurn));
         }
         return result;

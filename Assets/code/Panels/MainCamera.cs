@@ -26,7 +26,7 @@ public class MainCamera : MonoBehaviour
     internal static BuildPanel buildPanel;
     internal static PoliticsPanel politicsPanel;
     internal static FinancePanel financePanel;
-    internal static DiplomacyPanel diplomacyPanel;
+    internal static MilitaryPanel militaryPanel;
     //internal static MessagePanel messagePanel;
 
     // Use this for initialization
@@ -142,7 +142,7 @@ public class MainCamera : MonoBehaviour
             if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
             if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
             if (financePanel.isActiveAndEnabled) financePanel.refresh();
-            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh(true);
+            if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
         }
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
