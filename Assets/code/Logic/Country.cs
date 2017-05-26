@@ -551,6 +551,10 @@ public class Country : Consumer
             result += pr.getMenPopulation();
         return result;
     }
+    internal int getFamilyPopulation()
+    {        
+        return getMenPopulation() * Options.familySize;
+    }
     public int FindPopulationAmountByType(PopType ipopType)
     {
         int result = 0;
@@ -559,7 +563,14 @@ public class Country : Consumer
         return result;
     }
 
-
+    internal Value getGDPPer1000()
+    {
+        Value res = getGDP();
+        res.multiple(1000);
+        res.divide(getMenPopulation());
+        
+        return res;
+    }
 }
 public class DontUseThatMethod : Exception
 {

@@ -16,8 +16,8 @@ public class MainCamera : MonoBehaviour
     public static TopPanel topPanel;
     public static ProvincePanel provincePanel;
     public static PopulationPanel populationPanel;
-    public static PopUnitPanel popUnitPanel;
-
+    public  static PopUnitPanel popUnitPanel;
+    public static DiplomacyPanel diplomacyPanel;
     internal static TradeWindow tradeWindow;
     internal static ProductionWindow productionWindow;
     internal static FactoryPanel factoryPanel;
@@ -143,12 +143,13 @@ public class MainCamera : MonoBehaviour
             if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
             if (financePanel.isActiveAndEnabled) financePanel.refresh();
             if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
+            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
         }
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
 
         if (Game.selectedProvince != null)
-            provincePanel.UpdateProvinceWindow(Game.selectedProvince);
+            provincePanel.refresh(Game.selectedProvince);
         if (Game.MessageQueue.Count > 0)
             showMessageBox();
     }

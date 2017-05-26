@@ -81,7 +81,7 @@ public abstract class AbstractReform
 
     override public string ToString()
     {
-        return name;
+        return getValue().ToString();
     }
     abstract internal AbstractReformValue getValue();
     abstract internal AbstractReformValue getValue(int value);

@@ -39,6 +39,13 @@ public class ProvincePanel : MonoBehaviour
         else
             MainCamera.buildPanel.show(true);
     }
+    public void onCountryDiplomacyClick()
+    {
+        if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            MainCamera.diplomacyPanel.hide();
+        else
+            MainCamera.diplomacyPanel.show(Game.selectedProvince.getOwner());
+    }
     public void onPopulationDetailsClick()
     {
         //Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
@@ -101,7 +108,7 @@ public class ProvincePanel : MonoBehaviour
             MainCamera.productionWindow.show(Game.selectedProvince, true);
         }
     }
-    public void UpdateProvinceWindow(Province province)
+    public void refresh(Province province)
     {
         generaltext.text = "Province name: " + province
             + "\nID: " + province.getID()

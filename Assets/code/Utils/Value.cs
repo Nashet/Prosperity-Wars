@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Value
 {
@@ -103,11 +104,16 @@ public class Value
     }
     public void divide(Value invalue)
     {
-        if (invalue.get() < 0)
+        if (invalue.get() <= 0)
             Debug.Log("Value multiple failed");
-        set(this.divideOutside(invalue));
+        set(this.value / (float)invalue.value);
     }
-
+    internal void divide(int v)
+    {
+        if (v <= 0)
+            Debug.Log("Value multiple failed");
+        set(this.get() / (float)v);
+    }
 
 
     /// <summary>returns new value </summary>
@@ -191,5 +197,5 @@ public class Value
         else return "0";
     }
 
-
+    
 }
