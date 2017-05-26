@@ -28,8 +28,8 @@ public class FinancePanel : DragPanel
 
         sb.Clear();
         sb.Append("Income:");
-        sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
-        sb.Append("\n Rich tax: ").Append(Game.player.getCountryWallet().getRichTaxIncome());
+        sb.Append("\n Poor tax (").Append(Game.player.taxationForPoor.getValue()).Append("): ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
+        sb.Append("\n Rich tax (").Append(Game.player.taxationForRich.getValue()).Append("): ").Append(Game.player.getCountryWallet().getRichTaxIncome());
         sb.Append("\n Gold mines: ").Append(Game.player.getCountryWallet().getGoldMinesIncome());
         sb.Append("\n Owned enterprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
         sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
@@ -38,13 +38,15 @@ public class FinancePanel : DragPanel
         //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
         sb.Append("\n\nHave money: ").Append(Game.player.wallet.haveMoney).Append(" + some money in bank");
+        sb.Append("\nGDP: ").Append(Game.player.getGDP());
         incomeText.text = sb.ToString();
 
 
 
         sb.Clear();
         sb.Append("Expenses: ");
-        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense());
+        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense())
+            .Append(" unemployment: ").Append(Game.player.getUnemployment());
         sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
         sb.Append("\n Storage buying: ").Append(Game.player.getCountryWallet().getStorageBuyingExpense());
         expensesText.text = sb.ToString();

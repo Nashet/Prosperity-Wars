@@ -127,6 +127,7 @@ public class PopType
     {
         return militaryNeeds;
     }
+
     /////<summary> per 1000 men </summary>
     //public Storage getLifeNeedsPer1000(PopType popType)
     //{
@@ -181,5 +182,9 @@ public class PopType
     internal float getStrenght()
     {
         return strenght;
+    }
+    public bool canBeUnemployed()
+    {
+        return this == PopType.farmers || this == PopType.workers || this == PopType.tribeMen;
     }
 }

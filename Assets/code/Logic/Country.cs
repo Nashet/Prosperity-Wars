@@ -516,7 +516,34 @@ public class Country : Consumer
     {
         return Game.player != this;
     }
-
+    public Value getGDP()
+    {
+        Value result = new Value(0);
+        foreach (var prov in ownedProvinces)
+        {
+            foreach (var prod in prov.allFactories)
+                if (prod.gainGoodsThisTurn.get() > 0f)                    
+                        result.add(Game.market.getCost(prod.gainGoodsThisTurn) - Game.market.getCost(prod.consumedTotal).get());
+                    
+            foreach (var pop in prov.allPopUnits)
+                if (pop.gainGoodsThisTurn.get() > 0f)
+                    if (pop is Factory)                        
+                        result.add(Game.market.getCost(pop.gainGoodsThisTurn));
+        }
+        return result;
+    }
+    public Procent getUnemployment()
+    {
+        Procent result = new Procent(0f);
+        int calculatedBase = 0;
+        foreach (var item in ownedProvinces)
+        {
+            int population = item.getMenPopulation();
+            result.addPoportionally(calculatedBase, population, item.getUnemployment());
+            calculatedBase += population;
+        }
+        return result;
+    }
     internal int getMenPopulation()
     {
         int result = 0;

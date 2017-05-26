@@ -103,7 +103,7 @@ public class ProvincePanel : MonoBehaviour
     }
     public void UpdateProvinceWindow(Province province)
     {
-        generaltext.text = "name: " + province
+        generaltext.text = "Province name: " + province
             + "\nID: " + province.getID()
             + "\nPopulation (with families): " + province.getFamilyPopulation()
             + "\nMiddle loyalty: " + province.getMiddleLoyalty()

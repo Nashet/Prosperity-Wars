@@ -299,7 +299,7 @@ public class Province
 
         //foreach (PopUnit pop in workforceList)
         //    totalWorkForce += pop.getPopulation();
-        
+
         int popsLeft = totalWorkForce;
         if (totalWorkForce > 0)
         {
@@ -323,8 +323,8 @@ public class Province
                     else
                         factory.justHiredPeople = false;
                     //popsLeft -= factoryWants;                    
-                    popsLeft -= factory.hireWorkforce(factoryWants, workforceList);          
-                    
+                    popsLeft -= factory.hireWorkforce(factoryWants, workforceList);
+
                     //if (popsLeft <= 0) break;
                 }
                 else
@@ -392,6 +392,18 @@ public class Province
     override public string ToString()
     {
         return name;
+    }
+    public Procent getUnemployment()
+    {
+        Procent result = new Procent(0f);
+        int calculatedBase = 0;
+        foreach (var item in allPopUnits)
+        {
+            if (item.type.canBeUnemployed())
+                result.addPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
+            calculatedBase += item.getPopulation();
+        }
+        return result;
     }
     internal int getUnemployedWorkers()
     {
