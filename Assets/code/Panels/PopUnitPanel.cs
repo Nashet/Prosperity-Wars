@@ -43,9 +43,16 @@ public class PopUnitPanel : DragPanel
             string migrationText;
             var targetM = pop.getRichestMigrationTarget();
             if (pop.wantsToMigrate() && targetM != null && pop.getMigrationSize() > 0)
-                migrationText = targetM + " " + pop.getDemotionSize();
+                migrationText = targetM + " " + pop.getMigrationSize();
             else
                 migrationText = "none";
+
+            string immigrationText;
+            var targetIM = pop.getRichestImmigrationTarget();
+            if (pop.wantsToImmigrate() && targetIM != null && pop.getImmigrationSize() > 0)
+                immigrationText = targetIM + " ("+targetIM.getOwner() + ") " + pop.getImmigrationSize();
+            else
+                immigrationText = "none";
 
             string assimilationText;            
             if (pop.culture != pop.province.getOwner().culture && pop.getAssimilationSize() > 0)
@@ -88,6 +95,7 @@ public class PopUnitPanel : DragPanel
                 + "\nDemotion: " + demotionText
                 + "\nPromotion: " + promotionText
                 + "\nMigration: " + migrationText
+                + "\nImmigration: " + immigrationText
                 + "\nAssimilation: " + assimilationText
                 + "\nGrowth: " + pop.getGrowthSize()
                 + "\nUnemployment: " + pop.getUnemployedProcent() + loans

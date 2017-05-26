@@ -211,8 +211,7 @@ public class Game
         int chanceForA = 85;
 
         foreach (Province province in Province.allProvinces)
-        {
-            //Culture culture = new Culture(province + "landers");
+        {            
             if (province.getOwner() == Country.NullCountry)
             {
                 Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);
@@ -826,6 +825,7 @@ public class Game
                     pop.calcPromotions();
                     pop.calcDemotions();
                     pop.calcMigrations();
+                    pop.calcImmigrations();
                     pop.calcAssimilations();
 
                     pop.Invest();

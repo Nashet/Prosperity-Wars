@@ -46,26 +46,28 @@ public static class Options
 
     internal static readonly float PopAttritionFactor = 0.2f;
     internal static readonly float armyDefenceBonus = 0.5f;
-
     
     public static readonly Procent PopGrowthSpeed = new Procent(0.002f);
     public static readonly Procent PopStarvationSpeed = new Procent(0.01f);
-
     ///<summary> demotion  - when popUnit can't fulfill needs</summary>
     public static readonly Procent PopDemotionSpeed = new Procent(0.01f);
-
     ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
     public static readonly Procent PopPromotionSpeed = new Procent(0.01f);
-    public static readonly Procent PopAssimilationSpeed = new Procent(0.005f);
+    public static readonly Procent PopAssimilationSpeed = new Procent(0.002f);
     public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
+    public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
 
     public static readonly Procent PopNeedsDemotionLimit = new Procent(0.5f);
     public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
+    internal static readonly Procent PopNeedsImmigrationLimit = new Procent(0.33f);
+    /// <summary> Pops richer than that would promote</summary>
+    internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.5f); //0.5f);
+
     public static readonly int PopSizeConsolidationLimit = 100;
     /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>
     public static readonly int PopAgeLimitToWipeOut = 250;
-    /// <summary> Pops richer than that would promote</summary>
-    internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.4f); //0.5f);
+    
     internal static readonly float MaxMoralChangePerTic = 0.05f;
     internal static readonly int PopRichStrataVotePower = 5;
+    
 }
