@@ -40,7 +40,7 @@ public class Corps
     }
     public void consume(Country owner)
     {
-        var needs = getRealNeeds();
+        var needs = getRealNeeds(owner);
         //float allNeedsAmount = needs.sum();
         //if (allNeedsAmount == 0f)
         //{
@@ -65,7 +65,7 @@ public class Corps
             //    consumption.set((allNeedsAmount - shortage) / allNeedsAmount);
         }
         //float moralChange = consumption.get() - moral.get();
-        float moralChange = getConsumptionProcent(Product.Food).get() - moral.get();
+        float moralChange = getConsumptionProcent(Product.Food, owner).get() - moral.get();
         moralChange = Mathf.Clamp(moralChange, Options.MaxMoralChangePerTic * -1f, Options.MaxMoralChangePerTic);
         if (moral.get() + moralChange < 0)
             moral.set(0f);
@@ -76,21 +76,21 @@ public class Corps
     {
         return consumption;        
     }
-    internal Procent getConsumptionProcent(Product prod)
+    internal Procent getConsumptionProcent(Product prod, Country country)
     {
-        return Procent.makeProcent(consumption.getStorage(prod), getRealNeeds().getStorage(prod));
+        return Procent.makeProcent(consumption.getStorage(prod), getRealNeeds(country).getStorage(prod));
     }
     internal Value getConsumption(Product prod)
     {
         return consumption.getStorage(prod);
     }
-    public PrimitiveStorageSet getRealNeeds()
+    public PrimitiveStorageSet getRealNeeds(Country country)
     {
         Value multiplier = new Value(this.getSize() / 1000f);
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in origin.type.getMilitaryNeedsPer1000())
-            if (next.getProduct().isInventedByAnyOne())
+            if (country.isInvented(next.getProduct()))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiple(multiplier);

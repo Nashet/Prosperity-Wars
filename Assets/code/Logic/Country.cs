@@ -426,9 +426,12 @@ public class Country : Consumer
     }
     public bool isInvented(Product product)
     {
-        if (//(product == Product.Metal || product == Product.MetallOre) && !isInvented(InventionType.metal)
-            // || 
-            (!product.isResource() && !isInvented(InventionType.manufactories)))
+        if (
+            ((product == Product.Metal || product == Product.MetallOre || product == Product.ColdArms) && !isInvented(InventionType.metal))
+            || ((product == Product.Artillery || product == Product.Ammunition) && !isInvented(InventionType.Gunpowder))
+            || (product == Product.Firearms && !isInvented(InventionType.Firearms))
+            || (!product.isResource() && !isInvented(InventionType.manufactories))
+            )
             return false;
         else
             return true;
@@ -451,7 +454,7 @@ public class Country : Consumer
             sciencePoints.add(this.getMenPopulation());
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-
+        sciencePoints.add(this.getMenPopulation());
         if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 1000f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
@@ -482,8 +485,8 @@ public class Country : Consumer
     {
         var needs = getNeeds();
         foreach (var pro in Product.allProducts)
-        {           
-            
+        {
+
             // if I want to buy           
             if (storageSet.getStorage(pro).get() > needs.getStorage(pro).get() * 10)
                 ;
@@ -506,7 +509,7 @@ public class Country : Consumer
         PrimitiveStorageSet res = new PrimitiveStorageSet();
         foreach (var item in allArmies)
             res.add(item.getNeeds());
-        return res;        
+        return res;
     }
     private float getStreght()
     {

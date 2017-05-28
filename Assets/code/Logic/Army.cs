@@ -10,21 +10,41 @@ public class Army
     Dictionary<PopUnit, Corps> personal;
     Province destination;
     Country owner;
-    static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense",  0.5f, false);
-    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral",  1f, true);
-    static Modifier modifierDefault = new Modifier(x => x == x, "Default",  1f, true);
-    static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms",  1f, false);
+    static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
+    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", 1f, true);
+    static Modifier modifierDefault = new Modifier(x => x == x, "Default", 1f, true);
+    static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
+    static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
+    static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);
 
     private float getColdArmsSupply()
     {
-        return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms)).get();
+        if (getOwner().isInvented(Product.ColdArms))
+            return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms)).get();
+        else return 0f;
     }
-
-
+    private float getEquippedFirearmsSupply()
+    {
+        if (getOwner().isInvented(Product.Firearms))
+            return Mathf.Min(
+         Procent.makeProcent(getConsumption(Product.Firearms), getNeeds(Product.Firearms)).get(),
+         Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition)).get()
+         );
+        else return 0f;
+    }
+    private float getEquippedArtillerySupply()
+    {
+        if (getOwner().isInvented(Product.Artillery))
+            return Mathf.Min(
+         Procent.makeProcent(getConsumption(Product.Artillery), getNeeds(Product.Artillery)).get(),
+         Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition)).get()
+         );
+        else return 0f;
+    }
 
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms
+            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery
         });
     public Army(Country owner)
     {
@@ -191,14 +211,14 @@ public class Army
     {
         PrimitiveStorageSet res = new PrimitiveStorageSet();
         foreach (var item in personal)
-            res.add(item.Value.getRealNeeds());
+            res.add(item.Value.getRealNeeds(getOwner()));
         return res;
     }
     public Value getNeeds(Product pro)
     {
         Value res = new Value(0f);
         foreach (var item in personal)
-            res.add(item.Value.getRealNeeds().getStorage(pro));
+            res.add(item.Value.getRealNeeds(getOwner()).getStorage(pro));
         return res;
     }
 

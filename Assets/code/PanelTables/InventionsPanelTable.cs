@@ -39,18 +39,18 @@ public class InventionsPanelTable : MyTable
         AddButton("Science points");
         if (Game.player != null)
             foreach (var next in Game.player.inventions.list)
-            {
-                // Adding invention name 
-                AddButton(next.Key.ToString(), next.Key);
-                ////Adding possibleStatues
-                if (next.Value)
-                    AddButton("Invented", next.Key);
-                else
-                    AddButton("Uninvented", next.Key);
-                ////Adding invention price
-                AddButton(next.Key.cost.ToString(), next.Key);
-                counter++;
-            }
-
+                if (next.Key.isAvailable(Game.player))
+                {
+                    // Adding invention name 
+                    AddButton(next.Key.ToString(), next.Key);
+                    ////Adding possibleStatues
+                    if (next.Value)
+                        AddButton("Invented", next.Key);
+                    else
+                        AddButton("Uninvented", next.Key);
+                    ////Adding invention price
+                    AddButton(next.Key.cost.ToString(), next.Key);
+                    counter++;
+                }
     }
 }

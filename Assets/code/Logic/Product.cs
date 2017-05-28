@@ -14,7 +14,7 @@ public class Product
     Value defaultPrice;
 
     internal static Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
-     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms;
+     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery;
 
     internal bool isResource()
     {
@@ -37,30 +37,31 @@ public class Product
             return Product.Wood;
         return null;
     }
-    public Product(string inName, bool inlanded, float defaultPrice)
+    public Product(string name, bool inlanded, float defaultPrice)
     {
         this.defaultPrice = new Value(defaultPrice);
         resource = inlanded;
         if (resource) resourceCounter++;
-        name = inName;
+        this.name = name;
         allProducts.Add(this);
         Game.market.SetDefaultPrice(this, defaultPrice);
-        if (inName == "Food") Food = this;
-        if (inName == "Wood") Wood = this;
-        if (inName == "Lumber") Lumber = this;
-        if (inName == "Furniture") Furniture = this;
-        if (inName == "Gold") Gold = this;
-        if (inName == "Metal") Metal = this;
-        if (inName == "Metal ore") MetallOre = this;
-        if (inName == "Wool") Wool = this;
-        if (inName == "Clothes") Clothes = this;
-        if (inName == "Stone") Stone = this;
-        if (inName == "Cement") Cement = this;
-        if (inName == "Fruit") Fruit = this;
-        if (inName == "Wine") Wine = this;
-        if (inName == "Cold arms") ColdArms = this;
-        if (inName == "Ammunition") Ammunition = this;
-        if (inName == "Firearms") Firearms = this;
+        if (name == "Food") Food = this;
+        if (name == "Wood") Wood = this;
+        if (name == "Lumber") Lumber = this;
+        if (name == "Furniture") Furniture = this;
+        if (name == "Gold") Gold = this;
+        if (name == "Metal") Metal = this;
+        if (name == "Metal ore") MetallOre = this;
+        if (name == "Wool") Wool = this;
+        if (name == "Clothes") Clothes = this;
+        if (name == "Stone") Stone = this;
+        if (name == "Cement") Cement = this;
+        if (name == "Fruit") Fruit = this;
+        if (name == "Wine") Wine = this;
+        if (name == "Cold arms") ColdArms = this;
+        if (name == "Ammunition") Ammunition = this;
+        if (name == "Firearms") Firearms = this;
+        if (name == "Artillery") Artillery = this;
 
         //TODO checks for duplicates&
     }

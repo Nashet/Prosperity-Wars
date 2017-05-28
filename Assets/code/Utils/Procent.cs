@@ -31,7 +31,7 @@ public class Procent : Value
     {
         if (denominator.get() == 0f)
         {
-            Debug.Log("Division by zero in Procent.makeProcent(Storage)");
+           // Debug.Log("Division by zero in Procent.makeProcent(Storage)");
             return new Procent(0f);
         }
         else

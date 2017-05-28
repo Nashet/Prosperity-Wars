@@ -15,7 +15,7 @@ public class Game
     int triangleCounter = 0;
 
     public static Country player;
-    internal InventionType inventions = new InventionType();
+    //internal InventionType inventions = new InventionType();
 
     internal static bool haveToRunSimulation;
     internal static bool haveToStepSimulation;
@@ -187,6 +187,11 @@ public class Game
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Lumber, 1f));
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput, false);
     }
 
     void makeProducts()
@@ -207,6 +212,7 @@ public class Game
         new Product("Cold arms", false, 13f);
         new Product("Ammunition", false, 13f);
         new Product("Firearms", false, 13f);
+        new Product("Artillery", false, 13f);
     }
     internal static float getAllMoneyInWorld()
     {

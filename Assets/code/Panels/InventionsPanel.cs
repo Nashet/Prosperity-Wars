@@ -14,9 +14,7 @@ public class InventionsPanel : DragPanel
         MainCamera.inventionsPanel = this;
         inventButton.interactable = false;
         hide();
-    }
-    
-    
+    }       
     //public void hide()
     //{
     //    inventionsPanel.SetActive(false);
