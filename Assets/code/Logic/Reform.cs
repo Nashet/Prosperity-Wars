@@ -21,9 +21,9 @@ abstract public class AbstractReformValue : AbstractCondition
         description = indescription;
         this.allowed = condition;
         wantsReform = new Modifier(x => this.howIsItGoodForPop(x as PopUnit).get(),
-                    "How much is it good for population",  1f);
+                    "How much is it good for population",  1f, true);
         loyalty =  new Modifier(x => this.loyaltyBoostFor(x as PopUnit),
-                    "Loyalty",  1f);
+                    "Loyalty",  1f, false);
         modVoting = new ModifiersList(new List<Condition>{
         wantsReform, loyalty,education
         });
@@ -50,8 +50,8 @@ abstract public class AbstractReformValue : AbstractCondition
     abstract internal bool isAvailable(Country country);
     abstract internal void onReformEnacted();
     internal abstract Procent howIsItGoodForPop(PopUnit pop);
-    Modifier loyalty = new Modifier(Condition.IsNotImplemented, 0f);
-    Modifier education = new Modifier(Condition.IsNotImplemented, 0f);
+    Modifier loyalty = new Modifier(Condition.IsNotImplemented, 0f, false);
+    Modifier education = new Modifier(Condition.IsNotImplemented, 0f, false);
     Modifier wantsReform;
     public ModifiersList modVoting;
 }

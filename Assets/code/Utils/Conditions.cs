@@ -154,7 +154,7 @@ public class Condition : AbstractCondition
     //protected Func<Owner, bool> check;
     //protected Func<Country, bool> check2;
     protected Func<System.Object, bool> check3;
-    /// <summary>to hide juncky info /// </summary>
+    /// <summary>to hide junk info /// </summary>
     bool showAchievedConditionDescribtion;
     Func<string> dynamicString;
 
@@ -184,35 +184,12 @@ public class Condition : AbstractCondition
         dynamicString = another.dynamicString;
     }
 
-    /// <summary></summary>
-    //public Condition(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
-    //{
-    //    check = myMethodName;
-    //    this.text = conditionIsTrue;
-    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-    //}
-    //public Condition(Func<Owner, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion)
-    //{
-    //    check = myMethodName;
-    //    this.dynamicString = dynamicString;
-    //    //this.conditionDescription = conditionIsTrue;
-    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-    //}
-
     ////used in tax-like modifiers
     public Condition(string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
         this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
-    /// <summary>You better use shorter constructor, if possible </summary>
-    //public Condition(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
-    //{
-    //    check2 = myMethodName;
-    //    this.text = conditionIsTrue;
-    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-    //    //this.conditionIsFalse = conditionIsFalse;
-    //}
 
     /// <summary>Checks if invention is invented</summary>    
     public Condition(InventionType invention, bool showAchievedConditionDescribtion)
@@ -322,62 +299,57 @@ public class Condition : AbstractCondition
 }
 public class Modifier : Condition
 {
-    ///// <summary>You better use shorter constructor, if possible </summary>
-    //public Modifier(Func<Owner, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion): base (myMethodName,  conditionIsTrue, showAchievedConditionDescribtion)
-    //{
-
-    //}
-    //bool isMultiplier;
     float value;
     Func<int> multiplierModifierFunction;
     Func<System.Object, float> floatModifierFunction;
-
-
-    /// <summary>You better use shorter constructor, if possible </summary>
-    //public Modifier(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(myMethodName, conditionIsTrue, true)
-    //{
-    //    this.value = value;
-    //}
-    public Modifier(Func<System.Object, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(myMethodName, conditionIsTrue, true)
+    bool showZeroModifiers;
+    public Modifier(Func<System.Object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
     {
         this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
     }
-    public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, float value) : base(conditionIsTrue, true)
+    public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
     {
         this.value = value;
         floatModifierFunction = myMethodName;
+        this.showZeroModifiers = showZeroModifiers;
     }
     /// <summary></summary>
-    public Modifier(Func<int> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, showAchievedConditionDescribtion)
+    public Modifier(Func<int> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
     {
         check3 = null;
         multiplierModifierFunction = myMethodName;
 
         //isMultiplier = true;
         this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
     }
 
-    public Modifier(Condition condition, float value) : base(condition)
+    public Modifier(Condition condition, float value, bool showZeroModifiers) : base(condition)
     {
         this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
     }
 
 
     /// <summary>Checks if invention is invented.
     /// depreciated</summary>    
-    public Modifier(InventionType invention, bool showAchievedConditionDescribtion, float value) : base(invention, true)
+    public Modifier(InventionType invention, float value, bool showZeroModifiers) : base(invention, true)
     {
         this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
     }
     /// <summary>Checks if government == CheckingCountry.government/// depreciated</summary>  
-    public Modifier(Government.ReformValue government, bool showAchievedConditionDescribtion, float value) : base(government, true)
+    public Modifier(Government.ReformValue government, float value, bool showZeroModifiers) : base(government, true)
     {
         this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
     }
     /// <summary>Checks if economy == CheckingCountry.economy/// depreciated</summary>  
-    public Modifier(Economy.ReformValue economy, bool showAchievedConditionDescribtion, float value) : base(economy, true)
+    public Modifier(Economy.ReformValue economy, float value, bool showZeroModifiers) : base(economy, true)
     {
         this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
     }
     public override string ToString()
     {
@@ -385,8 +357,11 @@ public class Modifier : Condition
     }
 
     internal float getValue()
-    { return value; }
-    /// <summary>Returns bool result and description in out description</summary>    
+    {
+        return value;
+    }
+    /// <summary>Returns bool result and description in out description
+    /// Doesn't care about showZeroModifier</summary>        
     override internal bool checkIftrue(Country forWhom, out string description)
     {
         bool answer = false;
@@ -428,37 +403,49 @@ public class Modifier : Condition
         float result;
         if (floatModifierFunction != null)
         {
-            StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(getDescription());
             result = floatModifierFunction(forWhom) * getValue();
-            str.Append(": ").Append(result);
-            description = str.ToString();
+            if (result != 0f || showZeroModifiers)
+            {
+                StringBuilder str = new StringBuilder("\n(+) ");
+                str.Append(getDescription());
+                str.Append(": ").Append(result);
+                description = str.ToString();
+            }
+            else description = "";
         }
         else
         if (multiplierModifierFunction != null)
         {
-            StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(getDescription());
             result = multiplierModifierFunction() * getValue();
-            str.Append(": ").Append(result);
-            description = str.ToString();
-        }
-        else
-        if (check3(forWhom))
-        {
-
-            StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(getDescription());
-            result = getValue();
-            str.Append(": ").Append(result);
-
-            description = str.ToString();
+            if (result != 0f || showZeroModifiers)
+            {
+                StringBuilder str = new StringBuilder("\n(+) ");
+                str.Append(getDescription());
+                str.Append(": ").Append(result);
+                description = str.ToString();
+            }
+            else description = "";
         }
         else
         {
-            result = 0;
-            description = "";
+            if (check3(forWhom))
+                result = getValue();
+            else
+                result = 0f;
+            if (result != 0f || showZeroModifiers)
+            {
+                StringBuilder str = new StringBuilder("\n(+) ");
+                str.Append(getDescription());
+                str.Append(": ").Append(result);
+                description = str.ToString();
+            }
+            else description = "";
         }
+        //else 
+        //{
+        //    result = 0;
+        //    description = "";
+        //}
         return result;
     }
     internal float getModifier(System.Object forWhom)
@@ -498,11 +485,11 @@ public class ModifiersList : ConditionsList
         StringBuilder text = new StringBuilder();
         float summ = 0f;
         string accu;
-
         foreach (Modifier item in list)
         {
             summ += item.getModifier(forWhom, out accu);
             //if (item.checkIftrue(forWhom, out accu))
+           
             if (accu != "")
             {
                 text.Append(accu);

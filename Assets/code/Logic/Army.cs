@@ -10,10 +10,10 @@ public class Army
     Dictionary<PopUnit, Corps> personal;
     Province destination;
     Country owner;
-    static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
-    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral",  1f);
-    static Modifier modifierDefault = new Modifier(x => x == x, "Default", true, 1f);
-    static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms",  1f);
+    static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense",  0.5f, false);
+    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral",  1f, true);
+    static Modifier modifierDefault = new Modifier(x => x == x, "Default",  1f, true);
+    static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms",  1f, false);
 
     private float getColdArmsSupply()
     {

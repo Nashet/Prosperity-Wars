@@ -202,26 +202,26 @@ abstract public class PopUnit : Producer
     }
     private void makeModifiers()
     {
-        modifierStarvation = new Modifier(x => (x as PopUnit).needsFullfilled.get() < 0.20f, "Starvation", false, -0.3f);
-        modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", false, -0.2f);
-        modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", false, 0.1f);
-        modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", false, 0.15f);
-        modifierLuxuryNeedsFulfilled = new Modifier(x => (x as PopUnit).getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", false, 0.2f);
+        modifierStarvation = new Modifier(x => (x as PopUnit).needsFullfilled.get() < 0.20f, "Starvation",  -0.3f, false);
+        modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied",  -0.2f, false);
+        modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied",  0.1f, false);
+        modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied",  0.15f, false);
+        modifierLuxuryNeedsFulfilled = new Modifier(x => (x as PopUnit).getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied",  0.2f, false);
 
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanVote = new Modifier(x => (x as PopUnit).canVote(), "Can vote with that government ", false, 0.1f);
+        modifierCanVote = new Modifier(x => (x as PopUnit).canVote(), "Can vote with that government ",  0.1f, false);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ", false, -0.1f);
+        modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ",  -0.1f, false);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
-        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", false, -0.3f);
-        modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", false, -1.0f);
+        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform",  -0.3f, false);
+        modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies",  -1.0f, false);
         modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
         new Modifier(x => !(x as PopUnit).isStateCulture()
         && ((x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency
-        || (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", false, -0.1f);
+        || (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority",  -0.1f, false);
 
 
         //MinorityPolicy.IsResidency

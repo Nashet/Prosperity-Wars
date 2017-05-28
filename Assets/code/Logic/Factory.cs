@@ -54,26 +54,26 @@ public class Factory : Producer
 
 
         modifierHasResourceInProvince = new Modifier(x => !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput),
-           "Has input resource in this province", true, 20f);
-        modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", true, 1f);
+           "Has input resource in this province",  20f, false);
+        modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", 1f, false);
         modifierInventedMiningAndIsShaft = new Modifier(
              forWhom => (forWhom as Country).isInvented(InventionType.mining) && type.isShaft(),
-           new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), false, 50f);
-        modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government", false, -20f);
+           new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(),  50f, false);
+        modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government",  -20f, false);
 
         modifierNotBelongsToCountry = new Condition(
            x => !(factoryOwner is Country),
           "Doesn't belongs to government", false);
-        modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized", false, -10f);
+        modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized",  -10f, false);
         modifierEfficiency = new ModifiersList(new List<Condition>()
         {
             //x=>(x as Country).isInvented(InventionType.steamPower)
-            new Modifier(InventionType.SteamPowerInvented , 25f),
+            new Modifier(InventionType.SteamPowerInvented , 25f, false),
             modifierInventedMiningAndIsShaft,
-            new Modifier(Economy.StateCapitalism, true, 10f),
-            new Modifier(Economy.Interventionism, true, 30f),
-            new Modifier(Economy.LaissezFaire, true, 50f),
-            new Modifier(Economy.PlannedEconomy, true, -10f),
+            new Modifier(Economy.StateCapitalism,  10f, false),
+            new Modifier(Economy.Interventionism,  30f, false),
+            new Modifier(Economy.LaissezFaire,  50f, false),
+            new Modifier(Economy.PlannedEconomy,  -10f, false),
             modifierHasResourceInProvince, modifierLevelBonus,
             modifierBelongsToCountry, modifierIsSubsidised
         });
