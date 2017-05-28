@@ -112,18 +112,18 @@ public class Game
     {
         //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribesmen");
         new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f) }));
 
         new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f) }));
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f) }));
         new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers", 1f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f) }));
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
         new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
-            new PrimitiveStorageSet(new List<Storage>() { new Storage(Product.Food, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f) }));
     }
 
     void makeCountry(CountryNameGenerator countryName, CultureNameGenerator cultureName)
@@ -173,6 +173,20 @@ public class Game
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Fruit, 0.3333f));
         new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Stone, 1f));
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Lumber, 1f));
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput, false);
     }
 
     void makeProducts()
@@ -183,13 +197,16 @@ public class Game
         new Product("Gold", true, 4f);
         new Product("Metal ore", true, 3f);
         new Product("Metal", false, 6f);
-        new Product("Wool", true, 1);
-        new Product("Clothes", false, 3);
-        new Product("Furniture", false, 7);
-        new Product("Stone", true, 1);
-        new Product("Cement", false, 2);
-        new Product("Fruit", true, 1);
-        new Product("Wine", false, 3);
+        new Product("Wool", true, 1f);
+        new Product("Clothes", false, 3f);
+        new Product("Furniture", false, 7f);
+        new Product("Stone", true, 1f);
+        new Product("Cement", false, 2f);
+        new Product("Fruit", true, 1f);
+        new Product("Wine", false, 3f);
+        new Product("Cold arms", false, 13f);
+        new Product("Ammunition", false, 13f);
+        new Product("Firearms", false, 13f);
     }
     internal static float getAllMoneyInWorld()
     {
@@ -211,7 +228,7 @@ public class Game
         int chanceForA = 85;
 
         foreach (Province province in Province.allProvinces)
-        {            
+        {
             if (province.getOwner() == Country.NullCountry)
             {
                 Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);
@@ -672,7 +689,7 @@ public class Game
     }
     public static void PrepareForNewTick()
     {
-        Game.market.sentToMarket.SetZero();
+        Game.market.sentToMarket.setZero();
         foreach (Country country in Country.allExisting)
         // if (country != Country.NullCountry)
         {
@@ -680,6 +697,8 @@ public class Game
             country.storageSet.setStatisticToZero();
             country.getCountryWallet().setSatisticToZero();
             country.aristocrstTax = country.serfdom.status.getTax();
+            foreach (var army in country.allArmies)
+                army.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
                 province.BalanceEmployableWorkForce();

@@ -50,36 +50,39 @@ public class TradeWindowCountryMarketTable   : MyTable
         //AddButton("Price");
         ////Adding price Change
         //AddButton(null.loyalty.ToString(), null);
-        foreach (Storage next in Game.market.marketPrice)
-            
+        if (Game.player != null)
         {
-            Product product = next.getProduct();
-            if (product != Product.Gold && product.isInventedByAnyOne())
+            var needs = Game.player.getNeeds();
+            foreach (Storage next in Game.market.marketPrice)
+
             {
-                // Adding product name 
-                AddButton(product.getName(), next);
+                Product product = next.getProduct();
+                if (product != Product.Gold && product.isInventedByAnyOne())
+                {
+                    // Adding product name 
+                    AddButton(product.getName(), next);
 
-                ////Adding storage amount
-                AddButton(Game.player.storageSet.getStorage(next.getProduct()).ToString(), next);
-                
-
-                ////Adding needs
-                AddButton(Game.player.storageSet.getConsumption(next.getProduct()).ToString(), next);
-
-                ////Adding Produce
-                AddButton("wip", next);
-
-                ////Adding Consumption
-                AddButton("wip", next);
-
-                ////Adding bought
-                AddButton("wip", next);
+                    ////Adding storage amount
+                    AddButton(Game.player.storageSet.getStorage(next.getProduct()).ToString(), next);
 
 
-                counter++;
-                //contentPanel.r
+                    ////Adding needs
+                    AddButton(needs.getStorage(next.getProduct()).ToString(), next);
+
+                    ////Adding Produce
+                    AddButton("wip", next);
+
+                    ////Adding Consumption
+                    AddButton("wip", next);
+
+                    ////Adding bought
+                    AddButton("wip", next);
+
+
+                    counter++;
+                    //contentPanel.r
+                }
             }
         }
-
     }
 }

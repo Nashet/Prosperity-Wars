@@ -726,7 +726,7 @@ public class Factory : Producer
                 level++;
                 building = false;
                 upgrading = false;
-                needsToUpgrade.SetZero();
+                needsToUpgrade.setZero();
                 daysInConstruction = 0;
                 inputReservs.subtract(type.getBuildNeeds());
                 inputReservs.subtract(type.getUpgradeNeeds());
@@ -745,7 +745,7 @@ public class Factory : Producer
     {
         building = false;
         upgrading = false;
-        needsToUpgrade.SetZero();
+        needsToUpgrade.setZero();
         daysInConstruction = 0;
     }
     internal void markToDestroy()
@@ -841,7 +841,7 @@ public class Factory : Producer
     {
         working = false;
         upgrading = false;
-        needsToUpgrade.SetZero();
+        needsToUpgrade.setZero();
         daysInConstruction = 0;
     }
     internal void reopen(Owner byWhom)
@@ -1052,8 +1052,8 @@ public abstract class Producer : Consumer
         wallet.moneyIncomethisTurn.set(0f);
         consumedLastTurn.copyDataFrom(consumedTotal); // temp        
         sentToMarket.set(0f);
-        consumedTotal.SetZero();
-        consumedInMarket.SetZero();        
+        consumedTotal.setZero();
+        consumedInMarket.setZero();        
     }
     public void getMoneyFromMarket()
     {

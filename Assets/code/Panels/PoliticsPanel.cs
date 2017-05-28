@@ -168,7 +168,7 @@ public class PoliticsPanel : DragPanel
                     voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     forceDecisionButton.interactable = false;
-                    voteButton.GetComponentInChildren<Text>().text = "Vote for" + selectedReformValue;
+                    voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                 }
                 else // not enough voters
                 {

@@ -28,7 +28,7 @@ public class TradeWindow  : DragPanel //: MonoBehaviour//
     }
     
    
-    public void Refresh()
+    public void refresh()
     {
         hide();
         show(false);

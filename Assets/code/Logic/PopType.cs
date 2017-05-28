@@ -49,27 +49,28 @@ public class PopType
                 lifeNeeds.set(new Storage(Product.Food, 1));
 
                 everyDayNeeds.set(new Storage(Product.Fruit, 1));
-
+                everyDayNeeds.set(new Storage(Product.ColdArms, 1));
 
                 luxuryNeeds.set(new Storage(Product.Clothes, 1));
                 luxuryNeeds.set(new Storage(Product.Furniture, 1));
 
                 luxuryNeeds.set(new Storage(Product.Wine, 2));
-                luxuryNeeds.set(new Storage(Product.Metal, 1));
                 luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
                 break;
             case PopTypes.Capitalists:
                 capitalists = this;
-                lifeNeeds.set(new Storage(Product.Food, 1));
+                lifeNeeds.set(new Storage(Product.Food, 1f));
 
-                luxuryNeeds.set(new Storage(Product.Fruit, 1));
+                everyDayNeeds.set(new Storage(Product.Clothes, 1f));
+                everyDayNeeds.set(new Storage(Product.Furniture, 1f));
 
-                everyDayNeeds.set(new Storage(Product.Clothes, 1));
-                everyDayNeeds.set(new Storage(Product.Furniture, 1));
-
-                everyDayNeeds.set(new Storage(Product.Wine, 2));
-                everyDayNeeds.set(new Storage(Product.Metal, 1));
+                everyDayNeeds.set(new Storage(Product.Wine, 2f));
+                everyDayNeeds.set(new Storage(Product.Metal, 1f));
                 everyDayNeeds.set(new Storage(Product.Cement, 0.5f));
+
+                luxuryNeeds.set(new Storage(Product.Fruit, 1f));
+                luxuryNeeds.set(new Storage(Product.Firearms, 1f));
+                luxuryNeeds.set(new Storage(Product.Firearms, 0.5f));
                 break;
             case PopTypes.Farmers:
                 farmers = this;
@@ -80,7 +81,7 @@ public class PopType
                 everyDayNeeds.set(new Storage(Product.Wood, 1));
                 everyDayNeeds.set(new Storage(Product.Wool, 1));
                 everyDayNeeds.set(new Storage(Product.Lumber, 1));
-                everyDayNeeds.set(new Storage(Product.MetallOre, 1));
+                //everyDayNeeds.set(new Storage(Product.MetallOre, 1));
 
                 luxuryNeeds.set(new Storage(Product.Clothes, 1));
                 luxuryNeeds.set(new Storage(Product.Furniture, 1));

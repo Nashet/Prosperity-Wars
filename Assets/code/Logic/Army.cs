@@ -11,11 +11,20 @@ public class Army
     Province destination;
     Country owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", false, 0.5f);
-    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", true, 1f);
+    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral",  1f);
     static Modifier modifierDefault = new Modifier(x => x == x, "Default", true, 1f);
+    static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms",  1f);
+
+    private float getColdArmsSupply()
+    {
+        return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms)).get();
+    }
+
+
+
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            modifierDefault, modifierInDefense, modifierMoral
+            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms
         });
     public Army(Country owner)
     {
@@ -143,16 +152,53 @@ public class Army
             sb.Append("None");
         return sb.ToString();
     }
-
-    private Procent getConsumption()
+    //private Procent getConsumption(Product prod)
+    //{
+    //    Procent res = new Procent(0f);
+    //    int calculatedSize = 0;
+    //    foreach (var item in personal)
+    //    {
+    //        res.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getConsumption( prod));
+    //        calculatedSize += item.Value.getSize();
+    //    }
+    //    return res;
+    //}
+    private Value getConsumption(Product prod)
     {
-        Procent res = new Procent(0f);
-        int calculatedSize = 0;
+        Value res = new Value(0f);
         foreach (var item in personal)
-        {
-            res.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getConsumption(getOwner()));
-            calculatedSize += item.Value.getSize();
-        }
+            res.add(item.Value.getConsumption(prod));
+        return res;
+    }
+    private PrimitiveStorageSet getConsumption()
+    {
+        var consumption = new PrimitiveStorageSet();
+        foreach (var item in personal)
+            consumption.add(item.Value.getConsumption());
+
+
+        //    Procent res = new Procent(0f);
+        //int calculatedSize = 0;
+        //foreach (var item in personal)
+        //{
+        //    res.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getConsumption());
+        //    calculatedSize += item.Value.getSize();
+        //}
+        //return res;
+        return consumption;
+    }
+    public PrimitiveStorageSet getNeeds()
+    {
+        PrimitiveStorageSet res = new PrimitiveStorageSet();
+        foreach (var item in personal)
+            res.add(item.Value.getRealNeeds());
+        return res;
+    }
+    public Value getNeeds(Product pro)
+    {
+        Value res = new Value(0f);
+        foreach (var item in personal)
+            res.add(item.Value.getRealNeeds().getStorage(pro));
         return res;
     }
 
@@ -381,7 +427,11 @@ public class Army
         return destination;
     }
 
-
+    internal void setStatisticToZero()
+    {
+        foreach (var corps in personal)
+            corps.Value.setStatisticToZero();
+    }
 }
 public class BattleResult
 {

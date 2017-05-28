@@ -342,7 +342,7 @@ public class Modifier : Condition
     {
         this.value = value;
     }
-    public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion, float value) : base(conditionIsTrue, true)
+    public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, float value) : base(conditionIsTrue, true)
     {
         this.value = value;
         floatModifierFunction = myMethodName;

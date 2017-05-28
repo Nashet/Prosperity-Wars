@@ -19,7 +19,7 @@ public class CountryStorageSet : PrimitiveStorageSet
     }
     internal void setStatisticToZero()
     {
-        consumedLastTurn.SetZero();
+        consumedLastTurn.setZero();
     }
 
     /// / next - inherited
@@ -74,7 +74,7 @@ public class CountryStorageSet : PrimitiveStorageSet
 
     internal void SetZero()
     {
-        base.SetZero();
+        base.setZero();
         throw new DontUseThatMethod();
     }
     //internal PrimitiveStorageSet Divide(float v)
@@ -426,8 +426,9 @@ public class Country : Consumer
     }
     public bool isInvented(Product product)
     {
-        if ((product == Product.Metal || product == Product.MetallOre) && !isInvented(InventionType.metal)
-            || (!product.isResource() && !isInvented(InventionType.manufactories)))
+        if (//(product == Product.Metal || product == Product.MetallOre) && !isInvented(InventionType.metal)
+            // || 
+            (!product.isResource() && !isInvented(InventionType.manufactories)))
             return false;
         else
             return true;
@@ -479,24 +480,34 @@ public class Country : Consumer
 
     public override void buyNeeds()
     {
+        var needs = getNeeds();
         foreach (var pro in Product.allProducts)
-        {
-            // if I want to buy
-            if (storageSet.getStorage(pro).get() > storageSet.getConsumption(pro).get() * 10)
+        {           
+            
+            // if I want to buy           
+            if (storageSet.getStorage(pro).get() > needs.getStorage(pro).get() * 10)
                 ;
             else
             {
-                Storage toBuy = new Storage(pro, storageSet.getConsumption(pro).get() * 10 - storageSet.getStorage(pro).get());
+                //TerrainChangedFlags getConsumption to getNeeds
+                //fix metal producing
+                Storage toBuy = new Storage(pro, needs.getStorage(pro).get() * 10 - storageSet.getStorage(pro).get());
+                if (toBuy.get() < 10f) toBuy.set(10);
                 toBuy.multiple(Game.market.buy(this, toBuy, null));
                 storageSet.add(toBuy);
                 getCountryWallet().storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
-
 
             }
 
         }
     }
-
+    public PrimitiveStorageSet getNeeds()
+    {
+        PrimitiveStorageSet res = new PrimitiveStorageSet();
+        foreach (var item in allArmies)
+            res.add(item.getNeeds());
+        return res;        
+    }
     private float getStreght()
     {
         return howMuchCanMobilize();
@@ -522,12 +533,12 @@ public class Country : Consumer
         foreach (var prov in ownedProvinces)
         {
             foreach (var prod in prov.allFactories)
-                if (prod.gainGoodsThisTurn.get() > 0f)                    
-                        result.add(Game.market.getCost(prod.gainGoodsThisTurn) - Game.market.getCost(prod.consumedTotal).get());
-                    
+                if (prod.gainGoodsThisTurn.get() > 0f)
+                    result.add(Game.market.getCost(prod.gainGoodsThisTurn) - Game.market.getCost(prod.consumedTotal).get());
+
             foreach (var pop in prov.allPopUnits)
                 if (pop.type.isProducer())
-                    if (pop.gainGoodsThisTurn.get() > 0f)                
+                    if (pop.gainGoodsThisTurn.get() > 0f)
                         result.add(Game.market.getCost(pop.gainGoodsThisTurn));
         }
         return result;
@@ -552,7 +563,7 @@ public class Country : Consumer
         return result;
     }
     internal int getFamilyPopulation()
-    {        
+    {
         return getMenPopulation() * Options.familySize;
     }
     public int FindPopulationAmountByType(PopType ipopType)
@@ -568,7 +579,7 @@ public class Country : Consumer
         Value res = getGDP();
         res.multiple(1000);
         res.divide(getMenPopulation());
-        
+
         return res;
     }
 }

@@ -134,7 +134,7 @@ public class MainCamera : MonoBehaviour
             if (topPanel.isActiveAndEnabled) topPanel.refresh();
             if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
             if (populationPanel.isActiveAndEnabled) populationPanel.refresh();
-            if (tradeWindow.isActiveAndEnabled) tradeWindow.Refresh();
+            if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
             if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
             if (productionWindow.isActiveAndEnabled) productionWindow.refresh();
             if (goodsPanel.isActiveAndEnabled) goodsPanel.refresh();

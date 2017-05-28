@@ -397,12 +397,12 @@ public class PrimitiveStorageSet
         return null;
     }
     //keep it both
-    internal Value getStorage(Product whom)
+    internal Storage getStorage(Product whom)
     {
         foreach (Storage stor in container)
             if (stor.getProduct() == whom)
                 return stor;
-        return new Value(0f);
+        return new Storage(whom, 0f);
     }
     override public string ToString()
     {
@@ -438,7 +438,7 @@ public class PrimitiveStorageSet
     }
 
 
-    internal void SetZero()
+    internal void setZero()
     {
         foreach (Storage st in this)
             st.set(0f);
@@ -500,7 +500,7 @@ public class PrimitiveStorageSet
     internal void sendAll(PrimitiveStorageSet toWhom)
     {
         toWhom.add(this);
-        this.SetZero();
+        this.setZero();
     }
 
     internal float sum()
@@ -510,6 +510,11 @@ public class PrimitiveStorageSet
             result += item.get();
         return result;
 
+    }
+
+    internal void add(object p)
+    {
+        throw new NotImplementedException();
     }
 
 

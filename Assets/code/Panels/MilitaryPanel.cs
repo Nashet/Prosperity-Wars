@@ -67,11 +67,13 @@ public class MilitaryPanel : DragPanel
     {
         Game.player.mobilize();
         //onArmyLimitChanged(0f);
+        MainCamera.tradeWindow.refresh();
         refresh(false);
     }
     public void onDemobilizationClick()
     {
         Game.player.demobilize();
+        MainCamera.tradeWindow.refresh();
         refresh(false);
     }
     public void onSendArmyClick()

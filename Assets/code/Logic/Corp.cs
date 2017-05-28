@@ -12,13 +12,13 @@ public class Corps
     PopUnit origin;
     int size;
     Procent moral = new Procent(0f);
-    Procent consumption = new Procent(0f);
+    PrimitiveStorageSet consumption = new PrimitiveStorageSet();
     internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
         this.size = size;
         this.moral.set(0f);
-        consumption.set(0f);
+        consumption.setZero();
     }
     public Corps(PopUnit origin, int size)
     {
@@ -29,7 +29,7 @@ public class Corps
         size = 0;
         origin = null;
         moral.set(0);
-        consumption.set(0f);
+        consumption.setZero();
         //here - delete all links on that object        
     }
     internal void demobilizeFrom(Army army)
@@ -40,39 +40,49 @@ public class Corps
     }
     public void consume(Country owner)
     {
-        //Procent consumption = getConsumption(owner);
         var needs = getRealNeeds();
-        float allNeedsAmount = needs.sum();
-        if (allNeedsAmount == 0f)
-        {
-            consumption.set(1f);
-        }
-        else
+        //float allNeedsAmount = needs.sum();
+        //if (allNeedsAmount == 0f)
+        //{
+        //    consumption.set(1f);
+        //}
+        //else
         {
             float shortage = 0f;
-            foreach (var item in needs)
+            foreach (var stor in needs)
             {
-                if (owner.storageSet.has(item))
-                    owner.storageSet.subtract(item);
+                if (owner.storageSet.has(stor))
+                {
+                    owner.storageSet.subtract(stor);
+                    consumption.add(stor);
+                }
                 else
-                    shortage += item.get();
+                    shortage += stor.get();
             }
-            if (shortage == 0f)
-                consumption.set(1f);
-            else
-                consumption.set((allNeedsAmount - shortage) / allNeedsAmount);
+            //if (shortage == 0f)
+            //    consumption.set(1f);
+            //else
+            //    consumption.set((allNeedsAmount - shortage) / allNeedsAmount);
         }
-        float moralChange = consumption.get() - moral.get();
+        //float moralChange = consumption.get() - moral.get();
+        float moralChange = getConsumptionProcent(Product.Food).get() - moral.get();
         moralChange = Mathf.Clamp(moralChange, Options.MaxMoralChangePerTic * -1f, Options.MaxMoralChangePerTic);
         if (moral.get() + moralChange < 0)
             moral.set(0f);
         else
             moral.add(moralChange);
     }
-    public Procent getConsumption(Country owner)
+    public PrimitiveStorageSet getConsumption()
     {
-        return consumption;
-        //return owner.storageSet.HowMuchHaveOf(getRealNeeds());
+        return consumption;        
+    }
+    internal Procent getConsumptionProcent(Product prod)
+    {
+        return Procent.makeProcent(consumption.getStorage(prod), getRealNeeds().getStorage(prod));
+    }
+    internal Value getConsumption(Product prod)
+    {
+        return consumption.getStorage(prod);
     }
     public PrimitiveStorageSet getRealNeeds()
     {
@@ -130,7 +140,7 @@ public class Corps
             origin.takeLoss(loss);
             return loss;
         }
-        else 
+        else
         {
             int wasSize = size;
             origin.takeLoss(size);
@@ -147,7 +157,12 @@ public class Corps
     internal void add(Corps another)
     {
         size += another.getSize();
-        moral.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);        
+        moral.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
+    }
+
+    internal void setStatisticToZero()
+    {
+        consumption.setZero();
     }
 }
 namespace DesignPattern.Objectpool

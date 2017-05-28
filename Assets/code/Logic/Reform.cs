@@ -21,9 +21,9 @@ abstract public class AbstractReformValue : AbstractCondition
         description = indescription;
         this.allowed = condition;
         wantsReform = new Modifier(x => this.howIsItGoodForPop(x as PopUnit).get(),
-                    "How much is it good for population", true, 1f);
+                    "How much is it good for population",  1f);
         loyalty =  new Modifier(x => this.loyaltyBoostFor(x as PopUnit),
-                    "Loyalty", true, 1f);
+                    "Loyalty",  1f);
         modVoting = new ModifiersList(new List<Condition>{
         wantsReform, loyalty,education
         });

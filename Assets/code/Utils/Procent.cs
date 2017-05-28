@@ -27,7 +27,27 @@ public class Procent : Value
     {
 
     }
-    //check it
+    public static Procent makeProcent(Value numerator, Value denominator)
+    {
+        if (denominator.get() == 0f)
+        {
+            Debug.Log("Division by zero in Procent.makeProcent(Storage)");
+            return new Procent(0f);
+        }
+        else
+            return new Procent(numerator.get() / denominator.get());
+    }
+    public static Procent makeProcent(int numerator, int denominator)
+    {
+        if (denominator == 0)
+        {
+            Debug.Log("Division by zero in Procent.makeProcent()");
+            return new Procent(0f);
+        }
+        else
+            return new Procent(numerator / (float)denominator);
+    }
+    //TODO check it
     public static Procent makeProcent(PrimitiveStorageSet numerator, PrimitiveStorageSet denominator)
     {
         float allGoodsAmount = numerator.sum();
@@ -65,16 +85,7 @@ public class Procent : Value
         return get() - 0.5f;
     }
 
-    public static Procent makeProcent(int numerator, int denominator)
-    {
-        if (denominator == 0)
-        {
-            Debug.Log("Division by zero in Procent.makeProcent()");
-            return new Procent(0f);
-        }
-        else
-            return new Procent(numerator / (float)denominator);
-    }
+    
     public Value sendProcentToNew(Value source)
     {
 

@@ -13,20 +13,9 @@ public class Product
     static int resourceCounter = 0;
     Value defaultPrice;
 
-    internal static Product Food;
-    internal static Product Wood;
-    internal static Product Lumber;
-    internal static Product Furniture;
-    internal static Product Gold;
-    internal static Product Metal;
-    internal static Product MetallOre;
-    internal static Product Wool;
-    internal static Product Clothes;
+    internal static Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
+     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms;
 
-    internal static Product Stone;
-    internal static Product Cement;
-    internal static Product Fruit;
-    internal static Product Wine;
     internal bool isResource()
     {
         return resource;
@@ -69,6 +58,9 @@ public class Product
         if (inName == "Cement") Cement = this;
         if (inName == "Fruit") Fruit = this;
         if (inName == "Wine") Wine = this;
+        if (inName == "Cold arms") ColdArms = this;
+        if (inName == "Ammunition") Ammunition = this;
+        if (inName == "Firearms") Firearms = this;
 
         //TODO checks for duplicates&
     }
