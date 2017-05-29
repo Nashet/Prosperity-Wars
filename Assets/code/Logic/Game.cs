@@ -869,7 +869,7 @@ public class Game
                 province.allPopUnits.RemoveAll(x => x.getPopulation() == 0);
                 PopUnit.PopListToAddToGeneralList.Clear();
             }
-            country.Think();
+            country.think();
         }
     }
 }

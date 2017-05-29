@@ -159,7 +159,10 @@ public class Country : Consumer
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), new CountryWallet(0f), Color.yellow, null);
-
+    static Condition condDontHaveDeposits = new Condition(x => (x as Owner).deposits.get() == 0f, "Don't have deposits", false);
+    static Condition condDontHaveLoans = new Condition(x => (x as Owner).loans.get() == 0f, "Don't have loans", false);
+    public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
+    public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
     public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
     {
         homeArmy = new Army(this);
@@ -211,6 +214,7 @@ public class Country : Consumer
         return ownedProvinces.Count > 0;
     }
     internal static IEnumerable<Country> allExisting = getExisting();
+    internal int autoPutInBankLimit =2000;
 
     static IEnumerable<Country> getExisting()
     {
@@ -449,19 +453,20 @@ public class Country : Consumer
         else
             return name + " country";
     }
-    internal void Think()
+    internal void think()
     {
         if (Game.devMode)
             sciencePoints.add(this.getMenPopulation());
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-        //sciencePoints.add(this.getMenPopulation());
-        if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 1000f)
-            bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
-        else
-            bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get()));
-
-
+        sciencePoints.add(this.getMenPopulation());
+       
+        if (this.autoPutInBankLimit > 0f)
+        {
+            float extraMoney = wallet.haveMoney.get() - (float)this.autoPutInBankLimit;
+            if (extraMoney > 0f)
+                bank.takeMoney(this, new Value(extraMoney));
+        }
         allArmies.ForEach(x => x.consume());
         buyNeeds(); // Should go After all Armies consumption
 
@@ -491,14 +496,14 @@ public class Country : Consumer
         {
             // if I want to buy           
             Storage toBuy = new Storage(pro, needs.getStorage(pro).get() - storageSet.getStorage(pro).get());
-            buyNeeds(toBuy);            
+            buyNeeds(toBuy);
         }
         //buy x day needs
         foreach (var pro in Product.allProducts)
         {
             Storage toBuy = new Storage(pro, needs.getStorage(pro).get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getStorage(pro).get());
             buyNeeds(toBuy);
-        }       
+        }
     }
     void buyNeeds(Storage toBuy)
     {

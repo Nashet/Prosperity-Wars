@@ -97,9 +97,6 @@ public class CountryWallet : Wallet
     {
         richTaxIncome.add(toAdd);
     }
-
-   
-
     internal void goldMinesIncomeAdd(Value toAdd)
     {
         goldMinesIncome.add(toAdd);

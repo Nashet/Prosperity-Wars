@@ -4,24 +4,56 @@ using System;
 
 public class Bank
 {
+    /// <summary>
+    /// how much money have in cash
+    /// </summary>
     Wallet reservs = new Wallet(0);
     Value givenLoans = new Value(0);
-    internal void PutOnDeposit(Wallet fromWho, Value howMuch)
+
+    // 
+    internal void takeMoney(Owner giver, Value howMuch)
     {
-        fromWho.pay(reservs, howMuch);
+        giver.wallet.pay(reservs, howMuch);
+        if (giver.loans.get() > 0f)  //has debt (meaning has no deposits)
+            if (howMuch.get() >= giver.loans.get()) // cover debt
+            {
+                float extraMoney = howMuch.get() - giver.loans.get();
+                this.givenLoans.subtract(giver.loans);
+                giver.loans.set(0f);
+                giver.deposits.set(extraMoney);
+            }
+            else// not cover debt
+            {
+                giver.loans.subtract(howMuch);
+                this.givenLoans.subtract(howMuch);
+            }
+        else
+            giver.deposits.add(howMuch);
     }
-    internal void TakeFromDeposit(Wallet forWho, Value howMuch)
-    {
-        reservs.pay(forWho, howMuch);
-    }
+
     /// <summary>
     /// checks are outside
     /// </summary>   
-    internal void TakeLoan(Producer taker, Value howMuch)
+    internal void giveMoney(Owner taker, Value howMuch)
     {
         reservs.pay(taker.wallet, howMuch);
-        taker.loans.add(howMuch);
-        this.givenLoans.add(howMuch);
+        if (taker.deposits.get() > 0f) // has deposit (meaning, has no loans)
+            if (howMuch.get() >= taker.deposits.get())// loan is bigger than this deposit
+            {
+                float notEnoughMoney = howMuch.get() - taker.deposits.get();
+                taker.deposits.set(0f);
+                taker.loans.set(notEnoughMoney);
+                this.givenLoans.add(notEnoughMoney);
+            }
+            else // not cover
+            {
+                taker.deposits.subtract(howMuch);
+            }
+        else
+        {
+            taker.loans.add(howMuch);
+            this.givenLoans.add(howMuch);
+        }
     }
     /// <summary>
     /// checks are outside
@@ -37,6 +69,9 @@ public class Bank
     {
         return new Value(givenLoans.get());
     }
+    /// <summary>
+    /// how much money have in cash
+    /// </summary>
     internal float getReservs()
     {
         return reservs.haveMoney.get();
@@ -72,6 +107,6 @@ public class Bank
     internal void add(Bank annexingBank)
     {
         annexingBank.reservs.sendAll(this.reservs);
-        annexingBank.givenLoans.sendAll(this.givenLoans);        
+        annexingBank.givenLoans.sendAll(this.givenLoans);
     }
 }

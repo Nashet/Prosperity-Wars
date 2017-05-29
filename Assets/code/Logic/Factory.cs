@@ -54,17 +54,17 @@ public class Factory : Producer
 
 
         modifierHasResourceInProvince = new Modifier(x => !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput),
-           "Has input resource in this province",  20f, false);
+           "Has input resource in this province", 20f, false);
         modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", 1f, false);
         modifierInventedMiningAndIsShaft = new Modifier(
              forWhom => (forWhom as Country).isInvented(InventionType.mining) && type.isShaft(),
-           new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(),  50f, false);
-        modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government",  -20f, false);
+           new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), 50f, false);
+        modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government", -20f, false);
 
         modifierNotBelongsToCountry = new Condition(
            x => !(factoryOwner is Country),
           "Doesn't belongs to government", false);
-        modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized",  -10f, false);
+        modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized", -10f, false);
         modifierEfficiency = new ModifiersList(new List<Condition>()
         {
             //x=>(x as Country).isInvented(InventionType.steamPower)
@@ -822,7 +822,7 @@ public class Factory : Producer
                     {
                         Value loanSize = new Value(leftOver * -1f);
                         if (province.getOwner().bank.CanITakeThisLoan(loanSize))
-                            province.getOwner().bank.TakeLoan(this, loanSize);
+                            province.getOwner().bank.giveMoney(this, loanSize);
                     }
                     leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver >= 0f)
@@ -998,10 +998,27 @@ public class Owner
     /// money should be here??
     /// </summary>
     public Wallet wallet; // = new Wallet(0f);
+    public Value loans = new Value(0);
+    public Value deposits = new Value(0);
     public Owner(CountryWallet wallet)
     {
         this.wallet = wallet;
     }
+    //todo should be Value
+    //public float getLoans()
+    //{
+    //    if (loans.get() > 0f)
+    //        return loans.get();
+    //    else
+    //        return 0f;
+    //}
+    //public float getDeposits()
+    //{
+    //    if (loans.get() > 0f)
+    //        return 0f;
+    //    else
+    //        return loans.get() * -1f;
+    //}
     public Owner()
     {
         this.wallet = new Wallet(0f);
@@ -1024,7 +1041,7 @@ public abstract class Consumer : Owner
     public Consumer() : base() { }
     public Consumer(CountryWallet wallet) : base(wallet) { }
     public virtual void setStatisticToZero()
-    {        
+    {
         wallet.moneyIncomethisTurn.set(0f);
         consumedLastTurn.copyDataFrom(consumedTotal); // temp   
         consumedTotal.setZero();
@@ -1041,7 +1058,7 @@ public abstract class Producer : Consumer
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
 
-    internal Value loans = new Value(0);
+
 
 
     //protected Country owner; //Could be any Country or POP
@@ -1055,10 +1072,10 @@ public abstract class Producer : Consumer
     public abstract void payTaxes();
     override public void setStatisticToZero()
     {
-        base.setStatisticToZero();    
-        gainGoodsThisTurn.set(0f);              
+        base.setStatisticToZero();
+        gainGoodsThisTurn.set(0f);
         sentToMarket.set(0f);
-        
+
     }
     public void getMoneyFromMarket()
     {

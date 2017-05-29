@@ -1141,7 +1141,7 @@ abstract public class PopUnit : Producer
                             Value needLoan = new Value(cost.get() - wallet.haveMoney.get());
                             if (province.getOwner().bank.CanITakeThisLoan(needLoan))
                             {
-                                province.getOwner().bank.TakeLoan(this, needLoan);
+                                province.getOwner().bank.giveMoney(this, needLoan);
                                 Factory found = new Factory(province, this, proposition);
                                 wallet.payWithoutRecord(found.wallet, cost);
                             }
@@ -1169,7 +1169,7 @@ abstract public class PopUnit : Producer
                             Value needLoan = new Value(cost.get() - wallet.haveMoney.get());
                             if (province.getOwner().bank.CanITakeThisLoan(needLoan))
                             {
-                                province.getOwner().bank.TakeLoan(this, needLoan);
+                                province.getOwner().bank.giveMoney(this, needLoan);
                                 factory.upgrade(this);
                             }
                         }
