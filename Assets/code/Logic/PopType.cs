@@ -70,7 +70,7 @@ public class PopType
 
                 luxuryNeeds.set(new Storage(Product.Fruit, 1f));
                 luxuryNeeds.set(new Storage(Product.Firearms, 1f));
-                luxuryNeeds.set(new Storage(Product.Firearms, 0.5f));
+                luxuryNeeds.set(new Storage(Product.Ammunition, 0.5f));
                 break;
             case PopTypes.Farmers:
                 farmers = this;

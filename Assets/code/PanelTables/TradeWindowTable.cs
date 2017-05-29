@@ -8,7 +8,6 @@ using System;
 
 public class TradeWindowTable : MyTable
 {
-
     override protected void Refresh()
     {
         ////if (Game.date != 0)

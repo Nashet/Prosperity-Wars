@@ -69,5 +69,5 @@ public static class Options
     
     internal static readonly float MaxMoralChangePerTic = 0.05f;
     internal static readonly int PopRichStrataVotePower = 5;
-    
+    internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
 }

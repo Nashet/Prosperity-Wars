@@ -81,9 +81,9 @@ public class Market : Owner//: PrimitiveStorageSet
         return cost;
     }
     /// <summary>
-    /// Meaning demander actyally can pay for item in current prices
+    /// Meaning demander actually can pay for item in current prices
     /// Basing on current prices and needs
-    /// Not encounting ConsumedInMarket
+    /// Not counting ConsumedInMarket
     /// </summary>    
     internal float getBouth(Product pro, bool takeThisTurnData)
     {
@@ -91,6 +91,7 @@ public class Market : Owner//: PrimitiveStorageSet
         if (takeThisTurnData)
         {
             foreach (Country country in Country.allExisting)
+            {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.allProducers)
                     {
@@ -101,6 +102,10 @@ public class Market : Owner//: PrimitiveStorageSet
                                 result += re.get();
                         }
                     }
+                Storage countryStor = country.consumedInMarket.findStorage(pro);
+                if (countryStor != null)
+                    result += countryStor.get();
+            }
             return result;
         }
         if (dateOfgetBouth != Game.date)
@@ -110,6 +115,7 @@ public class Market : Owner//: PrimitiveStorageSet
             {
                 result = 0;
                 foreach (Country country in Country.allExisting)
+                {
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.allProducers)
                         {
@@ -120,6 +126,10 @@ public class Market : Owner//: PrimitiveStorageSet
                                     result += re.get();
                             }
                         }
+                    Storage countryStor = country.consumedInMarket.findStorage(sup.getProduct());
+                    if (countryStor != null)
+                        result += countryStor.get();
+                }
                 getBouthBuffer.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetBouth = Game.date;
@@ -148,9 +158,9 @@ public class Market : Owner//: PrimitiveStorageSet
         //return result;
     }
     /// <summary>
-    /// Meaning demander actyally can pay for item in current prices
+    /// Meaning demander actually can pay for item in current prices
     /// Basing on current prices and needs
-    /// Not encounting ConumedInMarket
+    /// Not counting ConumedInMarket
     /// </summary>    
     internal float getTotalConsumption(Product pro, bool takeThisTurnData)
     {
@@ -158,6 +168,7 @@ public class Market : Owner//: PrimitiveStorageSet
         if (takeThisTurnData)
         {
             foreach (Country country in Country.allExisting)
+            {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.allProducers)
                     {
@@ -168,6 +179,10 @@ public class Market : Owner//: PrimitiveStorageSet
                                 result += re.get();
                         }
                     }
+                Storage countryStor = country.consumedTotal.findStorage(pro);
+                if (countryStor != null)
+                    result += countryStor.get();
+            }
             return result;
         }
         if (dateOfgetTotalConsumption != Game.date)
@@ -177,6 +192,7 @@ public class Market : Owner//: PrimitiveStorageSet
             {
                 result = 0;
                 foreach (Country country in Country.allExisting)
+                {
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.allProducers)
                         {
@@ -187,8 +203,10 @@ public class Market : Owner//: PrimitiveStorageSet
                                     result += re.get();
                             }
                         }
-
-
+                    Storage countryStor = country.consumedTotal.findStorage(sup.getProduct());
+                    if (countryStor != null)
+                        result += countryStor.get();
+                }
                 getTotalConsumptionBuffer.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetTotalConsumption = Game.date;
@@ -502,7 +520,7 @@ public class Market : Owner//: PrimitiveStorageSet
     /// returns how much was sold de-facto
     /// new version of byy-old
     /// </summary>   
-    internal Storage Buy(Consumer buyer, Storage buying)
+    internal Storage buy(Consumer buyer, Storage buying)
     {
 
         //Storage storage = findStorage(what.getProduct());
@@ -585,7 +603,7 @@ public class Market : Owner//: PrimitiveStorageSet
             Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
             if (howMuchCanAfford.get() > 0f)
             {
-                howMuchCanAfford = Game.market.Buy(forWhom, howMuchCanAfford);
+                howMuchCanAfford = Game.market.buy(forWhom, howMuchCanAfford);
                 if (howMuchCanAfford.get() > 0f)
                 {
                     forWhom.consumedTotal.add(howMuchCanAfford);
@@ -602,7 +620,7 @@ public class Market : Owner//: PrimitiveStorageSet
     {
         if (need.get() > 0f)
         {
-            var actualConsumption = Game.market.Buy(forWhom, need);
+            var actualConsumption = Game.market.buy(forWhom, need);
             // todo connect to Buy,                     
             forWhom.consumedTotal.add(actualConsumption);
             forWhom.consumedInMarket.add(actualConsumption);
@@ -637,9 +655,9 @@ public class Market : Owner//: PrimitiveStorageSet
         return new Storage(need.getProduct(), actuallyNeedsFullfilled);
     }
     /// <summary>
-    /// return true if buying is zero
+    /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
-    internal bool Buy(Producer buyer, PrimitiveStorageSet buying, Procent buyInTime, PrimitiveStorageSet ofWhat)
+    internal bool buy(Producer buyer, PrimitiveStorageSet buying, Procent buyInTime, PrimitiveStorageSet ofWhat)
     {
         bool buyingIsEmpty = true;
         foreach (Storage what in ofWhat)
@@ -660,7 +678,7 @@ public class Market : Owner//: PrimitiveStorageSet
         return buyingIsEmpty;
 
     }
-    internal void Buy(Factory buyer, PrimitiveStorageSet buying, CountryWallet subsidizer)
+    internal void buy(Factory buyer, PrimitiveStorageSet buying, CountryWallet subsidizer)
     {
         // Storage actualConsumption;
         foreach (Storage input in buying)

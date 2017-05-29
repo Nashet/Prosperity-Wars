@@ -189,6 +189,7 @@ public class Country : Consumer
             inventions.MarkInvented(InventionType.farming);
             inventions.MarkInvented(InventionType.manufactories);
             inventions.MarkInvented(InventionType.banking);
+            inventions.MarkInvented(InventionType.metal);
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
@@ -454,7 +455,7 @@ public class Country : Consumer
             sciencePoints.add(this.getMenPopulation());
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-        sciencePoints.add(this.getMenPopulation());
+        //sciencePoints.add(this.getMenPopulation());
         if (isInvented(InventionType.banking) && wallet.haveMoney.get() <= 1000f)
             bank.PutOnDeposit(wallet, new Value(wallet.moneyIncomethisTurn.get() / 2f));
         else
@@ -484,24 +485,31 @@ public class Country : Consumer
     public override void buyNeeds()
     {
         var needs = getNeeds();
+        //if (wallet.canPay(Game.market.getCost(needs)))
+        //buy 1 day needs
         foreach (var pro in Product.allProducts)
         {
-
             // if I want to buy           
-            if (storageSet.getStorage(pro).get() > needs.getStorage(pro).get() * 10)
-                ;
-            else
-            {
-                //TerrainChangedFlags getConsumption to getNeeds
-                //fix metal producing
-                Storage toBuy = new Storage(pro, needs.getStorage(pro).get() * 10 - storageSet.getStorage(pro).get());
-                if (toBuy.get() < 10f) toBuy.set(10);
-                toBuy.multiple(Game.market.buy(this, toBuy, null));
-                storageSet.add(toBuy);
-                getCountryWallet().storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
-
-            }
-
+            Storage toBuy = new Storage(pro, needs.getStorage(pro).get() - storageSet.getStorage(pro).get());
+            buyNeeds(toBuy);            
+        }
+        //buy x day needs
+        foreach (var pro in Product.allProducts)
+        {
+            Storage toBuy = new Storage(pro, needs.getStorage(pro).get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getStorage(pro).get());
+            buyNeeds(toBuy);
+        }       
+    }
+    void buyNeeds(Storage toBuy)
+    {
+        // if I want to buy           
+        //Storage toBuy = new Storage(pro, needs.getStorage(pro).get()* days - storageSet.getStorage(pro).get());
+        if (toBuy.get() > 0f)
+        {
+            //if (toBuy.get() < 10f) toBuy.set(10);
+            toBuy.multiple(Game.market.buy(this, toBuy, null));
+            storageSet.add(toBuy);
+            getCountryWallet().storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
         }
     }
     public PrimitiveStorageSet getNeeds()

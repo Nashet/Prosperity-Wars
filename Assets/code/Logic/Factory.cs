@@ -699,9 +699,9 @@ public class Factory : Producer
 
             //todo !CAPITALISM part
             if (isSubsidized())
-                Game.market.Buy(this, new PrimitiveStorageSet(shoppingList), province.getOwner().getCountryWallet());
+                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getOwner().getCountryWallet());
             else
-                Game.market.Buy(this, new PrimitiveStorageSet(shoppingList), null);
+                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
         }
         if (isUpgrading() || isBuilding())
         {
@@ -711,10 +711,10 @@ public class Factory : Producer
             if (isMarket)
             {
                 if (isBuilding())
-                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
+                    isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
                 else
                     if (isUpgrading())
-                    isBuyingComplete = Game.market.Buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
+                    isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
                 // what if not enough money to complete buildinG?
                 float minimalFond = wallet.haveMoney.get() - 50f;
 
@@ -1023,6 +1023,13 @@ public abstract class Consumer : Owner
     public abstract void buyNeeds();
     public Consumer() : base() { }
     public Consumer(CountryWallet wallet) : base(wallet) { }
+    public virtual void setStatisticToZero()
+    {        
+        wallet.moneyIncomethisTurn.set(0f);
+        consumedLastTurn.copyDataFrom(consumedTotal); // temp   
+        consumedTotal.setZero();
+        consumedInMarket.setZero();
+    }
 }
 public abstract class Producer : Consumer
 {    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
@@ -1046,14 +1053,12 @@ public abstract class Producer : Consumer
     public abstract void produce();
 
     public abstract void payTaxes();
-    virtual public void setStatisticToZero()
-    {       
-        gainGoodsThisTurn.set(0f);      
-        wallet.moneyIncomethisTurn.set(0f);
-        consumedLastTurn.copyDataFrom(consumedTotal); // temp        
+    override public void setStatisticToZero()
+    {
+        base.setStatisticToZero();    
+        gainGoodsThisTurn.set(0f);              
         sentToMarket.set(0f);
-        consumedTotal.setZero();
-        consumedInMarket.setZero();        
+        
     }
     public void getMoneyFromMarket()
     {
