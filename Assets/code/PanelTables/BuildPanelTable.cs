@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-// represent each opunit record in table
 
 public class BuildPanelTable : MyTable
 {
