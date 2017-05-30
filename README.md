@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Nashet/EconomicSimulation.svg?style=plastic)](https://waffle.io/Nashet/EconomicSimulation)
+[![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) 
 # Economic simulation
 ## Demo
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
@@ -18,7 +18,7 @@ So, main principles of that simulation are:
  - basic trade & production
  - basic warfare
  - basic inventions
- - basic reforms (voting is not implemented yet)"
+ - basic reforms (voting is not implemented yet)
  - population demotion\promotion to other classes
  - migration (inside country)
  - assimilation
