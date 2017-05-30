@@ -38,22 +38,22 @@ public class Factory : Producer
         modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised;
     internal Condition modifierNotBelongsToCountry;
 
-    internal Factory(Province iprovince, Owner inowner, FactoryType intype)
+    internal Factory(Province province, Owner inowner, FactoryType intype) : base(province.getCountry().bank)
     { //assuming this is level 0 building
         type = intype;
         needsToUpgrade = type.getBuildNeeds();
-        iprovince.allFactories.Add(this);
+        province.allFactories.Add(this);
         factoryOwner = inowner;
-        province = iprovince;
+        base.province = province;
 
         gainGoodsThisTurn = new Storage(type.basicProduction.getProduct());
         storageNow = new Storage(type.basicProduction.getProduct());
         sentToMarket = new Storage(type.basicProduction.getProduct());
 
-        salary.set(province.getLocalMinSalary());
+        salary.set(base.province.getLocalMinSalary());
 
 
-        modifierHasResourceInProvince = new Modifier(x => !type.isResourceGathering() && province.isProducingOnFactories(type.resourceInput),
+        modifierHasResourceInProvince = new Modifier(x => !type.isResourceGathering() && base.province.isProducingOnFactories(type.resourceInput),
            "Has input resource in this province", 20f, false);
         modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", 1f, false);
         modifierInventedMiningAndIsShaft = new Modifier(
@@ -77,10 +77,10 @@ public class Factory : Producer
             modifierHasResourceInProvince, modifierLevelBonus,
             modifierBelongsToCountry, modifierIsSubsidised
         });
-        Condition factoryPlacedInOurCountry = new Condition((forWhom) => province.getOwner() == forWhom, "Enterprise placed in our country", false);
+        Condition factoryPlacedInOurCountry = new Condition((forWhom) => base.province.getCountry() == forWhom, "Enterprise placed in our country", false);
         conditionsUpgrade = new ConditionsList(new List<Condition>()
         {
-            new Condition(x=>  province.getOwner().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            new Condition(x=>  base.province.getCountry().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
             new Condition(x=> !isUpgrading() , "Not upgrading", false),
             new Condition(x=>  !isBuilding(), "Not building", false),
             new Condition(x=> isWorking(), "Open", false),
@@ -100,14 +100,14 @@ public class Factory : Producer
 
         conditionsClose = new ConditionsList(new List<Condition>()
         {
-            new Condition(x=>  province.getOwner().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            new Condition(x=>  base.province.getCountry().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
             new Condition(x=>  !isBuilding(),  "Not building", false),
             new Condition(x=>   isWorking(),  "Open", false),
             factoryPlacedInOurCountry
         });
         conditionsReopen = new ConditionsList(new List<Condition>()
         {
-            new Condition(x=>  province.getOwner().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            new Condition(x=>  base.province.getCountry().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
             new Condition(x=>  !isBuilding(), "Not building", false),
             new Condition(x=> !isWorking(), "Close", false),
             new Condition(x=>  (x as Owner).wallet.canPay(getReopenCost()),  delegate () {
@@ -321,7 +321,7 @@ public class Factory : Producer
         if (isWorking())
         {
             // per 1000 men            
-            if (Economy.isMarket.checkIftrue(province.getOwner()))
+            if (Economy.isMarket.checkIftrue(province.getCountry()))
             {
                 foreach (PopLinkage link in hiredWorkForce)
                 {
@@ -332,14 +332,14 @@ public class Factory : Producer
                     else
                         if (isSubsidized()) //take maney and try again
                     {
-                        province.getOwner().getCountryWallet().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
+                        province.getCountry().getCountryWallet().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
                         if (wallet.canPay(howMuchPay))
                             wallet.pay(link.pop.wallet, howMuchPay);
                         else
-                            salary.set(province.getOwner().getMinSalary());
+                            salary.set(province.getCountry().getMinSalary());
                     }
                     else
-                        salary.set(province.getOwner().getMinSalary());
+                        salary.set(province.getCountry().getMinSalary());
                     //todo else dont pay if there is nothing to pay
                 }
             }
@@ -432,8 +432,8 @@ public class Factory : Producer
                     this.wallet.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
                     Value sentToGovernment = new Value(wallet.moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
-                    wallet.pay(province.getOwner().wallet, sentToGovernment);
-                    province.getOwner().getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
+                    wallet.pay(province.getCountry().wallet, sentToGovernment);
+                    province.getCountry().getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
                 }
                 else
                 {
@@ -443,7 +443,7 @@ public class Factory : Producer
                 }
 
                 //if (province.getOwner().isInvented(InventionType.capitalism))
-                if (Economy.isMarket.checkIftrue(province.getOwner()))
+                if (Economy.isMarket.checkIftrue(province.getCountry()))
                 {
                     // Buyers should come and buy something...
                     // its in other files.
@@ -479,7 +479,7 @@ public class Factory : Producer
     internal void changeSalary()
     {
         //if (getLevel() > 0)
-        if (isWorking() && Economy.isMarket.checkIftrue(province.getOwner()))
+        if (isWorking() && Economy.isMarket.checkIftrue(province.getCountry()))
         //        province.getOwner().isInvented(InventionType.capitalism))
         {
             // rise salary to attract  workforce
@@ -498,7 +498,7 @@ public class Factory : Producer
             if (getWorkForce() < 100 && province.getUnemployedWorkers() == 0 && this.wallet.haveMoney.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.09f);
 
-            float minSalary = province.getOwner().getMinSalary();
+            float minSalary = province.getCountry().getMinSalary();
             // reduce salary on non-profit
             if (getProfit() < 0 && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
@@ -641,7 +641,7 @@ public class Factory : Producer
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-            result.set(result.get() * (1f + modifierEfficiency.getModifier(province.getOwner()) / 100f));
+            result.set(result.get() * (1f + modifierEfficiency.getModifier(province.getCountry()) / 100f));
         return result;
     }
 
@@ -699,7 +699,7 @@ public class Factory : Producer
 
             //todo !CAPITALISM part
             if (isSubsidized())
-                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getOwner().getCountryWallet());
+                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getCountry().getCountryWallet());
             else
                 Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
         }
@@ -707,7 +707,7 @@ public class Factory : Producer
         {
             bool isBuyingComplete = false;
             daysInConstruction++;
-            bool isMarket = Economy.isMarket.checkIftrue(province.getOwner());// province.getOwner().isInvented(InventionType.capitalism);
+            bool isMarket = Economy.isMarket.checkIftrue(province.getCountry());// province.getOwner().isInvented(InventionType.capitalism);
             if (isMarket)
             {
                 if (isBuilding())
@@ -753,12 +753,12 @@ public class Factory : Producer
         toRemove = true;
 
         //return loasns only if banking invented
-        if (province.getOwner().isInvented(InventionType.banking))
+        if (province.getCountry().isInvented(InventionType.banking))
         {
             Value howMuchToReturn = new Value(loans.get());
             if (howMuchToReturn.get() < wallet.haveMoney.get())
                 howMuchToReturn.set(wallet.haveMoney.get());
-            province.getOwner().bank.returnLoan(this, howMuchToReturn);
+            province.getCountry().bank.returnLoan(this, howMuchToReturn);
         }
         wallet.pay(getOwnerWallet(), wallet.haveMoney);
         MainCamera.factoryPanel.removeFactory(this);
@@ -815,14 +815,14 @@ public class Factory : Producer
                 markToDestroy();
             else if (Game.random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
-                if (province.getOwner().isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
+                if (province.getCountry().isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
                 {
                     float leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver < 0)
                     {
                         Value loanSize = new Value(leftOver * -1f);
-                        if (province.getOwner().bank.CanITakeThisLoan(loanSize))
-                            province.getOwner().bank.giveMoney(this, loanSize);
+                        if (province.getCountry().bank.CanITakeThisLoan(loanSize))
+                            province.getCountry().bank.giveMoney(this, loanSize);
                     }
                     leftOver = wallet.haveMoney.get() - wantsMinMoneyReserv();
                     if (leftOver >= 0f)
@@ -1000,9 +1000,26 @@ public class Owner
     public Wallet wallet; // = new Wallet(0f);
     public Value loans = new Value(0);
     public Value deposits = new Value(0);
+    /// <summary>
+    /// only for countries
+    /// </summary>
+    /// <param name="wallet"></param>
     public Owner(CountryWallet wallet)
     {
         this.wallet = wallet;
+        
+    }    
+    public Owner(Bank bank)
+    {
+        this.wallet = new Wallet(0f, bank);
+        //wallet.setBank();
+    }
+    internal CountryWallet getCountryWallet()
+    {
+        if (this is Country)
+            return wallet as CountryWallet;
+        else
+            return null;
     }
     //todo should be Value
     //public float getLoans()
@@ -1019,18 +1036,6 @@ public class Owner
     //    else
     //        return loans.get() * -1f;
     //}
-    public Owner()
-    {
-        this.wallet = new Wallet(0f);
-    }
-    internal CountryWallet getCountryWallet()
-    {
-        if (this is Country)
-            return wallet as CountryWallet;
-        else
-            return null;
-
-    }
 }
 public abstract class Consumer : Owner
 {
@@ -1038,7 +1043,8 @@ public abstract class Consumer : Owner
     public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void buyNeeds();
-    public Consumer() : base() { }
+    //public Consumer() : base(this as Country) { }
+    public Consumer(Bank bank) : base(bank) { }
     public Consumer(CountryWallet wallet) : base(wallet) { }
     public virtual void setStatisticToZero()
     {
@@ -1051,16 +1057,10 @@ public abstract class Consumer : Owner
 public abstract class Producer : Consumer
 {    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
     public Storage storageNow;
-
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
-
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
-
-
-
-
     //protected Country owner; //Could be any Country or POP
     public Province province;
 
@@ -1070,6 +1070,8 @@ public abstract class Producer : Consumer
     public abstract void produce();
 
     public abstract void payTaxes();
+    public Producer(Bank bank) : base(bank)
+    { }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
@@ -1087,14 +1089,14 @@ public abstract class Producer : Consumer
             realSold.multiple(DSB);
             float cost = Game.market.getCost(realSold);
             storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
-            if (Game.market.wallet.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+            if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {
-                Game.market.wallet.pay(this.wallet, new Value(cost));
+                Game.market.pay(this.wallet, new Value(cost));
 
                 //Game.market.sentToMarket.subtract(realSold);
             }
-            else if (Game.market.wallet.HowMuchCanNotAfford(cost).get() > 10f)
-                Debug.Log("Failed market - producer payment: " + Game.market.wallet.HowMuchCanNotAfford(cost)); // money in market ended... Only first lucky get money
+            else if (Game.market.HowMuchCanNotAfford(cost).get() > 10f)
+                Debug.Log("Failed market - producer payment: " + Game.market.HowMuchCanNotAfford(cost)); // money in market ended... Only first lucky get money
         }
     }
 }

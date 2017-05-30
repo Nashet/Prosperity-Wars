@@ -50,13 +50,13 @@ public class PopUnitPanel : DragPanel
             string immigrationText;
             var targetIM = pop.getRichestImmigrationTarget();
             if (pop.wantsToImmigrate() && targetIM != null && pop.getImmigrationSize() > 0)
-                immigrationText = targetIM + " ("+targetIM.getOwner() + ") " + pop.getImmigrationSize();
+                immigrationText = targetIM + " ("+targetIM.getCountry() + ") " + pop.getImmigrationSize();
             else
                 immigrationText = "none";
 
             string assimilationText;            
-            if (pop.culture != pop.province.getOwner().culture && pop.getAssimilationSize() > 0)
-                assimilationText = pop.province.getOwner().culture + " " + pop.getAssimilationSize();
+            if (pop.culture != pop.province.getCountry().culture && pop.getAssimilationSize() > 0)
+                assimilationText = pop.province.getCountry().culture + " " + pop.getAssimilationSize();
             else
                 assimilationText = "none";
             string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";

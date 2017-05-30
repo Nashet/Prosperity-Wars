@@ -41,7 +41,11 @@ public class Province
         setProvinceCenter();
         SetLabel();
     }
-    internal Country getOwner()
+    /// <summary>
+    /// returns 
+    /// </summary>
+    /// <returns></returns>
+    internal Country getCountry()
     {
         //if (owner == null)
         //    return Country.NullCountry;
@@ -52,9 +56,9 @@ public class Province
     { return ID; }
     public void InitialOwner(Country taker)
     {
-        if (this.getOwner() != null)
-            if (this.getOwner().ownedProvinces != null)
-                this.getOwner().ownedProvinces.Remove(this);
+        if (this.getCountry() != null)
+            if (this.getCountry().ownedProvinces != null)
+                this.getCountry().ownedProvinces.Remove(this);
         owner = taker;
 
         if (taker.ownedProvinces == null)
@@ -68,13 +72,13 @@ public class Province
         //refuse loans to old country bank
         foreach (var producer in allProducers)
             if (producer.loans.get() != 0f)
-                getOwner().bank.defaultLoaner(producer);
+                getCountry().bank.defaultLoaner(producer);
 
-        if (getOwner().isOneProvince())
-            getOwner().killCountry(taker);
+        if (getCountry().isOneProvince())
+            getCountry().killCountry(taker);
         else
             if (isCapital())
-            getOwner().moveCapitalTo(getOwner().getRandomOwnedProvince(x => x != this));
+            getCountry().moveCapitalTo(getCountry().getRandomOwnedProvince(x => x != this));
 
         this.demobilize();
 
@@ -82,9 +86,9 @@ public class Province
         allPopUnits.ForEach(x => x.loyalty.set(0f));
 
 
-        if (this.getOwner() != null)
-            if (this.getOwner().ownedProvinces != null)
-                this.getOwner().ownedProvinces.Remove(this);
+        if (this.getCountry() != null)
+            if (this.getCountry().ownedProvinces != null)
+                this.getCountry().ownedProvinces.Remove(this);
         owner = taker;
 
         if (taker.ownedProvinces == null)
@@ -98,12 +102,12 @@ public class Province
 
     internal bool isCapital()
     {
-        return getOwner().getCapital() == this;
+        return getCountry().getCapital() == this;
     }
 
     internal void demobilize()
     {
-        allPopUnits.ForEach(x => getOwner().allArmies.demobilize(x));
+        allPopUnits.ForEach(x => getCountry().allArmies.demobilize(x));
     }
 
 
@@ -187,7 +191,7 @@ public class Province
 
     internal void mobilize()
     {
-        var army = this.getOwner().homeArmy;
+        var army = this.getCountry().homeArmy;
         foreach (var pop in allPopUnits)
             if (pop.type.canMobilize())
                 army.add(pop.mobilize());
@@ -368,7 +372,7 @@ public class Province
     {
         if (HaveFactory(ft))
             return false;
-        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !getOwner().isInvented(ft.basicProduction.getProduct()))
+        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !getCountry().isInvented(ft.basicProduction.getProduct()))
             return false;
 
         return true;
@@ -482,7 +486,7 @@ public class Province
     internal float getLocalMinSalary()
     {
         if (allFactories.Count <= 1)
-            return getOwner().getMinSalary();
+            return getCountry().getMinSalary();
         else
         {
             float minSalary;
@@ -522,7 +526,7 @@ public class Province
     internal float getLocalMaxSalary()
     {
         if (allFactories.Count <= 1)
-            return getOwner().getMinSalary();
+            return getCountry().getMinSalary();
         else
         {
             float maxSalary;

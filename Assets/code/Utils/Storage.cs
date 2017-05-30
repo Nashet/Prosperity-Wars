@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System;
 public class CountryWallet : Wallet
 {
-    public CountryWallet(float inAmount) : base(inAmount)
+    public CountryWallet(float inAmount, Bank bank) : base(inAmount, bank)
     {
+       // setBank(country.bank);
     }
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
@@ -120,12 +121,17 @@ public class Wallet// : Value // : Storage
     /// Must be filled together with wallet
     /// </summary>
     public Value moneyIncomethisTurn = new Value(0);
-    internal Value haveMoney = new Value(0);
-
-    public Wallet(float inAmount) //: base (inAmount)//: base(Product.findByName("Gold"), inAmount)
+    public Value haveMoney = new Value(0);
+    /// <summary>
+    /// could be null
+    /// </summary>
+    Bank bank;
+       
+    public Wallet(float inAmount, Bank bank) //: base (inAmount)//: base(Product.findByName("Gold"), inAmount)
     {
-        haveMoney.set(inAmount);
+        haveMoney.set(inAmount);       
     }
+    
     ///public Wallet() : base(Product.findByName("Gold"), 0f)
     //public Wallet() : base(Product.findByName("Gold"), 20f) 
 
@@ -217,6 +223,12 @@ public class Wallet// : Value // : Storage
         else
             Debug.Log("Failed payment in wallet");
     }
+
+    internal void setBank(Bank bank)
+    {
+        this.bank = bank;
+    }
+
     internal void pay(Wallet whom, Value howMuch)
     {
         if (canPay(howMuch))
@@ -248,28 +260,122 @@ public class Wallet// : Value // : Storage
         return haveMoney.get() + " coins";
     }
 }
-public class CountryStorage : PrimitiveStorageSet
+
+public class CountryStorageSet : PrimitiveStorageSet
 {
-    static int reserveMultiplier = 10;
-    Value consumedLastTurn = new Value(0);
-    Value wantedConsumeLastTurn = new Value(0);
-    public Value HowMuchWantsToBuy()
+    PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+
+    internal Value getConsumption(Product whom)
     {
-        return wantedConsumeLastTurn.multipleOutside(reserveMultiplier);
+        foreach (Storage stor in consumedLastTurn)
+            if (stor.getProduct() == whom)
+                return stor;
+        return new Value(0f);
     }
-    //public CountryStorage(Product inProduct, float inAmount) : base(inProduct, inAmount)
-    //{
+    internal void setStatisticToZero()
+    {
+        consumedLastTurn.setZero();
+    }
 
+    /// / next - inherited
+
+
+    public void set(Storage inn)
+    {
+        base.set(inn);
+        throw new DontUseThatMethod();
+    }
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(Storage need)
+    //{
+    //    base.add(need);
+    //    consumedLastTurn.add(need)
     //}
 
-    //public CountryStorage(Product product) : base(product)
-    //{
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(PrimitiveStorageSet need)
+    //{ }
 
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, Storage what)
+    {
+        if (base.send(whom, what))
+        {
+            consumedLastTurn.add(what);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public void take(Storage fromHhom, Value howMuch)
+    {
+        base.take(fromHhom, howMuch);
+        throw new DontUseThatMethod();
+    }
+    /// <summary>
+    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
+    /// </summary>    
+    internal Value getStorage(Product whom)
+    {
+        return base.getStorage(whom);
+    }
+
+    internal void SetZero()
+    {
+        base.setZero();
+        throw new DontUseThatMethod();
+    }
+    //internal PrimitiveStorageSet Divide(float v)
+    //{
+    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
+    //    foreach (Storage stor in container)
+    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
+    //    return result;
     //}
+
+    internal bool subtract(Storage stor)
+    {
+        if (base.subtract(stor))
+        {
+            consumedLastTurn.add(stor);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    //internal Storage subtractOutside(Storage stor)
+    //{
+    //    Storage find = this.findStorage(stor.getProduct());
+    //    if (find == null)
+    //        return new Storage(stor);
+    //    else
+    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+    //}
+    internal void subtract(PrimitiveStorageSet set)
+    {
+        base.subtract(set);
+        throw new DontUseThatMethod();
+    }
+    internal void copyDataFrom(PrimitiveStorageSet consumed)
+    {
+        base.copyDataFrom(consumed);
+        throw new DontUseThatMethod();
+    }
+    internal void sendAll(PrimitiveStorageSet toWhom)
+    {
+        consumedLastTurn.add(this);
+        base.sendAll(toWhom);
+    }
+
 }
-
-
-
 public class PrimitiveStorageSet
 {
     //private static Storage tStorage;

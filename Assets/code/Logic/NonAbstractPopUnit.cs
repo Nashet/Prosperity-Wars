@@ -13,7 +13,7 @@ public class Tribemen : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -23,7 +23,7 @@ public class Tribemen : PopUnit
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
             || targetType == PopType.workers)
             return false;
         else
@@ -138,7 +138,7 @@ public class Farmers : PopUnit
             producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000 / overpopulation + getPopulation() * type.basicProduction.get() / 1000 / overpopulation * education.get());
         gainGoodsThisTurn.set(producedAmount);
 
-        if (Economy.isMarket.checkIftrue(province.getOwner()))
+        if (Economy.isMarket.checkIftrue(province.getCountry()))
         {
             sentToMarket.set(gainGoodsThisTurn);
             Game.market.sentToMarket.add(gainGoodsThisTurn);
@@ -148,7 +148,7 @@ public class Farmers : PopUnit
     }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.getOwner()))
+        if (Economy.isMarket.checkIftrue(province.getCountry()))
             return true;
         else
             return false;
@@ -231,8 +231,8 @@ public class Aristocrats : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
-            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.getOwner()))
+            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
+            || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.getCountry()))
             return false;
         else
             return true;
@@ -255,7 +255,7 @@ public class Aristocrats : PopUnit
     { }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.getOwner()))
+        if (Economy.isMarket.checkIftrue(province.getCountry()))
             return true;
         else
             return false;
@@ -329,7 +329,7 @@ public class Capitalists : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming))
+            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming))
             return false;
         else
             return true;
@@ -342,7 +342,7 @@ public class Capitalists : PopUnit
     { }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.getOwner()))
+        if (Economy.isMarket.checkIftrue(province.getCountry()))
             return true;
         else
             return false;
@@ -416,7 +416,7 @@ public class Workers : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getOwner().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -436,7 +436,7 @@ public class Workers : PopUnit
     { }
     internal override bool canTrade()
     {
-        if (Economy.isMarket.checkIftrue(province.getOwner()))
+        if (Economy.isMarket.checkIftrue(province.getCountry()))
             return true;
         else
             return false;

@@ -6,7 +6,7 @@ using System;
 /// <summary>
 /// directly itself it contains goods storage (amount). No Nahuya?
 /// </summary>
-public class Market : Owner//: PrimitiveStorageSet
+public class Market : Wallet//: PrimitiveStorageSet
 {
 
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
@@ -22,6 +22,8 @@ public class Market : Owner//: PrimitiveStorageSet
     PrimitiveStorageSet getBouthBuffer = new PrimitiveStorageSet();
     internal PricePool priceHistory;
     internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
+    public Market():base (0f, null)
+    { }
     internal Storage findPrice(Product whom)
     {
         return marketPrice.findStorage(whom);
@@ -543,7 +545,7 @@ public class Market : Owner//: PrimitiveStorageSet
             cost = buying.multipleOuside(price);
             if (buyer.wallet.canPay(cost))
             {
-                buyer.wallet.pay(Game.market.wallet, cost);
+                buyer.wallet.pay(Game.market, cost);
                 Game.market.sentToMarket.subtract(buying);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(buying);
@@ -554,7 +556,7 @@ public class Market : Owner//: PrimitiveStorageSet
                 float val = buyer.wallet.haveMoney.get() / price.get();
                 val = Mathf.Floor(val * Value.precision) / Value.precision;
                 howMuchCanConsume = new Storage(price.getProduct(), val);
-                buyer.wallet.pay(Game.market.wallet, howMuchCanConsume.multipleOuside(price));
+                buyer.wallet.pay(Game.market, howMuchCanConsume.multipleOuside(price));
                 Game.market.sentToMarket.subtract(howMuchCanConsume);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(howMuchCanConsume);
@@ -571,7 +573,7 @@ public class Market : Owner//: PrimitiveStorageSet
 
                 if (buyer.wallet.canPay(cost))
                 {
-                    buyer.wallet.pay(Game.market.wallet, cost);
+                    buyer.wallet.pay(Game.market, cost);
                     Game.market.sentToMarket.subtract(available);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(available);
@@ -582,7 +584,7 @@ public class Market : Owner//: PrimitiveStorageSet
                     howMuchCanConsume = new Storage(price.getProduct(), buyer.wallet.haveMoney.get() / price.get());
                     if (howMuchCanConsume.get() > available.get())
                         howMuchCanConsume.set(available.get()); // you don't buy more than there is
-                    buyer.wallet.pay(Game.market.wallet, buyer.wallet.haveMoney); //pay all money cause you don't have more
+                    buyer.wallet.pay(Game.market, buyer.wallet.haveMoney); //pay all money cause you don't have more
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(howMuchCanConsume);

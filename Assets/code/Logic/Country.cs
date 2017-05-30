@@ -6,121 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class CountryStorageSet : PrimitiveStorageSet
-{
-    PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
 
-    internal Value getConsumption(Product whom)
-    {
-        foreach (Storage stor in consumedLastTurn)
-            if (stor.getProduct() == whom)
-                return stor;
-        return new Value(0f);
-    }
-    internal void setStatisticToZero()
-    {
-        consumedLastTurn.setZero();
-    }
-
-    /// / next - inherited
-
-
-    public void set(Storage inn)
-    {
-        base.set(inn);
-        throw new DontUseThatMethod();
-    }
-    ///// <summary>
-    ///// If duplicated than adds
-    ///// </summary>
-    //internal void add(Storage need)
-    //{
-    //    base.add(need);
-    //    consumedLastTurn.add(need)
-    //}
-
-    ///// <summary>
-    ///// If duplicated than adds
-    ///// </summary>
-    //internal void add(PrimitiveStorageSet need)
-    //{ }
-
-    /// <summary>
-    /// Do checks outside
-    /// </summary>   
-    public bool send(Producer whom, Storage what)
-    {
-        if (base.send(whom, what))
-        {
-            consumedLastTurn.add(what);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    public void take(Storage fromHhom, Value howMuch)
-    {
-        base.take(fromHhom, howMuch);
-        throw new DontUseThatMethod();
-    }
-    /// <summary>
-    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
-    /// </summary>    
-    internal Value getStorage(Product whom)
-    {
-        return base.getStorage(whom);
-    }
-
-    internal void SetZero()
-    {
-        base.setZero();
-        throw new DontUseThatMethod();
-    }
-    //internal PrimitiveStorageSet Divide(float v)
-    //{
-    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
-    //    foreach (Storage stor in container)
-    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
-    //    return result;
-    //}
-
-    internal bool subtract(Storage stor)
-    {
-        if (base.subtract(stor))
-        {
-            consumedLastTurn.add(stor);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    //internal Storage subtractOutside(Storage stor)
-    //{
-    //    Storage find = this.findStorage(stor.getProduct());
-    //    if (find == null)
-    //        return new Storage(stor);
-    //    else
-    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
-    //}
-    internal void subtract(PrimitiveStorageSet set)
-    {
-        base.subtract(set);
-        throw new DontUseThatMethod();
-    }
-    internal void copyDataFrom(PrimitiveStorageSet consumed)
-    {
-        base.copyDataFrom(consumed);
-        throw new DontUseThatMethod();
-    }
-    internal void sendAll(PrimitiveStorageSet toWhom)
-    {
-        consumedLastTurn.add(this);
-        base.sendAll(toWhom);
-    }
-
-}
 public class Country : Consumer
 {
     public string name;
@@ -151,20 +37,23 @@ public class Country : Consumer
 
     TextMesh messhCapitalText;
 
-    public Bank bank = new Bank();
+    public Bank bank;
 
     /// <summary>
     /// per 1000 men
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), new CountryWallet(0f), Color.yellow, null);
+    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null, new CountryWallet(0f, null));
     static Condition condDontHaveDeposits = new Condition(x => (x as Owner).deposits.get() == 0f, "Don't have deposits", false);
     static Condition condDontHaveLoans = new Condition(x => (x as Owner).loans.get() == 0f, "Don't have loans", false);
     public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
     public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
-    public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
+    //todo fix base()
+    public Country(string iname, Culture iculture, Color color, Province capital, CountryWallet wallet) : base(wallet)
     {
+        //wallet = new CountryWallet(0f, bank);
+        bank = new Bank(0f);
         homeArmy = new Army(this);
         sendingArmy = new Army(this);
         government = new Government(this);
@@ -214,7 +103,7 @@ public class Country : Consumer
         return ownedProvinces.Count > 0;
     }
     internal static IEnumerable<Country> allExisting = getExisting();
-    internal int autoPutInBankLimit =2000;
+    internal int autoPutInBankLimit = 2000;
 
     static IEnumerable<Country> getExisting()
     {
@@ -267,7 +156,7 @@ public class Country : Consumer
         List<Province> result = new List<Province>();
         foreach (var province in ownedProvinces)
             result.AddRange(
-                province.getNeigbors(p => p.getOwner() != this && !result.Contains(p))
+                province.getNeigbors(p => p.getCountry() != this && !result.Contains(p))
                 );
         return result;
     }
@@ -460,7 +349,7 @@ public class Country : Consumer
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
         sciencePoints.add(this.getMenPopulation());
-       
+
         if (this.autoPutInBankLimit > 0f)
         {
             float extraMoney = wallet.haveMoney.get() - (float)this.autoPutInBankLimit;
@@ -475,8 +364,8 @@ public class Country : Consumer
             {
                 var possibleTarget = getRandomNeighborProvince();
                 if (possibleTarget != null)
-                    if ((this.getStreght() * 1.5f > possibleTarget.getOwner().getStreght() && possibleTarget.getOwner() == Game.player) || possibleTarget.getOwner() == NullCountry
-                        || possibleTarget.getOwner() != Game.player && this.getStreght() < possibleTarget.getOwner().getStreght() * 0.5f)
+                    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.player) || possibleTarget.getCountry() == NullCountry
+                        || possibleTarget.getCountry() != Game.player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
                     {
                         mobilize();
                         sendArmy(homeArmy, possibleTarget);

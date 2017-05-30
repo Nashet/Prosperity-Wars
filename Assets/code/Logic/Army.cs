@@ -272,7 +272,7 @@ public class Army
     }
     internal BattleResult attack(Province prov)
     {
-        var enemy = prov.getOwner();
+        var enemy = prov.getCountry();
         if (enemy == Country.NullCountry)
             prov.mobilize();
         else

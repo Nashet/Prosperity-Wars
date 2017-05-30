@@ -2,18 +2,22 @@
 using System.Collections;
 using System;
 
-public class Bank
+public class Bank : Wallet
 {
     /// <summary>
     /// how much money have in cash
     /// </summary>
-    Wallet reservs = new Wallet(0);
+    /// That's in base(Wallet) now
+    //Wallet reserves = new Wallet(0);
     Value givenLoans = new Value(0);
 
-    // 
+    public Bank(float money) : base(money, null)
+    {
+        //setBank(this);
+    }
     internal void takeMoney(Owner giver, Value howMuch)
     {
-        giver.wallet.pay(reservs, howMuch);
+        giver.wallet.pay(this, howMuch);
         if (giver.loans.get() > 0f)  //has debt (meaning has no deposits)
             if (howMuch.get() >= giver.loans.get()) // cover debt
             {
@@ -36,7 +40,7 @@ public class Bank
     /// </summary>   
     internal void giveMoney(Owner taker, Value howMuch)
     {
-        reservs.pay(taker.wallet, howMuch);
+        this.pay(taker.wallet, howMuch);
         if (taker.deposits.get() > 0f) // has deposit (meaning, has no loans)
             if (howMuch.get() >= taker.deposits.get())// loan is bigger than this deposit
             {
@@ -61,7 +65,7 @@ public class Bank
     internal void returnLoan(Producer returner, Value howMuch)
     {
         //reservs.pay(taker.wallet, howMuch);
-        returner.wallet.pay(reservs, howMuch);
+        returner.wallet.pay(this, howMuch);
         returner.loans.subtract(howMuch);
         this.givenLoans.subtract(howMuch);
     }
@@ -74,13 +78,13 @@ public class Bank
     /// </summary>
     internal float getReservs()
     {
-        return reservs.haveMoney.get();
+        return haveMoney.get();
     }
 
     internal bool CanITakeThisLoan(Value loan)
     {
         //if there is enough money and enough reserves
-        if (reservs.haveMoney.get() - loan.get() >= getMinimalReservs().get())
+        if (haveMoney.get() - loan.get() >= getMinimalReservs().get())
             return true;
         return false;
     }
@@ -93,7 +97,7 @@ public class Bank
 
     override public string ToString()
     {
-        return reservs.ToString();
+        return haveMoney.ToString();
     }
 
     internal void defaultLoaner(Producer producer)
@@ -106,7 +110,7 @@ public class Bank
     /// </summary>    
     internal void add(Bank annexingBank)
     {
-        annexingBank.reservs.sendAll(this.reservs);
+        annexingBank.haveMoney.sendAll(this.haveMoney);
         annexingBank.givenLoans.sendAll(this.givenLoans);
     }
 }
