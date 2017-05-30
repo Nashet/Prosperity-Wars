@@ -12,7 +12,8 @@ So, main principles of that simulation are:
 * population consume goods not in fixed order but - at first cheap goods, then expensive
 * factories can compete for workforce by changeable salary
 * factories have specific owner like government or population unit
-* capitalists could take loans form national bank for business expansion 
+* capitalists can take loans form national bank for business expansion 
+* governments can put extra money in bank
 ## What it has now (v10)
  - population agents
  - basic trade & production
