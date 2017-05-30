@@ -7,7 +7,6 @@ using System.Text;
 
 public class Province
 {
-
     Color colorID;
     Color color;
     public Mesh mesh;
@@ -69,26 +68,28 @@ public class Province
     }
     public void secedeTo(Country taker)
     {
+        Country oldCountry = getCountry();
         //refuse loans to old country bank
         foreach (var producer in allProducers)
+        {
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
-
-        if (getCountry().isOneProvince())
-            getCountry().killCountry(taker);
+            oldCountry.bank.giveMoney(producer, producer.deposits);
+        }
+        if (oldCountry.isOneProvince())
+            oldCountry.killCountry(taker);
         else
             if (isCapital())
-            getCountry().moveCapitalTo(getCountry().getRandomOwnedProvince(x => x != this));
+            oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));
 
         this.demobilize();
 
-        // add loyalty penalty for conquired province // temp
+        // add loyalty penalty for conquered province // temp
         allPopUnits.ForEach(x => x.loyalty.set(0f));
 
-
-        if (this.getCountry() != null)
-            if (this.getCountry().ownedProvinces != null)
-                this.getCountry().ownedProvinces.Remove(this);
+        if (oldCountry != null)
+            if (oldCountry.ownedProvinces != null)
+                oldCountry.ownedProvinces.Remove(this);
         owner = taker;
 
         if (taker.ownedProvinces == null)

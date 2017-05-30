@@ -114,7 +114,7 @@ public class Bank : Agent
     internal void defaultLoaner(Producer producer)
     {
         givenLoans.subtract(producer.loans);
-        producer.loans.set(0);
+        producer.loans.set(0);        
     }
     /// <summary>
     /// Assuming all clients already defaulted theirs loans

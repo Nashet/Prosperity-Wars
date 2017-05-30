@@ -70,10 +70,10 @@ abstract public class PopUnit : Producer
         population = sizeOfNewPop;
         if (source.population - sizeOfNewPop <= 0 && this.type == PopType.aristocrats || this.type == PopType.capitalists)
             // if source pop is gonna be dead..
-            //secede property... to new pop.. what is new pop in migration - OK; or changed type - fixed.
+            //secede property... to new pop.. 
             //todo - can optimize it, double run on List
             source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
-        source.subtractPopulation(sizeOfNewPop);
+
         mobilized = 0;
         type = newPopType;
         this.culture = culture;
@@ -81,29 +81,35 @@ abstract public class PopUnit : Producer
         needsFullfilled = new Procent(source.needsFullfilled.get());
         daysUpsetByForcedReform = 0;
         didntGetPromisedUnemloymentSubsidy = false;
+        incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
 
-        //Owner's fields:
+        //Agent's fields:
         //wallet = new Wallet(0f, where.getCountry().bank); it's already set in constructor
-        //wallet.setBank(where.getCountry().bank);
+        //bank - could be different, set in constructor
+        //loans - keep it in old unit        
+        //take deposit share?
+        if (source.deposits.get() > 0f)
+        {
+            Value takeDeposit = source.deposits.multipleOuside(newPopShare);
+            source.getCountry().bank.giveMoney(source, takeDeposit);
+            source.pay(this, takeDeposit);
+        }
         source.pay(this, source.cash.multipleOuside(newPopShare));
-        //wallet = newPopShare.sendProcentToNew(source.wallet.haveMoney);
 
         //Producer's fields:
         storageNow = newPopShare.sendProcentToNew(source.storageNow);
         gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
         sentToMarket = new Storage(source.sentToMarket.getProduct());
 
-        ////loans = new Value(0);
-        ////source.loans.pay(loans, source.loans.multiple(newPopShare));
-        loans = newPopShare.sendProcentToNew(source.loans);
+        province = where;//source.province;
 
+        //Consumer's fields:
         consumedTotal = new PrimitiveStorageSet();
         consumedLastTurn = new PrimitiveStorageSet();
         consumedInMarket = new PrimitiveStorageSet();
 
-        incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
-
-        province = where;//source.province;
+        //kill in the end
+        source.subtractPopulation(sizeOfNewPop);
     }
 
     internal abstract int getVotingPower(Government.ReformValue reformValue);
@@ -119,13 +125,11 @@ abstract public class PopUnit : Producer
     /// </summary>    
     internal void mergeIn(PopUnit source)
     {
-        //addPopulation(pop.getPopulation());
         //carefully summing 2 pops..                
 
         //Own PopUnit fields:
         loyalty.addPoportionally(this.getPopulation(), source.getPopulation(), source.loyalty);
         addPopulation(source.getPopulation());
-
 
         mobilized += source.mobilized;
         //type = newPopType; don't change that
@@ -135,16 +139,18 @@ abstract public class PopUnit : Producer
         //daysUpsetByForcedReform = 0; don't change that
         //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
-        //Owner's fields:        
-        source.sendAllMoney(this);
+        //Agent's fields:        
+        source.sendAllMoney(this); // includes deposits
+        loans.add(source.loans);
+        // Bank - stays same
 
         //Producer's fields:
         storageNow.add(source.storageNow);
         gainGoodsThisTurn.add(source.gainGoodsThisTurn);
         sentToMarket.add(source.sentToMarket);
+        //province - read header
 
-        loans.add(source.loans);
-
+        //consumer's fields
         consumedTotal.add(source.consumedTotal);
         consumedLastTurn.add(source.consumedLastTurn);
         consumedLastTurn.add(source.consumedLastTurn);
@@ -174,6 +180,8 @@ abstract public class PopUnit : Producer
         //remove from population panel.. Would do it automatically        
         //secede property... to government
         getOwnedFactories().ForEach(x => x.factoryOwner = province.getCountry());
+        sendAllMoney(getCountry().bank); // just in case if there is something
+        getCountry().bank.defaultLoaner(this);
     }
     override public void setStatisticToZero()
     {
@@ -270,32 +278,6 @@ abstract public class PopUnit : Producer
         daysUpsetByForcedReform += popDaysUpsetByForcedReform;
     }
 
-
-
-    //internal float getSayYesProcent(AbstractReformValue selectedReformValue)
-    //{
-    //    return (int)Mathf.RoundToInt(getSayingYes(selectedReformValue) / (float)population);
-    //}
-    /// <summary>
-    /// Creates Pop in PopListToAddToGeneralList, later in will go to proper List
-    /// </summary>    
-    //public static PopUnit Instantiate(PopType type, PopUnit source, int sizeOfNewPop)
-    //{
-    //    if (type == PopType.tribeMen) return new Tribemen(source, sizeOfNewPop);
-    //    else
-    //    if (type == PopType.farmers) return new Farmers(source, sizeOfNewPop);
-    //    else
-    //    if (type == PopType.aristocrats) return new Aristocrats(source, sizeOfNewPop);
-    //    else
-    //    if (type == PopType.workers) return new Workers(source, sizeOfNewPop);
-    //    else
-    //        if (type == PopType.capitalists) return new Capitalists(source, sizeOfNewPop);
-    //    else
-    //    {
-    //        Debug.Log("Unknown pop type!");
-    //        return null;
-    //    }
-    //}
     /// <summary>
     /// Creates Pop in PopListToAddToGeneralList, later in will go to proper List
     /// </summary>    
@@ -316,25 +298,7 @@ abstract public class PopUnit : Producer
             return null;
         }
     }
-    //todo delete it
-    //public static PopUnit Instantiate(int iamount, PopType ipopType, Culture iculture, Province where)
-    //{
 
-    //    if (ipopType == PopType.tribeMen) return new Tribemen(iamount, ipopType, iculture, where);
-    //    else
-    //    if (ipopType == PopType.farmers) return new Farmers(iamount, ipopType, iculture, where);
-    //    else
-    //    if (ipopType == PopType.aristocrats) return new Aristocrats(iamount, ipopType, iculture, where);
-    //    else
-    //    if (ipopType == PopType.workers) return new Workers(iamount, ipopType, iculture, where);
-    //    else
-    //        if (ipopType == PopType.capitalists) return new Capitalists(iamount, ipopType, iculture, where);
-    //    else
-    //    {
-    //        Debug.Log("Unknown pop type!");
-    //        return null;
-    //    }
-    //}
     internal bool getSayingYes(AbstractReformValue reform)
     {
         return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
