@@ -583,7 +583,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     howMuchCanConsume = new Storage(price.getProduct(), buyer.cash.get() / price.get());
                     if (howMuchCanConsume.get() > available.get())
                         howMuchCanConsume.set(available.get()); // you don't buy more than there is
-                    buyer.pay(Game.market, buyer.cash); //pay all money cause you don't have more
+                    buyer.sendAllMoney(Game.market); //pay all money cause you don't have more
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(howMuchCanConsume);

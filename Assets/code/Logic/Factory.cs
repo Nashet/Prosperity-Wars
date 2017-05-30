@@ -755,12 +755,18 @@ public class Factory : Producer
         //return loans only if banking invented
         if (province.getCountry().isInvented(InventionType.banking))
         {
-            Value howMuchToReturn = new Value(loans.get());
-            if (howMuchToReturn.get() < cash.get())
-                howMuchToReturn.set(cash.get());
-            province.getCountry().bank.returnLoan(this, howMuchToReturn);
+            if (loans.get() > 0f)
+            {
+                Value howMuchToReturn = new Value(loans);
+                if (howMuchToReturn.get() <= cash.get())
+                    howMuchToReturn.set(cash);
+                province.getCountry().bank.takeMoney(this, howMuchToReturn);
+                if (loans.get() > 0f)
+                    province.getCountry().bank.defaultLoaner(this);
+            }
         }
-        pay(getOwner(), cash);
+        sendAllMoney(getOwner());
+        //pay(getOwner(), cash);
         MainCamera.factoryPanel.removeFactory(this);
 
     }
@@ -824,7 +830,7 @@ public class Factory : Producer
                     if (leftOver < 0)
                     {
                         Value loanSize = new Value(leftOver * -1f);
-                        if (province.getCountry().bank.CanITakeThisLoan(loanSize))
+                        if (province.getCountry().bank.canGiveLoan(loanSize))
                             province.getCountry().bank.giveMoney(this, loanSize);
                     }
                     leftOver = cash.get() - wantsMinMoneyReserv();
@@ -1054,7 +1060,7 @@ public abstract class Producer : Consumer
             if (DSB.get() > 1f) DSB.set(1f);
             Storage realSold = new Storage(sentToMarket);
             realSold.multiple(DSB);
-            Value cost = new Value( Game.market.getCost(realSold));
+            Value cost = new Value(Game.market.getCost(realSold));
             storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
             if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {

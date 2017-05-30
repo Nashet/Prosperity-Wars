@@ -108,7 +108,9 @@ public class FinancePanel : DragPanel
     }
     public void onTakeLoan()
     {
-        Game.player.bank.giveMoney(Game.player, new Value(Game.player.bank.getReservs() * loanLimit.value));
+        Value loan = new Value(Game.player.bank.getReservs() * loanLimit.value);
+        if (Game.player.bank.canGiveLoan(loan))
+            Game.player.bank.giveMoney(Game.player, loan);
         refresh();
     }
     public void onPutInDeposit()

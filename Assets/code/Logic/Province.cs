@@ -74,7 +74,8 @@ public class Province
         {
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
-            oldCountry.bank.giveMoney(producer, producer.deposits);
+            if (oldCountry.bank.canGiveLoan(producer.deposits))
+                oldCountry.bank.giveMoney(producer, producer.deposits);
         }
         if (oldCountry.isOneProvince())
             oldCountry.killCountry(taker);

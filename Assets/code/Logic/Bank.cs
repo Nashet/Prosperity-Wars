@@ -4,43 +4,41 @@ using System;
 
 public class Bank : Agent
 {
-    /// <summary>
-    /// how much money have in cash
-    /// </summary>
-    /// That's in base(Wallet) now
-    //Wallet reserves = new Wallet(0);
     Value givenLoans = new Value(0);
 
     public Bank() : base(0f, null)
     {
         //setBank(this);
     }
+    /// <summary>
+    /// checks inside. Just wouldn't take money if giver hasn't enough money
+    /// </summary>    
     internal void takeMoney(Agent giver, Value howMuch)
     {
-        giver.pay(this, howMuch);
-        if (giver.loans.get() > 0f)  //has debt (meaning has no deposits)
-            if (howMuch.get() >= giver.loans.get()) // cover debt
-            {
-                float extraMoney = howMuch.get() - giver.loans.get();
-                this.givenLoans.subtract(giver.loans);
-                giver.loans.set(0f);
-                giver.deposits.set(extraMoney);
-            }
-            else// not cover debt
-            {
-                giver.loans.subtract(howMuch);
-                this.givenLoans.subtract(howMuch);
-            }
-        else
-            giver.deposits.add(howMuch);
+        if (giver.pay(this, howMuch))
+            if (giver.loans.get() > 0f)  //has debt (meaning has no deposits)
+                if (howMuch.get() >= giver.loans.get()) // cover debt
+                {
+                    float extraMoney = howMuch.get() - giver.loans.get();
+                    this.givenLoans.subtract(giver.loans);
+                    giver.loans.set(0f);
+                    giver.deposits.set(extraMoney);
+                }
+                else// not cover debt
+                {
+                    giver.loans.subtract(howMuch);
+                    this.givenLoans.subtract(howMuch);
+                }
+            else
+                giver.deposits.add(howMuch);
     }
 
     /// <summary>
-    /// checks are outside
+    ///checks outside 
     /// </summary>   
     internal void giveMoney(Agent taker, Value howMuch)
     {
-        this.payWithoutRecord(taker, howMuch);
+        payWithoutRecord(taker, howMuch);
         if (taker.deposits.get() > 0f) // has deposit (meaning, has no loans)
             if (howMuch.get() >= taker.deposits.get())// loan is bigger than this deposit
             {
@@ -60,26 +58,24 @@ public class Bank : Agent
         }
     }
     /// <summary>
-    /// Assuming Bank have enough money 
+    /// checks inside. Just wouldn't give money if can't
     /// </summary>    
     internal void giveLackingMoney(Agent agent, Value howMuch)
     {
-        giveMoney(agent, howMuch.subtractOutside(agent.cash));
-    }
-    internal void returnAllMoney(Agent agent)
-    {
-        giveMoney(agent, agent.deposits);
+        Value loan = howMuch.subtractOutside(agent.cash);
+        if (canGiveLoan(loan))
+            giveMoney(agent, loan);
     }
     /// <summary>
-    /// checks are outside
+    /// checks inside. Just wouldn't give money if can't
     /// </summary>
-    internal void returnLoan(Producer returner, Value howMuch)
+    /// //todo - add some cross bank money transfer?
+    internal void returnAllMoney(Agent agent)
     {
-        //reservs.pay(taker.wallet, howMuch);
-        returner.pay(this, howMuch);
-        returner.loans.subtract(howMuch);
-        this.givenLoans.subtract(howMuch);
+        if (canGiveLoan(agent.deposits))
+            giveMoney(agent, agent.deposits);
     }
+
     internal Value getGivenLoans()
     {
         return new Value(givenLoans.get());
@@ -92,7 +88,7 @@ public class Bank : Agent
         return cash.get();
     }
 
-    internal bool CanITakeThisLoan(Value loan)
+    internal bool canGiveLoan(Value loan)
     {
         //if there is enough money and enough reserves
         if (cash.get() - loan.get() >= getMinimalReservs().get())
@@ -103,7 +99,7 @@ public class Bank : Agent
     private Value getMinimalReservs()
     {
         //todo improve reserves
-        return new Value(100f);
+        return new Value(1000f);
     }
 
     override public string ToString()
@@ -114,7 +110,7 @@ public class Bank : Agent
     internal void defaultLoaner(Producer producer)
     {
         givenLoans.subtract(producer.loans);
-        producer.loans.set(0);        
+        producer.loans.set(0);
     }
     /// <summary>
     /// Assuming all clients already defaulted theirs loans
@@ -125,5 +121,5 @@ public class Bank : Agent
         annexingBank.givenLoans.sendAll(this.givenLoans);
     }
 
-    
+
 }

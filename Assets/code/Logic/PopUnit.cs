@@ -91,8 +91,11 @@ abstract public class PopUnit : Producer
         if (source.deposits.get() > 0f)
         {
             Value takeDeposit = source.deposits.multipleOuside(newPopShare);
-            source.getCountry().bank.giveMoney(source, takeDeposit);
-            source.pay(this, takeDeposit);
+            if (source.getCountry().bank.canGiveLoan(takeDeposit))
+            {
+                source.getCountry().bank.giveMoney(source, takeDeposit);
+                source.pay(this, takeDeposit);
+            }
         }
         source.pay(this, source.cash.multipleOuside(newPopShare));
 
@@ -1119,7 +1122,7 @@ abstract public class PopUnit : Producer
                         if (province.getCountry().isInvented(InventionType.banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
-                            if (province.getCountry().bank.CanITakeThisLoan(needLoan))
+                            if (province.getCountry().bank.canGiveLoan(needLoan))
                             {
                                 province.getCountry().bank.giveMoney(this, needLoan);
                                 Factory found = new Factory(province, this, proposition);
@@ -1147,7 +1150,7 @@ abstract public class PopUnit : Producer
                         if (province.getCountry().isInvented(InventionType.banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
-                            if (province.getCountry().bank.CanITakeThisLoan(needLoan))
+                            if (province.getCountry().bank.canGiveLoan(needLoan))
                             {
                                 province.getCountry().bank.giveMoney(this, needLoan);
                                 factory.upgrade(this);
