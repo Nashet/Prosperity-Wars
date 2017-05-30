@@ -11,7 +11,7 @@ public class Bank : Agent
     //Wallet reserves = new Wallet(0);
     Value givenLoans = new Value(0);
 
-    public Bank() : base( null)
+    public Bank() : base(0f, null)
     {
         //setBank(this);
     }
@@ -78,13 +78,13 @@ public class Bank : Agent
     /// </summary>
     internal float getReservs()
     {
-        return haveMoney.get();
+        return cash.get();
     }
 
     internal bool CanITakeThisLoan(Value loan)
     {
         //if there is enough money and enough reserves
-        if (haveMoney.get() - loan.get() >= getMinimalReservs().get())
+        if (cash.get() - loan.get() >= getMinimalReservs().get())
             return true;
         return false;
     }
@@ -97,7 +97,7 @@ public class Bank : Agent
 
     override public string ToString()
     {
-        return haveMoney.ToString();
+        return cash.ToString();
     }
 
     internal void defaultLoaner(Producer producer)
@@ -110,7 +110,7 @@ public class Bank : Agent
     /// </summary>    
     internal void add(Bank annexingBank)
     {
-        annexingBank.haveMoney.sendAll(this.haveMoney);
+        annexingBank.cash.sendAll(this.cash);
         annexingBank.givenLoans.sendAll(this.givenLoans);
     }
 }

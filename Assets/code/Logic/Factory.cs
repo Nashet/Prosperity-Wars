@@ -495,7 +495,7 @@ public class Factory : Producer
             //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
             //    salary.set(province.getLocalMinSalary());
             // freshly built factories should rise salary to concurrency with old ones
-            if (getWorkForce() < 100 && province.getUnemployedWorkers() == 0 && this.haveMoney.get() > 10f)// && getInputFactor() == 1)
+            if (getWorkForce() < 100 && province.getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.09f);
 
             float minSalary = province.getCountry().getMinSalary();
@@ -716,9 +716,9 @@ public class Factory : Producer
                     if (isUpgrading())
                     isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
                 // what if not enough money to complete buildinG?
-                float minimalFond = haveMoney.get() - 50f;
+                float minimalFond = cash.get() - 50f;
 
-                if (minimalFond < 0 && getOwner().canPay(minimalFond * -1f))
+                if (minimalFond < 0 && getOwner().canPay(new Value(minimalFond * -1f)))
                     getOwner().payWithoutRecord(this, new Value(minimalFond * -1f));
             }
             if (isBuyingComplete || (!isMarket && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
@@ -756,11 +756,11 @@ public class Factory : Producer
         if (province.getCountry().isInvented(InventionType.banking))
         {
             Value howMuchToReturn = new Value(loans.get());
-            if (howMuchToReturn.get() < haveMoney.get())
-                howMuchToReturn.set(haveMoney.get());
+            if (howMuchToReturn.get() < cash.get())
+                howMuchToReturn.set(cash.get());
             province.getCountry().bank.returnLoan(this, howMuchToReturn);
         }
-        pay(getOwner(), haveMoney);
+        pay(getOwner(), cash);
         MainCamera.factoryPanel.removeFactory(this);
 
     }
@@ -788,7 +788,7 @@ public class Factory : Producer
         if (isWorking())
         {
             float saveForYourSelf = wantsMinMoneyReserv();
-            float divident = haveMoney.get() - saveForYourSelf;
+            float divident = cash.get() - saveForYourSelf;
 
             if (divident > 0)
             {
@@ -820,14 +820,14 @@ public class Factory : Producer
             {//take loan for reopen
                 if (province.getCountry().isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
                 {
-                    float leftOver = haveMoney.get() - wantsMinMoneyReserv();
+                    float leftOver = cash.get() - wantsMinMoneyReserv();
                     if (leftOver < 0)
                     {
                         Value loanSize = new Value(leftOver * -1f);
                         if (province.getCountry().bank.CanITakeThisLoan(loanSize))
                             province.getCountry().bank.giveMoney(this, loanSize);
                     }
-                    leftOver = haveMoney.get() - wantsMinMoneyReserv();
+                    leftOver = cash.get() - wantsMinMoneyReserv();
                     if (leftOver >= 0f)
                         reopen(this);
                 }
@@ -995,51 +995,7 @@ public class PopLinkage
         amount = a;
     }
 }
-/// <summary>
-/// represent ability to take loans/deposits
-/// </summary>
-public class Agent : Wallet
-{
-  
-    public Value loans = new Value(0);
-    public Value deposits = new Value(0);
-    /// <summary>
-    /// only for countries
-    /// </summary>
-    /// <param name="wallet"></param>
-    //public Owner()
-    //{
 
-
-    //}    
-    public Agent(Bank bank) : base(0f, bank)
-    {
-        //this.wallet = new Wallet(0f, bank);
-        //wallet.setBank();
-    }
-    //internal CountryWallet getCountryWallet()
-    //{
-    //    if (this is Country)
-    //        return wallet as CountryWallet;
-    //    else
-    //        return null;
-    //}
-    //todo should be Value
-    //public float getLoans()
-    //{
-    //    if (loans.get() > 0f)
-    //        return loans.get();
-    //    else
-    //        return 0f;
-    //}
-    //public float getDeposits()
-    //{
-    //    if (loans.get() > 0f)
-    //        return 0f;
-    //    else
-    //        return loans.get() * -1f;
-    //}
-}
 /// <summary>
 /// Represent anyone who can consume (but can't produce by itself)
 /// Stores data about last consumption
@@ -1051,7 +1007,7 @@ public abstract class Consumer : Agent
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void buyNeeds();
     //public Consumer() : base(this as Country) { }
-    public Consumer(Bank bank) : base(bank) { }
+    public Consumer(Bank bank) : base(0, bank) { }
     //public Consumer(CountryWallet wallet) : base(wallet) { }
     public virtual void setStatisticToZero()
     {
@@ -1066,7 +1022,7 @@ public abstract class Consumer : Agent
 /// also linked to Province
 /// </summary>
 public abstract class Producer : Consumer
-{  
+{
     /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
     public Storage storageNow;
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>

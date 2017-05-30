@@ -91,7 +91,7 @@ public class PopUnitPanel : DragPanel
                 + "\nStorage: " + pop.storageNow.ToString()
                 + "\nGain goods: " + pop.gainGoodsThisTurn.ToString()
                 + "\nSent to market: " + pop.sentToMarket
-                + "\nCash: " + pop.haveMoney.ToString()
+                + "\nCash: " + pop.cash.ToString()
                 + "\nMoney income: " + pop.moneyIncomethisTurn
                 
                 + "\nDemotion: " + demotionText

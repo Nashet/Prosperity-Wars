@@ -364,7 +364,7 @@ public class Country : Consumer
 
         if (this.autoPutInBankLimit > 0f)
         {
-            float extraMoney = haveMoney.get() - (float)this.autoPutInBankLimit;
+            float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
             if (extraMoney > 0f)
                 bank.takeMoney(this, new Value(extraMoney));
         }
@@ -535,8 +535,8 @@ public class Country : Consumer
         else
         {
             //sendAll(byWhom.wallet);
-            payWithoutRecord(byWhom, byWhom.haveMoney);
-            factorySubsidiesExpense.add(byWhom.haveMoney);
+            payWithoutRecord(byWhom, byWhom.cash);
+            factorySubsidiesExpense.add(byWhom.cash);
         }
 
     }

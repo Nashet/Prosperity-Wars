@@ -6,7 +6,7 @@ using System;
 /// <summary>
 /// Represent World market (should be only static)
 /// </summary>
-public class Market : Wallet//: PrimitiveStorageSet
+public class Market : Agent//: PrimitiveStorageSet
 {
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
     int dateOfDSB = int.MaxValue;
@@ -552,7 +552,7 @@ public class Market : Wallet//: PrimitiveStorageSet
             }
             else
             {
-                float val = buyer.haveMoney.get() / price.get();
+                float val = buyer.cash.get() / price.get();
                 val = Mathf.Floor(val * Value.precision) / Value.precision;
                 howMuchCanConsume = new Storage(price.getProduct(), val);
                 buyer.pay(Game.market, howMuchCanConsume.multipleOuside(price));
@@ -580,10 +580,10 @@ public class Market : Wallet//: PrimitiveStorageSet
                 }
                 else
                 {
-                    howMuchCanConsume = new Storage(price.getProduct(), buyer.haveMoney.get() / price.get());
+                    howMuchCanConsume = new Storage(price.getProduct(), buyer.cash.get() / price.get());
                     if (howMuchCanConsume.get() > available.get())
                         howMuchCanConsume.set(available.get()); // you don't buy more than there is
-                    buyer.pay(Game.market, buyer.haveMoney); //pay all money cause you don't have more
+                    buyer.pay(Game.market, buyer.cash); //pay all money cause you don't have more
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(howMuchCanConsume);

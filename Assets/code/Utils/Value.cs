@@ -12,7 +12,18 @@ public class Value
             number = 0;
         set(number); // set already have multiplier
     }
-
+    public Value(Value number)
+    {        
+        set(number); // set already have multiplier
+    }
+    public bool isBiggerThan(Value invalue)
+    {
+        return this.value > invalue.value;
+    }
+    public bool isBiggerOrEqual(Value invalue)
+    {
+        return this.value >= invalue.value;
+    }
     //TODO overflow checks?
     public void add(Value invalue)
     {
@@ -31,6 +42,12 @@ public class Value
         }
         else
             value += (uint)Mathf.RoundToInt(invalue * precision);
+    }
+    internal Value addOutside(Value deposits)
+    {
+        var result = new Value(this);
+        result.add(deposits);
+        return result;
     }
     public bool subtract(Value invalue)
     {
