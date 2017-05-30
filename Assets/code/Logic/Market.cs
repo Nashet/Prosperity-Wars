@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System;
 
 /// <summary>
-/// directly itself it contains goods storage (amount). No Nahuya?
+/// Represent World market (should be only static)
 /// </summary>
 public class Market : Wallet//: PrimitiveStorageSet
 {
-
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
     int dateOfDSB = int.MaxValue;
     PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
@@ -543,9 +542,9 @@ public class Market : Wallet//: PrimitiveStorageSet
         if (Game.market.sentToMarket.has(buying))
         {
             cost = buying.multipleOuside(price);
-            if (buyer.wallet.canPay(cost))
+            if (buyer.canPay(cost))
             {
-                buyer.wallet.pay(Game.market, cost);
+                buyer.pay(Game.market, cost);
                 Game.market.sentToMarket.subtract(buying);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(buying);
@@ -553,10 +552,10 @@ public class Market : Wallet//: PrimitiveStorageSet
             }
             else
             {
-                float val = buyer.wallet.haveMoney.get() / price.get();
+                float val = buyer.haveMoney.get() / price.get();
                 val = Mathf.Floor(val * Value.precision) / Value.precision;
                 howMuchCanConsume = new Storage(price.getProduct(), val);
-                buyer.wallet.pay(Game.market, howMuchCanConsume.multipleOuside(price));
+                buyer.pay(Game.market, howMuchCanConsume.multipleOuside(price));
                 Game.market.sentToMarket.subtract(howMuchCanConsume);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(howMuchCanConsume);
@@ -571,9 +570,9 @@ public class Market : Wallet//: PrimitiveStorageSet
             {
                 cost = available.multipleOuside(price);
 
-                if (buyer.wallet.canPay(cost))
+                if (buyer.canPay(cost))
                 {
-                    buyer.wallet.pay(Game.market, cost);
+                    buyer.pay(Game.market, cost);
                     Game.market.sentToMarket.subtract(available);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(available);
@@ -581,10 +580,10 @@ public class Market : Wallet//: PrimitiveStorageSet
                 }
                 else
                 {
-                    howMuchCanConsume = new Storage(price.getProduct(), buyer.wallet.haveMoney.get() / price.get());
+                    howMuchCanConsume = new Storage(price.getProduct(), buyer.haveMoney.get() / price.get());
                     if (howMuchCanConsume.get() > available.get())
                         howMuchCanConsume.set(available.get()); // you don't buy more than there is
-                    buyer.wallet.pay(Game.market, buyer.wallet.haveMoney); //pay all money cause you don't have more
+                    buyer.pay(Game.market, buyer.haveMoney); //pay all money cause you don't have more
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(howMuchCanConsume);
@@ -602,7 +601,7 @@ public class Market : Wallet//: PrimitiveStorageSet
     {
         if (need.get() > 0f)
         {
-            Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
+            Storage howMuchCanAfford = forWhom.HowMuchCanAfford(need);
             if (howMuchCanAfford.get() > 0f)
             {
                 howMuchCanAfford = Game.market.buy(forWhom, howMuchCanAfford);
@@ -639,16 +638,16 @@ public class Market : Wallet//: PrimitiveStorageSet
         float actuallyNeedsFullfilled = 0f;
         //Storage actualConsumption;
 
-        if (forWhom.wallet.CanAfford(need))
+        if (forWhom.CanAfford(need))
             actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
         else
             if (subsidizer == null)
             actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
         else
         {
-            subsidizer.takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
+            subsidizer.takeFactorySubsidies(forWhom, forWhom.HowMuchCanNotAfford(need));
             //repeat attempt
-            if (forWhom.wallet.CanAfford(need))
+            if (forWhom.CanAfford(need))
                 actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
             else
                 actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);

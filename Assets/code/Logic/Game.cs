@@ -132,13 +132,13 @@ public class Game
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
         Country count = new Country(countryName.generateCountryName(), cul,  UtilsMy.getRandomColor(), province);
-        count.wallet.setBank(count.bank);
+        //count.setBank(count.bank);
         player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
         count.moveCapitalTo(province);
 
         //count.storageSet.add(new Storage(Product.Food, 200f));
-        count.wallet.haveMoney.add(100f);
+        count.haveMoney.add(100f);
     }
     void makeFactoryTypes()
     {
@@ -220,12 +220,12 @@ public class Game
         float allMoney = 0f;
         foreach (Country co in Country.allCountries)
         {
-            allMoney += co.wallet.haveMoney.get();
+            allMoney += co.haveMoney.get();
             allMoney += co.bank.getReservs();
             foreach (Province pr in co.ownedProvinces)
             {
                 foreach (var factory in pr.allProducers)
-                    allMoney += factory.wallet.haveMoney.get();
+                    allMoney += factory.haveMoney.get();
             }
         }
         return allMoney;
@@ -260,17 +260,17 @@ public class Game
                 else
                     pop = new Aristocrats(100, PopType.aristocrats, province.getCountry().culture, province);
 
-                pop.wallet.haveMoney.set(9000);
+                pop.haveMoney.set(9000);
                 pop.storageNow.add(60f);
                 province.allPopUnits.Add(pop);
                 if (!Game.devMode)
                 {
                     pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), PopType.capitalists, province.getCountry().culture, province);
-                    pop.wallet.haveMoney.set(9000);
+                    pop.haveMoney.set(9000);
                     province.allPopUnits.Add(pop);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), PopType.farmers, province.getCountry().culture, province);
-                    pop.wallet.haveMoney.set(20);
+                    pop.haveMoney.set(20);
                     province.allPopUnits.Add(pop);
 
                 }

@@ -42,7 +42,7 @@ public class FactoryType
           {
               Country who = forWhom as Country;
               if (Economy.isMarket.checkIftrue(who))
-                  return who.wallet.canPay(getBuildCost());
+                  return who.canPay(getBuildCost());
               else              
                   return who.storageSet.has(getBuildNeeds());              
 

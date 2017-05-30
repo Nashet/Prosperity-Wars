@@ -91,7 +91,7 @@ public class PopulationPanelTable : MyTable
                 AddButton(record.education.ToString(), record);   
                 
                 ////Adding cash
-                AddButton(record.wallet.ToString(), record);
+                AddButton(record.ToString(), record);
 
                 ////Adding needs fulfilling
 

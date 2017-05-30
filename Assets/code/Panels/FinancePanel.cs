@@ -36,10 +36,10 @@ public class FinancePanel : DragPanel
         sb.Append("\n Rich tax (").Append(Game.player.taxationForRich.getValue()).Append("): ").Append(Game.player.getRichTaxIncome());
         sb.Append("\n Gold mines: ").Append(Game.player.getGoldMinesIncome());
         sb.Append("\n Owned enterprises: ").Append(Game.player.getOwnedFactoriesIncome());
-        sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
+        sb.Append("\nTotal: ").Append(Game.player.moneyIncomethisTurn);
 
         sb.Append("\n\nBalance: ").Append(Game.player.getBalance());
-        sb.Append("\nHave money: ").Append(Game.player.wallet.haveMoney).Append(" + ").Append(Game.player.deposits).Append(" on bank deposit");
+        sb.Append("\nHave money: ").Append(Game.player.haveMoney).Append(" + ").Append(Game.player.deposits).Append(" on bank deposit");
         sb.Append("\nGDP (current prices): ").Append(Game.player.getGDP()).Append("; GDP per thousand men: ").Append(Game.player.getGDPPer1000());
         incomeText.text = sb.ToString();
         //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
@@ -113,7 +113,7 @@ public class FinancePanel : DragPanel
     }
     public void onPutInDeposit()
     {
-        Game.player.bank.takeMoney(Game.player, new Value(Game.player.wallet.haveMoney.get() * depositLimit.value));
+        Game.player.bank.takeMoney(Game.player, new Value(Game.player.haveMoney.get() * depositLimit.value));
         refresh();
     }
     public void onLoanLimitChange()
@@ -123,7 +123,7 @@ public class FinancePanel : DragPanel
 
     public void onDepositLimitChange()
     {
-        depositLimitText.text = (Game.player.wallet.haveMoney.get() * depositLimit.value).ToString();
+        depositLimitText.text = (Game.player.haveMoney.get() * depositLimit.value).ToString();
     }
     public void onAutoPutInBankLimitChange()
     {

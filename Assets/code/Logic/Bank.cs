@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-public class Bank : Wallet
+public class Bank : Agent
 {
     /// <summary>
     /// how much money have in cash
@@ -11,13 +11,13 @@ public class Bank : Wallet
     //Wallet reserves = new Wallet(0);
     Value givenLoans = new Value(0);
 
-    public Bank(float money) : base(money, null)
+    public Bank() : base( null)
     {
         //setBank(this);
     }
-    internal void takeMoney(Owner giver, Value howMuch)
+    internal void takeMoney(Agent giver, Value howMuch)
     {
-        giver.wallet.pay(this, howMuch);
+        giver.pay(this, howMuch);
         if (giver.loans.get() > 0f)  //has debt (meaning has no deposits)
             if (howMuch.get() >= giver.loans.get()) // cover debt
             {
@@ -38,9 +38,9 @@ public class Bank : Wallet
     /// <summary>
     /// checks are outside
     /// </summary>   
-    internal void giveMoney(Owner taker, Value howMuch)
+    internal void giveMoney(Agent taker, Value howMuch)
     {
-        this.pay(taker.wallet, howMuch);
+        this.pay(taker, howMuch);
         if (taker.deposits.get() > 0f) // has deposit (meaning, has no loans)
             if (howMuch.get() >= taker.deposits.get())// loan is bigger than this deposit
             {
@@ -65,7 +65,7 @@ public class Bank : Wallet
     internal void returnLoan(Producer returner, Value howMuch)
     {
         //reservs.pay(taker.wallet, howMuch);
-        returner.wallet.pay(this, howMuch);
+        returner.pay(this, howMuch);
         returner.loans.subtract(howMuch);
         this.givenLoans.subtract(howMuch);
     }

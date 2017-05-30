@@ -134,8 +134,8 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nBasic production: " + shownFactory.type.basicProduction
                 + "\nEfficiency: " + shownFactory.modifierEfficiency.getModifier(Game.player)
                 + "\nSent to market: " + shownFactory.sentToMarket
-                + "\nCash: " + shownFactory.wallet.ToString()
-                + "\nMoney income: " + shownFactory.wallet.moneyIncomethisTurn
+                + "\nCash: " + shownFactory.haveMoney.ToString()
+                + "\nMoney income: " + shownFactory.moneyIncomethisTurn
                 + "\nProfit: " + shownFactory.getProfit()
                 + "\nInput required: " + InputRequired
                 + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + shownFactory.getConsumedCost().ToString()

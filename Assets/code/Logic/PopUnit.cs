@@ -83,9 +83,9 @@ abstract public class PopUnit : Producer
         didntGetPromisedUnemloymentSubsidy = false;
 
         //Owner's fields:
-        wallet = new Wallet(0f, where.getCountry().bank);
+        //wallet = new Wallet(0f, where.getCountry().bank); it's already set in constructor
         //wallet.setBank(where.getCountry().bank);
-        source.wallet.pay(wallet, source.wallet.haveMoney.multipleOuside(newPopShare));
+        source.pay(this, source.haveMoney.multipleOuside(newPopShare));
         //wallet = newPopShare.sendProcentToNew(source.wallet.haveMoney);
 
         //Producer's fields:
@@ -136,7 +136,7 @@ abstract public class PopUnit : Producer
         //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
         //Owner's fields:        
-        source.wallet.sendAll(this.wallet);
+        source.sendAll(this);
 
         //Producer's fields:
         storageNow.add(source.storageNow);
@@ -351,26 +351,26 @@ abstract public class PopUnit : Producer
     override internal float getLocalEffectiveDemand(Product product)
     {
         float result = 0;
-        // need to know huw much i Consumed inside my needs
+        // need to know how much i Consumed inside my needs
         PrimitiveStorageSet needs = new PrimitiveStorageSet(getRealLifeNeeds());
         Storage need = needs.findStorage(product);
         if (need != null)
         {
-            Storage canAfford = wallet.HowMuchCanAfford(need);
+            Storage canAfford = HowMuchCanAfford(need);
             result += canAfford.get();
         }
         needs = new PrimitiveStorageSet(getRealEveryDayNeeds());
         need = needs.findStorage(product);
         if (need != null)
         {
-            Storage canAfford = wallet.HowMuchCanAfford(need);
+            Storage canAfford = HowMuchCanAfford(need);
             result += canAfford.get();
         }
         needs = new PrimitiveStorageSet(getRealLuxuryNeeds());
         need = needs.findStorage(product);
         if (need != null)
         {
-            Storage canAfford = wallet.HowMuchCanAfford(need);
+            Storage canAfford = HowMuchCanAfford(need);
             result += canAfford.get();
         }
         return result;
@@ -503,34 +503,34 @@ abstract public class PopUnit : Producer
         {
             if (this.type.isPoorStrata())
             {
-                taxSize = wallet.moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
-                if (wallet.canPay(taxSize))
+                taxSize = moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                if (canPay(taxSize))
                 {
                     incomeTaxPayed = taxSize;
                     province.getCountry().poorTaxIncomeAdd(taxSize);
-                    wallet.pay(province.getCountry().wallet, taxSize);
+                    pay(province.getCountry(), taxSize);
                 }
                 else
                 {
-                    incomeTaxPayed.set(wallet.haveMoney);
-                    province.getCountry().poorTaxIncomeAdd(wallet.haveMoney);
-                    wallet.sendAll(province.getCountry().wallet);
+                    incomeTaxPayed.set(haveMoney);
+                    province.getCountry().poorTaxIncomeAdd(haveMoney);
+                    sendAll(province.getCountry());
 
                 }
             }
             else
             if (this.type.isRichStrata())
             {
-                taxSize = wallet.moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
-                if (wallet.canPay(taxSize))
+                taxSize = moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                if (canPay(taxSize))
                 {
                     province.getCountry().richTaxIncomeAdd(taxSize);
-                    wallet.pay(province.getCountry().wallet, taxSize);
+                    pay(province.getCountry(), taxSize);
                 }
                 else
                 {
-                    province.getCountry().richTaxIncomeAdd(wallet.haveMoney);
-                    wallet.sendAll(province.getCountry().wallet);
+                    province.getCountry().richTaxIncomeAdd(haveMoney);
+                    sendAll(province.getCountry());
                 }
             }
 
@@ -638,10 +638,10 @@ abstract public class PopUnit : Producer
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
             Wallet reserv = new Wallet(0, null);
-            wallet.payWithoutRecord(reserv, wallet.haveMoney.multipleOuside(Options.savePopMoneyReserv));
+            payWithoutRecord(reserv, haveMoney.multipleOuside(Options.savePopMoneyReserv));
             lifeNeeds = (getRealEveryDayNeeds());
             Value needsCost = Game.market.getCost(lifeNeeds);
-            float moneyWas = wallet.haveMoney.get();
+            float moneyWas = haveMoney.get();
             Value spentMoney;
 
             foreach (Storage need in lifeNeeds)
@@ -649,25 +649,25 @@ abstract public class PopUnit : Producer
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                 Game.market.buy(this, need, null);
             }
-            spentMoney = new Value(moneyWas - wallet.haveMoney.get());
+            spentMoney = new Value(moneyWas - haveMoney.get());
             if (spentMoney.get() != 0f)
                 needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             if (getEveryDayNeedsFullfilling().get() >= 0.95f)
             {
                 lifeNeeds = (getRealLuxuryNeeds());
                 needsCost = Game.market.getCost(lifeNeeds);
-                moneyWas = wallet.haveMoney.get();
+                moneyWas = haveMoney.get();
                 foreach (Storage need in lifeNeeds)
                 {
                     Game.market.buy(this, need, null);
                     //NeedsFullfilled.set(0.66f + Game.market.Consume(this, need).get() / 3f);
 
                 }
-                spentMoney = new Value(moneyWas - wallet.haveMoney.get());
+                spentMoney = new Value(moneyWas - haveMoney.get());
                 if (spentMoney.get() != 0f)
                     needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             }
-            reserv.payWithoutRecord(wallet, reserv.haveMoney);
+            reserv.payWithoutRecord(this, reserv.haveMoney);
         }
     }
     /// <summary> </summary>
@@ -826,9 +826,9 @@ abstract public class PopUnit : Producer
             Value subsidy = getUnemployedProcent();
             subsidy.multiple(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
-            if (province.getCountry().wallet.canPay(subsidy))
+            if (province.getCountry().canPay(subsidy))
             {
-                province.getCountry().wallet.pay(this.wallet, subsidy);
+                province.getCountry().pay(this, subsidy);
                 province.getCountry().unemploymentSubsidiesExpenseAdd(subsidy);
             }
             else
@@ -971,7 +971,7 @@ abstract public class PopUnit : Producer
     {
         if (getCountry().isInvented(InventionType.banking))
         {
-            Value extraMoney = new Value(wallet.haveMoney.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
+            Value extraMoney = new Value(haveMoney.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
             if (extraMoney.get() > 5f)
                 getCountry().bank.takeMoney(this, extraMoney);
         }
@@ -1146,20 +1146,20 @@ abstract public class PopUnit : Producer
                         PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
                         Value cost = Game.market.getCost(resourceToBuild);
                         cost.add(Options.factoryMoneyReservPerLevel);
-                        if (wallet.canPay(cost))
+                        if (canPay(cost))
                         {
                             Factory found = new Factory(province, this, proposition);
-                            wallet.payWithoutRecord(found.wallet, cost);
+                            payWithoutRecord(found, cost);
                         }
                         else // find money in bank?
                         if (province.getCountry().isInvented(InventionType.banking))
                         {
-                            Value needLoan = new Value(cost.get() - wallet.haveMoney.get());
+                            Value needLoan = new Value(cost.get() - haveMoney.get());
                             if (province.getCountry().bank.CanITakeThisLoan(needLoan))
                             {
                                 province.getCountry().bank.giveMoney(this, needLoan);
                                 Factory found = new Factory(province, this, proposition);
-                                wallet.payWithoutRecord(found.wallet, cost);
+                                payWithoutRecord(found, cost);
                             }
                         }
                     }
@@ -1177,12 +1177,12 @@ abstract public class PopUnit : Producer
                         //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
                         //Value cost = Game.market.getCost(resourceToBuild);
                         Value cost = factory.getUpgradeCost();
-                        if (wallet.canPay(cost))
+                        if (canPay(cost))
                             factory.upgrade(this);
                         else // find money in bank?
                         if (province.getCountry().isInvented(InventionType.banking))
                         {
-                            Value needLoan = new Value(cost.get() - wallet.haveMoney.get());
+                            Value needLoan = new Value(cost.get() - haveMoney.get());
                             if (province.getCountry().bank.CanITakeThisLoan(needLoan))
                             {
                                 province.getCountry().bank.giveMoney(this, needLoan);

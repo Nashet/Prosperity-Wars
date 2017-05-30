@@ -42,12 +42,12 @@ public class BuildPanel : DragPanel
             {
                 Value cost = Game.market.getCost(resourceToBuild);
                 cost.add(Options.factoryMoneyReservPerLevel);
-                if (Game.player.wallet.canPay(cost))
+                if (Game.player.canPay(cost))
                 {
-                    var f = new Factory(Game.selectedProvince, Game.player, selectedFactoryType);
-                    Game.player.wallet.pay(f.wallet, cost);
+                    var factory = new Factory(Game.selectedProvince, Game.player, selectedFactoryType);
+                    Game.player.pay(factory, cost);
                     buildSomething = true;
-                    MainCamera.factoryPanel.Show(f);
+                    MainCamera.factoryPanel.Show(factory);
                 }
 
             }

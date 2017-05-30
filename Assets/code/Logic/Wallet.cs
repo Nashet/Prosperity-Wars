@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represent anyone who can have money (currently - gold only)
+/// </summary>
 public class Wallet// : Value // : Storage
 {
     /// <summary>
@@ -12,7 +15,7 @@ public class Wallet// : Value // : Storage
     /// <summary>
     /// could be null
     /// </summary>
-    Bank bank;
+    public Bank bank;
 
     public Wallet(float inAmount, Bank bank) //: base (inAmount)//: base(Product.findByName("Gold"), inAmount)
     {
@@ -110,12 +113,7 @@ public class Wallet// : Value // : Storage
         }
         else
             Debug.Log("Failed payment in wallet");
-    }
-
-    internal void setBank(Bank bank)
-    {
-        this.bank = bank;
-    }
+    }  
 
     internal void pay(Wallet whom, Value howMuch)
     {

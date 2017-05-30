@@ -46,7 +46,7 @@ public class ConditionsList
 
 
     /// <summary>Return false if any of conditions is false</summary>    
-    public bool isAllTrue(Owner forWhom, out string description)
+    public bool isAllTrue(Agent forWhom, out string description)
     {
         string accu;
         description = "";
@@ -83,7 +83,7 @@ public class ConditionsList
             return true;
         }
     }
-    public bool isAllTrue(Owner forWhom)
+    public bool isAllTrue(Agent forWhom)
     {
         foreach (var item in list)
             if (!item.checkIftrue(forWhom))
@@ -235,7 +235,7 @@ public class Condition : AbstractCondition
     }
 
     /// <summary>Returns bool result and description in out description</summary>    
-    internal bool checkIftrue(Owner forWhom, out string description)
+    internal bool checkIftrue(Agent forWhom, out string description)
     {
         string result = null;
         bool answer = false;
@@ -253,7 +253,7 @@ public class Condition : AbstractCondition
         return answer;
     }
     /// <summary>Fast version, without description</summary>    
-    internal bool checkIftrue(Owner forWhom)
+    internal bool checkIftrue(Agent forWhom)
     {
         return check3(forWhom);
     }

@@ -37,7 +37,8 @@ public class Country : Consumer
 
     TextMesh messhCapitalText;
 
-    public Bank bank;
+    //public Bank bank;
+    
 
     /// <summary>
     /// per 1000 men
@@ -45,8 +46,8 @@ public class Country : Consumer
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
-    static Condition condDontHaveDeposits = new Condition(x => (x as Owner).deposits.get() == 0f, "Don't have deposits", false);
-    static Condition condDontHaveLoans = new Condition(x => (x as Owner).loans.get() == 0f, "Don't have loans", false);
+    static Condition condDontHaveDeposits = new Condition(x => (x as Agent).deposits.get() == 0f, "Don't have deposits", false);
+    static Condition condDontHaveLoans = new Condition(x => (x as Agent).loans.get() == 0f, "Don't have loans", false);
     public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
     public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
 
@@ -63,7 +64,8 @@ public class Country : Consumer
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
         //wallet = new CountryWallet(0f, bank);
-        bank = new Bank(0f);
+        bank = new Bank();
+        
         homeArmy = new Army(this);
         sendingArmy = new Army(this);
         government = new Government(this);
@@ -362,7 +364,7 @@ public class Country : Consumer
 
         if (this.autoPutInBankLimit > 0f)
         {
-            float extraMoney = wallet.haveMoney.get() - (float)this.autoPutInBankLimit;
+            float extraMoney = haveMoney.get() - (float)this.autoPutInBankLimit;
             if (extraMoney > 0f)
                 bank.takeMoney(this, new Value(extraMoney));
         }
@@ -508,7 +510,7 @@ public class Country : Consumer
     }
     internal float getBalance()
     {
-        return wallet.moneyIncomethisTurn.get() - getAllExpenses().get();
+        return moneyIncomethisTurn.get() - getAllExpenses().get();
     }
 
     internal void setSatisticToZero()
@@ -519,22 +521,22 @@ public class Country : Consumer
         unemploymentSubsidiesExpense.set(0f);
         ownedFactoriesIncome.set(0f);
         factorySubsidiesExpense.set(0f);
-        wallet.moneyIncomethisTurn.set(0f);
+        moneyIncomethisTurn.set(0f);
         storageBuyingExpense.set(0f);
     }
 
     internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
     {
-        if (wallet.canPay(howMuch))
+        if (canPay(howMuch))
         {
-            wallet.payWithoutRecord(byWhom.wallet, howMuch);
+            payWithoutRecord(byWhom, howMuch);
             factorySubsidiesExpense.add(howMuch);
         }
         else
         {
             //sendAll(byWhom.wallet);
-            wallet.payWithoutRecord(byWhom.wallet, byWhom.wallet.haveMoney);
-            factorySubsidiesExpense.add(byWhom.wallet.haveMoney);
+            payWithoutRecord(byWhom, byWhom.haveMoney);
+            factorySubsidiesExpense.add(byWhom.haveMoney);
         }
 
     }
