@@ -130,7 +130,10 @@ public class Country : Consumer
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
         setSatisticToZero();
         //take all money from bank
-        byWhom.bank.add(this.bank);
+        if (byWhom.isInvented(InventionType.banking))
+            byWhom.bank.add(this.bank);
+        else
+            this.bank.destroy(byWhom);
 
         //byWhom.storageSet.
         storageSet.sendAll(byWhom.storageSet);

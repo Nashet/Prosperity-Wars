@@ -218,16 +218,17 @@ public class Game
     internal static float getAllMoneyInWorld()
     {
         float allMoney = 0f;
-        foreach (Country co in Country.allCountries)
+        foreach (Country country in Country.allCountries)
         {
-            allMoney += co.cash.get();
-            allMoney += co.bank.getReservs();
-            foreach (Province pr in co.ownedProvinces)
+            allMoney += country.cash.get();
+            allMoney += country.bank.getReservs();
+            foreach (Province pr in country.ownedProvinces)
             {
                 foreach (var factory in pr.allProducers)
                     allMoney += factory.cash.get();
             }
         }
+        allMoney += Game.market.cash.get();
         return allMoney;
     }
     void CreateRandomPopulation()

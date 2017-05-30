@@ -120,6 +120,13 @@ public class Bank : Agent
         annexingBank.cash.sendAll(this.cash);
         annexingBank.givenLoans.sendAll(this.givenLoans);
     }
-
-
+    internal Value howMuchCanGive()
+    {
+        return cash.subtractOutside(getMinimalReservs());
+    }
+    internal void destroy(Country byWhom)
+    {
+        cash.sendAll(byWhom.cash);
+        givenLoans.setZero();
+    }
 }

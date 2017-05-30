@@ -99,7 +99,7 @@ public class Agent
     {
         //return new Value(need - this.cash.get());
         //return need.subtractOutside(cash);
-        return need.subtractOutside(getMoneyTotal());        
+        return need.subtractOutside(getMoneyTotal());
     }
     //internal Value HowMuchMoneyCanNotPay(Value value)
     //{
@@ -131,7 +131,7 @@ public class Agent
     //{
     //    throw new NotImplementedException();
     //}
-   
+
     //internal bool canPay(Value howMuchPay)
     //{
     //    if (this.cash.get() >= howMuchPay.get())
@@ -175,7 +175,7 @@ public class Agent
     {
         if (canPay(howMuch))
         {
-            if (!canPayInCash(howMuch))
+            if (!canPayInCash(howMuch) && bank != null)
                 //bank.giveMoney(this, new Value(howMuch.get() - cash.get()));
                 bank.giveLackingMoney(this, howMuch.multipleOutside(5));
 
@@ -203,10 +203,11 @@ public class Agent
     }
     internal void sendAllMoney(Agent whom)
     {
-        bank.returnAllMoney(this);
+        if (bank != null)
+            bank.returnAllMoney(this);
         whom.cash.add(this.cash);
         whom.moneyIncomethisTurn.add(this.cash);
-        this.cash.set(0);        
+        this.cash.set(0);
     }
     public void ConvertFromGoldAndAdd(Value gold)
     {

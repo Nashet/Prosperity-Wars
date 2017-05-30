@@ -10,7 +10,7 @@ public class FinancePanel : DragPanel
         totalText;
     public Slider loanLimit, depositLimit, autoPutInBankLimit;
     public Toggle autoSendMoneyToBank;
-    public CanvasGroup loanPanel, depositPanel;
+    public CanvasGroup loanPanel, depositPanel, bankPanel;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
     void Start()
@@ -71,6 +71,13 @@ public class FinancePanel : DragPanel
         AutoPutInBankText.text = Game.player.autoPutInBankLimit.ToString();
         // loanPanel.interactable = Country.condCanTakeLoan.isAllTrue(Game.player, out loanPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
         //depositPanel.interactable = Country.condCanPutOnDeposit.isAllTrue(Game.player, out depositPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
+        if (Game.player.isInvented(InventionType.banking))
+            bankPanel.interactable = true;
+        else
+        {
+            bankPanel.interactable = false;
+            autoSendMoneyToBank.isOn = false;
+        }
     }
     public void show()
     {
@@ -120,7 +127,7 @@ public class FinancePanel : DragPanel
     }
     public void onLoanLimitChange()
     {
-        loanLimitText.text = (Game.player.bank.getReservs() * loanLimit.value).ToString();
+        loanLimitText.text = (Game.player.bank.howMuchCanGive().get() * loanLimit.value).ToString();
     }
 
     public void onDepositLimitChange()
