@@ -44,13 +44,23 @@ public class Country : Consumer
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null, new CountryWallet(0f, null));
+    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
     static Condition condDontHaveDeposits = new Condition(x => (x as Owner).deposits.get() == 0f, "Don't have deposits", false);
     static Condition condDontHaveLoans = new Condition(x => (x as Owner).loans.get() == 0f, "Don't have loans", false);
     public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
     public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
-    //todo fix base()
-    public Country(string iname, Culture iculture, Color color, Province capital, CountryWallet wallet) : base(wallet)
+
+
+    Value poorTaxIncome = new Value(0f);
+    Value richTaxIncome = new Value(0f);
+    Value goldMinesIncome = new Value(0f);
+    Value ownedFactoriesIncome = new Value(0f);
+
+    Value unemploymentSubsidiesExpense = new Value(0f);
+    Value factorySubsidiesExpense = new Value(0f);
+    Value storageBuyingExpense = new Value(0f);
+
+    public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
         //wallet = new CountryWallet(0f, bank);
         bank = new Bank(0f);
@@ -116,7 +126,7 @@ public class Country : Consumer
     {
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
-        getCountryWallet().setSatisticToZero();
+        setSatisticToZero();
         //take all money from bank
         byWhom.bank.add(this.bank);
 
@@ -403,7 +413,7 @@ public class Country : Consumer
             //if (toBuy.get() < 10f) toBuy.set(10);
             toBuy.multiple(Game.market.buy(this, toBuy, null));
             storageSet.add(toBuy);
-            getCountryWallet().storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
+            storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
         }
     }
     public PrimitiveStorageSet getNeeds()
@@ -487,6 +497,106 @@ public class Country : Consumer
 
         return res;
     }
+    //****************************
+    internal Value getAllExpenses()
+    {
+        Value result = new Value(0f);
+        result.add(unemploymentSubsidiesExpense);
+        result.add(factorySubsidiesExpense);
+        result.add(storageBuyingExpense);
+        return result;
+    }
+    internal float getBalance()
+    {
+        return wallet.moneyIncomethisTurn.get() - getAllExpenses().get();
+    }
+
+    internal void setSatisticToZero()
+    {
+        poorTaxIncome.set(0f);
+        richTaxIncome.set(0f);
+        goldMinesIncome.set(0f);
+        unemploymentSubsidiesExpense.set(0f);
+        ownedFactoriesIncome.set(0f);
+        factorySubsidiesExpense.set(0f);
+        wallet.moneyIncomethisTurn.set(0f);
+        storageBuyingExpense.set(0f);
+    }
+
+    internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
+    {
+        if (wallet.canPay(howMuch))
+        {
+            wallet.payWithoutRecord(byWhom.wallet, howMuch);
+            factorySubsidiesExpense.add(howMuch);
+        }
+        else
+        {
+            //sendAll(byWhom.wallet);
+            wallet.payWithoutRecord(byWhom.wallet, byWhom.wallet.haveMoney);
+            factorySubsidiesExpense.add(byWhom.wallet.haveMoney);
+        }
+
+    }
+    internal float getfactorySubsidiesExpense()
+    {
+        return factorySubsidiesExpense.get();
+    }
+    internal float getPoorTaxIncome()
+    {
+        return poorTaxIncome.get();
+    }
+
+    internal float getRichTaxIncome()
+    {
+        return richTaxIncome.get();
+    }
+
+    internal float getGoldMinesIncome()
+    {
+        return goldMinesIncome.get();
+    }
+
+
+    internal float getOwnedFactoriesIncome()
+    {
+        return ownedFactoriesIncome.get();
+    }
+
+    internal float getUnemploymentSubsidiesExpense()
+    {
+        return unemploymentSubsidiesExpense.get();
+    }
+    internal float getStorageBuyingExpense()
+    {
+        return storageBuyingExpense.get();
+    }
+
+    internal void poorTaxIncomeAdd(Value toAdd)
+    {
+        poorTaxIncome.add(toAdd);
+    }
+    internal void richTaxIncomeAdd(Value toAdd)
+    {
+        richTaxIncome.add(toAdd);
+    }
+    internal void goldMinesIncomeAdd(Value toAdd)
+    {
+        goldMinesIncome.add(toAdd);
+    }
+    internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
+    {
+        unemploymentSubsidiesExpense.add(toAdd);
+    }
+    internal void storageBuyingExpenseAdd(Value toAdd)
+    {
+        storageBuyingExpense.add(toAdd);
+    }
+    internal void ownedFactoriesIncomeAdd(Value toAdd)
+    {
+        ownedFactoriesIncome.add(toAdd);
+    }
+
 }
 public class DontUseThatMethod : Exception
 {

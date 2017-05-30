@@ -330,9 +330,9 @@ public class Factory : Producer
                     if (wallet.canPay(howMuchPay))
                         wallet.pay(link.pop.wallet, howMuchPay);
                     else
-                        if (isSubsidized()) //take maney and try again
+                        if (isSubsidized()) //take money and try again
                     {
-                        province.getCountry().getCountryWallet().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
+                        province.getCountry().takeFactorySubsidies(this, wallet.HowMuchCanNotPay(howMuchPay));
                         if (wallet.canPay(howMuchPay))
                             wallet.pay(link.pop.wallet, howMuchPay);
                         else
@@ -433,7 +433,7 @@ public class Factory : Producer
                     //send 50% to government
                     Value sentToGovernment = new Value(wallet.moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
                     wallet.pay(province.getCountry().wallet, sentToGovernment);
-                    province.getCountry().getCountryWallet().goldMinesIncomeAdd(sentToGovernment);
+                    province.getCountry().goldMinesIncomeAdd(sentToGovernment);
                 }
                 else
                 {
@@ -699,7 +699,7 @@ public class Factory : Producer
 
             //todo !CAPITALISM part
             if (isSubsidized())
-                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getCountry().getCountryWallet());
+                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getCountry());
             else
                 Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
         }
@@ -792,10 +792,13 @@ public class Factory : Producer
 
             if (pay > 0)
             {
-                Value sentToGovernment = new Value(pay);
-                wallet.pay(getOwnerWallet(), sentToGovernment);
-                if (factoryOwner is Country)
-                    factoryOwner.getCountryWallet().ownedFactoriesIncomeAdd(sentToGovernment);
+                Value sentToOwner = new Value(pay);
+                wallet.pay(getOwnerWallet(), sentToOwner);
+                var owner = factoryOwner as Country;
+                if (owner != null)
+                    owner.ownedFactoriesIncomeAdd(sentToOwner);
+                //if (factoryOwner is Country)
+                //    factoryOwner.getCountry().ownedFactoriesIncomeAdd(sentToGovernment);
             }
 
             if (getProfit() <= 0) // to avoid iternal zero profit factories
@@ -992,7 +995,7 @@ public class PopLinkage
         amount = a;
     }
 }
-public class Owner
+public class Owner: Wallet
 {
     /// <summary>
     /// money should be here??
@@ -1004,23 +1007,23 @@ public class Owner
     /// only for countries
     /// </summary>
     /// <param name="wallet"></param>
-    public Owner(CountryWallet wallet)
-    {
-        this.wallet = wallet;
+    //public Owner()
+    //{
+       
         
-    }    
-    public Owner(Bank bank)
+    //}    
+    public Owner(Bank bank):base (0f, bank)
     {
-        this.wallet = new Wallet(0f, bank);
+        //this.wallet = new Wallet(0f, bank);
         //wallet.setBank();
     }
-    internal CountryWallet getCountryWallet()
-    {
-        if (this is Country)
-            return wallet as CountryWallet;
-        else
-            return null;
-    }
+    //internal CountryWallet getCountryWallet()
+    //{
+    //    if (this is Country)
+    //        return wallet as CountryWallet;
+    //    else
+    //        return null;
+    //}
     //todo should be Value
     //public float getLoans()
     //{
@@ -1045,7 +1048,7 @@ public abstract class Consumer : Owner
     public abstract void buyNeeds();
     //public Consumer() : base(this as Country) { }
     public Consumer(Bank bank) : base(bank) { }
-    public Consumer(CountryWallet wallet) : base(wallet) { }
+    //public Consumer(CountryWallet wallet) : base(wallet) { }
     public virtual void setStatisticToZero()
     {
         wallet.moneyIncomethisTurn.set(0f);

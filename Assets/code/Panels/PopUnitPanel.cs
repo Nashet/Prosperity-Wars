@@ -83,6 +83,8 @@ public class PopUnitPanel : DragPanel
             string loans = "";
             if (pop.loans.get() > 0f)
                 loans = "\nLoan: " + pop.loans.ToString();
+            if (pop.deposits.get() > 0f)
+                loans = "\nDeposit: " + pop.deposits.ToString();
 
             generaltext.text = pop + "\n" + "Population: " + pop.getPopulation()
                 + "\nCulture: " + pop.culture
@@ -91,20 +93,22 @@ public class PopUnitPanel : DragPanel
                 + "\nSent to market: " + pop.sentToMarket
                 + "\nCash: " + pop.wallet.ToString()
                 + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
-                + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
+                
                 + "\nDemotion: " + demotionText
                 + "\nPromotion: " + promotionText
                 + "\nMigration: " + migrationText
                 + "\nImmigration: " + immigrationText
                 + "\nAssimilation: " + assimilationText
                 + "\nGrowth: " + pop.getGrowthSize()
-                + "\nUnemployment: " + pop.getUnemployedProcent() + loans
+                + "\nUnemployment: " + pop.getUnemployedProcent()
+                + loans
+                + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
                 + "\nAge: " + pop.getAge()
                 ;
-            if (Game.devMode)
-                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
-                + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
+            //if (Game.devMode)
+            //    generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
+            //    + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
 
             //+ "\nExpenses:"
         }

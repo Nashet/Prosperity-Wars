@@ -410,6 +410,10 @@ abstract public class PopUnit : Producer
     {
         return getNeedsInCommon(this.type.getLuxuryNeedsPer1000());
     }
+    public List<Storage> getRealAllNeeds()
+    {
+        return getNeedsInCommon(this.type.getAllNeedsPer1000());
+    }
 
     internal Procent getUnemployedProcent()
     {
@@ -503,13 +507,13 @@ abstract public class PopUnit : Producer
                 if (wallet.canPay(taxSize))
                 {
                     incomeTaxPayed = taxSize;
-                    province.getCountry().getCountryWallet().poorTaxIncomeAdd(taxSize);
+                    province.getCountry().poorTaxIncomeAdd(taxSize);
                     wallet.pay(province.getCountry().wallet, taxSize);
                 }
                 else
                 {
                     incomeTaxPayed.set(wallet.haveMoney);
-                    province.getCountry().getCountryWallet().poorTaxIncomeAdd(wallet.haveMoney);
+                    province.getCountry().poorTaxIncomeAdd(wallet.haveMoney);
                     wallet.sendAll(province.getCountry().wallet);
 
                 }
@@ -520,12 +524,12 @@ abstract public class PopUnit : Producer
                 taxSize = wallet.moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                 if (wallet.canPay(taxSize))
                 {
-                    province.getCountry().getCountryWallet().richTaxIncomeAdd(taxSize);
+                    province.getCountry().richTaxIncomeAdd(taxSize);
                     wallet.pay(province.getCountry().wallet, taxSize);
                 }
                 else
                 {
-                    province.getCountry().getCountryWallet().richTaxIncomeAdd(wallet.haveMoney);
+                    province.getCountry().richTaxIncomeAdd(wallet.haveMoney);
                     wallet.sendAll(province.getCountry().wallet);
                 }
             }
@@ -825,7 +829,7 @@ abstract public class PopUnit : Producer
             if (province.getCountry().wallet.canPay(subsidy))
             {
                 province.getCountry().wallet.pay(this.wallet, subsidy);
-                province.getCountry().getCountryWallet().unemploymentSubsidiesExpenseAdd(subsidy);
+                province.getCountry().unemploymentSubsidiesExpenseAdd(subsidy);
             }
             else
                 this.didntGetPromisedUnemloymentSubsidy = true;
@@ -962,6 +966,17 @@ abstract public class PopUnit : Producer
                     }
         return provinces.MaxBy(x => x.Value.get()).Key;
     }
+
+    internal void putExtraMoneyInBank()
+    {
+        if (getCountry().isInvented(InventionType.banking))
+        {
+            Value extraMoney = new Value(wallet.haveMoney.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
+            if (extraMoney.get() > 5f)
+                getCountry().bank.takeMoney(this, extraMoney);
+        }
+    }
+
     public bool wantsToImmigrate()
     {
         if (this.needsFullfilled.get() < Options.PopNeedsImmigrationLimit.get()
@@ -1062,7 +1077,7 @@ abstract public class PopUnit : Producer
 
     }
 
-    internal void Invest()
+    internal void invest()
     {
         if (type == PopType.aristocrats)
         {

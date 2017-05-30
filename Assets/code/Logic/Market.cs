@@ -634,7 +634,7 @@ public class Market : Wallet//: PrimitiveStorageSet
     /// <summary>
     /// returns PROCENT actual buying
     /// </summary>    
-    public Storage buy(Consumer forWhom, Storage need, CountryWallet subsidizer)
+    public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
     {
         float actuallyNeedsFullfilled = 0f;
         //Storage actualConsumption;
@@ -680,7 +680,7 @@ public class Market : Wallet//: PrimitiveStorageSet
         return buyingIsEmpty;
 
     }
-    internal void buy(Factory buyer, PrimitiveStorageSet buying, CountryWallet subsidizer)
+    internal void buy(Factory buyer, PrimitiveStorageSet buying, Country subsidizer)
     {
         // Storage actualConsumption;
         foreach (Storage input in buying)

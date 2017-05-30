@@ -131,7 +131,7 @@ public class Game
         Culture cul = new Culture(cultureName.generateCultureName());
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
-        Country count = new Country(countryName.generateCountryName(), cul,  UtilsMy.getRandomColor(), province, new CountryWallet(0f, null));
+        Country count = new Country(countryName.generateCountryName(), cul,  UtilsMy.getRandomColor(), province);
         count.wallet.setBank(count.bank);
         player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
@@ -703,7 +703,7 @@ public class Game
             //country.wallet.moneyIncomethisTurn.set(0);
             country.storageSet.setStatisticToZero();
             country.setStatisticToZero();
-            country.getCountryWallet().setSatisticToZero();
+            country.setSatisticToZero();
             country.aristocrstTax = country.serfdom.status.getTax();
             foreach (var army in country.allArmies)
                 army.setStatisticToZero();
@@ -855,7 +855,9 @@ public class Game
                     pop.calcImmigrations();
                     pop.calcAssimilations();
 
-                    pop.Invest();
+                    pop.invest();
+
+                    pop.putExtraMoneyInBank();
                 }
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                
