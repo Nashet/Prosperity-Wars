@@ -396,6 +396,12 @@ public class Storage : Value
         //value = new Value(inAmount);
         // TODO exceptions!!
     }
+    public Storage(Product inProduct, Value inAmount) : base(inAmount)
+    {
+        product = inProduct;
+     
+     
+    }
 
     public Storage(Product product) : this(product, 0f)
     {

@@ -40,7 +40,7 @@ public class Bank : Agent
     /// </summary>   
     internal void giveMoney(Agent taker, Value howMuch)
     {
-        this.pay(taker, howMuch);
+        this.payWithoutRecord(taker, howMuch);
         if (taker.deposits.get() > 0f) // has deposit (meaning, has no loans)
             if (howMuch.get() >= taker.deposits.get())// loan is bigger than this deposit
             {
@@ -58,6 +58,17 @@ public class Bank : Agent
             taker.loans.add(howMuch);
             this.givenLoans.add(howMuch);
         }
+    }
+    /// <summary>
+    /// Assuming Bank have enough money 
+    /// </summary>    
+    internal void giveLackingMoney(Agent agent, Value howMuch)
+    {
+        giveMoney(agent, howMuch.subtractOutside(agent.cash));
+    }
+    internal void returnAllMoney(Agent agent)
+    {
+        giveMoney(agent, agent.deposits);
     }
     /// <summary>
     /// checks are outside
@@ -113,4 +124,6 @@ public class Bank : Agent
         annexingBank.cash.sendAll(this.cash);
         annexingBank.givenLoans.sendAll(this.givenLoans);
     }
+
+    
 }

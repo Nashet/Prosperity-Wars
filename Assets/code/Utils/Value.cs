@@ -199,6 +199,12 @@ public class Value
     {
         return (float)value / (float)precision; //TODO roundation fakup
     }
+
+    internal void setZero()
+    {
+        value = 0;
+    }
+
     virtual public void set(float invalue)
     {
         value = (uint)Mathf.RoundToInt(invalue * precision);

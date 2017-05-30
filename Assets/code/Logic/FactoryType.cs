@@ -97,22 +97,23 @@ public class FactoryType
         return shaft;
     }
 
-    //todo improove getPossibleProfit
-    internal float getPossibleProfit(Province province)
+    //todo improve getPossibleProfit
+    internal Value getPossibleProfit(Province province)
     {
         foreach (Storage st in resourceInput)
             if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
-                return 0;
-        float income = Game.market.getCost(basicProduction);
+                return new Value(0);
+        Value income = Game.market.getCost(basicProduction);
         Value outCome = Game.market.getCost(resourceInput);
-        return income - outCome.get();
+        return income.subtractOutside(outCome);
     }
     internal Procent getPossibleMargin(Province province)
     {
         Value cost = Game.market.getCost(getBuildNeeds());
         cost.add(Options.factoryMoneyReservPerLevel);
         //if (cost.get() > 0)
-        return new Procent(getPossibleProfit(province) / cost.get());
+        //return new Procent(getPossibleProfit(province) / cost.get());
+        return Procent.makeProcent(getPossibleProfit(province), cost);
     }
     internal static FactoryType getMostTeoreticalProfitable(Province province)
     {
@@ -121,17 +122,17 @@ public class FactoryType
         float maxProfitFound = 0;
         foreach (FactoryType ft in possiblefactories)
         {
-
+            //todo refactor efficiency
             // if (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft))
             {
-                possibleProfit = ft.getPossibleProfit(province);
+                possibleProfit = ft.getPossibleProfit(province).get();
                 if (possibleProfit > maxProfitFound)
                     maxProfitFound = possibleProfit;
             }
         }
         if (maxProfitFound > 0f)
             foreach (FactoryType ft in possiblefactories)
-                if (ft.getPossibleProfit(province) == maxProfitFound && (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft)))
+                if (ft.getPossibleProfit(province).get() == maxProfitFound && (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft)))
                     return ft;
         return null;
     }

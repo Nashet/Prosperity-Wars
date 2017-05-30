@@ -451,7 +451,7 @@ public class Country : Consumer
         {
             foreach (var prod in prov.allFactories)
                 if (prod.gainGoodsThisTurn.get() > 0f)
-                    result.add(Game.market.getCost(prod.gainGoodsThisTurn) - Game.market.getCost(prod.consumedTotal).get());
+                    result.add(Game.market.getCost(prod.gainGoodsThisTurn).get() - Game.market.getCost(prod.consumedTotal).get());
 
             foreach (var pop in prov.allPopUnits)
                 if (pop.type.isProducer())

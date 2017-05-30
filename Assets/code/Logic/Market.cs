@@ -41,14 +41,14 @@ public class Market : Agent//: PrimitiveStorageSet
     //}
     internal Value getCost(PrimitiveStorageSet need)
     {
-        float cost = 0;
+        Value cost = new Value(0f);
         // float price;
         foreach (Storage stor in need)
         {
             //price = Game.market.findPrice(stor.getProduct()).get();
-            cost += getCost(stor);
+            cost.add( getCost(stor));
         }
-        return new Value(cost);
+        return cost;
     }
     //internal Value getCost(Storage need)
     //{
@@ -71,7 +71,7 @@ public class Market : Agent//: PrimitiveStorageSet
         //return new Value(cost);
         return cost;
     }
-    internal float getCost(Storage need)
+    internal Value getCost(Storage need)
     {
         float cost = 0;
         float price;
@@ -79,7 +79,7 @@ public class Market : Agent//: PrimitiveStorageSet
         price = Game.market.findPrice(need.getProduct()).get();
         cost = need.get() * price;
 
-        return cost;
+        return new Value (cost);
     }
     /// <summary>
     /// Meaning demander actually can pay for item in current prices
@@ -645,7 +645,7 @@ public class Market : Agent//: PrimitiveStorageSet
             actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
         else
         {
-            subsidizer.takeFactorySubsidies(forWhom, forWhom.HowMuchCanNotAfford(need));
+            subsidizer.takeFactorySubsidies(forWhom, forWhom.HowMuchMoneyCanNotPay(need));
             //repeat attempt
             if (forWhom.CanAfford(need))
                 actuallyNeedsFullfilled = DoFullBuying(forWhom, need);

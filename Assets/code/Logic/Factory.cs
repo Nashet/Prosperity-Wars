@@ -332,7 +332,7 @@ public class Factory : Producer
                     else
                         if (isSubsidized()) //take money and try again
                     {
-                        province.getCountry().takeFactorySubsidies(this, HowMuchCanNotPay(howMuchPay));
+                        province.getCountry().takeFactorySubsidies(this, HowMuchMoneyCanNotPay(howMuchPay));
                         if (canPay(howMuchPay))
                             pay(link.pop, howMuchPay);
                         else
@@ -818,7 +818,7 @@ public class Factory : Producer
                 markToDestroy();
             else if (Game.random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
-                if (province.getCountry().isInvented(InventionType.banking) && this.type.getPossibleProfit(province) > 10f)
+                if (province.getCountry().isInvented(InventionType.banking) && this.type.getPossibleProfit(province).get() > 10f)
                 {
                     float leftOver = cash.get() - wantsMinMoneyReserv();
                     if (leftOver < 0)
@@ -1054,16 +1054,16 @@ public abstract class Producer : Consumer
             if (DSB.get() > 1f) DSB.set(1f);
             Storage realSold = new Storage(sentToMarket);
             realSold.multiple(DSB);
-            float cost = Game.market.getCost(realSold);
+            Value cost = new Value( Game.market.getCost(realSold));
             storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
             if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {
-                Game.market.pay(this, new Value(cost));
+                Game.market.pay(this, cost);
 
                 //Game.market.sentToMarket.subtract(realSold);
             }
-            else if (Game.market.HowMuchCanNotAfford(cost).get() > 10f)
-                Debug.Log("Failed market - producer payment: " + Game.market.HowMuchCanNotAfford(cost)); // money in market ended... Only first lucky get money
+            else if (Game.market.HowMuchMoneyCanNotPay(cost).get() > 10f)
+                Debug.Log("Failed market - producer payment: " + Game.market.HowMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
 }

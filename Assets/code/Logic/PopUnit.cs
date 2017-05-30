@@ -136,7 +136,7 @@ abstract public class PopUnit : Producer
         //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
         //Owner's fields:        
-        source.sendAll(this);
+        source.sendAllMoney(this);
 
         //Producer's fields:
         storageNow.add(source.storageNow);
@@ -514,7 +514,7 @@ abstract public class PopUnit : Producer
                 {
                     incomeTaxPayed.set(cash);
                     province.getCountry().poorTaxIncomeAdd(cash);
-                    sendAll(province.getCountry());
+                    sendAllMoney(province.getCountry());
 
                 }
             }
@@ -530,7 +530,7 @@ abstract public class PopUnit : Producer
                 else
                 {
                     province.getCountry().richTaxIncomeAdd(cash);
-                    sendAll(province.getCountry());
+                    sendAllMoney(province.getCountry());
                 }
             }
 

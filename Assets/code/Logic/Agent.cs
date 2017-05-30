@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// represent ability to take loans/deposits
 /// </summary>
-public class Agent 
+public class Agent
 {
     /// <summary>
     /// Must be filled together with wallet
@@ -85,50 +85,75 @@ public class Agent
         return true;
     }
     /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-
-    internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
+    //internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
+    //{
+    //    return new Value(Game.market.getCost(need).get() - this.cash.get());
+    //}
+    /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
+    //internal Value HowMuchCanNotAfford(float need)
+    //{
+    //    return new Value(need - this.cash.get());
+    //}
+    /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
+    internal Value HowMuchMoneyCanNotPay(Value need)
     {
-        return new Value(Game.market.getCost(need).get() - this.cash.get());
+        //return new Value(need - this.cash.get());
+        //return need.subtractOutside(cash);
+        return need.subtractOutside(getMoneyTotal());        
     }
-    internal Value HowMuchCanNotAfford(float need)
-    {
-        return new Value(need - this.cash.get());
-    }
-    internal Value HowMuchCanNotAfford(Storage need)
-    {
-        return new Value(Game.market.getCost(need) - this.cash.get());
-    }
+    //internal Value HowMuchMoneyCanNotPay(Value value)
+    //{
+    //    return new Value(value.get() - this.cash.get());
+    //}
+    /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
+    //internal Value HowMuchCanNotAfford(Storage need)
+    //{
+    //    return new Value(Game.market.getCost(need) - this.cash.get());
+    //}
     internal Storage HowMuchCanAfford(Storage need)
     {
-        float price = Game.market.findPrice(need.getProduct()).get();
-        float cost = need.get() * price;
-        if (cost <= cash.get())
-            return new Storage(need.getProduct(), need.get());
+        //float price = Game.market.findPrice(need.getProduct()).get();
+        //if (cost <= cash.get())
+        //    return new Storage(need.getProduct(), need.get());
+        //else
+        //    return new Storage(need.getProduct(), cash.get() / price);
+
+        Value cost = Game.market.getCost(need);
+        if (canPay(cost))
+            return new Storage(need);
         else
-            return new Storage(need.getProduct(), cash.get() / price);
+            return new Storage(need.getProduct(), getMoneyTotal().divideOutside(
+                Game.market.findPrice(need.getProduct())
+                ));
     }
 
     //private float get()
     //{
     //    throw new NotImplementedException();
     //}
-    internal Value HowMuchCanNotPay(Value value)
-    {
-        return new Value(value.get() - this.cash.get());
-    }
+   
+    //internal bool canPay(Value howMuchPay)
+    //{
+    //    if (this.cash.get() >= howMuchPay.get())
+    //        return true;
+    //    else return false;
+    //}
+    //internal bool canPay(float howMuchPay)
+    //{
+    //    if (this.cash.get() >= howMuchPay)
+    //        return true;
+    //    else
+    //        return false;
+    //}
     internal bool canPay(Value howMuchPay)
     {
-        if (this.cash.get() >= howMuchPay.get())
-            return true;
-        else return false;
+        return getMoneyTotal().isBiggerOrEqual(howMuchPay);
     }
-    internal bool canPay(float howMuchPay)
+    internal bool canPayInCash(Value howMuchPay)
     {
-        if (this.cash.get() >= howMuchPay)
-            return true;
-        else
-            return false;
+        return cash.isBiggerOrEqual(howMuchPay);
     }
+
     public float getCash()
     {
         return cash.get();
@@ -146,34 +171,42 @@ public class Agent
     //    else
     //        Debug.Log("Failed payment in wallet");
     //}
-    internal void payWithoutRecord(Agent whom, Value howMuch)
+    public bool payWithoutRecord(Agent whom, Value howMuch)
     {
         if (canPay(howMuch))
         {
+            if (!canPayInCash(howMuch))
+                //bank.giveMoney(this, new Value(howMuch.get() - cash.get()));
+                bank.giveLackingMoney(this, howMuch.multipleOutside(5));
+
             whom.cash.add(howMuch);
-            //whom.moneyIncomethisTurn.add(howMuch);
             this.cash.subtract(howMuch);
+            return true;
         }
         else
-            Debug.Log("Failed payment in wallet");
+        {
+            Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+            return false;
+        }
+
     }
 
-    internal void pay(Agent whom, Value howMuch)
+    public bool pay(Agent whom, Value howMuch)
     {
-        if (canPay(howMuch))
+        if (payWithoutRecord(whom, howMuch))
         {
-            whom.cash.add(howMuch);
             whom.moneyIncomethisTurn.add(howMuch);
-            this.cash.subtract(howMuch);
+            return true;
         }
         else
-            Debug.Log("Failed payment in wallet");
+            return false;
     }
-    internal void sendAll(Agent whom)
+    internal void sendAllMoney(Agent whom)
     {
+        bank.returnAllMoney(this);
         whom.cash.add(this.cash);
         whom.moneyIncomethisTurn.add(this.cash);
-        this.cash.set(0);
+        this.cash.set(0);        
     }
     public void ConvertFromGoldAndAdd(Value gold)
     {
