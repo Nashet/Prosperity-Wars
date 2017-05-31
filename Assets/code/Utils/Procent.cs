@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Procent : Value
 {
-    
+
     internal static readonly Procent ZeroProcent = new Procent(0f);
 
     //uint value;
@@ -31,7 +31,7 @@ public class Procent : Value
     {
         if (denominator.get() == 0f)
         {
-           // Debug.Log("Division by zero in Procent.makeProcent(Storage)");
+            // Debug.Log("Division by zero in Procent.makeProcent(Storage)");
             return new Procent(0f);
         }
         else
@@ -72,7 +72,7 @@ public class Procent : Value
             dic.Add(item.getProduct(), relation);
         }
         float result = 0f;
-        
+
         foreach (var item in dic)
         {
             result += item.Value * numerator.findStorage(item.Key).get() / allGoodsAmount;
@@ -85,7 +85,7 @@ public class Procent : Value
         return get() - 0.5f;
     }
 
-    
+
     public Value sendProcentToNew(Value source)
     {
 
@@ -108,7 +108,8 @@ public class Procent : Value
     }
     public void addPoportionally(int baseValue, int secondValue, Procent secondProcent)
     {
-        set((this.get() * baseValue + secondProcent.get() * secondValue) / (float)(baseValue + secondValue));
+        if ((baseValue + secondValue) != 0)
+            set((this.get() * baseValue + secondProcent.get() * secondValue) / (float)(baseValue + secondValue));
     }
     public override string ToString()
     {
