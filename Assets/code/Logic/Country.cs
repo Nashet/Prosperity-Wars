@@ -363,7 +363,7 @@ public class Country : Consumer
             sciencePoints.add(this.getMenPopulation());
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-        //sciencePoints.add(this.getMenPopulation());
+        sciencePoints.add(this.getMenPopulation());
 
         if (this.autoPutInBankLimit > 0f)
         {

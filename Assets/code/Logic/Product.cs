@@ -103,13 +103,13 @@ public class Product
     {
         if (isResource())
         {
-            return defaultPrice.multipleOuside(Options.defaultPriceLimitMultiplier);
+            return defaultPrice.multipleOutside(Options.defaultPriceLimitMultiplier);
         }
         else
         {
             var type = FactoryType.whoCanProduce(this);
             if (type == null)
-                return defaultPrice.multipleOuside(Options.defaultPriceLimitMultiplier);
+                return defaultPrice.multipleOutside(Options.defaultPriceLimitMultiplier);
             else
             {
                 Value res = Game.market.getCost(type.resourceInput);

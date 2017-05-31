@@ -160,7 +160,7 @@ public class Game
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 0.5f));
         resourceInput.set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, false);
+        new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wool, 1f));

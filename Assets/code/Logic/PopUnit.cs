@@ -90,14 +90,14 @@ abstract public class PopUnit : Producer
         //take deposit share?
         if (source.deposits.isExist())
         {
-            Value takeDeposit = source.deposits.multipleOuside(newPopShare);
+            Value takeDeposit = source.deposits.multipleOutside(newPopShare);
             if (source.getCountry().bank.canGiveMoney(this, takeDeposit))
             {
                 source.getCountry().bank.giveMoney(source, takeDeposit);
                 source.pay(this, takeDeposit);
             }
         }
-        source.pay(this, source.cash.multipleOuside(newPopShare));
+        source.pay(this, source.cash.multipleOutside(newPopShare));
 
         //Producer's fields:
         storageNow = newPopShare.sendProcentToNew(source.storageNow);
@@ -470,7 +470,7 @@ abstract public class PopUnit : Producer
         {
             if (this.type.isPoorStrata())
             {
-                taxSize = moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = moneyIncomethisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                 if (canPay(taxSize))
                 {
                     incomeTaxPayed = taxSize;
@@ -488,7 +488,7 @@ abstract public class PopUnit : Producer
             else
             if (this.type.isRichStrata())
             {
-                taxSize = moneyIncomethisTurn.multipleOuside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                taxSize = moneyIncomethisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                 if (canPay(taxSize))
                 {
                     province.getCountry().richTaxIncomeAdd(taxSize);
@@ -508,10 +508,10 @@ abstract public class PopUnit : Producer
             // taxSize = gainGoodsThisTurn.multiple(province.getOwner().countryTax);
 
             if (this.type.isPoorStrata())
-                taxSize = gainGoodsThisTurn.multipleOuside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
             if (this.type.isRichStrata())
-                taxSize = gainGoodsThisTurn.multipleOuside((province.getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
 
             if (storageNow.canPay(taxSize))
                 storageNow.send(province.getCountry().storageSet, taxSize);
@@ -605,7 +605,7 @@ abstract public class PopUnit : Producer
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
             Agent reserv = new Agent(0f, null);
-            payWithoutRecord(reserv, cash.multipleOuside(Options.savePopMoneyReserv));
+            payWithoutRecord(reserv, cash.multipleOutside(Options.savePopMoneyReserv));
             lifeNeeds = (getRealEveryDayNeeds());
             Value needsCost = Game.market.getCost(lifeNeeds);
             float moneyWas = cash.get();
@@ -694,7 +694,7 @@ abstract public class PopUnit : Producer
     {
         {
             Value taxSize = new Value(0);
-            taxSize = gainGoodsThisTurn.multipleOuside(province.getCountry().aristocrstTax);
+            taxSize = gainGoodsThisTurn.multipleOutside(province.getCountry().aristocrstTax);
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }

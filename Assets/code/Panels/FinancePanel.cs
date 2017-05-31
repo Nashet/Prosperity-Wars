@@ -61,7 +61,7 @@ public class FinancePanel : DragPanel
         expensesText.text = sb.ToString();
 
         sb.Clear();
-        
+
         sb.Append("\nNational bank: ").Append(Game.Player.bank).Append(" loans: ").Append(Game.Player.bank.getGivenLoans());
         //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
         sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
@@ -125,17 +125,17 @@ public class FinancePanel : DragPanel
     }
     public void onPutInDeposit()
     {
-        Game.Player.bank.takeMoney(Game.Player, new Value(Game.Player.cash.get() * depositLimit.value));
+        Game.Player.bank.takeMoney(Game.Player, new Value(Game.Player.cash.multipleOutside(depositLimit.value)));
         refresh();
     }
     public void onLoanLimitChange()
     {
-        loanLimitText.text = (Game.Player.bank.howMuchCanGive(Game.Player).get() * loanLimit.value).ToString();
+        loanLimitText.text = Game.Player.bank.howMuchCanGive(Game.Player).multipleOutside(loanLimit.value).ToString();
     }
 
     public void onDepositLimitChange()
     {
-        depositLimitText.text = (Game.Player.cash.get() * depositLimit.value).ToString();
+        depositLimitText.text = Game.Player.cash.multipleOutside(depositLimit.value).ToString();
     }
     public void onAutoPutInBankLimitChange()
     {
@@ -151,6 +151,6 @@ public class FinancePanel : DragPanel
             autoPutInBankLimit.value = 0f;
             AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
         }
-        
+
     }
 }
