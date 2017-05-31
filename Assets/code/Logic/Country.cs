@@ -129,6 +129,7 @@ public class Country : Consumer
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
         setSatisticToZero();
+
         //take all money from bank
         if (byWhom.isInvented(InventionType.banking))
             byWhom.bank.add(this.bank);
@@ -136,6 +137,8 @@ public class Country : Consumer
             this.bank.destroy(byWhom);
 
         //byWhom.storageSet.
+        this.sendAllAvailableMoney(byWhom);
+        this.bank.defaultLoaner(this);
         storageSet.sendAll(byWhom.storageSet);
 
         if (this == Game.player)

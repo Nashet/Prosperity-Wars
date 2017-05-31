@@ -170,6 +170,9 @@ public class Agent
     //    else
     //        Debug.Log("Failed payment in wallet");
     //}
+    /// <summary>
+    /// checks inside. Wouldn't pay if can't
+    /// </summary>    
     public bool payWithoutRecord(Agent whom, Value howMuch)
     {
         if (canPay(howMuch))
@@ -189,7 +192,9 @@ public class Agent
         }
 
     }
-
+    /// <summary>
+    /// checks inside. Wouldn't pay if can't
+    /// </summary>    
     public bool pay(Agent whom, Value howMuch)
     {
         if (payWithoutRecord(whom, howMuch))

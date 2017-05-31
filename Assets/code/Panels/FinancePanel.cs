@@ -40,6 +40,7 @@ public class FinancePanel : DragPanel
 
         sb.Append("\n\nBalance: ").Append(Game.player.getBalance());
         sb.Append("\nHave money: ").Append(Game.player.cash).Append(" + ").Append(Game.player.deposits).Append(" on bank deposit");
+        sb.Append("\nLoans taken: ").Append(Game.player.loans);
         sb.Append("\nGDP (current prices): ").Append(Game.player.getGDP()).Append("; GDP per thousand men: ").Append(Game.player.getGDPPer1000());
         incomeText.text = sb.ToString();
         //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
@@ -60,7 +61,7 @@ public class FinancePanel : DragPanel
         expensesText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Loans taken: ").Append(Game.player.loans);
+        
         sb.Append("\nNational bank: ").Append(Game.player.bank).Append(" loans: ").Append(Game.player.bank.getGivenLoans());
         //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
         sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());

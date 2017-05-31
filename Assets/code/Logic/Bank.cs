@@ -112,10 +112,10 @@ public class Bank : Agent
         return cash.ToString();
     }
 
-    internal void defaultLoaner(Producer producer)
+    internal void defaultLoaner(Agent agent)
     {
-        givenLoans.subtract(producer.loans);
-        producer.loans.set(0);
+        givenLoans.subtract(agent.loans);
+        agent.loans.set(0);
     }
     /// <summary>
     /// Assuming all clients already defaulted theirs loans
