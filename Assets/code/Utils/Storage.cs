@@ -2,274 +2,131 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-public class CountryWallet : Wallet
-{
-    public CountryWallet(float inAmount) : base(inAmount)
-    {
-    }
-    Value poorTaxIncome = new Value(0f);
-    Value richTaxIncome = new Value(0f);
-    Value goldMinesIncome = new Value(0f);
-    Value ownedFactoriesIncome = new Value(0f);
-
-    Value unemploymentSubsidiesExpense = new Value(0f);
-    Value factorySubsidiesExpense = new Value(0f);
-    Value storageBuyingExpense = new Value(0f);
-    internal Value getAllExpenses()
-    {
-        Value result = new Value(0f);
-        result.add(unemploymentSubsidiesExpense);
-        result.add(factorySubsidiesExpense);
-        result.add(storageBuyingExpense);
-        return result;
-    }
-    internal float getBalance()
-    {
-        return moneyIncomethisTurn.get() - getAllExpenses().get();
-    }
-
-    internal void setSatisticToZero()
-    {
-        poorTaxIncome.set(0f);
-        richTaxIncome.set(0f);
-        goldMinesIncome.set(0f);
-        unemploymentSubsidiesExpense.set(0f);
-        ownedFactoriesIncome.set(0f);
-        factorySubsidiesExpense.set(0f);
-        moneyIncomethisTurn.set(0f);
-        storageBuyingExpense.set(0f);
-    }
-
-    internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
-    {
-        if (canPay(howMuch))
-        {
-            payWithoutRecord(byWhom.wallet, howMuch);
-            factorySubsidiesExpense.add(howMuch);
-        }
-        else
-        {
-            //sendAll(byWhom.wallet);
-            payWithoutRecord(byWhom.wallet, byWhom.wallet.haveMoney);
-            factorySubsidiesExpense.add(byWhom.wallet.haveMoney);
-        }
-
-    }
-    internal float getfactorySubsidiesExpense()
-    {
-        return factorySubsidiesExpense.get();
-    }
-    internal float getPoorTaxIncome()
-    {
-        return poorTaxIncome.get();
-    }
-
-    internal float getRichTaxIncome()
-    {
-        return richTaxIncome.get();
-    }
-
-    internal float getGoldMinesIncome()
-    {
-        return goldMinesIncome.get();
-    }
-
+//public class CountryWallet : Wallet
+//{
+//    public CountryWallet(float inAmount, Bank bank) : base(inAmount, bank)
+//    {
+//       // setBank(country.bank);
+//    }
    
-    internal float getOwnedFactoriesIncome()
-    {
-        return ownedFactoriesIncome.get();
-    }
+   
+//}
 
-    internal float getUnemploymentSubsidiesExpense()
-    {
-        return unemploymentSubsidiesExpense.get();
-    }
-    internal float getStorageBuyingExpense()
-    {
-        return storageBuyingExpense.get();
-    }
-
-    internal void poorTaxIncomeAdd(Value toAdd)
-    {
-        poorTaxIncome.add(toAdd);
-    }
-    internal void richTaxIncomeAdd(Value toAdd)
-    {
-        richTaxIncome.add(toAdd);
-    }
-    internal void goldMinesIncomeAdd(Value toAdd)
-    {
-        goldMinesIncome.add(toAdd);
-    }
-    internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
-    {
-        unemploymentSubsidiesExpense.add(toAdd);
-    }
-    internal void storageBuyingExpenseAdd(Value toAdd)
-    {
-        storageBuyingExpense.add(toAdd);
-    }
-    internal void ownedFactoriesIncomeAdd(Value toAdd)
-    {
-        ownedFactoriesIncome.add(toAdd);
-    }
-}
-public class Wallet// : Value // : Storage
+public class CountryStorageSet : PrimitiveStorageSet
 {
+    PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+
+    internal Value getConsumption(Product whom)
+    {
+        foreach (Storage stor in consumedLastTurn)
+            if (stor.getProduct() == whom)
+                return stor;
+        return new Value(0f);
+    }
+    internal void setStatisticToZero()
+    {
+        consumedLastTurn.setZero();
+    }
+
+    /// / next - inherited
+
+
+    public void set(Storage inn)
+    {
+        base.set(inn);
+        throw new DontUseThatMethod();
+    }
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(Storage need)
+    //{
+    //    base.add(need);
+    //    consumedLastTurn.add(need)
+    //}
+
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(PrimitiveStorageSet need)
+    //{ }
+
     /// <summary>
-    /// Must be filled together with wallet
-    /// </summary>
-    public Value moneyIncomethisTurn = new Value(0);
-    internal Value haveMoney = new Value(0);
-
-    public Wallet(float inAmount) //: base (inAmount)//: base(Product.findByName("Gold"), inAmount)
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, Storage what)
     {
-        haveMoney.set(inAmount);
-    }
-    ///public Wallet() : base(Product.findByName("Gold"), 0f)
-    //public Wallet() : base(Product.findByName("Gold"), 20f) 
-
-    //}
-
-    internal bool CanAfford(Storage need)
-    {
-        if (need.get() == HowMuchCanAfford(need).get())
-            return true;
-        else
-            return false;
-    }
-
-    internal bool CanAfford(PrimitiveStorageSet need)
-    {
-        foreach (Storage stor in need)
+        if (base.send(whom, what))
         {
-            if (HowMuchCanAfford(stor).get() < stor.get())
-                return false;
+            consumedLastTurn.add(what);
+            return true;
         }
-        return true;
-    }
-    /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-
-    internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
-    {
-        return new Value(Game.market.getCost(need).get() - this.haveMoney.get());
-    }
-    internal Value HowMuchCanNotAfford(float need)
-    {
-        return new Value(need - this.haveMoney.get());
-    }
-    internal Value HowMuchCanNotAfford(Storage need)
-    {
-        return new Value(Game.market.getCost(need) - this.haveMoney.get());
-    }
-    internal Storage HowMuchCanAfford(Storage need)
-    {
-        float price = Game.market.findPrice(need.getProduct()).get();
-        float cost = need.get() * price;
-        if (cost <= haveMoney.get())
-            return new Storage(need.getProduct(), need.get());
-        else
-            return new Storage(need.getProduct(), haveMoney.get() / price);
-    }
-
-    //private float get()
-    //{
-    //    throw new NotImplementedException();
-    //}
-    internal Value HowMuchCanNotPay(Value value)
-    {
-        return new Value(value.get() - this.haveMoney.get());
-    }
-    internal bool canPay(Value howMuchPay)
-    {
-        if (this.haveMoney.get() >= howMuchPay.get())
-            return true;
-        else return false;
-    }
-    internal bool canPay(float howMuchPay)
-    {
-        if (this.haveMoney.get() >= howMuchPay)
-            return true;
         else
             return false;
     }
 
-    //internal void pay(Wallet whom, float howMuch)
-    //{
-    //    if (canPay(howMuch))
-    //    {
-    //        whom.haveMoney.add(howMuch);
-    //        whom.moneyIncomethisTurn.add(howMuch);
-    //        this.haveMoney.subtract(howMuch);
+    public void take(Storage fromHhom, Value howMuch)
+    {
+        base.take(fromHhom, howMuch);
+        throw new DontUseThatMethod();
+    }
+    /// <summary>
+    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
+    /// </summary>    
+    internal Value getStorage(Product whom)
+    {
+        return base.getStorage(whom);
+    }
 
-    //    }
+    internal void SetZero()
+    {
+        base.setZero();
+        throw new DontUseThatMethod();
+    }
+    //internal PrimitiveStorageSet Divide(float v)
+    //{
+    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
+    //    foreach (Storage stor in container)
+    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
+    //    return result;
+    //}
+
+    internal bool subtract(Storage stor)
+    {
+        if (base.subtract(stor))
+        {
+            consumedLastTurn.add(stor);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    //internal Storage subtractOutside(Storage stor)
+    //{
+    //    Storage find = this.findStorage(stor.getProduct());
+    //    if (find == null)
+    //        return new Storage(stor);
     //    else
-    //        Debug.Log("Failed payment in wallet");
+    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
     //}
-    internal void payWithoutRecord(Wallet whom, Value howMuch)
+    internal void subtract(PrimitiveStorageSet set)
     {
-        if (canPay(howMuch))
-        {
-            whom.haveMoney.add(howMuch);
-            //whom.moneyIncomethisTurn.add(howMuch);
-            this.haveMoney.subtract(howMuch);
-        }
-        else
-            Debug.Log("Failed payment in wallet");
+        base.subtract(set);
+        throw new DontUseThatMethod();
     }
-    internal void pay(Wallet whom, Value howMuch)
+    internal void copyDataFrom(PrimitiveStorageSet consumed)
     {
-        if (canPay(howMuch))
-        {
-            whom.haveMoney.add(howMuch);
-            whom.moneyIncomethisTurn.add(howMuch);
-            this.haveMoney.subtract(howMuch);
-        }
-        else
-            Debug.Log("Failed payment in wallet");
+        base.copyDataFrom(consumed);
+        throw new DontUseThatMethod();
     }
-    internal void sendAll(Wallet whom)
+    internal void sendAll(PrimitiveStorageSet toWhom)
     {
-        whom.haveMoney.add(this.haveMoney);
-        whom.moneyIncomethisTurn.add(this.haveMoney);
-        this.haveMoney.set(0);
-    }
-    public void ConvertFromGoldAndAdd(Value gold)
-    {
-        float coins = gold.get() * Options.goldToCoinsConvert;
-        this.haveMoney.add(coins);
-        this.moneyIncomethisTurn.add(coins);
-        gold.set(0);
-
+        consumedLastTurn.add(this);
+        base.sendAll(toWhom);
     }
 
-    override public string ToString()
-    {
-        return haveMoney.get() + " coins";
-    }
 }
-public class CountryStorage : PrimitiveStorageSet
-{
-    static int reserveMultiplier = 10;
-    Value consumedLastTurn = new Value(0);
-    Value wantedConsumeLastTurn = new Value(0);
-    public Value HowMuchWantsToBuy()
-    {
-        return wantedConsumeLastTurn.multipleOutside(reserveMultiplier);
-    }
-    //public CountryStorage(Product inProduct, float inAmount) : base(inProduct, inAmount)
-    //{
-
-    //}
-
-    //public CountryStorage(Product product) : base(product)
-    //{
-
-    //}
-}
-
-
-
 public class PrimitiveStorageSet
 {
     //private static Storage tStorage;
@@ -538,6 +395,12 @@ public class Storage : Value
         product = inProduct;
         //value = new Value(inAmount);
         // TODO exceptions!!
+    }
+    public Storage(Product inProduct, Value inAmount) : base(inAmount)
+    {
+        product = inProduct;
+     
+     
     }
 
     public Storage(Product product) : this(product, 0f)

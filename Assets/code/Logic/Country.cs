@@ -6,121 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 
-public class CountryStorageSet : PrimitiveStorageSet
-{
-    PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
 
-    internal Value getConsumption(Product whom)
-    {
-        foreach (Storage stor in consumedLastTurn)
-            if (stor.getProduct() == whom)
-                return stor;
-        return new Value(0f);
-    }
-    internal void setStatisticToZero()
-    {
-        consumedLastTurn.setZero();
-    }
-
-    /// / next - inherited
-
-
-    public void set(Storage inn)
-    {
-        base.set(inn);
-        throw new DontUseThatMethod();
-    }
-    ///// <summary>
-    ///// If duplicated than adds
-    ///// </summary>
-    //internal void add(Storage need)
-    //{
-    //    base.add(need);
-    //    consumedLastTurn.add(need)
-    //}
-
-    ///// <summary>
-    ///// If duplicated than adds
-    ///// </summary>
-    //internal void add(PrimitiveStorageSet need)
-    //{ }
-
-    /// <summary>
-    /// Do checks outside
-    /// </summary>   
-    public bool send(Producer whom, Storage what)
-    {
-        if (base.send(whom, what))
-        {
-            consumedLastTurn.add(what);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    public void take(Storage fromHhom, Value howMuch)
-    {
-        base.take(fromHhom, howMuch);
-        throw new DontUseThatMethod();
-    }
-    /// <summary>
-    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
-    /// </summary>    
-    internal Value getStorage(Product whom)
-    {
-        return base.getStorage(whom);
-    }
-
-    internal void SetZero()
-    {
-        base.setZero();
-        throw new DontUseThatMethod();
-    }
-    //internal PrimitiveStorageSet Divide(float v)
-    //{
-    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
-    //    foreach (Storage stor in container)
-    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
-    //    return result;
-    //}
-
-    internal bool subtract(Storage stor)
-    {
-        if (base.subtract(stor))
-        {
-            consumedLastTurn.add(stor);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    //internal Storage subtractOutside(Storage stor)
-    //{
-    //    Storage find = this.findStorage(stor.getProduct());
-    //    if (find == null)
-    //        return new Storage(stor);
-    //    else
-    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
-    //}
-    internal void subtract(PrimitiveStorageSet set)
-    {
-        base.subtract(set);
-        throw new DontUseThatMethod();
-    }
-    internal void copyDataFrom(PrimitiveStorageSet consumed)
-    {
-        base.copyDataFrom(consumed);
-        throw new DontUseThatMethod();
-    }
-    internal void sendAll(PrimitiveStorageSet toWhom)
-    {
-        consumedLastTurn.add(this);
-        base.sendAll(toWhom);
-    }
-
-}
 public class Country : Consumer
 {
     public string name;
@@ -151,20 +37,35 @@ public class Country : Consumer
 
     TextMesh messhCapitalText;
 
-    public Bank bank = new Bank();
+    //public Bank bank;
+    
 
     /// <summary>
     /// per 1000 men
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), new CountryWallet(0f), Color.yellow, null);
-    static Condition condDontHaveDeposits = new Condition(x => (x as Owner).deposits.get() == 0f, "Don't have deposits", false);
-    static Condition condDontHaveLoans = new Condition(x => (x as Owner).loans.get() == 0f, "Don't have loans", false);
+    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
+    static Condition condDontHaveDeposits = new Condition(x => (x as Agent).deposits.get() == 0f, "Don't have deposits", false);
+    static Condition condDontHaveLoans = new Condition(x => (x as Agent).loans.get() == 0f, "Don't have loans", false);
     public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
     public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
-    public Country(string iname, Culture iculture, CountryWallet wallet, Color color, Province capital) : base(wallet)
+
+
+    Value poorTaxIncome = new Value(0f);
+    Value richTaxIncome = new Value(0f);
+    Value goldMinesIncome = new Value(0f);
+    Value ownedFactoriesIncome = new Value(0f);
+
+    Value unemploymentSubsidiesExpense = new Value(0f);
+    Value factorySubsidiesExpense = new Value(0f);
+    Value storageBuyingExpense = new Value(0f);
+
+    public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
+        //wallet = new CountryWallet(0f, bank);
+        bank = new Bank();
+        
         homeArmy = new Army(this);
         sendingArmy = new Army(this);
         government = new Government(this);
@@ -214,7 +115,7 @@ public class Country : Consumer
         return ownedProvinces.Count > 0;
     }
     internal static IEnumerable<Country> allExisting = getExisting();
-    internal int autoPutInBankLimit =2000;
+    internal int autoPutInBankLimit = 2000;
 
     static IEnumerable<Country> getExisting()
     {
@@ -227,11 +128,17 @@ public class Country : Consumer
     {
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
-        getCountryWallet().setSatisticToZero();
+        setSatisticToZero();
+
         //take all money from bank
-        byWhom.bank.add(this.bank);
+        if (byWhom.isInvented(InventionType.banking))
+            byWhom.bank.add(this.bank);
+        else
+            this.bank.destroy(byWhom);
 
         //byWhom.storageSet.
+        this.sendAllAvailableMoney(byWhom);
+        this.bank.defaultLoaner(this);
         storageSet.sendAll(byWhom.storageSet);
 
         if (this == Game.player)
@@ -267,7 +174,7 @@ public class Country : Consumer
         List<Province> result = new List<Province>();
         foreach (var province in ownedProvinces)
             result.AddRange(
-                province.getNeigbors(p => p.getOwner() != this && !result.Contains(p))
+                province.getNeigbors(p => p.getCountry() != this && !result.Contains(p))
                 );
         return result;
     }
@@ -460,10 +367,10 @@ public class Country : Consumer
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
         sciencePoints.add(this.getMenPopulation());
-       
+
         if (this.autoPutInBankLimit > 0f)
         {
-            float extraMoney = wallet.haveMoney.get() - (float)this.autoPutInBankLimit;
+            float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
             if (extraMoney > 0f)
                 bank.takeMoney(this, new Value(extraMoney));
         }
@@ -475,8 +382,8 @@ public class Country : Consumer
             {
                 var possibleTarget = getRandomNeighborProvince();
                 if (possibleTarget != null)
-                    if ((this.getStreght() * 1.5f > possibleTarget.getOwner().getStreght() && possibleTarget.getOwner() == Game.player) || possibleTarget.getOwner() == NullCountry
-                        || possibleTarget.getOwner() != Game.player && this.getStreght() < possibleTarget.getOwner().getStreght() * 0.5f)
+                    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.player) || possibleTarget.getCountry() == NullCountry
+                        || possibleTarget.getCountry() != Game.player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
                     {
                         mobilize();
                         sendArmy(homeArmy, possibleTarget);
@@ -514,7 +421,7 @@ public class Country : Consumer
             //if (toBuy.get() < 10f) toBuy.set(10);
             toBuy.multiple(Game.market.buy(this, toBuy, null));
             storageSet.add(toBuy);
-            getCountryWallet().storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
+            storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
         }
     }
     public PrimitiveStorageSet getNeeds()
@@ -550,7 +457,7 @@ public class Country : Consumer
         {
             foreach (var prod in prov.allFactories)
                 if (prod.gainGoodsThisTurn.get() > 0f)
-                    result.add(Game.market.getCost(prod.gainGoodsThisTurn) - Game.market.getCost(prod.consumedTotal).get());
+                    result.add(Game.market.getCost(prod.gainGoodsThisTurn).get() - Game.market.getCost(prod.consumedTotal).get());
 
             foreach (var pop in prov.allPopUnits)
                 if (pop.type.isProducer())
@@ -598,6 +505,106 @@ public class Country : Consumer
 
         return res;
     }
+    //****************************
+    internal Value getAllExpenses()
+    {
+        Value result = new Value(0f);
+        result.add(unemploymentSubsidiesExpense);
+        result.add(factorySubsidiesExpense);
+        result.add(storageBuyingExpense);
+        return result;
+    }
+    internal float getBalance()
+    {
+        return moneyIncomethisTurn.get() - getAllExpenses().get();
+    }
+
+    internal void setSatisticToZero()
+    {
+        poorTaxIncome.set(0f);
+        richTaxIncome.set(0f);
+        goldMinesIncome.set(0f);
+        unemploymentSubsidiesExpense.set(0f);
+        ownedFactoriesIncome.set(0f);
+        factorySubsidiesExpense.set(0f);
+        moneyIncomethisTurn.set(0f);
+        storageBuyingExpense.set(0f);
+    }
+
+    internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
+    {
+        if (canPay(howMuch))
+        {
+            payWithoutRecord(byWhom, howMuch);
+            factorySubsidiesExpense.add(howMuch);
+        }
+        else
+        {
+            //sendAll(byWhom.wallet);
+            payWithoutRecord(byWhom, byWhom.cash);
+            factorySubsidiesExpense.add(byWhom.cash);
+        }
+
+    }
+    internal float getfactorySubsidiesExpense()
+    {
+        return factorySubsidiesExpense.get();
+    }
+    internal float getPoorTaxIncome()
+    {
+        return poorTaxIncome.get();
+    }
+
+    internal float getRichTaxIncome()
+    {
+        return richTaxIncome.get();
+    }
+
+    internal float getGoldMinesIncome()
+    {
+        return goldMinesIncome.get();
+    }
+
+
+    internal float getOwnedFactoriesIncome()
+    {
+        return ownedFactoriesIncome.get();
+    }
+
+    internal float getUnemploymentSubsidiesExpense()
+    {
+        return unemploymentSubsidiesExpense.get();
+    }
+    internal float getStorageBuyingExpense()
+    {
+        return storageBuyingExpense.get();
+    }
+
+    internal void poorTaxIncomeAdd(Value toAdd)
+    {
+        poorTaxIncome.add(toAdd);
+    }
+    internal void richTaxIncomeAdd(Value toAdd)
+    {
+        richTaxIncome.add(toAdd);
+    }
+    internal void goldMinesIncomeAdd(Value toAdd)
+    {
+        goldMinesIncome.add(toAdd);
+    }
+    internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
+    {
+        unemploymentSubsidiesExpense.add(toAdd);
+    }
+    internal void storageBuyingExpenseAdd(Value toAdd)
+    {
+        storageBuyingExpense.add(toAdd);
+    }
+    internal void ownedFactoriesIncomeAdd(Value toAdd)
+    {
+        ownedFactoriesIncome.add(toAdd);
+    }
+
 }
 public class DontUseThatMethod : Exception
 {

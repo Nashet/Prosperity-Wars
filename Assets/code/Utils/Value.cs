@@ -12,7 +12,18 @@ public class Value
             number = 0;
         set(number); // set already have multiplier
     }
-
+    public Value(Value number)
+    {
+        set(number); // set already have multiplier
+    }
+    public bool isBiggerThan(Value invalue)
+    {
+        return this.value > invalue.value;
+    }
+    public bool isBiggerOrEqual(Value invalue)
+    {
+        return this.value >= invalue.value;
+    }
     //TODO overflow checks?
     public void add(Value invalue)
     {
@@ -31,6 +42,12 @@ public class Value
         }
         else
             value += (uint)Mathf.RoundToInt(invalue * precision);
+    }
+    internal Value addOutside(Value deposits)
+    {
+        var result = new Value(this);
+        result.add(deposits);
+        return result;
     }
     public bool subtract(Value invalue)
     {
@@ -131,6 +148,10 @@ public class Value
         return new Value(get() / invalue.get());
     }
 
+    public bool isExist()
+    {
+        return value > 0;
+    }
 
     internal Procent HowMuchHaveOf(Value need)
     {
@@ -182,6 +203,12 @@ public class Value
     {
         return (float)value / (float)precision; //TODO roundation fakup
     }
+
+    internal void setZero()
+    {
+        value = 0;
+    }
+
     virtual public void set(float invalue)
     {
         value = (uint)Mathf.RoundToInt(invalue * precision);
@@ -197,5 +224,5 @@ public class Value
         else return "0";
     }
 
-    
+
 }

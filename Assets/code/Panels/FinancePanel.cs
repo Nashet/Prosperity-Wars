@@ -10,7 +10,7 @@ public class FinancePanel : DragPanel
         totalText;
     public Slider loanLimit, depositLimit, autoPutInBankLimit;
     public Toggle autoSendMoneyToBank;
-    public CanvasGroup loanPanel, depositPanel;
+    public CanvasGroup loanPanel, depositPanel, bankPanel;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
     void Start()
@@ -32,14 +32,15 @@ public class FinancePanel : DragPanel
 
         sb.Clear();
         sb.Append("Income:");
-        sb.Append("\n Poor tax (").Append(Game.player.taxationForPoor.getValue()).Append("): ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
-        sb.Append("\n Rich tax (").Append(Game.player.taxationForRich.getValue()).Append("): ").Append(Game.player.getCountryWallet().getRichTaxIncome());
-        sb.Append("\n Gold mines: ").Append(Game.player.getCountryWallet().getGoldMinesIncome());
-        sb.Append("\n Owned enterprises: ").Append(Game.player.getCountryWallet().getOwnedFactoriesIncome());
-        sb.Append("\nTotal: ").Append(Game.player.wallet.moneyIncomethisTurn);
+        sb.Append("\n Poor tax (").Append(Game.player.taxationForPoor.getValue()).Append("): ").Append(Game.player.getPoorTaxIncome());
+        sb.Append("\n Rich tax (").Append(Game.player.taxationForRich.getValue()).Append("): ").Append(Game.player.getRichTaxIncome());
+        sb.Append("\n Gold mines: ").Append(Game.player.getGoldMinesIncome());
+        sb.Append("\n Owned enterprises: ").Append(Game.player.getOwnedFactoriesIncome());
+        sb.Append("\nTotal: ").Append(Game.player.moneyIncomethisTurn);
 
-        sb.Append("\n\nBalance: ").Append(Game.player.getCountryWallet().getBalance());
-        sb.Append("\nHave money: ").Append(Game.player.wallet.haveMoney).Append(" + ").Append(Game.player.deposits).Append(" on bank deposit");
+        sb.Append("\n\nBalance: ").Append(Game.player.getBalance());
+        sb.Append("\nHave money: ").Append(Game.player.cash).Append(" + ").Append(Game.player.deposits).Append(" on bank deposit");
+        sb.Append("\nLoans taken: ").Append(Game.player.loans);
         sb.Append("\nGDP (current prices): ").Append(Game.player.getGDP()).Append("; GDP per thousand men: ").Append(Game.player.getGDPPer1000());
         incomeText.text = sb.ToString();
         //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
@@ -52,17 +53,19 @@ public class FinancePanel : DragPanel
 
         sb.Clear();
         sb.Append("Expenses: ");
-        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getCountryWallet().getUnemploymentSubsidiesExpense())
+        sb.Append("\n Unemployment subsidies: ").Append(Game.player.getUnemploymentSubsidiesExpense())
             .Append(" unemployment: ").Append(Game.player.getUnemployment());
-        sb.Append("\n Enterprises subsidies: ").Append(Game.player.getCountryWallet().getfactorySubsidiesExpense());
-        sb.Append("\n Storage buying: ").Append(Game.player.getCountryWallet().getStorageBuyingExpense());
-        sb.Append("\nTotal: ").Append(Game.player.getCountryWallet().getAllExpenses());
+        sb.Append("\n Enterprises subsidies: ").Append(Game.player.getfactorySubsidiesExpense());
+        sb.Append("\n Storage buying: ").Append(Game.player.getStorageBuyingExpense());
+        sb.Append("\nTotal: ").Append(Game.player.getAllExpenses());
         expensesText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Loans taken: ").Append(Game.player.loans);
-        sb.Append("\nBank reserves: ").Append(Game.player.bank).Append(" Bank loans: ").Append(Game.player.bank.getGivenLoans());
+        
+        sb.Append("\nNational bank: ").Append(Game.player.bank).Append(" loans: ").Append(Game.player.bank.getGivenLoans());
+        //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
         sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
+        sb.Append("\n*Government and others could automatically take money from deposits");
         bankText.text = sb.ToString();
 
         onLoanLimitChange();
@@ -70,6 +73,13 @@ public class FinancePanel : DragPanel
         AutoPutInBankText.text = Game.player.autoPutInBankLimit.ToString();
         // loanPanel.interactable = Country.condCanTakeLoan.isAllTrue(Game.player, out loanPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
         //depositPanel.interactable = Country.condCanPutOnDeposit.isAllTrue(Game.player, out depositPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
+        if (Game.player.isInvented(InventionType.banking))
+            bankPanel.interactable = true;
+        else
+        {
+            bankPanel.interactable = false;
+            autoSendMoneyToBank.isOn = false;
+        }
     }
     public void show()
     {
@@ -107,22 +117,25 @@ public class FinancePanel : DragPanel
     }
     public void onTakeLoan()
     {
-        Game.player.bank.giveMoney(Game.player, new Value(Game.player.bank.getReservs() * loanLimit.value));
+        Value loan = Game.player.bank.howMuchCanGive(Game.player);
+        loan.multiple(loanLimit.value);
+        if (Game.player.bank.canGiveMoney(Game.player, loan))
+            Game.player.bank.giveMoney(Game.player, loan);
         refresh();
     }
     public void onPutInDeposit()
     {
-        Game.player.bank.takeMoney(Game.player, new Value(Game.player.wallet.haveMoney.get() * depositLimit.value));
+        Game.player.bank.takeMoney(Game.player, new Value(Game.player.cash.get() * depositLimit.value));
         refresh();
     }
     public void onLoanLimitChange()
     {
-        loanLimitText.text = (Game.player.bank.getReservs() * loanLimit.value).ToString();
+        loanLimitText.text = (Game.player.bank.howMuchCanGive(Game.player).get() * loanLimit.value).ToString();
     }
 
     public void onDepositLimitChange()
     {
-        depositLimitText.text = (Game.player.wallet.haveMoney.get() * depositLimit.value).ToString();
+        depositLimitText.text = (Game.player.cash.get() * depositLimit.value).ToString();
     }
     public void onAutoPutInBankLimitChange()
     {

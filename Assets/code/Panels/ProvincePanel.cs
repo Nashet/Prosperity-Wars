@@ -44,7 +44,7 @@ public class ProvincePanel : MonoBehaviour
         if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             MainCamera.diplomacyPanel.hide();
         else
-            MainCamera.diplomacyPanel.show(Game.selectedProvince.getOwner());
+            MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
     }
     public void onPopulationDetailsClick()
     {
@@ -121,9 +121,9 @@ public class ProvincePanel : MonoBehaviour
             //+ "\nNeighbors " + province.getNeigborsList()
             ;
         Text text = btnOwner.GetComponentInChildren<Text>();
-        text.text = "Owner: " + province.getOwner();
+        text.text = "Owner: " + province.getCountry();
 
-        if (province.getOwner() == Game.player)
+        if (province.getCountry() == Game.player)
         {
             btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "";
             btnBuild.interactable = true;

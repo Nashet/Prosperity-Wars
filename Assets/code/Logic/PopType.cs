@@ -165,6 +165,15 @@ public class PopType
         return result;
         // Needs
     }
+    ///<summary> per 1000 men </summary>
+    public List<Storage> getAllNeedsPer1000()
+    {
+        List<Storage> result = getLifeNeedsPer1000();
+        result.AddRange(getEveryDayNeedsPer1000());
+        result.AddRange(getLuxuryNeedsPer1000());
+        return result;
+        
+    }
     override public string ToString()
     {
         return name;

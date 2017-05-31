@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System;
 
 /// <summary>
-/// directly itself it contains goods storage (amount). No Nahuya?
+/// Represent World market (should be only static)
 /// </summary>
-public class Market : Owner//: PrimitiveStorageSet
+public class Market : Agent//: PrimitiveStorageSet
 {
-
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
     int dateOfDSB = int.MaxValue;
     PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
@@ -22,6 +21,8 @@ public class Market : Owner//: PrimitiveStorageSet
     PrimitiveStorageSet getBouthBuffer = new PrimitiveStorageSet();
     internal PricePool priceHistory;
     internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
+    public Market():base (0f, null)
+    { }
     internal Storage findPrice(Product whom)
     {
         return marketPrice.findStorage(whom);
@@ -40,14 +41,14 @@ public class Market : Owner//: PrimitiveStorageSet
     //}
     internal Value getCost(PrimitiveStorageSet need)
     {
-        float cost = 0;
+        Value cost = new Value(0f);
         // float price;
         foreach (Storage stor in need)
         {
             //price = Game.market.findPrice(stor.getProduct()).get();
-            cost += getCost(stor);
+            cost.add( getCost(stor));
         }
-        return new Value(cost);
+        return cost;
     }
     //internal Value getCost(Storage need)
     //{
@@ -70,7 +71,7 @@ public class Market : Owner//: PrimitiveStorageSet
         //return new Value(cost);
         return cost;
     }
-    internal float getCost(Storage need)
+    internal Value getCost(Storage need)
     {
         float cost = 0;
         float price;
@@ -78,7 +79,7 @@ public class Market : Owner//: PrimitiveStorageSet
         price = Game.market.findPrice(need.getProduct()).get();
         cost = need.get() * price;
 
-        return cost;
+        return new Value (cost);
     }
     /// <summary>
     /// Meaning demander actually can pay for item in current prices
@@ -541,9 +542,9 @@ public class Market : Owner//: PrimitiveStorageSet
         if (Game.market.sentToMarket.has(buying))
         {
             cost = buying.multipleOuside(price);
-            if (buyer.wallet.canPay(cost))
+            if (buyer.canPay(cost))
             {
-                buyer.wallet.pay(Game.market.wallet, cost);
+                buyer.pay(Game.market, cost);
                 Game.market.sentToMarket.subtract(buying);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(buying);
@@ -551,10 +552,10 @@ public class Market : Owner//: PrimitiveStorageSet
             }
             else
             {
-                float val = buyer.wallet.haveMoney.get() / price.get();
+                float val = buyer.cash.get() / price.get();
                 val = Mathf.Floor(val * Value.precision) / Value.precision;
                 howMuchCanConsume = new Storage(price.getProduct(), val);
-                buyer.wallet.pay(Game.market.wallet, howMuchCanConsume.multipleOuside(price));
+                buyer.pay(Game.market, howMuchCanConsume.multipleOuside(price));
                 Game.market.sentToMarket.subtract(howMuchCanConsume);
                 if (buyer is Factory)
                     (buyer as Factory).inputReservs.add(howMuchCanConsume);
@@ -569,9 +570,9 @@ public class Market : Owner//: PrimitiveStorageSet
             {
                 cost = available.multipleOuside(price);
 
-                if (buyer.wallet.canPay(cost))
+                if (buyer.canPay(cost))
                 {
-                    buyer.wallet.pay(Game.market.wallet, cost);
+                    buyer.pay(Game.market, cost);
                     Game.market.sentToMarket.subtract(available);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(available);
@@ -579,10 +580,10 @@ public class Market : Owner//: PrimitiveStorageSet
                 }
                 else
                 {
-                    howMuchCanConsume = new Storage(price.getProduct(), buyer.wallet.haveMoney.get() / price.get());
+                    howMuchCanConsume = new Storage(price.getProduct(), buyer.cash.get() / price.get());
                     if (howMuchCanConsume.get() > available.get())
                         howMuchCanConsume.set(available.get()); // you don't buy more than there is
-                    buyer.wallet.pay(Game.market.wallet, buyer.wallet.haveMoney); //pay all money cause you don't have more
+                    buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     if (buyer is Factory)
                         (buyer as Factory).inputReservs.add(howMuchCanConsume);
@@ -600,7 +601,7 @@ public class Market : Owner//: PrimitiveStorageSet
     {
         if (need.get() > 0f)
         {
-            Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
+            Storage howMuchCanAfford = forWhom.HowMuchCanAfford(need);
             if (howMuchCanAfford.get() > 0f)
             {
                 howMuchCanAfford = Game.market.buy(forWhom, howMuchCanAfford);
@@ -632,21 +633,21 @@ public class Market : Owner//: PrimitiveStorageSet
     /// <summary>
     /// returns PROCENT actual buying
     /// </summary>    
-    public Storage buy(Consumer forWhom, Storage need, CountryWallet subsidizer)
+    public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
     {
         float actuallyNeedsFullfilled = 0f;
         //Storage actualConsumption;
 
-        if (forWhom.wallet.CanAfford(need))
+        if (forWhom.CanAfford(need))
             actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
         else
             if (subsidizer == null)
             actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
         else
         {
-            subsidizer.takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
+            subsidizer.takeFactorySubsidies(forWhom, forWhom.HowMuchMoneyCanNotPay(need));
             //repeat attempt
-            if (forWhom.wallet.CanAfford(need))
+            if (forWhom.CanAfford(need))
                 actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
             else
                 actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
@@ -678,7 +679,7 @@ public class Market : Owner//: PrimitiveStorageSet
         return buyingIsEmpty;
 
     }
-    internal void buy(Factory buyer, PrimitiveStorageSet buying, CountryWallet subsidizer)
+    internal void buy(Factory buyer, PrimitiveStorageSet buying, Country subsidizer)
     {
         // Storage actualConsumption;
         foreach (Storage input in buying)

@@ -60,7 +60,7 @@ public class Game
             makeCountry(countryNameGenerator, cultureNameGenerator);
 
         foreach (var pro in Province.allProvinces)
-            if (pro.getOwner() == null)
+            if (pro.getCountry() == null)
                 pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
@@ -130,14 +130,15 @@ public class Game
     {
         Culture cul = new Culture(cultureName.generateCultureName());
 
-        Province province = Province.getRandomProvinceInWorld((x) => x.getOwner() == null);// Country.NullCountry);
-        Country count = new Country(countryName.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
+        Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
+        Country count = new Country(countryName.generateCountryName(), cul, UtilsMy.getRandomColor(), province);
+        //count.setBank(count.bank);
         player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
         count.moveCapitalTo(province);
 
         //count.storageSet.add(new Storage(Product.Food, 200f));
-        count.wallet.haveMoney.add(100f);
+        count.cash.add(100f);
     }
     void makeFactoryTypes()
     {
@@ -214,19 +215,20 @@ public class Game
         new Product("Firearms", false, 13f);
         new Product("Artillery", false, 13f);
     }
-    internal static float getAllMoneyInWorld()
+    internal static Value getAllMoneyInWorld()
     {
-        float allMoney = 0f;
-        foreach (Country co in Country.allCountries)
+        Value allMoney = new Value(0f);
+        foreach (Country country in Country.allCountries)
         {
-            allMoney += co.wallet.haveMoney.get();
-            allMoney += co.bank.getReservs();
-            foreach (Province pr in co.ownedProvinces)
+            allMoney.add(country.cash);
+            allMoney.add(country.bank.getReservs());
+            foreach (Province pr in country.ownedProvinces)
             {
                 foreach (var factory in pr.allProducers)
-                    allMoney += factory.wallet.haveMoney.get();
+                    allMoney.add(factory.cash);
             }
         }
+        allMoney.add(Game.market.cash);
         return allMoney;
     }
     void CreateRandomPopulation()
@@ -235,41 +237,41 @@ public class Game
 
         foreach (Province province in Province.allProvinces)
         {
-            if (province.getOwner() == Country.NullCountry)
+            if (province.getCountry() == Country.NullCountry)
             {
-                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);
+                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getCountry().culture, province);
                 province.allPopUnits.Add(f);
             }
             else
             {
                 PopUnit pop;
                 if (!Game.devMode)
-                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), PopType.tribeMen, province.getOwner().culture, province);
+                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), PopType.tribeMen, province.getCountry().culture, province);
                 else
-                    pop = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
+                    pop = new Tribemen(2000, PopType.tribeMen, province.getCountry().culture, province);
                 province.allPopUnits.Add(pop);
 
-                if (province.getOwner() == Game.player)
+                if (province.getCountry() == Game.player)
                 {
                     //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                     //province.allPopUnits.Add(pop);
                 }
                 if (!Game.devMode)
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), PopType.aristocrats, province.getOwner().culture, province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), PopType.aristocrats, province.getCountry().culture, province);
                 else
-                    pop = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
+                    pop = new Aristocrats(100, PopType.aristocrats, province.getCountry().culture, province);
 
-                pop.wallet.haveMoney.set(9000);
+                pop.cash.set(9000);
                 pop.storageNow.add(60f);
                 province.allPopUnits.Add(pop);
                 if (!Game.devMode)
                 {
-                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), PopType.capitalists, province.getOwner().culture, province);
-                    pop.wallet.haveMoney.set(9000);
+                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), PopType.capitalists, province.getCountry().culture, province);
+                    pop.cash.set(9000);
                     province.allPopUnits.Add(pop);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), PopType.farmers, province.getOwner().culture, province);
-                    pop.wallet.haveMoney.set(20);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), PopType.farmers, province.getCountry().culture, province);
+                    pop.cash.set(20);
                     province.allPopUnits.Add(pop);
 
                 }
@@ -702,7 +704,7 @@ public class Game
             //country.wallet.moneyIncomethisTurn.set(0);
             country.storageSet.setStatisticToZero();
             country.setStatisticToZero();
-            country.getCountryWallet().setSatisticToZero();
+            country.setSatisticToZero();
             country.aristocrstTax = country.serfdom.status.getTax();
             foreach (var army in country.allArmies)
                 army.setStatisticToZero();
@@ -837,7 +839,7 @@ public class Game
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
+                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getCountry())))
                         pop.getMoneyFromMarket();
 
                     //because income come only after consuming, and only after FULL consumption
@@ -854,7 +856,9 @@ public class Game
                     pop.calcImmigrations();
                     pop.calcAssimilations();
 
-                    pop.Invest();
+                    pop.invest();
+
+                    pop.putExtraMoneyInBank();
                 }
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                

@@ -93,7 +93,7 @@ public class MilitaryPanel : DragPanel
         {
             //if (next.isAvailable(Game.player))
             {
-                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getOwner() + ")" });
+                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getCountry() + ")" });
                 availableProvinces.Add(next);
 
                 //selectedReformValue = next;

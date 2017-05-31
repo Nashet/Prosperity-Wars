@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using DesignPattern.Objectpool;
+
 
 
 
@@ -165,8 +165,7 @@ public class Corps
         consumption.setZero();
     }
 }
-namespace DesignPattern.Objectpool
-{
+
     // The PooledObject class is the type that is expensive or slow to instantiate,
     // or that has limited availability, so is to be held in the object pool.
 
@@ -217,4 +216,3 @@ namespace DesignPattern.Objectpool
         //}
     }
 
-}

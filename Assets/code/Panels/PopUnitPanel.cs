@@ -50,13 +50,13 @@ public class PopUnitPanel : DragPanel
             string immigrationText;
             var targetIM = pop.getRichestImmigrationTarget();
             if (pop.wantsToImmigrate() && targetIM != null && pop.getImmigrationSize() > 0)
-                immigrationText = targetIM + " ("+targetIM.getOwner() + ") " + pop.getImmigrationSize();
+                immigrationText = targetIM + " ("+targetIM.getCountry() + ") " + pop.getImmigrationSize();
             else
                 immigrationText = "none";
 
             string assimilationText;            
-            if (pop.culture != pop.province.getOwner().culture && pop.getAssimilationSize() > 0)
-                assimilationText = pop.province.getOwner().culture + " " + pop.getAssimilationSize();
+            if (pop.culture != pop.province.getCountry().culture && pop.getAssimilationSize() > 0)
+                assimilationText = pop.province.getCountry().culture + " " + pop.getAssimilationSize();
             else
                 assimilationText = "none";
             string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";
@@ -83,28 +83,32 @@ public class PopUnitPanel : DragPanel
             string loans = "";
             if (pop.loans.get() > 0f)
                 loans = "\nLoan: " + pop.loans.ToString();
+            if (pop.deposits.get() > 0f)
+                loans = "\nDeposit: " + pop.deposits.ToString();
 
             generaltext.text = pop + "\n" + "Population: " + pop.getPopulation()
                 + "\nCulture: " + pop.culture
                 + "\nStorage: " + pop.storageNow.ToString()
                 + "\nGain goods: " + pop.gainGoodsThisTurn.ToString()
                 + "\nSent to market: " + pop.sentToMarket
-                + "\nCash: " + pop.wallet.ToString()
-                + "\nMoney income: " + pop.wallet.moneyIncomethisTurn
-                + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
+                + "\nCash: " + pop.cash.ToString()
+                + "\nMoney income: " + pop.moneyIncomethisTurn
+                
                 + "\nDemotion: " + demotionText
                 + "\nPromotion: " + promotionText
                 + "\nMigration: " + migrationText
                 + "\nImmigration: " + immigrationText
                 + "\nAssimilation: " + assimilationText
                 + "\nGrowth: " + pop.getGrowthSize()
-                + "\nUnemployment: " + pop.getUnemployedProcent() + loans
+                + "\nUnemployment: " + pop.getUnemployedProcent()
+                + loans
+                + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
                 + "\nAge: " + pop.getAge()
                 ;
-            if (Game.devMode)
-                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
-                + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
+            //if (Game.devMode)
+            //    generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
+            //    + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
 
             //+ "\nExpenses:"
         }
