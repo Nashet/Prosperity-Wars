@@ -90,7 +90,7 @@ public class Country : Consumer
             inventions.markInvented(Invention.farming);
             inventions.markInvented(Invention.manufactories);
             inventions.markInvented(Invention.banking);
-            inventions.markInvented(Invention.metal);
+           // inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
