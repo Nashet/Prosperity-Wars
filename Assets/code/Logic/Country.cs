@@ -333,18 +333,7 @@ public class Country : Consumer
 
         return inventions.isInvented(type);
     }
-    public bool isInvented(Product product)
-    {
-        if (
-            ((product == Product.Metal || product == Product.MetallOre || product == Product.ColdArms) && !isInvented(Invention.metal))
-            || ((product == Product.Artillery || product == Product.Ammunition) && !isInvented(Invention.Gunpowder))
-            || (product == Product.Firearms && !isInvented(Invention.Firearms))
-            || (!product.isResource() && !isInvented(Invention.manufactories))
-            )
-            return false;
-        else
-            return true;
-    }
+    
     internal float getMinSalary()
     {
         return (minimalWage.getValue() as MinimalWage.ReformValue).getWage();

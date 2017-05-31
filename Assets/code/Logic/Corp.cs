@@ -90,7 +90,7 @@ public class Corps
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in origin.type.getMilitaryNeedsPer1000())
-            if (country.isInvented(next.getProduct()))
+            if (next.getProduct().isInvented(country))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiple(multiplier);

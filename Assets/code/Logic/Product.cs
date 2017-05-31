@@ -15,28 +15,6 @@ public class Product
 
     internal static Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
      Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery;
-
-    internal bool isResource()
-    {
-        return resource;
-    }
-    internal static Product getRandomResource(bool ignoreGold)
-    {
-        int random = Game.random.Next(resourceCounter);
-        int counter = 0;
-        foreach (Product pro in Product.allProducts)
-        {
-            if (pro.isResource())
-            {
-                if (counter == random)
-                    return pro;
-                counter++;
-            }
-        }
-        if (ignoreGold)
-            return Product.Wood;
-        return null;
-    }
     public Product(string name, bool inlanded, float defaultPrice)
     {
         this.defaultPrice = new Value(defaultPrice);
@@ -62,9 +40,30 @@ public class Product
         if (name == "Ammunition") Ammunition = this;
         if (name == "Firearms") Firearms = this;
         if (name == "Artillery") Artillery = this;
-
         //TODO checks for duplicates&
     }
+    internal bool isResource()
+    {
+        return resource;
+    }
+    internal static Product getRandomResource(bool ignoreGold)
+    {
+        int random = Game.random.Next(resourceCounter);
+        int counter = 0;
+        foreach (Product pro in Product.allProducts)
+        {
+            if (pro.isResource())
+            {
+                if (counter == random)
+                    return pro;
+                counter++;
+            }
+        }
+        if (ignoreGold)
+            return Product.Wood;
+        return null;
+    }
+    
     public static Product findByName(string name)
     {  //HashSet set = new HashSet();
         foreach (Product next in allProducts)
@@ -81,10 +80,25 @@ public class Product
     }
     public bool isInventedByAnyOne()
     {
-        foreach (var any in Country.allCountries)
-            if (any.isInvented(this))
+
+        foreach (var country in Country.allCountries)
+            if (this.isInvented(country))
                 return true;
         return false;
+    }
+    public bool isInvented(Country country)
+    {
+
+        if (
+            (
+            (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.metal))
+            || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
+            || (this == Firearms && !country.isInvented(Invention.Firearms))
+            || (!isResource() && !country.isInvented(Invention.manufactories))
+            )
+            return false;
+        else
+            return true;
     }
     //bool isStorable()
     //{
@@ -92,7 +106,7 @@ public class Product
     //}
     //void setStorable(bool isStorable)
     //{
-    //    this.storable = isStorable;
+    //    storable = isStorable;
     //}
     override public string ToString()
     {

@@ -19,13 +19,13 @@ public class Army
 
     private float getColdArmsSupply()
     {
-        if (getOwner().isInvented(Product.ColdArms))
+        if (Product.ColdArms.isInvented(getOwner()))
             return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms)).get();
         else return 0f;
     }
     private float getEquippedFirearmsSupply()
     {
-        if (getOwner().isInvented(Product.Firearms))
+        if (Product.Firearms.isInvented(getOwner()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Firearms), getNeeds(Product.Firearms)).get(),
          Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition)).get()
@@ -34,7 +34,7 @@ public class Army
     }
     private float getEquippedArtillerySupply()
     {
-        if (getOwner().isInvented(Product.Artillery))
+        if (Product.Artillery.isInvented(getOwner()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Artillery), getNeeds(Product.Artillery)).get(),
          Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition)).get()

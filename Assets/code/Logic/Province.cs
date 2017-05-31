@@ -377,7 +377,7 @@ public class Province
     {
         if (HaveFactory(ft))
             return false;
-        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !getCountry().isInvented(ft.basicProduction.getProduct()))
+        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !ft.basicProduction.getProduct().isInvented(getCountry()))
             return false;
 
         return true;
