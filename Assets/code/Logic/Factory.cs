@@ -765,7 +765,7 @@ public class Factory : Producer
                     province.getCountry().bank.defaultLoaner(this);
             }
         }
-        sendAllMoney(getOwner());
+        sendAllAvailableMoney(getOwner());
         //pay(getOwner(), cash);
         MainCamera.factoryPanel.removeFactory(this);
 
@@ -830,7 +830,7 @@ public class Factory : Producer
                     if (leftOver < 0)
                     {
                         Value loanSize = new Value(leftOver * -1f);
-                        if (province.getCountry().bank.canGiveLoan(loanSize))
+                        if (province.getCountry().bank.canGiveMoney(this, loanSize))
                             province.getCountry().bank.giveMoney(this, loanSize);
                     }
                     leftOver = cash.get() - wantsMinMoneyReserv();

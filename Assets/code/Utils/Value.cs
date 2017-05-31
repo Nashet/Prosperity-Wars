@@ -13,7 +13,7 @@ public class Value
         set(number); // set already have multiplier
     }
     public Value(Value number)
-    {        
+    {
         set(number); // set already have multiplier
     }
     public bool isBiggerThan(Value invalue)
@@ -148,6 +148,10 @@ public class Value
         return new Value(get() / invalue.get());
     }
 
+    public bool isExist()
+    {
+        return value > 0;
+    }
 
     internal Procent HowMuchHaveOf(Value need)
     {
@@ -220,5 +224,5 @@ public class Value
         else return "0";
     }
 
-    
+
 }

@@ -131,7 +131,7 @@ public class Game
         Culture cul = new Culture(cultureName.generateCultureName());
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
-        Country count = new Country(countryName.generateCountryName(), cul,  UtilsMy.getRandomColor(), province);
+        Country count = new Country(countryName.generateCountryName(), cul, UtilsMy.getRandomColor(), province);
         //count.setBank(count.bank);
         player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
@@ -215,20 +215,20 @@ public class Game
         new Product("Firearms", false, 13f);
         new Product("Artillery", false, 13f);
     }
-    internal static float getAllMoneyInWorld()
+    internal static Value getAllMoneyInWorld()
     {
-        float allMoney = 0f;
+        Value allMoney = new Value(0f);
         foreach (Country country in Country.allCountries)
         {
-            allMoney += country.cash.get();
-            allMoney += country.bank.getReservs();
+            allMoney.add(country.cash);
+            allMoney.add(country.bank.getReservs());
             foreach (Province pr in country.ownedProvinces)
             {
                 foreach (var factory in pr.allProducers)
-                    allMoney += factory.cash.get();
+                    allMoney.add(factory.cash);
             }
         }
-        allMoney += Game.market.cash.get();
+        allMoney.add(Game.market.cash);
         return allMoney;
     }
     void CreateRandomPopulation()

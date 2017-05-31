@@ -64,6 +64,7 @@ public class FinancePanel : DragPanel
         sb.Append("\nNational bank: ").Append(Game.player.bank).Append(" loans: ").Append(Game.player.bank.getGivenLoans());
         //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
         sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
+        sb.Append("\n*Government and others could automatically take money from deposits");
         bankText.text = sb.ToString();
 
         onLoanLimitChange();
@@ -115,8 +116,9 @@ public class FinancePanel : DragPanel
     }
     public void onTakeLoan()
     {
-        Value loan = new Value(Game.player.bank.getReservs() * loanLimit.value);
-        if (Game.player.bank.canGiveLoan(loan))
+        Value loan = Game.player.bank.howMuchCanGive(Game.player);
+        loan.multiple(loanLimit.value);
+        if (Game.player.bank.canGiveMoney(Game.player, loan))
             Game.player.bank.giveMoney(Game.player, loan);
         refresh();
     }
@@ -127,7 +129,7 @@ public class FinancePanel : DragPanel
     }
     public void onLoanLimitChange()
     {
-        loanLimitText.text = (Game.player.bank.howMuchCanGive().get() * loanLimit.value).ToString();
+        loanLimitText.text = (Game.player.bank.howMuchCanGive(Game.player).get() * loanLimit.value).ToString();
     }
 
     public void onDepositLimitChange()

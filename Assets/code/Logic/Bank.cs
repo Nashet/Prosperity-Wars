@@ -60,20 +60,22 @@ public class Bank : Agent
     /// <summary>
     /// checks inside. Just wouldn't give money if can't
     /// </summary>    
-    internal void giveLackingMoney(Agent agent, Value howMuch)
+    internal void giveLackingMoney(Agent agent, Value sum)
     {
-        Value loan = howMuch.subtractOutside(agent.cash);
-        if (canGiveLoan(loan))
-            giveMoney(agent, loan);
+        Value lackOfSum = sum.subtractOutside(agent.cash);
+        if (canGiveMoney(agent, lackOfSum))
+            giveMoney(agent, lackOfSum);
     }
     /// <summary>
-    /// checks inside. Just wouldn't give money if can't
+    /// Returns deposits only. As much as possible. checks inside. Just wouldn't give money if can't
     /// </summary>
     /// //todo - add some cross bank money transfer?
     internal void returnAllMoney(Agent agent)
     {
-        if (canGiveLoan(agent.deposits))
-            giveMoney(agent, agent.deposits);
+        //if (canGiveLoan(agent.deposits))
+        //    giveMoney(agent, agent.deposits);
+
+        giveMoney(agent, howMuchDepositCanReturn(agent));
     }
 
     internal Value getGivenLoans()
@@ -83,17 +85,20 @@ public class Bank : Agent
     /// <summary>
     /// how much money have in cash
     /// </summary>
-    internal float getReservs()
+    internal Value getReservs()
     {
-        return cash.get();
+        return new Value (cash);
     }
-
-    internal bool canGiveLoan(Value loan)
+    /// <summary>
+    /// Checks reserve limits and deposits
+    /// </summary>    
+    internal bool canGiveMoney(Agent agent, Value loan)
     {
         //if there is enough money and enough reserves
-        if (cash.get() - loan.get() >= getMinimalReservs().get())
-            return true;
-        return false;
+        //if (cash.get() - loan.get() >= getMinimalReservs().get())
+        //    return true;
+        //return false;
+        return howMuchCanGive(agent).isBiggerOrEqual(loan);
     }
 
     private Value getMinimalReservs()
@@ -120,9 +125,34 @@ public class Bank : Agent
         annexingBank.cash.sendAll(this.cash);
         annexingBank.givenLoans.sendAll(this.givenLoans);
     }
-    internal Value howMuchCanGive()
+    bool isItEnoughReserves(Value sum)
     {
-        return cash.subtractOutside(getMinimalReservs());
+        return cash.subtractOutside(getMinimalReservs()).isExist();
+    }
+
+    /// <summary>
+    /// Checks reserve limits and deposits
+    /// </summary>    
+    internal Value howMuchCanGive(Agent agent)
+    {
+        Value wouldGive = cash.subtractOutside(getMinimalReservs());
+        if (agent.deposits.isBiggerThan(wouldGive))
+        {
+            wouldGive = new Value(agent.deposits); // increase wouldGive to deposits size
+            if (wouldGive.isBiggerThan(cash)) //decrease wouldGive to cash size
+                wouldGive = new Value(cash);
+        }
+        return wouldGive;
+    }
+    /// <summary>
+    /// includes checks for cash and deposit size
+    /// </summary>   
+    internal Value howMuchDepositCanReturn(Agent agent)
+    {
+        if (cash.isBiggerOrEqual(agent.deposits))
+            return new Value(agent.deposits);
+        else
+            return new Value(cash);
     }
     internal void destroy(Country byWhom)
     {

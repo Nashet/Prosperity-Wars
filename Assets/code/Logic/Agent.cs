@@ -29,9 +29,13 @@ public class Agent
         cash.set(inAmount);
         this.bank = bank;
     }
-    public Value getMoneyTotal()
+    public Value getMoneyAvailable()
     {
-        return cash.addOutside(deposits);
+        //return cash.addOutside(deposits);
+        if (bank == null)
+            return new Value(cash);
+        else
+            return cash.addOutside(bank.howMuchDepositCanReturn(this));
     }
     //new internal bool canPay(Value howMuchPay)
     //{
@@ -99,7 +103,7 @@ public class Agent
     {
         //return new Value(need - this.cash.get());
         //return need.subtractOutside(cash);
-        return need.subtractOutside(getMoneyTotal());
+        return need.subtractOutside(getMoneyAvailable());
     }
     //internal Value HowMuchMoneyCanNotPay(Value value)
     //{
@@ -111,18 +115,13 @@ public class Agent
     //    return new Value(Game.market.getCost(need) - this.cash.get());
     //}
     internal Storage HowMuchCanAfford(Storage need)
-    {
-        //float price = Game.market.findPrice(need.getProduct()).get();
-        //if (cost <= cash.get())
-        //    return new Storage(need.getProduct(), need.get());
-        //else
-        //    return new Storage(need.getProduct(), cash.get() / price);
+    {    
 
         Value cost = Game.market.getCost(need);
         if (canPay(cost))
             return new Storage(need);
         else
-            return new Storage(need.getProduct(), getMoneyTotal().divideOutside(
+            return new Storage(need.getProduct(), getMoneyAvailable().divideOutside(
                 Game.market.findPrice(need.getProduct())
                 ));
     }
@@ -147,7 +146,7 @@ public class Agent
     //}
     internal bool canPay(Value howMuchPay)
     {
-        return getMoneyTotal().isBiggerOrEqual(howMuchPay);
+        return getMoneyAvailable().isBiggerOrEqual(howMuchPay);
     }
     internal bool canPayInCash(Value howMuchPay)
     {
@@ -201,7 +200,7 @@ public class Agent
         else
             return false;
     }
-    internal void sendAllMoney(Agent whom)
+    internal void sendAllAvailableMoney(Agent whom)
     {
         if (bank != null)
             bank.returnAllMoney(this);

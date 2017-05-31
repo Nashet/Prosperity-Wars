@@ -88,10 +88,10 @@ abstract public class PopUnit : Producer
         //bank - could be different, set in constructor
         //loans - keep it in old unit        
         //take deposit share?
-        if (source.deposits.get() > 0f)
+        if (source.deposits.isExist())
         {
             Value takeDeposit = source.deposits.multipleOuside(newPopShare);
-            if (source.getCountry().bank.canGiveLoan(takeDeposit))
+            if (source.getCountry().bank.canGiveMoney(this, takeDeposit))
             {
                 source.getCountry().bank.giveMoney(source, takeDeposit);
                 source.pay(this, takeDeposit);
@@ -143,7 +143,7 @@ abstract public class PopUnit : Producer
         //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
         //Agent's fields:        
-        source.sendAllMoney(this); // includes deposits
+        source.sendAllAvailableMoney(this); // includes deposits
         loans.add(source.loans);
         // Bank - stays same
 
@@ -183,7 +183,7 @@ abstract public class PopUnit : Producer
         //remove from population panel.. Would do it automatically        
         //secede property... to government
         getOwnedFactories().ForEach(x => x.factoryOwner = province.getCountry());
-        sendAllMoney(getCountry().bank); // just in case if there is something
+        sendAllAvailableMoney(getCountry().bank); // just in case if there is something
         getCountry().bank.defaultLoaner(this);
     }
     override public void setStatisticToZero()
@@ -481,7 +481,7 @@ abstract public class PopUnit : Producer
                 {
                     incomeTaxPayed.set(cash);
                     province.getCountry().poorTaxIncomeAdd(cash);
-                    sendAllMoney(province.getCountry());
+                    sendAllAvailableMoney(province.getCountry());
 
                 }
             }
@@ -497,7 +497,7 @@ abstract public class PopUnit : Producer
                 else
                 {
                     province.getCountry().richTaxIncomeAdd(cash);
-                    sendAllMoney(province.getCountry());
+                    sendAllAvailableMoney(province.getCountry());
                 }
             }
 
@@ -1122,7 +1122,7 @@ abstract public class PopUnit : Producer
                         if (province.getCountry().isInvented(InventionType.banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
-                            if (province.getCountry().bank.canGiveLoan(needLoan))
+                            if (province.getCountry().bank.canGiveMoney(this, needLoan))
                             {
                                 province.getCountry().bank.giveMoney(this, needLoan);
                                 Factory found = new Factory(province, this, proposition);
@@ -1150,7 +1150,7 @@ abstract public class PopUnit : Producer
                         if (province.getCountry().isInvented(InventionType.banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
-                            if (province.getCountry().bank.canGiveLoan(needLoan))
+                            if (province.getCountry().bank.canGiveMoney(this, needLoan))
                             {
                                 province.getCountry().bank.giveMoney(this, needLoan);
                                 factory.upgrade(this);
