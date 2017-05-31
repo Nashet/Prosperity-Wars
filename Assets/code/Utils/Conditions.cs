@@ -31,8 +31,8 @@ public class ConditionsList
                 if (next is Economy.ReformValue)
                 list.Add(new Condition(next as Economy.ReformValue, true));
             else
-                if (next is InventionType)
-                list.Add(new Condition(next as InventionType, true));
+                if (next is Invention)
+                list.Add(new Condition(next as Invention, true));
             else
                 if (next is Condition)
                 list.Add(next as Condition);
@@ -192,7 +192,7 @@ public class Condition : AbstractCondition
     }
 
     /// <summary>Checks if invention is invented</summary>    
-    public Condition(InventionType invention, bool showAchievedConditionDescribtion)
+    public Condition(Invention invention, bool showAchievedConditionDescribtion)
     {
         check3 = x => (x as Country).isInvented(invention);
 
@@ -334,7 +334,7 @@ public class Modifier : Condition
 
     /// <summary>Checks if invention is invented.
     /// depreciated</summary>    
-    public Modifier(InventionType invention, float value, bool showZeroModifiers) : base(invention, true)
+    public Modifier(Invention invention, float value, bool showZeroModifiers) : base(invention, true)
     {
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;

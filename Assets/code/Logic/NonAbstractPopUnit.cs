@@ -13,7 +13,7 @@ public class Tribemen : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -23,7 +23,7 @@ public class Tribemen : PopUnit
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.workers)
             return false;
         else
@@ -231,7 +231,7 @@ public class Aristocrats : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.getCountry()))
             return false;
         else
@@ -329,7 +329,7 @@ public class Capitalists : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming))
+            || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming))
             return false;
         else
             return true;
@@ -416,7 +416,7 @@ public class Workers : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.type
-            || targetType == PopType.farmers && !province.getCountry().isInvented(InventionType.farming)
+            || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;

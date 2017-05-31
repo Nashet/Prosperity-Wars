@@ -99,7 +99,7 @@ public class Government : AbstractReform
         }
         internal override bool isAvailable(Country country)
         {
-            if (ID == 4 && !country.isInvented(InventionType.collectivism))
+            if (ID == 4 && !country.isInvented(Invention.collectivism))
                 return false;
             else
                 return true;
@@ -208,7 +208,7 @@ public class Economy : AbstractReform
             if (requested.ID == 1)
                 return true;
             else
-            if (requested.ID == 2 && country.isInvented(InventionType.collectivism))
+            if (requested.ID == 2 && country.isInvented(Invention.collectivism))
                 return true;
             else
             if (requested.ID == 3)
@@ -253,15 +253,15 @@ public class Economy : AbstractReform
         {
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
-            new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true),
+            new Condition(Invention.individualRights, true),
+            new Condition(Invention.banking, true),
             Serfdom.IsAbolishedInAnyWay
         });
     internal ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<AbstractCondition> {
-            InventionType.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
+            Invention.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
     internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, ConditionsList.IsNotImplemented);
     internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, capitalism);
     internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, capitalism);
@@ -315,10 +315,10 @@ public class Serfdom : AbstractReform
         {
             ReformValue requested = this;
             //alowed
-            if ((requested.ID == 4) && country.isInvented(InventionType.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+            if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else
-            if ((requested.ID == 3) && country.isInvented(InventionType.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+            if ((requested.ID == 3) && country.isInvented(Invention.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
                 return true;
             else
             if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
@@ -377,13 +377,13 @@ public class Serfdom : AbstractReform
     internal static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
         new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.individualRights, true)
+            new Condition(Invention.individualRights, true)
         }));
     internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
         new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.individualRights, true),
-            new Condition(InventionType.banking, true), Condition.IsNotImplemented
+            new Condition(Invention.individualRights, true),
+            new Condition(Invention.banking, true), Condition.IsNotImplemented
         }));
     internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "- Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
@@ -552,27 +552,27 @@ public class MinimalWage : AbstractReform
 
     internal static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Middle = new ReformValue("Middle", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
 
@@ -604,7 +604,7 @@ public class MinimalWage : AbstractReform
     }
     internal override bool isAvailable(Country country)
     {
-        if (country.isInvented(InventionType.Welfare))
+        if (country.isInvented(Invention.Welfare))
             return true;
         else
             return false;
@@ -709,27 +709,27 @@ public class UnemploymentSubsidies : AbstractReform
     internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
     internal static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Middle = new ReformValue("Middle", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
     internal static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
-            new Condition(InventionType.Welfare, true),
+            new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
 
@@ -762,7 +762,7 @@ public class UnemploymentSubsidies : AbstractReform
     }
     internal override bool isAvailable(Country country)
     {
-        if (country.isInvented(InventionType.Welfare))
+        if (country.isInvented(Invention.Welfare))
             return true;
         else
             return false;
@@ -942,10 +942,10 @@ public class MinorityPolicy : AbstractReform
         internal override bool isAvailable(Country country)
         {
             ReformValue requested = this;            
-            if ((requested.ID == 4) && country.isInvented(InventionType.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+            if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else
-            if ((requested.ID == 3) && country.isInvented(InventionType.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+            if ((requested.ID == 3) && country.isInvented(Invention.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
                 return true;
             else
             if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
@@ -1009,7 +1009,7 @@ public class MinorityPolicy : AbstractReform
     {
         if (Equality == null)
             Equality = new ReformValue("Equality", "- All cultures have same rights", 2,
-                new ConditionsList(new List<Condition>() { InventionType.IndividualRightsInvented }));
+                new ConditionsList(new List<Condition>() { Invention.IndividualRightsInvented }));
         if (Residency == null)
             Residency = new ReformValue("Restricted rights", "- Only state culture can vote", 1, ConditionsList.AlwaysYes);
 

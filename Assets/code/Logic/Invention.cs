@@ -5,53 +5,68 @@ using System;
 
 public class InventionsList
 {
-    internal Dictionary<InventionType, bool> list = new Dictionary<InventionType, bool>();
+    Dictionary<Invention, bool> list = new Dictionary<Invention, bool>();
     public InventionsList()
     {
-        foreach (var each in InventionType.allInventions)
+        foreach (var each in Invention.allInventions)
             list.Add(each, false);
     }
-    public void MarkInvented(InventionType type)
+    public IEnumerable<KeyValuePair<Invention, bool>> getAvailable(Country country)
     {
-        //bool result = false;
-        //if (list.TryGetValue(type, out result))
-        //    result = true;
-        //else
-        //    result = false;
+        foreach (var invention in list)
+            if (invention.Key.isAvailable(country))
+                yield return invention;
+    }
+    public IEnumerable<KeyValuePair<Invention, bool>> getUninvented(Country country)
+    {
+        foreach (var invention in list)
+            if (invention.Value == false && invention.Key.isAvailable(country))
+                yield return invention;
+    }
+    public IEnumerable<KeyValuePair<Invention, bool>> getInvented(Country country)
+    {
+        foreach (var invention in list)
+            if (invention.Value == true && invention.Key.isAvailable(country))
+                yield return invention;
+    }
+    //TODO strange architecture
+    public void markInvented(Invention type)
+    {        
         list[type] = true;
     }
-    public bool isInvented(InventionType type)
+    public bool isInvented(Invention type)
     {
         bool result = false;
         list.TryGetValue(type, out result);
         return result;
     }
+    
 
 }
-public class InventionType : AbstractCondition
+public class Invention : AbstractCondition
 {
-    internal static List<InventionType> allInventions = new List<InventionType>();
+    internal static List<Invention> allInventions = new List<Invention>();
     string name;
     string description;
     internal Value cost;
     string inventedPhrase;
-    public static readonly InventionType farming = new InventionType("Farming", "Allows farming and farmers", new Value(100f)),
+    public static readonly Invention farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
         //capitalism = new InventionType("Capitalism", "", new Value(50f)),
-        banking = new InventionType("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
-        manufactories = new InventionType("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
-        mining = new InventionType("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
+        banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
+        manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
+        mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
         //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
-        metal = new InventionType("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
-        individualRights = new InventionType("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
-        collectivism = new InventionType("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
-        steamPower = new InventionType("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
-        Welfare = new InventionType("Welfare", "Allows min wage and.. other", new Value(100f)),        
-        Gunpowder = new InventionType("Gunpowder", "Allows Artillery & Ammunition", new Value(100f)),
-        Firearms= new InventionType("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(100f))
+        metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
+        individualRights = new Invention("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
+        collectivism = new Invention("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
+        steamPower = new Invention("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
+        Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(100f)),
+        Gunpowder = new Invention("Gunpowder", "Allows Artillery & Ammunition", new Value(100f)),
+        Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(100f))
         ;
-    readonly public static Condition SteamPowerInvented = new Condition(x=>(x as Country).isInvented(InventionType.steamPower), "Steam Power is invented", true);
-    readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(InventionType.individualRights), "Individual Rights are invented", true);
-    internal InventionType(string name, string description, Value cost)
+    readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.steamPower), "Steam Power is invented", true);
+    readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(Invention.individualRights), "Individual Rights are invented", true);
+    internal Invention(string name, string description, Value cost)
     {
         this.name = name;
         this.description = description;
@@ -67,9 +82,9 @@ public class InventionType : AbstractCondition
     }
     public bool isAvailable(Country country)
     {
-        if (this == InventionType.collectivism
-            || (this == InventionType.Gunpowder && !country.isInvented(InventionType.metal))
-            || (this == InventionType.Firearms && !country.isInvented(InventionType.Gunpowder))
+        if (this == Invention.collectivism
+            || (this == Invention.Gunpowder && !country.isInvented(Invention.metal))
+            || (this == Invention.Firearms && !country.isInvented(Invention.Gunpowder))
             )
             return false;
         else

@@ -490,7 +490,7 @@ public class BattleResult
     {
         sb.Clear();
 
-        if (attacker == Game.player && isAttackerWon())
+        if (attacker == Game.Player && isAttackerWon())
         {
             sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
@@ -501,7 +501,7 @@ public class BattleResult
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-        if (defender == Game.player && isDefenderWon())
+        if (defender == Game.Player && isDefenderWon())
         {
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");
@@ -512,7 +512,7 @@ public class BattleResult
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-            if (attacker == Game.player && isDefenderWon())
+            if (attacker == Game.Player && isDefenderWon())
         {
             sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append(" Modifiers: ").Append(attackerBonus);
@@ -522,7 +522,7 @@ public class BattleResult
             new Message("We lost a battle!", sb.ToString(), "Fine");
         }
         else
-            if (defender == Game.player && isAttackerWon())
+            if (defender == Game.Player && isAttackerWon())
 
         {
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)

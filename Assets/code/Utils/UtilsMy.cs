@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
+
 public class CultureNameGenerator
 {
     static ChanceBox<string> prefix;
@@ -827,6 +829,9 @@ public static class MyIEnumerableExtensions
     //        //if (target)
     //        target.Add(element);
     //}
+    /// <summary>
+    /// returns default(T) if fails
+    /// </summary>    
     public static T PickRandom<T>(this List<T> source)
     {
         //return source.ElementAt(Game.random.Next(source.Count));
@@ -835,10 +840,54 @@ public static class MyIEnumerableExtensions
         return source[Game.random.Next(source.Count)];
 
     }
+    /// <summary>
+    ///returns an empty List<T> if didn't find anything
+    /// </summary>    
     public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
     {
         return source.FindAll(predicate).PickRandom();
         //return source.ElementAt(Game.random.Next(source.Count));
 
+    }   
+}
+public class DontUseThatMethod : Exception
+{
+    /// <summary>
+    /// Just create the exception
+    /// </summary>
+    public DontUseThatMethod()
+      : base()
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    public DontUseThatMethod(String message)
+      : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description and inner cause
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    /// <param name="innerException">Exception inner cause</param>
+    public DontUseThatMethod(String message, Exception innerException)
+      : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception from serialized data.
+    /// Usual scenario is when exception is occurred somewhere on the remote workstation
+    /// and we have to re-create/re-throw the exception on the local machine
+    /// </summary>
+    /// <param name="info">Serialization info</param>
+    /// <param name="context">Serialization context</param>
+    protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
     }
 }

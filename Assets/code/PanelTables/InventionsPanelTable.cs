@@ -17,7 +17,7 @@ public class InventionsPanelTable : MyTable
             contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
-    protected void AddButton(string text, InventionType inventionType)
+    protected void AddButton(string text, Invention inventionType)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(contentPanel, true);
@@ -37,9 +37,9 @@ public class InventionsPanelTable : MyTable
         AddButton("Status");
         ////Adding invention price
         AddButton("Science points");
-        if (Game.player != null)
-            foreach (var next in Game.player.inventions.list)
-                if (next.Key.isAvailable(Game.player))
+        if (Game.Player != null)
+            foreach (var next in Game.Player.inventions.getAvailable(Game.Player))
+                //if (next.Key.isAvailable(Game.Player))
                 {
                     // Adding invention name 
                     AddButton(next.Key.ToString(), next.Key);

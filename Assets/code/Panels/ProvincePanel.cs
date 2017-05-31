@@ -123,7 +123,7 @@ public class ProvincePanel : MonoBehaviour
         Text text = btnOwner.GetComponentInChildren<Text>();
         text.text = "Owner: " + province.getCountry();
 
-        if (province.getCountry() == Game.player)
+        if (province.getCountry() == Game.Player)
         {
             btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "";
             btnBuild.interactable = true;

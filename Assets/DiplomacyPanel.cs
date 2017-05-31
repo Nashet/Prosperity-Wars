@@ -32,6 +32,7 @@ public class DiplomacyPanel : DragPanel
         sb.Append("\nArmy: ").Append(selectedCountry.homeArmy.getShortName());
         sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append("; GDP per thousand men: ").Append(selectedCountry.getGDPPer1000());
         sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append(", ").Append(selectedCountry.economy.getValue()).Append(", ").Append(selectedCountry.minorityPolicy.getValue());
+        sb.Append("\nInventions: ").Append(selectedCountry.inventions.getInvented(selectedCountry));
         generalText.text = sb.ToString();
     }
     public void show(Country count)

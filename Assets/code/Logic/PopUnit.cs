@@ -936,7 +936,7 @@ abstract public class PopUnit : Producer
 
     internal void putExtraMoneyInBank()
     {
-        if (getCountry().isInvented(InventionType.banking))
+        if (getCountry().isInvented(Invention.banking))
         {
             Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
             if (extraMoney.get() > 5f)
@@ -1119,7 +1119,7 @@ abstract public class PopUnit : Producer
                             payWithoutRecord(found, cost);
                         }
                         else // find money in bank?
-                        if (province.getCountry().isInvented(InventionType.banking))
+                        if (province.getCountry().isInvented(Invention.banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
                             if (province.getCountry().bank.canGiveMoney(this, needLoan))
@@ -1147,7 +1147,7 @@ abstract public class PopUnit : Producer
                         if (canPay(cost))
                             factory.upgrade(this);
                         else // find money in bank?
-                        if (province.getCountry().isInvented(InventionType.banking))
+                        if (province.getCountry().isInvented(Invention.banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
                             if (province.getCountry().bank.canGiveMoney(this, needLoan))

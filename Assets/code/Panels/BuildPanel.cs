@@ -36,16 +36,16 @@ public class BuildPanel : DragPanel
         {
             bool buildSomething = false;
             var resourceToBuild = selectedFactoryType.getBuildNeeds();
-            if (Economy.isMarket.checkIftrue(Game.player))
+            if (Economy.isMarket.checkIftrue(Game.Player))
             //if (Game.player.economy.status == Economy.StateCapitalism)
             //have money /resource
             {
                 Value cost = Game.market.getCost(resourceToBuild);
                 cost.add(Options.factoryMoneyReservPerLevel);
-                if (Game.player.canPay(cost))
+                if (Game.Player.canPay(cost))
                 {
-                    var factory = new Factory(Game.selectedProvince, Game.player, selectedFactoryType);
-                    Game.player.pay(factory, cost);
+                    var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
+                    Game.Player.pay(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.Show(factory);
                 }
@@ -54,12 +54,12 @@ public class BuildPanel : DragPanel
             else // non market
             {
                 Storage needFood = resourceToBuild.findStorage(Product.Food);
-                if (Game.player.storageSet.has(needFood))
+                if (Game.Player.storageSet.has(needFood))
                 {
-                    Factory fact = new Factory(Game.selectedProvince, Game.player, selectedFactoryType);
+                    Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
 
                     //wallet.pay(fact.wallet, new Value(100f));
-                    Game.player.storageSet.subtract(needFood);
+                    Game.Player.storageSet.subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.Show(fact);
                 }
@@ -90,7 +90,7 @@ public class BuildPanel : DragPanel
 
             descriptionText.text = sb.ToString();
            
-            buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.player, out buildButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, out buildButton.GetComponentInChildren<ToolTipHandler>().tooltip);
             if (!Game.selectedProvince.CanBuildNewFactory(selectedFactoryType))
                 buildButton.interactable = false;
             if (buildButton.interactable)

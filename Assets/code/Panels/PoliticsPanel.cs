@@ -56,7 +56,7 @@ public class PoliticsPanel : DragPanel
     public void onForceDecisionClick()
     {
         //uint votersSayedYes;
-        foreach (Province pro in Game.player.ownedProvinces)
+        foreach (Province pro in Game.Player.ownedProvinces)
             foreach (PopUnit pop in pro.allPopUnits)
             {
                 if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
@@ -130,20 +130,20 @@ public class PoliticsPanel : DragPanel
            
             ////
             Procent procentPopulationSayedYes = new Procent(0f);
-            Procent procentVotersSayedYes = Game.player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
+            Procent procentVotersSayedYes = Game.Player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 
             Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
-            Dictionary<PopType, int> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
+            Dictionary<PopType, int> divisionVotersResult = Game.Player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
 
             if (selectedReformValue != selectedReform.getValue())
             {
-                if (Game.player.government.status != Government.Despotism)
+                if (Game.Player.government.status != Government.Despotism)
                 {
                     descriptionText.text += "\n\n" + procentVotersSayedYes + " of voters want this reform ( ";
                     foreach (PopType type in PopType.allPopTypes)
                         if (divisionVotersResult[type] > 0)
                         {
-                            Procent res = new Procent(divisionVotersResult[type] / (float)Game.player.FindPopulationAmountByType(type));
+                            Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.FindPopulationAmountByType(type));
                             descriptionText.text += res + " of " + type + "; ";
                         }
                     descriptionText.text += ")";
@@ -154,7 +154,7 @@ public class PoliticsPanel : DragPanel
                 foreach (PopType type in PopType.allPopTypes)
                     if (divisionPopulationResult[type] > 0)
                     {
-                        Procent res = new Procent(divisionPopulationResult[type] / (float)Game.player.FindPopulationAmountByType(type));
+                        Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.FindPopulationAmountByType(type));
                         descriptionText.text += res + " of " + type + "; ";
                     }
                 descriptionText.text += ")";
@@ -163,9 +163,9 @@ public class PoliticsPanel : DragPanel
 
             if (selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
-                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.player.government.status == Government.Despotism)
+                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.status == Government.Despotism)
                 { // has enough voters
-                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     forceDecisionButton.interactable = false;
                     voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
@@ -173,7 +173,7 @@ public class PoliticsPanel : DragPanel
                 else // not enough voters
                 {
                     voteButton.interactable = false;
-                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }

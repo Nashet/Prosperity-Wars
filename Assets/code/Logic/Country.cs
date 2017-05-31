@@ -37,9 +37,6 @@ public class Country : Consumer
 
     TextMesh messhCapitalText;
 
-    //public Bank bank;
-    
-
     /// <summary>
     /// per 1000 men
     /// </summary>
@@ -65,7 +62,7 @@ public class Country : Consumer
     {
         //wallet = new CountryWallet(0f, bank);
         bank = new Bank();
-        
+
         homeArmy = new Army(this);
         sendingArmy = new Army(this);
         government = new Government(this);
@@ -90,10 +87,10 @@ public class Country : Consumer
 
             economy.status = Economy.StateCapitalism;
 
-            inventions.MarkInvented(InventionType.farming);
-            inventions.MarkInvented(InventionType.manufactories);
-            inventions.MarkInvented(InventionType.banking);
-            inventions.MarkInvented(InventionType.metal);
+            inventions.markInvented(Invention.farming);
+            inventions.markInvented(Invention.manufactories);
+            inventions.markInvented(Invention.banking);
+            inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
@@ -131,7 +128,7 @@ public class Country : Consumer
         setSatisticToZero();
 
         //take all money from bank
-        if (byWhom.isInvented(InventionType.banking))
+        if (byWhom.isInvented(Invention.banking))
             byWhom.bank.add(this.bank);
         else
             this.bank.destroy(byWhom);
@@ -141,7 +138,7 @@ public class Country : Consumer
         this.bank.defaultLoaner(this);
         storageSet.sendAll(byWhom.storageSet);
 
-        if (this == Game.player)
+        if (this == Game.Player)
             new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
     }
 
@@ -216,7 +213,7 @@ public class Country : Consumer
 
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
         messhCapitalText.text = this.ToString();
-        if (this == Game.player)
+        if (this == Game.Player)
 
         {
             messhCapitalText.color = Color.blue;
@@ -331,7 +328,7 @@ public class Country : Consumer
         }
         return divisionVotersResult;
     }
-    public bool isInvented(InventionType type)
+    public bool isInvented(Invention type)
     {
 
         return inventions.isInvented(type);
@@ -339,10 +336,10 @@ public class Country : Consumer
     public bool isInvented(Product product)
     {
         if (
-            ((product == Product.Metal || product == Product.MetallOre || product == Product.ColdArms) && !isInvented(InventionType.metal))
-            || ((product == Product.Artillery || product == Product.Ammunition) && !isInvented(InventionType.Gunpowder))
-            || (product == Product.Firearms && !isInvented(InventionType.Firearms))
-            || (!product.isResource() && !isInvented(InventionType.manufactories))
+            ((product == Product.Metal || product == Product.MetallOre || product == Product.ColdArms) && !isInvented(Invention.metal))
+            || ((product == Product.Artillery || product == Product.Ammunition) && !isInvented(Invention.Gunpowder))
+            || (product == Product.Firearms && !isInvented(Invention.Firearms))
+            || (!product.isResource() && !isInvented(Invention.manufactories))
             )
             return false;
         else
@@ -355,7 +352,7 @@ public class Country : Consumer
     }
     override public string ToString()
     {
-        if (this == Game.player)
+        if (this == Game.Player)
             return name + " country (you are)";
         else
             return name + " country";
@@ -366,7 +363,7 @@ public class Country : Consumer
             sciencePoints.add(this.getMenPopulation());
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-        sciencePoints.add(this.getMenPopulation());
+        //sciencePoints.add(this.getMenPopulation());
 
         if (this.autoPutInBankLimit > 0f)
         {
@@ -382,8 +379,8 @@ public class Country : Consumer
             {
                 var possibleTarget = getRandomNeighborProvince();
                 if (possibleTarget != null)
-                    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.player) || possibleTarget.getCountry() == NullCountry
-                        || possibleTarget.getCountry() != Game.player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
+                    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
+                        || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
                     {
                         mobilize();
                         sendArmy(homeArmy, possibleTarget);
@@ -392,8 +389,26 @@ public class Country : Consumer
                 //if (homeArmy.getSize() > 50 + Game.random.Next(100))
                 //    sendArmy(homeArmy, getRandomNeighborProvince());
             }
+        if (isAI())
+            aiInvent();
     }
 
+    private void aiInvent()
+    {
+        var invention = inventions.getUninvented(this).ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.cost));
+        if (invention.Key != null)
+            invent(invention.Key);
+    }
+    public bool invent(Invention invention)
+    {
+        if (sciencePoints.isBiggerOrEqual(invention.cost))
+        {
+            inventions.markInvented(invention);
+            sciencePoints.subtract(invention.cost);
+            return true;
+        }
+        else return false;
+    }
     public override void buyNeeds()
     {
         var needs = getNeeds();
@@ -448,7 +463,7 @@ public class Country : Consumer
 
     private bool isAI()
     {
-        return Game.player != this;
+        return Game.Player != this;
     }
     public Value getGDP()
     {
@@ -605,45 +620,4 @@ public class Country : Consumer
         ownedFactoriesIncome.add(toAdd);
     }
 
-}
-public class DontUseThatMethod : Exception
-{
-    /// <summary>
-    /// Just create the exception
-    /// </summary>
-    public DontUseThatMethod()
-      : base()
-    {
-    }
-
-    /// <summary>
-    /// Create the exception with description
-    /// </summary>
-    /// <param name="message">Exception description</param>
-    public DontUseThatMethod(String message)
-      : base(message)
-    {
-    }
-
-    /// <summary>
-    /// Create the exception with description and inner cause
-    /// </summary>
-    /// <param name="message">Exception description</param>
-    /// <param name="innerException">Exception inner cause</param>
-    public DontUseThatMethod(String message, Exception innerException)
-      : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Create the exception from serialized data.
-    /// Usual scenario is when exception is occured somewhere on the remote workstation
-    /// and we have to re-create/re-throw the exception on the local machine
-    /// </summary>
-    /// <param name="info">Serialization info</param>
-    /// <param name="context">Serialization context</param>
-    protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
-      : base(info, context)
-    {
-    }
 }

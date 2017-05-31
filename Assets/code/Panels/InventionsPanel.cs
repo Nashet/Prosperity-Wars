@@ -7,7 +7,7 @@ public class InventionsPanel : DragPanel
     public ScrollRect table;
     public Text descriptionText;
     public Button inventButton;
-    public InventionType selectedInvention;
+    public Invention selectedInvention;
     // Use this for initialization
     void Start()
     {
@@ -29,10 +29,9 @@ public class InventionsPanel : DragPanel
 
     public void onInventClick()
     {
-        if (!Game.player.inventions.isInvented(selectedInvention) && Game.player.sciencePoints.get() >= selectedInvention.cost.get())
+        if (!Game.Player.inventions.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
         {
-            Game.player.inventions.MarkInvented(selectedInvention);
-            Game.player.sciencePoints.subtract(selectedInvention.cost);
+            Game.Player.invent(selectedInvention);
             inventButton.interactable = false;
             MainCamera.topPanel.refresh();
             if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
@@ -48,11 +47,11 @@ public class InventionsPanel : DragPanel
         hide();
         if (selectedInvention != null)
         {
-            descriptionText.text = "Science points: " + Game.player.sciencePoints
+            descriptionText.text = "Science points: " + Game.Player.sciencePoints
                 + "\n\n" + selectedInvention.ToString() + " description: " + selectedInvention.getDescription();
 
             // invention available
-            if (!Game.player.inventions.isInvented(selectedInvention) && Game.player.sciencePoints.get() >= selectedInvention.cost.get())
+            if (!Game.Player.inventions.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
             {
                 inventButton.GetComponentInChildren<Text>().text = "Invent " + selectedInvention.ToString();
                 inventButton.interactable = true;
@@ -60,7 +59,7 @@ public class InventionsPanel : DragPanel
             else
             {
                 inventButton.interactable = false;
-                if (Game.player.inventions.isInvented(selectedInvention))
+                if (Game.Player.inventions.isInvented(selectedInvention))
                     inventButton.GetComponentInChildren<Text>().text = "Already invented " + selectedInvention.ToString();
                 else
                     inventButton.GetComponentInChildren<Text>().text = "Not enough SP to invent " + selectedInvention.ToString();

@@ -31,7 +31,7 @@ public class PopulationPanel : DragPanel
     {
         List<PopUnit> er = new List<PopUnit>();
         //Game.popListToShow.Clear();
-        foreach (Province province in Game.player.ownedProvinces)
+        foreach (Province province in Game.Player.ownedProvinces)
             foreach (PopUnit popUnit in province.allPopUnits)
                 // Game.popListToShow.Add(popUnit);
                 er.Add(popUnit);

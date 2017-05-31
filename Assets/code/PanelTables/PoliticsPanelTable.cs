@@ -41,11 +41,11 @@ public class PoliticsPanelTable : MyTable
         ////Adding Can change possibility
         AddButton("Can change", null);
 
-        if (Game.player != null)
+        if (Game.Player != null)
         {
             //var factoryList = Game.player;
 
-            foreach (var next in Game.player.reforms)
+            foreach (var next in Game.Player.reforms)
             // if (next.isAvailable(Game.player))
             {
                 // Adding reform name

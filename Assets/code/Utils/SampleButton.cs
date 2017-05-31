@@ -55,9 +55,9 @@ public class SampleButton : MonoBehaviour
             MainCamera.goodsPanel.Show((Product)obj, true);
             MainCamera.goodsPanel.refresh();
         }
-        else if (obj is InventionType)
+        else if (obj is Invention)
         {
-            MainCamera.inventionsPanel.selectedInvention = (InventionType)obj;
+            MainCamera.inventionsPanel.selectedInvention = (Invention)obj;
             MainCamera.inventionsPanel.refresh();
         }
         else if (obj is FactoryType)

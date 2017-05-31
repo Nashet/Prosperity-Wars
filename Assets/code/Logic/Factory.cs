@@ -57,8 +57,8 @@ public class Factory : Producer
            "Has input resource in this province", 20f, false);
         modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", 1f, false);
         modifierInventedMiningAndIsShaft = new Modifier(
-             forWhom => (forWhom as Country).isInvented(InventionType.mining) && type.isShaft(),
-           new StringBuilder("Invented ").Append(InventionType.mining.ToString()).ToString(), 50f, false);
+             forWhom => (forWhom as Country).isInvented(Invention.mining) && type.isShaft(),
+           new StringBuilder("Invented ").Append(Invention.mining.ToString()).ToString(), 50f, false);
         modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government", -20f, false);
 
         modifierNotBelongsToCountry = new Condition(
@@ -68,7 +68,7 @@ public class Factory : Producer
         modifierEfficiency = new ModifiersList(new List<Condition>()
         {
             //x=>(x as Country).isInvented(InventionType.steamPower)
-            new Modifier(InventionType.SteamPowerInvented , 25f, false),
+            new Modifier(Invention.SteamPowerInvented , 25f, false),
             modifierInventedMiningAndIsShaft,
             new Modifier(Economy.StateCapitalism,  10f, false),
             new Modifier(Economy.Interventionism,  30f, false),
@@ -753,7 +753,7 @@ public class Factory : Producer
         toRemove = true;
 
         //return loans only if banking invented
-        if (province.getCountry().isInvented(InventionType.banking))
+        if (province.getCountry().isInvented(Invention.banking))
         {
             if (loans.get() > 0f)
             {
@@ -824,7 +824,7 @@ public class Factory : Producer
                 markToDestroy();
             else if (Game.random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
-                if (province.getCountry().isInvented(InventionType.banking) && this.type.getPossibleProfit(province).get() > 10f)
+                if (province.getCountry().isInvented(Invention.banking) && this.type.getPossibleProfit(province).get() > 10f)
                 {
                     float leftOver = cash.get() - wantsMinMoneyReserv();
                     if (leftOver < 0)

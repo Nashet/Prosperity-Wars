@@ -14,7 +14,7 @@ public class Game
     List<Vector3> vertices = new List<Vector3>();
     int triangleCounter = 0;
 
-    public static Country player;
+    public static Country Player;
     //internal InventionType inventions = new InventionType();
 
     internal static bool haveToRunSimulation;
@@ -68,7 +68,7 @@ public class Game
         setStartResources();
         MainCamera.topPanel.refresh();
         makeHelloMessage();
-        MainCamera.cameraMy.transform.position = new Vector3(Game.player.getCapital().centre.x, Game.player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
+        MainCamera.cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
 
     private void deleteEdgeProvinces()
@@ -133,7 +133,7 @@ public class Game
         Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
         Country count = new Country(countryName.generateCountryName(), cul, UtilsMy.getRandomColor(), province);
         //count.setBank(count.bank);
-        player = Country.allCountries[1]; // not wild Tribes DONT touch that
+        Player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
         count.moveCapitalTo(province);
 
@@ -251,7 +251,7 @@ public class Game
                     pop = new Tribemen(2000, PopType.tribeMen, province.getCountry().culture, province);
                 province.allPopUnits.Add(pop);
 
-                if (province.getCountry() == Game.player)
+                if (province.getCountry() == Game.Player)
                 {
                     //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                     //province.allPopUnits.Add(pop);
@@ -736,7 +736,7 @@ public class Game
             "\n\nCurrently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \nbasic inventions \nbasic reforms (voting is not implemented)"
             + " \npopulation demotion\\promotion to other classes \nmigration (inside country) \nassimilation"
-            + "\n\nYou play as " + Game.player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            + "\n\nYou play as " + Game.Player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\nEnter key to close top window, space - to pause\\unpause"
             , "Ok");
@@ -762,7 +762,7 @@ public class Game
                     {
                         attackerArmy.getDestination().secedeTo(country);
                     }
-                    if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
+                    if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
                     {
                         result.createMessage();
                         //new Message("2th message", "", "");

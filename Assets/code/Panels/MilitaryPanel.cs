@@ -37,21 +37,21 @@ public class MilitaryPanel : DragPanel
             rebuildDropDown();            
         }
         sb.Clear();
-        sb.Append("Military of ").Append(Game.player);
+        sb.Append("Military of ").Append(Game.Player);
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.player.homeArmy.getShortName());
+        sb.Append("Have army: ").Append(Game.Player.homeArmy.getShortName());
         
 
         allArmySizeText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Sending army: ").Append(Game.player.sendingArmy);        
+        sb.Append("Sending army: ").Append(Game.Player.sendingArmy);        
 
         sendingArmySizeText.text = sb.ToString();
 
-        sendArmy.interactable = Game.player.sendingArmy.getSize() > 0 ? true : false;
+        sendArmy.interactable = Game.Player.sendingArmy.getSize() > 0 ? true : false;
         //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
     }
 
@@ -65,21 +65,21 @@ public class MilitaryPanel : DragPanel
   
     public void onMobilizationClick()
     {
-        Game.player.mobilize();
+        Game.Player.mobilize();
         //onArmyLimitChanged(0f);
         //MainCamera.tradeWindow.refresh();
         refresh(false);
     }
     public void onDemobilizationClick()
     {
-        Game.player.demobilize();
+        Game.Player.demobilize();
         //MainCamera.tradeWindow.refresh();
         refresh(false);
     }
     public void onSendArmyClick()
     {
-        Game.player.sendArmy(Game.player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-        Game.player.sendingArmy = new Army(Game.player);
+        Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
+        Game.Player.sendingArmy = new Army(Game.Player);
         refresh(false);
     }
     void rebuildDropDown()
@@ -88,7 +88,7 @@ public class MilitaryPanel : DragPanel
         ddProvinceSelect.ClearOptions();
         byte count = 0;
         availableProvinces.Clear();
-        var list = Game.player.getNeighborProvinces();
+        var list = Game.Player.getNeighborProvinces();
         foreach (Province next in list)
         {
             //if (next.isAvailable(Game.player))
@@ -113,7 +113,7 @@ public class MilitaryPanel : DragPanel
     public void onArmyLimitChanged(float value)
     {
       
-        Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(value));      
+        Game.Player.homeArmy.balance(Game.Player.sendingArmy, new Procent(value));      
         refresh(false);
        
 

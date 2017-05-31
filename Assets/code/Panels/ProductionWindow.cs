@@ -41,7 +41,7 @@ public class ProductionWindow : DragPanel
     {
         List<Factory> er = new List<Factory>();
         //Game.popListToShow.Clear();
-        foreach (Province province in Game.player.ownedProvinces)
+        foreach (Province province in Game.Player.ownedProvinces)
             foreach (Factory factory in province.allFactories)
                 // Game.popListToShow.Add(popUnit);
                 er.Add(factory);

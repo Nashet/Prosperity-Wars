@@ -88,7 +88,7 @@ public class ProductionWindowTable : MyTable
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Economy.isMarket.checkIftrue(Game.player))
+            if (Economy.isMarket.checkIftrue(Game.Player))
                 AddButton(next.getSalary().ToString() + " coins", next);
             else
                 AddButton(next.getSalary().ToString()+ " food", next);
