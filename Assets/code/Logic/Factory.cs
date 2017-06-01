@@ -822,7 +822,7 @@ public class Factory : Producer
             daysClosed++;
             if (daysClosed == Options.maxDaysClosedBeforeRemovingFactory)
                 markToDestroy();
-            else if (Game.random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
+            else if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
                 if (province.getCountry().isInvented(Invention.banking) && this.type.getPossibleProfit(province).get() > 10f)
                 {

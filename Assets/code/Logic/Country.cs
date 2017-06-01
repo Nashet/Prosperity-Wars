@@ -352,7 +352,7 @@ public class Country : Consumer
             sciencePoints.add(this.getMenPopulation());
         else
             sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-        sciencePoints.add(this.getMenPopulation());
+        //sciencePoints.add(this.getMenPopulation());
 
         if (this.autoPutInBankLimit > 0f)
         {
@@ -364,7 +364,7 @@ public class Country : Consumer
         buyNeeds(); // Should go After all Armies consumption
 
         if (isAI() && !isOnlyCountry())
-            if (Game.random.Next(10) == 1)
+            if (Game.Random.Next(10) == 1)
             {
                 var possibleTarget = getRandomNeighborProvince();
                 if (possibleTarget != null)
@@ -378,7 +378,7 @@ public class Country : Consumer
                 //if (homeArmy.getSize() > 50 + Game.random.Next(100))
                 //    sendArmy(homeArmy, getRandomNeighborProvince());
             }
-        if (isAI())
+        if (isAI() && Game.Random.Next(30)==1)
             aiInvent();
     }
 

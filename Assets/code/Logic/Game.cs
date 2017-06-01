@@ -21,7 +21,7 @@ public class Game
     internal static bool haveToStepSimulation;
     internal static int howMuchPausedWindowsOpen = 0;
 
-    public static System.Random random = new System.Random();
+    public static System.Random Random = new System.Random();
 
     public static Province selectedProvince;
     public static List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
@@ -55,7 +55,7 @@ public class Game
 
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
-        int extraCountries = random.Next(6);
+        int extraCountries = Random.Next(6);
         for (int i = 0; i < 16 + extraCountries; i++)
             makeCountry(countryNameGenerator, cultureNameGenerator);
 
@@ -112,18 +112,19 @@ public class Game
     {
         //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribesmen");
         new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f), new Storage(Product.Artillery, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
 
         new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f), new Storage(Product.Artillery, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f), new Storage(Product.Artillery, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
         new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers", 1f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f), new Storage(Product.Artillery, 0.2f) }));
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
+        new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
+
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
-        new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.2f), new Storage(Product.Artillery, 0.2f) }));
     }
 
     void makeCountry(CountryNameGenerator countryName, CultureNameGenerator cultureName)
@@ -193,6 +194,37 @@ public class Game
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput, false);
+
+
+        new FactoryType("Oil rig", new Storage(Product.Oil, 2f), null, true);
+        new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), null, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Oil, 1f));
+        new FactoryType("Oil refinery", new Storage(Product.Fuel, 2f), resourceInput, false);
+
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Machinery, 1f));
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        resourceInput.set(new Storage(Product.Rubber, 1f));
+        new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Machinery, 1f));
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        resourceInput.set(new Storage(Product.Artillery, 1f));
+        new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput, false);
+
+        resourceInput = new PrimitiveStorageSet();
+        resourceInput.set(new Storage(Product.Lumber, 1f));
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        resourceInput.set(new Storage(Product.Machinery, 1f));
+        new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput, false);
     }
 
     void makeProducts()
@@ -214,6 +246,14 @@ public class Game
         new Product("Ammunition", false, 13f);
         new Product("Firearms", false, 13f);
         new Product("Artillery", false, 13f);
+
+        new Product("Oil", true, 10f);
+        new Product("Fuel", false, 15f);
+        new Product("Machinery", false, 8f);
+        new Product("Cars", false, 15f);
+        new Product("Tanks", false, 20f);
+        new Product("Airplanes", false, 20f);
+        new Product("Rubber", true, 10f);
     }
     internal static Value getAllMoneyInWorld()
     {
@@ -371,8 +411,8 @@ public class Game
         if (Game.devMode)
             amountOfProvince = 10;
         else
-            amountOfProvince = 12 + Game.random.Next(8);
-        amountOfProvince = 60 + Game.random.Next(20);
+            amountOfProvince = 12 + Game.Random.Next(8);
+        amountOfProvince = 60 + Game.Random.Next(20);
         //amountOfProvince = 160 + Game.random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());

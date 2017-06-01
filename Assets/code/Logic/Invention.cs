@@ -31,7 +31,7 @@ public class InventionsList
     }
     //TODO strange architecture
     public void markInvented(Invention type)
-    {        
+    {
         list[type] = true;
     }
     public bool isInvented(Invention type)
@@ -40,7 +40,7 @@ public class InventionsList
         list.TryGetValue(type, out result);
         return result;
     }
-    
+
 
 }
 public class Invention : AbstractCondition
@@ -56,13 +56,16 @@ public class Invention : AbstractCondition
         manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
         mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
         //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
-        metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
+        Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
         individualRights = new Invention("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
         collectivism = new Invention("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
         steamPower = new Invention("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(100f)),
         Gunpowder = new Invention("Gunpowder", "Allows Artillery & Ammunition", new Value(100f)),
-        Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(100f))
+        Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(100f)),
+        CombustionEngine = new Invention("Combustion engine", "", new Value(200f)),
+        Tanks = new Invention("Tanks", "", new Value(400f)),
+        Airplanes = new Invention("Airplanes", "", new Value(800f))
         ;
     readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.steamPower), "Steam Power is invented", true);
     readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(Invention.individualRights), "Individual Rights are invented", true);
@@ -83,8 +86,12 @@ public class Invention : AbstractCondition
     public bool isAvailable(Country country)
     {
         if (this == Invention.collectivism
-            || (this == Invention.Gunpowder && !country.isInvented(Invention.metal))
+            || (this == Invention.Gunpowder && !country.isInvented(Invention.Metal))
+            || (this == Invention.steamPower && !country.isInvented(Invention.Metal))
             || (this == Invention.Firearms && !country.isInvented(Invention.Gunpowder))
+            || (this == Invention.CombustionEngine && !country.isInvented(Invention.steamPower))
+            || (this == Invention.Tanks && !country.isInvented(Invention.CombustionEngine))
+            || (this == Invention.Airplanes && !country.isInvented(Invention.CombustionEngine))
             )
             return false;
         else

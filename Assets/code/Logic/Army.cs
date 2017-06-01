@@ -17,6 +17,11 @@ public class Army
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
     static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);
 
+    static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Equipped cars", 2f, false);
+    static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped tanks", 1f, false);
+    static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped airplanes", 1f, false);
+
+
     private float getColdArmsSupply()
     {
         if (Product.ColdArms.isInvented(getOwner()))
@@ -41,10 +46,39 @@ public class Army
          );
         else return 0f;
     }
+    private float getEquippedCarsSupply()
+    {
+        if (Product.Cars.isInvented(getOwner()))
+            return Mathf.Min(
+         Procent.makeProcent(getConsumption(Product.Cars), getNeeds(Product.Cars)).get(),
+         Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel)).get()
+         );
+        else return 0f;
+    }
+    private float getEquippedTanksSupply()
+    {
+        if (Product.Tanks.isInvented(getOwner()))
+            return Mathf.Min(
+         Procent.makeProcent(getConsumption(Product.Tanks), getNeeds(Product.Tanks)).get(),
+         Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel)).get(),
+         Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition)).get()
+         );
+        else return 0f;
+    }
+    private float getEquippedAirplanesSupply()
+    {
+        if (Product.Airplanes.isInvented(getOwner()))
+            return Mathf.Min(
+         Procent.makeProcent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes)).get(),
+         Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel)).get(),
+         Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition)).get()
+         );
+        else return 0f;
+    }
 
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery
+            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery, modifierCars, modifierTanks,modifierAirplanes
         });
     public Army(Country owner)
     {

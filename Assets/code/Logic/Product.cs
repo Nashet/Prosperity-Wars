@@ -15,6 +15,13 @@ public class Product
 
     internal static Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
      Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery;
+    internal static Product Oil,
+      Fuel,
+      Cars,
+   Tanks,
+     Airplanes,
+      Rubber, Machinery;
+
     public Product(string name, bool inlanded, float defaultPrice)
     {
         this.defaultPrice = new Value(defaultPrice);
@@ -40,6 +47,14 @@ public class Product
         if (name == "Ammunition") Ammunition = this;
         if (name == "Firearms") Firearms = this;
         if (name == "Artillery") Artillery = this;
+
+        if (name == "Oil") Oil = this;
+        if (name == "Fuel") Fuel = this;
+        if (name == "Cars") Cars = this;
+        if (name == "Tanks") Tanks = this;
+        if (name == "Airplanes") Airplanes = this;
+        if (name == "Rubber") Rubber = this;
+        if (name == "Machinery") Machinery = this;
         //TODO checks for duplicates&
     }
     internal bool isResource()
@@ -48,7 +63,7 @@ public class Product
     }
     internal static Product getRandomResource(bool ignoreGold)
     {
-        int random = Game.random.Next(resourceCounter);
+        int random = Game.Random.Next(resourceCounter);
         int counter = 0;
         foreach (Product pro in Product.allProducts)
         {
@@ -63,7 +78,7 @@ public class Product
             return Product.Wood;
         return null;
     }
-    
+
     public static Product findByName(string name)
     {  //HashSet set = new HashSet();
         foreach (Product next in allProducts)
@@ -91,9 +106,12 @@ public class Product
 
         if (
             (
-            (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.metal))
+            (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.Metal))
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
+            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Machinery || this == Cars))
+            || (!country.isInvented(Invention.Tanks) && this == Tanks )
+            || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
             || (!isResource() && !country.isInvented(Invention.manufactories))
             )
             return false;

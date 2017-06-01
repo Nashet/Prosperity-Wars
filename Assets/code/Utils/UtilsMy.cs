@@ -50,7 +50,7 @@ public class CultureNameGenerator
         result.Append(prefix.getRandom());
 
         //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5))));
+        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
         result.Append(postfix.getRandom());
 
         return (result.ToString());
@@ -115,7 +115,7 @@ public class CountryNameGenerator
         result.Append(prefix.getRandom());
 
         //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5))));
+        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
         result.Append(postfix.getRandom());
 
         return (result.ToString());
@@ -130,10 +130,10 @@ public class ProvinceNameGenerator
     public static string generateWord(int length)
     {
         Game.threadDangerSB.Clear();
-        if (Game.random.Next(10) == 1)
+        if (Game.Random.Next(10) == 1)
         {
             Game.threadDangerSB.Append(vowels.getRandom());
-            if (Game.random.Next(2) == 1)
+            if (Game.Random.Next(2) == 1)
                 Game.threadDangerSB.Append(consonants.getRandom());
         }
         //if (Game.random.Next(6) == 1)
@@ -142,7 +142,7 @@ public class ProvinceNameGenerator
         for (int i = 0; i < length; i += 2)
         {
             Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
-            if (Game.random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
+            if (Game.Random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
         }
         return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
         //return Game.threadDangerSB.ToString();
@@ -266,9 +266,9 @@ public class ProvinceNameGenerator
     {
         result.Clear();
         result.Append(prefix.getRandom());
-        if (Game.random.Next(3) == 1) result.Append(generateWord(Game.random.Next(2, 5)));
+        if (Game.Random.Next(3) == 1) result.Append(generateWord(Game.Random.Next(2, 5)));
         else
-            result.Append(generateWord(Game.random.Next(3, 5)));
+            result.Append(generateWord(Game.Random.Next(3, 5)));
         result.Append(postfix.getRandom());
 
         return UtilsMy.FirstLetterToUpper(result.ToString());
@@ -476,7 +476,7 @@ public static class UtilsMy
         //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
 
         if (image.coordinatesExist(x, y))
-            if (Game.random.Next(straightBorderChance) != 1)
+            if (Game.Random.Next(straightBorderChance) != 1)
                 //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
                 if (image.GetPixel(x, y) == Color.black)
                     image.SetPixel(x, y, color.setAlphaToZero());
@@ -542,11 +542,11 @@ public static class UtilsMy
     }
     public static int getRandomX(this Texture2D image)
     {
-        return Game.random.Next(0, image.width);
+        return Game.Random.Next(0, image.width);
     }
     public static int getRandomY(this Texture2D image)
     {
-        return Game.random.Next(0, image.height);
+        return Game.Random.Next(0, image.height);
     }
     public static string FirstLetterToUpper(string str)
     {
@@ -756,6 +756,11 @@ public static class MyIEnumerableExtensions
     {
         return source.MaxBy(selector, null);
     }
+    public static string ToString<TSource, TKey>(this IEnumerable<TSource> source,
+           Func<TSource, TKey> selector)
+    {
+        return source.MaxBy(selector, null).ToString();
+    }
 
     /// <summary>
     /// Returns the maximal element of the given sequence, based on
@@ -837,7 +842,7 @@ public static class MyIEnumerableExtensions
         //return source.ElementAt(Game.random.Next(source.Count));
         if (source == null || source.Count == 0)
             return default(T);
-        return source[Game.random.Next(source.Count)];
+        return source[Game.Random.Next(source.Count)];
 
     }
     /// <summary>

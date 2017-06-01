@@ -308,7 +308,7 @@ abstract public class PopUnit : Producer
     }
     public static int getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
     {
-        int randomPopulation = minGeneratedPopulation + Game.random.Next(maxGeneratedPopulation - minGeneratedPopulation);
+        int randomPopulation = minGeneratedPopulation + Game.Random.Next(maxGeneratedPopulation - minGeneratedPopulation);
         return randomPopulation;
     }
 
@@ -1097,7 +1097,7 @@ abstract public class PopUnit : Producer
                 }
             }
         }
-        if (Economy.isMarket.checkIftrue(province.getCountry()) && type == PopType.capitalists && Game.random.Next(10) == 1)
+        if (Economy.isMarket.checkIftrue(province.getCountry()) && type == PopType.capitalists && Game.Random.Next(10) == 1)
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
