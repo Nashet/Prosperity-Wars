@@ -42,15 +42,11 @@ public class MilitaryPanel : DragPanel
 
         sb.Clear();
         sb.Append("Have army: ").Append(Game.Player.homeArmy.getShortName());
-        
-
         allArmySizeText.text = sb.ToString();
 
         sb.Clear();
         sb.Append("Sending army: ").Append(Game.Player.sendingArmy);        
-
         sendingArmySizeText.text = sb.ToString();
-
         sendArmy.interactable = Game.Player.sendingArmy.getSize() > 0 ? true : false;
         //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
     }
@@ -104,7 +100,7 @@ public class MilitaryPanel : DragPanel
                 count++;
             }
         }
-        onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
+        //onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
     }
     public void onddProvinceSelectValueChanged()
     {

@@ -55,8 +55,8 @@ public class PopUnitPanel : DragPanel
                 immigrationText = "none";
 
             string assimilationText;            
-            if (pop.culture != pop.province.getCountry().culture && pop.getAssimilationSize() > 0)
-                assimilationText = pop.province.getCountry().culture + " " + pop.getAssimilationSize();
+            if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
+                assimilationText = pop.province.getCountry().getCulture() + " " + pop.getAssimilationSize();
             else
                 assimilationText = "none";
             string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";

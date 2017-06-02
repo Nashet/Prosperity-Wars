@@ -20,7 +20,7 @@ public class Army
     static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Equipped cars", 2f, false);
     static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped tanks", 1f, false);
     static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped airplanes", 1f, false);
-
+    static Modifier modifierLuck = new Modifier(x => UnityEngine.Random.Range(-0.5f, 0.5f), "Luck", 1f, false);
 
     private float getColdArmsSupply()
     {
@@ -78,7 +78,8 @@ public class Army
 
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery, modifierCars, modifierTanks,modifierAirplanes
+            modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery,
+        modifierCars, modifierTanks, modifierAirplanes, modifierLuck
         });
     public Army(Country owner)
     {

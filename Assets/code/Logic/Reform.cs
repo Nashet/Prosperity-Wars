@@ -999,10 +999,10 @@ public class MinorityPolicy : AbstractReform
     }
     internal ReformValue status;
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal static ReformValue Equality; // all can vote
+    internal static  ReformValue Equality; // all can vote
     internal static ReformValue Residency; // state culture only can vote
                                            //todo add no-individual rights condition check?
-    internal static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, ConditionsList.AlwaysYes);
+    internal static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, ConditionsList.IsNotImplemented);
 
     //internal static Condition IsResidencyPop;
     public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)
@@ -1013,7 +1013,7 @@ public class MinorityPolicy : AbstractReform
         if (Residency == null)
             Residency = new ReformValue("Restricted rights", "- Only state culture can vote", 1, ConditionsList.AlwaysYes);
 
-        status = NoRights;
+        status = Residency;
         //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
         //Residency.getDescription(), true);
     }

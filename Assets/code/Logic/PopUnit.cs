@@ -16,8 +16,16 @@ abstract public class PopUnit : Producer
     public Procent loyalty;
     int population;
     int mobilized;
-    public PopType type;
-    public Culture culture;
+    public PopType type
+    {
+        get { return type; }
+        private set { type = value; }
+    }
+    public Culture culture
+    {
+        get { return culture; }
+        private set { culture = value; }
+    }
     public Procent education;
     public Procent needsFullfilled;
 
@@ -522,7 +530,7 @@ abstract public class PopUnit : Producer
 
     internal bool isStateCulture()
     {
-        return this.culture == this.province.getCountry().culture;
+        return this.culture == this.province.getCountry().getCulture();
     }
 
     public Procent getLifeNeedsFullfilling()
@@ -923,7 +931,7 @@ abstract public class PopUnit : Producer
         //where to g0?
         // where life is rich and I where I have some rights
         foreach (var country in Country.allExisting)
-            if (country.culture == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+            if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                 if (country != this.getCountry())
                     foreach (var pro in country.ownedProvinces)
                     {
@@ -1016,11 +1024,11 @@ abstract public class PopUnit : Producer
     }
     internal void calcAssimilations()
     {
-        if (this.culture != province.getCountry().culture)
+        if (this.culture != province.getCountry().getCulture())
         {
             int assimilationSize = getAssimilationSize();
             if (assimilationSize > 0 && this.getPopulation() >= assimilationSize)
-                assimilate(province.getCountry().culture, assimilationSize);
+                assimilate(province.getCountry().getCulture(), assimilationSize);
         }
     }
 

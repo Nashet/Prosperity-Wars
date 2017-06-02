@@ -27,7 +27,7 @@ public class Country : Consumer
     internal TaxationForRich taxationForRich;
     internal MinorityPolicy minorityPolicy;
     internal List<AbstractReform> reforms = new List<AbstractReform>();
-    public Culture culture;
+    Culture culture;
     Color nationalColor;
     Province capital;
 
@@ -95,7 +95,10 @@ public class Country : Consumer
             serfdom.status = Serfdom.Abolished;
         }
     }
-
+    public Culture getCulture()
+    {
+        return culture;
+    }
     internal void demobilize()
     {
         //ownedProvinces.ForEach(x => x.demobilize());
@@ -450,7 +453,7 @@ public class Country : Consumer
         return result;
     }
 
-    private bool isAI()
+    public bool isAI()
     {
         return Game.Player != this;
     }
