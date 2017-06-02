@@ -791,28 +791,32 @@ public class Game
     }
     private static void calcBattles()
     {
-        foreach (Country country in Country.allExisting)
+        foreach (Country attackerCountry in Country.allExisting)
         {
-            foreach (var attackerArmy in country.allArmies)
+            foreach (var attackerArmy in attackerCountry.allArmies)
             {
                 if (attackerArmy.getDestination() != null)
                 {
-                    var result = attackerArmy.attack(attackerArmy.getDestination());
-                    if (result.isAttackerWon())
+                    if (attackerArmy.getDestination().getCountry() != attackerCountry)
                     {
-                        attackerArmy.getDestination().secedeTo(country);
+                        var result = attackerArmy.attack(attackerArmy.getDestination());
+                        if (result.isAttackerWon())
+                        {
+                            attackerArmy.getDestination().secedeTo(attackerCountry);
+                        }
+                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+                        {
+                            result.createMessage();
+                            //new Message("2th message", "", "");
+                            //new Message("3th message", "", "");
+                            //new Message("4th message", "", "");
+                        }
+                        attackerArmy.moveTo(null); // go home
                     }
-                    if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-                    {
-                        result.createMessage();
-                        //new Message("2th message", "", "");
-                        //new Message("3th message", "", "");
-                        //new Message("4th message", "", "");
-                    }
-                    attackerArmy.moveTo(null); // go home
+                    else attackerArmy.moveTo(null); // go home
                 }
             }
-            country.allArmies.consolidate(country);
+            attackerCountry.allArmies.consolidate(attackerCountry);
         }
     }
     internal static void stepSimulation()

@@ -16,16 +16,11 @@ abstract public class PopUnit : Producer
     public Procent loyalty;
     int population;
     int mobilized;
-    public PopType type
-    {
-        get { return type; }
-        private set { type = value; }
-    }
-    public Culture culture
-    {
-        get { return culture; }
-        private set { culture = value; }
-    }
+
+    public PopType type;
+
+    public Culture culture;
+    
     public Procent education;
     public Procent needsFullfilled;
 

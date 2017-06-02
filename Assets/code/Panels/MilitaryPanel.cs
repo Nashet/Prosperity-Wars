@@ -7,12 +7,12 @@ using System.Text;
 
 public class MilitaryPanel : DragPanel
 {
-    public Dropdown ddProvinceSelect;   
+    public Dropdown ddProvinceSelect;
     public Text allArmySizeText, captionText, sendingArmySizeText;
     public Slider armySendLimit;
     public Button sendArmy;
     StringBuilder sb = new StringBuilder();
-    
+
     List<Province> availableProvinces = new List<Province>();
     // Use this for initialization
     void Start()
@@ -29,12 +29,12 @@ public class MilitaryPanel : DragPanel
     }
     public void refresh(bool rebuildDropdown)
     {
-        
+
         if (rebuildDropdown)
         {
             //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
             //armySendLimit.value = 0; // cause extra mobilization
-            rebuildDropDown();            
+            rebuildDropDown();
         }
         sb.Clear();
         sb.Append("Military of ").Append(Game.Player);
@@ -45,7 +45,7 @@ public class MilitaryPanel : DragPanel
         allArmySizeText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Sending army: ").Append(Game.Player.sendingArmy);        
+        sb.Append("Sending army: ").Append(Game.Player.sendingArmy);
         sendingArmySizeText.text = sb.ToString();
         sendArmy.interactable = Game.Player.sendingArmy.getSize() > 0 ? true : false;
         //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
@@ -58,9 +58,11 @@ public class MilitaryPanel : DragPanel
         panelRectTransform.SetAsLastSibling();
         refresh(true);
     }
-  
+
     public void onMobilizationClick()
     {
+        if (Game.Player.homeArmy.getSize()==0)
+            Game.Player.homeArmy = new Army(Game.Player);
         Game.Player.mobilize();
         //onArmyLimitChanged(0f);
         //MainCamera.tradeWindow.refresh();
@@ -104,14 +106,16 @@ public class MilitaryPanel : DragPanel
     }
     public void onddProvinceSelectValueChanged()
     {
-      
+
     }
     public void onArmyLimitChanged(float value)
     {
-      
-        Game.Player.homeArmy.balance(Game.Player.sendingArmy, new Procent(value));      
+
+        //actually creates new army here
+        Game.Player.homeArmy.balance(Game.Player.sendingArmy, new Procent(value));
+        
         refresh(false);
-       
+
 
     }
 }

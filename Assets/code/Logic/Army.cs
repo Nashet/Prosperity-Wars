@@ -83,9 +83,10 @@ public class Army
         });
     public Army(Country owner)
     {
+        owner.allArmies.Add(this);
         personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
-        owner.allArmies.Add(this);
+
     }
     //public Army(Army army)
     //{
@@ -102,8 +103,9 @@ public class Army
             corps.demobilizeFrom(this);
         }
         //is it here problem with #83?
-        if (this != getOwner().homeArmy && this != getOwner().sendingArmy)
-            owner.allArmies.Remove(this);
+        //if (this != getOwner().homeArmy)
+        //&& this != getOwner().sendingArmy)
+        owner.allArmies.Remove(this);
         //personal.ForEach((pop, corps) =>
         //{
 
@@ -144,7 +146,7 @@ public class Army
                 personal.Add(corpsToAdd.getPopUnit(), corpsToAdd);
         }
     }
-    public void add(Army armyToAdd)
+    public void joinin(Army armyToAdd)
     {
         if (armyToAdd != this)
         {
@@ -157,7 +159,9 @@ public class Army
                         this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
                 else
                     corpsToTransfert.Value.demobilizeFrom(armyToAdd);
+            armyToAdd.clear();
         }
+
     }
     internal void remove(Corps corps)
     {
@@ -180,7 +184,8 @@ public class Army
         if (size > 0)
         {
             foreach (var next in personal)
-                sb.Append(next.Value).Append(", ");
+                if (next.Value.getSize() > 0)
+                    sb.Append(next.Value).Append(", ");
             sb.Append("Total size is ").Append(getSize());
         }
         else
@@ -279,17 +284,17 @@ public class Army
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
         {
-            secondArmy.add(this);
-            this.personal.Clear();
+            secondArmy.joinin(this);
+            //this.personal.Clear();
         }
         else
         {
             //Army sumArmy = new Army();
             //sumArmy.add(this);
-            this.add(secondArmy);
+            this.joinin(secondArmy);
             int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
 
-            secondArmy.clear();
+            //secondArmy.clear();
 
             int needToFullFill = secondArmyExpectedSize;
             while (needToFullFill > 0)

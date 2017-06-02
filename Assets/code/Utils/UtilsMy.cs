@@ -701,9 +701,10 @@ public static class MyIEnumerableExtensions
     {
         foreach (Army next in source)
             if (next.getDestination() == null)
-                country.homeArmy.add(next);
+                country.homeArmy.joinin(next);
 
-        source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
+        //source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
+        source.RemoveAll(army => army.getSize() == 0 && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
     }
     public static bool demobilize(this List<Army> source, PopUnit pop)
     {
