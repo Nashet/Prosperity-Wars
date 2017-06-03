@@ -169,6 +169,17 @@ public class Province
             result += pop.getPopulation();
         return result;
     }
+
+    internal bool isBelongsTo(Country country)
+    {
+        return this.getCountry() == country;
+    }
+    internal bool isNeghbour(Country country)
+    {
+        return neighbors.Any(x => x.getCountry() == country);
+    }
+    
+
     public int getFamilyPopulation()
     {
         return getMenPopulation() * Options.familySize;

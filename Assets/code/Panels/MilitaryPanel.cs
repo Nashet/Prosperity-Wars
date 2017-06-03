@@ -51,17 +51,22 @@ public class MilitaryPanel : DragPanel
         //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
     }
 
-    public void show()
+    public void show(Province province)
     {
         gameObject.SetActive(true);
+        panelRectTransform.SetAsLastSibling();        
 
-        panelRectTransform.SetAsLastSibling();
-        refresh(true);
+            refresh(true);
+        if (province != null)
+        {
+            var list = Game.Player.getNeighborProvinces();
+            ddProvinceSelect.value = list.IndexOf(province);
+        }
     }
 
     public void onMobilizationClick()
     {
-        if (Game.Player.homeArmy.getSize()==0)
+        if (Game.Player.homeArmy.getSize() == 0)
             Game.Player.homeArmy = new Army(Game.Player);
         Game.Player.mobilize();
         //onArmyLimitChanged(0f);
@@ -113,7 +118,7 @@ public class MilitaryPanel : DragPanel
 
         //actually creates new army here
         Game.Player.homeArmy.balance(Game.Player.sendingArmy, new Procent(value));
-        
+
         refresh(false);
 
 

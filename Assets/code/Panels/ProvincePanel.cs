@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class ProvincePanel : MonoBehaviour
 {
-    public Text generaltext;   
-    public Button btnOwner, btnBuild;
+    public Text generaltext;
+    public Button btnOwner, btnBuild, btAttackThat, btMobilize;
     // Use this for initialization    
     void Start()
     {
@@ -46,6 +46,11 @@ public class ProvincePanel : MonoBehaviour
         else
             MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
     }
+    public void onMobilizeClick()
+    {
+        Game.selectedProvince.mobilize();
+        MainCamera.militaryPanel.show(null);
+    }
     public void onPopulationDetailsClick()
     {
         //Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
@@ -77,6 +82,10 @@ public class ProvincePanel : MonoBehaviour
             MainCamera.populationPanel.show(true);
         }
 
+    }
+    public void onAttackThatClick()
+    {
+        MainCamera.militaryPanel.show(Game.selectedProvince);
     }
     public void onEnterprisesClick()
     {
@@ -127,13 +136,23 @@ public class ProvincePanel : MonoBehaviour
         {
             btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "";
             btnBuild.interactable = true;
+            btMobilize.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+            btMobilize.interactable = true;
         }
         else
         {
             btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "That isn't your province, right?";
             btnBuild.interactable = false;
+            btMobilize.GetComponentInChildren<ToolTipHandler>().tooltip = "That isn't your province, right?";
+            btMobilize.interactable = false;
         }
 
         if (Game.devMode) generaltext.text += "\nColor: " + province.getColorID();
+
+        btAttackThat.interactable = Game.Player.canAttack(province);
+        if (!btAttackThat.interactable)
+            btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "Can attack only neighbors";
+        else btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+
     }
 }

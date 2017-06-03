@@ -163,6 +163,12 @@ public class Country : Consumer
         //sendingArmy.clear();
     }
 
+    internal bool canAttack(Province province)
+    {
+        //!province.isBelongsTo(this) &&
+        return province.isNeghbour(this);
+    }
+
     internal void mobilize()
     {
         foreach (var province in ownedProvinces)

@@ -42,7 +42,7 @@ public class TopPanel : MonoBehaviour
         if (MainCamera.militaryPanel.isActiveAndEnabled)
             MainCamera.militaryPanel.hide();
         else
-            MainCamera.militaryPanel.show();
+            MainCamera.militaryPanel.show(null);
     }
     public void onInventionsClick()
     {
