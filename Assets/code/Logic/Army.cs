@@ -5,6 +5,104 @@ using System.Text;
 using System.Linq;
 using System;
 
+public class GeneralStaff
+{
+    //internal Army homeArmy;
+    //internal Army sendingArmy;
+    List<Army> allArmies = new List<Army>();
+    /// <summary>
+    /// Unites all armies in one. Assuming armies are alive, just needed to consolidate
+    /// </summary>
+    public Army consolidateArmies()
+    {
+        if (allArmies.Count > 0)
+        {
+            foreach (Army next in allArmies)
+                if (next.getDestination() == null)
+                    allArmies[0].joinin(next);
+            return allArmies[0];
+        }
+        else return null;
+
+        //source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
+        allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
+    }
+    internal void mobilize(IEnumerable<Province> source)
+    {
+        foreach (var province in source)
+        {
+            Army newArmy = new Army(province.getCountry());
+            foreach (var item in province.allPopUnits)
+                if (item.howMuchCanMobilize() > 0)
+                    newArmy.add(item.mobilize());
+            if (newArmy.getSize() > 0)
+                addArmy(newArmy);
+        }
+        consolidateArmies();
+    }
+    void addArmy(Army army)
+    {
+        allArmies.Add(army);
+    }
+    internal void demobilizeAll()
+    {
+        foreach (var item in allArmies)
+        {
+            item.demobilize();
+        }
+        allArmies.RemoveAll(x => x.getSize() == 0);
+    }
+    internal void demobilize(Func<Corps, bool> predicate)
+    {
+        foreach (Army nextArmy in allArmies)
+            nextArmy.getCorps().FindAndDo(predicate, x => x.demobilizeFrom(nextArmy));
+    }
+
+    internal void consume()
+    {
+        allArmies.ForEach(x => x.consume());
+    }
+
+    internal PrimitiveStorageSet getNeeds()
+    {
+        PrimitiveStorageSet res = new PrimitiveStorageSet();
+        foreach (var item in allArmies)
+            res.add(item.getNeeds());
+        return res;
+    }
+
+    internal void sendArmy(Province possibleTarget, Procent procent)
+    {
+        consolidateArmies().moveTo(possibleTarget);
+    }
+
+    internal void setStatisticToZero()
+    {
+        allArmies.ForEach(x => x.setStatisticToZero());
+    }
+
+    internal IEnumerable<Army> getAttackingArmies()
+    {
+        foreach (var army in allArmies)
+            if (army.getDestination() != null)
+                if (army.getDestination().getCountry() != army.getOwner())
+                    yield return army;
+                else
+                    army.moveTo(null); // go home
+    }
+
+    internal Army getDefenceForces()
+    {
+        consolidateArmies();
+        return allArmies[0];
+    }
+
+    internal Army getVirtualArmy(Procent procent)
+    {
+        Army virtualArmy = allArmies[0].balance(procent);
+        return virtualArmy;
+    }
+}
 public class Army
 {
     Dictionary<PopUnit, Corps> personal;
@@ -83,10 +181,15 @@ public class Army
         });
     public Army(Country owner)
     {
-        owner.allArmies.Add(this);
+        //owner.staff.allArmies.Add(this);
         personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
-
+    }
+    //public static bool Any<TSource>(this IEnumerable<TSource> source);
+    void move(Corps item, Army destination)
+    {
+        if (this.personal.Remove(item.getPopUnit())) // don't remove this
+            destination.personal.Add(item.getPopUnit(), item);
     }
     //public Army(Army army)
     //{
@@ -102,10 +205,10 @@ public class Army
             //personal.Remove(corps.getPopUnit());
             corps.demobilizeFrom(this);
         }
-        //is it here problem with #83?
+
         //if (this != getOwner().homeArmy)
         //&& this != getOwner().sendingArmy)
-        owner.allArmies.Remove(this);
+        //owner.allArmies.Remove(this);
         //personal.ForEach((pop, corps) =>
         //{
 
@@ -122,7 +225,7 @@ public class Army
         //}
         personal.ForEach((x, corps) => corps.consume(getOwner()));
     }
-    public Procent getMoral()
+    Procent getMoral()
     {
         Procent result = new Procent(0);
         int calculatedSize = 0;
@@ -254,7 +357,7 @@ public class Army
             res.add(item.Value.getRealNeeds(getOwner()));
         return res;
     }
-    public Value getNeeds(Product pro)
+    Value getNeeds(Product pro)
     {
         Value res = new Value(0f);
         foreach (var item in personal)
@@ -262,7 +365,7 @@ public class Army
         return res;
     }
 
-    public Dictionary<PopType, int> getAmountByTypes()
+    Dictionary<PopType, int> getAmountByTypes()
     {
         Dictionary<PopType, int> res = new Dictionary<PopType, int>();
         //int test;
@@ -279,8 +382,10 @@ public class Army
         }
         return res;
     }
-
-    internal void balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
+    /// <summary>
+    /// howMuchShouldBeInSecondArmy - procent of this army. Returns second army
+    /// </summary>
+    internal Army balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
         if (howMuchShouldBeInSecondArmy.get() == 1f)
         {
@@ -303,10 +408,41 @@ public class Army
                 if (corpsToBalance == null)
                     break;
                 else
-                    this.personal.move(corpsToBalance, secondArmy.personal);
+                    this.move(corpsToBalance, secondArmy);
                 needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
             }
 
+        }
+        return secondArmy;
+    }
+    internal Army balance(Procent howMuchShouldBeInSecondArmy)
+    {
+        if (howMuchShouldBeInSecondArmy.get() == 1f)
+        {
+            return this;
+            //this.personal.Clear();
+        }
+        else
+        {
+            Army secondArmy = new Army(this.getOwner());
+            //Army sumArmy = new Army();
+            //sumArmy.add(this);
+            //this.joinin(secondArmy);
+            int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+
+            //secondArmy.clear();
+
+            int needToFullFill = secondArmyExpectedSize;
+            while (needToFullFill > 0)
+            {
+                var corpsToBalance = this.getBiggestCorpsSmallerThan(needToFullFill);
+                if (corpsToBalance == null)
+                    break;
+                else
+                    this.move(corpsToBalance, secondArmy);
+                needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
+            }
+            return secondArmy;
         }
 
     }
@@ -316,13 +452,13 @@ public class Army
         if (enemy == Country.NullCountry)
             prov.mobilize();
         else
-            enemy.mobilize();
-        return attack(enemy.homeArmy);
+            enemy.staff.mobilize(enemy.ownedProvinces);
+        return attack(enemy.getDefenceForces());
     }
     /// <summary>
     /// returns true if attacker is winner
     /// </summary>    
-    internal BattleResult attack(Army defender)
+    BattleResult attack(Army defender)
     {
         Army attacker = this;
         int initialAttackerSize = attacker.getSize();

@@ -686,39 +686,8 @@ public static class MyIEnumerableExtensions
             destination.Add(item);
 
     }
-    //public static bool Any<TSource>(this IEnumerable<TSource> source);
-    public static void move(this Dictionary<PopUnit, Corps> source, Corps item, Dictionary<PopUnit, Corps> destination)
-    {
-        //if (source.TryGetValue(corpsToAdd.getPopUnit(), out found))
-
-        if (source.Remove(item.getPopUnit())) // don't remove this
-            destination.Add(item.getPopUnit(), item);
-    }
-    /// <summary>
-    /// Unites all armies in one
-    /// </summary>
-    public static void consolidate(this List<Army> source, Country country)
-    {
-        foreach (Army next in source)
-            if (next.getDestination() == null)
-                country.homeArmy.joinin(next);
-
-        //source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
-        source.RemoveAll(army => army.getSize() == 0 && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
-    }
-    public static bool demobilize(this List<Army> source, PopUnit pop)
-    {
-        foreach (Army nextArmy in source)
-            foreach (Corps corps in nextArmy.getCorps())
-                if (corps.getPopUnit() == pop)
-                {
-                    //nextArmy.remove(corps);
-                    corps.demobilizeFrom(nextArmy);
-                    //pop.demobilize();
-                    return true;
-                }
-        return false;
-    }
+    
+    
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {
         return source.MinBy(selector, null);

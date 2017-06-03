@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Procent : Value
 {
-
+    internal static readonly Procent HundredProcent = new Procent(1f);
     internal static readonly Procent ZeroProcent = new Procent(0f);
 
     //uint value;
@@ -136,4 +136,6 @@ public class Procent : Value
         else
             base.set(invalue);
     }
+
+    
 }

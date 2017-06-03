@@ -746,8 +746,9 @@ public class Game
             country.setStatisticToZero();
             country.setSatisticToZero();
             country.aristocrstTax = country.serfdom.status.getTax();
-            foreach (var army in country.allArmies)
-                army.setStatisticToZero();
+            country.aristocrstTax = country.serfdom.status.getTax();
+
+            country.staff.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
                 province.BalanceEmployableWorkForce();
@@ -793,30 +794,18 @@ public class Game
     {
         foreach (Country attackerCountry in Country.allExisting)
         {
-            foreach (var attackerArmy in attackerCountry.allArmies)
+            foreach (var attackerArmy in attackerCountry.staff.getAttackingArmies())
             {
-                if (attackerArmy.getDestination() != null)
+                var result = attackerArmy.attack(attackerArmy.getDestination());
+                if (result.isAttackerWon())
                 {
-                    if (attackerArmy.getDestination().getCountry() != attackerCountry)
-                    {
-                        var result = attackerArmy.attack(attackerArmy.getDestination());
-                        if (result.isAttackerWon())
-                        {
-                            attackerArmy.getDestination().secedeTo(attackerCountry);
-                        }
-                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-                        {
-                            result.createMessage();
-                            //new Message("2th message", "", "");
-                            //new Message("3th message", "", "");
-                            //new Message("4th message", "", "");
-                        }
-                        attackerArmy.moveTo(null); // go home
-                    }
-                    else attackerArmy.moveTo(null); // go home
+                    attackerArmy.getDestination().secedeTo(attackerCountry);
                 }
+                if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)            
+                    result.createMessage();   
+                attackerArmy.moveTo(null); // go home
             }
-            attackerCountry.allArmies.consolidate(attackerCountry);
+            attackerCountry.staff.consolidateArmies();
         }
     }
     internal static void stepSimulation()

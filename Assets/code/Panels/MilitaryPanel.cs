@@ -14,6 +14,7 @@ public class MilitaryPanel : DragPanel
     StringBuilder sb = new StringBuilder();
 
     List<Province> availableProvinces = new List<Province>();
+    Army virtualArmyToSend;
     // Use this for initialization
     void Start()
     {
@@ -41,22 +42,22 @@ public class MilitaryPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.Player.homeArmy.getShortName());
+        sb.Append("Have army: ").Append(Game.Player.getDefenceForces().getShortName());
         allArmySizeText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Sending army: ").Append(Game.Player.sendingArmy);
+        sb.Append("Sending army: ").Append(virtualArmyToSend);
         sendingArmySizeText.text = sb.ToString();
-        sendArmy.interactable = Game.Player.sendingArmy.getSize() > 0 ? true : false;
+        sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
         //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
     }
 
     public void show(Province province)
     {
         gameObject.SetActive(true);
-        panelRectTransform.SetAsLastSibling();        
+        panelRectTransform.SetAsLastSibling();
 
-            refresh(true);
+        refresh(true);
         if (province != null)
         {
             var list = Game.Player.getNeighborProvinces();
@@ -66,9 +67,9 @@ public class MilitaryPanel : DragPanel
 
     public void onMobilizationClick()
     {
-        if (Game.Player.homeArmy.getSize() == 0)
-            Game.Player.homeArmy = new Army(Game.Player);
-        Game.Player.mobilize();
+        //if (Game.Player.homeArmy.getSize() == 0)
+        //  Game.Player.homeArmy = new Army(Game.Player);
+        Game.Player.staff.mobilize(Game.Player.getAllPopUnits());
         //onArmyLimitChanged(0f);
         //MainCamera.tradeWindow.refresh();
         refresh(false);
@@ -81,8 +82,9 @@ public class MilitaryPanel : DragPanel
     }
     public void onSendArmyClick()
     {
-        Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-        Game.Player.sendingArmy = new Army(Game.Player);
+        //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
+        Game.Player.staff.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+        //Game.Player.sendingArmy = new Army(Game.Player);
         refresh(false);
     }
     void rebuildDropDown()
@@ -117,7 +119,7 @@ public class MilitaryPanel : DragPanel
     {
 
         //actually creates new army here
-        Game.Player.homeArmy.balance(Game.Player.sendingArmy, new Procent(value));
+        virtualArmyToSend = Game.Player.staff.getVirtualArmy(new Procent(value));
 
         refresh(false);
 

@@ -75,7 +75,7 @@ public class Province
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
             //take back deposits            
-            oldCountry.bank.returnAllMoney(producer);                
+            oldCountry.bank.returnAllMoney(producer);
         }
         //allFactories.Where(x => x.getOwner() == oldCountry)o;
         allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
@@ -85,7 +85,8 @@ public class Province
             if (isCapital())
             oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));
 
-        this.demobilize();
+
+        oldCountry.staff.demobilize(x => x.getPopUnit().province == this);
 
         // add loyalty penalty for conquered province // temp
         allPopUnits.ForEach(x => x.loyalty.set(0f));
@@ -109,10 +110,7 @@ public class Province
         return getCountry().getCapital() == this;
     }
 
-    internal void demobilize()
-    {
-        allPopUnits.ForEach(x => getCountry().allArmies.demobilize(x));
-    }
+
 
 
 
@@ -178,7 +176,7 @@ public class Province
     {
         return neighbors.Any(x => x.getCountry() == country);
     }
-    
+
 
     public int getFamilyPopulation()
     {
@@ -206,10 +204,12 @@ public class Province
 
     internal void mobilize()
     {
-        var army = this.getCountry().homeArmy;
-        foreach (var pop in allPopUnits)
-            if (pop.type.canMobilize())
-                army.add(pop.mobilize());
+        getCountry().staff.mobilize(allPopUnits);
+      
+        //var army = this.getCountry().homeArmy;
+        //foreach (var pop in allPopUnits)
+        //    if (pop.type.canMobilize())
+        //        army.add(pop.mobilize());
     }
 
     public static bool isProvinceCreated(Color color)

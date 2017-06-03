@@ -5,8 +5,6 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-
-
 public class Country : Consumer
 {
     public string name;
@@ -31,9 +29,7 @@ public class Country : Consumer
     Color nationalColor;
     Province capital;
 
-    internal Army homeArmy;
-    internal Army sendingArmy;
-    internal List<Army> allArmies = new List<Army>();
+    public GeneralStaff staff = new GeneralStaff();
 
     TextMesh messhCapitalText;
 
@@ -63,8 +59,8 @@ public class Country : Consumer
         //wallet = new CountryWallet(0f, bank);
         bank = new Bank();
 
-        homeArmy = new Army(this);
-        sendingArmy = new Army(this);
+        //homeArmy = new Army(this);
+        //sendingArmy = new Army(this);
         government = new Government(this);
 
         economy = new Economy(this);
@@ -90,7 +86,7 @@ public class Country : Consumer
             inventions.markInvented(Invention.farming);
             inventions.markInvented(Invention.manufactories);
             inventions.markInvented(Invention.banking);
-           // inventions.markInvented(Invention.metal);
+            // inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
@@ -102,13 +98,10 @@ public class Country : Consumer
     internal void demobilize()
     {
         //ownedProvinces.ForEach(x => x.demobilize());
-        allArmies.ForEach(x => x.demobilize());
+        //allArmies.ForEach(x => x.demobilize());
+        staff.demobilizeAll();
     }
 
-    internal void demobilize(Province province)
-    {
-        province.demobilize();
-    }
 
     public bool isExist()
     {
@@ -167,12 +160,6 @@ public class Country : Consumer
     {
         //!province.isBelongsTo(this) &&
         return province.isNeghbour(this);
-    }
-
-    internal void mobilize()
-    {
-        foreach (var province in ownedProvinces)
-            province.mobilize();
     }
 
     internal List<Province> getNeighborProvinces()
@@ -342,7 +329,7 @@ public class Country : Consumer
 
         return inventions.isInvented(type);
     }
-    
+
     internal float getMinSalary()
     {
         return (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
@@ -369,7 +356,8 @@ public class Country : Consumer
             if (extraMoney > 0f)
                 bank.takeMoney(this, new Value(extraMoney));
         }
-        allArmies.ForEach(x => x.consume());
+        staff.consume();
+
         buyNeeds(); // Should go After all Armies consumption
 
         if (isAI() && !isOnlyCountry())
@@ -380,15 +368,22 @@ public class Country : Consumer
                     if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
                         || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
                     {
-                        mobilize();
-                        sendArmy(homeArmy, possibleTarget);
+                        staff.mobilize(ownedProvinces);
+                        staff.sendArmy(possibleTarget, Procent.HundredProcent);
                     }
                 //mobilize();
                 //if (homeArmy.getSize() > 50 + Game.random.Next(100))
                 //    sendArmy(homeArmy, getRandomNeighborProvince());
             }
-        if (isAI() && Game.Random.Next(30)==1)
+        if (isAI() && Game.Random.Next(30) == 1)
             aiInvent();
+    }
+
+    public IEnumerable<PopUnit> getAllPopUnits()
+    {
+        foreach (var province in ownedProvinces)
+            foreach (var pops in province.allPopUnits)
+                yield return pops;
     }
 
     private void aiInvent()
@@ -425,6 +420,12 @@ public class Country : Consumer
             buyNeeds(toBuy);
         }
     }
+
+    internal Army getDefenceForces()
+    {
+        return staff.getDefenceForces();
+    }
+
     void buyNeeds(Storage toBuy)
     {
         // if I want to buy           
@@ -439,10 +440,7 @@ public class Country : Consumer
     }
     public PrimitiveStorageSet getNeeds()
     {
-        PrimitiveStorageSet res = new PrimitiveStorageSet();
-        foreach (var item in allArmies)
-            res.add(item.getNeeds());
-        return res;
+        return staff.getNeeds();
     }
     private float getStreght()
     {
