@@ -20,7 +20,7 @@ public class Army
     static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Equipped cars", 2f, false);
     static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped tanks", 1f, false);
     static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped airplanes", 1f, false);
-    static Modifier modifierLuck = new Modifier(x => UnityEngine.Random.Range(-0.5f, 0.5f), "Luck", 1f, false);
+    static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
 
     private float getColdArmsSupply()
     {
