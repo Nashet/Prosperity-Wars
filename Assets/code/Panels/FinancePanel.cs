@@ -96,19 +96,19 @@ public class FinancePanel : DragPanel
         {
             foreach (var fact in item.allFactories)
             {
-                if (fact.factoryOwner == null)
+                if (fact.getOwner() == null)
                     new Message("", "Null owner in " + item + " " + fact, "Got it");
                 else
-                if (fact.factoryOwner is PopUnit)
+                if (fact.getOwner() is PopUnit)
                 {
-                    var c = fact.factoryOwner as PopUnit;
+                    var c = fact.getOwner() as PopUnit;
                     if (c.getPopulation() == 0)
                         new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
                 }
                 else
-                if (fact.factoryOwner is Country)
+                if (fact.getOwner() is Country)
                 {
-                    var c = fact.factoryOwner as Country;
+                    var c = fact.getOwner() as Country;
                     if (!c.isExist())
                         new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
                 }

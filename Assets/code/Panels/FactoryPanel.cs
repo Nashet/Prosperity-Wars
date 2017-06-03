@@ -143,7 +143,7 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nInput reserves: " + shownFactory.inputReservs
                 + "\nInput factor: " + shownFactory.getInputFactor()
                 + "\nSalary (per 1000 men):" + shownFactory.getSalary() + " Salary(total):" + shownFactory.getSalaryCost()
-                + "\nOwner: " + shownFactory.factoryOwner.ToString()
+                + "\nOwner: " + shownFactory.getOwner()
                 + upgradeNeeds
                 + construction + unprofitable + daysClosed + loans
                 + "\nHowMuchHiredLastTurn " + shownFactory.getHowMuchHiredLastTurn()
