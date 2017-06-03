@@ -74,12 +74,11 @@ public class Province
         {
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
-            //take back deposits
-            //if (oldCountry.bank.canGiveLoan(producer, producer.deposits))
-            //    oldCountry.bank.giveMoney(producer, producer.deposits);
-            oldCountry.bank.returnAllMoney(producer);
-                
+            //take back deposits            
+            oldCountry.bank.returnAllMoney(producer);                
         }
+        //allFactories.Where(x => x.getOwner() == oldCountry)o;
+        allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
         if (oldCountry.isOneProvince())
             oldCountry.killCountry(taker);
         else

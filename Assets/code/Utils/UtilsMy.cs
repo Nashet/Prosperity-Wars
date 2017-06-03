@@ -723,7 +723,11 @@ public static class MyIEnumerableExtensions
     {
         return source.MinBy(selector, null);
     }
-
+    public static void FindAndDo<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, Action< TSource> action)
+    {
+        foreach (var item in source.Where(predicate))
+            action(item);
+    }
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
         Func<TSource, TKey> selector, IComparer<TKey> comparer)
     {

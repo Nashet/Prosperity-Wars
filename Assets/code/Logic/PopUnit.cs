@@ -20,7 +20,7 @@ abstract public class PopUnit : Producer
     public PopType type;
 
     public Culture culture;
-    
+
     public Procent education;
     public Procent needsFullfilled;
 
@@ -75,7 +75,7 @@ abstract public class PopUnit : Producer
             // if source pop is gonna be dead..
             //secede property... to new pop.. 
             //todo - can optimize it, double run on List
-            source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
+            source.getOwnedFactories().ForEach(x => x.setOwner(this));
 
         mobilized = 0;
         type = newPopType;
@@ -168,7 +168,7 @@ abstract public class PopUnit : Producer
         //todo - can optimize it, double run on List. Also have point only in Consolidation, not for PopUnit.PopListToAddToGeneralList
         //that check in not really needed as it this pop supposed to be same type as source
         //if (this.type == PopType.aristocrats || this.type == PopType.capitalists)
-        source.getOwnedFactories().ForEach(x => x.factoryOwner = this);
+        source.getOwnedFactories().ForEach(x => x.setOwner(this));
 
         // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
         source.deleteData();
@@ -185,7 +185,7 @@ abstract public class PopUnit : Producer
             MainCamera.popUnitPanel.hide();
         //remove from population panel.. Would do it automatically        
         //secede property... to government
-        getOwnedFactories().ForEach(x => x.factoryOwner = province.getCountry());
+        getOwnedFactories().ForEach(x => x.setOwner(province.getCountry()));
         sendAllAvailableMoney(getCountry().bank); // just in case if there is something
         getCountry().bank.defaultLoaner(this);
     }
@@ -204,7 +204,7 @@ abstract public class PopUnit : Producer
         if (type == PopType.aristocrats || type == PopType.capitalists)
         {
             foreach (var item in province.allFactories)
-                if (item.factoryOwner == this)
+                if (item.getOwner() == this)
                     result.Add(item);
             return result;
         }

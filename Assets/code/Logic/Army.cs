@@ -12,7 +12,7 @@ public class Army
     Country owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
     static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", 1f, true);
-    static Modifier modifierDefault = new Modifier(x => x == x, "Default", 1f, true);
+    static Modifier modifierDefault = new Modifier(x => true, "Default", 1f, true);
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
     static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);

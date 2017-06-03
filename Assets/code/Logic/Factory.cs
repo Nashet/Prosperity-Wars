@@ -18,7 +18,7 @@ public class Factory : Producer
     private bool dontHireOnSubsidies, subsidized;
     private byte priority = 0;
     protected Value salary = new Value(0);
-    internal Agent factoryOwner;
+    Agent factoryOwner;
     internal PrimitiveStorageSet needsToUpgrade;
     internal PrimitiveStorageSet inputReservs = new PrimitiveStorageSet();
 
@@ -186,6 +186,10 @@ public class Factory : Producer
         //if (factoryOwner != null) return factoryOwner.wallet;
         //else return factoryOwner.wallet;
         return factoryOwner;
+    }
+    public void setOwner(Agent agent)
+    {
+        factoryOwner = agent;
     }
     //abstract internal string getName();
     public override void simulate()
