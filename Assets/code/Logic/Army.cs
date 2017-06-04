@@ -738,7 +738,8 @@ public class BattleResult
 
         if (attacker == Game.Player && isAttackerWon())
         {
-            sb.Append("Our glorious army attacked ").Append(place).Append(" owned by ").Append(place.getCountry())
+            //.Append(place).Append(" owned by ").Append(place.getCountry())
+            sb.Append("Our glorious army attacked ")
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
@@ -761,7 +762,8 @@ public class BattleResult
         else
             if (attacker == Game.Player && isDefenderWon())
         {
-            sb.Append("Our glorious army attacked ").Append(place).Append(" owned by ").Append(place.getCountry())
+            //.Append(" owned by ").Append(place.getCountry())
+            sb.Append("Our glorious army attacked ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);

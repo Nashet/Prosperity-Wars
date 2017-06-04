@@ -950,7 +950,7 @@ abstract public class PopUnit : Producer
     public bool wantsToImmigrate()
     {
         if (this.needsFullfilled.get() < Options.PopNeedsImmigrationLimit.get()
-            || (getCountry().minorityPolicy.getValue() == MinorityPolicy.NoRights && !isStateCulture()))
+            || (getCountry().minorityPolicy.getValue() != MinorityPolicy.Equality && !isStateCulture()))
             return true;
         else return false;
     }
