@@ -23,7 +23,7 @@ public class Corps
     }
     //public Corps(Corps corps):this(corps.getPopUnit(), corps.getSize())
     //{
-        
+
     //}
     internal void deleteData()
     {
@@ -72,6 +72,8 @@ public class Corps
             moral.set(0f);
         else
             moral.add(moralChange);
+        if (moral.isBiggerThan(Procent.HundredProcent))
+            moral.set(1f);
     }
     public PrimitiveStorageSet getConsumption()
     {
