@@ -9,17 +9,7 @@ public class Procent : Value
     internal static readonly Procent HundredProcent = new Procent(1f);
     internal static readonly Procent ZeroProcent = new Procent(0f);
 
-    //uint value;
-    public static bool GetChance(uint procent)
-    {
-        //TODO fix that GetChance shit
-        float realLuck = UnityEngine.Random.value * 100; // (0..100 including)
-        if (procent >= realLuck)
-            return true;
-        else
-            return false;
-    }
-
+   
     public Procent(float number) : base(number)
     {
     }

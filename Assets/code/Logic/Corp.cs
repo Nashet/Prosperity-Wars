@@ -21,6 +21,10 @@ public class Corps
     {
         initialize(origin, size);
     }
+    //public Corps(Corps corps):this(corps.getPopUnit(), corps.getSize())
+    //{
+        
+    //}
     internal void deleteData()
     {
         size = 0;
@@ -29,12 +33,12 @@ public class Corps
         consumption.setZero();
         //here - delete all links on that object        
     }
-    internal void demobilizeFrom(Army army)
-    {
-        army.remove(this);
-        origin.demobilize();
-        Pool.ReleaseObject(this);
-    }
+    //internal void demobilizeFrom(Army army)
+    //{
+    //    //army.remove(this);
+    //    origin.demobilize();
+    //    Pool.ReleaseObject(this);
+    //}
     public void consume(Country owner)
     {
         var needs = getRealNeeds(owner);
@@ -71,7 +75,7 @@ public class Corps
     }
     public PrimitiveStorageSet getConsumption()
     {
-        return consumption;        
+        return consumption;
     }
     internal Procent getConsumptionProcent(Product prod, Country country)
     {
@@ -163,53 +167,54 @@ public class Corps
     }
 }
 
-    // The PooledObject class is the type that is expensive or slow to instantiate,
-    // or that has limited availability, so is to be held in the object pool.
+// The PooledObject class is the type that is expensive or slow to instantiate,
+// or that has limited availability, so is to be held in the object pool.
 
 
-    // The Pool class is the most important class in the object pool design pattern. It controls access to the
-    // pooled objects, maintaining a list of available objects and a collection of objects that have already been
-    // requested from the pool and are still in use. The pool also ensures that objects that have been released
-    // are returned to a suitable state, ready for the next time they are requested. 
-    public static class Pool
+// The Pool class is the most important class in the object pool design pattern. It controls access to the
+// pooled objects, maintaining a list of available objects and a collection of objects that have already been
+// requested from the pool and are still in use. The pool also ensures that objects that have been released
+// are returned to a suitable state, ready for the next time they are requested. 
+public static class Pool
+{
+    private static List<Corps> _available = new List<Corps>();
+    private static List<Corps> _inUse = new List<Corps>();
+
+    public static Corps GetObject(PopUnit origin, int size)
     {
-        private static List<Corps> _available = new List<Corps>();
-        private static List<Corps> _inUse = new List<Corps>();
-
-        public static Corps GetObject(PopUnit origin, int size)
+        lock (_available)
         {
-            lock (_available)
+            if (_available.Count == 0)
             {
-                if (_available.Count == 0)
-                {
-                    Corps po = new Corps(origin, size);
-                    _inUse.Add(po);
-                    return po;
-                }
-                else
-                {
-                    Corps po = _available[0];
-                    po.initialize(origin, size);
-                    _inUse.Add(po);
-                    _available.RemoveAt(0);
-                    return po;
-                }
+                Corps po = new Corps(origin, size);
+                _inUse.Add(po);
+                return po;
+            }
+            else
+            {
+                Corps po = _available[0];
+                po.initialize(origin, size);
+                _inUse.Add(po);
+                _available.RemoveAt(0);
+                return po;
             }
         }
-
-        public static void ReleaseObject(Corps po)
-        {
-            po.deleteData();
-            lock (_available)
-            {
-                _available.Add(po);
-                _inUse.Remove(po);
-            }
-        }
-        //public static IEnumerable<Corps> existing()      
-        //{
-        //    foreach (Corps f in _inUse)
-        //        yield return f;                      
-        //}
     }
+
+    public static void ReleaseObject(Corps corps)
+    {
+        corps.getPopUnit().demobilize();
+        corps.deleteData();
+        lock (_available)
+        {
+            _available.Add(corps);
+            _inUse.Remove(corps);
+        }
+    }
+    //public static IEnumerable<Corps> existing()      
+    //{
+    //    foreach (Corps f in _inUse)
+    //        yield return f;                      
+    //}
+}
 

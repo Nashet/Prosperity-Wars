@@ -29,7 +29,7 @@ public class Country : Consumer
     Color nationalColor;
     Province capital;
 
-    public GeneralStaff staff = new GeneralStaff();
+    public GeneralStaff staff;
 
     TextMesh messhCapitalText;
 
@@ -58,7 +58,7 @@ public class Country : Consumer
     {
         //wallet = new CountryWallet(0f, bank);
         bank = new Bank();
-
+        staff = new GeneralStaff(this);
         //homeArmy = new Army(this);
         //sendingArmy = new Army(this);
         government = new Government(this);
@@ -99,7 +99,7 @@ public class Country : Consumer
     {
         //ownedProvinces.ForEach(x => x.demobilize());
         //allArmies.ForEach(x => x.demobilize());
-        staff.demobilizeAll();
+        staff.demobilizeAllArmies();
     }
 
 
@@ -150,7 +150,7 @@ public class Country : Consumer
 
     internal void sendArmy(Army sendingArmy, Province province)
     {
-        sendingArmy.moveTo(province);
+        sendingArmy.sendTo(province);
         //walkingArmies.Add(new Army(sendingArmy));
         //allArmies.Add(sendingArmy);
         //sendingArmy.clear();
@@ -423,7 +423,11 @@ public class Country : Consumer
 
     internal Army getDefenceForces()
     {
-        return staff.getDefenceForces();
+        Army a = staff.getDefenceForces();
+        if (a == null)
+            return new Army(this);
+        else
+            return a;
     }
 
     void buyNeeds(Storage toBuy)

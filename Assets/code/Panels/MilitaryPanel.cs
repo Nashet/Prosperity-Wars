@@ -45,11 +45,14 @@ public class MilitaryPanel : DragPanel
         sb.Append("Have army: ").Append(Game.Player.getDefenceForces().getShortName());
         allArmySizeText.text = sb.ToString();
 
+        if (virtualArmyToSend == null)
+            virtualArmyToSend = new Army(Game.Player);
         sb.Clear();
-        sb.Append("Sending army: ").Append(virtualArmyToSend);
+        sb.Append("Sending army: ").Append(virtualArmyToSend.getShortName());
         sendingArmySizeText.text = sb.ToString();
+        //sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
         sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
-        //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
+
     }
 
     public void show(Province province)
@@ -69,7 +72,7 @@ public class MilitaryPanel : DragPanel
     {
         //if (Game.Player.homeArmy.getSize() == 0)
         //  Game.Player.homeArmy = new Army(Game.Player);
-        Game.Player.staff.mobilize(Game.Player.getAllPopUnits());
+        Game.Player.staff.mobilize(Game.Player.ownedProvinces);
         //onArmyLimitChanged(0f);
         //MainCamera.tradeWindow.refresh();
         refresh(false);
@@ -77,6 +80,7 @@ public class MilitaryPanel : DragPanel
     public void onDemobilizationClick()
     {
         Game.Player.demobilize();
+        virtualArmyToSend.demobilize();
         //MainCamera.tradeWindow.refresh();
         refresh(false);
     }
@@ -84,6 +88,7 @@ public class MilitaryPanel : DragPanel
     {
         //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
         Game.Player.staff.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+        //virtualArmyToSend = new Army(null);
         //Game.Player.sendingArmy = new Army(Game.Player);
         refresh(false);
     }
@@ -117,12 +122,11 @@ public class MilitaryPanel : DragPanel
     }
     public void onArmyLimitChanged(float value)
     {
-
+        //Game.Player.staff.consolidateArmies();
         //actually creates new army here
-        virtualArmyToSend = Game.Player.staff.getVirtualArmy(new Procent(value));
-
+        //virtualArmyToSend = (Game.Player.staff.consolidateArmies().getSize() * value).ToString("0");
+        virtualArmyToSend = Game.Player.staff.consolidateArmies().balance(new Procent(value));
+        //virtualArmyToSend = del.getShortName();
         refresh(false);
-
-
     }
 }

@@ -204,12 +204,7 @@ public class Province
 
     internal void mobilize()
     {
-        getCountry().staff.mobilize(allPopUnits);
-      
-        //var army = this.getCountry().homeArmy;
-        //foreach (var pop in allPopUnits)
-        //    if (pop.type.canMobilize())
-        //        army.add(pop.mobilize());
+        getCountry().staff.mobilize(new List<Province> { this});     
     }
 
     public static bool isProvinceCreated(Color color)

@@ -7,25 +7,40 @@ using System;
 
 public class GeneralStaff
 {
-    //internal Army homeArmy;
     //internal Army sendingArmy;
     List<Army> allArmies = new List<Army>();
+    Country country;
+    public GeneralStaff(Country country)
+    {
+        this.country = country;
+    }
     /// <summary>
-    /// Unites all armies in one. Assuming armies are alive, just needed to consolidate
+    /// Unites all home armies in one. Assuming armies are alive, just needed to consolidate. If there is nothing to consolidate than returns empty army    
     /// </summary>
     public Army consolidateArmies()
     {
-        if (allArmies.Count > 0)
+        Army consolidatedArmy = new Army(country);
+        if (allArmies.Count == 1)
+            return allArmies[0];
+        else
+            if (allArmies.Count > 0)
         {
+
             foreach (Army next in allArmies)
                 if (next.getDestination() == null)
-                    allArmies[0].joinin(next);
-            return allArmies[0];
+                {
+                    consolidatedArmy.setOwner(next.getOwner());
+                    consolidatedArmy.joinin(next);
+                }
+            //if (addConsolidatedArmyInList)
+            allArmies.Add(consolidatedArmy);
+            allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army            
+
         }
-        else return null;
+        return consolidatedArmy;
 
         //source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
-        allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
+        //allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
     }
     internal void mobilize(IEnumerable<Province> source)
     {
@@ -33,29 +48,34 @@ public class GeneralStaff
         {
             Army newArmy = new Army(province.getCountry());
             foreach (var item in province.allPopUnits)
-                if (item.howMuchCanMobilize() > 0)
+                if (item.type.canMobilize() && item.howMuchCanMobilize() > 0)
                     newArmy.add(item.mobilize());
-            if (newArmy.getSize() > 0)
-                addArmy(newArmy);
+            //if (newArmy.getSize() > 0)
+            //    addArmy(newArmy);
         }
         consolidateArmies();
     }
-    void addArmy(Army army)
+    public void addArmy(Army army)
     {
         allArmies.Add(army);
     }
-    internal void demobilizeAll()
+    internal void demobilizeAllArmies()
     {
         foreach (var item in allArmies)
         {
             item.demobilize();
         }
-        allArmies.RemoveAll(x => x.getSize() == 0);
+        allArmies.Clear();
     }
     internal void demobilize(Func<Corps, bool> predicate)
     {
         foreach (Army nextArmy in allArmies)
-            nextArmy.getCorps().FindAndDo(predicate, x => x.demobilizeFrom(nextArmy));
+        {
+            nextArmy.demobilize(predicate);
+
+        }
+
+        allArmies.RemoveAll(army => army.getSize() == 0);
     }
 
     internal void consume()
@@ -73,7 +93,7 @@ public class GeneralStaff
 
     internal void sendArmy(Province possibleTarget, Procent procent)
     {
-        consolidateArmies().moveTo(possibleTarget);
+        consolidateArmies().balance(procent).sendTo(possibleTarget);
     }
 
     internal void setStatisticToZero()
@@ -88,20 +108,22 @@ public class GeneralStaff
                 if (army.getDestination().getCountry() != army.getOwner())
                     yield return army;
                 else
-                    army.moveTo(null); // go home
+                    army.sendTo(null); // go home
     }
 
     internal Army getDefenceForces()
     {
-        consolidateArmies();
-        return allArmies[0];
+        return allArmies.Find(x => x.getSize() > 0 && x.getDestination() == null);
+        //return consolidateArmies();
     }
 
-    internal Army getVirtualArmy(Procent procent)
-    {
-        Army virtualArmy = allArmies[0].balance(procent);
-        return virtualArmy;
-    }
+
+
+    //internal Army getVirtualArmy(Procent procent)
+    //{
+    //    Army virtualArmy = consolidateArmies(false).getVirtualArmy(procent);
+    //    return virtualArmy;
+    //}
 }
 public class Army
 {
@@ -179,12 +201,23 @@ public class Army
             modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery,
         modifierCars, modifierTanks, modifierAirplanes, modifierLuck
         });
+    // private Army consolidatedArmy;
+
     public Army(Country owner)
     {
-        //owner.staff.allArmies.Add(this);
+        owner.staff.addArmy(this);
         personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
     }
+    public Army(Army consolidatedArmy) : this(consolidatedArmy.getOwner())
+    { }
+    //public Army()
+    //{
+    //    //owner.staff.addArmy(this);
+    //    personal = new Dictionary<PopUnit, Corps>();
+    //    this.owner = null;
+    //}
+
     //public static bool Any<TSource>(this IEnumerable<TSource> source);
     void move(Corps item, Army destination)
     {
@@ -202,20 +235,19 @@ public class Army
     {
         foreach (var corps in personal.Values.ToList())
         {
-            //personal.Remove(corps.getPopUnit());
-            corps.demobilizeFrom(this);
+            personal.Remove(corps.getPopUnit());
+            Pool.ReleaseObject(corps);
         }
+    }
+    public void demobilize(Func<Corps, bool> predicate)
+    {
 
-        //if (this != getOwner().homeArmy)
-        //&& this != getOwner().sendingArmy)
-        //owner.allArmies.Remove(this);
-        //personal.ForEach((pop, corps) =>
-        //{
-
-        //    personal.Remove(corps.getPopUnit());
-        //    corps.demobilize();
-        //}
-        //);
+        foreach (var corps in personal.Values.ToList())
+            if (predicate(corps))
+            {
+                personal.Remove(corps.getPopUnit());
+                Pool.ReleaseObject(corps);
+            }
     }
     public void consume()
     {
@@ -261,10 +293,12 @@ public class Army
                     else
                         this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
                 else
-                    corpsToTransfert.Value.demobilizeFrom(armyToAdd);
-            armyToAdd.clear();
+                {
+                    armyToAdd.personal.Remove(corpsToTransfert.Key);
+                    Pool.ReleaseObject(corpsToTransfert.Value);
+                }
+            armyToAdd.personal.Clear();
         }
-
     }
     internal void remove(Corps corps)
     {
@@ -387,12 +421,12 @@ public class Army
     /// </summary>
     internal Army balance(Army secondArmy, Procent howMuchShouldBeInSecondArmy)
     {
-        if (howMuchShouldBeInSecondArmy.get() == 1f)
-        {
-            secondArmy.joinin(this);
-            //this.personal.Clear();
-        }
-        else
+        //if (howMuchShouldBeInSecondArmy.get() == 1f)
+        //{
+        //    secondArmy.joinin(this);
+        //    //this.personal.Clear();
+        //}
+        //else
         {
             //Army sumArmy = new Army();
             //sumArmy.add(this);
@@ -417,14 +451,15 @@ public class Army
     }
     internal Army balance(Procent howMuchShouldBeInSecondArmy)
     {
-        if (howMuchShouldBeInSecondArmy.get() == 1f)
-        {
-            return this;
-            //this.personal.Clear();
-        }
-        else
+        //if (howMuchShouldBeInSecondArmy.get() == 1f)
+        //{
+        //    return this;
+        //    //this.personal.Clear();
+        //}
+        //else
         {
             Army secondArmy = new Army(this.getOwner());
+
             //Army sumArmy = new Army();
             //sumArmy.add(this);
             //this.joinin(secondArmy);
@@ -444,8 +479,39 @@ public class Army
             }
             return secondArmy;
         }
-
     }
+    //internal Army getVirtualArmy(Procent howMuchShouldBeInSecondArmy)
+    //{
+    //    if (howMuchShouldBeInSecondArmy.get() == 1f)
+    //    {
+    //        return this;
+    //        //this.personal.Clear();
+    //    }
+    //    else
+    //    {
+    //        Army secondArmy = new Army(this.getOwner());
+    //        //Army sumArmy = new Army();
+    //        //sumArmy.add(this);
+    //        //this.joinin(secondArmy);
+    //        int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+
+    //        //secondArmy.clear();
+
+    //        int needToFullFill = secondArmyExpectedSize;
+    //        while (needToFullFill > 0)
+    //        {
+    //            var corpsToBalance = this.getBiggestCorpsSmallerThan(needToFullFill);
+    //            if (corpsToBalance == null)
+    //                break;
+    //            else
+    //                //this.move(corpsToBalance, secondArmy);
+    //                secondArmy.add(new Corps(corpsToBalance));
+    //            needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
+    //        }
+    //        return secondArmy;
+    //    }
+
+    //}
     internal BattleResult attack(Province prov)
     {
         var enemy = prov.getCountry();
@@ -453,6 +519,7 @@ public class Army
             prov.mobilize();
         else
             enemy.staff.mobilize(enemy.ownedProvinces);
+        enemy.staff.consolidateArmies();
         return attack(enemy.getDefenceForces());
     }
     /// <summary>
@@ -515,6 +582,10 @@ public class Army
     {
         return owner;
     }
+    public void setOwner(Country country)
+    {
+        owner = country;
+    }
 
     private int takeLoss(int loss)
     {
@@ -576,16 +647,15 @@ public class Army
         return result;
     }
 
-    internal void clear()
-    {
-        personal.Clear();
-        destination = null;
-    }
 
+    //internal void clearEmpty()
+    //{
+    //    personal.
+    //}
     private Corps getBiggestCorpsSmallerThan(int secondArmyExpectedSize)
     {
 
-        var smallerCorps = personal.Where(x => x.Value.getSize() < secondArmyExpectedSize);
+        var smallerCorps = personal.Where(x => x.Value.getSize() <= secondArmyExpectedSize);
         if (smallerCorps.Count() == 0)
             return null;
         else
@@ -613,7 +683,7 @@ public class Army
 
 
 
-    internal void moveTo(Province province)
+    internal void sendTo(Province province)
     {
         destination = province;
     }
@@ -668,7 +738,8 @@ public class BattleResult
 
         if (attacker == Game.Player && isAttackerWon())
         {
-            sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men.");
+            sb.Append("Our glorious army attacked ").Append(place).Append(" owned by ").Append(place.getCountry())
+                .Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
@@ -690,7 +761,8 @@ public class BattleResult
         else
             if (attacker == Game.Player && isDefenderWon())
         {
-            sb.Append("Our glorious army attacked ").Append(place).Append(" with army of ").Append(attackerArmy).Append(" men");
+            sb.Append("Our glorious army attacked ").Append(place).Append(" owned by ").Append(place.getCountry())
+                .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");

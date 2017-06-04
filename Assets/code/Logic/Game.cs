@@ -803,7 +803,7 @@ public class Game
                 }
                 if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)            
                     result.createMessage();   
-                attackerArmy.moveTo(null); // go home
+                attackerArmy.sendTo(null); // go home
             }
             attackerCountry.staff.consolidateArmies();
         }
