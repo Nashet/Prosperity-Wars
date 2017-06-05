@@ -94,6 +94,7 @@ public class GeneralStaff
     internal void sendArmy(Province possibleTarget, Procent procent)
     {
         consolidateArmies().balance(procent).sendTo(possibleTarget);
+        
     }
 
     internal void setStatisticToZero()

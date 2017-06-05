@@ -87,7 +87,7 @@ public class MilitaryPanel : DragPanel
     public void onSendArmyClick()
     {
         //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-        Game.Player.staff.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+        Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
         //virtualArmyToSend = new Army(null);
         //Game.Player.sendingArmy = new Army(Game.Player);
         refresh(false);

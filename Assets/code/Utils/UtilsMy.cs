@@ -673,7 +673,14 @@ public static class MyIEnumerableExtensions
             invokeMe(keyValue.Key, keyValue.Value);
         }
     }
-    public static void AddMy(this Dictionary<System.Object, int> dictionary, System.Object what, int size)
+    //public static void AddMy(this Dictionary<System.Object, int> dictionary, System.Object what, int size)
+    //{
+    //    if (dictionary.ContainsKey(what))
+    //        dictionary[what] += size;
+    //    else
+    //        dictionary.Add(what, size);
+    //}
+    public static void AddMy<T>(this Dictionary<T, int> dictionary, T what, int size)
     {
         if (dictionary.ContainsKey(what))
             dictionary[what] += size;
@@ -700,8 +707,9 @@ public static class MyIEnumerableExtensions
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
         Func<TSource, TKey> selector, IComparer<TKey> comparer)
     {
-        if (source == null) throw new ArgumentNullException("source");
-        if (selector == null) throw new ArgumentNullException("selector");
+        //if (source == null) throw new ArgumentNullException("source");
+        //if (selector == null) throw new ArgumentNullException("selector");
+        //todo fix exception
         comparer = comparer ?? Comparer<TKey>.Default;
 
         using (var sourceIterator = source.GetEnumerator())

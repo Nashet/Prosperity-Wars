@@ -127,6 +127,8 @@ public class ProvincePanel : MonoBehaviour
             + "\nTax income: " + province.getIncomeTax()
             + "\nResource: " + province.getResource()
             + "\nRural overpopulation: " + province.getOverpopulation()
+            + "\nCores: " + province.getCoresDescription();
+
             //+ "\nNeighbors " + province.getNeigborsList()
             ;
         Text text = btnOwner.GetComponentInChildren<Text>();

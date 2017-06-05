@@ -31,10 +31,10 @@ public class Value
     {
         value += invalue.value;
     }
-    
+
     public void add(float invalue)
     {
-        if (invalue + value < 0)
+        if (invalue + get() < float.Epsilon)
         {
             Debug.Log("Value Add-float failed");
             set(0);
@@ -70,7 +70,7 @@ public class Value
             return new Value(0);
         }
         else
-            return new Value((this.value - invalue.value) /(float) precision);
+            return new Value((this.value - invalue.value) / (float)precision);
     }
     public void subtract(float invalue)
     {
@@ -85,7 +85,7 @@ public class Value
     //    value = (uint)(value * invalue.get());
     //}
 
-    
+
     /// <summary>Keeps result inside</summary>    
     public void multiple(Value invalue)
     {
@@ -167,7 +167,7 @@ public class Value
         else
             return Procent.makeProcent((int)this.value, (int)need.value);
     }
-    
+
     public void send(Value another, float amount)
     {
         if (this.get() >= amount)

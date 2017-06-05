@@ -10,7 +10,6 @@ public class Culture
     {
         name = iname;
         allCultures.Add(this);
-
     }
     public override string ToString()
     {

@@ -7,13 +7,13 @@ using System.Runtime.Serialization;
 
 public class Country : Consumer
 {
-    string name;
+    readonly string name;
     public static List<Country> allCountries = new List<Country>();
     public List<Province> ownedProvinces = new List<Province>();
 
     public CountryStorageSet storageSet = new CountryStorageSet();
     //public Procent countryTax;
-    public Procent aristocrstTax;//= new Procent(0.10f);
+    //public Procent aristocrstTax;//= new Procent(0.10f);
     public InventionsList inventions = new InventionsList();
 
     internal Government government;
@@ -28,6 +28,9 @@ public class Country : Consumer
     Culture culture;
     Color nationalColor;
     Province capital;
+
+    Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
+    Dictionary<Country, int> myLastAttackDate = new Dictionary<Country, int>();
 
     public GeneralStaff staff;
 
@@ -44,6 +47,8 @@ public class Country : Consumer
     public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
     public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
 
+    Modifier modXHasMyCores;
+    public ModifiersList modMyOpinionOfXCountry;
 
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
@@ -56,7 +61,15 @@ public class Country : Consumer
 
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
-        //wallet = new CountryWallet(0f, bank);
+        modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "Has my cores", -0.05f, false);
+        modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
+            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
+            new Modifier (x=>Game.date - (x as Country).getLastAttackDateOn(this) > 30
+            && Game.date - this.getLastAttackDateOn(x as Country) > 30,"Lives in peace with us", 0.005f, false),
+            new Modifier (x=>Game.date - (x as Country).getLastAttackDateOn(this) > 0 && Game.date - (x as Country).getLastAttackDateOn(this) < 10  ,"Recently attacked us", -0.05f, false),
+            new Modifier (x=> this.isThreatenBy(x as Country),"Weaker", -0.04f, false),
+            new Modifier (delegate(System.Object x) { Country bully = this.isThereBadboyCountry(); return bully != null && bully!= x as Country; },"There is bigger threat to the world", 0.02f, false)
+            });
         bank = new Bank();
         staff = new GeneralStaff(this);
         //homeArmy = new Army(this);
@@ -91,6 +104,59 @@ public class Country : Consumer
             serfdom.status = Serfdom.Abolished;
         }
     }
+    /// <summary>
+    /// returns true if there is in world country  with power of X(world)
+    /// </summary>
+    /// <returns></returns>
+    public Country isThereBadboyCountry()
+    {
+        float worldStrenght = 0f;
+        foreach (var item in Country.getExisting())
+            worldStrenght += item.getStreght();
+        return Country.allCountries.Find(x => x.getStreght() >= worldStrenght * Options.CountryBadBoyWorldLimit);
+
+    }
+
+    private bool isThreatenBy(Country country)
+    {
+        if (country == this)
+            return false;
+        if (country.getStreght() > this.getStreght() * 2)
+            return true;
+        else
+            return false;
+    }
+
+    public int getLastAttackDateOn(Country country)
+    {
+        if (myLastAttackDate.ContainsKey(country))
+            return myLastAttackDate[country];
+        else
+            return -2000000;
+    }
+    private bool hasCores(Country country)
+    {
+        return ownedProvinces.Any(x => x.isCoreFor(country));
+    }
+    /// <summary>
+    /// Returns null if used on itself
+    /// </summary>
+    /// <param name="country"></param>    
+    public Procent getRelationTo(Country country)
+    {
+        if (this == country)
+            return null;
+        Procent opinion;
+        if (opinionOf.TryGetValue(country, out opinion))
+            return opinion;
+        else
+        {
+            opinion = new Procent(0.5f);
+            opinionOf.Add(country, opinion);
+            return opinion;
+        }
+
+    }
     public Culture getCulture()
     {
         return culture;
@@ -107,10 +173,10 @@ public class Country : Consumer
     {
         return ownedProvinces.Count > 0;
     }
-    internal static IEnumerable<Country> allExisting = getExisting();
+    //internal static IEnumerable<Country> allExisting = getExisting();
     internal int autoPutInBankLimit = 2000;
 
-    static IEnumerable<Country> getExisting()
+    static public IEnumerable<Country> getExisting()
     {
         foreach (var c in allCountries)
             if (c.isExist() && c != Country.NullCountry)
@@ -121,7 +187,7 @@ public class Country : Consumer
     {
         if (messhCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(messhCapitalText.gameObject);
-        setSatisticToZero();
+        setStatisticToZero();
 
         //take all money from bank
         if (byWhom.isInvented(Invention.banking))
@@ -148,12 +214,16 @@ public class Country : Consumer
         return capital;
     }
 
-    internal void sendArmy(Army sendingArmy, Province province)
+    internal void sendArmy(Province target, Procent procent)
     {
-        sendingArmy.sendTo(province);
-        //walkingArmies.Add(new Army(sendingArmy));
-        //allArmies.Add(sendingArmy);
-        //sendingArmy.clear();
+        staff.sendArmy(target, procent);
+        myLastAttackDate.AddMy(target.getCountry(), Game.date);
+        //if (this.dateOfBattleWith.ContainsKey(target.getCountry()))
+        //    dateOfBattleWith[target.getCountry()] = Game.date;
+        //else
+        //    dateOfBattleWith.Add(target.getCountry(), Game.date);
+
+
     }
 
     internal bool canAttack(Province province)
@@ -179,9 +249,10 @@ public class Country : Consumer
             return getNeighborProvinces().PickRandom();
     }
 
+
     private bool isOnlyCountry()
     {
-        foreach (var any in Country.allExisting)
+        foreach (var any in Country.getExisting())
             if (any != this)
                 return false;
         return true;
@@ -364,21 +435,41 @@ public class Country : Consumer
         staff.consume();
 
         buyNeeds(); // Should go After all Armies consumption
+        //Procent opinion;
+        foreach (var item in Country.getExisting())
+            if (item != this)
+            {
+                var procent = getRelationTo(item);
+                procent.add(modMyOpinionOfXCountry.getModifier(item));
+                procent.clamp100();
+            }
+        //if (opinionOf.TryGetValue(item, out opinion))
+        //{
+        //    opinion.add(modMyOpinionOfXCountry.getModifier(item));
+        //    opinion.clamp100();
+        //}
+
 
         if (isAI() && !isOnlyCountry())
             if (Game.Random.Next(10) == 1)
             {
-                var possibleTarget = getRandomNeighborProvince();
-                if (possibleTarget != null)
-                    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
-                        || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
-                    {
-                        staff.mobilize(ownedProvinces);
-                        staff.sendArmy(possibleTarget, Procent.HundredProcent);
-                    }
-                //mobilize();
-                //if (homeArmy.getSize() > 50 + Game.random.Next(100))
-                //    sendArmy(homeArmy, getRandomNeighborProvince());
+                //var possibleTarget = getRandomNeighborProvince();
+                //if (possibleTarget != null)
+                //    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
+                //        || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
+                //    {
+                //        staff.mobilize(ownedProvinces);
+                //        sendArmy(possibleTarget, Procent.HundredProcent);
+                //    }                
+
+                var possibleTarget = getNeighborProvinces().MinBy(x => modMyOpinionOfXCountry.getModifier(x.getCountry()));
+                if (possibleTarget != null && this.getStreght() > 0 && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f)
+                //if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
+                //    || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
+                {
+                    staff.mobilize(ownedProvinces);
+                    sendArmy(possibleTarget, Procent.HundredProcent);
+                }
             }
         if (isAI() && Game.Random.Next(30) == 1)
             aiInvent();
@@ -453,7 +544,11 @@ public class Country : Consumer
     }
     private float getStreght()
     {
-        return howMuchCanMobilize();
+        int size = 0;
+        var defArmy = staff.getDefenceForces();
+        if (defArmy != null)
+            size = defArmy.getSize();
+        return howMuchCanMobilize() + size;
     }
 
     private float howMuchCanMobilize()
@@ -539,8 +634,9 @@ public class Country : Consumer
         return moneyIncomethisTurn.get() - getAllExpenses().get();
     }
 
-    internal void setSatisticToZero()
+    override public void setStatisticToZero()
     {
+        base.setStatisticToZero();
         poorTaxIncome.set(0f);
         richTaxIncome.set(0f);
         goldMinesIncome.set(0f);

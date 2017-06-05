@@ -403,8 +403,8 @@ public class Game
     }
     void generateMapImage()
     {
-        mapImage = new Texture2D(200, 100);
-        //mapImage = new Texture2D(100, 50);
+        //mapImage = new Texture2D(200, 100);
+        mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -412,8 +412,8 @@ public class Game
             amountOfProvince = 10;
         else
             amountOfProvince = 12 + Game.Random.Next(8);
-        //amountOfProvince = 60 + Game.Random.Next(20);
-        amountOfProvince = 160 + Game.Random.Next(20);
+        amountOfProvince = 60 + Game.Random.Next(20);
+        //amountOfProvince = 160 + Game.Random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -738,16 +738,12 @@ public class Game
     public static void PrepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getExisting())
         // if (country != Country.NullCountry)
         {
             //country.wallet.moneyIncomethisTurn.set(0);
             country.storageSet.setStatisticToZero();
             country.setStatisticToZero();
-            country.setSatisticToZero();
-            country.aristocrstTax = country.serfdom.status.getTax();
-            country.aristocrstTax = country.serfdom.status.getTax();
-
             country.staff.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
@@ -792,7 +788,7 @@ public class Game
     }
     private static void calcBattles()
     {
-        foreach (Country attackerCountry in Country.allExisting)
+        foreach (Country attackerCountry in Country.getExisting())
         {
             foreach (var attackerArmy in attackerCountry.staff.getAttackingArmies())
             {
@@ -818,7 +814,7 @@ public class Game
         PrepareForNewTick();
 
         // big PRODUCE circle
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 //Now factories time!               
@@ -839,7 +835,7 @@ public class Game
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {
                 foreach (Factory factory in province.allFactories)
@@ -859,7 +855,7 @@ public class Game
                 }
             }
         // big AFTER all circle
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getExisting())
         {
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
@@ -905,6 +901,7 @@ public class Game
                 }
                 province.allPopUnits.RemoveAll(x => x.getPopulation() == 0);
                 PopUnit.PopListToAddToGeneralList.Clear();
+                province.think();
             }
             country.think();
         }

@@ -127,5 +127,9 @@ public class Procent : Value
             base.set(invalue);
     }
 
-    
+    internal void clamp100()
+    {
+        if (this.isBiggerThan(Procent.HundredProcent))
+            this.set(1f);
+    }
 }

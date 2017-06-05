@@ -699,7 +699,7 @@ abstract public class PopUnit : Producer
     {
         {
             Value taxSize = new Value(0);
-            taxSize = gainGoodsThisTurn.multipleOutside(province.getCountry().aristocrstTax);
+            taxSize = gainGoodsThisTurn.multipleOutside(province.getCountry().serfdom.status.getTax());
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
@@ -927,7 +927,7 @@ abstract public class PopUnit : Producer
         Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
         //where to g0?
         // where life is rich and I where I have some rights
-        foreach (var country in Country.allExisting)
+        foreach (var country in Country.getExisting())
             if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                 if (country != this.getCountry())
                     foreach (var pro in country.ownedProvinces)

@@ -91,7 +91,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
+            foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.allProducers)
@@ -115,7 +115,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allExisting)
+                foreach (Country country in Country.getExisting())
                 {
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.allProducers)
@@ -168,7 +168,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
+            foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.allProducers)
@@ -192,7 +192,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allExisting)
+                foreach (Country country in Country.getExisting())
                 {
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.allProducers)
@@ -240,7 +240,7 @@ public class Market : Agent//: PrimitiveStorageSet
     internal float getGlobalEffectiveDemandOlder(Product pro)
     {
         float result = 0f;
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)
             {
                 foreach (Factory factory in province.allFactories)
@@ -269,7 +269,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
+            foreach (Country country in Country.getExisting())
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.allProducers)
                         if (producer.sentToMarket.getProduct() == pro) //sup.getProduct()
@@ -282,7 +282,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allExisting)
+                foreach (Country country in Country.getExisting())
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.allProducers)
                             if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
@@ -308,7 +308,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
+            foreach (Country country in Country.getExisting())
                 foreach (Province province in country.ownedProvinces)
                 {
                     foreach (Producer producer in province.allProducers)
@@ -325,7 +325,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
-                foreach (Country country in Country.allExisting)
+                foreach (Country country in Country.getExisting())
                     foreach (Province province in country.ownedProvinces)
                     {
                         foreach (Producer producer in province.allProducers)

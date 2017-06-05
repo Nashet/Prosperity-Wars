@@ -27,6 +27,7 @@ public class Province
     private List<Province> neighbors = new List<Province>();
     Product resource;
     internal int fertileSoil;
+    List<Country> cores = new List<Country>();
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
 
@@ -53,6 +54,9 @@ public class Province
     }
     internal int getID()
     { return ID; }
+    /// <summary>
+    /// called only on map generation
+    /// </summary>    
     public void InitialOwner(Country taker)
     {
         if (this.getCountry() != null)
@@ -65,6 +69,33 @@ public class Province
         taker.ownedProvinces.Add(this);
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = color;
+        if (taker != Country.NullCountry)
+            cores.Add(taker);
+    }
+    public void think()
+    {
+        if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
+            if (getMajorCulture() == getCountry().getCulture() && !cores.Contains(getCountry()))
+                cores.Add(getCountry());
+    }
+    public bool isCoreFor(Country country)
+    {
+        return cores.Contains(country);
+    }
+    public string getCoresDescription()
+    {
+        if (cores.Count == 0)
+            return "none";
+        else
+            if (cores.Count == 1)
+            return cores[0].ToString();
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            cores.ForEach(x => sb.Append(x).Append("; "));
+            return sb.ToString();
+        }
+
     }
     public void secedeTo(Country taker)
     {
@@ -148,7 +179,7 @@ public class Province
 
     internal Culture getMajorCulture()
     {
-        Dictionary<System.Object, int> cultures = new Dictionary<System.Object, int>();
+        Dictionary<Culture, int> cultures = new Dictionary<Culture, int>();
 
         foreach (var pop in allPopUnits)
             //if (cultures.ContainsKey(pop.culture))
@@ -204,7 +235,7 @@ public class Province
 
     internal void mobilize()
     {
-        getCountry().staff.mobilize(new List<Province> { this});     
+        getCountry().staff.mobilize(new List<Province> { this });
     }
 
     public static bool isProvinceCreated(Color color)
