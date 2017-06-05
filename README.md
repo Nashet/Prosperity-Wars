@@ -3,6 +3,7 @@
 
 ## Demo
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
+And there is standalone (PC, Mac, Linux) version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
 
 ## Description
 Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
@@ -17,14 +18,15 @@ So, main principles of that simulation are:
 * capitalists can take loans form national bank for business expansion 
 * governments can put extra money in bank
 
-## What it has now (v10)
+## What it has now (v0.11.0)
+ - provinces and countries
  - population agents
- - basic trade & production
+ - basic production\trade\consumption
  - basic warfare
  - basic inventions
- - basic reforms (voting is not implemented yet)
+ - basic reforms (population can vote for reforms)
  - population demotion\promotion to other classes
- - migration (inside country)
+ - migration\immigration
  - assimilation
 
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           
