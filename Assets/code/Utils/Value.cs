@@ -6,6 +6,8 @@ public class Value
     ///<summary> storing as value as number * precision </summary>
     private uint value;
     internal static uint precision = 1000; // 0.01
+    internal static readonly Value Zero = new Value(0);
+
     public Value(float number)
     {
         if (number < 0f)

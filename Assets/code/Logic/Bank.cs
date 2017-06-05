@@ -11,26 +11,30 @@ public class Bank : Agent
         //setBank(this);
     }
     /// <summary>
-    /// checks inside. Just wouldn't take money if giver hasn't enough money
+    /// Returns money to bank. checks inside.
+    /// Just wouldn't take money if giver hasn't enough money
+    /// Don't provide variables like Cash as argument!! It would default to zero!
     /// </summary>    
-    internal void takeMoney(Agent giver, Value howMuch)
+    internal void takeMoney(Agent giver, Value howMuchTake)
     {
-        if (giver.pay(this, howMuch))
-            if (giver.loans.get() > 0f)  //has debt (meaning has no deposits)
-                if (howMuch.get() >= giver.loans.get()) // cover debt
+        if (giver.pay(this, howMuchTake))
+            if (giver.loans.isBiggerThan(Value.Zero))  //has debt (meaning has no deposits)
+                if (howMuchTake.isBiggerOrEqual(giver.loans)) // cover debt
                 {
-                    float extraMoney = howMuch.get() - giver.loans.get();
+                    Value extraMoney = howMuchTake.subtractOutside(giver.loans);
                     this.givenLoans.subtract(giver.loans);
                     giver.loans.set(0f);
                     giver.deposits.set(extraMoney);
                 }
                 else// not cover debt
                 {
-                    giver.loans.subtract(howMuch);
-                    this.givenLoans.subtract(howMuch);
+                    giver.loans.subtract(howMuchTake);
+                    this.givenLoans.subtract(howMuchTake);
                 }
             else
-                giver.deposits.add(howMuch);
+            {
+                giver.deposits.add(howMuchTake);
+            }
     }
 
     /// <summary>
@@ -39,10 +43,10 @@ public class Bank : Agent
     internal void giveMoney(Agent taker, Value howMuch)
     {
         payWithoutRecord(taker, howMuch);
-        if (taker.deposits.get() > 0f) // has deposit (meaning, has no loans)
-            if (howMuch.get() >= taker.deposits.get())// loan is bigger than this deposit
+        if (taker.deposits.isBiggerThan(Value.Zero)) // has deposit (meaning, has no loans)
+            if (howMuch.isBiggerOrEqual(taker.deposits))// loan is bigger than this deposit
             {
-                float notEnoughMoney = howMuch.get() - taker.deposits.get();
+                Value notEnoughMoney = howMuch.subtractOutside(taker.deposits);
                 taker.deposits.set(0f);
                 taker.loans.set(notEnoughMoney);
                 this.givenLoans.add(notEnoughMoney);
@@ -87,7 +91,7 @@ public class Bank : Agent
     /// </summary>
     internal Value getReservs()
     {
-        return new Value (cash);
+        return new Value(cash);
     }
     /// <summary>
     /// Checks reserve limits and deposits

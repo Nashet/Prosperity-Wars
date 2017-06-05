@@ -127,7 +127,7 @@ public class FinancePanel : DragPanel
     public void onPutInDeposit()
     {
         if (loanLimit.value == 1f)
-            Game.Player.bank.takeMoney(Game.Player, Game.Player.cash);
+            Game.Player.bank.takeMoney(Game.Player, new Value(Game.Player.cash));
         else
             Game.Player.bank.takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));
         refresh();
