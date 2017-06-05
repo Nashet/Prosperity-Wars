@@ -536,7 +536,7 @@ public class Market : Agent//: PrimitiveStorageSet
         // not using DSB anyway
         //if (DSB < 1f) DSB = 1f;
         // BuyingAmountAvailable = buying.get() / DSB;
-        // todo reduce can afford barnhes
+        // todo reduce can afford circles
 
         //cost = Game.market.getCost(buying);
         if (Game.market.sentToMarket.has(buying))

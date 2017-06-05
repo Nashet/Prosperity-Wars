@@ -45,7 +45,7 @@ public class BuildPanel : DragPanel
                 if (Game.Player.canPay(cost))
                 {
                     var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
-                    Game.Player.pay(factory, cost);
+                    Game.Player.payWithoutRecord(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.Show(factory);
                 }

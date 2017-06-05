@@ -777,7 +777,7 @@ public class Game
             "\n\nCurrently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \nbasic inventions \nbasic reforms (voting is not implemented)"
             + " \npopulation demotion\\promotion to other classes \nmigration (inside country) \nassimilation"
-            + "\n\nYou play as " + Game.Player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\nEnter key to close top window, space - to pause\\unpause"
             , "Ok");

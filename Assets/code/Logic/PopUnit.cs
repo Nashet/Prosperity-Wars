@@ -84,7 +84,7 @@ abstract public class PopUnit : Producer
         needsFullfilled = new Procent(source.needsFullfilled.get());
         daysUpsetByForcedReform = 0;
         didntGetPromisedUnemloymentSubsidy = false;
-        incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
+        //incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
 
         //Agent's fields:
         //wallet = new Wallet(0f, where.getCountry().bank); it's already set in constructor
@@ -97,10 +97,10 @@ abstract public class PopUnit : Producer
             if (source.getCountry().bank.canGiveMoney(this, takeDeposit))
             {
                 source.getCountry().bank.giveMoney(source, takeDeposit);
-                source.pay(this, takeDeposit);
+                source.payWithoutRecord(this, takeDeposit);
             }
         }
-        source.pay(this, source.cash.multipleOutside(newPopShare));
+        source.payWithoutRecord(this, source.cash.multipleOutside(newPopShare));
 
         //Producer's fields:
         storageNow = newPopShare.sendProcentToNew(source.storageNow);
@@ -494,11 +494,13 @@ abstract public class PopUnit : Producer
                 taxSize = moneyIncomethisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                 if (canPay(taxSize))
                 {
+                    incomeTaxPayed.set(taxSize);
                     province.getCountry().richTaxIncomeAdd(taxSize);
                     pay(province.getCountry(), taxSize);
                 }
                 else
                 {
+                    incomeTaxPayed.set(cash);
                     province.getCountry().richTaxIncomeAdd(cash);
                     sendAllAvailableMoney(province.getCountry());
                 }
@@ -930,9 +932,9 @@ abstract public class PopUnit : Producer
                 if (country != this.getCountry())
                     foreach (var pro in country.ownedProvinces)
                     {
-                        var needsInProvince = pro.getMiddleNeedsFulfilling(this.type);
-                        if (needsInProvince.get() > needsFullfilled.get())
-                            provinces.Add(pro, needsInProvince);
+                        var needsInTargetProvince = pro.getMiddleNeedsFulfilling(this.type);
+                        if (needsInTargetProvince.get() >= this.needsFullfilled.get())
+                            provinces.Add(pro, needsInTargetProvince);
                     }
         return provinces.MaxBy(x => x.Value.get()).Key;
     }

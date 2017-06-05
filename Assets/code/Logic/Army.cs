@@ -738,8 +738,8 @@ public class BattleResult
 
         if (attacker == Game.Player && isAttackerWon())
         {
-            //.Append(place).Append(" owned by ").Append(place.getCountry())
-            sb.Append("Our glorious army attacked ")
+            //.Append(" owned by ").Append(place.getCountry())
+            sb.Append("Our glorious army attacked ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);

@@ -93,7 +93,8 @@ public class PopUnitPanel : DragPanel
                 + "\nSent to market: " + pop.sentToMarket
                 + "\nCash: " + pop.cash.ToString()
                 + "\nMoney income: " + pop.moneyIncomethisTurn
-                
+                + "\nIncome tax: " + pop.incomeTaxPayed
+
                 + "\nDemotion: " + demotionText
                 + "\nPromotion: " + promotionText
                 + "\nMigration: " + migrationText

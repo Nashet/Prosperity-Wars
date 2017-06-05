@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 public class Country : Consumer
 {
-    public string name;
+    string name;
     public static List<Country> allCountries = new List<Country>();
     public List<Province> ownedProvinces = new List<Province>();
 
@@ -335,6 +335,11 @@ public class Country : Consumer
         return (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
         //return minSalary.get();
     }
+    public string getName()
+    {
+        return name;
+    }
+
     override public string ToString()
     {
         if (this == Game.Player)
