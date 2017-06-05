@@ -403,8 +403,8 @@ public class Game
     }
     void generateMapImage()
     {
-        //mapImage = new Texture2D(200, 100);
-        mapImage = new Texture2D(100, 50);
+        mapImage = new Texture2D(200, 100);
+        //mapImage = new Texture2D(100, 50);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -412,8 +412,8 @@ public class Game
             amountOfProvince = 10;
         else
             amountOfProvince = 12 + Game.Random.Next(8);
-        amountOfProvince = 60 + Game.Random.Next(20);
-        //amountOfProvince = 160 + Game.random.Next(20);
+        //amountOfProvince = 60 + Game.Random.Next(20);
+        amountOfProvince = 160 + Game.Random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
 
@@ -775,10 +775,10 @@ public class Game
     {
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurrently there is: "
-            + "\n\npopulation agents \nbasic trade & production \nbasic warfare \nbasic inventions \nbasic reforms (voting is not implemented)"
-            + " \npopulation demotion\\promotion to other classes \nmigration (inside country) \nassimilation"
+            + "\n\npopulation agents \nbasic trade & production \nbasic warfare \nbasic inventions \nbasic reforms (population can vote for reforms)"
+            + " \npopulation demotion\\promotion to other classes \nmigration\\immigration\nassimilation"
             + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
-            + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"
+            + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\nEnter key to close top window, space - to pause\\unpause"
             , "Ok");
         ;

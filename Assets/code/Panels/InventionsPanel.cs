@@ -48,7 +48,7 @@ public class InventionsPanel : DragPanel
         if (selectedInvention != null)
         {
             descriptionText.text = "Science points: " + Game.Player.sciencePoints
-                + "\n\n" + selectedInvention.ToString() + " description: " + selectedInvention.getDescription();
+                + "\n\n" + selectedInvention + " : " + selectedInvention.getDescription();
 
             // invention available
             if (!Game.Player.inventions.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())

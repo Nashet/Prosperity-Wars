@@ -62,10 +62,10 @@ public class Invention : AbstractCondition
         steamPower = new Invention("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(100f)),
         Gunpowder = new Invention("Gunpowder", "Allows Artillery & Ammunition", new Value(100f)),
-        Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(100f)),
-        CombustionEngine = new Invention("Combustion engine", "", new Value(200f)),
-        Tanks = new Invention("Tanks", "", new Value(400f)),
-        Airplanes = new Invention("Airplanes", "", new Value(800f))
+        Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(200f)),
+        CombustionEngine = new Invention("Combustion engine", "Allows Oil, Fuel, Cars, Rubber and Machinery", new Value(400f)),
+        Tanks = new Invention("Tanks", "Allows Tanks", new Value(800f)),
+        Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f))
         ;
     readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.steamPower), "Steam Power is invented", true);
     readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(Invention.individualRights), "Individual Rights are invented", true);

@@ -104,7 +104,7 @@ public class Procent : Value
     public override string ToString()
     {
         if (get() > 0)
-            return System.Convert.ToString(get() * 100f) + "%";
+            return (get() * 100f).ToString("0.00") + "%";
         else return "0%";
     }
 

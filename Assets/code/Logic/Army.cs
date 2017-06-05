@@ -137,9 +137,9 @@ public class Army
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
     static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);
 
-    static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Equipped cars", 2f, false);
-    static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped tanks", 1f, false);
-    static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped airplanes", 1f, false);
+    static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Equipped Cars", 2f, false);
+    static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped Tanks", 1f, false);
+    static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped Airplanes", 1f, false);
     static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
 
     private float getColdArmsSupply()
