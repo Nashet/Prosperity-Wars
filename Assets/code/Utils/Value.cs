@@ -29,10 +29,7 @@ public class Value
     {
         value += invalue.value;
     }
-    public void add(uint invalue)
-    {
-        value += invalue * precision;
-    }
+    
     public void add(float invalue)
     {
         if (invalue + value < 0)
@@ -71,7 +68,7 @@ public class Value
             return new Value(0);
         }
         else
-            return new Value(this.get() - invalue.get());
+            return new Value((this.value - invalue.value) /(float) precision);
     }
     public void subtract(float invalue)
     {
@@ -168,15 +165,7 @@ public class Value
         else
             return Procent.makeProcent((int)this.value, (int)need.value);
     }
-    public void send(Value another, uint amount)
-    {
-        if (this.get() >= amount)
-        {
-            this.subtract(amount);
-            another.add(amount);
-        }
-        else Debug.Log("value payment failed");
-    }
+    
     public void send(Value another, float amount)
     {
         if (this.get() >= amount)
