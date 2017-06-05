@@ -213,6 +213,14 @@ public class Agent
         whom.moneyIncomethisTurn.add(this.cash);
         this.cash.set(0);
     }
+    internal void sendAllAvailableMoneyWithoutRecord(Agent whom)
+    {
+        if (bank != null)
+            bank.returnAllMoney(this);
+        whom.cash.add(this.cash);
+        //whom.moneyIncomethisTurn.add(this.cash);
+        this.cash.set(0);
+    }
     public void ConvertFromGoldAndAdd(Value gold)
     {
         float coins = gold.get() * Options.goldToCoinsConvert;

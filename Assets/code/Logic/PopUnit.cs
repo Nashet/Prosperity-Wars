@@ -146,7 +146,7 @@ abstract public class PopUnit : Producer
         //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
         //Agent's fields:        
-        source.sendAllAvailableMoney(this); // includes deposits
+        source.sendAllAvailableMoneyWithoutRecord(this); // includes deposits
         loans.add(source.loans);
         // Bank - stays same
 
