@@ -50,6 +50,8 @@ public class Country : Consumer
     readonly Modifier modXHasMyCores;
     public ModifiersList modMyOpinionOfXCountry;
 
+    
+
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
     Value goldMinesIncome = new Value(0f);
@@ -205,7 +207,7 @@ public class Country : Consumer
         this.bank.defaultLoaner(this);
         storageSet.sendAll(byWhom.storageSet);
 
-        if (this == Game.Player)
+        if (!this.isAI())
             new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
     }
 
@@ -570,7 +572,7 @@ public class Country : Consumer
 
     public bool isAI()
     {
-        return Game.Player != this;
+        return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
     }
     public Value getGDP()
     {

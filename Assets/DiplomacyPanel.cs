@@ -55,6 +55,10 @@ public class DiplomacyPanel : DragPanel
     }
     public void onSurrenderClick()
     {
-        Game.Player = null;
+        Game.givePlayerControlToAI();
+    }
+    public void onRegainControlClick()
+    {
+        Game.regainControlToPlayer();
     }
 }

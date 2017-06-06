@@ -737,7 +737,7 @@ public class BattleResult
     {
         sb.Clear();
 
-        if (attacker == Game.Player && isAttackerWon())
+        if (!attacker.isAI() && isAttackerWon())
         {
             //.Append(" owned by ").Append(place.getCountry())
             sb.Append("Our glorious army attacked ").Append(place)
@@ -750,7 +750,7 @@ public class BattleResult
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-        if (defender == Game.Player && isDefenderWon())
+        if (!defender.isAI()&& isDefenderWon())
         {
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");
@@ -761,7 +761,7 @@ public class BattleResult
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-            if (attacker == Game.Player && isDefenderWon())
+            if (!attacker.isAI() && isDefenderWon())
         {
             //.Append(" owned by ").Append(place.getCountry())
             sb.Append("Our glorious army attacked ").Append(place)
@@ -773,7 +773,7 @@ public class BattleResult
             new Message("We lost a battle!", sb.ToString(), "Fine");
         }
         else
-            if (defender == Game.Player && isAttackerWon())
+            if (!defender.isAI() && isAttackerWon())
 
         {
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)

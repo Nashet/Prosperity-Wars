@@ -716,7 +716,8 @@ public static class MyIEnumerableExtensions
         {
             if (!sourceIterator.MoveNext())
             {
-                throw new InvalidOperationException("Sequence contains no elements");
+                //throw new InvalidOperationException("Sequence contains no elements");
+                return default(TSource);
             }
             var min = sourceIterator.Current;
             var minKey = selector(min);
@@ -876,5 +877,42 @@ public class DontUseThatMethod : Exception
     protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
       : base(info, context)
     {
+    }
+}
+public class Date
+{
+    int date;
+    public Date(int date)
+    {
+        this.date = date;
+    }
+    /// <summary>
+    /// copy constructor
+    /// </summary>    
+    public Date(Date date)
+    {
+        this.date = date.date;
+    }
+    public int getDate()
+    {
+        return date;
+    }
+    public int getTimeSince(Date anotherDate)
+    {
+        return date - anotherDate.getDate();
+    }
+
+    internal void StepSimulation()
+    {
+        date++;
+    }
+
+    internal bool isItTimeOf(Date anotherDate)
+    {
+        return date == anotherDate.date;
+    }
+    public override string ToString()
+    {
+        return "year " + date;
     }
 }

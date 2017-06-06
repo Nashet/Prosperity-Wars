@@ -4,44 +4,6 @@ using UnityEngine.UI;
 using System.Text;
 using System;
 
-public class Date
-{
-    int date;
-    public Date(int date)
-    {
-        this.date = date;
-    }
-    /// <summary>
-    /// copy constructor
-    /// </summary>    
-    public Date(Date date)
-    {
-        this.date = date.date;
-    }
-    public int getDate()
-    {
-        return date;
-    }
-    public int getTimeSince(Date anotherDate)
-    {
-        return date - anotherDate.getDate();
-    }
-
-    internal void StepSimulation()
-    {
-        date++;
-    }
-
-    internal bool isItTimeOf(Date anotherDate)
-    {
-        return date == anotherDate.date;
-    }
-    public override string ToString()
-    {
-        return "year " + date;
-    }
-}
-
 public static class Game //: Date
 {
     static Texture2D mapImage;
@@ -74,7 +36,7 @@ public static class Game //: Date
     public readonly static Date date = new Date(0);
     internal static bool devMode = false;
     private static int mapMode;
-
+    private static bool surrended;
     static Game()
     {
         Application.runInBackground = true;
@@ -111,6 +73,15 @@ public static class Game //: Date
         //MainCamera.cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
 
+    internal static void regainControlToPlayer()
+    {
+        surrended = false;
+    }
+
+    public static void givePlayerControlToAI()
+    {
+        surrended = true;
+    }
     static private void deleteEdgeProvinces()
     {
         for (int x = 0; x < mapImage.width; x++)
@@ -505,6 +476,12 @@ public static class Game //: Date
                 province.addNeigbor(found);
         }
     }
+
+    internal static bool isPlayerSurrended()
+    {
+        return surrended;
+    }
+
     static void findNeighborprovinces()
     {
         int f = 0;
