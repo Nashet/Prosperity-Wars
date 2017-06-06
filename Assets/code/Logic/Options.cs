@@ -17,8 +17,9 @@ public static class Options
     internal static readonly int maximumFactoriesInUpgradeToBuildNew = 2;
     internal static readonly byte maxFactoryLevel = 255;
     internal static readonly float minMarginToUpgrade = 0.005f;
-    internal static readonly float minLandForTribemen = 1f;
-    internal static readonly float minLandForFarmers = 0.25f;
+    internal static readonly float PopMinLandForTribemen = 1f;
+    internal static readonly float PopMinLandForFarmers = 0.25f;
+    internal static readonly float PopMinLandForTownspeople = 0.0025f;
     internal static readonly int maxDaysUnprofitableBeforeFactoryClosing = 180;
     internal static readonly int maxDaysBuildingBeforeRemoving = 180; // 180;
     internal static readonly int maxDaysClosedBeforeRemovingFactory = 180;
@@ -74,4 +75,5 @@ public static class Options
     internal static readonly float CountryBadBoyWorldLimit = 0.25f;
     internal static readonly int FactoryMediumTierLevels = 8+1;
     internal static readonly int FactoryMediumHighLevels = 15+1;
+    
 }

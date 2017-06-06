@@ -20,14 +20,14 @@ public class PopType
     public enum PopTypes { Tribemen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists };
     public static PopType tribeMen, aristocrats, farmers, artisans, soldiers, workers, capitalists;
     public PopTypes type;
-    public static List<PopType> allPopTypes = new List<PopType>();
+    public readonly static List<PopType> allPopTypes = new List<PopType>();
     ///<summary> per 1000 men </summary>
     public Storage basicProduction;
     private string name;
     /// <summary>
     /// SHOULD not be zero!
     /// </summary>
-    private float strenght;
+    private float strenght;   
     public PopType(PopTypes itype, Storage iproduces, string iname, float strenght, PrimitiveStorageSet militaryNeeds)
     {
         this.militaryNeeds = militaryNeeds;

@@ -180,12 +180,12 @@ public class Government : AbstractReform
 }
 public class Economy : AbstractReform
 {
-    internal static Condition isNotLF = new Condition(delegate (System.Object forWhom) { return (forWhom as Country).economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
-    internal static Condition isNotNatural = new Condition(x => (x as Country).economy.status != Economy.NaturalEconomy, "Economy policy is not Natural Economy", true);
+    internal readonly static Condition isNotLF = new Condition(delegate (System.Object forWhom) { return (forWhom as Country).economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
+    internal readonly static Condition isNotNatural = new Condition(x => (x as Country).economy.status != Economy.NaturalEconomy, "Economy policy is not Natural Economy", true);
 
-    internal static Condition isNotState = new Condition(x => (x as Country).economy.status != Economy.StateCapitalism, "Economy policy is not State Capitalism", true);
-    internal static Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Economy.Interventionism, "Economy policy is not Limited Interventionism", true);
-    internal static Condition isNotPlanned = new Condition(x => (x as Country).economy.status != Economy.PlannedEconomy, "Economy policy is not Planned Economy", true);
+    internal readonly static Condition isNotState = new Condition(x => (x as Country).economy.status != Economy.StateCapitalism, "Economy policy is not State Capitalism", true);
+    internal readonly static Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Economy.Interventionism, "Economy policy is not Limited Interventionism", true);
+    internal readonly static Condition isNotPlanned = new Condition(x => (x as Country).economy.status != Economy.PlannedEconomy, "Economy policy is not Planned Economy", true);
 
     internal static Condition isNotMarket = new Condition(x => (x as Country).economy.status == Economy.NaturalEconomy || (x as Country).economy.status == Economy.PlannedEconomy,
       "Economy is not market economy", true);
@@ -249,7 +249,7 @@ public class Economy : AbstractReform
             return result;
         }
     }
-    static ConditionsList capitalism = new ConditionsList(new List<Condition>()
+    static readonly ConditionsList capitalism = new ConditionsList(new List<Condition>()
         {
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
@@ -547,30 +547,30 @@ public class MinimalWage : AbstractReform
     }
     ReformValue status;
 
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
+    internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal readonly static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
 
-    internal static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Middle = new ReformValue("Middle", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Middle = new ReformValue("Middle", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
@@ -705,29 +705,29 @@ public class UnemploymentSubsidies : AbstractReform
         }
     }
     ReformValue status;
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
-    internal static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
+    internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal readonly static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
+    internal readonly static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Middle = new ReformValue("Middle", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Middle = new ReformValue("Middle", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
@@ -815,7 +815,7 @@ public class TaxationForPoor : AbstractReform
         }
     }
     ReformValue status;
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
+    internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
         for (int i = 0; i <= 10; i++)
@@ -896,7 +896,7 @@ public class TaxationForRich : AbstractReform
         }
     }
     ReformValue status;
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
+    internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
         for (int i = 0; i <= 10; i++)
@@ -963,9 +963,9 @@ public class MinorityPolicy : AbstractReform
         {
 
         }
-        static Procent br = new Procent(0.2f);
-        static Procent al = new Procent(0.1f);
-        static Procent nu = new Procent(0.0f);
+        static readonly Procent br = new Procent(0.2f);
+        static readonly Procent al = new Procent(0.1f);
+        static readonly Procent nu = new Procent(0.0f);
         internal Procent getTax()
         {
             if (this == Residency)
@@ -999,10 +999,10 @@ public class MinorityPolicy : AbstractReform
     }
     internal ReformValue status;
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal static  ReformValue Equality; // all can vote
+    internal static ReformValue Equality; // all can vote
     internal static ReformValue Residency; // state culture only can vote
                                            //todo add no-individual rights condition check?
-    internal static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, ConditionsList.IsNotImplemented);
+    internal readonly static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, ConditionsList.IsNotImplemented);
 
     //internal static Condition IsResidencyPop;
     public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)

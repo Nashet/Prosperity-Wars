@@ -127,7 +127,7 @@ public class MainCamera : MonoBehaviour
             topPanel.switchHaveToRunSimulation(topPanel.btnPlay);
         if (Input.GetKeyDown(KeyCode.Return))
             closeToppestPanel();
-        if (Game.haveToStepSimulation || Game.haveToRunSimulation && Game.howMuchPausedWindowsOpen == 0)
+        if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
         {
             Game.stepSimulation();
 
@@ -145,8 +145,7 @@ public class MainCamera : MonoBehaviour
             if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
             if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
         }
-        if (Game.haveToStepSimulation)
-            Game.haveToStepSimulation = false;
+        
 
         if (Game.selectedProvince != null)
             provincePanel.refresh(Game.selectedProvince);

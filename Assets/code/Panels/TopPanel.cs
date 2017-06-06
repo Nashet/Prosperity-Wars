@@ -8,19 +8,14 @@ public class TopPanel : MonoBehaviour
     public Text generalText;
     // Use this for initialization
     void Start()
-    {
-        //generaltext = transform.FindChild("GeneralText").gameObject.GetComponent<Text>();
+    {        
         btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
         btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
         btnPlay.image.color = Color.grey;
         MainCamera.topPanel = this;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+   
     public void refresh()
     {
 
@@ -28,7 +23,7 @@ public class TopPanel : MonoBehaviour
             + "\nMoney: " + Game.Player.cash
             + " Science points: " + Game.Player.sciencePoints
             + " Men: " + Game.Player.getMenPopulation();
-            //+ " Storage: " + Game.player.storageSet.ToString();
+        //+ " Storage: " + Game.player.storageSet.ToString();
     }
     public void onTradeClick()
     {
@@ -111,15 +106,15 @@ public class TopPanel : MonoBehaviour
     }
     void onbtnStepClick(Button button)
     {
-        if (Game.haveToRunSimulation)
+        if (Game.isRunningSimulation())
         {
-            Game.haveToRunSimulation = false;
+            Game.pauseSimulation();
             button.image.color = Color.grey;
             Text text = button.GetComponentInChildren<Text>();
             text.text = "Pause";
         }
         else
-            Game.haveToStepSimulation = true;
+            Game.makeOneStepSimulation();
     }
     void onbtnPlayClick(Button button)
     {
@@ -127,8 +122,12 @@ public class TopPanel : MonoBehaviour
     }
     public void switchHaveToRunSimulation(Button button)
     {
-        Game.haveToRunSimulation = !Game.haveToRunSimulation;
-        if (Game.haveToRunSimulation)
+        if (Game.isRunningSimulation())
+            Game.pauseSimulation();
+        else
+            Game.continueSimulation();
+
+        if (Game.isRunningSimulation())
         {
             button.image.color = Color.white;
             Text text = button.GetComponentInChildren<Text>();

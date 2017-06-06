@@ -21,13 +21,13 @@ public class Province
     public Vector3 centre;
 
     public static List<Province> allProvinces = new List<Province>();
-    private static int defaultPopulationSpawn = 10;
+
     public List<Factory> allFactories = new List<Factory>();
     private Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
     private List<Province> neighbors = new List<Province>();
     Product resource;
     internal int fertileSoil;
-    List<Country> cores = new List<Country>();
+    readonly List<Country> cores = new List<Country>();
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
 
@@ -514,10 +514,13 @@ public class Province
             switch (pop.type.type)
             {
                 case PopType.PopTypes.Tribemen:
-                    usedLand += pop.getPopulation() * Options.minLandForTribemen;
+                    usedLand += pop.getPopulation() * Options.PopMinLandForTribemen;
                     break;
                 case PopType.PopTypes.Farmers:
-                    usedLand += pop.getPopulation() * Options.minLandForFarmers;
+                    usedLand += pop.getPopulation() * Options.PopMinLandForFarmers;
+                    break;
+                default:
+                    usedLand += pop.getPopulation() * Options.PopMinLandForTownspeople;
                     break;
             }
         return usedLand / fertileSoil;

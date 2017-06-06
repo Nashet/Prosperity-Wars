@@ -29,7 +29,7 @@ public class Factory : Producer
     private int daysClosed;
     internal bool justHiredPeople;
     private int hiredLastTurn;
-    internal ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
+    internal readonly ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
         conditionsDestroy, conditionsSell, conditionsBuy, conditionsNatinalize,
         conditionsSubsidize, conditionsDontHireOnSubsidies, conditionsChangePriority;
 

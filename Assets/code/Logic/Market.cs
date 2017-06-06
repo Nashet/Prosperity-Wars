@@ -9,19 +9,19 @@ using System;
 public class Market : Agent//: PrimitiveStorageSet
 {
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
-    int dateOfDSB = int.MaxValue;
+    Date dateOfDSB = new Date(int.MaxValue);
     PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
-    int dateOfgetSupply = int.MaxValue;
-    int dateOfgetProductionTotal = int.MaxValue;
-    int dateOfgetTotalConsumption = int.MaxValue;
-    int dateOfgetBouth = int.MaxValue;
+    Date dateOfgetSupply = new Date(int.MaxValue);
+    Date dateOfgetProductionTotal = new Date(int.MaxValue);
+    Date dateOfgetTotalConsumption = new Date(int.MaxValue);
+    Date dateOfgetBouth = new Date(int.MaxValue);
     PrimitiveStorageSet getSupplyBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getProductionTotalBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getTotalConsumptionBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getBouthBuffer = new PrimitiveStorageSet();
     internal PricePool priceHistory;
     internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
-    public Market():base (0f, null)
+    public Market() : base(0f, null)
     { }
     internal Storage findPrice(Product whom)
     {
@@ -46,7 +46,7 @@ public class Market : Agent//: PrimitiveStorageSet
         foreach (Storage stor in need)
         {
             //price = Game.market.findPrice(stor.getProduct()).get();
-            cost.add( getCost(stor));
+            cost.add(getCost(stor));
         }
         return cost;
     }
@@ -79,7 +79,7 @@ public class Market : Agent//: PrimitiveStorageSet
         price = Game.market.findPrice(need.getProduct()).get();
         cost = need.get() * price;
 
-        return new Value (cost);
+        return new Value(cost);
     }
     /// <summary>
     /// Meaning demander actually can pay for item in current prices
@@ -347,7 +347,8 @@ public class Market : Agent//: PrimitiveStorageSet
     }
     internal void ForceDSBRecalculation()
     {
-        dateOfDSB--;
+
+        //dateOfDSB--;//!!! Warning! This need to be uncommented to work properly
         getDemandSupplyBalance(null);
     }
 
@@ -766,7 +767,8 @@ public class Market : Agent//: PrimitiveStorageSet
     internal float getDemandSupplyBalance(Product pro)
     {
         float balance;
-        if (dateOfDSB != Game.date)
+        //if (dateOfDSB != Game.date)
+        if (Game.date.isItTimeOf(dateOfDSB))
         // recalculate DSBbuffer
         {
 

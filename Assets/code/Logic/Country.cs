@@ -29,8 +29,8 @@ public class Country : Consumer
     Color nationalColor;
     Province capital;
 
-    Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-    Dictionary<Country, int> myLastAttackDate = new Dictionary<Country, int>();
+    readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
+    readonly Dictionary<Country, Date> myLastAttackDate = new Dictionary<Country, Date>();
 
     public GeneralStaff staff;
 
@@ -44,10 +44,10 @@ public class Country : Consumer
     internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
     static Condition condDontHaveDeposits = new Condition(x => (x as Agent).deposits.get() == 0f, "Don't have deposits", false);
     static Condition condDontHaveLoans = new Condition(x => (x as Agent).loans.get() == 0f, "Don't have loans", false);
-    public static ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
-    public static ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
+    public static readonly ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
+    public static readonly ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
 
-    Modifier modXHasMyCores;
+    readonly Modifier modXHasMyCores;
     public ModifiersList modMyOpinionOfXCountry;
 
     Value poorTaxIncome = new Value(0f);
@@ -64,9 +64,9 @@ public class Country : Consumer
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "Has my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
-            new Modifier (x=>Game.date - (x as Country).getLastAttackDateOn(this) > 30
-            && Game.date - this.getLastAttackDateOn(x as Country) > 30,"Lives in peace with us", 0.005f, false),
-            new Modifier (x=>Game.date - (x as Country).getLastAttackDateOn(this) > 0 && Game.date - (x as Country).getLastAttackDateOn(this) < 10  ,"Recently attacked us", -0.05f, false),
+            new Modifier (x=>Game.date.getTimeSince((x as Country).getLastAttackDateOn(this)) > 30
+            && Game.date.getTimeSince(this.getLastAttackDateOn(x as Country)) > 30,"Lives in peace with us", 0.005f, false),
+            new Modifier (x=>Game.date.getTimeSince((x as Country).getLastAttackDateOn(this)) > 0 &&Game.date.getTimeSince( (x as Country).getLastAttackDateOn(this)) < 10  ,"Recently attacked us", -0.05f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"Weaker", -0.04f, false),
             new Modifier (delegate(System.Object x) { Country bully = this.isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.02f, false)
             });
@@ -132,12 +132,12 @@ public class Country : Consumer
             return false;
     }
 
-    public int getLastAttackDateOn(Country country)
+    public Date getLastAttackDateOn(Country country)
     {
         if (myLastAttackDate.ContainsKey(country))
             return myLastAttackDate[country];
         else
-            return -2000000;
+            return new Date(-2000000);
     }
     private bool hasCores(Country country)
     {
@@ -222,11 +222,11 @@ public class Country : Consumer
     internal void sendArmy(Province target, Procent procent)
     {
         staff.sendArmy(target, procent);
-        myLastAttackDate.AddMy(target.getCountry(), Game.date);
-        //if (this.dateOfBattleWith.ContainsKey(target.getCountry()))
-        //    dateOfBattleWith[target.getCountry()] = Game.date;
-        //else
-        //    dateOfBattleWith.Add(target.getCountry(), Game.date);
+        //myLastAttackDate.AddMy(target.getCountry(), Game.date);
+        if (this.myLastAttackDate.ContainsKey(target.getCountry()))
+            myLastAttackDate[target.getCountry()] = Game.date;
+        else
+            myLastAttackDate.Add(target.getCountry(), Game.date);
 
 
     }

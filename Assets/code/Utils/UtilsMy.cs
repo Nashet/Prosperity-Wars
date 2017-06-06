@@ -337,7 +337,7 @@ public class ChanceBox<T>
 public class PricePool
 {
     Dictionary<Product, DataStorage2> pool = new Dictionary<Product, DataStorage2>();
-    static internal int lenght = 40; // !! duplicate of DataStorage!!
+    static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
     internal PricePool()
     {
         foreach (var pro in Product.allProducts)

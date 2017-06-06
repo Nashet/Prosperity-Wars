@@ -45,7 +45,7 @@ public class InventionsList
 }
 public class Invention : AbstractCondition
 {
-    internal static List<Invention> allInventions = new List<Invention>();
+    internal readonly static List<Invention> allInventions = new List<Invention>();
     string name;
     string description;
     internal Value cost;

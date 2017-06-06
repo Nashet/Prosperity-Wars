@@ -27,7 +27,7 @@ abstract public class PopUnit : Producer
     private int daysUpsetByForcedReform;
     private bool didntGetPromisedUnemloymentSubsidy;
 
-    public ModifiersList modifiersLoyaltyChange;
+    public static ModifiersList modifiersLoyaltyChange;
 
     static Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies,
@@ -35,13 +35,45 @@ abstract public class PopUnit : Producer
 
     public Value incomeTaxPayed = new Value(0);
 
-    private int born;
+    private Date born;
     //if add new fields make sure it's implemented in second constructor and in merge()   
 
+    static PopUnit()
+    {
+        //makeModifiers();
+        modifierStarvation = new Modifier(x => (x as PopUnit).needsFullfilled.get() < 0.20f, "Starvation", -0.3f, false);
+        modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", -0.2f, false);
+        modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", 0.1f, false);
+        modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", 0.15f, false);
+        modifierLuxuryNeedsFulfilled = new Modifier(x => (x as PopUnit).getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", 0.2f, false);
 
+        //Game.threadDangerSB.Clear();
+        //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
+        modifierCanVote = new Modifier(x => (x as PopUnit).canVote(), "Can vote with that government ", 0.1f, false);
+        //Game.threadDangerSB.Clear();
+        //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
+        modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ", -0.1f, false);
+        //Game.threadDangerSB.Clear();
+        //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
+        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", -0.3f, false);
+        modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
+        modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
+        new Modifier(x => !(x as PopUnit).isStateCulture()
+        && ((x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.Residency
+        || (x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.1f, false);
+
+
+        //MinorityPolicy.IsResidency
+        modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
+        {
+           modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled,
+        modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
+            modifierMinorityPolicy
+});
+    }
     public PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
     {
-        born = Game.date;
+        born = new Date(Game.date);
         population = iamount;
         type = ipopType;
         culture = iculture;
@@ -53,7 +85,7 @@ abstract public class PopUnit : Producer
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
         province = where;
-        makeModifiers();
+        
     }
     /// <summary> Creates new PopUnit basing on part of other PopUnit.
     /// And transfers sizeOfNewPop population.
@@ -62,7 +94,7 @@ abstract public class PopUnit : Producer
     {
         born = Game.date;
         PopListToAddToGeneralList.Add(this);
-        makeModifiers();
+       // makeModifiers();
 
         // here should be careful copying of popUnit data
         //And careful editing of old unit
@@ -213,40 +245,10 @@ abstract public class PopUnit : Producer
     }
     public int getAge()
     {
-        return Game.date - born;
+        //return Game.date - born;
+        return Game.date.getTimeSince(born);
     }
-    private void makeModifiers()
-    {
-        modifierStarvation = new Modifier(x => (x as PopUnit).needsFullfilled.get() < 0.20f, "Starvation", -0.3f, false);
-        modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", -0.2f, false);
-        modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", 0.1f, false);
-        modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", 0.15f, false);
-        modifierLuxuryNeedsFulfilled = new Modifier(x => (x as PopUnit).getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", 0.2f, false);
-
-        //Game.threadDangerSB.Clear();
-        //Game.threadDangerSB.Append("Likes that government because can vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanVote = new Modifier(x => (x as PopUnit).canVote(), "Can vote with that government ", 0.1f, false);
-        //Game.threadDangerSB.Clear();
-        //Game.threadDangerSB.Append("Dislikes that government because can't vote with ").Append(this.province.getOwner().government.ToString());
-        modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ", -0.1f, false);
-        //Game.threadDangerSB.Clear();
-        //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
-        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", -0.3f, false);
-        modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
-        modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
-        new Modifier(x => !(x as PopUnit).isStateCulture()
-        && ((x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.Residency
-        || (x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.1f, false);
-
-
-        //MinorityPolicy.IsResidency
-        modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
-        {
-           modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled,
-        modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
-            modifierMinorityPolicy
-});
-    }
+    
     public int getPopulation()
     { return population; }
     internal int howMuchCanMobilize()
