@@ -52,5 +52,9 @@ public class DiplomacyPanel : DragPanel
         panelRectTransform.SetAsLastSibling();
         selectedCountry = count;
         refresh();
-    }   
+    }
+    public void onSurrenderClick()
+    {
+        Game.Player = null;
+    }
 }

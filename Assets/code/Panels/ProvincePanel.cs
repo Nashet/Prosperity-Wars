@@ -157,4 +157,10 @@ public class ProvincePanel : MonoBehaviour
         else btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "";
 
     }
+    public void onddMapModesChange(int newMapMode)
+    {
+        if (Game.getMapMode() != newMapMode)
+            Game.redrawMapAccordingToMapMode(newMapMode);
+
+    }
 }

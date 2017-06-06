@@ -5,7 +5,7 @@ using System;
 
 public class MainCamera : MonoBehaviour
 {
-    public Game Game;
+    //public Game Game;
     internal static Camera cameraMy;
     static GameObject mapPointer;
 
@@ -50,7 +50,8 @@ public class MainCamera : MonoBehaviour
         }
         //topPanel = transform.FindChild("TopPanel").gameObject;
         //.GetComponent<Panel>()
-        Game = new Game();
+        //Game = new Game();
+        cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
     int GetRayCastMeshNumber()
     {
@@ -91,13 +92,13 @@ public class MainCamera : MonoBehaviour
     internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
-            Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.getColor();
+            Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
 
         if (number >= 0)
         {
             if (Province.findByID(number) == Game.selectedProvince)// same province selected
             {
-                Game.selectedProvince.meshRenderer.material.color = Game.selectedProvince.getColor();
+                Game.selectedProvince.updateColor( Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
                 Game.selectedProvince = null;
                 provincePanel.hide();
                 if (buildPanel.isActiveAndEnabled)
@@ -105,13 +106,17 @@ public class MainCamera : MonoBehaviour
             }
             else // new province selected
             {
-                Province.findByID(number).meshRenderer.material.color = Color.gray;
+                Province.findByID(number).updateColor( Color.gray);
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
                 Game.selectedProvince = Province.findByID(number);
                 provincePanel.show();
                 if (buildPanel.isActiveAndEnabled)
                     buildPanel.refresh();
+                if (Game.getMapMode() == 2) //core map mode
+                    Game.redrawMapAccordingToMapMode(2);
+                
             }
+            
         }
     }
     // Update is called once per frame

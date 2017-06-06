@@ -13,6 +13,7 @@ public class TopPanel : MonoBehaviour
         btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
         btnPlay.image.color = Color.grey;
         MainCamera.topPanel = this;
+        refresh();
     }
 
    

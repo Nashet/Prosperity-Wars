@@ -12,19 +12,19 @@ public class Province
     public Mesh mesh;
     MeshFilter meshFilter;
     internal GameObject gameObject;
-    public MeshRenderer meshRenderer;
+    readonly MeshRenderer meshRenderer;
     //public static int maxTribeMenCapacity = 2000;
-    private string name;
-    private int ID;
+    private readonly string name;
+    private readonly int ID;
     Country owner;
-    public List<PopUnit> allPopUnits = new List<PopUnit>();
+    public readonly List<PopUnit> allPopUnits = new List<PopUnit>();
     public Vector3 centre;
 
-    public static List<Province> allProvinces = new List<Province>();
+    public readonly static List<Province> allProvinces = new List<Province>();
 
     public List<Factory> allFactories = new List<Factory>();
-    private Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
-    private List<Province> neighbors = new List<Province>();
+    private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+    private readonly List<Province> neighbors = new List<Province>();
     Product resource;
     internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
@@ -132,8 +132,7 @@ public class Province
         taker.ownedProvinces.Add(this);
 
         color = taker.getColor().getAlmostSameColor();
-        meshRenderer.material.color = color;
-
+        meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
     }
 
     internal bool isCapital()
@@ -144,7 +143,14 @@ public class Province
 
 
 
-
+    internal Country  getRandomCore()
+    {
+        return cores.PickRandom();
+    }
+    internal Country getRandomCore(Predicate<Country> predicate)
+    {
+        return cores.FindAll(predicate).PickRandom();
+    }
     internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
     {
         return allProvinces.PickRandom(predicate);
@@ -261,6 +267,8 @@ public class Province
         return result;
     }
 
+    
+
     internal static Province findByID(int number)
     {
         foreach (var pro in allProvinces)
@@ -295,6 +303,12 @@ public class Province
             //Game.market.tmpMarketStorage.add(aristocrat.gainGoodsThisTurn);
         }
     }
+
+    internal void updateColor(Color color)
+    {
+        meshRenderer.material.color = color;
+    }
+
     ///<summary> Similar by popType & culture</summary>    
     public PopUnit getSimilarPopUnit(PopUnit target)
     {
