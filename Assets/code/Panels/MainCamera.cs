@@ -125,7 +125,7 @@ public class MainCamera : MonoBehaviour
         }
         if (Input.GetKeyUp(KeyCode.Space))
             topPanel.switchHaveToRunSimulation(topPanel.btnPlay);
-        if (Input.GetKeyUp(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
             closeToppestPanel();
         if (Game.haveToStepSimulation || Game.haveToRunSimulation && Game.howMuchPausedWindowsOpen == 0)
         {

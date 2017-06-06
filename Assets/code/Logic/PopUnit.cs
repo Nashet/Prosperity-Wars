@@ -1063,7 +1063,7 @@ abstract public class PopUnit : Producer
                     if (factory == null)
                         resourceToBuild = ftype.getBuildNeeds();
                     else
-                        resourceToBuild = ftype.getUpgradeNeeds();
+                        resourceToBuild = factory.getUpgradeNeeds();
                     //build new shownFactory
                     if (factory == null)
                     //Has money/ resources?

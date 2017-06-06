@@ -145,7 +145,16 @@ public class Factory : Producer
 
 
     }
-
+    internal PrimitiveStorageSet getUpgradeNeeds()
+    {
+        if (getLevel() < Options.FactoryMediumTierLevels)
+            return type.upgradeResourceLowTier;
+        else
+            if (getLevel() < Options.FactoryMediumHighLevels)
+            return type.upgradeResourceMediumTier;
+        else
+            return type.upgradeResourceHighTier;
+    }
     internal float getPriority()
     {
         return priority;
@@ -402,7 +411,7 @@ public class Factory : Producer
     }
     internal Value getUpgradeCost()
     {
-        Value result = Game.market.getCost(type.getUpgradeNeeds());
+        Value result = Game.market.getCost(getUpgradeNeeds());
         result.add(Options.factoryMoneyReservPerLevel);
         return result;
         //return Game.market.getCost(type.getUpgradeNeeds());
@@ -723,7 +732,7 @@ public class Factory : Producer
                     isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getBuildNeeds());
                 else
                     if (isUpgrading())
-                    isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, type.getUpgradeNeeds());
+                    isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
                 // what if not enough money to complete buildinG?
                 float minimalFond = cash.get() - 50f;
 
@@ -738,7 +747,7 @@ public class Factory : Producer
                 needsToUpgrade.setZero();
                 daysInConstruction = 0;
                 inputReservs.subtract(type.getBuildNeeds());
-                inputReservs.subtract(type.getUpgradeNeeds());
+                inputReservs.subtract(getUpgradeNeeds());
 
                 reopen(this);
             }
@@ -896,7 +905,7 @@ public class Factory : Producer
     internal void upgrade(Agent byWhom)
     {
         upgrading = true;
-        needsToUpgrade = type.getUpgradeNeeds().getCopy();
+        needsToUpgrade = getUpgradeNeeds().getCopy();
         byWhom.payWithoutRecord(this, getUpgradeCost());
     }
 

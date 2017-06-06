@@ -54,7 +54,7 @@ public class PopType
                 everyDayNeeds.set(new Storage(Product.Furniture, 1));
 
                 luxuryNeeds.set(new Storage(Product.Wine, 2));
-                luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
+                //luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
                 luxuryNeeds.set(new Storage(Product.Cars, 1f));
                 luxuryNeeds.set(new Storage(Product.Fuel, 1f));
                 luxuryNeeds.set(new Storage(Product.Airplanes, 1f));
@@ -66,7 +66,7 @@ public class PopType
                 everyDayNeeds.set(new Storage(Product.Clothes, 1f));
                 everyDayNeeds.set(new Storage(Product.Furniture, 1f));
                 everyDayNeeds.set(new Storage(Product.Wine, 2f));                
-                everyDayNeeds.set(new Storage(Product.Cement, 0.5f));
+                //everyDayNeeds.set(new Storage(Product.Cement, 0.5f));
                 everyDayNeeds.set(new Storage(Product.Fruit, 1f));
 
                 luxuryNeeds.set(new Storage(Product.Firearms, 1f));
@@ -92,7 +92,7 @@ public class PopType
                 luxuryNeeds.set(new Storage(Product.Furniture, 1));
                 luxuryNeeds.set(new Storage(Product.Wine, 2));
                 //luxuryNeeds.set(new Storage(Product.Metal, 1));
-                luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
+                //luxuryNeeds.set(new Storage(Product.Cement, 0.5f));
 
                 break;
             case PopTypes.Artisans:

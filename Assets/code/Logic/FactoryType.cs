@@ -15,7 +15,9 @@ public class FactoryType
     internal PrimitiveStorageSet resourceInput;
 
     /// <summary>Per 1 level upgrade</summary>
-    internal PrimitiveStorageSet upgradeResource = new PrimitiveStorageSet();
+    public readonly PrimitiveStorageSet upgradeResourceLowTier;
+    public readonly PrimitiveStorageSet upgradeResourceMediumTier;
+    public readonly PrimitiveStorageSet upgradeResourceHighTier;
     internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
 
     //internal ConditionsList conditionsBuild;
@@ -36,7 +38,9 @@ public class FactoryType
         else
             resourceInput = iresourceInput;
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
-        upgradeResource.set(new Storage(Product.Stone, 10f));        
+        upgradeResourceLowTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
+        upgradeResourceMediumTier= new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
+        upgradeResourceHighTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Cement, 10f),  new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
         enoughMoneyOrResourcesToBuild = new Condition(
           (delegate (System.Object forWhom)
           {
@@ -54,10 +58,7 @@ public class FactoryType
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
     }
-    internal PrimitiveStorageSet getUpgradeNeeds()
-    {
-        return upgradeResource;
-    }
+   
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());

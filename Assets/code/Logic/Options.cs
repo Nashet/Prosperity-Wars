@@ -46,7 +46,7 @@ public static class Options
 
     internal static readonly float PopAttritionFactor = 0.2f;
     internal static readonly float armyDefenceBonus = 0.5f;
-    
+
     public static readonly Procent PopGrowthSpeed = new Procent(0.002f);
     public static readonly Procent PopStarvationSpeed = new Procent(0.01f);
     ///<summary> demotion  - when popUnit can't fulfill needs</summary>
@@ -66,10 +66,12 @@ public static class Options
     public static readonly int PopSizeConsolidationLimit = 100;
     /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>
     public static readonly int PopAgeLimitToWipeOut = 250;
-    
+
     internal static readonly float MaxMoralChangePerTic = 0.05f;
     internal static readonly int PopRichStrataVotePower = 5;
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly int ProvinceChanceToGetCore = 25;
-    internal static readonly float CountryBadBoyWorldLimit = 0.2f;
+    internal static readonly float CountryBadBoyWorldLimit = 0.25f;
+    internal static readonly int FactoryMediumTierLevels = 8+1;
+    internal static readonly int FactoryMediumHighLevels = 15+1;
 }
