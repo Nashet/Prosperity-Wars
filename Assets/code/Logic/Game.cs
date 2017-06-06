@@ -33,7 +33,7 @@ public static class Game //: Date
 
     internal static StringBuilder threadDangerSB = new StringBuilder();
 
-    public readonly static Date date = new Date(0);
+    public static DateTime date = new DateTime(0);
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended;
@@ -910,7 +910,8 @@ public static class Game //: Date
     {
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
-        date.StepSimulation();
+        //date = date.AddDays(23);
+        date = date.AddYears(1);
         // strongly before PrepareForNewTick
         Game.market.simulatePriceChangeBasingOnLastTurnDate();
 

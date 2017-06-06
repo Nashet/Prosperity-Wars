@@ -836,7 +836,15 @@ public static class MyIEnumerableExtensions
         return source.FindAll(predicate).PickRandom();
         //return source.ElementAt(Game.random.Next(source.Count));
 
-    }   
+    }
+    //public static int getYearsSince(this DateTime source, DateTime date2)
+    //{
+    //    return source.Year - date2.Year;
+    //}
+    public static int getYearsSince(this DateTime date2)
+    {
+        return Game.date.Year - date2.Year;
+    }
 }
 public class DontUseThatMethod : Exception
 {
@@ -879,40 +887,47 @@ public class DontUseThatMethod : Exception
     {
     }
 }
-public class Date
-{
-    int date;
-    public Date(int date)
-    {
-        this.date = date;
-    }
-    /// <summary>
-    /// copy constructor
-    /// </summary>    
-    public Date(Date date)
-    {
-        this.date = date.date;
-    }
-    public int getDate()
-    {
-        return date;
-    }
-    public int getTimeSince(Date anotherDate)
-    {
-        return date - anotherDate.getDate();
-    }
+//DateTime
+//public struct Date 
+//{
+//    int blya;
+//    public Date(int date)
+//    {
+//        this.blya = date;
+//    }
+//    /// <summary>
+//    /// copy constructor
+//    /// </summary>    
+//    public Date(Date date)
+//    {
+//        this.blya = date.blya;
+//    }
+//    public int getDate()
+//    {
+//        return blya;
+//    }
+//    public int getTimeSince(Date anotherDate)
+//    {
+//        return blya - anotherDate.getDate();
+//    }
 
-    internal void StepSimulation()
-    {
-        date++;
-    }
+//    internal void StepSimulation()
+//    {
+//        //blya++;
+//        blya = 100;
+//    }
 
-    internal bool isItTimeOf(Date anotherDate)
-    {
-        return date == anotherDate.date;
-    }
-    public override string ToString()
-    {
-        return "year " + date;
-    }
-}
+//    internal bool isItTimeOf(Date anotherDate)
+//    {
+//        return blya == anotherDate.blya;
+//    }
+//    public override string ToString()
+//    {
+//        return "year " + blya;
+//    }
+
+//    internal void set(Date date)
+//    {
+//        this.blya = date.blya;
+//    }
+//}

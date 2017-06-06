@@ -35,7 +35,7 @@ abstract public class PopUnit : Producer
 
     public Value incomeTaxPayed = new Value(0);
 
-    private Date born;
+    private DateTime born;
     //if add new fields make sure it's implemented in second constructor and in merge()   
 
     static PopUnit()
@@ -73,7 +73,7 @@ abstract public class PopUnit : Producer
     }
     public PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
     {
-        born = new Date(Game.date);
+        born = Game.date;
         population = iamount;
         type = ipopType;
         culture = iculture;
@@ -246,7 +246,7 @@ abstract public class PopUnit : Producer
     public int getAge()
     {
         //return Game.date - born;
-        return Game.date.getTimeSince(born);
+        return born.getYearsSince();
     }
     
     public int getPopulation()

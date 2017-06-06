@@ -30,7 +30,7 @@ public class Country : Consumer
     Province capital;
 
     readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-    readonly Dictionary<Country, Date> myLastAttackDate = new Dictionary<Country, Date>();
+    readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
 
     public GeneralStaff staff;
 
@@ -66,9 +66,9 @@ public class Country : Consumer
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "Has my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
-            new Modifier (x=>Game.date.getTimeSince((x as Country).getLastAttackDateOn(this)) > 30
-            && Game.date.getTimeSince(this.getLastAttackDateOn(x as Country)) > 30,"Lives in peace with us", 0.005f, false),
-            new Modifier (x=>Game.date.getTimeSince((x as Country).getLastAttackDateOn(this)) > 0 &&Game.date.getTimeSince( (x as Country).getLastAttackDateOn(this)) < 10  ,"Recently attacked us", -0.05f, false),
+            new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
+            && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"Lives in peace with us", 0.005f, false),
+            new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 10  ,"Recently attacked us", -0.05f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"Weaker", -0.04f, false),
             new Modifier (delegate(System.Object x) { Country bully = this.isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.02f, false)
             });
@@ -134,12 +134,12 @@ public class Country : Consumer
             return false;
     }
 
-    public Date getLastAttackDateOn(Country country)
+    public DateTime getLastAttackDateOn(Country country)
     {
         if (myLastAttackDate.ContainsKey(country))
             return myLastAttackDate[country];
         else
-            return new Date(-2000000);
+            return  DateTime.MaxValue;
     }
     private bool hasCores(Country country)
     {

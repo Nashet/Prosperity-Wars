@@ -9,12 +9,12 @@ using System;
 public class Market : Agent//: PrimitiveStorageSet
 {
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
-    Date dateOfDSB = new Date(int.MaxValue);
+    DateTime dateOfDSB = new DateTime(int.MaxValue);
     PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
-    Date dateOfgetSupply = new Date(int.MaxValue);
-    Date dateOfgetProductionTotal = new Date(int.MaxValue);
-    Date dateOfgetTotalConsumption = new Date(int.MaxValue);
-    Date dateOfgetBouth = new Date(int.MaxValue);
+    DateTime dateOfgetSupply = new DateTime(int.MaxValue);
+    DateTime dateOfgetProductionTotal = new DateTime(int.MaxValue);
+    DateTime dateOfgetTotalConsumption = new DateTime(int.MaxValue);
+    DateTime dateOfgetBouth = new DateTime(int.MaxValue);
     PrimitiveStorageSet getSupplyBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getProductionTotalBuffer = new PrimitiveStorageSet();
     PrimitiveStorageSet getTotalConsumptionBuffer = new PrimitiveStorageSet();
@@ -111,7 +111,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         if (dateOfgetBouth != Game.date)
         {
-            //recalculate supplybuffer
+            //recalculate supply buffer
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
@@ -278,7 +278,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         if (dateOfgetSupply != Game.date)
         {
-            //recalculate supplybuffer
+            //recalculate supply buffer
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
@@ -321,7 +321,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         if (dateOfgetProductionTotal != Game.date)
         {
-            //recalculate Productionbuffer
+            //recalculate Production buffer
             foreach (Storage sup in marketPrice)
             {
                 result = 0;
@@ -768,7 +768,7 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         float balance;
         //if (dateOfDSB != Game.date)
-        if (Game.date.isItTimeOf(dateOfDSB))
+        if (dateOfDSB != Game.date)
         // recalculate DSBbuffer
         {
 
@@ -799,7 +799,7 @@ public class Market : Agent//: PrimitiveStorageSet
 
                 DSBbuffer.set(new Storage(stor.getProduct(), balance));
             }
-            dateOfDSB = Game.date;
+            dateOfDSB=Game.date;
         }
         Storage tmp = DSBbuffer.findStorage(pro);
 

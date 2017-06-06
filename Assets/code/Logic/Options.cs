@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -75,5 +76,5 @@ public static class Options
     internal static readonly float CountryBadBoyWorldLimit = 0.25f;
     internal static readonly int FactoryMediumTierLevels = 8+1;
     internal static readonly int FactoryMediumHighLevels = 15+1;
-    
+    internal static readonly int CountryTimeToForgetBattle = 30;
 }
