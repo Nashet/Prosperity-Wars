@@ -88,11 +88,11 @@ public class Province
             return "none";
         else
             if (cores.Count == 1)
-            return cores[0].ToString();
+            return cores[0].getName();
         else
         {
             StringBuilder sb = new StringBuilder();
-            cores.ForEach(x => sb.Append(x).Append("; "));
+            cores.ForEach(x => sb.Append(x.getName()).Append("; "));
             return sb.ToString();
         }
 

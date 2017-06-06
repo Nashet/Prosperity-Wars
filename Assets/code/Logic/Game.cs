@@ -403,8 +403,9 @@ public class Game
     }
     void generateMapImage()
     {
-        //mapImage = new Texture2D(200, 100);
+        
         mapImage = new Texture2D(100, 50);
+        //mapImage = new Texture2D(200, 100);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;

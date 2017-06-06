@@ -68,7 +68,7 @@ public class Country : Consumer
             && Game.date - this.getLastAttackDateOn(x as Country) > 30,"Lives in peace with us", 0.005f, false),
             new Modifier (x=>Game.date - (x as Country).getLastAttackDateOn(this) > 0 && Game.date - (x as Country).getLastAttackDateOn(this) < 10  ,"Recently attacked us", -0.05f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"Weaker", -0.04f, false),
-            new Modifier (delegate(System.Object x) { Country bully = this.isThereBadboyCountry(); return bully != null && bully!= x as Country; },"There is bigger threat to the world", 0.02f, false)
+            new Modifier (delegate(System.Object x) { Country bully = this.isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.02f, false)
             });
         bank = new Bank();
         staff = new GeneralStaff(this);
@@ -113,7 +113,12 @@ public class Country : Consumer
         float worldStrenght = 0f;
         foreach (var item in Country.getExisting())
             worldStrenght += item.getStreght();
-        return Country.allCountries.Find(x => x.getStreght() >= worldStrenght * Options.CountryBadBoyWorldLimit);
+        float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
+        Country found = Country.allCountries.Find(x => x.getStreght() >= streghtLimit);
+        if (found == Country.NullCountry)
+            return null;
+        else
+            return found;
 
     }
 
@@ -463,7 +468,9 @@ public class Country : Consumer
                 //    }                
 
                 var possibleTarget = getNeighborProvinces().MinBy(x => modMyOpinionOfXCountry.getModifier(x.getCountry()));
-                if (possibleTarget != null && this.getStreght() > 0 && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f)
+                if (possibleTarget != null && this.getStreght() > 0 
+                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f || possibleTarget.getCountry() == Country.NullCountry) 
+                    )
                 //if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
                 //    || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
                 {

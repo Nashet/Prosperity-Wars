@@ -516,10 +516,14 @@ public class Factory : Producer
 
         }
     }
+
+    int getMaxHiringSpeed()
+    {
+        return Options.maxFactoryFireHireSpeed * getLevel();
+    }
     /// <summary>
     /// max - max capacity
-    /// </summary>
-    /// <returns></returns>
+    /// </summary>    
     public int HowMuchWorkForceWants()
     {
         //if (getLevel() == 0) return 0;
@@ -528,25 +532,26 @@ public class Factory : Producer
 
         int difference = wants - getWorkForce();
 
+        int maxHiringSpeed = getMaxHiringSpeed();
         // clamp difference in Options.maxFactoryFireHireSpeed []
-        if (difference > Options.maxFactoryFireHireSpeed)
-            difference = Options.maxFactoryFireHireSpeed;
+        if (difference > maxHiringSpeed)
+            difference = maxHiringSpeed;
         else
-            if (difference < -1 * Options.maxFactoryFireHireSpeed) difference = -1 * Options.maxFactoryFireHireSpeed;
+            if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
 
         //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
         if (difference > 0 && !justHiredPeople && getInputFactor() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
-            difference = -1 * Options.maxFactoryFireHireSpeed;
+            difference = -1 * maxHiringSpeed;
 
         //fire people if unprofitable. 
         if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
-            difference = -1 * Options.maxFactoryFireHireSpeed;
+            difference = -1 * maxHiringSpeed;
 
-        // just dont't hire more..
+        // just don't hire more..
         if (difference > 0 && (getProfit() < 0f || getInputFactor() < 0.95f) && !isSubsidized())
             difference = 0;
 
-        //todo optimaze getWorkforce()
+        //todo optimize getWorkforce()
         int result = getWorkForce() + difference;
         if (result < 0) return 0;
         return result;
