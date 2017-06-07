@@ -59,6 +59,6 @@ public class DiplomacyPanel : DragPanel
     }
     public void onRegainControlClick()
     {
-        Game.regainControlToPlayer();
+        Game.takePlayerControlOfThatCountry(selectedCountry);
     }
 }

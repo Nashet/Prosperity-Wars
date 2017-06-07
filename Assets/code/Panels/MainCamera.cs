@@ -89,6 +89,24 @@ public class MainCamera : MonoBehaviour
         ;
         return System.Convert.ToInt32(mesh.name);
     }
+
+    internal static void refreshAllActive()
+    {
+        if (topPanel.isActiveAndEnabled) topPanel.refresh();
+        if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
+        if (populationPanel.isActiveAndEnabled) populationPanel.refresh();
+        if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
+        if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
+        if (productionWindow.isActiveAndEnabled) productionWindow.refresh();
+        if (goodsPanel.isActiveAndEnabled) goodsPanel.refresh();
+        if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh();
+        if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
+        if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
+        if (financePanel.isActiveAndEnabled) financePanel.refresh();
+        if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
+        if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
+    }
+
     internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
@@ -135,22 +153,8 @@ public class MainCamera : MonoBehaviour
         if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
         {
             Game.stepSimulation();
-
-            if (topPanel.isActiveAndEnabled) topPanel.refresh();
-            if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
-            if (populationPanel.isActiveAndEnabled) populationPanel.refresh();
-            if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
-            if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
-            if (productionWindow.isActiveAndEnabled) productionWindow.refresh();
-            if (goodsPanel.isActiveAndEnabled) goodsPanel.refresh();
-            if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh();
-            if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
-            if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
-            if (financePanel.isActiveAndEnabled) financePanel.refresh();
-            if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
-            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
-        }
-        
+            refreshAllActive();
+        }        
 
         if (Game.selectedProvince != null)
             provincePanel.refresh(Game.selectedProvince);

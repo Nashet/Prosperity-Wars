@@ -68,13 +68,12 @@ public class BuildPanel : DragPanel
             if (buildSomething == true)
             {
                 // voteButton.interactable = false;
-                MainCamera.topPanel.refresh();
-                if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
+                MainCamera.refreshAllActive();
                 selectedFactoryType = null;
 
                 //Hide();
                 //show();
-                refresh();
+                //refresh();
             }
         }
     }

@@ -73,9 +73,14 @@ public static class Game //: Date
         //MainCamera.cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
 
-    internal static void regainControlToPlayer()
+    internal static void takePlayerControlOfThatCountry(Country country)
     {
-        surrended = false;
+        if (country != Country.NullCountry)
+        {
+            surrended = false;
+            Player = country;
+            MainCamera.refreshAllActive();
+        }
     }
 
     public static void givePlayerControlToAI()
@@ -199,9 +204,9 @@ public static class Game //: Date
     {
         mapMode = newMapMode;
         foreach (var item in Province.allProvinces)
-        {            
+        {
             item.updateColor(getProvinceColorAccordingToMapMode(item));
-        }       
+        }
     }
 
     internal static void continueSimulation()

@@ -5,9 +5,7 @@ using UnityEngine.EventSystems;
 
 
 public class FactoryPanel : DragPanel//for dragging
-{
-
-    //Tooltip
+{    
     public Button upgradeButton, reopenButton, destroyButton, buyButton, sellButton, nationalizeButton;
     public Toggle subidize, dontHireOnSubsidies;
     public Slider priority;
@@ -197,6 +195,7 @@ public class FactoryPanel : DragPanel//for dragging
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
         MainCamera.topPanel.refresh();
+        if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.refresh();
     }
     public void onUpgradeClick()
     {
@@ -205,6 +204,7 @@ public class FactoryPanel : DragPanel//for dragging
             shownFactory.upgrade(Game.Player);
             if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
             MainCamera.topPanel.refresh();
+            if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.refresh();
             this.refresh();
         }
     }
