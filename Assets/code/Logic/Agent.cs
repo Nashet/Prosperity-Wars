@@ -178,9 +178,10 @@ public class Agent
         if (canPay(howMuch))
         {
             if (!canPayInCash(howMuch) && bank != null)
-                //bank.giveMoney(this, new Value(howMuch.get() - cash.get()));
+            {
+                bank.giveLackingMoney(this, howMuch);
                 bank.giveLackingMoney(this, howMuch.multipleOutside(5));
-
+            }
             whom.cash.add(howMuch);
             this.cash.subtract(howMuch);
             return true;

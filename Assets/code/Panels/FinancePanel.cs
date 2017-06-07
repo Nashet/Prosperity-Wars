@@ -122,15 +122,15 @@ public class FinancePanel : DragPanel
             loan.multiple(loanLimit.value);
         if (Game.Player.bank.canGiveMoney(Game.Player, loan))
             Game.Player.bank.giveMoney(Game.Player, loan);
-        refresh();
+        MainCamera.refreshAllActive();
     }
     public void onPutInDeposit()
     {
         if (loanLimit.value == 1f)
             Game.Player.bank.takeMoney(Game.Player, new Value(Game.Player.cash));
         else
-            Game.Player.bank.takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));
-        refresh();
+            Game.Player.bank.takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));        
+        MainCamera.refreshAllActive();
     }
     public void onLoanLimitChange()
     {

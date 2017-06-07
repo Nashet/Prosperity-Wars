@@ -213,7 +213,7 @@ public class FactoryPanel : DragPanel//for dragging
         //if (shownFactory.whyCantDestroyFactory() == null)
         {
             shownFactory.destroyImmediately();
-            if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
+            MainCamera.refreshAllActive();
         }
     }
     public void onBuyClick()
@@ -227,7 +227,7 @@ public class FactoryPanel : DragPanel//for dragging
     public void onNationalizeClick()
     {
         shownFactory.changeOwner(Game.Player);
-        refresh();
+        MainCamera.refreshAllActive();
     }
 
 }
