@@ -8,7 +8,7 @@ public class Factory : Producer
     //public enum PopTypes { Forestry, GoldMine, MetalMine };
 
     internal FactoryType type;
-    protected static int workForcePerLevel = 1000;
+    protected static readonly int workForcePerLevel = 1000;
     protected int level = 0;
     /// <summary>shownFactory in a process of building - level 1 </summary>
     private bool building = true;
@@ -35,8 +35,8 @@ public class Factory : Producer
 
     internal ModifiersList modifierEfficiency;
     internal Modifier modifierHasResourceInProvince, modifierLevelBonus,
-        modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised;
-    internal Condition modifierNotBelongsToCountry;
+        modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised        ;
+    internal Condition conNotBelongsToCountry;//, conIsBuilding;
 
     internal Factory(Province province, Agent inowner, FactoryType intype) : base(province.getCountry().bank)
     { //assuming this is level 0 building
@@ -61,11 +61,11 @@ public class Factory : Producer
            new StringBuilder("Invented ").Append(Invention.mining.ToString()).ToString(), 50f, false);
         modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government", -20f, false);
 
-        modifierNotBelongsToCountry = new Condition(
+        conNotBelongsToCountry = new Condition(
            x => !(factoryOwner is Country),
           "Doesn't belongs to government", false);
         modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized", -10f, false);
-        modifierEfficiency = new ModifiersList(new List<Condition>()
+        modifierEfficiency = new ModifiersList(new List<Condition>
         {
             //x=>(x as Country).isInvented(InventionType.steamPower)
             new Modifier(Invention.SteamPowerInvented , 25f, false),
@@ -78,9 +78,10 @@ public class Factory : Producer
             modifierBelongsToCountry, modifierIsSubsidised
         });
         Condition factoryPlacedInOurCountry = new Condition((forWhom) => base.province.getCountry() == forWhom, "Enterprise placed in our country", false);
-        conditionsUpgrade = new ConditionsList(new List<Condition>()
+        conditionsUpgrade = new ConditionsList(new List<Condition>
         {
             new Condition(x=>  base.province.getCountry().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+             //Economy.isNotLF,
             new Condition(x=> !isUpgrading() , "Not upgrading", false),
             new Condition(x=>  !isBuilding(), "Not building", false),
             new Condition(x=> isWorking(), "Open", false),
@@ -89,7 +90,7 @@ public class Factory : Producer
             {
                 Value cost = this.getUpgradeCost();
                 return (forWhom as Agent).canPay(cost);
-            }, delegate ()
+            }, delegate 
             {
                 Game.threadDangerSB.Clear();
                 Game.threadDangerSB.Append("Have ").Append(getUpgradeCost()).Append(" coins");
@@ -98,16 +99,18 @@ public class Factory : Producer
                 ,factoryPlacedInOurCountry
         });
 
-        conditionsClose = new ConditionsList(new List<Condition>()
+        conditionsClose = new ConditionsList(new List<Condition>
         {
             new Condition(x=>  base.province.getCountry().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            //Economy.isNotLF,
             new Condition(x=>  !isBuilding(),  "Not building", false),
             new Condition(x=>   isWorking(),  "Open", false),
             factoryPlacedInOurCountry
         });
-        conditionsReopen = new ConditionsList(new List<Condition>()
+        conditionsReopen = new ConditionsList(new List<Condition>
         {
             new Condition(x=>  base.province.getCountry().economy.status != Economy.LaissezFaire || x is PopUnit, "Economy policy is not Laissez Faire", true),
+            //Economy.isNotLF,
             new Condition(x=>  !isBuilding(), "Not building", false),
             new Condition(x=> !isWorking(), "Close", false),
             new Condition(x=>  (x as Agent).canPay(getReopenCost()),  delegate () {
@@ -117,7 +120,7 @@ public class Factory : Producer
                 }, true),
                 factoryPlacedInOurCountry
         });
-        conditionsDestroy = new ConditionsList(new List<Condition>() { Economy.isNotLF, factoryPlacedInOurCountry });
+        conditionsDestroy = new ConditionsList(new List<Condition> { Economy.isNotLF, factoryPlacedInOurCountry });
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
         conditionsSell = ConditionsList.IsNotImplemented; // !Planned and ! State fabricIsOur
 
@@ -125,23 +128,23 @@ public class Factory : Producer
         conditionsBuy = ConditionsList.IsNotImplemented; // ! LF and !Planned fabricIsOur
 
         // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-        conditionsNatinalize = new ConditionsList(new List<Condition>()
+        conditionsNatinalize = new ConditionsList(new List<Condition>
         {
-            Economy.isNotLF, Economy.isNotInterventionism, modifierNotBelongsToCountry, factoryPlacedInOurCountry
+            Economy.isNotLF, Economy.isNotInterventionism, conNotBelongsToCountry, factoryPlacedInOurCountry
         }); //!LF and ! Inter
 
 
-        conditionsSubsidize = new ConditionsList(new List<Condition>()
+        conditionsSubsidize = new ConditionsList(new List<Condition>
         {
             Economy.isNotLF, Economy.isNotNatural, factoryPlacedInOurCountry
         });
 
-        conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>()
+        conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>
         {
             Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented,factoryPlacedInOurCountry
         });
 
-        conditionsChangePriority = new ConditionsList(new List<Condition>() { Economy.isNotLF, Condition.IsNotImplemented, factoryPlacedInOurCountry });
+        conditionsChangePriority = new ConditionsList(new List<Condition> { Economy.isNotLF, Condition.IsNotImplemented, factoryPlacedInOurCountry });
 
 
     }
@@ -501,7 +504,7 @@ public class Factory : Producer
 
             //too allocate workers form other popTypes
             if (getFreeJobSpace() > 100 && province.getPopulationAmountByType(PopType.workers) < 600
-                && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)
+                && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)// in that case float can store 1 exactly
                 salary.add(0.01f);
 
             // to help factories catch up other factories salaries
@@ -1008,87 +1011,4 @@ public class Factory : Producer
 //        return "Sawmill";
 //    }
 //}
-
-public class PopLinkage
-{
-    public PopUnit pop;
-    public int amount;
-    internal PopLinkage(PopUnit p, int a)
-    {
-        pop = p;
-        amount = a;
-    }
-}
-
-/// <summary>
-/// Represent anyone who can consume (but can't produce by itself)
-/// Stores data about last consumption
-/// </summary>
-public abstract class Consumer : Agent
-{
-    public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
-    public abstract void buyNeeds();
-    //public Consumer() : base(this as Country) { }
-    public Consumer(Bank bank) : base(0, bank) { }
-    //public Consumer(CountryWallet wallet) : base(wallet) { }
-    public virtual void setStatisticToZero()
-    {
-        moneyIncomethisTurn.set(0f);
-        consumedLastTurn.copyDataFrom(consumedTotal); // temp   
-        consumedTotal.setZero();
-        consumedInMarket.setZero();
-    }
-}
-/// <summary>
-/// Represents anyone who can produce, store and sell product (1 product)
-/// also linked to Province
-/// </summary>
-public abstract class Producer : Consumer
-{
-    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
-    public Storage storageNow;
-    /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
-    public Storage gainGoodsThisTurn;
-    /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
-    public Storage sentToMarket;
-    //protected Country owner; //Could be any Country or POP
-    public Province province;
-
-    /// <summary> /// Return in pieces  /// </summary>    
-    abstract internal float getLocalEffectiveDemand(Product product);
-    public abstract void simulate(); ///!!!
-    public abstract void produce();
-
-    public abstract void payTaxes();
-    public Producer(Bank bank) : base(bank)
-    { }
-    override public void setStatisticToZero()
-    {
-        base.setStatisticToZero();
-        gainGoodsThisTurn.set(0f);
-        sentToMarket.set(0f);
-    }
-    public void getMoneyFromMarket()
-    {
-        if (sentToMarket.get() > 0f)
-        {
-            Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
-            if (DSB.get() > 1f) DSB.set(1f);
-            Storage realSold = new Storage(sentToMarket);
-            realSold.multiple(DSB);
-            Value cost = new Value(Game.market.getCost(realSold));
-            storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
-            if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
-            {
-                Game.market.pay(this, cost);
-
-                //Game.market.sentToMarket.subtract(realSold);
-            }
-            else if (Game.market.HowMuchMoneyCanNotPay(cost).get() > 10f)
-                Debug.Log("Failed market - producer payment: " + Game.market.HowMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
-        }
-    }
-}
 

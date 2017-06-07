@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 abstract public class PopUnit : Producer
 {
     ///<summary>buffer popList of demoted. To avoid iteration breaks</summary>
-    public static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
+    public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
 
     public Procent loyalty;
     int population;
@@ -27,7 +27,7 @@ abstract public class PopUnit : Producer
     private int daysUpsetByForcedReform;
     private bool didntGetPromisedUnemloymentSubsidy;
 
-    public static ModifiersList modifiersLoyaltyChange;
+    public readonly static ModifiersList modifiersLoyaltyChange;
 
     static Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies,
@@ -35,7 +35,7 @@ abstract public class PopUnit : Producer
 
     public Value incomeTaxPayed = new Value(0);
 
-    private DateTime born;
+    private readonly DateTime born;
     //if add new fields make sure it's implemented in second constructor and in merge()   
 
     static PopUnit()
@@ -64,14 +64,14 @@ abstract public class PopUnit : Producer
 
 
         //MinorityPolicy.IsResidency
-        modifiersLoyaltyChange = new ModifiersList(new List<Condition>()
+        modifiersLoyaltyChange = new ModifiersList(new List<Condition>
         {
            modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled,
         modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
             modifierMinorityPolicy
 });
     }
-    public PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
+    protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
     {
         born = Game.date;
         population = iamount;
@@ -85,16 +85,16 @@ abstract public class PopUnit : Producer
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
         province = where;
-        
+
     }
     /// <summary> Creates new PopUnit basing on part of other PopUnit.
     /// And transfers sizeOfNewPop population.
     /// </summary>    
-    public PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where.getCountry().bank)
+    protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where.getCountry().bank)
     {
         born = Game.date;
         PopListToAddToGeneralList.Add(this);
-       // makeModifiers();
+        // makeModifiers();
 
         // here should be careful copying of popUnit data
         //And careful editing of old unit
@@ -248,7 +248,7 @@ abstract public class PopUnit : Producer
         //return Game.date - born;
         return born.getYearsSince();
     }
-    
+
     public int getPopulation()
     { return population; }
     internal int howMuchCanMobilize()
@@ -568,7 +568,7 @@ abstract public class PopUnit : Producer
     /// <param name="needs"></param>
     /// <param name="maxLevel"></param>
     /// <param name="howDeep"></param>
-    private void consumeEveryDayAndLuxury(List<Storage> needs, float maxLevel, byte howDeep)
+    private void consumeEveryDayAndLuxury(List<Storage> needs, byte howDeep)
     {
         howDeep--;
         //List<Storage> needs = getEveryDayNeeds();
@@ -579,7 +579,7 @@ abstract public class PopUnit : Producer
                     storageNow.subtract(need);
                     consumedTotal.add(need);
                     needsFullfilled.set(2f / 3f);
-                    if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), 0.99f, howDeep);
+                    if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
                 }
                 else
                 {
@@ -613,12 +613,12 @@ abstract public class PopUnit : Producer
         {
             Agent reserv = new Agent(0f, null);
             payWithoutRecord(reserv, cash.multipleOutside(Options.savePopMoneyReserv));
-            lifeNeeds = (getRealEveryDayNeeds());
-            Value needsCost = Game.market.getCost(lifeNeeds);
+            var everyDayNeeds = (getRealEveryDayNeeds());
+            Value needsCost = Game.market.getCost(everyDayNeeds);
             float moneyWas = cash.get();
             Value spentMoney;
 
-            foreach (Storage need in lifeNeeds)
+            foreach (Storage need in everyDayNeeds)
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                 Game.market.buy(this, need, null);
@@ -628,10 +628,10 @@ abstract public class PopUnit : Producer
                 needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             if (getEveryDayNeedsFullfilling().get() >= 0.95f)
             {
-                lifeNeeds = (getRealLuxuryNeeds());
-                needsCost = Game.market.getCost(lifeNeeds);
+                var luxuryNeeds = (getRealLuxuryNeeds());
+                needsCost = Game.market.getCost(luxuryNeeds);
                 moneyWas = cash.get();
-                foreach (Storage need in lifeNeeds)
+                foreach (Storage need in luxuryNeeds)
                 {
                     Game.market.buy(this, need, null);
                     //NeedsFullfilled.set(0.66f + Game.market.Consume(this, need).get() / 3f);
@@ -664,7 +664,7 @@ abstract public class PopUnit : Producer
                     storageNow.subtract(need);
                     consumedTotal.set(need);
                     needsFullfilled.set(1f / 3f);
-                    consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2f / 3f, 2);
+                    consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
                 }
                 else
                 {
@@ -700,8 +700,7 @@ abstract public class PopUnit : Producer
     public void PayTaxToAllAristocrats()
     {
         {
-            Value taxSize = new Value(0);
-            taxSize = gainGoodsThisTurn.multipleOutside(province.getCountry().serfdom.status.getTax());
+            Value taxSize = gainGoodsThisTurn.multipleOutside(province.getCountry().serfdom.status.getTax());
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
@@ -868,9 +867,9 @@ abstract public class PopUnit : Producer
     public List<PopType> getPossibeDemotionsList()
     {
         List<PopType> result = new List<PopType>();
-        foreach (PopType type in PopType.allPopTypes)
+        foreach (PopType nextType in PopType.allPopTypes)
             if (canThisDemoteInto(this.type))
-                result.Add(type);
+                result.Add(nextType);
         return result;
     }
 

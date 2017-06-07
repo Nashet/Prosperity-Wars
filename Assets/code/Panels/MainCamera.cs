@@ -132,7 +132,7 @@ public class MainCamera : MonoBehaviour
                     buildPanel.refresh();
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
-                
+                Province.findByID(number).updateColor(Color.gray);
             }
             
         }
