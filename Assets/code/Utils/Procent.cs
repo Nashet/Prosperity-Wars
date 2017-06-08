@@ -17,21 +17,21 @@ public class Procent : Value
     {
 
     }
-    public static Procent makeProcent(Value numerator, Value denominator)
+    public static Procent makeProcent(Value numerator, Value denominator, bool showMessageAboutOperationFails = true)
     {
         if (denominator.get() == 0f)
         {
-            // Debug.Log("Division by zero in Procent.makeProcent(Storage)");
+            if (showMessageAboutOperationFails)Debug.Log("Division by zero in Procent.makeProcent(Storage)");
             return new Procent(0f);
         }
         else
             return new Procent(numerator.get() / denominator.get());
     }
-    public static Procent makeProcent(int numerator, int denominator)
+    public static Procent makeProcent(int numerator, int denominator, bool showMessageAboutOperationFails = true)
     {
         if (denominator == 0)
         {
-            Debug.Log("Division by zero in Procent.makeProcent()");
+           if(showMessageAboutOperationFails) Debug.Log("Division by zero in Procent.makeProcent()");
             return new Procent(0f);
         }
         else

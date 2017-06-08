@@ -173,7 +173,7 @@ public class Agent
     /// <summary>
     /// checks inside. Wouldn't pay if can't
     /// </summary>    
-    public bool payWithoutRecord(Agent whom, Value howMuch)
+    public bool payWithoutRecord(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
     {
         if (canPay(howMuch))
         {
@@ -188,7 +188,8 @@ public class Agent
         }
         else
         {
-            Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+            if(showMessageAboutNegativeValue)
+                Debug.Log("Not enough money to pay in Agent.payWithoutRecord");            
             return false;
         }
 

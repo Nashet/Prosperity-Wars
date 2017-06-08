@@ -20,7 +20,7 @@ public class Factory : Producer
     protected Value salary = new Value(0);
     Agent factoryOwner;
     internal PrimitiveStorageSet needsToUpgrade;
-    internal PrimitiveStorageSet inputReservs = new PrimitiveStorageSet();
+    internal readonly PrimitiveStorageSet inputReservs = new PrimitiveStorageSet();
 
     protected List<PopLinkage> hiredWorkForce = new List<PopLinkage>();
     private static int xMoneyReservForResources = 10;
@@ -35,7 +35,7 @@ public class Factory : Producer
 
     internal ModifiersList modifierEfficiency;
     internal Modifier modifierHasResourceInProvince, modifierLevelBonus,
-        modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised        ;
+        modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised;
     internal Condition conNotBelongsToCountry;//, conIsBuilding;
 
     internal Factory(Province province, Agent inowner, FactoryType intype) : base(province.getCountry().bank)
@@ -90,7 +90,7 @@ public class Factory : Producer
             {
                 Value cost = this.getUpgradeCost();
                 return (forWhom as Agent).canPay(cost);
-            }, delegate 
+            }, delegate
             {
                 Game.threadDangerSB.Clear();
                 Game.threadDangerSB.Append("Have ").Append(getUpgradeCost()).Append(" coins");
@@ -383,7 +383,7 @@ public class Factory : Producer
                     {
                         PopUnit payer = factoryOwner as PopUnit;
 
-                        if (payer.storageNow.canPay(link.pop.storageNow, howMuchPay))
+                        if (payer.storageNow.has(link.pop.storageNow, howMuchPay))
                         {
                             payer.storageNow.send(link.pop.storageNow, howMuchPay);
                             link.pop.gainGoodsThisTurn.add(howMuchPay);
@@ -474,7 +474,15 @@ public class Factory : Producer
     private void consumeInputResources(List<Storage> list)
     {
         foreach (Storage next in list)
-            inputReservs.subtract(next);
+        {
+            inputReservs.subtract(next, false);
+            //var storage = inputReservs.findStorage(next.getProduct());
+            //if (storage != null)
+            //    if (storage.isBiggerOrEqual(next))
+            //        storage.subtract(next);
+            //    else
+            //        storage.setZero();
+        }
     }
 
 
@@ -682,7 +690,7 @@ public class Factory : Producer
             if (reserv == null)
                 result.Add(howMuchWantBuy);
             else
-                if (howMuchWantBuy.canPay(reserv))
+                if (howMuchWantBuy.has(reserv))
             {
                 howMuchWantBuy.subtract(reserv);
                 result.Add(howMuchWantBuy);
@@ -749,8 +757,8 @@ public class Factory : Producer
                 upgrading = false;
                 needsToUpgrade.setZero();
                 daysInConstruction = 0;
-                inputReservs.subtract(type.getBuildNeeds());
-                inputReservs.subtract(getUpgradeNeeds());
+                inputReservs.subtract(type.getBuildNeeds(), false);
+                inputReservs.subtract(getUpgradeNeeds(), false);
 
                 reopen(this);
             }
