@@ -139,7 +139,7 @@ public class Bank : Agent
     /// </summary>    
     internal Value howMuchCanGive(Agent agent)
     {
-        Value wouldGive = cash.subtractOutside(getMinimalReservs());
+        Value wouldGive = cash.subtractOutside(getMinimalReservs(), false);
         if (agent.deposits.isBiggerThan(wouldGive))
         {
             wouldGive = new Value(agent.deposits); // increase wouldGive to deposits size

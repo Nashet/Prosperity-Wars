@@ -799,7 +799,7 @@ public class Market : Agent//: PrimitiveStorageSet
 
                 DSBbuffer.set(new Storage(stor.getProduct(), balance));
             }
-            dateOfDSB=Game.date;
+            dateOfDSB = Game.date;
         }
         Storage tmp = DSBbuffer.findStorage(pro);
 

@@ -340,7 +340,7 @@ public class Province
                 allPopulation += pop.getPopulation();
                 result.add(pop.needsFullfilled.multipleOutside(pop.getPopulation()));
             }
-            return result.divideOutside(allPopulation); ;
+            return result.divideOutside(allPopulation); 
         }
         else/// add default population - no, don't, we now fixed it
         {

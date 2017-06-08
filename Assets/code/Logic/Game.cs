@@ -36,7 +36,7 @@ public static class Game //: Date
     public static DateTime date = new DateTime(0);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended;
+    private static bool surrended = true;
     static Game()
     {
         Application.runInBackground = true;
