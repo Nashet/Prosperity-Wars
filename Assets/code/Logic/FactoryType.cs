@@ -107,7 +107,7 @@ public class FactoryType
                 return new Value(0);
         Value income = Game.market.getCost(basicProduction);
         Value outCome = Game.market.getCost(resourceInput);
-        return income.subtractOutside(outCome);
+        return income.subtractOutside(outCome, false);
     }
     internal Procent getPossibleMargin(Province province)
     {

@@ -50,7 +50,7 @@ public class Country : Consumer
     readonly Modifier modXHasMyCores;
     public ModifiersList modMyOpinionOfXCountry;
 
-    
+
 
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
@@ -139,7 +139,7 @@ public class Country : Consumer
         if (myLastAttackDate.ContainsKey(country))
             return myLastAttackDate[country];
         else
-            return  DateTime.MaxValue;
+            return DateTime.MaxValue;
     }
     private bool hasCores(Country country)
     {
@@ -447,7 +447,7 @@ public class Country : Consumer
             if (item != this)
             {
                 var procent = getRelationTo(item);
-                procent.add(modMyOpinionOfXCountry.getModifier(item));
+                procent.add(modMyOpinionOfXCountry.getModifier(item), false);
                 procent.clamp100();
             }
         //if (opinionOf.TryGetValue(item, out opinion))
@@ -470,8 +470,8 @@ public class Country : Consumer
                 //    }                
 
                 var possibleTarget = getNeighborProvinces().MinBy(x => modMyOpinionOfXCountry.getModifier(x.getCountry()));
-                if (possibleTarget != null && this.getStreght() > 0 
-                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f || possibleTarget.getCountry() == Country.NullCountry) 
+                if (possibleTarget != null && this.getStreght() > 0
+                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f || possibleTarget.getCountry() == Country.NullCountry)
                     )
                 //if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
                 //    || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)

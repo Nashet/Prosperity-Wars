@@ -32,11 +32,11 @@ public class Value
         value += invalue.value;
     }
 
-    public void add(float invalue)
+    public void add(float invalue, bool showMessageAboutNegativeValue = true)
     {
-        if (invalue + get() < float.Epsilon)
+        if (invalue + get() < 0f)
         {
-            Debug.Log("Value Add-float failed");
+            if (showMessageAboutNegativeValue) Debug.Log("Value Add-float failed");
             set(0);
         }
         else
@@ -48,11 +48,11 @@ public class Value
         result.add(deposits);
         return result;
     }
-    public bool subtract(Value invalue)
+    public bool subtract(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.value > value)
         {
-            Debug.Log("Value subtract failed");
+            if (showMessageAboutNegativeValue) Debug.Log("Value subtract gave negative result");
             set(0);
             return false;
         }
@@ -62,21 +62,25 @@ public class Value
             return true;
         }
     }
-    public Value subtractOutside(Value invalue)
+    public Value subtractOutside(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.value > value)
         {
-            Debug.Log("Value subtrackOutside failed");
+            if (showMessageAboutNegativeValue) Debug.Log("Value subtrackOutside failed");
             return new Value(0);
         }
         else
             return new Value((this.value - invalue.value) / (float)precision);
     }
-    public void subtract(float invalue)
+    public void subtract(float invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue > value)
-            Debug.Log("Value subtract failed");
-        value -= (uint)Mathf.RoundToInt(invalue * precision);
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value subtract failed");
+            value = 0;
+        }
+        else
+            value -= (uint)Mathf.RoundToInt(invalue * precision);
     }
     //public void multiple(Value invalue)
     //{
@@ -87,72 +91,108 @@ public class Value
 
 
     /// <summary>Keeps result inside</summary>    
-    public void multiple(Value invalue)
+    public void multiple(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() < 0)
-            Debug.Log("Value multiple failed");
-        set(invalue.get() * this.get());
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            value = 0;
+        }
+        else
+            set(invalue.get() * this.get());
     }
     /// <summary>Keeps result inside</summary>    
-    public void multiple(float invalue)
+    public void multiple(float invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue < 0f)
-            Debug.Log("Value multiple failed");
-        set(invalue * this.get());
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            value = 0;
+        }
+        else
+            set(invalue * this.get());
     }
     /// <summary>
     /// returns new value
     /// </summary>
-    internal Value multipleOutside(int invalue)
+    internal Value multipleOutside(int invalue, bool showMessageAboutOperationFails = true)
     {
-        //if (invalue.get() < 0)
-        //  Debug.Log("Value multiple failed");
-        return new Value(get() * invalue);
+        if (invalue < 0)
+        {
+            if (showMessageAboutOperationFails) Debug.Log("Value multiple failed");
+            return new Value(0f);
+        }
+        else
+            return new Value(get() * invalue);
     }
-    internal Value multipleOutside(float invalue)
+    internal Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
     {
-        //if (invalue.get() < 0)
-        //  Debug.Log("Value multiple failed");
-        return new Value(get() * invalue);
+        if (invalue < 0f)
+        {
+            if (showMessageAboutOperationFails) Debug.Log("Value multiple failed");
+            return new Value(0f);
+        }
+        else
+            return new Value(get() * invalue);
     }
     /// <summary>
     /// returns new value
     /// </summary>    
-    public Value multipleOutside(Value invalue)
+    public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() < 0)
-            Debug.Log("Value multiple failed");
-        return new Value(get() * invalue.get());
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            return new Value(0);
+        }
+        else
+            return new Value(get() * invalue.get());
     }
     /// <summary>Keeps result inside</summary>    
-    public void divide(Value invalue)
+    public void divide(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() <= 0)
-            Debug.Log("Value multiple failed");
-        set(this.value / (float)invalue.value);
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            value = 0;
+        }
+        else
+            set(this.value / (float)invalue.value);
     }
     /// <summary>Keeps result inside</summary>    
-    internal void divide(int v)
+    internal void divide(int v, bool showMessageAboutNegativeValue = true)
     {
         if (v <= 0)
-            Debug.Log("Value multiple failed");
-        set(this.get() / (float)v);
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            value = 0;
+        }
+        else
+            set(this.get() / (float)v);
     }
 
 
     /// <summary>returns new value </summary>
-    internal Value divideOutside(int invalue)
+    internal Value divideOutside(int invalue, bool showMessageAboutNegativeValue = true)
     {
-        if (invalue == 0) Debug.Log("Value divide by zero");
-
-        return new Value(get() / invalue);
+        if (invalue == 0)
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value divide by zero");
+            return new Value(0);
+        }
+        else
+            return new Value(get() / invalue);
     }
     /// <summary>returns new value </summary>
-    internal Value divideOutside(Value invalue)
+    internal Value divideOutside(Value invalue, bool showMessageAboutNegativeValue = true)
     {
-        if (invalue.get() == 0) Debug.Log("Value divide by zero");
-
-        return new Value(get() / invalue.get());
+        if (invalue.get() == 0)
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value divide by zero");
+            return new Value(0);
+        }
+        else
+            return new Value(get() / invalue.get());
     }
 
     public bool isExist()
@@ -168,25 +208,36 @@ public class Value
             return Procent.makeProcent((int)this.value, (int)need.value);
     }
 
-    public void send(Value another, float amount)
+    public void send(Value another, float amount, bool showMessageAboutOperationFails = true)
     {
         if (this.get() >= amount)
         {
             this.subtract(amount);
             another.add(amount);
         }
-        else Debug.Log("value payment failed");
+        else
+        {
+            if (showMessageAboutOperationFails) Debug.Log("No enough value to send");
+            sendAll(another);
+        }
+
     }
-    public void send(Value another, Value amount)
+    public bool send(Value another, Value amount, bool showMessageAboutOperationFails = true)
     {
         if (this.get() >= amount.get())
         {
             this.subtract(amount);
             another.add(amount);
+            return true;
         }
-        else Debug.Log("value payment failed");
+        else
+        {
+            if (showMessageAboutOperationFails) Debug.Log("No enough value to send");
+            sendAll(another);
+            return false;
+        }
     }
-    public bool canPay(Value HowMuch)
+    public bool has(Value HowMuch)
     {
         if (HowMuch.value >= this.value)
             return false;

@@ -81,7 +81,7 @@ public class Corps
     }
     internal Procent getConsumptionProcent(Product prod, Country country)
     {
-        return Procent.makeProcent(consumption.getStorage(prod), getRealNeeds(country).getStorage(prod));
+        return Procent.makeProcent(consumption.getStorage(prod), getRealNeeds(country).getStorage(prod), false);
     }
     internal Value getConsumption(Product prod)
     {

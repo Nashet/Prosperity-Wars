@@ -520,7 +520,7 @@ abstract public class PopUnit : Producer
             if (this.type.isRichStrata())
                 taxSize = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
 
-            if (storageNow.canPay(taxSize))
+            if (storageNow.has(taxSize))
                 storageNow.send(province.getCountry().storageSet, taxSize);
             else
                 storageNow.sendAll(province.getCountry().storageSet);
@@ -595,7 +595,7 @@ abstract public class PopUnit : Producer
         if (!skipKifeneeds)
             foreach (Storage need in lifeNeeds)
             {
-                if (storageNow.canPay(need))// dont need to buy on market
+                if (storageNow.has(need))// dont need to buy on market
                 {
                     storageNow.subtract(need);
                     consumedTotal.set(need);

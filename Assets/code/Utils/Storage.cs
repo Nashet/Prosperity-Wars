@@ -8,8 +8,8 @@ using System;
 //    {
 //       // setBank(country.bank);
 //    }
-   
-   
+
+
 //}
 
 public class CountryStorageSet : PrimitiveStorageSet
@@ -91,9 +91,9 @@ public class CountryStorageSet : PrimitiveStorageSet
     //    return result;
     //}
 
-    internal bool subtract(Storage stor)
+    internal bool subtract(Storage stor, bool showMessageAboutNegativeValue)
     {
-        if (base.subtract(stor))
+        if (base.subtract(stor, showMessageAboutNegativeValue))
         {
             consumedLastTurn.add(stor);
             return true;
@@ -112,7 +112,7 @@ public class CountryStorageSet : PrimitiveStorageSet
     //}
     internal void subtract(PrimitiveStorageSet set)
     {
-        base.subtract(set);
+        base.subtract(set, true);
         throw new DontUseThatMethod();
     }
     internal void copyDataFrom(PrimitiveStorageSet consumed)
@@ -203,7 +203,7 @@ public class PrimitiveStorageSet
     public bool send(Producer whom, Storage what)
     {
         Storage storage = findStorage(what.getProduct());
-        return storage.send(whom, what);
+        return storage.send(whom.storageNow, what);
     }
 
     public void take(Storage fromHhom, Value howMuch)
@@ -242,7 +242,7 @@ public class PrimitiveStorageSet
         PrimitiveStorageSet shortage = this.subtractOuside(need);
         return Procent.makeProcent(shortage, need);
     }
-    //keep it both
+    //Returns NULL if search is failed
     internal Storage findStorage(Product whom)
     {
         foreach (Storage stor in container)
@@ -250,7 +250,7 @@ public class PrimitiveStorageSet
                 return stor;
         return null;
     }
-    //keep it both
+    //Returns NEW empty storage if search is failed
     internal Storage getStorage(Product whom)
     {
         foreach (Storage stor in container)
@@ -313,13 +313,30 @@ public class PrimitiveStorageSet
         return result;
     }
 
-    internal bool subtract(Storage stor)
+    //internal bool subtract(Storage stor)
+    //{
+    //    Storage find = this.findStorage(stor.getProduct());
+    //    if (find == null)
+    //        return false;//container.Add(value);
+    //    else
+    //    {
+    //        if (find.has(stor))
+    //            return find.subtract(stor);
+    //        else
+    //        {
+    //            Debug.Log("Someone tried to subtract from Pr.Storage more than it has");
+    //            find.setZero();
+    //            return false;
+    //        }
+    //    }
+    //}
+    internal bool subtract(Storage stor, bool showMessageAboutNegativeValue = true)
     {
         Storage find = this.findStorage(stor.getProduct());
         if (find == null)
             return false;//container.Add(value);
         else
-            return find.subtract(stor);
+            return find.subtract(stor, showMessageAboutNegativeValue);
     }
     internal Storage subtractOutside(Storage stor)
     {
@@ -329,10 +346,10 @@ public class PrimitiveStorageSet
         else
             return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
     }
-    internal void subtract(PrimitiveStorageSet set)
+    internal void subtract(PrimitiveStorageSet set, bool showMessageAboutNegativeValue)
     {
         foreach (Storage stor in set)
-            this.subtract(stor);
+            this.subtract(stor, showMessageAboutNegativeValue);
     }
     internal PrimitiveStorageSet subtractOuside(PrimitiveStorageSet substracting)
     {
@@ -399,8 +416,8 @@ public class Storage : Value
     public Storage(Product inProduct, Value inAmount) : base(inAmount)
     {
         product = inProduct;
-     
-     
+
+
     }
 
     public Storage(Product product) : this(product, 0f)
@@ -453,14 +470,13 @@ public class Storage : Value
     public void sendAll(PrimitiveStorageSet storage)
     {
         storage.take(this, this);
-
     }
     public void sendAll(Storage another)
     {
         if (this.getProduct() != another.getProduct())
             Debug.Log("Attempt to give wrong product");
-        this.send(another, this);
-
+        else
+            base.sendAll(another);
     }
     public void send(PrimitiveStorageSet whom, Value HowMuch)
     {
@@ -473,38 +489,42 @@ public class Storage : Value
     {
         if (this.getProduct() != another.getProduct())
             Debug.Log("Attempt to give wrong product");
-        if (this.get() >= amount)
-        {
-            another.add(amount);
-            this.subtract(amount);
-
-        }
         else
-            Debug.Log("value payment failed");
+            base.send(another, amount);
+        //{
+        //    if (this.get() >= amount)
+        //    {
+        //        another.add(amount);
+        //        this.subtract(amount);
+
+        //    }
+        //    else
+        //        Debug.Log("value payment failed");
+        //}
     }
     /// <summary>
     /// checks inside, returns true if succeeded
     /// </summary>    
-    public bool send(Producer toWhom, Storage what)
-    {      
-        if (this.getProduct() != toWhom.storageNow.getProduct())
-        {
-            Debug.Log("Attempt to give wrong product in bool send(Producer toWhom, Storage what)");
-            return false;
-        }
-        if (this.get() >= what.get())
-        {
-            toWhom.storageNow.add(what);
-            this.subtract(what);
-            return true;
-        }
-        else
-        {
-            Debug.Log("value payment failed");
-            return false;
-        }
+    //public bool send(Producer toWhom, Storage what)
+    //{
+    //    if (this.getProduct() != toWhom.storageNow.getProduct())
+    //    {
+    //        Debug.Log("Attempt to give wrong product in bool send(Producer toWhom, Storage what)");
+    //        return false;
+    //    }
+    //    if (this.get() >= what.get())
+    //    {
+    //        toWhom.storageNow.add(what);
+    //        this.subtract(what);
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("value payment failed");
+    //        return false;
+    //    }
 
-    }
+    //}
     /// <summary>
     /// checks inside, returns true if succeeded
     /// </summary>    
@@ -515,17 +535,21 @@ public class Storage : Value
             Debug.Log("Attempt to give wrong product");
             return false;
         }
-        if (this.get() >= amount.get())
-        {
-            toWhom.add(amount);
-            this.subtract(amount);
-            return true;
-        }
         else
         {
-            Debug.Log("value payment failed");
-            return false;
+            return base.send(toWhom, amount);
         }
+        //if (this.get() >= amount.get())
+        //{
+        //    toWhom.add(amount);
+        //    this.subtract(amount);
+        //    return true;
+        //}
+        //else
+        //{
+        //    Debug.Log("value payment failed");
+        //    return false;
+        //}
 
     }
 
@@ -538,15 +562,17 @@ public class Storage : Value
     //    }
     //    else Debug.Log("value payment failed");
     //}
-    public bool canPay(Storage Whom, Value HowMuch)
+    public bool has(Storage Whom, Value HowMuch)
     {
         if (this.getProduct() != Whom.getProduct())
         {
             Debug.Log("Attempted to pay wrong product!");
             return false;
         }
-        if (this.get() < HowMuch.get()) return false;
-        else return true;
+        else
+            return has(HowMuch);
+        //if (this.get() < HowMuch.get()) return false;
+        //else return true;
 
 
     }
