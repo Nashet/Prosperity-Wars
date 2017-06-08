@@ -77,4 +77,5 @@ public static class Options
     internal static readonly int FactoryMediumTierLevels = 8+1;
     internal static readonly int FactoryMediumHighLevels = 15+1;
     internal static readonly int CountryTimeToForgetBattle = 30;
+    internal static readonly int MapRedrawRate =20; // bigger number  - less often redraw
 }

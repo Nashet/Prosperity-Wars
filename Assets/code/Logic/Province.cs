@@ -75,7 +75,7 @@ public class Province
     public void think()
     {
         if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
-            if (getMajorCulture() == getCountry().getCulture() && !cores.Contains(getCountry()))
+            if (neighbors.Any(x=>x.isCoreFor(getCountry())) && !cores.Contains(getCountry()) && getMajorCulture() == getCountry().getCulture())
                 cores.Add(getCountry());
     }
     public bool isCoreFor(Country country)
@@ -143,7 +143,7 @@ public class Province
 
 
 
-    internal Country  getRandomCore()
+    internal Country getRandomCore()
     {
         return cores.PickRandom();
     }
@@ -267,7 +267,7 @@ public class Province
         return result;
     }
 
-    
+
 
     internal static Province findByID(int number)
     {

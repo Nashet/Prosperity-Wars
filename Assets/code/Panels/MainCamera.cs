@@ -16,7 +16,7 @@ public class MainCamera : MonoBehaviour
     public static TopPanel topPanel;
     public static ProvincePanel provincePanel;
     public static PopulationPanel populationPanel;
-    public  static PopUnitPanel popUnitPanel;
+    public static PopUnitPanel popUnitPanel;
     public static DiplomacyPanel diplomacyPanel;
     internal static TradeWindow tradeWindow;
     internal static ProductionWindow productionWindow;
@@ -116,7 +116,7 @@ public class MainCamera : MonoBehaviour
         {
             if (Province.findByID(number) == Game.selectedProvince)// same province selected
             {
-                Game.selectedProvince.updateColor( Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
+                Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
                 Game.selectedProvince = null;
                 provincePanel.hide();
                 if (buildPanel.isActiveAndEnabled)
@@ -124,7 +124,7 @@ public class MainCamera : MonoBehaviour
             }
             else // new province selected
             {
-                Province.findByID(number).updateColor( Color.gray);
+                Province.findByID(number).updateColor(Color.gray);
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
                 Game.selectedProvince = Province.findByID(number);
                 provincePanel.show();
@@ -134,12 +134,14 @@ public class MainCamera : MonoBehaviour
                     Game.redrawMapAccordingToMapMode(2);
                 Province.findByID(number).updateColor(Color.gray);
             }
-            
+
         }
     }
     // Update is called once per frame
     void Update()
     {
+        if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))
+            Game.redrawMapAccordingToMapMode(Game.getMapMode());
         if (Input.GetMouseButtonDown(0)) // clicked and released left button
         {
             int meshNumber = GetRayCastMeshNumber();
@@ -154,7 +156,7 @@ public class MainCamera : MonoBehaviour
         {
             Game.stepSimulation();
             refreshAllActive();
-        }        
+        }
 
         if (Game.selectedProvince != null)
             provincePanel.refresh(Game.selectedProvince);

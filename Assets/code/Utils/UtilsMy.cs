@@ -837,6 +837,10 @@ public static class MyIEnumerableExtensions
         //return source.ElementAt(Game.random.Next(source.Count));
 
     }
+    
+}
+public static class MyDateExtensions
+{
     //public static int getYearsSince(this DateTime source, DateTime date2)
     //{
     //    return source.Year - date2.Year;
@@ -845,8 +849,12 @@ public static class MyIEnumerableExtensions
     {
         return Game.date.Year - date2.Year;
     }
+    public static bool isYearsPassed(this DateTime date, int years)
+    {
+        return date.Year % years == 0;
+    }
 }
-public class DontUseThatMethod : Exception
+    public class DontUseThatMethod : Exception
 {
     /// <summary>
     /// Just create the exception

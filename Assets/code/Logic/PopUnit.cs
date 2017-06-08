@@ -981,11 +981,9 @@ abstract public class PopUnit : Producer
     public Province getRichestMigrationTarget()
     {
         Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
-        foreach (var pro in province.getCountry().ownedProvinces)
-            //if (provinces.ContainsKey(pro))
-            //    provinces[pro] = size;
-            //else
-            if (pro != this.province)
+        //foreach (var pro in province.getCountry().ownedProvinces)            
+        foreach (var pro in province.getNeigbors(x=>x.getCountry() == province.getCountry()))
+            //if (pro != this.province)
             {
                 var needsInProvince = pro.getMiddleNeedsFulfilling(this.type);
                 if (needsInProvince.get() > needsFullfilled.get())

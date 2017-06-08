@@ -204,9 +204,10 @@ public static class Game //: Date
     {
         mapMode = newMapMode;
         foreach (var item in Province.allProvinces)
-        {
-            item.updateColor(getProvinceColorAccordingToMapMode(item));
-        }
+            if (item != Game.selectedProvince)
+            {
+                item.updateColor(getProvinceColorAccordingToMapMode(item));
+            }
     }
 
     internal static void continueSimulation()
