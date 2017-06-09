@@ -40,13 +40,13 @@ public static class Game //: Date
     static Game()
     {
         Application.runInBackground = true;
-        //LoadImages();        
-        generateMapImage();
+        LoadImages();        
+        //generateMapImage();
         makeProducts();
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         makeProvinces();
-        roundMesh();
+        //roundMesh();
         deleteEdgeProvinces();
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
@@ -106,7 +106,7 @@ public static class Game //: Date
         var toremove = Province.findProvince(mapImage.GetPixel(x, y));
         if (Province.allProvinces.Contains(toremove))
         {
-            UnityEngine.Object.Destroy(toremove.gameObject);
+            UnityEngine.Object.Destroy(toremove.rootGameObject);
             Province.allProvinces.Remove(toremove);
         }
     }
@@ -551,7 +551,7 @@ public static class Game //: Date
     {
         foreach (var all in Province.allProvinces)
             if (color == all.getColorID())
-                return all.mesh;
+                return all.landMesh;
         return null;
     }
     static Mesh getMeshID(int xpos, int ypos)
@@ -559,7 +559,7 @@ public static class Game //: Date
         Color color = mapImage.GetPixel(xpos, ypos);
         foreach (var all in Province.allProvinces)
             if (color == all.getColorID())
-                return all.mesh;
+                return all.landMesh;
         return null;
     }
     static private bool movePointRight(Mesh mesh, int xpos, int ypos, int xMove, int yMove)

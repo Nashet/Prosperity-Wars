@@ -7,11 +7,12 @@ using System.Text;
 
 public class Province
 {
-    Color colorID;
+    readonly Color colorID;
     Color color;
-    public Mesh mesh;
-    MeshFilter meshFilter;
-    internal GameObject gameObject;
+    readonly public Mesh landMesh;
+    Mesh borderMesh;
+    readonly MeshFilter meshFilter;
+    readonly internal GameObject rootGameObject;
     readonly MeshRenderer meshRenderer;
     //public static int maxTribeMenCapacity = 2000;
     private readonly string name;
@@ -26,20 +27,61 @@ public class Province
     private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
     private readonly List<Province> neighbors = new List<Province>();
     Product resource;
-    internal int fertileSoil;
+    readonly internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
-
         allProducers = getProducers();
         resource = inresource;
-        colorID = icolorID; mesh = imesh; name = iname; meshFilter = imeshFilter;
+        colorID = icolorID; landMesh = imesh; name = iname; meshFilter = imeshFilter;
         ID = iID;
-        gameObject = igameObject;
+        rootGameObject = igameObject;
         meshRenderer = imeshRenderer;
         fertileSoil = 10000;
         setProvinceCenter();
-        SetLabel();
+        //SetLabel();
+        //makeBordersMesh();
+        var lr = rootGameObject.AddComponent<LineRenderer>();
+        //lr.loop = true;
+        var perimeterVerices = landMesh.getPerimeterVerices(true);
+        //perimeterVerices.ForEach(x => x.);
+        //foreach (var item in perimeterVerices)
+        //{
+        //    item.Set(item.x, item.y, item.z - 0.5f);
+        //}
+        lr.positionCount = perimeterVerices.Length;
+        lr.SetPositions(perimeterVerices);
+        // lineRenderer.SetVertexCount(2);
+        //.SetColors(c1, c2);
+
+        //lineRenderer.SetWidth(1, 1);
+        //Debug.Log("rendered line");
+    }
+    void makeBordersMesh()
+    {
+        GameObject objToSpawn = new GameObject(string.Format("{0} border", getID()));
+
+        //Add Components
+        MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
+
+        // in case you want the new gameobject to be a child
+        // of the gameobject that your script is attached to
+        objToSpawn.transform.parent = rootGameObject.transform;
+
+        borderMesh = meshFilter.mesh;
+        borderMesh.Clear();
+
+
+        borderMesh.vertices = landMesh.vertices;
+        borderMesh.triangles = landMesh.getPerimeterVertexNumbers().ToArray();
+        borderMesh.RecalculateNormals();
+        borderMesh.RecalculateBounds();
+
+        meshRenderer.material.shader = Shader.Find("Standard");
+        meshRenderer.material.color = colorID;
+
+        borderMesh.name = getID().ToString() + " border";
     }
     /// <summary>
     /// returns 
@@ -75,7 +117,7 @@ public class Province
     public void think()
     {
         if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
-            if (neighbors.Any(x=>x.isCoreFor(getCountry())) && !cores.Contains(getCountry()) && getMajorCulture() == getCountry().getCulture())
+            if (neighbors.Any(x => x.isCoreFor(getCountry())) && !cores.Contains(getCountry()) && getMajorCulture() == getCountry().getCulture())
                 cores.Add(getCountry());
     }
     public bool isCoreFor(Country country)
@@ -176,9 +218,9 @@ public class Province
         //foreach (Province pro in Province.allProvinces)
         //{
         //e accu.Set(0, 0, 0);
-        foreach (var c in this.mesh.vertices)
+        foreach (var c in this.landMesh.vertices)
             accu += c;
-        accu = accu / this.mesh.vertices.Length;
+        accu = accu / this.landMesh.vertices.Length;
         this.centre = accu;
         // }
     }
@@ -340,7 +382,7 @@ public class Province
                 allPopulation += pop.getPopulation();
                 result.add(pop.needsFullfilled.multipleOutside(pop.getPopulation()));
             }
-            return result.divideOutside(allPopulation); 
+            return result.divideOutside(allPopulation);
         }
         else/// add default population - no, don't, we now fixed it
         {
@@ -495,7 +537,7 @@ public class Province
     {
 
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
-        txtMeshTransform.SetParent(this.gameObject.transform, false);
+        txtMeshTransform.SetParent(this.rootGameObject.transform, false);
 
         //newProvince.centre = (meshRenderer.bounds.max + meshRenderer.bounds.center) / 2f;
         txtMeshTransform.position = this.centre;
@@ -664,4 +706,5 @@ public class Province
         }
         return false;
     }
+
 }

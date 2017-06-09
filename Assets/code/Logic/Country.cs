@@ -278,7 +278,7 @@ public class Country : Consumer
     internal void makeCapitalTextMesh()
     {
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
-        txtMeshTransform.SetParent(capital.gameObject.transform, false);
+        txtMeshTransform.SetParent(capital.rootGameObject.transform, false);
 
 
         Vector3 capitalTextPosition = capital.centre;
@@ -303,7 +303,8 @@ public class Country : Consumer
     internal void moveCapitalTo(Province newCapital)
     {
         if (messhCapitalText == null)
-            makeCapitalTextMesh();
+            //makeCapitalTextMesh();
+            ;
         else
         {
             Vector3 capitalTextPosition = newCapital.centre;
