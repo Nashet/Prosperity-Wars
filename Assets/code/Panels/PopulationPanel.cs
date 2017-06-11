@@ -6,7 +6,7 @@ public class PopulationPanel : DragPanel
 {
     // public GameObject ScrollViewMy;
     public ScrollRect table;
-    public bool showAll;
+    //public bool showAll;
     internal Province showingProvince;
 
     // Use this for initialization
@@ -25,7 +25,7 @@ public class PopulationPanel : DragPanel
     override public void onCloseClick()
     {
         base.onCloseClick();
-        showAll = false;
+        //showAll = false;
     }
     internal void SetAllPopsToShow()
     {
@@ -41,13 +41,14 @@ public class PopulationPanel : DragPanel
     {
         hide();
         SetAllPopsToShow();
-        showAll = true;
+        //showAll = true;
+        showingProvince = null;
         show(true);
     }
     public void refresh()
     {
         hide();
-        if (showAll)
+        if (showingProvince == null)
             SetAllPopsToShow();
         show(false);
     }
