@@ -40,13 +40,17 @@ public static class Game //: Date
     static Game()
     {
         Application.runInBackground = true;
-        LoadImages();        
-        //generateMapImage();
+        //loadImages();        
+        generateMapImage();
         makeProducts();
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+
+        
         makeProvinces();
-        //roundMesh();
+        roundMesh();
+        Province.allProvinces.ForEach(x => x.makeBordersMesh());
+
         deleteEdgeProvinces();
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
@@ -888,7 +892,7 @@ public static class Game //: Date
         ;
 
     }
-    static void LoadImages()
+    static void loadImages()
     {
         mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
         RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();

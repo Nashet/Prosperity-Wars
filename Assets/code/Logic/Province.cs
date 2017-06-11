@@ -41,45 +41,80 @@ public class Province
         setProvinceCenter();
         //SetLabel();
         //makeBordersMesh();
-        var lr = rootGameObject.AddComponent<LineRenderer>();
-        //lr.loop = true;
-        var perimeterVerices = landMesh.getPerimeterVerices(true);
-        //perimeterVerices.ForEach(x => x.);
-        //foreach (var item in perimeterVerices)
-        //{
-        //    item.Set(item.x, item.y, item.z - 0.5f);
-        //}
-        lr.positionCount = perimeterVerices.Length;
-        lr.SetPositions(perimeterVerices);
-        // lineRenderer.SetVertexCount(2);
-        //.SetColors(c1, c2);
+        //var lr = rootGameObject.AddComponent<LineRenderer>();
+        ////lr.loop = true;
+        //var perimeterVerices = landMesh.getPerimeterVerices(true);
+        ////perimeterVerices.ForEach(x => x.);
+        ////foreach (var item in perimeterVerices)
+        ////{
+        ////    item.Set(item.x, item.y, item.z - 0.5f);
+        ////}
+        //lr.positionCount = perimeterVerices.Length;
+        //lr.SetPositions(perimeterVerices);
+        //// lineRenderer.SetVertexCount(2);
+        ////.SetColors(c1, c2);
 
-        //lineRenderer.SetWidth(1, 1);
-        //Debug.Log("rendered line");
+        ////lineRenderer.SetWidth(1, 1);
+        ////Debug.Log("rendered line");
     }
-    void makeBordersMesh()
+    public void makeBordersMesh()
     {
+        float borderHeight = 0.1f;
         GameObject objToSpawn = new GameObject(string.Format("{0} border", getID()));
 
         //Add Components
         MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
 
-        // in case you want the new gameobject to be a child
-        // of the gameobject that your script is attached to
         objToSpawn.transform.parent = rootGameObject.transform;
 
         borderMesh = meshFilter.mesh;
         borderMesh.Clear();
 
 
-        borderMesh.vertices = landMesh.vertices;
-        borderMesh.triangles = landMesh.getPerimeterVertexNumbers().ToArray();
+        var perimeterVertices = landMesh.getPerimeterVerices(false);
+        Vector3[] borderVertices = new Vector3[perimeterVertices.Length * 2];
+        Vector2[] UVmap = new Vector2[perimeterVertices.Length * 2];
+        int[] borderTriangles = new int[perimeterVertices.Length * 3];
+        int vertexCounter = 0;
+         for (int i = 0; i < perimeterVertices.Length - 1; i += 2)
+        //int i = 0;
+        {
+            borderVertices[i * 2 + 0] = perimeterVertices[i + 0] + Vector3.back *borderHeight;
+            UVmap[i * 2 + 0] = new Vector2(0f,0f);
+
+            borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(perimeterVertices[i + 0], perimeterVertices[i + 1], 0.3f) + Vector3.back * borderHeight;
+            UVmap[i * 2 + 1] = new Vector2(1f, 0f);
+
+            borderVertices[i * 2 + 2] = perimeterVertices[i + 1] + Vector3.back * borderHeight;
+            UVmap[i * 2 + 2] = new Vector2(0f, 1f);
+
+            borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(perimeterVertices[i + 1], perimeterVertices[i + 0], -0.3f) + Vector3.back * borderHeight;
+            UVmap[i * 2 + 3] = new Vector2(1f, 1f);
+
+            borderTriangles[i * 3 + 0] = 0 + vertexCounter;
+            borderTriangles[i * 3 + 1] = 2 + vertexCounter;
+            borderTriangles[i * 3 + 2] = 1 + vertexCounter;
+
+            borderTriangles[i * 3 + 3] = 2 + vertexCounter;
+            borderTriangles[i * 3 + 4] = 3 + vertexCounter;
+            borderTriangles[i * 3 + 5] = 1 + vertexCounter;
+            vertexCounter += 4;
+            
+        }
+
+        borderMesh.vertices = borderVertices;
+        borderMesh.triangles = borderTriangles;
+        borderMesh.uv = UVmap;
         borderMesh.RecalculateNormals();
         borderMesh.RecalculateBounds();
 
-        meshRenderer.material.shader = Shader.Find("Standard");
-        meshRenderer.material.color = colorID;
+        // Assigns a material named "Assets/Resources/DEV_Orange" to the object.
+        Material newMat = Resources.Load("Border", typeof(Material)) as Material;
+        meshRenderer.material = newMat;
+
+        //meshRenderer.material.shader = Shader.Find("Standard");
+        //meshRenderer.material.color = colorID;
 
         borderMesh.name = getID().ToString() + " border";
     }
