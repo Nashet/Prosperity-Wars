@@ -23,7 +23,7 @@ public class VoxelGrid : MonoBehaviour
     private List<int> triangles;
 
     private Voxel dummyX, dummyY, dummyT;
-
+    private Color analyzingColor;
     public void Initialize(int resolution, float size, Texture2D texture, Color color)
     {
         this.resolution = resolution;
@@ -36,11 +36,13 @@ public class VoxelGrid : MonoBehaviour
         dummyY = new Voxel();
         dummyT = new Voxel();
 
+        analyzingColor = color;
+
         for (int i = 0, y = 0; y < resolution; y++)
         {
             for (int x = 0; x < resolution; x++, i++)
             {
-                CreateVoxel(i, x, y, texture.GetPixel(x, y) == color);
+                CreateVoxel(i, x, y, texture.GetPixel(x, y));
             }
         }
 
@@ -54,7 +56,7 @@ public class VoxelGrid : MonoBehaviour
     {
         return mesh;
     }
-    private void CreateVoxel(int i, int x, int y, bool state)
+    private void CreateVoxel(int i, int x, int y, Color state)
     {
         //GameObject o = Instantiate(voxelPrefab) as GameObject;
         //o.transform.parent = transform;
@@ -62,7 +64,7 @@ public class VoxelGrid : MonoBehaviour
         //o.transform.localScale = Vector3.one * voxelSize * 0.1f;
         //voxelMaterials[i] = o.GetComponent<MeshRenderer>().material;
         voxels[i] = new Voxel(x, y, voxelSize, state);
-       
+
     }
 
     private void Refresh()
@@ -145,19 +147,19 @@ public class VoxelGrid : MonoBehaviour
     private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d)
     {
         int cellType = 0;
-        if (a.state)
+        if (a.state == analyzingColor)
         {
             cellType |= 1;
         }
-        if (b.state)
+        if (b.state == analyzingColor)
         {
             cellType |= 2;
         }
-        if (c.state)
+        if (c.state == analyzingColor)
         {
             cellType |= 4;
         }
-        if (d.state)
+        if (d.state == analyzingColor)
         {
             cellType |= 8;
         }
@@ -213,8 +215,40 @@ public class VoxelGrid : MonoBehaviour
                 AddQuad(a.position, c.position, d.position, b.position);
                 break;
         }
-    }
+        //detecting 3 color connecting
+        if (is3ColorCornerUp(a, b, c, d) && a.state == analyzingColor)
+            AddTriangle(c.xEdgePosition, b.yEdgePosition, a.yEdgePosition);
 
+        if (is3ColorCornerDown(a, b, c, d) && c.state == analyzingColor)
+            AddTriangle(b.yEdgePosition, a.xEdgePosition, a.yEdgePosition);
+
+        if (is3ColorCornerLeft(a, b, c, d) && c.state == analyzingColor)
+            AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+
+        if (is3ColorCornerRight(a, b, c, d) && d.state == analyzingColor)
+            AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
+
+        if (a.state != b.state && a.state != c.state && a.state != d.state
+            && b.state != c.state && b.state != d.state
+            && c.state != d.state)
+            AddQuad(a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+    }
+    private bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
+    {
+        return a.state == b.state && a.state != c.state && a.state != d.state && c.state != d.state;
+    }
+    private bool is3ColorCornerDown(Voxel a, Voxel b, Voxel c, Voxel d)
+    {
+        return c.state == d.state && c.state != a.state && c.state != b.state && a.state != b.state;
+    }
+    private bool is3ColorCornerLeft(Voxel a, Voxel b, Voxel c, Voxel d)
+    {
+        return c.state == a.state && c.state != d.state && a.state != b.state && d.state != b.state;
+    }
+    private bool is3ColorCornerRight(Voxel a, Voxel b, Voxel c, Voxel d)
+    {
+        return d.state == b.state && d.state != c.state && b.state != a.state && c.state != a.state;
+    }
     private void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
     {
         int vertexIndex = vertices.Count;

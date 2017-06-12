@@ -41,7 +41,7 @@ public static class Game //: Date
     {
         Application.runInBackground = true;
         LoadImages();        
-        //generateMapImage();
+        generateMapImage();
         makeProducts();
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
@@ -58,18 +58,18 @@ public static class Game //: Date
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
         int extraCountries = Random.Next(6);
-        //for (int i = 0; i < 16 + extraCountries; i++)
-        //    makeCountry(countryNameGenerator, cultureNameGenerator);
+        for (int i = 0; i < 16 + extraCountries; i++)
+            makeCountry(countryNameGenerator, cultureNameGenerator);
 
-        //foreach (var pro in Province.allProvinces)
-        //    if (pro.getCountry() == null)
-        //        pro.InitialOwner(Country.NullCountry);
+        foreach (var pro in Province.allProvinces)
+            if (pro.getCountry() == null)
+                pro.InitialOwner(Country.NullCountry);
 
-        //CreateRandomPopulation();
+        CreateRandomPopulation();
 
-        //setStartResources();
-        //MainCamera.topPanel.refresh();
-        //makeHelloMessage();
+        setStartResources();
+        MainCamera.topPanel.refresh();
+        makeHelloMessage();
         //MainCamera.cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
 

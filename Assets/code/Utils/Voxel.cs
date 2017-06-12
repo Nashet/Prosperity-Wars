@@ -5,11 +5,11 @@ using System;
 public class Voxel
 {
 
-    public bool state;
+    public Color state;
 
     public Vector2 position, xEdgePosition, yEdgePosition;
 
-    public Voxel(int x, int y, float size, bool state)
+    public Voxel(int x, int y, float size, Color state)
     {
         position.x = (x + 0.5f) * size;
         position.y = (y + 0.5f) * size;
