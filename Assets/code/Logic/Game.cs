@@ -52,7 +52,7 @@ public static class Game //: Date
         makeProvinces();
         //roundMesh();
 
-        Province.allProvinces.ForEach(x => x.makeBordersMesh());
+        //Province.allProvinces.ForEach(x => x.makeBordersMesh());
 
 
         deleteEdgeProvinces();
@@ -74,11 +74,9 @@ public static class Game //: Date
                 pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
-
-        setStartResources();
-        //MainCamera.topPanel.refresh();
+        setStartResources();       
         makeHelloMessage();
-        //MainCamera.cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
+       
     }
 
     internal static void takePlayerControlOfThatCountry(Country country)

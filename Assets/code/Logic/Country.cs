@@ -303,8 +303,7 @@ public class Country : Consumer
     internal void moveCapitalTo(Province newCapital)
     {
         if (messhCapitalText == null)
-            //makeCapitalTextMesh();
-            ;
+            makeCapitalTextMesh();            
         else
         {
             Vector3 capitalTextPosition = newCapital.centre;

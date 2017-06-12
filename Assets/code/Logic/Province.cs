@@ -39,7 +39,7 @@ public class Province
         meshRenderer = imeshRenderer;
         fertileSoil = 10000;
         setProvinceCenter();
-        //SetLabel();
+        SetLabel();
         //makeBordersMesh();
         //var lr = rootGameObject.AddComponent<LineRenderer>();
         ////lr.loop = true;
