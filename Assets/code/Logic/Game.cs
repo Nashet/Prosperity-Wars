@@ -40,13 +40,13 @@ public static class Game //: Date
     static Game()
     {
         Application.runInBackground = true;
-        //LoadImages();        
+        LoadImages();
         generateMapImage();
         makeProducts();
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         makeProvinces();
-        roundMesh();
+        //roundMesh();
         deleteEdgeProvinces();
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
@@ -511,8 +511,8 @@ public static class Game //: Date
     static void generateMapImage()
     {
 
-        mapImage = new Texture2D(100, 50);
-        //mapImage = new Texture2D(200, 100);
+        mapImage = new Texture2D(100, 100);
+        //mapImage = new Texture2D(200, 200);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -639,60 +639,25 @@ public static class Game //: Date
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
-        mapObject = GameObject.Find("MapObject");
-
+        mapObject = GameObject.Find("MapObject");        
         Color currentProvinceColor = mapImage.GetPixel(0, 0);
-        Color currentColor, lastColor, lastprovinceColor = mapImage.GetPixel(0, 0); //, stripeColor;
         int provinceCounter = 0;
-        for (int j = 0; j < mapImage.height; j++) // cicle by province        
+        for (int j = 0; j < mapImage.height; j++) // circle by province        
             for (int i = 0; i < mapImage.width; i++)
             {
-                currentProvinceColor = mapImage.GetPixel(i, j);
-                if ((lastprovinceColor != currentProvinceColor) && !Province.isProvinceCreated(currentProvinceColor))
-                { // fill up province's mesh
-                  // making mesh from texture
-                    int stripeLenght = 0;
-                    lastColor = Color.black.setAlphaToZero(); // unexisting color
+                if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
+                {
+                    VoxelGrid grid = mapObject.GetComponent<VoxelGrid>();
+                    grid.Initialize(mapImage.width, Options.cellMultiplier * 100, mapImage, currentProvinceColor);
 
-                    for (int ypos = 0; ypos < mapImage.height; ypos++)
-                    {
-                        lastColor = Color.black.setAlphaToZero(); // unexisting color
-                        for (int xpos = 0; xpos < mapImage.width; xpos++)
-                        {
-                            currentColor = mapImage.GetPixel(xpos, ypos);
-                            if (currentColor == currentProvinceColor)
-                                stripeLenght++;
-                            else //place for trangle making
-                            {
-                                if (lastColor == currentProvinceColor)
-                                {
-                                    makePolygonalStripe((xpos - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
-                                        (xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
-                                                                                        //makePolygonalStripe((xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
-                                    stripeLenght = 0;
-                                }
-                            }
-                            lastColor = currentColor;
-                        }
-                        if (stripeLenght != 0)
-                            if (lastColor == currentProvinceColor)
-                            {
-                                makePolygonalStripe((mapImage.width - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, (mapImage.width) * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
-                                    (mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
-                                                                                                          //makePolygonalStripe((mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
-                                stripeLenght = 0;
-                            }
-                        stripeLenght = 0;
-                    }
-                    //finished all map search for currentProvince
-                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName());
+                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(), grid.getMesh());
                     provinceCounter++;
                 }
-                lastprovinceColor = currentProvinceColor;
-            }
+                currentProvinceColor = mapImage.GetPixel(i, j);
+            }       
     }
 
-    static void makeProvince(int provinceID, Color colorID, string name)
+    static void makeProvince(int provinceID, Color colorID, string name, Mesh MSMesh)
     {//spawn object
         GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
 
@@ -707,8 +672,8 @@ public static class Game //: Date
         Mesh mesh = meshFilter.mesh;
         mesh.Clear();
 
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = trianglesList.ToArray();
+        mesh.vertices = MSMesh.vertices;
+        mesh.triangles = MSMesh.triangles;
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 

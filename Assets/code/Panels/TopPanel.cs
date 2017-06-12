@@ -24,7 +24,7 @@ public class TopPanel : MonoBehaviour
             + "\nMoney: " + Game.Player.cash
             + " Science points: " + Game.Player.sciencePoints
             + " Men: " + Game.Player.getMenPopulation();
-        //+ " Storage: " + Game.player.storageSet.ToString();
+
     }
     public void onTradeClick()
     {
