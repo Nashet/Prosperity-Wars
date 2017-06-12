@@ -50,15 +50,19 @@ public class VoxelGrid : MonoBehaviour
         triangles = new List<int>();
         Refresh();
     }
-
+    public Mesh getMesh()
+    {
+        return mesh;
+    }
     private void CreateVoxel(int i, int x, int y, bool state)
     {
-        GameObject o = Instantiate(voxelPrefab) as GameObject;
-        o.transform.parent = transform;
-        o.transform.localPosition = new Vector3((x + 0.5f) * voxelSize, (y + 0.5f) * voxelSize, -0.01f);
-        o.transform.localScale = Vector3.one * voxelSize * 0.1f;
-        voxelMaterials[i] = o.GetComponent<MeshRenderer>().material;
+        //GameObject o = Instantiate(voxelPrefab) as GameObject;
+        //o.transform.parent = transform;
+        //o.transform.localPosition = new Vector3((x + 0.5f) * voxelSize, (y + 0.5f) * voxelSize, -0.01f);
+        //o.transform.localScale = Vector3.one * voxelSize * 0.1f;
+        //voxelMaterials[i] = o.GetComponent<MeshRenderer>().material;
         voxels[i] = new Voxel(x, y, voxelSize, state);
+       
     }
 
     private void Refresh()
@@ -260,7 +264,7 @@ public class VoxelGrid : MonoBehaviour
     {
         for (int i = 0; i < voxels.Length; i++)
         {
-            voxelMaterials[i].color = voxels[i].state ? Color.black : Color.white;
+            //voxelMaterials[i].color = voxels[i].state ? Color.black : Color.white;
         }
     }
 
