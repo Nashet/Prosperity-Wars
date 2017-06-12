@@ -40,15 +40,15 @@ public static class Game //: Date
     static Game()
     {
         Application.runInBackground = true;
-        //loadImages();        
-        generateMapImage();
+        loadImages();        
+        //generateMapImage();
         makeProducts();
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
 
         
         makeProvinces();
-        roundMesh();
+        //roundMesh();
         Province.allProvinces.ForEach(x => x.makeBordersMesh());
 
         deleteEdgeProvinces();

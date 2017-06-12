@@ -861,6 +861,19 @@ public static class MeshExtensions
         else
             return false;
     }
+    public static int isAnyPointOnLine(this Mesh mesh, Vector3 a, Vector3 b)
+    {
+        int result = -1;
+        for (int i = 0; i < mesh.vertices.Length; i++)
+        {
+            if (isPointLiesOnLine(mesh.vertices[i], a, b))
+            {
+                result = i;
+                break;
+            }
+        }
+        return result;
+    }
     public static bool isSameEdge(this Mesh mesh, List<int> vertexNumbers, int a, int b, int c, int d)
     {
         //if ( (mesh.vertices[a] == mesh.vertices[c] && mesh.vertices[b] == mesh.vertices[d])
@@ -869,25 +882,100 @@ public static class MeshExtensions
             || (a == d && b == c)
             || isTwoLinesTouchEachOther(mesh.vertices[a], mesh.vertices[b], mesh.vertices[c], mesh.vertices[d]))
         {
-            if (isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d])
-               &&// !(isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d]) && isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d])))
-               isTwoLinesTouchEachOther(mesh.vertices[a], mesh.vertices[d], mesh.vertices[a], mesh.vertices[c]))
+            var point = mesh.isAnyPointOnLine(mesh.vertices[c], mesh.vertices[d]);
+            if (point > 0)
             {
                 vertexNumbers.Add(a);
-                vertexNumbers.Add(d);
+                vertexNumbers.Add(point);
             }
+            //if (
+            //    isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d])
+            //   //|| isPointLiesOnLine(mesh.vertices[c], mesh.vertices[a], mesh.vertices[b]))
+            //   && !(isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d]) && isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d])))
+            ////isTwoLinesTouchEachOther(mesh.vertices[a], mesh.vertices[d], mesh.vertices[a], mesh.vertices[c]))
+            //{
+            //    vertexNumbers.Add(a);
+            //    vertexNumbers.Add(d);
+            //}
+            //else
             //if (isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d])
-            //    && !(isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d])))// && isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d])))
+            //   && !(isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d]) && isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d])))
+            ////isTwoLinesTouchEachOther(mesh.vertices[a], mesh.vertices[d], mesh.vertices[a], mesh.vertices[c]))
             //{
             //    vertexNumbers.Add(b);
             //    vertexNumbers.Add(c);
             //}
+
+            //if (isPointLiesOnLine(mesh.vertices[c], mesh.vertices[a], mesh.vertices[b])
+            //  && !(isPointLiesOnLine(mesh.vertices[b], mesh.vertices[c], mesh.vertices[d]) && isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d])))
+            ////isTwoLinesTouchEachOther(mesh.vertices[a], mesh.vertices[d], mesh.vertices[a], mesh.vertices[c]))
+            //{
+            //    vertexNumbers.Add(c);
+            //    vertexNumbers.Add(a);
+            //}
             return true;
         }
         else
+        {
+           
             return false;
+        }
     }
+    public static List<int> getPerimeterVertexNumbers(this Mesh mesh)
+    {
+        List<int> vertexNumbers = new List<int>();
+        for (int i = 0; i < mesh.triangles.Count(); i += 6)
+        //for (int i = 0; i < 17; i += 6)
+        //int i = 0;        
+        {
+            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            mesh.triangles[i + 5],
+            mesh.triangles[i + 1]))
+            {
+                vertexNumbers.Add(mesh.triangles[i + 5]);
+                vertexNumbers.Add(mesh.triangles[i + 1]);
+            }
 
+
+            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            mesh.triangles[i + 1],
+            mesh.triangles[i + 2]))
+            {
+                vertexNumbers.Add(mesh.triangles[i + 1]);
+                vertexNumbers.Add(mesh.triangles[i + 2]);
+            }
+
+            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            mesh.triangles[i + 2],
+            mesh.triangles[i + 0]))
+            {
+                vertexNumbers.Add(mesh.triangles[i + 2]);
+                vertexNumbers.Add(mesh.triangles[i + 0]);
+            }
+
+
+            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+           mesh.triangles[i + 0],
+           mesh.triangles[i + 5]))
+            {
+                vertexNumbers.Add(mesh.triangles[i + 0]);
+                vertexNumbers.Add(mesh.triangles[i + 5]);
+            }
+
+
+        }
+        //List<int> realVertexNumbers = new List<int>();
+        //for (int i = 1; i < vertexNumbers.Count - 1; i += 2)
+        //{
+        //    if (Mathf.Abs(vertexNumbers[i] - vertexNumbers[i + 1]) > 1)
+        //    {
+        //        realVertexNumbers.Add(vertexNumbers[i] + 1);
+        //        realVertexNumbers.Add(vertexNumbers[i] + 2);
+        //    }
+        //}
+        //vertexNumbers.AddRange(realVertexNumbers);
+        return vertexNumbers;
+    }
     public static bool isTwoLinesTouchEachOther(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
     {
         if (isLinesParallel(a, b, c, d))
@@ -964,50 +1052,7 @@ public static class MeshExtensions
 
         return leftBasePoint;
     }
-    public static List<int> getPerimeterVertexNumbers(this Mesh mesh)
-    {
-        List<int> vertexNumbers = new List<int>();
-        for (int i = 0; i < mesh.triangles.Count(); i += 6)
-        //int i = 0;        
-        {
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
-            mesh.triangles[i + 5],
-            mesh.triangles[i + 1]))
-            {
-                vertexNumbers.Add(mesh.triangles[i + 5]);
-                vertexNumbers.Add(mesh.triangles[i + 1]);
-            }
 
-
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
-            mesh.triangles[i + 1],
-            mesh.triangles[i + 2]))
-            {
-                vertexNumbers.Add(mesh.triangles[i + 1]);
-                vertexNumbers.Add(mesh.triangles[i + 2]);
-            }
-
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
-            mesh.triangles[i + 2],
-            mesh.triangles[i + 0]))
-            {
-                vertexNumbers.Add(mesh.triangles[i + 2]);
-                vertexNumbers.Add(mesh.triangles[i + 0]);
-            }
-
-
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
-           mesh.triangles[i + 0],
-           mesh.triangles[i + 5]))
-            {
-                vertexNumbers.Add(mesh.triangles[i + 0]);
-                vertexNumbers.Add(mesh.triangles[i + 5]);
-            }
-
-
-        }
-        return vertexNumbers;
-    }
 }
 public static class MyDateExtensions
 {

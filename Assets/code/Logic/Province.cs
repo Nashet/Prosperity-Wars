@@ -77,11 +77,11 @@ public class Province
         Vector2[] UVmap = new Vector2[perimeterVertices.Length * 2];
         int[] borderTriangles = new int[perimeterVertices.Length * 3];
         int vertexCounter = 0;
-         for (int i = 0; i < perimeterVertices.Length - 1; i += 2)
+        for (int i = 0; i < perimeterVertices.Length - 1; i += 2)
         //int i = 0;
         {
-            borderVertices[i * 2 + 0] = perimeterVertices[i + 0] + Vector3.back *borderHeight;
-            UVmap[i * 2 + 0] = new Vector2(0f,0f);
+            borderVertices[i * 2 + 0] = perimeterVertices[i + 0] + Vector3.back * borderHeight;
+            UVmap[i * 2 + 0] = new Vector2(0f, 0f);
 
             borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(perimeterVertices[i + 0], perimeterVertices[i + 1], 0.3f) + Vector3.back * borderHeight;
             UVmap[i * 2 + 1] = new Vector2(1f, 0f);
@@ -100,7 +100,7 @@ public class Province
             borderTriangles[i * 3 + 4] = 3 + vertexCounter;
             borderTriangles[i * 3 + 5] = 1 + vertexCounter;
             vertexCounter += 4;
-            
+
         }
 
         borderMesh.vertices = borderVertices;
