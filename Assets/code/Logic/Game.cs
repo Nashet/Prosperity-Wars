@@ -40,13 +40,10 @@ public static class Game //: Date
     static Game()
     {
         Application.runInBackground = true;
-<<<<<<< HEAD
-        loadImages();        
-        //generateMapImage();
-=======
-        LoadImages();
+
+        loadImages();
         generateMapImage();
->>>>>>> refs/remotes/origin/master
+
         makeProducts();
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
@@ -54,11 +51,10 @@ public static class Game //: Date
         
         makeProvinces();
         //roundMesh();
-<<<<<<< HEAD
+
         Province.allProvinces.ForEach(x => x.makeBordersMesh());
 
-=======
->>>>>>> refs/remotes/origin/master
+
         deleteEdgeProvinces();
         findNeighborprovinces();
         var mapWidth = mapImage.width * Options.cellMultiplier;
