@@ -51,7 +51,7 @@ public class MainCamera : MonoBehaviour
         //topPanel = transform.FindChild("TopPanel").gameObject;
         //.GetComponent<Panel>()
         //Game = new Game();
-        //cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
+        cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
     }
     int GetRayCastMeshNumber()
     {

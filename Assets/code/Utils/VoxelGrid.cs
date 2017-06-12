@@ -46,8 +46,9 @@ public class VoxelGrid : MonoBehaviour
             }
         }
 
-        GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        mesh.name = "VoxelGrid Mesh";
+        //GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+        mesh = new Mesh();
+        //mesh.name = "VoxelGrid Mesh";
         vertices = new List<Vector3>();
         triangles = new List<int>();
         Refresh();
@@ -69,7 +70,7 @@ public class VoxelGrid : MonoBehaviour
 
     private void Refresh()
     {
-        SetVoxelColors();
+        //SetVoxelColors();
         Triangulate();
     }
 
@@ -298,7 +299,7 @@ public class VoxelGrid : MonoBehaviour
     {
         for (int i = 0; i < voxels.Length; i++)
         {
-            //voxelMaterials[i].color = voxels[i].state ? Color.black : Color.white;
+          //  voxelMaterials[i].color = voxels[i].state ? Color.black : Color.white;
         }
     }
 
