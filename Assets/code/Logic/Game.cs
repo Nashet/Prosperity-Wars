@@ -641,55 +641,58 @@ public static class Game //: Date
 
         mapObject = GameObject.Find("MapObject");
 
-        Color currentProvinceColor = mapImage.GetPixel(0, 0);
-        Color currentColor, lastColor, lastprovinceColor = mapImage.GetPixel(0, 0); //, stripeColor;
-        int provinceCounter = 0;
-        for (int j = 0; j < mapImage.height; j++) // cicle by province        
-            for (int i = 0; i < mapImage.width; i++)
-            {
-                currentProvinceColor = mapImage.GetPixel(i, j);
-                if ((lastprovinceColor != currentProvinceColor) && !Province.isProvinceCreated(currentProvinceColor))
-                { // fill up province's mesh
-                  // making mesh from texture
-                    int stripeLenght = 0;
-                    lastColor = Color.black.setAlphaToZero(); // unexisting color
+        VoxelGrid grid = new VoxelGrid();
+        grid.Initialize(100, 20f);
 
-                    for (int ypos = 0; ypos < mapImage.height; ypos++)
-                    {
-                        lastColor = Color.black.setAlphaToZero(); // unexisting color
-                        for (int xpos = 0; xpos < mapImage.width; xpos++)
-                        {
-                            currentColor = mapImage.GetPixel(xpos, ypos);
-                            if (currentColor == currentProvinceColor)
-                                stripeLenght++;
-                            else //place for trangle making
-                            {
-                                if (lastColor == currentProvinceColor)
-                                {
-                                    makePolygonalStripe((xpos - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
-                                        (xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
-                                                                                        //makePolygonalStripe((xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
-                                    stripeLenght = 0;
-                                }
-                            }
-                            lastColor = currentColor;
-                        }
-                        if (stripeLenght != 0)
-                            if (lastColor == currentProvinceColor)
-                            {
-                                makePolygonalStripe((mapImage.width - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, (mapImage.width) * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
-                                    (mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
-                                                                                                          //makePolygonalStripe((mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
-                                stripeLenght = 0;
-                            }
-                        stripeLenght = 0;
-                    }
-                    //finished all map search for currentProvince
-                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName());
-                    provinceCounter++;
-                }
-                lastprovinceColor = currentProvinceColor;
-            }
+        //Color currentProvinceColor = mapImage.GetPixel(0, 0);
+        //Color currentColor, lastColor, lastprovinceColor = mapImage.GetPixel(0, 0); //, stripeColor;
+        //int provinceCounter = 0;
+        //for (int j = 0; j < mapImage.height; j++) // cicle by province        
+        //    for (int i = 0; i < mapImage.width; i++)
+        //    {
+        //        currentProvinceColor = mapImage.GetPixel(i, j);
+        //        if ((lastprovinceColor != currentProvinceColor) && !Province.isProvinceCreated(currentProvinceColor))
+        //        { // fill up province's mesh
+        //          // making mesh from texture
+        //            int stripeLenght = 0;
+        //            lastColor = Color.black.setAlphaToZero(); // unexisting color
+
+        //            for (int ypos = 0; ypos < mapImage.height; ypos++)
+        //            {
+        //                lastColor = Color.black.setAlphaToZero(); // unexisting color
+        //                for (int xpos = 0; xpos < mapImage.width; xpos++)
+        //                {
+        //                    currentColor = mapImage.GetPixel(xpos, ypos);
+        //                    if (currentColor == currentProvinceColor)
+        //                        stripeLenght++;
+        //                    else //place for trangle making
+        //                    {
+        //                        if (lastColor == currentProvinceColor)
+        //                        {
+        //                            makePolygonalStripe((xpos - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
+        //                                (xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
+        //                                                                                //makePolygonalStripe((xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
+        //                            stripeLenght = 0;
+        //                        }
+        //                    }
+        //                    lastColor = currentColor;
+        //                }
+        //                if (stripeLenght != 0)
+        //                    if (lastColor == currentProvinceColor)
+        //                    {
+        //                        makePolygonalStripe((mapImage.width - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, (mapImage.width) * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
+        //                            (mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
+        //                                                                                                  //makePolygonalStripe((mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
+        //                        stripeLenght = 0;
+        //                    }
+        //                stripeLenght = 0;
+        //            }
+        //            //finished all map search for currentProvince
+        //            makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName());
+        //            provinceCounter++;
+        //        }
+        //        lastprovinceColor = currentProvinceColor;
+        //    }
     }
 
     static void makeProvince(int provinceID, Color colorID, string name)
