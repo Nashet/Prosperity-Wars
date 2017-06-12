@@ -53,32 +53,33 @@ public class ProvincePanel : MonoBehaviour
     }
     public void onPopulationDetailsClick()
     {
-        //Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-        //MainCamera.populationPanel.show(true);
         if (MainCamera.populationPanel.isActiveAndEnabled)
-            if (MainCamera.populationPanel.showAll)
+            if (MainCamera.populationPanel.showingProvince == null)
             {
                 MainCamera.populationPanel.hide();
                 Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
                 MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                MainCamera.populationPanel.showAll = false;
+                //MainCamera.populationPanel.showAll = false;
                 MainCamera.populationPanel.show(true);
             }
             else
-                if (MainCamera.populationPanel.showingProvince == Game.selectedProvince)
-                MainCamera.populationPanel.hide();
-            else
             {
-                Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                MainCamera.populationPanel.showAll = false;
-                MainCamera.populationPanel.show(true);
+                if (MainCamera.populationPanel.showingProvince == Game.selectedProvince)
+                    MainCamera.populationPanel.hide();
+                else
+                {
+                    MainCamera.populationPanel.hide();
+                    Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
+                    MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                    //MainCamera.populationPanel.showAll = false;
+                    MainCamera.populationPanel.show(true);
+                }
             }
         else
         {
             Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
             MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-            MainCamera.populationPanel.showAll = false;
+            //MainCamera.populationPanel.showAll = false;
             MainCamera.populationPanel.show(true);
         }
 
@@ -89,9 +90,6 @@ public class ProvincePanel : MonoBehaviour
     }
     public void onEnterprisesClick()
     {
-        //Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-        //MainCamera.productionWindow.show(Game.selectedProvince, true);
-
         if (MainCamera.productionWindow.isActiveAndEnabled)
             if (MainCamera.productionWindow.showingProvince == null)
             {
@@ -101,14 +99,16 @@ public class ProvincePanel : MonoBehaviour
                 MainCamera.productionWindow.show(Game.selectedProvince, true);
             }
             else
-                if (MainCamera.productionWindow.showingProvince == Game.selectedProvince)
-                MainCamera.productionWindow.hide();
-            else
             {
-                MainCamera.productionWindow.hide();
-                Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories; ;
-                MainCamera.productionWindow.showingProvince = Game.selectedProvince;
-                MainCamera.productionWindow.show(Game.selectedProvince, true);
+                if (MainCamera.productionWindow.showingProvince == Game.selectedProvince)
+                    MainCamera.productionWindow.hide();
+                else
+                {
+                    MainCamera.productionWindow.hide();
+                    Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories; ;
+                    MainCamera.productionWindow.showingProvince = Game.selectedProvince;
+                    MainCamera.productionWindow.show(Game.selectedProvince, true);
+                }
             }
         else
         {
@@ -129,8 +129,8 @@ public class ProvincePanel : MonoBehaviour
             + "\nRural overpopulation: " + province.getOverpopulation()
             + "\nCores: " + province.getCoresDescription();
 
-            //+ "\nNeighbors " + province.getNeigborsList()
-            ;
+        //+ "\nNeighbors " + province.getNeigborsList()
+        ;
         Text text = btnOwner.GetComponentInChildren<Text>();
         text.text = "Owner: " + province.getCountry();
 

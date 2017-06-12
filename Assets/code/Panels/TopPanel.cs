@@ -24,7 +24,7 @@ public class TopPanel : MonoBehaviour
             + "\nMoney: " + Game.Player.cash
             + " Science points: " + Game.Player.sciencePoints
             + " Men: " + Game.Player.getMenPopulation();
-        //+ " Storage: " + Game.player.storageSet.ToString();
+
     }
     public void onTradeClick()
     {
@@ -84,7 +84,7 @@ public class TopPanel : MonoBehaviour
         ////MainCamera.populationPanel.show();
 
         if (MainCamera.populationPanel.isActiveAndEnabled)
-            if (MainCamera.populationPanel.showAll)
+            if (MainCamera.populationPanel.showingProvince==null)
                 MainCamera.populationPanel.hide();
             else
                 MainCamera.populationPanel.onShowAllClick();
