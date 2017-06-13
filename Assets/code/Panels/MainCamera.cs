@@ -5,7 +5,7 @@ using System;
 
 public class MainCamera : MonoBehaviour
 {
-    //public Game Game;
+    public static Game Game;
     internal static Camera cameraMy;
     static GameObject mapPointer;
 
@@ -31,9 +31,9 @@ public class MainCamera : MonoBehaviour
 
     // Use this for initialization
     //public Text generalText;
-    void Start()
+    void Awake()
     {
-
+        //Game = new Game();
         GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
         if (gameControllerObject != null)
         {

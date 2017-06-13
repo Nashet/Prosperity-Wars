@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Text;
 using System;
 
-public static class Game //: Date
+public  class Game : ThreadedJob
 {
     static Texture2D mapImage;
     static GameObject mapObject;
@@ -37,30 +37,28 @@ public static class Game //: Date
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended = true;
-    internal static readonly Material defaultCountryBorderMaterial;
-    internal static readonly Material defaultProvinceBorderMaterial;
-
-    static Game()
+    internal static  Material defaultCountryBorderMaterial;
+    internal static  Material defaultProvinceBorderMaterial;
+    private void initilize()
     {
+        makeProducts();
         Application.runInBackground = true;
         // Assigns a material named "Assets/Resources/..." to the object.
-        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;        
+        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
         defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
         //loadImages();
         generateMapImage();
 
-        makeProducts();
+        
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
 
         makeProvinces();
         //roundMesh();     
 
-
         deleteEdgeProvinces();
         findNeighborprovinces();
 
-        
         Province.makeAllBordersMesh();
 
         var mapWidth = mapImage.width * Options.cellMultiplier;
@@ -82,6 +80,10 @@ public static class Game //: Date
         CreateRandomPopulation();
         setStartResources();
         makeHelloMessage();
+    }
+    public Game()
+    {
+        
 
     }
 
@@ -999,5 +1001,10 @@ public static class Game //: Date
             }
             country.think();
         }
+    }
+
+    protected override void ThreadFunction()
+    {
+        initilize();
     }
 }
