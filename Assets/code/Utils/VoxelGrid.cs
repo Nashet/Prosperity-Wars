@@ -231,7 +231,8 @@ public class VoxelGrid : MonoBehaviour
 
         if (a.state != b.state && a.state != c.state && a.state != d.state
             && b.state != c.state && b.state != d.state
-            && c.state != d.state)
+            && c.state != d.state
+            && a.state == analyzingColor)
             AddQuad(a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
     }
     private bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
