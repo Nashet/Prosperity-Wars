@@ -245,7 +245,7 @@ public static class Game //: Date
         Culture cul = new Culture(cultureName.generateCultureName());
 
         Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
-        Country count = new Country(countryName.generateCountryName(), cul, UtilsMy.getRandomColor(), province);
+        Country count = new Country(countryName.generateCountryName(), cul, ColorExtensions.getRandomColor(), province);
         //count.setBank(count.bank);
         Player = Country.allCountries[1]; // not wild Tribes DONT touch that
         province.InitialOwner(count);
@@ -535,7 +535,7 @@ public static class Game //: Date
         amountOfProvince = 60 + Game.Random.Next(20);
         //amountOfProvince = 160 + Game.Random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
-            mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
+            mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 
         int emptyPixels = int.MaxValue;
         Color currentColor = mapImage.GetPixel(0, 0);

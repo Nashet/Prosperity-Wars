@@ -418,37 +418,12 @@ public class LimitedQueue<T> : Queue<T>
 public static class UtilsMy
 {
 
-    public static Color getRandomColor()
-    {
-        return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
-    }
+
     public static void Clear(this StringBuilder value)
     {
         value.Length = 0;
     }
-    public static Color setAlphaToZero(this Color color)
-    {
-        color.a = 0f;
-        return color;
-    }
-    public static Color getAlmostSameColor(this Color color)
-    {
-        float maxDeviation = 0.02f;//not including
 
-        var result = new Color();
-        float deviation = maxDeviation - UnityEngine.Random.Range(0f, maxDeviation * 2);
-        result.r = color.r + deviation;
-        result.g = color.g + deviation;
-        result.b = color.b + deviation;
-
-
-        return result;
-    }
-    public static Color setAlphaToMax(this Color color)
-    {
-        color.a = 1f;
-        return color;
-    }
     public static bool isDifferentColor(this Texture2D image, int thisx, int thisy, int x, int y)
     {
         if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))
@@ -561,14 +536,7 @@ public static class UtilsMy
 
 
 
-    public static bool isSameColorsWithoutAlpha(Color colorA, Color colorB)
-    {
-        if (colorA.b == colorB.b && colorA.g == colorB.g && colorA.r == colorB.r)
-            return true;
-        else
-            return false;
 
-    }
 
     public static GameObject CreateButton(Transform parent, float x, float y,
                                         float w, float h, string message,
@@ -839,6 +807,49 @@ public static class MyIEnumerableExtensions
     }
 
 }
+public static class ColorExtensions
+{
+    public static Color getNegative(this Color color)
+    {
+        return new Color(1.0f - color.r, 1.0f - color.g, 1.0f - color.b);
+    }
+
+    public static Color getRandomColor()
+    {
+        return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+    }
+    public static Color setAlphaToZero(this Color color)
+    {
+        color.a = 0f;
+        return color;
+    }
+    public static Color getAlmostSameColor(this Color color)
+    {
+        float maxDeviation = 0.02f;//not including
+
+        var result = new Color();
+        float deviation = maxDeviation - UnityEngine.Random.Range(0f, maxDeviation * 2);
+        result.r = color.r + deviation;
+        result.g = color.g + deviation;
+        result.b = color.b + deviation;
+
+
+        return result;
+    }
+    public static bool isSameColorsWithoutAlpha(this Color colorA, Color colorB)
+    {
+        if (colorA.b == colorB.b && colorA.g == colorB.g && colorA.r == colorB.r)
+            return true;
+        else
+            return false;
+
+    }
+    public static Color setAlphaToMax(this Color color)
+    {
+        color.a = 1f;
+        return color;
+    }
+}
 public static class MeshExtensions
 {
     public static bool hasDuplicateOfEdge(this Mesh mesh, int pointA, int pointB)
@@ -884,7 +895,7 @@ public static class MeshExtensions
         }
         return res;
     }
-   
+
     public static int isAnyPointOnLine(this Mesh mesh, Vector3 a, Vector3 b)
     {
         int result = -1;

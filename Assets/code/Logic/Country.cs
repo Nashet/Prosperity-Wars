@@ -113,7 +113,7 @@ public class Country : Consumer
         //if (capital != null) // not null-country
         {
             borderMaterial = new Material(Game.defaultCountryBorderMaterial);
-            borderMaterial.color = nationalColor;
+            borderMaterial.color = nationalColor.getNegative();
         }
 
 

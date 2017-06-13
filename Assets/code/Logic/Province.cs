@@ -108,8 +108,8 @@ public class Province
     }
     MeshRenderer makeBorderMesh(Province neghbor, List<EdgeHelpers.Edge> edges)
     {
-        float borderWidth = 0.8f;
-        float borderWidth2 = -0.8f;
+        float borderWidth = 0.4f;
+        float borderWidth2 = -0.4f;
         float borderHeight = 0.1f;
         // GameObject objToSpawn = new GameObject(string.Format("{0} border", getID()));
         GameObject objToSpawn = new GameObject("Border with " + neghbor.ToString());
