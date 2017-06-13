@@ -841,7 +841,7 @@ public static class MyIEnumerableExtensions
 }
 public static class MeshExtensions
 {
-    public static bool hasDuplicateOfEdge(this Mesh mesh, List<int> vertexNumbers, int pointA, int pointB)
+    public static bool hasDuplicateOfEdge(this Mesh mesh, int pointA, int pointB)
     {
         //getAllTriangles
         //    getAlledge
@@ -849,17 +849,40 @@ public static class MeshExtensions
         int foundEdgeDuplicates = 0;
         for (int i = 0; i < mesh.triangles.Count(); i += 3)
         {
-            if (mesh.isSameEdge(vertexNumbers, pointA, pointB, mesh.triangles[i + 0], mesh.triangles[i + 1]))
+            if (mesh.isSameEdge(pointA, pointB, mesh.triangles[i + 0], mesh.triangles[i + 1]))
                 foundEdgeDuplicates++;
-            if (mesh.isSameEdge(vertexNumbers, pointA, pointB, mesh.triangles[i + 1], mesh.triangles[i + 2]))
+            if (mesh.isSameEdge(pointA, pointB, mesh.triangles[i + 1], mesh.triangles[i + 2]))
                 foundEdgeDuplicates++;
-            if (mesh.isSameEdge(vertexNumbers, pointA, pointB, mesh.triangles[i + 2], mesh.triangles[i + 0]))
+            if (mesh.isSameEdge(pointA, pointB, mesh.triangles[i + 2], mesh.triangles[i + 0]))
                 foundEdgeDuplicates++;
+            if (foundEdgeDuplicates > 1) // 1 is this edge itself
+                return true;
         }
-        if (foundEdgeDuplicates > 1) // 1 is this edge itself
-            return true;
-        else
-            return false;
+        return false;
+    }
+    public static List<EdgeHelpers.Edge> getBorders(this Mesh mesh, List<EdgeHelpers.Edge> edges)
+    {
+        List<EdgeHelpers.Edge> res = new List<EdgeHelpers.Edge>();
+        foreach (var checkingEdge in edges)
+        {
+            //if (!mesh.hasDuplicateOfEdge(item.v1, item.v2))
+            // check only in edges!
+            // need vector by vector comprasion
+            int foundDuplicates = 0;
+            foreach (var comparingEdge in edges)
+            {
+                //if (checkingEdge == comparingEdge)
+                if (mesh.isSameEdge(checkingEdge.v1, checkingEdge.v2, comparingEdge.v1, comparingEdge.v2))
+                {
+                    foundDuplicates++;
+                    if (foundDuplicates > 1) // 1 - is edge itself
+                        break;
+                }
+            }
+            if (foundDuplicates < 2)
+                res.Add(checkingEdge);
+        }
+        return res;
     }
     public static int isAnyPointOnLine(this Mesh mesh, Vector3 a, Vector3 b)
     {
@@ -874,7 +897,7 @@ public static class MeshExtensions
         }
         return result;
     }
-    public static bool isSameEdge(this Mesh mesh, List<int> vertexNumbers, int a, int b, int c, int d)
+    public static bool isSameEdge(this Mesh mesh, int a, int b, int c, int d)
     {
         //if ( (mesh.vertices[a] == mesh.vertices[c] && mesh.vertices[b] == mesh.vertices[d])
         //    || (mesh.vertices[a] == mesh.vertices[c] && mesh.vertices[d] == mesh.vertices[b]))
@@ -882,12 +905,12 @@ public static class MeshExtensions
             || (a == d && b == c)
             || isTwoLinesTouchEachOther(mesh.vertices[a], mesh.vertices[b], mesh.vertices[c], mesh.vertices[d]))
         {
-            var point = mesh.isAnyPointOnLine(mesh.vertices[c], mesh.vertices[d]);
-            if (point > 0)
-            {
-                vertexNumbers.Add(a);
-                vertexNumbers.Add(point);
-            }
+            //var point = mesh.isAnyPointOnLine(mesh.vertices[c], mesh.vertices[d]);
+            //if (point > 0)
+            //{
+            //    vertexNumbers.Add(a);
+            //    vertexNumbers.Add(point);
+            //}
             //if (
             //    isPointLiesOnLine(mesh.vertices[a], mesh.vertices[c], mesh.vertices[d])
             //   //|| isPointLiesOnLine(mesh.vertices[c], mesh.vertices[a], mesh.vertices[b]))
@@ -917,7 +940,7 @@ public static class MeshExtensions
         }
         else
         {
-           
+
             return false;
         }
     }
@@ -933,7 +956,7 @@ public static class MeshExtensions
         //for (int i = 0; i < 17; i += 6)
         //int i = 0;        
         {
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            if (!mesh.hasDuplicateOfEdge(
             mesh.triangles[i + 5],
             mesh.triangles[i + 1]))
             {
@@ -942,7 +965,7 @@ public static class MeshExtensions
             }
 
 
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            if (!mesh.hasDuplicateOfEdge(
             mesh.triangles[i + 1],
             mesh.triangles[i + 2]))
             {
@@ -950,7 +973,7 @@ public static class MeshExtensions
                 vertexNumbers.Add(mesh.triangles[i + 2]);
             }
 
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            if (!mesh.hasDuplicateOfEdge(
             mesh.triangles[i + 2],
             mesh.triangles[i + 0]))
             {
@@ -959,7 +982,7 @@ public static class MeshExtensions
             }
 
 
-            if (!mesh.hasDuplicateOfEdge(vertexNumbers,
+            if (!mesh.hasDuplicateOfEdge(
            mesh.triangles[i + 0],
            mesh.triangles[i + 5]))
             {
@@ -984,8 +1007,10 @@ public static class MeshExtensions
     public static bool isTwoLinesTouchEachOther(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
     {
         if (isLinesParallel(a, b, c, d))
-            return isPointLiesOnLine(a, c, d) || isPointLiesOnLine(b, c, d)
-                || isPointLiesOnLine(c, a, b) || isPointLiesOnLine(d, a, b);
+            //return isPointLiesOnLine(a, c, d) || isPointLiesOnLine(b, c, d)
+            //    || isPointLiesOnLine(c, a, b) || isPointLiesOnLine(d, a, b);
+            return (a == c && b == d) || (a == d && b == c);
+        // || (a == b && c == d) || (a == d && b == c);
         else
             return false;
     }
@@ -995,7 +1020,12 @@ public static class MeshExtensions
     }
     public static bool isLinesParallel(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
     {
-        return Mathf.Abs(getLineSlope2D(a, b) - getLineSlope2D(c, d)) < 0.001f;
+        var slope1 = getLineSlope2D(a, b);
+        var slope2 = getLineSlope2D(c, d);
+        //return Mathf.Abs(slope1 - slope2) < 0.001f;
+        return slope1 == slope2 || (float.IsInfinity(slope1) && float.IsInfinity(slope2));
+
+        //if 
     }
     public static bool isPointLiesOnLine(Vector3 point, Vector3 a, Vector3 b)
     {
@@ -1019,7 +1049,7 @@ public static class MeshExtensions
     //        compare it eash edge of other meshs
     //        if same add it in collection
     //    for (int i=0; i< mesh.vertexCount; i++)
-            
+
     //}
     public static Vector3[] getPerimeterVerices(this Mesh mesh, bool removeDuplicates)
     {
@@ -1180,6 +1210,14 @@ public static class EdgeHelpers
             v2 = aV2;
             triangleIndex = aIndex;
         }
+        public static bool operator ==(Edge c1, Edge c2)
+        {
+            return (c1.v1 == c2.v1 && c1.v2 == c2.v2) || (c1.v1 == c2.v2 && c1.v2 == c2.v1);
+        }
+        public static bool operator !=(Edge c1, Edge c2)
+        {
+            return (c1.v1 != c2.v1 || c1.v2 != c2.v2) && (c1.v1 != c2.v2 || c1.v2 != c2.v1);
+        }
     }
 
     public static List<Edge> GetEdges(int[] aIndices)
@@ -1194,6 +1232,9 @@ public static class EdgeHelpers
             result.Add(new Edge(v2, v3, i));
             result.Add(new Edge(v3, v1, i));
         }
+
+
+
         return result;
     }
 

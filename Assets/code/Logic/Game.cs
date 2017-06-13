@@ -41,7 +41,7 @@ public static class Game //: Date
     {
         Application.runInBackground = true;
 
-        loadImages();
+        //loadImages();
         generateMapImage();
 
         makeProducts();
@@ -52,7 +52,7 @@ public static class Game //: Date
         makeProvinces();
         //roundMesh();
 
-        //Province.allProvinces.ForEach(x => x.makeBordersMesh());
+        Province.allProvinces.ForEach(x => x.makeBordersMesh());
 
 
         deleteEdgeProvinces();
@@ -517,7 +517,7 @@ public static class Game //: Date
     static void generateMapImage()
     {
 
-        mapImage = new Texture2D(50, 50);
+        mapImage = new Texture2D(30, 30);
         //mapImage = new Texture2D(200, 200);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
