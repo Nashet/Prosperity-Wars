@@ -41,17 +41,11 @@ public  class Game : ThreadedJob
     internal static  Material defaultProvinceBorderMaterial;
     private void initilize()
     {
-        makeProducts();
-        Application.runInBackground = true;
-        // Assigns a material named "Assets/Resources/..." to the object.
-        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-        //loadImages();
-        generateMapImage();
+       
 
-        
+        makeProducts();
         market.initialize();
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        
 
         makeProvinces();
         //roundMesh();     
@@ -83,8 +77,15 @@ public  class Game : ThreadedJob
     }
     public Game()
     {
-        
+        Application.runInBackground = true;
+        // Assigns a material named "Assets/Resources/..." to the object.
+        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
+        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        mapObject = GameObject.Find("MapObject");
 
+        //loadImages();
+        generateMapImage();
     }
 
     internal static void takePlayerControlOfThatCountry(Country country)
@@ -653,7 +654,7 @@ public  class Game : ThreadedJob
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
-        mapObject = GameObject.Find("MapObject");
+        
         Color currentProvinceColor = mapImage.GetPixel(0, 0);
         int provinceCounter = 0;
         for (int j = 0; j < mapImage.height; j++) // circle by province        
