@@ -35,13 +35,13 @@ public class Country : Consumer
     public GeneralStaff staff;
 
     TextMesh messhCapitalText;
-
+    Material borderMaterial;
     /// <summary>
     /// per 1000 men
     /// </summary>
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
+    internal static readonly Country NullCountry;
     static Condition condDontHaveDeposits = new Condition(x => (x as Agent).deposits.get() == 0f, "Don't have deposits", false);
     static Condition condDontHaveLoans = new Condition(x => (x as Agent).loans.get() == 0f, "Don't have loans", false);
     public static readonly ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
@@ -60,9 +60,14 @@ public class Country : Consumer
     Value unemploymentSubsidiesExpense = new Value(0f);
     Value factorySubsidiesExpense = new Value(0f);
     Value storageBuyingExpense = new Value(0f);
-
+    static Country()
+    {
+        NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
+    }
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
+
+
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "Has my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
@@ -105,6 +110,13 @@ public class Country : Consumer
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
+        //if (capital != null) // not null-country
+        {
+            borderMaterial = new Material(Game.defaultCountryBorderMaterial);
+            borderMaterial.color = nationalColor;
+        }
+
+
     }
     /// <summary>
     /// returns true if there is in world country  with power of X(world)
@@ -303,7 +315,7 @@ public class Country : Consumer
     internal void moveCapitalTo(Province newCapital)
     {
         if (messhCapitalText == null)
-            makeCapitalTextMesh();            
+            makeCapitalTextMesh();
         else
         {
             Vector3 capitalTextPosition = newCapital.centre;
@@ -354,8 +366,14 @@ public class Country : Consumer
             procentVotersSayedYes.set((float)votersSayedYes / votingPopulation);
         return procentVotersSayedYes;
     }
+
+    internal Material getBorderMaterial()
+    {
+        return borderMaterial;
+    }
+
     /// <summary>
-    /// Not finished, dont use it
+    /// Not finished, don't use it
     /// </summary>
     /// <param name="reform"></param>   
     internal Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)

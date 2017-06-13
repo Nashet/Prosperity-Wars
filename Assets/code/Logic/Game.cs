@@ -37,10 +37,15 @@ public static class Game //: Date
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended = true;
+    internal static readonly Material defaultCountryBorderMaterial;
+    internal static readonly Material defaultProvinceBorderMaterial;
+
     static Game()
     {
         Application.runInBackground = true;
-
+        // Assigns a material named "Assets/Resources/..." to the object.
+        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;        
+        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
         //loadImages();
         generateMapImage();
 
