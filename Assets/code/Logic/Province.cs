@@ -29,7 +29,8 @@ public class Province
     Product resource;
     readonly internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
-    readonly List<EdgeHelpers.Edge> edges;
+    List<EdgeHelpers.Edge> edges;
+    Dictionary<Province, MeshRenderer> bordresMeshes = new Dictionary<Province, MeshRenderer>();
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
     {
         // List<int> trianglesList = new List<int>();
@@ -82,9 +83,7 @@ public class Province
         fertileSoil = 10000;
         setProvinceCenter();
         SetLabel();
-        edges = EdgeHelpers.GetEdges(landMesh.triangles).FindBoundary();
-        //if (Game.Random.Next(10) == 1)
-            edges = landMesh.getBorders(edges);
+
         //makeBordersMesh();
         //var lr = rootGameObject.AddComponent<LineRenderer>();
         ////lr.loop = true;
@@ -102,15 +101,17 @@ public class Province
         ////lineRenderer.SetWidth(1, 1);
         ////Debug.Log("rendered line");
     }
-    public void findBorderEdges()
+    public static void makeAllBordersMesh()
     {
-
+        allProvinces.ForEach(x => x.edges = EdgeHelpers.GetEdges(x.landMesh.triangles).FindBoundary());
+        allProvinces.ForEach(x => x.makeBordersMesh());
     }
-    public void makeBordersMesh()
+    MeshRenderer makeBorderMesh(Province neghbor, List<EdgeHelpers.Edge> edges)
     {
         float borderHeight = 0.1f;
-        GameObject objToSpawn = new GameObject(string.Format("{0} border", getID()));
-
+        // GameObject objToSpawn = new GameObject(string.Format("{0} border", getID()));
+        GameObject objToSpawn = new GameObject("Border with " + neghbor.ToString());
+        
         //Add Components
         MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
@@ -119,7 +120,6 @@ public class Province
 
         borderMesh = meshFilter.mesh;
         borderMesh.Clear();
-
 
         //var perimeterVertices = landMesh.getPerimeterVerices(false);
         Vector3[] borderVertices = new Vector3[edges.Count * 4];
@@ -152,31 +152,6 @@ public class Province
             vertexCounter += 4;
             i += 2;
         }
-        //for (int i = 0; i < perimeterVertices.Length - 1; i += 2)
-        ////int i = 0;
-        //{
-        //    borderVertices[i * 2 + 0] = perimeterVertices[i + 0] + Vector3.back * borderHeight;
-        //    UVmap[i * 2 + 0] = new Vector2(0f, 0f);
-
-        //    borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(perimeterVertices[i + 0], perimeterVertices[i + 1], 0.3f) + Vector3.back * borderHeight;
-        //    UVmap[i * 2 + 1] = new Vector2(1f, 0f);
-
-        //    borderVertices[i * 2 + 2] = perimeterVertices[i + 1] + Vector3.back * borderHeight;
-        //    UVmap[i * 2 + 2] = new Vector2(0f, 1f);
-
-        //    borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(perimeterVertices[i + 1], perimeterVertices[i + 0], -0.3f) + Vector3.back * borderHeight;
-        //    UVmap[i * 2 + 3] = new Vector2(1f, 1f);
-
-        //    borderTriangles[i * 3 + 0] = 0 + vertexCounter;
-        //    borderTriangles[i * 3 + 1] = 2 + vertexCounter;
-        //    borderTriangles[i * 3 + 2] = 1 + vertexCounter;
-
-        //    borderTriangles[i * 3 + 3] = 2 + vertexCounter;
-        //    borderTriangles[i * 3 + 4] = 3 + vertexCounter;
-        //    borderTriangles[i * 3 + 5] = 1 + vertexCounter;
-        //    vertexCounter += 4;
-
-        //}
 
         borderMesh.vertices = borderVertices;
         borderMesh.triangles = borderTriangles;
@@ -184,14 +159,60 @@ public class Province
         borderMesh.RecalculateNormals();
         borderMesh.RecalculateBounds();
 
-        // Assigns a material named "Assets/Resources/DEV_Orange" to the object.
+        // Assigns a material named "Assets/Resources/..." to the object.
         Material newMat = Resources.Load("Border", typeof(Material)) as Material;
         meshRenderer.material = newMat;
+        borderMesh.name = "Border with "+ neghbor.ToString();
+        return meshRenderer;
+    }
+    void makeBordersMesh()
+    {
 
-        //meshRenderer.material.shader = Shader.Find("Standard");
-        //meshRenderer.material.color = colorID;
+        //if (Game.Random.Next(10) == 1)
 
-        borderMesh.name = getID().ToString() + " border";
+        foreach (var neighbor in neighbors)
+        {
+            var filtredEdges = filterNeighborEdges(neighbor);
+            bordresMeshes.Add(neighbor, makeBorderMesh(neighbor, filtredEdges));
+        }
+
+    }
+    public List<EdgeHelpers.Edge> filterNeighborEdges(Province neighbor)
+    {
+        List<EdgeHelpers.Edge> res = new List<EdgeHelpers.Edge>();
+
+        foreach (var checkingEdge in edges)
+        {
+            //if neighbor has checkingEdge add it in res
+            foreach (var comparingEdge in neighbor.edges)
+                if (MeshExtensions.isTwoLinesTouchEachOther(landMesh.vertices[checkingEdge.v1],
+                    landMesh.vertices[checkingEdge.v2],
+            neighbor.landMesh.vertices[comparingEdge.v1],
+            neighbor.landMesh.vertices[comparingEdge.v2])
+            )
+                    res.Add(checkingEdge);
+        }
+
+        //foreach (var checkingEdge in edges)
+        //{
+        //    //if (!mesh.hasDuplicateOfEdge(item.v1, item.v2))
+        //    // check only in edges!
+        //    // need vector by vector comprasion
+        //    int foundDuplicates = 0;
+        //    foreach (var comparingEdge in edges)
+        //    {
+        //        //if (checkingEdge == comparingEdge)
+        //        if (mesh.isSameEdge(checkingEdge.v1, checkingEdge.v2, comparingEdge.v1, comparingEdge.v2))
+        //        {
+        //            foundDuplicates++;
+        //            if (foundDuplicates > 1) // 1 - is edge itself
+        //                break;
+        //        }
+        //    }
+        //    if (foundDuplicates < 2)
+        //        res.Add(checkingEdge);
+        //}
+        return res;
     }
     /// <summary>
     /// returns 

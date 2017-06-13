@@ -48,15 +48,16 @@ public static class Game //: Date
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
 
-
         makeProvinces();
-        //roundMesh();
-
-        Province.allProvinces.ForEach(x => x.makeBordersMesh());
+        //roundMesh();     
 
 
         deleteEdgeProvinces();
         findNeighborprovinces();
+
+        
+        Province.makeAllBordersMesh();
+
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
 
