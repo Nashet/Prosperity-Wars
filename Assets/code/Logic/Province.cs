@@ -29,17 +29,61 @@ public class Province
     Product resource;
     readonly internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
+    readonly List<EdgeHelpers.Edge> edges;
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
-    {
+    { 
+       // List<int> trianglesList = new List<int>();
+       //List<Vector3> vertices = new List<Vector3>();
+       //int triangleCounter = 0;
+
+    //rootGameObject = mapObject;
+    //    //spawn object
+    //    GameObject objToSpawn = new GameObject(string.Format("{0}", iID));
+
+    //    // in case you want the new gameobject to be a child
+    //    // of the gameobject that your script is attached to
+    //    objToSpawn.transform.parent = mapObject.transform;
+
+    //    //Add Components
+    //    meshFilter = objToSpawn.AddComponent<MeshFilter>();
+    //    meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
+
+        
+
+    //    landMesh = meshFilter.mesh;
+    //    landMesh.Clear();
+
+    //    landMesh.vertices = meshToCopy.vertices;
+    //    landMesh.triangles = meshToCopy.triangles;
+    //    landMesh.RecalculateNormals();
+    //    landMesh.RecalculateBounds();
+
+    //    meshRenderer.material.shader = Shader.Find("Standard");
+    //    meshRenderer.material.color = colorID;
+
+    //    MeshCollider groundMeshCollider;
+    //    groundMeshCollider = objToSpawn.AddComponent(typeof(MeshCollider)) as MeshCollider;
+    //    groundMeshCollider.sharedMesh = landMesh;
+
+    //    //vertices.Clear();
+    //    //trianglesList.Clear();
+    //    //triangleCounter = 0;
+
+    //    landMesh.name = iID.ToString();
+
+
         allProducers = getProducers();
         resource = inresource;
         colorID = icolorID; landMesh = imesh; name = iname; meshFilter = imeshFilter;
         ID = iID;
         rootGameObject = igameObject;
-        meshRenderer = imeshRenderer;
+        meshRenderer = imeshRenderer;      
+        
         fertileSoil = 10000;
         setProvinceCenter();
         SetLabel();
+        //edges = EdgeHelpers.GetEdges(landMesh.triangles).FindBoundary();
+       
         //makeBordersMesh();
         //var lr = rootGameObject.AddComponent<LineRenderer>();
         ////lr.loop = true;
@@ -57,6 +101,10 @@ public class Province
         ////lineRenderer.SetWidth(1, 1);
         ////Debug.Log("rendered line");
     }
+    public void findBorderEdges()
+    {
+
+    }
     public void makeBordersMesh()
     {
         float borderHeight = 0.1f;
@@ -73,10 +121,35 @@ public class Province
 
 
         var perimeterVertices = landMesh.getPerimeterVerices(false);
-        Vector3[] borderVertices = new Vector3[perimeterVertices.Length * 2];
-        Vector2[] UVmap = new Vector2[perimeterVertices.Length * 2];
-        int[] borderTriangles = new int[perimeterVertices.Length * 3];
+        Vector3[] borderVertices = new Vector3[edges.Count*4];
+        Vector2[] UVmap = new Vector2[edges.Count * 4];
+        int[] borderTriangles = new int[edges.Count * 6];
         int vertexCounter = 0;
+        //int i = 0;
+        //foreach (var item in edges)
+        //{
+        //    borderVertices[i * 2 + 0] = landMesh.vertices[item.v1] + Vector3.back * borderHeight;
+        //    UVmap[i * 2 + 0] = new Vector2(0f, 0f);
+
+        //    borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(landMesh.vertices[item.v1], landMesh.vertices[item.v2], 0.3f) + Vector3.back * borderHeight;
+        //    UVmap[i * 2 + 1] = new Vector2(1f, 0f);
+
+        //    borderVertices[i * 2 + 2] = landMesh.vertices[item.v2] + Vector3.back * borderHeight;
+        //    UVmap[i * 2 + 2] = new Vector2(0f, 1f);
+
+        //    borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(landMesh.vertices[item.v1], landMesh.vertices[item.v2], -0.3f) + Vector3.back * borderHeight;
+        //    UVmap[i * 2 + 3] = new Vector2(1f, 1f);
+
+        //    borderTriangles[i * 3 + 0] = 0 + vertexCounter;
+        //    borderTriangles[i * 3 + 1] = 2 + vertexCounter;
+        //    borderTriangles[i * 3 + 2] = 1 + vertexCounter;
+
+        //    borderTriangles[i * 3 + 3] = 2 + vertexCounter;
+        //    borderTriangles[i * 3 + 4] = 3 + vertexCounter;
+        //    borderTriangles[i * 3 + 5] = 1 + vertexCounter;
+        //    vertexCounter += 4;
+        //    i += 2;
+        //}
         for (int i = 0; i < perimeterVertices.Length - 1; i += 2)
         //int i = 0;
         {

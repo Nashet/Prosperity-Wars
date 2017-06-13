@@ -48,7 +48,7 @@ public static class Game //: Date
         market.initialize();
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
 
-        
+
         makeProvinces();
         //roundMesh();
 
@@ -74,9 +74,9 @@ public static class Game //: Date
                 pro.InitialOwner(Country.NullCountry);
 
         CreateRandomPopulation();
-        setStartResources();       
+        setStartResources();
         makeHelloMessage();
-       
+
     }
 
     internal static void takePlayerControlOfThatCountry(Country country)
@@ -517,7 +517,7 @@ public static class Game //: Date
     static void generateMapImage()
     {
 
-        mapImage = new Texture2D(100, 100);
+        mapImage = new Texture2D(50, 50);
         //mapImage = new Texture2D(200, 200);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
@@ -645,22 +645,27 @@ public static class Game //: Date
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
-        mapObject = GameObject.Find("MapObject");        
+        mapObject = GameObject.Find("MapObject");
         Color currentProvinceColor = mapImage.GetPixel(0, 0);
         int provinceCounter = 0;
         for (int j = 0; j < mapImage.height; j++) // circle by province        
             for (int i = 0; i < mapImage.width; i++)
             {
+                //var newProvince = Province.findProvince(currentProvinceColor);
+                //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
                 if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
                 {
                     VoxelGrid grid = mapObject.GetComponent<VoxelGrid>();
                     grid.Initialize(mapImage.width, Options.cellMultiplier * 100, mapImage, currentProvinceColor);
 
                     makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(), grid.getMesh());
+                    //Province newProvince =
+                    //var np = new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, grid.getMesh(), Product.getRandomResource(false), mapObject);
+                    //Province.allProvinces.Add(np);
                     provinceCounter++;
                 }
                 currentProvinceColor = mapImage.GetPixel(i, j);
-            }       
+            }
     }
 
     static void makeProvince(int provinceID, Color colorID, string name, Mesh MSMesh)
@@ -689,6 +694,7 @@ public static class Game //: Date
         MeshCollider groundMeshCollider;
         groundMeshCollider = objToSpawn.AddComponent(typeof(MeshCollider)) as MeshCollider;
         groundMeshCollider.sharedMesh = mesh;
+
 
         vertices.Clear();
         trianglesList.Clear();
