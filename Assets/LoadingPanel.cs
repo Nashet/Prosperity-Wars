@@ -20,17 +20,19 @@ public class LoadingPanel : DragPanel
         {
             SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
             MainCamera.Game = new Game();
-            MainCamera.Game.Start();
+            MainCamera.Game.initilize();
+
+            // MainCamera.Game.Start();
         }
-        if (MainCamera.Game != null)
-        {
-            if (MainCamera.Game.Update())
-            {
-                // Alternative to the OnFinished callback
-                //MainCamera.Game = null;
-            }
-        }
-    } 
-   
+
+        //if (MainCamera.Game.Update())
+        //{
+        //    // Alternative to the OnFinished callback
+        //    //MainCamera.Game = null;
+        //    // close scene here
+        //}
+
+    }
+
 
 }

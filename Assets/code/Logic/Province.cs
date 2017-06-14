@@ -10,6 +10,8 @@ public class Province
     readonly Color colorID;
     Color color;
     readonly public Mesh landMesh;
+    readonly public MeshStructure meshStructure;
+
     Mesh borderMesh;
     readonly MeshFilter meshFilter;
     readonly internal GameObject rootGameObject;
@@ -31,7 +33,7 @@ public class Province
     readonly List<Country> cores = new List<Country>();
     List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
-    public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource)
+    public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource, MeshStructure meshStructure)
     {
         // List<int> trianglesList = new List<int>();
         //List<Vector3> vertices = new List<Vector3>();
@@ -72,7 +74,7 @@ public class Province
 
         //    landMesh.name = iID.ToString();
 
-
+        this.meshStructure = meshStructure;
         allProducers = getProducers();
         resource = inresource;
         colorID = icolorID; landMesh = imesh; name = iname; meshFilter = imeshFilter;
@@ -131,16 +133,16 @@ public class Province
         int i = 0;
         foreach (var item in edges)
         {
-            borderVertices[i * 2 + 0] = landMesh.vertices[item.v1] + Vector3.back * borderHeight;
+            borderVertices[i * 2 + 0] = meshStructure.vertices[item.v1] + Vector3.back * borderHeight;
             UVmap[i * 2 + 0] = new Vector2(0f, 1f);
 
-            borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(landMesh.vertices[item.v1], landMesh.vertices[item.v2], borderWidth) + Vector3.back * borderHeight;
+            borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(meshStructure.vertices[item.v1], meshStructure.vertices[item.v2], borderWidth) + Vector3.back * borderHeight;
             UVmap[i * 2 + 1] = new Vector2(1f, 1f);
 
-            borderVertices[i * 2 + 2] = landMesh.vertices[item.v2] + Vector3.back * borderHeight;
+            borderVertices[i * 2 + 2] = meshStructure.vertices[item.v2] + Vector3.back * borderHeight;
             UVmap[i * 2 + 2] = new Vector2(0f, 0f);
 
-            borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(landMesh.vertices[item.v2], landMesh.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
+            borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(meshStructure.vertices[item.v2], meshStructure.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
             UVmap[i * 2 + 3] = new Vector2(1f, 0f);
 
             borderTriangles[i * 3 + 0] = 0 + vertexCounter;
@@ -186,10 +188,10 @@ public class Province
         {
             //if neighbor has checkingEdge add it in res
             foreach (var comparingEdge in neighbor.edges)
-                if (MeshExtensions.isTwoLinesTouchEachOther(landMesh.vertices[checkingEdge.v1],
-                    landMesh.vertices[checkingEdge.v2],
-            neighbor.landMesh.vertices[comparingEdge.v1],
-            neighbor.landMesh.vertices[comparingEdge.v2])
+                if (MeshExtensions.isTwoLinesTouchEachOther(meshStructure.vertices[checkingEdge.v1],
+                    meshStructure.vertices[checkingEdge.v2],
+            neighbor.meshStructure.vertices[comparingEdge.v1],
+            neighbor.meshStructure.vertices[comparingEdge.v2])
             )
                     res.Add(checkingEdge);
         }
@@ -382,9 +384,9 @@ public class Province
         //foreach (Province pro in Province.allProvinces)
         //{
         //e accu.Set(0, 0, 0);
-        foreach (var c in this.landMesh.vertices)
+        foreach (var c in this.meshStructure.vertices)
             accu += c;
-        accu = accu / this.landMesh.vertices.Length;
+        accu = accu / this.meshStructure.vertices.Count;
         this.centre = accu;
         // }
     }

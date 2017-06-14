@@ -17,10 +17,10 @@ public class VoxelGrid : MonoBehaviour
 
     private Material[] voxelMaterials;
 
-    private Mesh mesh;
+    private MeshStructure mesh;
 
-    private List<Vector3> vertices;
-    private List<int> triangles;
+    //private List<Vector3> vertices;
+    //private List<int> triangles;
 
     private Voxel dummyX, dummyY, dummyT;
     private Color analyzingColor;
@@ -47,13 +47,13 @@ public class VoxelGrid : MonoBehaviour
         }
 
         //GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        mesh = new Mesh();
+        mesh = new MeshStructure();
         //mesh.name = "VoxelGrid Mesh";
-        vertices = new List<Vector3>();
-        triangles = new List<int>();
+        //vertices = new List<Vector3>();
+        //triangles = new List<int>();
         Refresh();
     }
-    public Mesh getMesh()
+    public MeshStructure getMesh()
     {
         return mesh;
     }
@@ -76,9 +76,8 @@ public class VoxelGrid : MonoBehaviour
 
     private void Triangulate()
     {
-        vertices.Clear();
-        triangles.Clear();
-        mesh.Clear();
+        
+        //mesh.Clear();
 
         if (xNeighbor != null)
         {
@@ -90,8 +89,8 @@ public class VoxelGrid : MonoBehaviour
             TriangulateGapRow();
         }
 
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
+        //mesh.vertices = vertices.ToArray();
+        //mesh.triangles = triangles.ToArray();
     }
 
     private void TriangulateCellRows()
@@ -253,47 +252,47 @@ public class VoxelGrid : MonoBehaviour
     }
     private void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
     {
-        int vertexIndex = vertices.Count;
-        vertices.Add(a);
-        vertices.Add(b);
-        vertices.Add(c);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 1);
-        triangles.Add(vertexIndex + 2);
+        int vertexIndex = mesh.vertices.Count;
+        mesh.vertices.Add(a);
+        mesh.vertices.Add(b);
+        mesh.vertices.Add(c);
+        mesh.triangles.Add(vertexIndex);
+        mesh.triangles.Add(vertexIndex + 1);
+        mesh.triangles.Add(vertexIndex + 2);
     }
 
     private void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
     {
-        int vertexIndex = vertices.Count;
-        vertices.Add(a);
-        vertices.Add(b);
-        vertices.Add(c);
-        vertices.Add(d);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 1);
-        triangles.Add(vertexIndex + 2);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 2);
-        triangles.Add(vertexIndex + 3);
+        int vertexIndex = mesh.vertices.Count;
+        mesh.vertices.Add(a);
+        mesh.vertices.Add(b);
+        mesh.vertices.Add(c);
+        mesh.vertices.Add(d);
+        mesh.triangles.Add(vertexIndex);
+        mesh.triangles.Add(vertexIndex + 1);
+        mesh.triangles.Add(vertexIndex + 2);
+        mesh.triangles.Add(vertexIndex);
+        mesh.triangles.Add(vertexIndex + 2);
+        mesh.triangles.Add(vertexIndex + 3);
     }
 
     private void AddPentagon(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 e)
     {
-        int vertexIndex = vertices.Count;
-        vertices.Add(a);
-        vertices.Add(b);
-        vertices.Add(c);
-        vertices.Add(d);
-        vertices.Add(e);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 1);
-        triangles.Add(vertexIndex + 2);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 2);
-        triangles.Add(vertexIndex + 3);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 3);
-        triangles.Add(vertexIndex + 4);
+        int vertexIndex = mesh.vertices.Count;
+        mesh.vertices.Add(a);
+        mesh.vertices.Add(b);
+        mesh.vertices.Add(c);
+        mesh.vertices.Add(d);
+        mesh.vertices.Add(e);
+        mesh.triangles.Add(vertexIndex);
+        mesh.triangles.Add(vertexIndex + 1);
+        mesh.triangles.Add(vertexIndex + 2);
+        mesh.triangles.Add(vertexIndex);
+        mesh.triangles.Add(vertexIndex + 2);
+        mesh.triangles.Add(vertexIndex + 3);
+        mesh.triangles.Add(vertexIndex);
+        mesh.triangles.Add(vertexIndex + 3);
+        mesh.triangles.Add(vertexIndex + 4);
     }
 
     private void SetVoxelColors()

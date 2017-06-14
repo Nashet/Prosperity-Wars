@@ -39,15 +39,24 @@ public  class Game : ThreadedJob
     private static bool surrended = true;
     internal static  Material defaultCountryBorderMaterial;
     internal static  Material defaultProvinceBorderMaterial;
-    private void initilize()
+    public void initilize()
     {
-       
+        Application.runInBackground = true;
+        // Assigns a material named "Assets/Resources/..." to the object.
+        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
+        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        mapObject = GameObject.Find("MapObject");
+
+        //loadImages();
+        generateMapImage();
+        makeProvinces();
+
+        //9999999999999999999999999999999999
+
 
         makeProducts();
         market.initialize();
-        
-
-        makeProvinces();
         //roundMesh();     
 
         deleteEdgeProvinces();
@@ -77,15 +86,7 @@ public  class Game : ThreadedJob
     }
     public Game()
     {
-        Application.runInBackground = true;
-        // Assigns a material named "Assets/Resources/..." to the object.
-        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-        mapObject = GameObject.Find("MapObject");
-
-        //loadImages();
-        generateMapImage();
+       
     }
 
     internal static void takePlayerControlOfThatCountry(Country country)
@@ -532,10 +533,10 @@ public  class Game : ThreadedJob
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
         if (Game.devMode)
-            amountOfProvince = 10;
+            amountOfProvince = 7;
         else
             amountOfProvince = 12 + Game.Random.Next(8);
-        amountOfProvince = 60 + Game.Random.Next(20);
+        amountOfProvince = 40 + Game.Random.Next(20);
         //amountOfProvince = 160 + Game.Random.Next(20);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
@@ -677,7 +678,7 @@ public  class Game : ThreadedJob
             }
     }
 
-    static void makeProvince(int provinceID, Color colorID, string name, Mesh MSMesh)
+    static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh)
     {//spawn object
         GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
 
@@ -692,8 +693,8 @@ public  class Game : ThreadedJob
         Mesh mesh = meshFilter.mesh;
         mesh.Clear();
 
-        mesh.vertices = MSMesh.vertices;
-        mesh.triangles = MSMesh.triangles;
+        mesh.vertices = MSMesh.vertices.ToArray();
+        mesh.triangles = MSMesh.triangles.ToArray();
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
@@ -712,7 +713,7 @@ public  class Game : ThreadedJob
         mesh.name = provinceID.ToString();
 
         Province newProvince = new Province(name,
-            provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false));
+            provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false), MSMesh);
         Province.allProvinces.Add(newProvince);
 
     }
