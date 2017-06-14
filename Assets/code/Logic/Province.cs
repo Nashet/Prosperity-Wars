@@ -105,7 +105,7 @@ public class Province
     }
     public static void makeAllBordersMesh()
     {
-        allProvinces.ForEach(x => x.edges = EdgeHelpers.GetEdges(x.landMesh.triangles).FindBoundary());
+        allProvinces.ForEach(x => x.edges = EdgeHelpers.GetEdges(x.meshStructure.triangles.ToArray()).FindBoundary());
         allProvinces.ForEach(x => x.makeBordersMesh());
     }
     MeshRenderer makeBorderMesh(Province neghbor, List<EdgeHelpers.Edge> edges)

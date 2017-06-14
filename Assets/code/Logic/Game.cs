@@ -655,7 +655,8 @@ public  class Game : ThreadedJob
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
-        
+        VoxelGrid grid = mapObject.GetComponent<VoxelGrid>();
+        grid.Initialize(mapImage.width, Options.cellMultiplier * 100, mapImage);
         Color currentProvinceColor = mapImage.GetPixel(0, 0);
         int provinceCounter = 0;
         for (int j = 0; j < mapImage.height; j++) // circle by province        
@@ -665,10 +666,9 @@ public  class Game : ThreadedJob
                 //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
                 if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
                 {
-                    VoxelGrid grid = mapObject.GetComponent<VoxelGrid>();
-                    grid.Initialize(mapImage.width, Options.cellMultiplier * 100, mapImage, currentProvinceColor);
 
-                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(), grid.getMesh());
+                    
+                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(), grid.getMesh(currentProvinceColor));
                     //Province newProvince =
                     //var np = new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, grid.getMesh(), Product.getRandomResource(false), mapObject);
                     //Province.allProvinces.Add(np);

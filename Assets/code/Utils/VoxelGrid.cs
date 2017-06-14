@@ -23,8 +23,8 @@ public class VoxelGrid : MonoBehaviour
     //private List<int> triangles;
 
     private Voxel dummyX, dummyY, dummyT;
-    private Color analyzingColor;
-    public void Initialize(int resolution, float size, Texture2D texture, Color color)
+    //private Color analyzingColor;
+    public void Initialize(int resolution, float size, Texture2D texture)//, Color color)
     {
         this.resolution = resolution;
         gridSize = size;
@@ -36,7 +36,7 @@ public class VoxelGrid : MonoBehaviour
         dummyY = new Voxel();
         dummyT = new Voxel();
 
-        analyzingColor = color;
+        //analyzingColor = color;
 
         for (int i = 0, y = 0; y < resolution; y++)
         {
@@ -47,14 +47,16 @@ public class VoxelGrid : MonoBehaviour
         }
 
         //GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        mesh = new MeshStructure();
+       // mesh = new MeshStructure();
         //mesh.name = "VoxelGrid Mesh";
         //vertices = new List<Vector3>();
         //triangles = new List<int>();
-        Refresh();
+       
     }
-    public MeshStructure getMesh()
+    public MeshStructure getMesh(Color colorID)
     {
+        mesh = new MeshStructure();
+        Triangulate(colorID);
         return mesh;
     }
     private void CreateVoxel(int i, int x, int y, Color state)
@@ -68,13 +70,9 @@ public class VoxelGrid : MonoBehaviour
 
     }
 
-    private void Refresh()
-    {
-        //SetVoxelColors();
-        Triangulate();
-    }
+    
 
-    private void Triangulate()
+    private void Triangulate(Color colorID)
     {
         
         //mesh.Clear();
@@ -83,17 +81,17 @@ public class VoxelGrid : MonoBehaviour
         {
             dummyX.BecomeXDummyOf(xNeighbor.voxels[0], gridSize);
         }
-        TriangulateCellRows();
+        TriangulateCellRows(colorID);
         if (yNeighbor != null)
         {
-            TriangulateGapRow();
+            TriangulateGapRow(colorID);
         }
 
         //mesh.vertices = vertices.ToArray();
         //mesh.triangles = triangles.ToArray();
     }
 
-    private void TriangulateCellRows()
+    private void TriangulateCellRows(Color colorID)
     {
         int cells = resolution - 1;
         for (int i = 0, y = 0; y < cells; y++, i++)
@@ -104,25 +102,25 @@ public class VoxelGrid : MonoBehaviour
                     voxels[i],
                     voxels[i + 1],
                     voxels[i + resolution],
-                    voxels[i + resolution + 1]);
+                    voxels[i + resolution + 1], colorID);
             }
             if (xNeighbor != null)
             {
-                TriangulateGapCell(i);
+                TriangulateGapCell(i, colorID);
             }
         }
     }
 
-    private void TriangulateGapCell(int i)
+    private void TriangulateGapCell(int i, Color colorID)
     {
         Voxel dummySwap = dummyT;
         dummySwap.BecomeXDummyOf(xNeighbor.voxels[i + 1], gridSize);
         dummyT = dummyX;
         dummyX = dummySwap;
-        TriangulateCell(voxels[i], dummyT, voxels[i + resolution], dummyX);
+        TriangulateCell(voxels[i], dummyT, voxels[i + resolution], dummyX, colorID);
     }
 
-    private void TriangulateGapRow()
+    private void TriangulateGapRow(Color colorID)
     {
         dummyY.BecomeYDummyOf(yNeighbor.voxels[0], gridSize);
         int cells = resolution - 1;
@@ -134,17 +132,17 @@ public class VoxelGrid : MonoBehaviour
             dummySwap.BecomeYDummyOf(yNeighbor.voxels[x + 1], gridSize);
             dummyT = dummyY;
             dummyY = dummySwap;
-            TriangulateCell(voxels[x + offset], voxels[x + offset + 1], dummyT, dummyY);
+            TriangulateCell(voxels[x + offset], voxels[x + offset + 1], dummyT, dummyY, colorID);
         }
 
         if (xNeighbor != null)
         {
             dummyT.BecomeXYDummyOf(xyNeighbor.voxels[0], gridSize);
-            TriangulateCell(voxels[voxels.Length - 1], dummyX, dummyY, dummyT);
+            TriangulateCell(voxels[voxels.Length - 1], dummyX, dummyY, dummyT, colorID);
         }
     }
 
-    private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d)
+    private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
     {
         int cellType = 0;
         if (a.state == analyzingColor)
