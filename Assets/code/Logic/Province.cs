@@ -9,13 +9,13 @@ public class Province
 {
     readonly Color colorID;
     Color color;
-    readonly public Mesh landMesh;
-    readonly public MeshStructure meshStructure;
+    public Mesh landMesh;
+    public MeshStructure meshStructure;
 
     Mesh borderMesh;
-    readonly MeshFilter meshFilter;
-    readonly internal GameObject rootGameObject;
-    readonly MeshRenderer meshRenderer;
+    MeshFilter meshFilter;
+    internal GameObject rootGameObject;
+    MeshRenderer meshRenderer;
     //public static int maxTribeMenCapacity = 2000;
     private readonly string name;
     private readonly int ID;
@@ -26,13 +26,135 @@ public class Province
     public readonly static List<Province> allProvinces = new List<Province>();
 
     public List<Factory> allFactories = new List<Factory>();
-    private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+    //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
     private readonly List<Province> neighbors = new List<Province>();
     Product resource;
     readonly internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
     List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
+    public static void preReadProvinces(Texture2D image)
+    {
+        ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
+        Color currentProvinceColor = image.GetPixel(0, 0);
+        int provinceCounter = 0;
+        for (int j = 0; j < image.height; j++) // circle by province        
+            for (int i = 0; i < image.width; i++)
+            {
+                //var newProvince = Province.findProvince(currentProvinceColor);
+                //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
+                if (currentProvinceColor != image.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
+                {
+                    allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
+                    provinceCounter++;
+                }
+                currentProvinceColor = image.GetPixel(i, j);
+            }
+    }
+
+    internal static void generateUnityData(Texture2D image)
+    {
+        VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
+        grid.Initialize(image.width, Options.cellMultiplier * 100, image);
+        allProvinces.ForEach(x => x.generateMeshes(grid.getMesh(x.colorID), grid.getBorders()));
+    }
+    void generateMeshes(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
+    {
+        this.meshStructure = meshStructure;
+        //allProducers = getProducers();
+        //resource = inresource;
+        //colorID = icolorID;
+        //landMesh = imesh;
+        //name = iname;
+        // meshFilter = imeshFilter;
+        //ID = iID;
+        //rootGameObject = igameObject;
+        //meshRenderer = imeshRenderer;
+
+        //spawn object
+        rootGameObject = new GameObject(string.Format("{0}", getID()));
+
+        //Add Components
+        meshFilter = rootGameObject.AddComponent<MeshFilter>();
+        meshRenderer = rootGameObject.AddComponent<MeshRenderer>();
+
+        // in case you want the new gameobject to be a child
+        // of the gameobject that your script is attached to
+        rootGameObject.transform.parent = Game.mapObject.transform;
+
+        landMesh = meshFilter.mesh;
+        landMesh.Clear();
+
+        landMesh.vertices = meshStructure.vertices.ToArray();
+        landMesh.triangles = meshStructure.triangles.ToArray();
+        landMesh.RecalculateNormals();
+        landMesh.RecalculateBounds();
+
+        meshRenderer.material.shader = Shader.Find("Standard");
+        meshRenderer.material.color = colorID;
+
+        MeshCollider groundMeshCollider;
+        groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+        groundMeshCollider.sharedMesh = landMesh;
+
+        landMesh.name = getID().ToString();
+
+        //Province newProvince = new Province(name,
+        //    provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false), MSMesh);
+        //Province.allProvinces.Add(newProvince);
+
+        //fertileSoil = 10000;
+        setProvinceCenter();
+        SetLabel();
+        // setting neighbors
+        //making meshes for border
+        foreach (var border in neighborBorders)
+        {
+            //each color is one neighbor (non repeating)
+            var neighbor = Province.findProvince(border.Key);
+            neighbors.Add(neighbor);
+
+            GameObject borderObject = new GameObject("Border with " + neighbor.ToString());
+
+            //Add Components
+            MeshFilter meshFilter = borderObject.AddComponent<MeshFilter>();
+            MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
+
+            borderObject.transform.parent = rootGameObject.transform;
+
+            borderMesh = meshFilter.mesh;
+            borderMesh.Clear();
+
+            borderMesh.vertices = border.Value.vertices.ToArray();
+            borderMesh.triangles = border.Value.triangles.ToArray();
+            borderMesh.uv = border.Value.UVmap.ToArray(); 
+            borderMesh.RecalculateNormals();
+            borderMesh.RecalculateBounds();
+            meshRenderer.material = Game.defaultProvinceBorderMaterial;
+            borderMesh.name = "Border with " + neighbor.ToString();
+
+            bordersMeshes.Add(neighbor, meshRenderer);
+        }
+
+    }
+    //empty province constructor
+    public Province(string iname, int iID, Color icolorID, Product inresource)
+    {
+        //this.meshStructure = meshStructure;
+        allProducers = getProducers();
+        resource = inresource;
+        colorID = icolorID;
+        //landMesh = imesh; 
+        name = iname;
+        //meshFilter = imeshFilter;
+        ID = iID;
+        //rootGameObject = igameObject;
+        //meshRenderer = imeshRenderer;
+
+        fertileSoil = 10000;
+        //setProvinceCenter();
+        //SetLabel();
+    }
     public Province(string iname, int iID, Color icolorID, Mesh imesh, MeshFilter imeshFilter, GameObject igameObject, MeshRenderer imeshRenderer, Product inresource, MeshStructure meshStructure)
     {
         // List<int> trianglesList = new List<int>();
@@ -770,23 +892,23 @@ public class Province
 
     internal void addNeigbor(Province found)
     {
-        if (found != this && !distances.ContainsKey(found))
-            distances.Add(found, 1);
-        if (!neighbors.Contains(found))
-            neighbors.Add(found);
+        //if (found != this && !distances.ContainsKey(found))
+        //    distances.Add(found, 1);
+        //if (!neighbors.Contains(found))
+        //    neighbors.Add(found);
 
     }
     /// <summary>
     /// for debug reasons
     /// </summary>
     /// <returns></returns>
-    internal string getNeigborsList()
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach (var t in distances)
-            sb.Append("\n").Append(t.Key.ToString());
-        return sb.ToString();
-    }
+    //internal string getNeigborsList()
+    //{
+    //    StringBuilder sb = new StringBuilder();
+    //    foreach (var t in distances)
+    //        sb.Append("\n").Append(t.Key.ToString());
+    //    return sb.ToString();
+    //}
     /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minsalary
     ///</summary>
     internal float getLocalMaxSalary()

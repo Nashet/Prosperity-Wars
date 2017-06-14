@@ -7,12 +7,12 @@ using System;
 public  class Game : ThreadedJob
 {
     static Texture2D mapImage;
-    static GameObject mapObject;
+    public static GameObject mapObject;
     internal static GameObject r3dTextPrefab;
 
-    static List<int> trianglesList = new List<int>();
-    static List<Vector3> vertices = new List<Vector3>();
-    static int triangleCounter = 0;
+    //static List<int> trianglesList = new List<int>();
+    //static List<Vector3> vertices = new List<Vector3>();
+    //static int triangleCounter = 0;
 
     public static Country Player;
     //internal InventionType inventions = new InventionType();
@@ -50,8 +50,9 @@ public  class Game : ThreadedJob
 
         //loadImages();
         generateMapImage();
-        makeProvinces();
-
+        Province.preReadProvinces(mapImage);
+        //makeProvinces();
+        Province.generateUnityData(mapImage);
         //9999999999999999999999999999999999
 
 
@@ -60,9 +61,9 @@ public  class Game : ThreadedJob
         //roundMesh();     
 
         deleteEdgeProvinces();
-        findNeighborprovinces();
+        //findNeighborprovinces();
 
-        Province.makeAllBordersMesh();
+        //Province.makeAllBordersMesh();
 
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
@@ -446,48 +447,48 @@ public  class Game : ThreadedJob
     /// <summary>
     /// Makes polygonal Stripe and stores it vertices[] and trianglesList[]
     /// </summary>    
-    static void makePolygonalStripe(float x, float y, float x2, float y2, int xpos1, int ypos1, int xpos2, int ypos2)
-    //void makePolygonalStripe(float x, float y, float x2, float y2)
-    {
-        //float x = xpos1 * Options.cellMuliplier;
-        //float y = ypos1 * Options.cellMuliplier;
-        //float x2 = xpos2 * Options.cellMuliplier;
-        //float y2 = ypos1 * Options.cellMuliplier;
+    //static void makePolygonalStripe(float x, float y, float x2, float y2, int xpos1, int ypos1, int xpos2, int ypos2)
+    ////void makePolygonalStripe(float x, float y, float x2, float y2)
+    //{
+    //    //float x = xpos1 * Options.cellMuliplier;
+    //    //float y = ypos1 * Options.cellMuliplier;
+    //    //float x2 = xpos2 * Options.cellMuliplier;
+    //    //float y2 = ypos1 * Options.cellMuliplier;
 
-        //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-        //    x -= Options.cellMuliplier;
-        //if (mapImage.isRightTopCorner(xpos1, ypos1))
-        //    x += Options.cellMuliplier;
+    //    //if (mapImage.isLeftTopCorner(xpos1, ypos1))
+    //    //    x -= Options.cellMuliplier;
+    //    //if (mapImage.isRightTopCorner(xpos1, ypos1))
+    //    //    x += Options.cellMuliplier;
 
-        //if (mapImage.isLeftBottomCorner(xpos1, ypos1))
-        //    vertices.Add(new Vector3(x + Options.cellMuliplier, y, 0));
-        //else
-        vertices.Add(new Vector3(x, y, 0));
+    //    //if (mapImage.isLeftBottomCorner(xpos1, ypos1))
+    //    //    vertices.Add(new Vector3(x + Options.cellMuliplier, y, 0));
+    //    //else
+    //    vertices.Add(new Vector3(x, y, 0));
 
-        //if (mapImage.isRightBottomCorner(xpos2 - 1, ypos1))
-        //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y, 0));
-        //else
-        vertices.Add(new Vector3(x2, y, 0));
+    //    //if (mapImage.isRightBottomCorner(xpos2 - 1, ypos1))
+    //    //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y, 0));
+    //    //else
+    //    vertices.Add(new Vector3(x2, y, 0));
 
-        //if (mapImage.isRightTopCorner(xpos2 - 1, ypos1))
-        //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y2, 0));
-        //else
-        vertices.Add(new Vector3(x2, y2, 0));
+    //    //if (mapImage.isRightTopCorner(xpos2 - 1, ypos1))
+    //    //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y2, 0));
+    //    //else
+    //    vertices.Add(new Vector3(x2, y2, 0));
 
-        //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-        //    vertices.Add(new Vector3(x + Options.cellMuliplier, y2, 0));
-        //else
-        vertices.Add(new Vector3(x, y2, 0));
+    //    //if (mapImage.isLeftTopCorner(xpos1, ypos1))
+    //    //    vertices.Add(new Vector3(x + Options.cellMuliplier, y2, 0));
+    //    //else
+    //    vertices.Add(new Vector3(x, y2, 0));
 
-        trianglesList.Add(0 + triangleCounter);
-        trianglesList.Add(2 + triangleCounter);
-        trianglesList.Add(1 + triangleCounter);
+    //    trianglesList.Add(0 + triangleCounter);
+    //    trianglesList.Add(2 + triangleCounter);
+    //    trianglesList.Add(1 + triangleCounter);
 
-        trianglesList.Add(2 + triangleCounter);
-        trianglesList.Add(0 + triangleCounter);
-        trianglesList.Add(3 + triangleCounter);
-        triangleCounter += 4;
-    }
+    //    trianglesList.Add(2 + triangleCounter);
+    //    trianglesList.Add(0 + triangleCounter);
+    //    trianglesList.Add(3 + triangleCounter);
+    //    triangleCounter += 4;
+    //}
     static void checkCoordinateForNeighbors(Province province, int x1, int y1, int x2, int y2)
     {
         if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
@@ -668,7 +669,8 @@ public  class Game : ThreadedJob
                 {
 
                     
-                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(), grid.getMesh(currentProvinceColor));
+                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(),
+                        grid.getMesh(currentProvinceColor), grid.getBorders());
                     //Province newProvince =
                     //var np = new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, grid.getMesh(), Product.getRandomResource(false), mapObject);
                     //Province.allProvinces.Add(np);
@@ -678,7 +680,7 @@ public  class Game : ThreadedJob
             }
     }
 
-    static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh)
+    static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh, Dictionary <Color, MeshStructure> bordersMeshes)
     {//spawn object
         GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
 
@@ -706,9 +708,9 @@ public  class Game : ThreadedJob
         groundMeshCollider.sharedMesh = mesh;
 
 
-        vertices.Clear();
-        trianglesList.Clear();
-        triangleCounter = 0;
+        //vertices.Clear();
+        //trianglesList.Clear();
+        //triangleCounter = 0;
 
         mesh.name = provinceID.ToString();
 

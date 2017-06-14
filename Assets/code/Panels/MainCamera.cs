@@ -140,7 +140,7 @@ public class MainCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (MainCamera.Game == null && Input.GetKeyUp(KeyCode.Backspace))
+        if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
         {
             //SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
             MainCamera.Game = new Game();

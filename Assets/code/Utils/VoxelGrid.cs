@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 [SelectionBase]
 public class VoxelGrid : MonoBehaviour
@@ -18,7 +19,7 @@ public class VoxelGrid : MonoBehaviour
     private Material[] voxelMaterials;
 
     private MeshStructure mesh;
-
+    private Dictionary<Color, MeshStructure> bordersMeshes;
     //private List<Vector3> vertices;
     //private List<int> triangles;
 
@@ -47,15 +48,16 @@ public class VoxelGrid : MonoBehaviour
         }
 
         //GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-       // mesh = new MeshStructure();
+        // mesh = new MeshStructure();
         //mesh.name = "VoxelGrid Mesh";
         //vertices = new List<Vector3>();
         //triangles = new List<int>();
-       
+
     }
     public MeshStructure getMesh(Color colorID)
     {
         mesh = new MeshStructure();
+        bordersMeshes = new Dictionary<Color, MeshStructure>();
         Triangulate(colorID);
         return mesh;
     }
@@ -70,11 +72,11 @@ public class VoxelGrid : MonoBehaviour
 
     }
 
-    
+
 
     private void Triangulate(Color colorID)
     {
-        
+
         //mesh.Clear();
 
         if (xNeighbor != null)
@@ -141,23 +143,46 @@ public class VoxelGrid : MonoBehaviour
             TriangulateCell(voxels[voxels.Length - 1], dummyX, dummyY, dummyT, colorID);
         }
     }
+    private bool isBorderCell(Voxel a, Voxel b, Voxel c, Voxel d)
+    {
+        return !(a.color == b.color && a.color == c.color && a.color == d.color);
+    }
+    private void makeBorderQuad(Voxel a, Voxel b)
+    {
 
+    }
+    private MeshStructure findMesh(Color b)
+    {
+        MeshStructure border;
+        if (!bordersMeshes.TryGetValue(b, out border))
+        {
+            border = new MeshStructure();
+            bordersMeshes.Add(b, new MeshStructure());
+        }
+        return border;
+    }
     private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
     {
+        // put to constant
+        float borderWidth = 0.4f;
+        float borderWidth2 = -0.4f;
+
+
+        bool isBorder = isBorderCell(a, b, c, d);
         int cellType = 0;
-        if (a.state == analyzingColor)
+        if (a.color == analyzingColor)
         {
             cellType |= 1;
         }
-        if (b.state == analyzingColor)
+        if (b.color == analyzingColor)
         {
             cellType |= 2;
         }
-        if (c.state == analyzingColor)
+        if (c.color == analyzingColor)
         {
             cellType |= 4;
         }
-        if (d.state == analyzingColor)
+        if (d.color == analyzingColor)
         {
             cellType |= 8;
         }
@@ -167,18 +192,34 @@ public class VoxelGrid : MonoBehaviour
                 return;
             case 1:
                 AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
+
+                AddBorderQuad(findMesh(b.color),
+                (Vector3)a.yEdgePosition,
+                MeshExtensions.makeArrow(a.yEdgePosition, a.xEdgePosition, borderWidth),
+                (Vector3)a.xEdgePosition,
+                MeshExtensions.makeArrow(a.xEdgePosition, a.yEdgePosition, borderWidth2),
+                true
+                );               
                 break;
             case 2:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
+
+                AddBorderQuad(findMesh(c.color),
+               (Vector3)a.xEdgePosition,
+               MeshExtensions.makeArrow(a.xEdgePosition, b.yEdgePosition, borderWidth),
+               (Vector3)b.yEdgePosition,
+               MeshExtensions.makeArrow(b.yEdgePosition, a.xEdgePosition, borderWidth2),
+               true
+               );
                 break;
             case 3:
-                AddQuad(a.position, a.yEdgePosition, b.yEdgePosition, b.position);
+                AddQuad(mesh, a.position, a.yEdgePosition, b.yEdgePosition, b.position, true);
                 break;
             case 4:
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
                 break;
             case 5:
-                AddQuad(a.position, c.position, c.xEdgePosition, a.xEdgePosition);
+                AddQuad(mesh, a.position, c.position, c.xEdgePosition, a.xEdgePosition, true);
                 break;
             case 6:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
@@ -195,13 +236,13 @@ public class VoxelGrid : MonoBehaviour
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
                 break;
             case 10:
-                AddQuad(a.xEdgePosition, c.xEdgePosition, d.position, b.position);
+                AddQuad(mesh, a.xEdgePosition, c.xEdgePosition, d.position, b.position, true);
                 break;
             case 11:
                 AddPentagon(b.position, a.position, a.yEdgePosition, c.xEdgePosition, d.position);
                 break;
             case 12:
-                AddQuad(a.yEdgePosition, c.position, d.position, b.yEdgePosition);
+                AddQuad(mesh, a.yEdgePosition, c.position, d.position, b.yEdgePosition, true);
                 break;
             case 13:
                 AddPentagon(c.position, d.position, b.yEdgePosition, a.xEdgePosition, a.position);
@@ -210,43 +251,43 @@ public class VoxelGrid : MonoBehaviour
                 AddPentagon(d.position, b.position, a.xEdgePosition, a.yEdgePosition, c.position);
                 break;
             case 15:
-                AddQuad(a.position, c.position, d.position, b.position);
+                AddQuad(mesh, a.position, c.position, d.position, b.position, true);
                 break;
         }
         //detecting 3 color connecting
-        if (is3ColorCornerUp(a, b, c, d) && a.state == analyzingColor)
+        if (is3ColorCornerUp(a, b, c, d) && a.color == analyzingColor)
             AddTriangle(c.xEdgePosition, b.yEdgePosition, a.yEdgePosition);
 
-        if (is3ColorCornerDown(a, b, c, d) && c.state == analyzingColor)
+        if (is3ColorCornerDown(a, b, c, d) && c.color == analyzingColor)
             AddTriangle(b.yEdgePosition, a.xEdgePosition, a.yEdgePosition);
 
-        if (is3ColorCornerLeft(a, b, c, d) && c.state == analyzingColor)
+        if (is3ColorCornerLeft(a, b, c, d) && c.color == analyzingColor)
             AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
 
-        if (is3ColorCornerRight(a, b, c, d) && d.state == analyzingColor)
+        if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
             AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
 
-        if (a.state != b.state && a.state != c.state && a.state != d.state
-            && b.state != c.state && b.state != d.state
-            && c.state != d.state
-            && a.state == analyzingColor)
-            AddQuad(a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+        if (a.color != b.color && a.color != c.color && a.color != d.color
+            && b.color != c.color && b.color != d.color
+            && c.color != d.color
+            && a.color == analyzingColor)
+            AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition, true);
     }
     private bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return a.state == b.state && a.state != c.state && a.state != d.state && c.state != d.state;
+        return a.color == b.color && a.color != c.color && a.color != d.color && c.color != d.color;
     }
     private bool is3ColorCornerDown(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return c.state == d.state && c.state != a.state && c.state != b.state && a.state != b.state;
+        return c.color == d.color && c.color != a.color && c.color != b.color && a.color != b.color;
     }
     private bool is3ColorCornerLeft(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return c.state == a.state && c.state != d.state && a.state != b.state && d.state != b.state;
+        return c.color == a.color && c.color != d.color && a.color != b.color && d.color != b.color;
     }
     private bool is3ColorCornerRight(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return d.state == b.state && d.state != c.state && b.state != a.state && c.state != a.state;
+        return d.color == b.color && d.color != c.color && b.color != a.color && c.color != a.color;
     }
     private void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
     {
@@ -259,21 +300,78 @@ public class VoxelGrid : MonoBehaviour
         mesh.triangles.Add(vertexIndex + 2);
     }
 
-    private void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
+    private void AddQuad(MeshStructure targetMesh, Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
     {
-        int vertexIndex = mesh.vertices.Count;
-        mesh.vertices.Add(a);
-        mesh.vertices.Add(b);
-        mesh.vertices.Add(c);
-        mesh.vertices.Add(d);
-        mesh.triangles.Add(vertexIndex);
-        mesh.triangles.Add(vertexIndex + 1);
-        mesh.triangles.Add(vertexIndex + 2);
-        mesh.triangles.Add(vertexIndex);
-        mesh.triangles.Add(vertexIndex + 2);
-        mesh.triangles.Add(vertexIndex + 3);
-    }
+        int vertexIndex = targetMesh.vertices.Count;
+        targetMesh.vertices.Add(a);
+        targetMesh.vertices.Add(b);
+        targetMesh.vertices.Add(c);
+        targetMesh.vertices.Add(d);
+        targetMesh.triangles.Add(vertexIndex);
+        targetMesh.triangles.Add(vertexIndex + 1);
+        targetMesh.triangles.Add(vertexIndex + 2);
+        targetMesh.triangles.Add(vertexIndex);
+        targetMesh.triangles.Add(vertexIndex + 2);
+        targetMesh.triangles.Add(vertexIndex + 3);
 
+        if (addUV)
+        {
+            targetMesh.UVmap.Add(new Vector2(0f, 1f));
+            targetMesh.UVmap.Add(new Vector2(1f, 1f));
+            targetMesh.UVmap.Add(new Vector2(0f, 0f));
+            targetMesh.UVmap.Add(new Vector2(1f, 0f));
+        }
+        //borderVertices[i * 2 + 0] = meshStructure.vertices[item.v1] + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 0] = new Vector2(0f, 1f);
+
+        //borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(meshStructure.vertices[item.v1], meshStructure.vertices[item.v2], borderWidth) + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 1] = new Vector2(1f, 1f);
+
+        //borderVertices[i * 2 + 2] = meshStructure.vertices[item.v2] + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 2] = new Vector2(0f, 0f);
+
+        //borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(meshStructure.vertices[item.v2], meshStructure.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 3] = new Vector2(1f, 0f);
+    }
+    private void AddBorderQuad(MeshStructure targetMesh, Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
+    {
+        float borderHeight = 0.1f;
+        a = a + Vector3.back * borderHeight;
+        b = b + Vector3.back * borderHeight;
+        c = c + Vector3.back * borderHeight;
+        d = d + Vector3.back * borderHeight;
+
+        int vertexIndex = targetMesh.vertices.Count;
+        targetMesh.vertices.Add(a);
+        targetMesh.vertices.Add(b);
+        targetMesh.vertices.Add(c);
+        targetMesh.vertices.Add(d);
+        targetMesh.triangles.Add(vertexIndex);
+        targetMesh.triangles.Add(vertexIndex + 2);
+        targetMesh.triangles.Add(vertexIndex + 1);
+        targetMesh.triangles.Add(vertexIndex + 2);
+        targetMesh.triangles.Add(vertexIndex + 3);
+        targetMesh.triangles.Add(vertexIndex + 1);
+
+        if (addUV)
+        {
+            targetMesh.UVmap.Add(new Vector2(0f, 1f));
+            targetMesh.UVmap.Add(new Vector2(1f, 1f));
+            targetMesh.UVmap.Add(new Vector2(0f, 0f));
+            targetMesh.UVmap.Add(new Vector2(1f, 0f));
+        }
+        //borderVertices[i * 2 + 0] = meshStructure.vertices[item.v1] + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 0] = new Vector2(0f, 1f);
+
+        //borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(meshStructure.vertices[item.v1], meshStructure.vertices[item.v2], borderWidth) + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 1] = new Vector2(1f, 1f);
+
+        //borderVertices[i * 2 + 2] = meshStructure.vertices[item.v2] + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 2] = new Vector2(0f, 0f);
+
+        //borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(meshStructure.vertices[item.v2], meshStructure.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 3] = new Vector2(1f, 0f);
+    }
     private void AddPentagon(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 e)
     {
         int vertexIndex = mesh.vertices.Count;
@@ -297,8 +395,13 @@ public class VoxelGrid : MonoBehaviour
     {
         for (int i = 0; i < voxels.Length; i++)
         {
-          //  voxelMaterials[i].color = voxels[i].state ? Color.black : Color.white;
+            //  voxelMaterials[i].color = voxels[i].state ? Color.black : Color.white;
         }
+    }
+
+    internal Dictionary<Color, MeshStructure> getBorders()
+    {
+        return bordersMeshes;
     }
 
     //public void Apply(VoxelStencil stencil)
