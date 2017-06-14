@@ -190,32 +190,41 @@ public class VoxelGrid : MonoBehaviour
             case 1:
                 AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
 
-                AddBorderQuad2(findMesh(b.color), a.yEdgePosition, a.xEdgePosition);
-                //AddBorderQuad(findMesh(b.color),
-                //(Vector3)a.yEdgePosition,
-                //MeshExtensions.makeArrow(a.yEdgePosition, a.xEdgePosition, borderWidth),
-                //(Vector3)a.xEdgePosition,
-                //MeshExtensions.makeArrow(a.xEdgePosition, a.yEdgePosition, borderWidth2),
-                //true
-                //);
+                if (a.color != b.color && a.color != c.color && a.color != d.color
+                    && b.color != c.color && b.color != d.color
+                    && c.color != d.color
+                    && a.color == analyzingColor)
+                {
+                    AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                    AddBorderQuad2(findMesh(b.color),  b.yEdgePosition,a.xEdgePosition);
+                }
+                else
+                    AddBorderQuad2(findMesh(d.color), a.yEdgePosition, a.xEdgePosition);
+
                 break;
             case 2:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
-
-                AddBorderQuad2(findMesh(c.color), a.xEdgePosition, b.yEdgePosition);
-                // AddBorderQuad(findMesh(c.color),
-                //(Vector3)a.xEdgePosition,
-                //MeshExtensions.makeArrow(a.xEdgePosition, b.yEdgePosition, borderWidth),
-                //(Vector3)b.yEdgePosition,
-                //MeshExtensions.makeArrow(b.yEdgePosition, a.xEdgePosition, borderWidth2),
-                //true
-                //);
+                if (a.color != b.color && a.color != c.color && a.color != d.color
+                   && b.color != c.color && b.color != d.color
+                   && c.color != d.color
+                   && a.color == analyzingColor)
+                {
+                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                    //AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                    //AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                    //AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                }
+                else
+                    AddBorderQuad2(findMesh(c.color), a.xEdgePosition, b.yEdgePosition);
+               
                 break;
             case 3:
                 AddQuad(mesh, a.position, a.yEdgePosition, b.yEdgePosition, b.position);
                 if (is3ColorCornerDown(a, b, c, d) && b.color == analyzingColor)
                 {
-                    AddTriangle(b.yEdgePosition, a.yEdgePosition, c.xEdgePosition);                    
+                    AddTriangle(b.yEdgePosition, a.yEdgePosition, c.xEdgePosition);
                     AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
                     AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
                 }
@@ -225,7 +234,13 @@ public class VoxelGrid : MonoBehaviour
                 break;
             case 4:
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
-                AddBorderQuad2(findMesh(b.color), c.xEdgePosition, a.yEdgePosition);
+                if (a.color != b.color && a.color != c.color && a.color != d.color
+                   && b.color != c.color && b.color != d.color
+                   && c.color != d.color
+                   && a.color == analyzingColor)
+                    ;//AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                else
+                    AddBorderQuad2(findMesh(b.color), c.xEdgePosition, a.yEdgePosition);
 
                 break;
             case 5:
@@ -255,8 +270,13 @@ public class VoxelGrid : MonoBehaviour
                 break;
             case 8:
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
-
-                AddBorderQuad2(findMesh(b.color), b.yEdgePosition, c.xEdgePosition);
+                if (a.color != b.color && a.color != c.color && a.color != d.color
+                   && b.color != c.color && b.color != d.color
+                   && c.color != d.color
+                   && a.color == analyzingColor)
+                    ;//AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                else
+                    AddBorderQuad2(findMesh(a.color), b.yEdgePosition, c.xEdgePosition);
 
                 break;
             case 9:
@@ -286,7 +306,7 @@ public class VoxelGrid : MonoBehaviour
                 AddQuad(mesh, a.yEdgePosition, c.position, d.position, b.yEdgePosition);
                 if (is3ColorCornerUp(a, b, c, d) && c.color == analyzingColor)
                 {
-                    AddTriangle(a.yEdgePosition,  b.yEdgePosition, a.xEdgePosition);
+                    AddTriangle(a.yEdgePosition, b.yEdgePosition, a.xEdgePosition);
                     AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
                     AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
                 }
@@ -322,11 +342,7 @@ public class VoxelGrid : MonoBehaviour
         //if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
         //    AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
 
-        //if (a.color != b.color && a.color != c.color && a.color != d.color
-        //    && b.color != c.color && b.color != d.color
-        //    && c.color != d.color
-        //    && a.color == analyzingColor)
-        //    AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+
     }
     private bool is3ColorCornerDown(Voxel a, Voxel b, Voxel c, Voxel d)
     {
