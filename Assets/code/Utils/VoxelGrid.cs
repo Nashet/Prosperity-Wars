@@ -147,10 +147,7 @@ public class VoxelGrid : MonoBehaviour
     {
         return !(a.color == b.color && a.color == c.color && a.color == d.color);
     }
-    private void makeBorderQuad(Voxel a, Voxel b)
-    {
 
-    }
     private MeshStructure findMesh(Color b)
     {
         MeshStructure border;
@@ -168,7 +165,7 @@ public class VoxelGrid : MonoBehaviour
         float borderWidth2 = -0.4f;
 
 
-        bool isBorder = isBorderCell(a, b, c, d);
+        //bool isBorder = isBorderCell(a, b, c, d);
         int cellType = 0;
         if (a.color == analyzingColor)
         {
@@ -193,67 +190,88 @@ public class VoxelGrid : MonoBehaviour
             case 1:
                 AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
 
-                AddBorderQuad(findMesh(b.color),
-                (Vector3)a.yEdgePosition,
-                MeshExtensions.makeArrow(a.yEdgePosition, a.xEdgePosition, borderWidth),
-                (Vector3)a.xEdgePosition,
-                MeshExtensions.makeArrow(a.xEdgePosition, a.yEdgePosition, borderWidth2),
-                true
-                );
+                AddBorderQuad2(findMesh(b.color), a.yEdgePosition, a.xEdgePosition);
+                //AddBorderQuad(findMesh(b.color),
+                //(Vector3)a.yEdgePosition,
+                //MeshExtensions.makeArrow(a.yEdgePosition, a.xEdgePosition, borderWidth),
+                //(Vector3)a.xEdgePosition,
+                //MeshExtensions.makeArrow(a.xEdgePosition, a.yEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 2:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
 
-                AddBorderQuad(findMesh(c.color),
-               (Vector3)a.xEdgePosition,
-               MeshExtensions.makeArrow(a.xEdgePosition, b.yEdgePosition, borderWidth),
-               (Vector3)b.yEdgePosition,
-               MeshExtensions.makeArrow(b.yEdgePosition, a.xEdgePosition, borderWidth2),
-               true
-               );
+                AddBorderQuad2(findMesh(c.color), a.xEdgePosition, b.yEdgePosition);
+                // AddBorderQuad(findMesh(c.color),
+                //(Vector3)a.xEdgePosition,
+                //MeshExtensions.makeArrow(a.xEdgePosition, b.yEdgePosition, borderWidth),
+                //(Vector3)b.yEdgePosition,
+                //MeshExtensions.makeArrow(b.yEdgePosition, a.xEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 3:
                 AddQuad(mesh, a.position, a.yEdgePosition, b.yEdgePosition, b.position, true);
-
-                AddBorderQuad(findMesh(c.color),
-             (Vector3)a.yEdgePosition,
-             MeshExtensions.makeArrow(a.yEdgePosition, b.yEdgePosition, borderWidth),
-             (Vector3)b.yEdgePosition,
-             MeshExtensions.makeArrow(b.yEdgePosition, a.yEdgePosition, borderWidth2),
-             true
-             );
+                AddBorderQuad2(findMesh(c.color), a.yEdgePosition, b.yEdgePosition);
+                //   AddBorderQuad(findMesh(c.color),
+                //(Vector3)a.yEdgePosition,
+                //MeshExtensions.makeArrow(a.yEdgePosition, b.yEdgePosition, borderWidth),
+                //(Vector3)b.yEdgePosition,
+                //MeshExtensions.makeArrow(b.yEdgePosition, a.yEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 4:
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
-
-                AddBorderQuad(findMesh(b.color),
-                (Vector3)c.xEdgePosition,
-                MeshExtensions.makeArrow(c.xEdgePosition, a.yEdgePosition, borderWidth),
-                (Vector3)a.yEdgePosition,
-                MeshExtensions.makeArrow(a.yEdgePosition, c.xEdgePosition, borderWidth2),
-                true
-                );
+                AddBorderQuad2(findMesh(b.color), c.xEdgePosition, a.yEdgePosition);
+                //AddBorderQuad(findMesh(b.color),
+                //(Vector3)c.xEdgePosition,
+                //MeshExtensions.makeArrow(c.xEdgePosition, a.yEdgePosition, borderWidth),
+                //(Vector3)a.yEdgePosition,
+                //MeshExtensions.makeArrow(a.yEdgePosition, c.xEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 5:
                 AddQuad(mesh, a.position, c.position, c.xEdgePosition, a.xEdgePosition, true);
+                AddBorderQuad2(findMesh(d.color), c.xEdgePosition, a.xEdgePosition);
+                //     AddBorderQuad(findMesh(d.color),
+                //(Vector3)c.xEdgePosition,
+                //MeshExtensions.makeArrow(c.xEdgePosition, a.xEdgePosition, borderWidth),
+                // (Vector3)a.xEdgePosition,
+                //MeshExtensions.makeArrow(a.xEdgePosition, c.xEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 6:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
+
+
                 break;
             case 7:
                 AddPentagon(a.position, c.position, c.xEdgePosition, b.yEdgePosition, b.position);
+                AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                // AddBorderQuad(findMesh(d.color),
+                //(Vector3)c.xEdgePosition,
+                //MeshExtensions.makeArrow(c.xEdgePosition, b.yEdgePosition, borderWidth),
+                //(Vector3)b.yEdgePosition,
+                //MeshExtensions.makeArrow(b.yEdgePosition, c.xEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 8:
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
 
-                AddBorderQuad(findMesh(b.color),
-               (Vector3)b.yEdgePosition,
-               MeshExtensions.makeArrow(b.yEdgePosition, c.xEdgePosition, borderWidth),
-               (Vector3)c.xEdgePosition,
-               MeshExtensions.makeArrow(c.xEdgePosition, b.yEdgePosition, borderWidth2),
-               true
-               );
+                AddBorderQuad2(findMesh(b.color), b.yEdgePosition, c.xEdgePosition);
+                // AddBorderQuad(findMesh(b.color),
+                //(Vector3)b.yEdgePosition,
+                //MeshExtensions.makeArrow(b.yEdgePosition, c.xEdgePosition, borderWidth),
+                //(Vector3)c.xEdgePosition,
+                //MeshExtensions.makeArrow(c.xEdgePosition, b.yEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 9:
                 AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
@@ -261,50 +279,76 @@ public class VoxelGrid : MonoBehaviour
                 break;
             case 10:
                 AddQuad(mesh, a.xEdgePosition, c.xEdgePosition, d.position, b.position, true);
+                AddBorderQuad2(findMesh(c.color), a.xEdgePosition, c.xEdgePosition);
                 break;
             case 11:
                 AddPentagon(b.position, a.position, a.yEdgePosition, c.xEdgePosition, d.position);
+                AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                //  AddBorderQuad(findMesh(c.color),
+                //(Vector3)a.yEdgePosition,
+                //MeshExtensions.makeArrow(a.yEdgePosition, c.xEdgePosition, borderWidth),
+                //(Vector3)c.xEdgePosition,
+                //MeshExtensions.makeArrow(c.xEdgePosition, a.yEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 12:
                 AddQuad(mesh, a.yEdgePosition, c.position, d.position, b.yEdgePosition, true);
+                AddBorderQuad2(findMesh(c.color), b.yEdgePosition, a.yEdgePosition);
+                //    AddBorderQuad(findMesh(c.color),
+                //(Vector3)b.yEdgePosition,
+                //MeshExtensions.makeArrow(b.yEdgePosition, a.yEdgePosition, borderWidth),
+                //  (Vector3)a.yEdgePosition,
+                //MeshExtensions.makeArrow(a.yEdgePosition, b.yEdgePosition, borderWidth2),
+                //true
+                //);
 
-                AddBorderQuad(findMesh(b.color),            
-           
-            (Vector3)b.yEdgePosition,
-            MeshExtensions.makeArrow(b.yEdgePosition, a.yEdgePosition, borderWidth),
-             (Vector3)a.yEdgePosition,
-            MeshExtensions.makeArrow(a.yEdgePosition, b.yEdgePosition, borderWidth2),
-            true
-            );
                 break;
             case 13:
                 AddPentagon(c.position, d.position, b.yEdgePosition, a.xEdgePosition, a.position);
+                AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                //    AddBorderQuad(findMesh(b.color),
+                //(Vector3)b.yEdgePosition,
+                //MeshExtensions.makeArrow(b.yEdgePosition, a.xEdgePosition, borderWidth),
+                //(Vector3)a.xEdgePosition,
+                //MeshExtensions.makeArrow(a.xEdgePosition, b.yEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 14:
                 AddPentagon(d.position, b.position, a.xEdgePosition, a.yEdgePosition, c.position);
+                AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                //       AddBorderQuad(findMesh(a.color),
+                //(Vector3)a.xEdgePosition,
+                //MeshExtensions.makeArrow(a.xEdgePosition, a.yEdgePosition, borderWidth),
+                //(Vector3)a.yEdgePosition,
+                //MeshExtensions.makeArrow(a.yEdgePosition, a.xEdgePosition, borderWidth2),
+                //true
+                //);
                 break;
             case 15:
                 AddQuad(mesh, a.position, c.position, d.position, b.position, true);
+               //don't add borders here, it's inside mesh
                 break;
         }
         //detecting 3 color connecting
-        if (is3ColorCornerUp(a, b, c, d) && a.color == analyzingColor)
-            AddTriangle(c.xEdgePosition, b.yEdgePosition, a.yEdgePosition);
+        //if (is3ColorCornerUp(a, b, c, d) && a.color == analyzingColor)
+        //    AddTriangle(c.xEdgePosition, b.yEdgePosition, a.yEdgePosition);
 
-        if (is3ColorCornerDown(a, b, c, d) && c.color == analyzingColor)
-            AddTriangle(b.yEdgePosition, a.xEdgePosition, a.yEdgePosition);
+        //if (is3ColorCornerDown(a, b, c, d) && c.color == analyzingColor)
+        //    AddTriangle(b.yEdgePosition, a.xEdgePosition, a.yEdgePosition);
 
-        if (is3ColorCornerLeft(a, b, c, d) && c.color == analyzingColor)
-            AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+        //if (is3ColorCornerLeft(a, b, c, d) && c.color == analyzingColor)
+        //    AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
 
-        if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
-            AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
+        //if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
+        //    AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
 
-        if (a.color != b.color && a.color != c.color && a.color != d.color
-            && b.color != c.color && b.color != d.color
-            && c.color != d.color
-            && a.color == analyzingColor)
-            AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition, true);
+        //if (a.color != b.color && a.color != c.color && a.color != d.color
+        //    && b.color != c.color && b.color != d.color
+        //    && c.color != d.color
+        //    && a.color == analyzingColor)
+        //    AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition, true);
     }
     private bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
     {
@@ -365,6 +409,19 @@ public class VoxelGrid : MonoBehaviour
 
         //borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(meshStructure.vertices[item.v2], meshStructure.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
         //UVmap[i * 2 + 3] = new Vector2(1f, 0f);
+    }
+    private void AddBorderQuad2(MeshStructure targetMesh, Vector2 a, Vector2 b)
+    {
+        float borderWidth = 0.4f;
+        float borderWidth2 = -0.4f;
+
+        AddBorderQuad(targetMesh,
+(Vector3)a,
+MeshExtensions.makeArrow(a, b, borderWidth),
+(Vector3)b,
+MeshExtensions.makeArrow(b, a, borderWidth2),
+true
+);
     }
     private void AddBorderQuad(MeshStructure targetMesh, Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
     {

@@ -48,8 +48,8 @@ public  class Game : ThreadedJob
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
 
-        //loadImages();
-        generateMapImage();
+        loadImages();
+        //generateMapImage();
         Province.preReadProvinces(mapImage);
         //makeProvinces();
         Province.generateUnityData(mapImage);
@@ -528,7 +528,7 @@ public  class Game : ThreadedJob
     static void generateMapImage()
     {
 
-        mapImage = new Texture2D(30, 30);
+        mapImage = new Texture2D(40, 40);
         //mapImage = new Texture2D(200, 200);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
