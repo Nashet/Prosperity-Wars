@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Text;
 using System;
 
-public  class Game : ThreadedJob
+public class Game : ThreadedJob
 {
     static Texture2D mapImage;
     public static GameObject mapObject;
@@ -37,8 +37,8 @@ public  class Game : ThreadedJob
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended = true;
-    internal static  Material defaultCountryBorderMaterial;
-    internal static  Material defaultProvinceBorderMaterial;
+    internal static Material defaultCountryBorderMaterial;
+    internal static Material defaultProvinceBorderMaterial;
     public void initilize()
     {
         Application.runInBackground = true;
@@ -73,8 +73,11 @@ public  class Game : ThreadedJob
 
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
-        int extraCountries = Random.Next(6);
-        for (int i = 0; i < 16 + extraCountries; i++)
+        //int howMuchCountries = Province.allProvinces.Count / 3;
+        //howMuchCountries += Random.Next(6);
+        int howMuchCountries = 7;
+
+        for (int i = 0; i < howMuchCountries; i++)
             makeCountry(countryNameGenerator, cultureNameGenerator);
 
         foreach (var pro in Province.allProvinces)
@@ -87,7 +90,7 @@ public  class Game : ThreadedJob
     }
     public Game()
     {
-       
+
     }
 
     internal static void takePlayerControlOfThatCountry(Country country)
@@ -668,7 +671,7 @@ public  class Game : ThreadedJob
                 if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
                 {
 
-                    
+
                     makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(),
                         grid.getMesh(currentProvinceColor), grid.getBorders());
                     //Province newProvince =
@@ -680,7 +683,7 @@ public  class Game : ThreadedJob
             }
     }
 
-    static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh, Dictionary <Color, MeshStructure> bordersMeshes)
+    static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh, Dictionary<Color, MeshStructure> bordersMeshes)
     {//spawn object
         GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
 
