@@ -199,7 +199,7 @@ public class VoxelGrid : MonoBehaviour
                 (Vector3)a.xEdgePosition,
                 MeshExtensions.makeArrow(a.xEdgePosition, a.yEdgePosition, borderWidth2),
                 true
-                );               
+                );
                 break;
             case 2:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
@@ -214,9 +214,25 @@ public class VoxelGrid : MonoBehaviour
                 break;
             case 3:
                 AddQuad(mesh, a.position, a.yEdgePosition, b.yEdgePosition, b.position, true);
+
+                AddBorderQuad(findMesh(c.color),
+             (Vector3)a.yEdgePosition,
+             MeshExtensions.makeArrow(a.yEdgePosition, b.yEdgePosition, borderWidth),
+             (Vector3)b.yEdgePosition,
+             MeshExtensions.makeArrow(b.yEdgePosition, a.yEdgePosition, borderWidth2),
+             true
+             );
                 break;
             case 4:
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
+
+                AddBorderQuad(findMesh(b.color),
+                (Vector3)c.xEdgePosition,
+                MeshExtensions.makeArrow(c.xEdgePosition, a.yEdgePosition, borderWidth),
+                (Vector3)a.yEdgePosition,
+                MeshExtensions.makeArrow(a.yEdgePosition, c.xEdgePosition, borderWidth2),
+                true
+                );
                 break;
             case 5:
                 AddQuad(mesh, a.position, c.position, c.xEdgePosition, a.xEdgePosition, true);
@@ -230,6 +246,14 @@ public class VoxelGrid : MonoBehaviour
                 break;
             case 8:
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
+
+                AddBorderQuad(findMesh(b.color),
+               (Vector3)b.yEdgePosition,
+               MeshExtensions.makeArrow(b.yEdgePosition, c.xEdgePosition, borderWidth),
+               (Vector3)c.xEdgePosition,
+               MeshExtensions.makeArrow(c.xEdgePosition, b.yEdgePosition, borderWidth2),
+               true
+               );
                 break;
             case 9:
                 AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
@@ -243,6 +267,15 @@ public class VoxelGrid : MonoBehaviour
                 break;
             case 12:
                 AddQuad(mesh, a.yEdgePosition, c.position, d.position, b.yEdgePosition, true);
+
+                AddBorderQuad(findMesh(b.color),            
+           
+            (Vector3)b.yEdgePosition,
+            MeshExtensions.makeArrow(b.yEdgePosition, a.yEdgePosition, borderWidth),
+             (Vector3)a.yEdgePosition,
+            MeshExtensions.makeArrow(a.yEdgePosition, b.yEdgePosition, borderWidth2),
+            true
+            );
                 break;
             case 13:
                 AddPentagon(c.position, d.position, b.yEdgePosition, a.xEdgePosition, a.position);
