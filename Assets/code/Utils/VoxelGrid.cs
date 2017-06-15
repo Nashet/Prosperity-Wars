@@ -260,7 +260,7 @@ public class VoxelGrid : MonoBehaviour
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
                 AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
 
-                AddBorderQuad2(findMesh(c.color), a.xEdgePosition, a.yEdgePosition);
+                AddBorderQuad2(findMesh(d.color), a.xEdgePosition, a.yEdgePosition);
                 AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
                 break;
             case 7:
@@ -284,7 +284,7 @@ public class VoxelGrid : MonoBehaviour
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
                 //AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
                 AddBorderQuad2(findMesh(c.color), a.yEdgePosition, a.xEdgePosition);
-                AddBorderQuad2(findMesh(d.color), b.yEdgePosition, c.xEdgePosition);
+                AddBorderQuad2(findMesh(c.color), b.yEdgePosition, c.xEdgePosition);
                 break;
             case 10:
                 AddQuad(mesh, a.xEdgePosition, c.xEdgePosition, d.position, b.position);

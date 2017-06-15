@@ -48,8 +48,8 @@ public class Game : ThreadedJob
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
 
-        //loadImages();
-        generateMapImage();
+        loadImages();
+        //generateMapImage();
         makeProducts();
         Province.preReadProvinces(mapImage);
         //makeProvinces();
@@ -61,7 +61,7 @@ public class Game : ThreadedJob
         market.initialize();
         //roundMesh();     
 
-        deleteEdgeProvinces();
+        //deleteEdgeProvinces();
         //findNeighborprovinces();
 
         //Province.makeAllBordersMesh();
@@ -120,7 +120,20 @@ public class Game : ThreadedJob
             removeProvince(0, y);
             removeProvince(mapImage.width - 1, y);
         }
+        killRandomProvince();
+        if (Game.Random.Next(3) == 1)
+        {
+            killRandomProvince();
+            if (Game.Random.Next(20) == 1)
+                killRandomProvince();
+        }
 
+    }
+    static void killRandomProvince()
+    {
+        var toremove = Province.allProvinces.PickRandom();
+        UnityEngine.Object.Destroy(toremove.rootGameObject);
+        Province.allProvinces.Remove(toremove);
     }
     static void removeProvince(int x, int y)
     {
@@ -532,7 +545,7 @@ public class Game : ThreadedJob
     static void generateMapImage()
     {
 
-        mapImage = new Texture2D(50, 50);
+        mapImage = new Texture2D(100, 100);
         //mapImage = new Texture2D(200, 200);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
