@@ -28,13 +28,79 @@ public class MainCamera : MonoBehaviour
     internal static PoliticsPanel politicsPanel;
     internal static FinancePanel financePanel;
     internal static MilitaryPanel militaryPanel;
+    static bool gameIsLoaded;
+    internal static LoadingPanel loadingPanel;
+
     //internal static MessagePanel messagePanel;
 
     // Use this for initialization
     //public Text generalText;
-    void Awake()
+    void Start()
     {
-       
+        //topPanel.hide();
+    }
+   
+    // Update is called once per frame
+    void Update()
+    {
+        if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
+        {
+            Application.runInBackground = true;
+            //SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
+            MainCamera.Game = new Game();
+            //MainCamera.Game.initialize();
+            MainCamera.Game.Start(); //initialize is here
+            //Game = new Game();           
+        }
+        if (MainCamera.Game.IsDone && !gameIsLoaded)
+        {
+            Game.setUnityAPI();
+            GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
+            if (gameControllerObject != null)
+            {
+                cameraMy = gameControllerObject.GetComponent<Camera>();
+            }
+            if (cameraMy == null)
+            {
+                Debug.Log("Cannot find 'cameraMy' ");
+            }
+            mapPointer = GameObject.FindWithTag("pointerMy");
+            if (mapPointer == null)
+            {
+                Debug.Log("Cannot find 'pointerMy' ");
+            }
+
+            //Game = new Game();
+            cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
+            loadingPanel.hide();
+            topPanel.show();
+            gameIsLoaded = true;
+        }
+        if (gameIsLoaded)
+        {
+            if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))
+                Game.redrawMapAccordingToMapMode(Game.getMapMode());
+            if (Input.GetMouseButtonDown(0)) // clicked and released left button
+            {
+                int meshNumber = GetRayCastMeshNumber();
+                //found something correct            
+                SelectProvince(meshNumber);
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+                topPanel.switchHaveToRunSimulation(topPanel.btnPlay);
+            if (Input.GetKeyDown(KeyCode.Return))
+                closeToppestPanel();
+            if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
+            {
+                Game.stepSimulation();
+                refreshAllActive();
+            }
+
+            if (Game.selectedProvince != null)
+                provincePanel.refresh(Game.selectedProvince);
+            if (Game.MessageQueue.Count > 0)
+                showMessageBox();
+        }
     }
     int GetRayCastMeshNumber()
     {
@@ -120,60 +186,6 @@ public class MainCamera : MonoBehaviour
 
         }
     }
-    // Update is called once per frame
-    void Update()
-    {
-        if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
-        {
-            Application.runInBackground = true;
-            //SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
-            MainCamera.Game = new Game();
-            MainCamera.Game.initialize();
-             //MainCamera.Game.Start(); //initialize is here
-            //Game = new Game();
-            GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
-            if (gameControllerObject != null)
-            {
-                cameraMy = gameControllerObject.GetComponent<Camera>();
-            }
-            if (cameraMy == null)
-            {
-                Debug.Log("Cannot find 'cameraMy' ");
-            }
-            mapPointer = GameObject.FindWithTag("pointerMy");
-            if (mapPointer == null)
-            {
-                Debug.Log("Cannot find 'pointerMy' ");
-            }
-
-            //Game = new Game();
-            cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
-            topPanel.refresh();
-        }
-        if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))
-            Game.redrawMapAccordingToMapMode(Game.getMapMode());
-        if (Input.GetMouseButtonDown(0)) // clicked and released left button
-        {
-            int meshNumber = GetRayCastMeshNumber();
-            //found something correct            
-            SelectProvince(meshNumber);
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-            topPanel.switchHaveToRunSimulation(topPanel.btnPlay);
-        if (Input.GetKeyDown(KeyCode.Return))
-            closeToppestPanel();
-        if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
-        {
-            Game.stepSimulation();
-            refreshAllActive();
-        }
-
-        if (Game.selectedProvince != null)
-            provincePanel.refresh(Game.selectedProvince);
-        if (Game.MessageQueue.Count > 0)
-            showMessageBox();
-    }
-
     private void closeToppestPanel()
     {
         //canvas.GetComponentInChildren<DragPanel>();

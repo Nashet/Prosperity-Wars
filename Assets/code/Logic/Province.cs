@@ -33,13 +33,13 @@ public class Province
     readonly List<Country> cores = new List<Country>();
     List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
-    public static void preReadProvinces(Texture2D image, List<Color> blockedProvinces)
+    public static void preReadProvinces(MyTexture image,  List<Color> blockedProvinces)
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
         Color currentProvinceColor = image.GetPixel(0, 0);
         int provinceCounter = 0;
-        for (int j = 0; j < image.height; j++) // circle by province        
-            for (int i = 0; i < image.width; i++)
+        for (int j = 0; j < image.getHeight(); j++) // circle by province        
+            for (int i = 0; i < image.getWidth(); i++)
             {
                 if (currentProvinceColor != image.GetPixel(i, j)
                     // && !blockedProvinces.Contains(currentProvinceColor)
@@ -52,7 +52,7 @@ public class Province
             }
     }
 
-    internal static void generateUnityData(Texture2D image, List<Color> blockedProvinces, VoxelGrid grid)
+    internal static void generateUnityData( List<Color> blockedProvinces, VoxelGrid grid)
     {
         //VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
 

@@ -26,7 +26,7 @@ public class VoxelGrid
     private Voxel dummyX, dummyY, dummyT;
     //private Color analyzingColor;
 
-    public VoxelGrid(int resolution, float size, Texture2D texture, List<Color> blockedProvinces)
+    public VoxelGrid(int resolution, float size, MyTexture texture, List<Color> blockedProvinces)
     {
         this.resolution = resolution;
         gridSize = size;

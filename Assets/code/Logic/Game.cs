@@ -3,10 +3,37 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
 using System;
-
+public class MyTexture
+{
+    readonly int width, height;
+    readonly Color[] map;
+    public MyTexture(Texture2D image)
+    {
+        width = image.width;
+        height = image.height;
+        map = image.GetPixels();
+    }
+    internal int getWidth()
+    {
+        return width;
+    }
+    internal int getHeight()
+    {
+        return height;
+    }
+    internal Color GetPixel(int x, int v)
+    {
+        return map[x*width+v];
+    }
+    public Color getRandomPixel()
+    {
+        return map[Game.Random.Next((width*height) -1)];
+    }
+}
 public class Game : ThreadedJob
 {
-    static Texture2D mapImage;
+    //static Texture2D mapImage;
+    static MyTexture map;
     public static GameObject mapObject;
     internal static GameObject r3dTextPrefab;
 
@@ -40,7 +67,8 @@ public class Game : ThreadedJob
     internal static Material defaultCountryBorderMaterial;
     internal static Material defaultProvinceBorderMaterial;
     internal static List<Color> blockedProvinces;
-    public void setUnityAPI(VoxelGrid grid)
+    static VoxelGrid grid;
+    public void setUnityAPI()
     {
         // Assigns a material named "Assets/Resources/..." to the object.
         defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
@@ -48,76 +76,71 @@ public class Game : ThreadedJob
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
 
-        Province.generateUnityData(mapImage, blockedProvinces, grid);
+        Province.generateUnityData( blockedProvinces, grid);
         Country.setUnityAPI();
+        deleteEdgeProvinces();
+        grid = null;
     }
     public void initialize()
     {
-        //loadImages();
-        generateMapImage();
-        var mapWidth = mapImage.width * Options.cellMultiplier;
-        var mapHeight = mapImage.height * Options.cellMultiplier;
-        blockedProvinces = getProvinceBlockList();
         makeProducts();
         market.initialize();
         makeFactoryTypes();
         makePopTypes();
 
-        Province.preReadProvinces(mapImage, blockedProvinces);
-        VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
+        Province.preReadProvinces(Game.map, blockedProvinces);
+        grid = new VoxelGrid(map.getWidth(), Options.cellMultiplier * 100, map,  Game.blockedProvinces);
 
 
         Country.makeCountries();
         CreateRandomPopulation();
         setStartResources();
         makeHelloMessage();
-
-        setUnityAPI(grid);
-
-        deleteEdgeProvinces();
-
-
-
     }
     public Game()
     {
-
+        //loadImages();
+        generateMapImage();
+        var mapWidth = map.getWidth() * Options.cellMultiplier;
+        var mapHeight = map.getHeight() * Options.cellMultiplier;
+        blockedProvinces = getProvinceBlockList();
+       
     }
     List<Color> getProvinceBlockList()
     {
         List<Color> res = new List<Color>();
         Color colorToBlock;
-        for (int x = 0; x < mapImage.width; x++)
+        for (int x = 0; x < map.getWidth(); x++)
         {
-            colorToBlock = mapImage.GetPixel(x, 0);
+            colorToBlock = map.GetPixel(x, 0);
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
-            colorToBlock = mapImage.GetPixel(x, mapImage.height - 1);
+            colorToBlock = map.GetPixel(x, map.getHeight() - 1);
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
         }
-        for (int y = 0; y < mapImage.height; y++)
+        for (int y = 0; y < map.getHeight(); y++)
         {
-            colorToBlock = mapImage.GetPixel(0, y);
+            colorToBlock = map.GetPixel(0, y);
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
-            colorToBlock = mapImage.GetPixel(mapImage.width - 1, y);
+            colorToBlock = map.GetPixel(map.getWidth() - 1, y);
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
         }
 
-        colorToBlock = mapImage.getRandomPixel();
+        colorToBlock = map.getRandomPixel();
         if (!res.Contains(colorToBlock))
             res.Add(colorToBlock);
         
         if (Game.Random.Next(3) == 1)
         {
-            colorToBlock = mapImage.getRandomPixel();
+            colorToBlock = map.getRandomPixel();
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
             if (Game.Random.Next(20) == 1)
             {
-                colorToBlock = mapImage.getRandomPixel();
+                colorToBlock = map.getRandomPixel();
                 if (!res.Contains(colorToBlock))
                     res.Add(colorToBlock);
             }
@@ -168,7 +191,7 @@ public class Game : ThreadedJob
 
     static void removeProvince(int x, int y)
     {
-        var toremove = Province.findProvince(mapImage.GetPixel(x, y));
+        var toremove = Province.findProvince(map.GetPixel(x, y));
         if (Province.allProvinces.Contains(toremove))
         {
             toremove.removeProvince();
@@ -525,48 +548,48 @@ public class Game : ThreadedJob
     //    trianglesList.Add(3 + triangleCounter);
     //    triangleCounter += 4;
     //}
-    static void checkCoordinateForNeighbors(Province province, int x1, int y1, int x2, int y2)
-    {
-        if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
-        {
-            Province found;
-            found = Province.findProvince(mapImage.GetPixel(x2, y2));
-            if (found != null) // for remove edge provinces
-                province.addNeigbor(found);
-        }
-    }
+    //static void checkCoordinateForNeighbors(Province province, int x1, int y1, int x2, int y2)
+    //{
+    //    if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
+    //    {
+    //        Province found;
+    //        found = Province.findProvince(mapImage.GetPixel(x2, y2));
+    //        if (found != null) // for remove edge provinces
+    //            province.addNeigbor(found);
+    //    }
+    //}
 
     internal static bool isPlayerSurrended()
     {
         return surrended;
     }
 
-    static void findNeighborprovinces()
-    {
-        int f = 0;
-        foreach (var province in Province.allProvinces)
-        {
-            f++;
-            for (int j = 0; j < mapImage.height; j++)
-                for (int i = 0; i < mapImage.width; i++)
-                {
-                    Color currentColor = mapImage.GetPixel(i, j);
-                    if (currentColor == province.getColorID())
-                    {
-                        checkCoordinateForNeighbors(province, i, j, i + 1, j);
-                        checkCoordinateForNeighbors(province, i, j, i - 1, j);
-                        checkCoordinateForNeighbors(province, i, j, i, j + 1);
-                        checkCoordinateForNeighbors(province, i, j, i, j - 1);
-                    }
-                }
-        }
-    }
+    //static void findNeighborprovinces()
+    //{
+    //    int f = 0;
+    //    foreach (var province in Province.allProvinces)
+    //    {
+    //        f++;
+    //        for (int j = 0; j < mapImage.height; j++)
+    //            for (int i = 0; i < mapImage.width; i++)
+    //            {
+    //                Color currentColor = mapImage.GetPixel(i, j);
+    //                if (currentColor == province.getColorID())
+    //                {
+    //                    checkCoordinateForNeighbors(province, i, j, i + 1, j);
+    //                    checkCoordinateForNeighbors(province, i, j, i - 1, j);
+    //                    checkCoordinateForNeighbors(province, i, j, i, j + 1);
+    //                    checkCoordinateForNeighbors(province, i, j, i, j - 1);
+    //                }
+    //            }
+    //    }
+    //}
     static void generateMapImage()
     {
 
-        mapImage = new Texture2D(100, 100);
-        //mapImage = new Texture2D(160, 160);
-        //mapImage = new Texture2D(300, 300);
+        //Texture2D mapImage = new Texture2D(100, 100);
+        Texture2D mapImage = new Texture2D(160, 160);
+        //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -575,7 +598,7 @@ public class Game : ThreadedJob
         else
             amountOfProvince = 12 + Game.Random.Next(8);
         amountOfProvince = 40 + Game.Random.Next(20);
-        //amountOfProvince = 160 + Game.Random.Next(20);
+        amountOfProvince = 160 + Game.Random.Next(20);
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
@@ -601,6 +624,7 @@ public class Game : ThreadedJob
             mapImage.setAlphaToMax();
         }
         mapImage.Apply();
+        map = new MyTexture(mapImage);
     }
     static Mesh getMeshID(Color color)
     {
@@ -609,14 +633,14 @@ public class Game : ThreadedJob
                 return all.landMesh;
         return null;
     }
-    static Mesh getMeshID(int xpos, int ypos)
-    {
-        Color color = mapImage.GetPixel(xpos, ypos);
-        foreach (var all in Province.allProvinces)
-            if (color == all.getColorID())
-                return all.landMesh;
-        return null;
-    }
+    //static Mesh getMeshID(int xpos, int ypos)
+    //{
+    //    Color color = mapImage.GetPixel(xpos, ypos);
+    //    foreach (var all in Province.allProvinces)
+    //        if (color == all.getColorID())
+    //            return all.landMesh;
+    //    return null;
+    //}
     static private bool movePointRight(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
     {
         Vector3[] editingVertices = mesh.vertices;
@@ -635,87 +659,87 @@ public class Game : ThreadedJob
         }
         return false;
     }
-    static private bool movePointLeft(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
-    {
-        Vector3[] mesh1Vertices = mesh.vertices;
+    //static private bool movePointLeft(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
+    //{
+    //    Vector3[] mesh1Vertices = mesh.vertices;
 
-        Mesh mesh2 = getMeshID(xpos + 1, ypos);
-        Vector3[] mesh2Vertices = mesh2.vertices;
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 2) * Options.cellMultiplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
-            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
-            if (mesh1Vertices[i] == sr)
-            {
-                mesh1Vertices[i].x += Options.cellMultiplier * xMove / 2;
-                mesh.vertices = mesh1Vertices;
-                mesh.RecalculateBounds();
-                return true;
-            }
-        }
-        return false;
-    }
+    //    Mesh mesh2 = getMeshID(xpos + 1, ypos);
+    //    Vector3[] mesh2Vertices = mesh2.vertices;
+    //    for (int i = 0; i < mesh.vertices.Length; i++)
+    //    {
+    //        Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 2) * Options.cellMultiplier, 0f);
+    //        //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
+    //        //if (editingVertices[i] == sr || editingVertices[i] == sr2)
+    //        if (mesh1Vertices[i] == sr)
+    //        {
+    //            mesh1Vertices[i].x += Options.cellMultiplier * xMove / 2;
+    //            mesh.vertices = mesh1Vertices;
+    //            mesh.RecalculateBounds();
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+    //}
 
-    static void roundMesh()
-    {
-        for (int ypos = 0; ypos < mapImage.height; ypos++)
-        {
-            for (int xpos = 0; xpos < mapImage.width; xpos++)
-            {
-                if (mapImage.isRightTopCorner(xpos, ypos))
-                {
-                    movePointLeft(getMeshID(xpos, ypos), xpos + 1, ypos - 1, -1, 0);
-                    movePointLeft(getMeshID(xpos + 1, ypos), xpos + 1, ypos - 1, -1, 0);
-                }
-                else
-                if (mapImage.isLeftTopCorner(xpos, ypos))
-                {
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos, 1, 0);
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos, 1, 0);
-                }
-                else
-                if (mapImage.isLeftBottomCorner(xpos, ypos))
-                {
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
-                }
-                else
-                if (mapImage.isRightBottomCorner(xpos, ypos))
-                {
-                    movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
-                    movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
-                }
-            }
-        }
-    }
+    //static void roundMesh()
+    //{
+    //    for (int ypos = 0; ypos < mapImage.height; ypos++)
+    //    {
+    //        for (int xpos = 0; xpos < mapImage.width; xpos++)
+    //        {
+    //            if (mapImage.isRightTopCorner(xpos, ypos))
+    //            {
+    //                movePointLeft(getMeshID(xpos, ypos), xpos + 1, ypos - 1, -1, 0);
+    //                movePointLeft(getMeshID(xpos + 1, ypos), xpos + 1, ypos - 1, -1, 0);
+    //            }
+    //            else
+    //            if (mapImage.isLeftTopCorner(xpos, ypos))
+    //            {
+    //                movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos, 1, 0);
+    //                movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos, 1, 0);
+    //            }
+    //            else
+    //            if (mapImage.isLeftBottomCorner(xpos, ypos))
+    //            {
+    //                movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
+    //                movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
+    //            }
+    //            else
+    //            if (mapImage.isRightBottomCorner(xpos, ypos))
+    //            {
+    //                movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
+    //                movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
+    //            }
+    //        }
+    //    }
+    //}
 
-    static void makeProvinces()
-    {
-        ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
+    //static void makeProvinces()
+    //{
+    //    ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
 
-        VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
-        Color currentProvinceColor = mapImage.GetPixel(0, 0);
-        int provinceCounter = 0;
-        for (int j = 0; j < mapImage.height; j++) // circle by province        
-            for (int i = 0; i < mapImage.width; i++)
-            {
-                //var newProvince = Province.findProvince(currentProvinceColor);
-                //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
-                if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
-                {
+    //    VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
+    //    Color currentProvinceColor = mapImage.GetPixel(0, 0);
+    //    int provinceCounter = 0;
+    //    for (int j = 0; j < mapImage.height; j++) // circle by province        
+    //        for (int i = 0; i < mapImage.width; i++)
+    //        {
+    //            //var newProvince = Province.findProvince(currentProvinceColor);
+    //            //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
+    //            if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
+    //            {
 
 
-                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(),
-                        grid.getMesh(currentProvinceColor), grid.getBorders());
-                    //Province newProvince =
-                    //var np = new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, grid.getMesh(), Product.getRandomResource(false), mapObject);
-                    //Province.allProvinces.Add(np);
-                    provinceCounter++;
-                }
-                currentProvinceColor = mapImage.GetPixel(i, j);
-            }
-    }
+    //                makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(),
+    //                    grid.getMesh(currentProvinceColor), grid.getBorders());
+    //                //Province newProvince =
+    //                //var np = new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, grid.getMesh(), Product.getRandomResource(false), mapObject);
+    //                //Province.allProvinces.Add(np);
+    //                provinceCounter++;
+    //            }
+    //            currentProvinceColor = mapImage.GetPixel(i, j);
+    //        }
+    //}
 
     static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh, Dictionary<Color, MeshStructure> bordersMeshes)
     {//spawn object
@@ -831,44 +855,44 @@ public class Game : ThreadedJob
         //}
         //return false;
     }
-    static bool isThereOtherColorsIn4Negbors(int x, int y, short[,] bordersMarkers, short borderDeepLevel)
-    {
-        Color color = mapImage.GetPixel(x, y);
-        //if (x == 0)
-        //    return true;
-        //else
-        //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x - 1, y), color)) return true;
+    //static bool isThereOtherColorsIn4Negbors(int x, int y, short[,] bordersMarkers, short borderDeepLevel)
+    //{
+    //    Color color = mapImage.GetPixel(x, y);
+    //    //if (x == 0)
+    //    //    return true;
+    //    //else
+    //    //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x - 1, y), color)) return true;
 
-        //if (x == mapImage.width - 1)
-        //    return true;
-        //else
-        //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x + 1, y), color)) return true;
-        //if (y == 0)
-        //    return true;
-        //else
-        //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y - 1), color)) return true;
-        //if (y == mapImage.height - 1)
-        //    return true;
-        //if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y + 1), color)) return true;
-        //return false;
-        if (x == 0)
-            return true;
-        else
-          if (mapImage.GetPixel(x - 1, y) != color || bordersMarkers[x - 1, y] != borderDeepLevel) return true;
+    //    //if (x == mapImage.width - 1)
+    //    //    return true;
+    //    //else
+    //    //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x + 1, y), color)) return true;
+    //    //if (y == 0)
+    //    //    return true;
+    //    //else
+    //    //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y - 1), color)) return true;
+    //    //if (y == mapImage.height - 1)
+    //    //    return true;
+    //    //if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y + 1), color)) return true;
+    //    //return false;
+    //    if (x == 0)
+    //        return true;
+    //    else
+    //      if (mapImage.GetPixel(x - 1, y) != color || bordersMarkers[x - 1, y] != borderDeepLevel) return true;
 
-        if (x == mapImage.width - 1)
-            return true;
-        else
-            if (mapImage.GetPixel(x + 1, y) != color || bordersMarkers[x + 1, y] != borderDeepLevel) return true;
-        if (y == 0)
-            return true;
-        else
-            if (mapImage.GetPixel(x, y - 1) != color || bordersMarkers[x, y - 1] != borderDeepLevel) return true;
-        if (y == mapImage.height - 1)
-            return true;
-        if (mapImage.GetPixel(x, y + 1) != color || bordersMarkers[x, y + 1] != borderDeepLevel) return true;
-        return false;
-    }
+    //    if (x == mapImage.width - 1)
+    //        return true;
+    //    else
+    //        if (mapImage.GetPixel(x + 1, y) != color || bordersMarkers[x + 1, y] != borderDeepLevel) return true;
+    //    if (y == 0)
+    //        return true;
+    //    else
+    //        if (mapImage.GetPixel(x, y - 1) != color || bordersMarkers[x, y - 1] != borderDeepLevel) return true;
+    //    if (y == mapImage.height - 1)
+    //        return true;
+    //    if (mapImage.GetPixel(x, y + 1) != color || bordersMarkers[x, y + 1] != borderDeepLevel) return true;
+    //    return false;
+    //}
     public static void PrepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
@@ -916,9 +940,10 @@ public class Game : ThreadedJob
     }
     static void loadImages()
     {
-        mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
-        RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
-        ri.texture = mapImage;
+        Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
+        //RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
+        //ri.texture = mapImage;
+        map = new MyTexture(mapImage);
     }
     private static void calcBattles()
     {

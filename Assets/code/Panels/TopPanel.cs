@@ -12,11 +12,20 @@ public class TopPanel : MonoBehaviour
         btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
         btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
         btnPlay.image.color = Color.grey;
-        MainCamera.topPanel = this;
-        //refresh();
+        MainCamera.topPanel = this;        
+        hide();
+        
     }
-
-   
+    public void hide()
+    {
+        gameObject.SetActive(false);
+    }
+    public void show()
+    {
+        gameObject.SetActive(true);
+        //panelRectTransform.SetAsLastSibling();
+        refresh();
+    }
     public void refresh()
     {
         generalText.text = "Economic Simulation v0.11.0 Date: " + Game.date.Date.ToShortDateString() + " Country: " + Game.Player.getName()
@@ -41,6 +50,7 @@ public class TopPanel : MonoBehaviour
             MainCamera.militaryPanel.hide();
         else
             MainCamera.militaryPanel.show(null);
+        
     }
     public void onInventionsClick()
     {
