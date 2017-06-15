@@ -5,7 +5,7 @@ using System;
 public class Voxel
 {
 
-    public Color state;
+    public Color color;
 
     public Vector2 position, xEdgePosition, yEdgePosition;
 
@@ -18,7 +18,7 @@ public class Voxel
         xEdgePosition.x += size * 0.5f;
         yEdgePosition = position;
         yEdgePosition.y += size * 0.5f;
-        this.state = state;
+        this.color = state;
         //this.state = Game.Random.Next(3) == 1;
     }
 
@@ -26,7 +26,7 @@ public class Voxel
 
     public void BecomeXDummyOf(Voxel voxel, float offset)
     {
-        state = voxel.state;
+        color = voxel.color;
         position = voxel.position;
         xEdgePosition = voxel.xEdgePosition;
         yEdgePosition = voxel.yEdgePosition;
@@ -37,7 +37,7 @@ public class Voxel
 
     public void BecomeYDummyOf(Voxel voxel, float offset)
     {
-        state = voxel.state;
+        color = voxel.color;
         position = voxel.position;
         xEdgePosition = voxel.xEdgePosition;
         yEdgePosition = voxel.yEdgePosition;
@@ -48,7 +48,7 @@ public class Voxel
 
     public void BecomeXYDummyOf(Voxel voxel, float offset)
     {
-        state = voxel.state;
+        color = voxel.color;
         position = voxel.position;
         xEdgePosition = voxel.xEdgePosition;
         yEdgePosition = voxel.yEdgePosition;

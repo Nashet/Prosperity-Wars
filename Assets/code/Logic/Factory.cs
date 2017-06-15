@@ -1020,3 +1020,21 @@ public class Factory : Producer
 //    }
 //}
 
+public class MeshStructure
+{
+    public List<Vector3> vertices;
+    public List<int> triangles;
+    public List<Vector2> UVmap;    
+    
+    public MeshStructure()
+    {        
+        vertices = new List<Vector3>();
+        triangles = new List<int>();
+        UVmap = new List<Vector2>();
+    }
+    public void Clear()
+    {
+        vertices.Clear();
+        triangles.Clear();
+    }
+}

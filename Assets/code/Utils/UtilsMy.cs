@@ -326,9 +326,10 @@ public class ChanceBox<T>
     /// <summary>Gives random T according element weight  /// </summary>    
     public T getRandom()
     {
-        float randomNumver = UnityEngine.Random.value;
+        //float randomNumver = UnityEngine.Random.value;
+        float randomNumber = Game.Random.getFloat(0f, 1f);
         foreach (Mean next in list)
-            if (randomNumver <= next.weight)
+            if (randomNumber <= next.weight)
                 return next.element;
         return default(T);
     }
@@ -417,7 +418,12 @@ public class LimitedQueue<T> : Queue<T>
 
 public static class UtilsMy
 {
+    public static float getFloat(this System.Random random, float minValue, float maxValue)
+    {
+        //float m = (maxValue - minValue) ;
 
+        return (float)(random.NextDouble()) * (maxValue - minValue) + minValue;
+    }
 
     public static void Clear(this StringBuilder value)
     {
@@ -518,6 +524,10 @@ public static class UtilsMy
     public static int getRandomX(this Texture2D image)
     {
         return Game.Random.Next(0, image.width);
+    }
+    public static Color getRandomPixel(this Texture2D image)
+    {
+        return image.GetPixel(image.getRandomX(), image.getRandomY());
     }
     public static int getRandomY(this Texture2D image)
     {
@@ -816,7 +826,7 @@ public static class ColorExtensions
 
     public static Color getRandomColor()
     {
-        return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+        return new Color((float)Game.Random.NextDouble(), (float)Game.Random.NextDouble(), (float)Game.Random.NextDouble(), 1f);
     }
     public static Color setAlphaToZero(this Color color)
     {
@@ -828,7 +838,7 @@ public static class ColorExtensions
         float maxDeviation = 0.02f;//not including
 
         var result = new Color();
-        float deviation = maxDeviation - UnityEngine.Random.Range(0f, maxDeviation * 2);
+        float deviation = maxDeviation - Game.Random.getFloat(0f, maxDeviation * 2);
         result.r = color.r + deviation;
         result.g = color.g + deviation;
         result.b = color.b + deviation;

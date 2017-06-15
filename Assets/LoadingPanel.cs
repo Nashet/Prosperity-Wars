@@ -4,33 +4,24 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class LoadingPanel : DragPanel
+public class LoadingPanel :MonoBehaviour
 {
     public Text loadingText;
     // Use this for initialization
     void Start()
     {
-
+        MainCamera.loadingPanel = this;
     }
-
+    public void hide()
+    {
+        gameObject.SetActive(false);
+    }
     // Update is called once per frame
     void Update()
     {
-        if (MainCamera.Game == null)
-        {
-            SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
-            MainCamera.Game = new Game();
-            MainCamera.Game.Start();
-        }
-        if (MainCamera.Game != null)
-        {
-            if (MainCamera.Game.Update())
-            {
-                // Alternative to the OnFinished callback
-                //MainCamera.Game = null;
-            }
-        }
-    } 
-   
+       
+
+    }
+
 
 }
