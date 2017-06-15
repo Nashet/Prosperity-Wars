@@ -519,6 +519,10 @@ public static class UtilsMy
     {
         return Game.Random.Next(0, image.width);
     }
+    public static Color getRandomPixel(this Texture2D image)
+    {
+        return image.GetPixel(image.getRandomX(), image.getRandomY());
+    }
     public static int getRandomY(this Texture2D image)
     {
         return Game.Random.Next(0, image.height);

@@ -33,17 +33,17 @@ public class Province
     readonly List<Country> cores = new List<Country>();
     List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
-    public static void preReadProvinces(Texture2D image)
+    public static void preReadProvinces(Texture2D image, List<Color> blockedProvinces)
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
         Color currentProvinceColor = image.GetPixel(0, 0);
         int provinceCounter = 0;
         for (int j = 0; j < image.height; j++) // circle by province        
             for (int i = 0; i < image.width; i++)
-            {
-                //var newProvince = Province.findProvince(currentProvinceColor);
-                //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
-                if (currentProvinceColor != image.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
+            {                
+                if (currentProvinceColor != image.GetPixel(i, j) 
+                   // && !blockedProvinces.Contains(currentProvinceColor)
+                    && !Province.isProvinceCreated(currentProvinceColor))
                 {
                     allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
                     provinceCounter++;
@@ -52,10 +52,10 @@ public class Province
             }
     }
 
-    internal static void generateUnityData(Texture2D image)
+    internal static void generateUnityData(Texture2D image, List<Color> blockedProvinces)
     {
-        VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
-        grid.Initialize(image.width, Options.cellMultiplier * 100, image);
+        //VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
+        VoxelGrid grid = new VoxelGrid(image.width, Options.cellMultiplier * 100, image, Game.blockedProvinces);
         allProvinces.ForEach(x => x.generateMeshes(grid.getMesh(x.colorID), grid.getBorders()));
     }
     void generateMeshes(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
@@ -224,6 +224,12 @@ public class Province
 
         ////lineRenderer.SetWidth(1, 1);
         ////Debug.Log("rendered line");
+    }
+    public void removeProvince()
+    {
+        UnityEngine.Object.Destroy(rootGameObject);
+        neighbors.ForEach(x => x.neighbors.Remove(this));
+        Province.allProvinces.Remove(this);
     }
     public static void makeAllBordersMesh()
     {

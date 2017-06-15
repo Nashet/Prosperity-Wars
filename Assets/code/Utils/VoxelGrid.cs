@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 
 [SelectionBase]
-public class VoxelGrid : MonoBehaviour
+public class VoxelGrid
 {
 
     public int resolution;
@@ -25,7 +25,8 @@ public class VoxelGrid : MonoBehaviour
 
     private Voxel dummyX, dummyY, dummyT;
     //private Color analyzingColor;
-    public void Initialize(int resolution, float size, Texture2D texture)//, Color color)
+
+    public VoxelGrid(int resolution, float size, Texture2D texture, List<Color> blockedProvinces)
     {
         this.resolution = resolution;
         gridSize = size;
@@ -38,20 +39,36 @@ public class VoxelGrid : MonoBehaviour
         dummyT = new Voxel();
 
         //analyzingColor = color;
-
+        Color curColor, x1y1Color, x2y1Color, x1y2Color, x2y2Color;
         for (int i = 0, y = 0; y < resolution; y++)
         {
             for (int x = 0; x < resolution; x++, i++)
             {
-                CreateVoxel(i, x, y, texture.GetPixel(x, y));
+                curColor = texture.GetPixel(x, y);
+                //if (!blockedProvinces.Contains(curColor))
+                CreateVoxel(i, x, y, curColor);
             }
         }
 
-        //GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        // mesh = new MeshStructure();
-        //mesh.name = "VoxelGrid Mesh";
-        //vertices = new List<Vector3>();
-        //triangles = new List<int>();
+        //for (int i = 0, y = 0; y < resolution; y++)
+        //{
+        //    for (int x = 0; x < resolution ; x++, i++)
+        //    {
+        //        x1y1Color = texture.GetPixel(x, y);
+        //        x2y1Color = texture.GetPixel(x + 1, y);
+        //        x1y2Color = texture.GetPixel(x, y + 1);
+        //        x2y2Color = texture.GetPixel(x + 1, y + 1);
+
+        //        if (!blockedProvinces.Contains(x1y1Color)
+        //            || !blockedProvinces.Contains(x2y1Color)
+        //            || !blockedProvinces.Contains(x1y2Color)
+        //            || !blockedProvinces.Contains(x2y2Color)
+        //            )
+        //            CreateVoxel(i, x, y, x1y1Color);
+        //        else
+        //            CreateVoxel(i, x, y, Color.black);
+        //    }
+        //}
 
     }
     public MeshStructure getMesh(Color colorID)
@@ -99,13 +116,17 @@ public class VoxelGrid : MonoBehaviour
         for (int i = 0, y = 0; y < cells; y++, i++)
         {
             for (int x = 0; x < cells; x++, i++)
-            {
-                TriangulateCell(
-                    voxels[i],
-                    voxels[i + 1],
-                    voxels[i + resolution],
-                    voxels[i + resolution + 1], colorID);
-            }
+                //if (voxels[i].color != Color.black
+                //    || voxels[i + 1].color != Color.black
+                //    || voxels[i + resolution].color != Color.black
+                //    || voxels[i + resolution + 1].color != Color.black)
+                {
+                    TriangulateCell(
+                        voxels[i],
+                        voxels[i + 1],
+                        voxels[i + resolution],
+                        voxels[i + resolution + 1], colorID);
+                }
             if (xNeighbor != null)
             {
                 TriangulateGapCell(i, colorID);
@@ -160,9 +181,8 @@ public class VoxelGrid : MonoBehaviour
     }
     private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
     {
-        // put to constant
-        float borderWidth = 0.4f;
-        float borderWidth2 = -0.4f;
+       
+       
 
 
         //bool isBorder = isBorderCell(a, b, c, d);
@@ -198,7 +218,7 @@ public class VoxelGrid : MonoBehaviour
                     AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
                     AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
                     AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
-                    AddBorderQuad2(findMesh(b.color),  b.yEdgePosition,a.xEdgePosition);
+                    AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
                 }
                 else
                     AddBorderQuad2(findMesh(d.color), a.yEdgePosition, a.xEdgePosition);
@@ -218,7 +238,7 @@ public class VoxelGrid : MonoBehaviour
                 }
                 else
                     AddBorderQuad2(findMesh(c.color), a.xEdgePosition, b.yEdgePosition);
-               
+
                 break;
             case 3:
                 AddQuad(mesh, a.position, a.yEdgePosition, b.yEdgePosition, b.position);
@@ -282,6 +302,7 @@ public class VoxelGrid : MonoBehaviour
             case 9:
                 AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
+                //duplicates quad in 6:
                 //AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
                 AddBorderQuad2(findMesh(c.color), a.yEdgePosition, a.xEdgePosition);
                 AddBorderQuad2(findMesh(c.color), b.yEdgePosition, c.xEdgePosition);
@@ -389,6 +410,7 @@ public class VoxelGrid : MonoBehaviour
     }
     private void AddBorderQuad2(MeshStructure targetMesh, Vector2 a, Vector2 b)
     {
+        //TODO put to constant
         float borderWidth = 0.4f;
         float borderWidth2 = -0.4f;
 
