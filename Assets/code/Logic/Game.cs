@@ -88,14 +88,18 @@ public class Game : ThreadedJob
         makeFactoryTypes();
         makePopTypes();
 
-        Province.preReadProvinces(Game.map, blockedProvinces);
-        grid = new VoxelGrid(map.getWidth(), Options.cellMultiplier * 100, map,  Game.blockedProvinces);
+        //updateStatus("Reading provinces..");
+        Province.preReadProvinces(Game.map, blockedProvinces, this);
+        updateStatus("Making grid..");
+        grid = new VoxelGrid(map.getWidth(), Options.cellMultiplier * 100, map,  Game.blockedProvinces, this);
 
-
-        Country.makeCountries();
+        updateStatus("Making countries..");
+        Country.makeCountries(this);
+        updateStatus("Making population..");
         CreateRandomPopulation();
         setStartResources();
         makeHelloMessage();
+        updateStatus("Finishing generation..");
     }
     public Game()
     {
@@ -404,8 +408,9 @@ public class Game : ThreadedJob
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput, false);
     }
 
-    static void makeProducts()
+     void makeProducts()
     {
+        updateStatus("Making products..");
         new Product("Food", false, 0.4f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);

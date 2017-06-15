@@ -1306,6 +1306,7 @@ public static class EdgeHelpers
 public abstract class ThreadedJob
 {
     private bool m_IsDone = false;
+    private string status ="Not started yet";
     private object m_Handle = new object();
     private System.Threading.Thread m_Thread = null;
     public bool IsDone
@@ -1327,7 +1328,21 @@ public abstract class ThreadedJob
             }
         }
     }
-
+    public void updateStatus(String status)
+    {
+        lock (this.status)
+        {
+            this.status = status;
+        }
+    }
+    public string getStatus()
+    {
+        //tmp = status;
+        lock (status)
+        {
+            return status;
+        }
+    }
     public virtual void Start()
     {
         m_Thread = new System.Threading.Thread(Run);

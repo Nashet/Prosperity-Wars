@@ -33,7 +33,7 @@ public class Province
     readonly List<Country> cores = new List<Country>();
     List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
-    public static void preReadProvinces(MyTexture image,  List<Color> blockedProvinces)
+    public static void preReadProvinces(MyTexture image,  List<Color> blockedProvinces, Game game)
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
         Color currentProvinceColor = image.GetPixel(0, 0);
@@ -47,8 +47,10 @@ public class Province
                 {
                     allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
                     provinceCounter++;
+                    
                 }
                 currentProvinceColor = image.GetPixel(i, j);
+                game.updateStatus("Reading provinces.. x = " + i+" y = " + j);
             }
     }
 

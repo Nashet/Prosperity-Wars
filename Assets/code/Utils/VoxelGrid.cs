@@ -24,10 +24,13 @@ public class VoxelGrid
     //private List<int> triangles;
 
     private Voxel dummyX, dummyY, dummyT;
+    private Game game;
+
     //private Color analyzingColor;
 
-    public VoxelGrid(int resolution, float size, MyTexture texture, List<Color> blockedProvinces)
+    public VoxelGrid(int resolution, float size, MyTexture texture, List<Color> blockedProvinces, Game game)
     {
+        this.game = game;
         this.resolution = resolution;
         gridSize = size;
         voxelSize = size / resolution;
@@ -41,7 +44,7 @@ public class VoxelGrid
         //analyzingColor = color;
         Color curColor, x1y1Color, x2y1Color, x1y2Color, x2y2Color;
         for (int i = 0, y = 0; y < resolution; y++)
-        {
+        {           
             for (int x = 0; x < resolution; x++, i++)
             {
                 curColor = texture.GetPixel(x, y);
@@ -75,6 +78,7 @@ public class VoxelGrid
     {
         mesh = new MeshStructure();
         bordersMeshes = new Dictionary<Color, MeshStructure>();
+        game.updateStatus("Triangulation .." + colorID);
         Triangulate(colorID);
         return mesh;
     }
@@ -180,9 +184,7 @@ public class VoxelGrid
         return border;
     }
     private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
-    {
-       
-       
+    {    
 
 
         //bool isBorder = isBorderCell(a, b, c, d);

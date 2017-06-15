@@ -128,7 +128,7 @@ public class Country : Consumer
         }
 
     }
-    internal static void makeCountries()
+    internal static void makeCountries(Game game)
     {
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
@@ -138,6 +138,7 @@ public class Country : Consumer
             howMuchCountries = 7;
         for (int i = 0; i < howMuchCountries; i++)
         {
+            game.updateStatus("Making countries.."+i);
             Culture cul = new Culture(cultureNameGenerator.generateCultureName());
 
             Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null 

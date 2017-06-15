@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 public class MainCamera : MonoBehaviour
 {
     public static Game Game;
-    internal static Camera cameraMy;
-    static GameObject mapPointer;
+    //internal static Camera cameraMy;
+    //static GameObject mapPointer;
 
     public SimpleObjectPool buttonObjectPool;
     public Transform panelParent;
@@ -30,6 +30,7 @@ public class MainCamera : MonoBehaviour
     internal static MilitaryPanel militaryPanel;
     static bool gameIsLoaded;
     internal static LoadingPanel loadingPanel;
+    private Camera camera;
 
     //internal static MessagePanel messagePanel;
 
@@ -39,10 +40,24 @@ public class MainCamera : MonoBehaviour
     {
         //topPanel.hide();
     }
-   
+    void FixedUpdate()
+    {
+        if (gameIsLoaded)
+        {
+            float xyCameraSpeed = 10f;
+            float zCameraSpeed = 150f;
+            float xMove = Input.GetAxis("Horizontal");
+            float yMove = Input.GetAxis("Vertical");
+            float zMove = Input.GetAxis("Mouse ScrollWheel");
+            float newZ = zMove * zCameraSpeed;
+            if (this.transform.position.z + newZ > -40f) newZ = 0f;
+            transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, newZ);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
+        //starts loading thread
         if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
         {
             Application.runInBackground = true;
@@ -52,30 +67,22 @@ public class MainCamera : MonoBehaviour
             MainCamera.Game.Start(); //initialize is here
             //Game = new Game();           
         }
-        if (MainCamera.Game.IsDone && !gameIsLoaded)
-        {
-            Game.setUnityAPI();
-            GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
-            if (gameControllerObject != null)
+        if (MainCamera.Game != null)
+            if (MainCamera.Game.IsDone && !gameIsLoaded)
             {
-                cameraMy = gameControllerObject.GetComponent<Camera>();
-            }
-            if (cameraMy == null)
-            {
-                Debug.Log("Cannot find 'cameraMy' ");
-            }
-            mapPointer = GameObject.FindWithTag("pointerMy");
-            if (mapPointer == null)
-            {
-                Debug.Log("Cannot find 'pointerMy' ");
-            }
+                Game.setUnityAPI();
 
-            //Game = new Game();
-            cameraMy.transform.position = new Vector3(Game.Player.getCapital().centre.x, Game.Player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
-            loadingPanel.hide();
-            topPanel.show();
-            gameIsLoaded = true;
-        }
+
+                camera = this.GetComponent<Camera>();
+                //Game = new Game();
+                gameObject.transform.position = new Vector3(Game.Player.getCapital().centre.x,
+                    Game.Player.getCapital().centre.y, gameObject.transform.position.z);
+                loadingPanel.hide();
+                topPanel.show();
+                gameIsLoaded = true;
+            }
+            else
+                loadingPanel.loadingText.text = Game.getStatus();
         if (gameIsLoaded)
         {
             if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))
@@ -110,7 +117,7 @@ public class MainCamera : MonoBehaviour
                                           //Physics.DefaultRaycastLayers;
 
         if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-            if (!Physics.Raycast(cameraMy.ScreenPointToRay(Input.mousePosition), out hit))
+            if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
                 return -1;
             else; // go on
         else return -3; //hovering over UI
@@ -216,16 +223,6 @@ public class MainCamera : MonoBehaviour
         mesPanel.show(mes);
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
-    void FixedUpdate()
-    {
-        float xyCameraSpeed = 10f;
-        float zCameraSpeed = 150f;
-        float xMove = Input.GetAxis("Horizontal");
-        float yMove = Input.GetAxis("Vertical");
-        float zMove = Input.GetAxis("Mouse ScrollWheel");
-        float newZ = zMove * zCameraSpeed;
-        if (this.transform.position.z + newZ > -40f) newZ = 0f;
-        transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, newZ);
-    }
+
 
 }
