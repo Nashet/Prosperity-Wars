@@ -110,15 +110,24 @@ public class Country : Consumer
             // inventions.MarkInvented(InventionType.individualRights);
             serfdom.status = Serfdom.Abolished;
         }
-        //if (capital != null) // not null-country
-        {
-            borderMaterial = new Material(Game.defaultCountryBorderMaterial);
-            borderMaterial.color = nationalColor.getNegative();
-        }
+
 
 
     }
+    public static void setUnityAPI()
+    {
+        foreach (var item in allCountries)
+        {
+            if (item != Country.NullCountry)
+                item.moveCapitalTo(item.ownedProvinces[0]);
+            //if (capital != null) // not null-country
 
+            item.borderMaterial = new Material(Game.defaultCountryBorderMaterial);
+            item.borderMaterial.color = item.nationalColor.getNegative();
+            item.ownedProvinces[0].setBorderMaterials();
+        }
+
+    }
     internal static void makeCountries()
     {
         var countryNameGenerator = new CountryNameGenerator();
@@ -131,18 +140,19 @@ public class Country : Consumer
         {
             Culture cul = new Culture(cultureNameGenerator.generateCultureName());
 
-            Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
+            Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null 
+            && !Game.blockedProvinces.Contains(x.getColorID()));// Country.NullCountry);
             Country count = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province);
             //count.setBank(count.bank);
-            Game.Player = Country.allCountries[1]; // not wild Tribes DONT touch that
+            Game.Player = Country.allCountries[1]; // not wild Tribes, DONT touch that
             province.InitialOwner(count);
-            count.moveCapitalTo(province);
+
 
             //count.storageSet.add(new Storage(Product.Food, 200f));
             count.cash.add(100f);
 
         }
-           
+
 
         foreach (var pro in Province.allProvinces)
             if (pro.getCountry() == null)

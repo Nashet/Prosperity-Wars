@@ -40,14 +40,16 @@ public class Game : ThreadedJob
     internal static Material defaultCountryBorderMaterial;
     internal static Material defaultProvinceBorderMaterial;
     internal static List<Color> blockedProvinces;
-    public void callUnityAPI(VoxelGrid grid)
+    public void setUnityAPI(VoxelGrid grid)
     {
         // Assigns a material named "Assets/Resources/..." to the object.
         defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
         defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
-        Province.generateUnityData(mapImage, blockedProvinces,  grid);
+
+        Province.generateUnityData(mapImage, blockedProvinces, grid);
+        Country.setUnityAPI();
     }
     public void initialize()
     {
@@ -55,7 +57,7 @@ public class Game : ThreadedJob
         generateMapImage();
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
-        //blockedProvinces = getProvinceBlockList();
+        blockedProvinces = getProvinceBlockList();
         makeProducts();
         market.initialize();
         makeFactoryTypes();
@@ -63,19 +65,19 @@ public class Game : ThreadedJob
 
         Province.preReadProvinces(mapImage, blockedProvinces);
         VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
-        
-
-
-
-        callUnityAPI(grid);
-
-        deleteEdgeProvinces();
 
 
         Country.makeCountries();
         CreateRandomPopulation();
         setStartResources();
         makeHelloMessage();
+
+        setUnityAPI(grid);
+
+        deleteEdgeProvinces();
+
+
+
     }
     public Game()
     {
@@ -90,30 +92,36 @@ public class Game : ThreadedJob
             colorToBlock = mapImage.GetPixel(x, 0);
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
+            colorToBlock = mapImage.GetPixel(x, mapImage.height - 1);
+            if (!res.Contains(colorToBlock))
+                res.Add(colorToBlock);
         }
         for (int y = 0; y < mapImage.height; y++)
         {
             colorToBlock = mapImage.GetPixel(0, y);
             if (!res.Contains(colorToBlock))
                 res.Add(colorToBlock);
+            colorToBlock = mapImage.GetPixel(mapImage.width - 1, y);
+            if (!res.Contains(colorToBlock))
+                res.Add(colorToBlock);
         }
 
-        //colorToBlock = mapImage.getRandomPixel();
-        //if (!res.Contains(colorToBlock))
-        //    res.Add(colorToBlock);
-
-        //if (Game.Random.Next(3) == 1)
-        //{
-        //    colorToBlock = mapImage.getRandomPixel();
-        //    if (!res.Contains(colorToBlock))
-        //        res.Add(colorToBlock);
-        //    if (Game.Random.Next(20) == 1)
-        //    {
-        //        colorToBlock = mapImage.getRandomPixel();
-        //        if (!res.Contains(colorToBlock))
-        //            res.Add(colorToBlock);
-        //    }
-        //}
+        colorToBlock = mapImage.getRandomPixel();
+        if (!res.Contains(colorToBlock))
+            res.Add(colorToBlock);
+        
+        if (Game.Random.Next(3) == 1)
+        {
+            colorToBlock = mapImage.getRandomPixel();
+            if (!res.Contains(colorToBlock))
+                res.Add(colorToBlock);
+            if (Game.Random.Next(20) == 1)
+            {
+                colorToBlock = mapImage.getRandomPixel();
+                if (!res.Contains(colorToBlock))
+                    res.Add(colorToBlock);
+            }
+        }
         return res;
     }
     internal static void takePlayerControlOfThatCountry(Country country)
@@ -132,23 +140,29 @@ public class Game : ThreadedJob
     }
     static private void deleteEdgeProvinces()
     {
-        for (int x = 0; x < mapImage.width; x++)
-        {
-            removeProvince(x, 0);
-            removeProvince(x, mapImage.height - 1);
-        }
-        for (int y = 0; y < mapImage.height; y++)
-        {
-            removeProvince(0, y);
-            removeProvince(mapImage.width - 1, y);
-        }
-        Province.allProvinces.PickRandom().removeProvince();
-        if (Game.Random.Next(3) == 1)
-        {
-            Province.allProvinces.PickRandom().removeProvince();
-            if (Game.Random.Next(20) == 1)
-                Province.allProvinces.PickRandom().removeProvince();
-        }
+        //Province.allProvinces.FindAndDo(x => blockedProvinces.Contains(x.getColorID()), x => x.removeProvince());
+        foreach (var item in Province.allProvinces.ToArray())
+            if (blockedProvinces.Contains(item.getColorID()))
+            {
+                item.removeProvince();
+            }
+        //for (int x = 0; x < mapImage.width; x++)
+        //{
+        //    removeProvince(x, 0);
+        //    removeProvince(x, mapImage.height - 1);
+        //}
+        //for (int y = 0; y < mapImage.height; y++)
+        //{
+        //    removeProvince(0, y);
+        //    removeProvince(mapImage.width - 1, y);
+        //}
+        //Province.allProvinces.PickRandom().removeProvince();
+        //if (Game.Random.Next(3) == 1)
+        //{
+        //    Province.allProvinces.PickRandom().removeProvince();
+        //    if (Game.Random.Next(20) == 1)
+        //        Province.allProvinces.PickRandom().removeProvince();
+        //}
 
     }
 
@@ -280,7 +294,7 @@ public class Game : ThreadedJob
     {
         haveToStepSimulation = true;
     }
-    
+
     static void makeFactoryTypes()
     {
         new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);

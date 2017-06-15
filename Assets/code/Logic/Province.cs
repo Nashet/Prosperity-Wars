@@ -40,9 +40,9 @@ public class Province
         int provinceCounter = 0;
         for (int j = 0; j < image.height; j++) // circle by province        
             for (int i = 0; i < image.width; i++)
-            {                
-                if (currentProvinceColor != image.GetPixel(i, j) 
-                   // && !blockedProvinces.Contains(currentProvinceColor)
+            {
+                if (currentProvinceColor != image.GetPixel(i, j)
+                    // && !blockedProvinces.Contains(currentProvinceColor)
                     && !Province.isProvinceCreated(currentProvinceColor))
                 {
                     allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
@@ -55,10 +55,11 @@ public class Province
     internal static void generateUnityData(Texture2D image, List<Color> blockedProvinces, VoxelGrid grid)
     {
         //VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
+
+        allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
         
-        allProvinces.ForEach(x => x.generateMeshes(grid.getMesh(x.colorID), grid.getBorders()));
     }
-    void generateMeshes(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
+    void setUnityAPI(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
     {
         this.meshStructure = meshStructure;
         //allProducers = getProducers();
@@ -106,6 +107,7 @@ public class Province
         //fertileSoil = 10000;
         setProvinceCenter();
         SetLabel();
+        meshRenderer.material.color = color;
         // setting neighbors
         //making meshes for border
         foreach (var border in neighborBorders)
@@ -127,7 +129,7 @@ public class Province
 
             borderMesh.vertices = border.Value.vertices.ToArray();
             borderMesh.triangles = border.Value.triangles.ToArray();
-            borderMesh.uv = border.Value.UVmap.ToArray(); 
+            borderMesh.uv = border.Value.UVmap.ToArray();
             borderMesh.RecalculateNormals();
             borderMesh.RecalculateBounds();
             meshRenderer.material = Game.defaultProvinceBorderMaterial;
@@ -136,6 +138,24 @@ public class Province
             bordersMeshes.Add(neighbor, meshRenderer);
         }
 
+    }
+    public void setBorderMaterials()
+    {
+        foreach (var neighbor in neighbors)
+            if (getCountry() == neighbor.getCountry())
+            {
+                this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
+                neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+            }
+            else
+            {
+                // if (getCountry() != Country.NullCountry && neighbor.getCountry() != Country.NullCountry)
+                {
+                    this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
+                    if (neighbor.getCountry() != null)
+                        neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
+                }
+            }
     }
     //empty province constructor
     public Province(string iname, int iID, Color icolorID, Product inresource)
@@ -206,7 +226,7 @@ public class Province
 
         fertileSoil = 10000;
         setProvinceCenter();
-        SetLabel();
+
 
         //makeBordersMesh();
         //var lr = rootGameObject.AddComponent<LineRenderer>();
@@ -372,25 +392,11 @@ public class Province
             taker.ownedProvinces = new List<Province>();
         taker.ownedProvinces.Add(this);
         color = taker.getColor().getAlmostSameColor();
-        meshRenderer.material.color = color;
+
         if (taker != Country.NullCountry)
             cores.Add(taker);
 
-        foreach (var neighbor in neighbors)
-            if (getCountry() == neighbor.getCountry())
-            {
-                this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
-                neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
-            }
-            else
-            {
-                // if (getCountry() != Country.NullCountry && neighbor.getCountry() != Country.NullCountry)
-                {
-                    this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
-                    if (neighbor.getCountry() != null)
-                        neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
-                }
-            }
+
     }
     public void think()
     {
@@ -453,22 +459,22 @@ public class Province
 
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
-
-        foreach (var neighbor in neighbors)
-            if (getCountry() == neighbor.getCountry())
-            {
-                this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
-                neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
-            }
-            else
-            {
-                // if (getCountry() != Country.NullCountry && neighbor.getCountry() != Country.NullCountry)
-                {
-                    this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
-                    if (neighbor.getCountry() != null)
-                        neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
-                }
-            }
+        setBorderMaterials();
+        //foreach (var neighbor in neighbors)
+        //    if (getCountry() == neighbor.getCountry())
+        //    {
+        //        this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
+        //        neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+        //    }
+        //    else
+        //    {
+        //        // if (getCountry() != Country.NullCountry && neighbor.getCountry() != Country.NullCountry)
+        //        {
+        //            this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
+        //            if (neighbor.getCountry() != null)
+        //                neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
+        //        }
+        //    }
     }
 
     internal bool isCapital()
