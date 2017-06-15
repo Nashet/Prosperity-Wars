@@ -118,6 +118,37 @@ public class Country : Consumer
 
 
     }
+
+    internal static void makeCountries()
+    {
+        var countryNameGenerator = new CountryNameGenerator();
+        var cultureNameGenerator = new CultureNameGenerator();
+        int howMuchCountries = Province.allProvinces.Count / 6;
+        howMuchCountries += Game.Random.Next(6);
+        if (howMuchCountries < 7)
+            howMuchCountries = 7;
+        for (int i = 0; i < howMuchCountries; i++)
+        {
+            Culture cul = new Culture(cultureNameGenerator.generateCultureName());
+
+            Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
+            Country count = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province);
+            //count.setBank(count.bank);
+            Game.Player = Country.allCountries[1]; // not wild Tribes DONT touch that
+            province.InitialOwner(count);
+            count.moveCapitalTo(province);
+
+            //count.storageSet.add(new Storage(Product.Food, 200f));
+            count.cash.add(100f);
+
+        }
+           
+
+        foreach (var pro in Province.allProvinces)
+            if (pro.getCountry() == null)
+                pro.InitialOwner(Country.NullCountry);
+    }
+
     /// <summary>
     /// returns true if there is in world country  with power of X(world)
     /// </summary>

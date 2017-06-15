@@ -20,7 +20,7 @@ public class LoadingPanel : DragPanel
         {
             SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
             MainCamera.Game = new Game();
-            MainCamera.Game.initilize();
+            MainCamera.Game.initialize();
 
             // MainCamera.Game.Start();
         }

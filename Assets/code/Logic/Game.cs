@@ -39,52 +39,40 @@ public class Game : ThreadedJob
     private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial;
     internal static Material defaultProvinceBorderMaterial;
-    internal static  List<Color> blockedProvinces;
-
-    public void initilize()
+    internal static List<Color> blockedProvinces;
+    public void callUnityAPI(VoxelGrid grid)
     {
-        Application.runInBackground = true;
         // Assigns a material named "Assets/Resources/..." to the object.
         defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
         defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
-
+        Province.generateUnityData(mapImage, blockedProvinces,  grid);
+    }
+    public void initialize()
+    {
         //loadImages();
         generateMapImage();
-        //blockedProvinces = getProvinceBlockList();
-        makeProducts();
-        Province.preReadProvinces(mapImage, blockedProvinces);
-        //makeProvinces();
-        Province.generateUnityData(mapImage, blockedProvinces);
-        //9999999999999999999999999999999999
-
-        market.initialize();        
-
-        deleteEdgeProvinces();
-        
-
-       
-
         var mapWidth = mapImage.width * Options.cellMultiplier;
         var mapHeight = mapImage.height * Options.cellMultiplier;
-
+        //blockedProvinces = getProvinceBlockList();
+        makeProducts();
+        market.initialize();
         makeFactoryTypes();
         makePopTypes();
 
-        var countryNameGenerator = new CountryNameGenerator();
-        var cultureNameGenerator = new CultureNameGenerator();
-        //int howMuchCountries = Province.allProvinces.Count / 3;
-        //howMuchCountries += Random.Next(6);
-        int howMuchCountries = 7;
+        Province.preReadProvinces(mapImage, blockedProvinces);
+        VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
+        
 
-        for (int i = 0; i < howMuchCountries; i++)
-            makeCountry(countryNameGenerator, cultureNameGenerator);
 
-        foreach (var pro in Province.allProvinces)
-            if (pro.getCountry() == null)
-                pro.InitialOwner(Country.NullCountry);
 
+        callUnityAPI(grid);
+
+        deleteEdgeProvinces();
+
+
+        Country.makeCountries();
         CreateRandomPopulation();
         setStartResources();
         makeHelloMessage();
@@ -107,13 +95,13 @@ public class Game : ThreadedJob
         {
             colorToBlock = mapImage.GetPixel(0, y);
             if (!res.Contains(colorToBlock))
-                res.Add(colorToBlock);            
+                res.Add(colorToBlock);
         }
 
         //colorToBlock = mapImage.getRandomPixel();
         //if (!res.Contains(colorToBlock))
         //    res.Add(colorToBlock);
-        
+
         //if (Game.Random.Next(3) == 1)
         //{
         //    colorToBlock = mapImage.getRandomPixel();
@@ -163,7 +151,7 @@ public class Game : ThreadedJob
         }
 
     }
-    
+
     static void removeProvince(int x, int y)
     {
         var toremove = Province.findProvince(mapImage.GetPixel(x, y));
@@ -292,21 +280,7 @@ public class Game : ThreadedJob
     {
         haveToStepSimulation = true;
     }
-
-    static void makeCountry(CountryNameGenerator countryName, CultureNameGenerator cultureName)
-    {
-        Culture cul = new Culture(cultureName.generateCultureName());
-
-        Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);// Country.NullCountry);
-        Country count = new Country(countryName.generateCountryName(), cul, ColorExtensions.getRandomColor(), province);
-        //count.setBank(count.bank);
-        Player = Country.allCountries[1]; // not wild Tribes DONT touch that
-        province.InitialOwner(count);
-        count.moveCapitalTo(province);
-
-        //count.storageSet.add(new Storage(Product.Food, 200f));
-        count.cash.add(100f);
-    }
+    
     static void makeFactoryTypes()
     {
         new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);
@@ -576,8 +550,9 @@ public class Game : ThreadedJob
     static void generateMapImage()
     {
 
-        //mapImage = new Texture2D(100, 100);
-        mapImage = new Texture2D(160, 160);
+        mapImage = new Texture2D(100, 100);
+        //mapImage = new Texture2D(160, 160);
+        //mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
@@ -586,7 +561,8 @@ public class Game : ThreadedJob
         else
             amountOfProvince = 12 + Game.Random.Next(8);
         amountOfProvince = 40 + Game.Random.Next(20);
-        amountOfProvince = 160 + Game.Random.Next(20);
+        //amountOfProvince = 160 + Game.Random.Next(20);
+        //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 
@@ -703,7 +679,7 @@ public class Game : ThreadedJob
     static void makeProvinces()
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
-        
+
         VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
         Color currentProvinceColor = mapImage.GetPixel(0, 0);
         int provinceCounter = 0;
@@ -1056,6 +1032,6 @@ public class Game : ThreadedJob
 
     protected override void ThreadFunction()
     {
-        initilize();
+        initialize();
     }
 }

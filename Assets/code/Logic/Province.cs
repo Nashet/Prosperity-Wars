@@ -52,10 +52,10 @@ public class Province
             }
     }
 
-    internal static void generateUnityData(Texture2D image, List<Color> blockedProvinces)
+    internal static void generateUnityData(Texture2D image, List<Color> blockedProvinces, VoxelGrid grid)
     {
         //VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
-        VoxelGrid grid = new VoxelGrid(image.width, Options.cellMultiplier * 100, image, Game.blockedProvinces);
+        
         allProvinces.ForEach(x => x.generateMeshes(grid.getMesh(x.colorID), grid.getBorders()));
     }
     void generateMeshes(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)

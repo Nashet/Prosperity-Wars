@@ -125,11 +125,11 @@ public class MainCamera : MonoBehaviour
     {
         if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
         {
+            Application.runInBackground = true;
             //SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
             MainCamera.Game = new Game();
-            MainCamera.Game.initilize();
-
-            // MainCamera.Game.Start();
+            MainCamera.Game.initialize();
+             //MainCamera.Game.Start(); //initialize is here
             //Game = new Game();
             GameObject gameControllerObject = GameObject.FindWithTag("MainCamera");
             if (gameControllerObject != null)
