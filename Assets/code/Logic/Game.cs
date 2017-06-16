@@ -23,7 +23,7 @@ public class MyTexture
     }
     internal Color GetPixel(int x, int v)
     {
-        return map[x*width+v];
+        return map[x+v*width];
     }
     public Color getRandomPixel()
     {
@@ -103,8 +103,8 @@ public class Game : ThreadedJob
     }
     public Game()
     {
-        //loadImages();
-        generateMapImage();
+        loadImages();
+        //generateMapImage();
         var mapWidth = map.getWidth() * Options.cellMultiplier;
         var mapHeight = map.getHeight() * Options.cellMultiplier;
         blockedProvinces = getProvinceBlockList();

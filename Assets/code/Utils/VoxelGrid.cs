@@ -215,12 +215,13 @@ public class VoxelGrid
                 if (a.color != b.color && a.color != c.color && a.color != d.color
                     && b.color != c.color && b.color != d.color
                     && c.color != d.color
-                    && a.color == analyzingColor)
+                    )//&& c.color == analyzingColor)
                 {
-                    AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
-                    AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
+                    AddTriangle(a.yEdgePosition, centre, a.xEdgePosition);
+                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, centre);
+                    AddBorderQuad2(findMesh(b.color),  centre, a.xEdgePosition);
                 }
                 else
                     AddBorderQuad2(findMesh(d.color), a.yEdgePosition, a.xEdgePosition);
@@ -231,12 +232,12 @@ public class VoxelGrid
                 if (a.color != b.color && a.color != c.color && a.color != d.color
                    && b.color != c.color && b.color != d.color
                    && c.color != d.color
-                   && a.color == analyzingColor)
+                   )//&& c.color == analyzingColor)
                 {
-                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    //AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
-                    //AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
-                    //AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
+                    AddTriangle(a.xEdgePosition, centre, b.yEdgePosition);                    
+                    AddBorderQuad2(findMesh(a.color), a.xEdgePosition, centre);
+                    AddBorderQuad2(findMesh(d.color), centre, b.yEdgePosition);
                 }
                 else
                     AddBorderQuad2(findMesh(c.color), a.xEdgePosition, b.yEdgePosition);
@@ -259,8 +260,15 @@ public class VoxelGrid
                 if (a.color != b.color && a.color != c.color && a.color != d.color
                    && b.color != c.color && b.color != d.color
                    && c.color != d.color
-                   && a.color == analyzingColor)
-                    ;//AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                   )//&& a.color == analyzingColor)
+                {
+                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
+                    AddTriangle(c.xEdgePosition, centre, a.yEdgePosition);
+                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findMesh(a.color), centre, a.yEdgePosition);
+                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, centre);
+
+                }
                 else
                     AddBorderQuad2(findMesh(b.color), c.xEdgePosition, a.yEdgePosition);
 
@@ -295,8 +303,15 @@ public class VoxelGrid
                 if (a.color != b.color && a.color != c.color && a.color != d.color
                    && b.color != c.color && b.color != d.color
                    && c.color != d.color
-                   && a.color == analyzingColor)
-                    ;//AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                   )//&& a.color == analyzingColor)
+                {
+                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
+                    AddTriangle(c.xEdgePosition,  b.yEdgePosition, centre);
+                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findMesh(b.color), b.yEdgePosition, centre);
+                    AddBorderQuad2(findMesh(c.color), centre, c.xEdgePosition);
+                }
                 else
                     AddBorderQuad2(findMesh(a.color), b.yEdgePosition, c.xEdgePosition);
 
