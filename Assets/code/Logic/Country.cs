@@ -124,7 +124,7 @@ public class Country : Consumer
 
             item.borderMaterial = new Material(Game.defaultCountryBorderMaterial);
             item.borderMaterial.color = item.nationalColor.getNegative();
-            item.ownedProvinces[0].setBorderMaterials();
+            item.ownedProvinces[0].setUnselectedBorderMaterials();
         }
 
     }

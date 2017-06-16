@@ -63,9 +63,8 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(0);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = true;
-    internal static Material defaultCountryBorderMaterial;
-    internal static Material defaultProvinceBorderMaterial;
+    private static bool surrended = true;    
+    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
     internal static List<Color> blockedProvinces;
     static VoxelGrid grid;
     public void setUnityAPI()
@@ -73,6 +72,7 @@ public class Game : ThreadedJob
         // Assigns a material named "Assets/Resources/..." to the object.
         defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
         defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+        selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
 
@@ -103,8 +103,8 @@ public class Game : ThreadedJob
     }
     public Game()
     {
-        loadImages();
-        //generateMapImage();
+        //loadImages();
+        generateMapImage();
         var mapWidth = map.getWidth() * Options.cellMultiplier;
         var mapHeight = map.getHeight() * Options.cellMultiplier;
         blockedProvinces = getProvinceBlockList();

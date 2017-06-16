@@ -141,7 +141,12 @@ public class Province
         }
 
     }
-    public void setBorderMaterials()
+    public void setBorderMaterial(Material material)
+    {
+        foreach (var item in bordersMeshes)
+            item.Value.material = material;
+    }
+    public void setUnselectedBorderMaterials()
     {
         foreach (var neighbor in neighbors)
             if (getCountry() == neighbor.getCountry())
@@ -150,8 +155,7 @@ public class Province
                 neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
             }
             else
-            {
-                // if (getCountry() != Country.NullCountry && neighbor.getCountry() != Country.NullCountry)
+            {                
                 {
                     this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
                     if (neighbor.getCountry() != null)
@@ -461,7 +465,7 @@ public class Province
 
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
-        setBorderMaterials();
+        setUnselectedBorderMaterials();
         //foreach (var neighbor in neighbors)
         //    if (getCountry() == neighbor.getCountry())
         //    {

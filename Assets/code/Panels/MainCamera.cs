@@ -166,13 +166,20 @@ public class MainCamera : MonoBehaviour
     internal static void SelectProvince(int number)
     {
         if (Game.selectedProvince != null && number >= 0)
-            Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
+        {
+            Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+            Game.selectedProvince.setUnselectedBorderMaterials();
+        }
+        // Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
+        //Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
 
         if (number >= 0)
         {
-            if (Province.findByID(number) == Game.selectedProvince)// same province selected
+            if (Province.findByID(number) == Game.selectedProvince)// same province clicked, hide selection
             {
-                Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
+                //Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
+                Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                Game.selectedProvince.setUnselectedBorderMaterials();
                 Game.selectedProvince = null;
                 provincePanel.hide();
                 if (buildPanel.isActiveAndEnabled)
@@ -180,15 +187,17 @@ public class MainCamera : MonoBehaviour
             }
             else // new province selected
             {
-                Province.findByID(number).updateColor(Color.gray);
+                //Province.findByID(number).updateColor(Color.gray);
+                
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
                 Game.selectedProvince = Province.findByID(number);
+                Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                 provincePanel.show();
                 if (buildPanel.isActiveAndEnabled)
                     buildPanel.refresh();
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
-                Province.findByID(number).updateColor(Color.gray);
+                //Province.findByID(number).updateColor(Color.gray);
             }
 
         }
