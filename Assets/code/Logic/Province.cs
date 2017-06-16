@@ -92,15 +92,17 @@ public class Province
         landMesh.triangles = meshStructure.triangles.ToArray();
         landMesh.RecalculateNormals();
         landMesh.RecalculateBounds();
+        landMesh.name = getID().ToString();
 
         meshRenderer.material.shader = Shader.Find("Standard");
-        meshRenderer.material.color = colorID;
+        //meshRenderer.material.color = colorID;
+        meshRenderer.material.color = color;
 
         MeshCollider groundMeshCollider;
         groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
         groundMeshCollider.sharedMesh = landMesh;
 
-        landMesh.name = getID().ToString();
+        
 
         //Province newProvince = new Province(name,
         //    provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false), MSMesh);
@@ -109,7 +111,7 @@ public class Province
         //fertileSoil = 10000;
         setProvinceCenter();
         SetLabel();
-        meshRenderer.material.color = color;
+        
         // setting neighbors
         //making meshes for border
         foreach (var border in neighborBorders)
@@ -841,12 +843,26 @@ public class Province
 
     internal void SetLabel()
     {
+        LODGroup group = rootGameObject.AddComponent<LODGroup>();
 
+        // Add 4 LOD levels
+        LOD[] lods = new LOD[1];
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
-        txtMeshTransform.SetParent(this.rootGameObject.transform, false);
+        txtMeshTransform.SetParent(this.rootGameObject.transform, false);        
+        Renderer[] renderers = new Renderer[1];
+        renderers[0] = txtMeshTransform.GetComponent<Renderer>();
+        //lods[i] = new LOD(1.0F / (i + 1), renderers);
+        lods[0] = new LOD(0.19F, renderers);
+
+        txtMeshTransform.position = this.centre;
+        group.SetLODs(lods);
+        group.RecalculateBounds();
+
+
+        
 
         //newProvince.centre = (meshRenderer.bounds.max + meshRenderer.bounds.center) / 2f;
-        txtMeshTransform.position = this.centre;
+       
 
         TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
         txtMesh.text = this.ToString();

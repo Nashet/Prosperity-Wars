@@ -341,17 +341,17 @@ public class Country : Consumer
 
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
         messhCapitalText.text = this.ToString();
+        messhCapitalText.fontSize *= 2;
         if (this == Game.Player)
-
         {
             messhCapitalText.color = Color.blue;
-            messhCapitalText.fontSize += messhCapitalText.fontSize / 2;
+            messhCapitalText.fontSize += 10;
 
         }
         else
         {
             messhCapitalText.color = Color.cyan; // Set the text's color to red
-            messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
+            //messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
         }
     }
     internal void moveCapitalTo(Province newCapital)
