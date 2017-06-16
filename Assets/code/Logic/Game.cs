@@ -66,8 +66,9 @@ public class Game : ThreadedJob
     private static bool surrended = true;    
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
     internal static List<Color> blockedProvinces;
+    private Rect mapBorders;
     static VoxelGrid grid;
-    public void setUnityAPI()
+    public static void setUnityAPI()
     {
         // Assigns a material named "Assets/Resources/..." to the object.
         defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
@@ -103,12 +104,15 @@ public class Game : ThreadedJob
     }
     public Game()
     {
-        //loadImages();
-        generateMapImage();
-        var mapWidth = map.getWidth() * Options.cellMultiplier;
-        var mapHeight = map.getHeight() * Options.cellMultiplier;
+        loadImages();
+        //generateMapImage();        
+        mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
         blockedProvinces = getProvinceBlockList();
        
+    }
+    public Rect getMapBorders()
+    {
+        return mapBorders;
     }
     List<Color> getProvinceBlockList()
     {

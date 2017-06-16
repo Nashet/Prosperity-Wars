@@ -44,15 +44,24 @@ public class MainCamera : MonoBehaviour
     {
         if (gameIsLoaded)
         {
+            var position = this.transform.position;
+            var mapBorders = Game.getMapBorders();
             float xyCameraSpeed = 10f;
             float zCameraSpeed = 150f;
             float xMove = Input.GetAxis("Horizontal");
+            if (xMove * xyCameraSpeed + position.x < mapBorders.x
+                || xMove * xyCameraSpeed + position.x > mapBorders.x + mapBorders.width)
+                xMove = 0;
             float yMove = Input.GetAxis("Vertical");
+            if (yMove * xyCameraSpeed + position.y < mapBorders.y
+                || yMove * xyCameraSpeed + position.y > mapBorders.y + mapBorders.height)
+                yMove = 0;
             float zMove = Input.GetAxis("Mouse ScrollWheel");
-            float newZ = zMove * zCameraSpeed;
-            if (this.transform.position.z + newZ > -35f) newZ = 0f;
-            if (this.transform.position.z + newZ < -400f) newZ = 0f;
-            transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, newZ);
+            zMove = zMove * zCameraSpeed;
+            if (position.z + zMove > -35f
+                || position.z + zMove < -400f)
+                zMove = 0f;
+            transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
         }
     }
     // Update is called once per frame
@@ -189,7 +198,7 @@ public class MainCamera : MonoBehaviour
             else // new province selected
             {
                 //Province.findByID(number).updateColor(Color.gray);
-                
+
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
                 Game.selectedProvince = Province.findByID(number);
                 Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
