@@ -1379,3 +1379,30 @@ public abstract class ThreadedJob
         IsDone = true;
     }
 }
+public class MyTexture
+{
+    readonly int width, height;
+    readonly Color[] map;
+    public MyTexture(Texture2D image)
+    {
+        width = image.width;
+        height = image.height;
+        map = image.GetPixels();
+    }
+    internal int getWidth()
+    {
+        return width;
+    }
+    internal int getHeight()
+    {
+        return height;
+    }
+    internal Color GetPixel(int x, int v)
+    {
+        return map[x + v * width];
+    }
+    public Color getRandomPixel()
+    {
+        return map[Game.Random.Next((width * height) - 1)];
+    }
+}

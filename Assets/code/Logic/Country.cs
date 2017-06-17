@@ -50,8 +50,6 @@ public class Country : Consumer
     readonly Modifier modXHasMyCores;
     public ModifiersList modMyOpinionOfXCountry;
 
-
-
     Value poorTaxIncome = new Value(0f);
     Value richTaxIncome = new Value(0f);
     Value goldMinesIncome = new Value(0f);

@@ -3,46 +3,15 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
 using System;
-public class MyTexture
-{
-    readonly int width, height;
-    readonly Color[] map;
-    public MyTexture(Texture2D image)
-    {
-        width = image.width;
-        height = image.height;
-        map = image.GetPixels();
-    }
-    internal int getWidth()
-    {
-        return width;
-    }
-    internal int getHeight()
-    {
-        return height;
-    }
-    internal Color GetPixel(int x, int v)
-    {
-        return map[x + v * width];
-    }
-    public Color getRandomPixel()
-    {
-        return map[Game.Random.Next((width * height) - 1)];
-    }
-}
+
 public class Game : ThreadedJob
 {
     //static Texture2D mapImage;
     static MyTexture map;
     public static GameObject mapObject;
-    internal static GameObject r3dTextPrefab;
+    internal static GameObject r3dTextPrefab;   
 
-    //static List<int> trianglesList = new List<int>();
-    //static List<Vector3> vertices = new List<Vector3>();
-    //static int triangleCounter = 0;
-
-    public static Country Player;
-    //internal InventionType inventions = new InventionType();
+    public static Country Player;    
 
     static bool haveToRunSimulation;
     static bool haveToStepSimulation;
@@ -64,9 +33,10 @@ public class Game : ThreadedJob
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended = true;
-    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
-    internal static List<Color> blockedProvinces;
+    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;    
     private Rect mapBorders;
+
+    internal static List<Color> blockedProvinces;
     static VoxelGrid grid;
     public static void setUnityAPI()
     {
@@ -80,7 +50,9 @@ public class Game : ThreadedJob
         Province.generateUnityData(blockedProvinces, grid);
         Country.setUnityAPI();
         deleteSomeProvinces();
+        blockedProvinces = null;
         grid = null;
+        map = null;
     }
     public void initialize()
     {
@@ -603,8 +575,8 @@ public class Game : ThreadedJob
     static void generateMapImage()
     {
 
-        Texture2D mapImage = new Texture2D(100, 100);
-        //Texture2D mapImage = new Texture2D(160, 160);
+        //Texture2D mapImage = new Texture2D(100, 100);
+        Texture2D mapImage = new Texture2D(160, 160);
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
@@ -642,6 +614,7 @@ public class Game : ThreadedJob
         }
         mapImage.Apply();
         map = new MyTexture(mapImage);
+        Texture2D.Destroy(mapImage);
     }
     static Mesh getMeshID(Color color)
     {
@@ -758,45 +731,7 @@ public class Game : ThreadedJob
     //        }
     //}
 
-    static void makeProvince(int provinceID, Color colorID, string name, MeshStructure MSMesh, Dictionary<Color, MeshStructure> bordersMeshes)
-    {//spawn object
-        GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
-
-        //Add Components
-        MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
-        MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
-
-        // in case you want the new gameobject to be a child
-        // of the gameobject that your script is attached to
-        objToSpawn.transform.parent = mapObject.transform;
-
-        Mesh mesh = meshFilter.mesh;
-        mesh.Clear();
-
-        mesh.vertices = MSMesh.vertices.ToArray();
-        mesh.triangles = MSMesh.triangles.ToArray();
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-
-        meshRenderer.material.shader = Shader.Find("Standard");
-        meshRenderer.material.color = colorID;
-
-        MeshCollider groundMeshCollider;
-        groundMeshCollider = objToSpawn.AddComponent(typeof(MeshCollider)) as MeshCollider;
-        groundMeshCollider.sharedMesh = mesh;
-
-
-        //vertices.Clear();
-        //trianglesList.Clear();
-        //triangleCounter = 0;
-
-        mesh.name = provinceID.ToString();
-
-        Province newProvince = new Province(name,
-            provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false), MSMesh);
-        Province.allProvinces.Add(newProvince);
-
-    }
+    
     static bool FindProvinceCenters()
     {
         //Vector3 accu = new Vector3(0, 0, 0);
