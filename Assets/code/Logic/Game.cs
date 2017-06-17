@@ -23,11 +23,11 @@ public class MyTexture
     }
     internal Color GetPixel(int x, int v)
     {
-        return map[x+v*width];
+        return map[x + v * width];
     }
     public Color getRandomPixel()
     {
-        return map[Game.Random.Next((width*height) -1)];
+        return map[Game.Random.Next((width * height) - 1)];
     }
 }
 public class Game : ThreadedJob
@@ -63,7 +63,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(0);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = true;    
+    private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
     internal static List<Color> blockedProvinces;
     private Rect mapBorders;
@@ -77,9 +77,9 @@ public class Game : ThreadedJob
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
 
-        Province.generateUnityData( blockedProvinces, grid);
+        Province.generateUnityData(blockedProvinces, grid);
         Country.setUnityAPI();
-        deleteEdgeProvinces();
+        deleteSomeProvinces();
         grid = null;
     }
     public void initialize()
@@ -89,26 +89,29 @@ public class Game : ThreadedJob
         makeFactoryTypes();
         makePopTypes();
 
-        //updateStatus("Reading provinces..");
+        updateStatus("Reading provinces..");
         Province.preReadProvinces(Game.map, blockedProvinces, this);
+
         updateStatus("Making grid..");
-        grid = new VoxelGrid(map.getWidth(), Options.cellMultiplier * 100, map,  Game.blockedProvinces, this);
+        grid = new VoxelGrid(map.getWidth(), Options.cellMultiplier * map.getWidth(), map, Game.blockedProvinces, this);
 
         updateStatus("Making countries..");
         Country.makeCountries(this);
+
         updateStatus("Making population..");
         CreateRandomPopulation();
+
         setStartResources();
         makeHelloMessage();
         updateStatus("Finishing generation..");
     }
     public Game()
     {
-        loadImages();
-        //generateMapImage();        
+        //loadImages();
+        generateMapImage();
         mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
         blockedProvinces = getProvinceBlockList();
-       
+
     }
     public Rect getMapBorders()
     {
@@ -140,7 +143,7 @@ public class Game : ThreadedJob
         colorToBlock = map.getRandomPixel();
         if (!res.Contains(colorToBlock))
             res.Add(colorToBlock);
-        
+
         if (Game.Random.Next(3) == 1)
         {
             colorToBlock = map.getRandomPixel();
@@ -169,7 +172,7 @@ public class Game : ThreadedJob
     {
         surrended = true;
     }
-    static private void deleteEdgeProvinces()
+    static private void deleteSomeProvinces()
     {
         //Province.allProvinces.FindAndDo(x => blockedProvinces.Contains(x.getColorID()), x => x.removeProvince());
         foreach (var item in Province.allProvinces.ToArray())
@@ -177,6 +180,10 @@ public class Game : ThreadedJob
             {
                 item.removeProvince();
             }
+        int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
+        for (int i = 0; i < howMuchLakes; i++)
+            Province.allProvinces.PickRandom().removeProvince();
+
         //for (int x = 0; x < mapImage.width; x++)
         //{
         //    removeProvince(x, 0);
@@ -197,17 +204,17 @@ public class Game : ThreadedJob
 
     }
 
-    static void removeProvince(int x, int y)
-    {
-        var toremove = Province.findProvince(map.GetPixel(x, y));
-        if (Province.allProvinces.Contains(toremove))
-        {
-            toremove.removeProvince();
-            //UnityEngine.Object.Destroy(toremove.rootGameObject);
+    //static void removeProvince(int x, int y)
+    //{
+    //    var toremove = Province.findProvince(map.GetPixel(x, y));
+    //    if (Province.allProvinces.Contains(toremove))
+    //    {
+    //        toremove.removeProvince();
+    //        //UnityEngine.Object.Destroy(toremove.rootGameObject);
 
-            //Province.allProvinces.Remove(toremove);
-        }
-    }
+    //        //Province.allProvinces.Remove(toremove);
+    //    }
+    //}
 
     static private void setStartResources()
     {
@@ -412,7 +419,7 @@ public class Game : ThreadedJob
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput, false);
     }
 
-     void makeProducts()
+    void makeProducts()
     {
         updateStatus("Making products..");
         new Product("Food", false, 0.4f);
@@ -596,8 +603,8 @@ public class Game : ThreadedJob
     static void generateMapImage()
     {
 
-        //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(160, 160);
+        Texture2D mapImage = new Texture2D(100, 100);
+        //Texture2D mapImage = new Texture2D(160, 160);
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
@@ -608,6 +615,7 @@ public class Game : ThreadedJob
             amountOfProvince = 12 + Game.Random.Next(8);
         amountOfProvince = 40 + Game.Random.Next(20);
         amountOfProvince = 160 + Game.Random.Next(20);
+        amountOfProvince = mapImage.width * mapImage.height / 150 + Game.Random.Next(5); 
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());

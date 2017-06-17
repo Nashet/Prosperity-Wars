@@ -10,7 +10,7 @@ public static class Options
     internal static readonly float maxPrice = 999.99f;
     internal static readonly int familySize = 5;
 
-    internal static readonly float cellMultiplier = 2f;
+    internal static readonly float cellMultiplier = 1f;
     internal static readonly float goldToCoinsConvert = 10f;
     internal static readonly float minWorkforceFullfillingToUpgradeFactory = 0.75f;
     internal static readonly Procent BuyInTimeFactoryUpgradeNeeds = new Procent(0.1f);
@@ -74,8 +74,10 @@ public static class Options
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly int ProvinceChanceToGetCore = 25;
     internal static readonly float CountryBadBoyWorldLimit = 0.25f;
-    internal static readonly int FactoryMediumTierLevels = 8+1;
-    internal static readonly int FactoryMediumHighLevels = 15+1;
+    internal static readonly int FactoryMediumTierLevels = 8 + 1;
+    internal static readonly int FactoryMediumHighLevels = 15 + 1;
     internal static readonly int CountryTimeToForgetBattle = 30;
-    internal static readonly int MapRedrawRate =20; // bigger number  - less often redraw
+    internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw
+    internal static readonly int ProvinceLakeShance = 20; // bigger - less lakes
+    internal static readonly int ProvincesPerCountry = 6;
 }

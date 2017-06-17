@@ -33,7 +33,7 @@ public class VoxelGrid
         this.game = game;
         this.resolution = resolution;
         gridSize = size;
-        voxelSize = size / resolution;
+        voxelSize = size / resolution;       
         voxels = new Voxel[resolution * resolution];
         voxelMaterials = new Material[voxels.Length];
 

@@ -50,15 +50,15 @@ public class MainCamera : MonoBehaviour
             float zCameraSpeed = 150f;
             float xMove = Input.GetAxis("Horizontal");
             if (xMove * xyCameraSpeed + position.x < mapBorders.x
-                || xMove * xyCameraSpeed + position.x > mapBorders.x + mapBorders.width)
+                || xMove * xyCameraSpeed + position.x >  mapBorders.width)
                 xMove = 0;
             float yMove = Input.GetAxis("Vertical");
             if (yMove * xyCameraSpeed + position.y < mapBorders.y
-                || yMove * xyCameraSpeed + position.y > mapBorders.y + mapBorders.height)
+                || yMove * xyCameraSpeed + position.y >  mapBorders.height)
                 yMove = 0;
             float zMove = Input.GetAxis("Mouse ScrollWheel");
             zMove = zMove * zCameraSpeed;
-            if (position.z + zMove > -35f
+            if (position.z + zMove > -70f
                 || position.z + zMove < -400f)
                 zMove = 0f;
             transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);

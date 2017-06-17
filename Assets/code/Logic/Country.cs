@@ -132,7 +132,7 @@ public class Country : Consumer
     {
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
-        int howMuchCountries = Province.allProvinces.Count / 6;
+        int howMuchCountries = Province.allProvinces.Count / Options.ProvincesPerCountry;
         howMuchCountries += Game.Random.Next(6);
         if (howMuchCountries < 7)
             howMuchCountries = 7;
