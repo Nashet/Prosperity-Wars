@@ -6,8 +6,8 @@ using System;
 public class VoxelGrid
 {
 
-    public int resolution;
-
+    //readonly int resolution;
+    readonly int width, height;
     public GameObject voxelPrefab;
 
     public VoxelGrid xNeighbor, yNeighbor, xyNeighbor;
@@ -28,13 +28,15 @@ public class VoxelGrid
 
     //private Color analyzingColor;
 
-    public VoxelGrid(int resolution, float size, MyTexture texture, List<Color> blockedProvinces, Game game)
+    public VoxelGrid(int width, int height, float size, MyTexture texture, List<Color> blockedProvinces, Game game)
     {
+        this.width = width;
+        this.height = height;
         this.game = game;
-        this.resolution = resolution;
+       // this.resolution = resolution;
         gridSize = size;
-        voxelSize = size / resolution;       
-        voxels = new Voxel[resolution * resolution];
+        voxelSize = size / width;       
+        voxels = new Voxel[width * height];
         voxelMaterials = new Material[voxels.Length];
 
         dummyX = new Voxel();
@@ -43,9 +45,9 @@ public class VoxelGrid
 
         //analyzingColor = color;
         Color curColor, x1y1Color, x2y1Color, x1y2Color, x2y2Color;
-        for (int i = 0, y = 0; y < resolution; y++)
+        for (int i = 0, y = 0; y < height; y++)
         {           
-            for (int x = 0; x < resolution; x++, i++)
+            for (int x = 0; x < width; x++, i++)
             {
                 curColor = texture.GetPixel(x, y);
                 //if (!blockedProvinces.Contains(curColor))
@@ -116,10 +118,10 @@ public class VoxelGrid
 
     private void TriangulateCellRows(Color colorID)
     {
-        int cells = resolution - 1;
-        for (int i = 0, y = 0; y < cells; y++, i++)
+        //int cells = resolution - 1;
+        for (int i = 0, y = 0; y < height -1; y++, i++)
         {
-            for (int x = 0; x < cells; x++, i++)
+            for (int x = 0; x < width -1; x++, i++)
                 //if (voxels[i].color != Color.black
                 //    || voxels[i + 1].color != Color.black
                 //    || voxels[i + resolution].color != Color.black
@@ -128,8 +130,8 @@ public class VoxelGrid
                     TriangulateCell(
                         voxels[i],
                         voxels[i + 1],
-                        voxels[i + resolution],
-                        voxels[i + resolution + 1], colorID);
+                        voxels[i + width],
+                        voxels[i + width + 1], colorID);
                 }
             if (xNeighbor != null)
             {
@@ -144,16 +146,17 @@ public class VoxelGrid
         dummySwap.BecomeXDummyOf(xNeighbor.voxels[i + 1], gridSize);
         dummyT = dummyX;
         dummyX = dummySwap;
-        TriangulateCell(voxels[i], dummyT, voxels[i + resolution], dummyX, colorID);
+        TriangulateCell(voxels[i], dummyT, voxels[i + width], dummyX, colorID);
     }
 
     private void TriangulateGapRow(Color colorID)
     {
         dummyY.BecomeYDummyOf(yNeighbor.voxels[0], gridSize);
-        int cells = resolution - 1;
-        int offset = cells * resolution;
+        //int cells = width - 1;
+        //int offset = cells * resolution;
+        int offset = (width - 1) * width;
 
-        for (int x = 0; x < cells; x++)
+        for (int x = 0; x < width - 1; x++)
         {
             Voxel dummySwap = dummyT;
             dummySwap.BecomeYDummyOf(yNeighbor.voxels[x + 1], gridSize);

@@ -65,7 +65,7 @@ public class Game : ThreadedJob
         Province.preReadProvinces(Game.map, blockedProvinces, this);
 
         updateStatus("Making grid..");
-        grid = new VoxelGrid(map.getWidth(), Options.cellMultiplier * map.getWidth(), map, Game.blockedProvinces, this);
+        grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.blockedProvinces, this);
 
         updateStatus("Making countries..");
         Country.makeCountries(this);
@@ -576,7 +576,7 @@ public class Game : ThreadedJob
     {
 
         //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(160, 160);
+        Texture2D mapImage = new Texture2D(200, 100);
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
