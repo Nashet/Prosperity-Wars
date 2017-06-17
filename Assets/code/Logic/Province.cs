@@ -33,6 +33,7 @@ public class Province
     readonly List<Country> cores = new List<Country>();
     List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
+
     public static void preReadProvinces(MyTexture image, List<Color> blockedProvinces, Game game)
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
@@ -56,10 +57,7 @@ public class Province
 
     internal static void generateUnityData(List<Color> blockedProvinces, VoxelGrid grid)
     {
-        //VoxelGrid grid = Game.mapObject.GetComponent<VoxelGrid>();
-
         allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
-
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
     {

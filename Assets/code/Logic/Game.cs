@@ -48,8 +48,9 @@ public class Game : ThreadedJob
         mapObject = GameObject.Find("MapObject");
 
         Province.generateUnityData(blockedProvinces, grid);
-        Country.setUnityAPI();
         deleteSomeProvinces();
+        Country.setUnityAPI();
+        
         blockedProvinces = null;
         grid = null;
         map = null;
