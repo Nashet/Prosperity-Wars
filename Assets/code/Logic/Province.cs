@@ -31,10 +31,10 @@ public class Province
     Product resource;
     readonly internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
-    List<EdgeHelpers.Edge> edges;
+    //List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
 
-    public static void preReadProvinces(MyTexture image, List<Color> blockedProvinces, Game game)
+    public static void preReadProvinces(MyTexture image, Game game)
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
         Color currentProvinceColor = image.GetPixel(0, 0);
@@ -43,7 +43,7 @@ public class Province
             for (int i = 0; i < image.getWidth(); i++)
             {
                 if (currentProvinceColor != image.GetPixel(i, j)
-                    // && !blockedProvinces.Contains(currentProvinceColor)
+                     //&& !blockedProvinces.Contains(currentProvinceColor)
                     && !Province.isProvinceCreated(currentProvinceColor))
                 {
                     allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
@@ -51,26 +51,18 @@ public class Province
 
                 }
                 currentProvinceColor = image.GetPixel(i, j);
-                game.updateStatus("Reading provinces.. x = " + i + " y = " + j);
+                //game.updateStatus("Reading provinces.. x = " + i + " y = " + j);
             }
     }
 
-    internal static void generateUnityData(List<Color> blockedProvinces, VoxelGrid grid)
+    internal static void generateUnityData( VoxelGrid grid)
     {
         allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
     }
-    void setUnityAPI(MeshStructure meshStructure, Dictionary<Color, MeshStructure> neighborBorders)
+    void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
     {
         this.meshStructure = meshStructure;
-        //allProducers = getProducers();
-        //resource = inresource;
-        //colorID = icolorID;
-        //landMesh = imesh;
-        //name = iname;
-        // meshFilter = imeshFilter;
-        //ID = iID;
-        //rootGameObject = igameObject;
-        //meshRenderer = imeshRenderer;
+      
 
         //spawn object
         rootGameObject = new GameObject(string.Format("{0}", getID()));
@@ -93,13 +85,13 @@ public class Province
         landMesh.name = getID().ToString();
 
         meshRenderer.material.shader = Shader.Find("Standard");
-        //meshRenderer.material.color = colorID;
+      
         meshRenderer.material.color = color;
 
         MeshCollider groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
         groundMeshCollider.sharedMesh = landMesh;     
 
-        //fertileSoil = 10000;
+        
         setProvinceCenter();
         SetLabel();
 
@@ -108,7 +100,7 @@ public class Province
         foreach (var border in neighborBorders)
         {
             //each color is one neighbor (non repeating)
-            var neighbor = Province.findProvince(border.Key);
+            var neighbor = border.Key;
             neighbors.Add(neighbor);
 
             GameObject borderObject = new GameObject("Border with " + neighbor.ToString());
@@ -158,34 +150,21 @@ public class Province
     }
     //empty province constructor
     public Province(string iname, int iID, Color icolorID, Product inresource)
-    {
-        //this.meshStructure = meshStructure;
-        allProducers = getProducers();
+    {             
         resource = inresource;
-        colorID = icolorID;
-        //landMesh = imesh; 
+        colorID = icolorID;     
         name = iname;
-        //meshFilter = imeshFilter;
+        
         ID = iID;
-        //rootGameObject = igameObject;
-        //meshRenderer = imeshRenderer;
 
         fertileSoil = 10000;
-        //setProvinceCenter();
-        //SetLabel();
-    }
-   
-    public void removeProvince()
-    {
-        UnityEngine.Object.Destroy(rootGameObject);
-        neighbors.ForEach(x => x.neighbors.Remove(this));
-        Province.allProvinces.Remove(this);
+     
     }   
-   
+    
     /// <summary>
     /// returns 
     /// </summary>
-    /// <returns></returns>
+    
     internal Country getCountry()
     {
         //if (owner == null)
@@ -200,9 +179,10 @@ public class Province
     /// </summary>    
     public void InitialOwner(Country taker)
     {
-        if (this.getCountry() != null)
-            if (this.getCountry().ownedProvinces != null)
-                this.getCountry().ownedProvinces.Remove(this);
+        // in case if province already have owner..
+        //if (this.getCountry() != null)
+        //    if (this.getCountry().ownedProvinces != null)
+        //        this.getCountry().ownedProvinces.Remove(this);
         owner = taker;
 
         if (taker.ownedProvinces == null)
@@ -244,7 +224,7 @@ public class Province
     {
         Country oldCountry = getCountry();
         //refuse loans to old country bank
-        foreach (var producer in allProducers)
+        foreach (var producer in getProducers())
         {
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
@@ -319,8 +299,8 @@ public class Province
         return neighbors.FindAll(predicate);
 
     }
-    internal IEnumerable<Producer> allProducers;
-    IEnumerable<Producer> getProducers()
+    
+    public IEnumerable<Producer> getProducers()
     //public System.Collections.IEnumerator GetEnumerator()
     {
         foreach (Factory f in allFactories)
@@ -410,13 +390,7 @@ public class Province
                 return true;
         return false;
     }
-    public static Province findProvince(Color color)
-    {
-        foreach (Province anyProvince in allProvinces)
-            if (anyProvince.colorID == color)
-                return anyProvince;
-        return null;
-    }
+    
     public List<PopUnit> getAllPopUnits(PopType ipopType)
     {
         List<PopUnit> result = new List<PopUnit>();
@@ -427,8 +401,14 @@ public class Province
     }
 
 
-
-    internal static Province findByID(int number)
+    public static Province find(Color color)
+    {
+        foreach (Province anyProvince in allProvinces)
+            if (anyProvince.colorID == color)
+                return anyProvince;
+        return null;
+    }
+    internal static Province find(int number)
     {
         foreach (var pro in allProvinces)
             if (pro.ID == number)

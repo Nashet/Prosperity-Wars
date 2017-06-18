@@ -185,7 +185,7 @@ public class MainCamera : MonoBehaviour
 
         if (number >= 0)
         {
-            if (Province.findByID(number) == Game.selectedProvince)// same province clicked, hide selection
+            if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
             {
                 //Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
                 Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
@@ -200,7 +200,7 @@ public class MainCamera : MonoBehaviour
                 //Province.findByID(number).updateColor(Color.gray);
 
                 //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
-                Game.selectedProvince = Province.findByID(number);
+                Game.selectedProvince = Province.find(number);
                 Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                 provincePanel.show();
                 if (buildPanel.isActiveAndEnabled)

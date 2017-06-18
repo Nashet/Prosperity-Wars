@@ -63,20 +63,22 @@ public class Product
     }
     internal static Product getRandomResource(bool ignoreGold)
     {
-        int random = Game.Random.Next(resourceCounter);
-        int counter = 0;
-        foreach (Product pro in Product.allProducts)
-        {
-            if (pro.isResource())
-            {
-                if (counter == random)
-                    return pro;
-                counter++;
-            }
-        }
+        //int random = Game.Random.Next(resourceCounter);
+        //int counter = 0;
+        //foreach (Product pro in Product.allProducts)
+        //{
+        //    if (pro.isResource())
+        //    {
+        //        if (counter == random)
+        //            return pro;
+        //        counter++;
+        //    }
+        //}
         if (ignoreGold)
             return Product.Wood;
-        return null;
+        return Product.allProducts.PickRandom(x=>x.isResource());
+        
+        //return null;
     }
 
     public static Product findByName(string name)

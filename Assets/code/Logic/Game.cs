@@ -36,7 +36,7 @@ public class Game : ThreadedJob
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;    
     private Rect mapBorders;
 
-    internal static List<Color> blockedProvinces;
+    internal static List<Province> seaProvinces;
     static VoxelGrid grid;
     public static void setUnityAPI()
     {
@@ -47,26 +47,31 @@ public class Game : ThreadedJob
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
         mapObject = GameObject.Find("MapObject");
 
-        Province.generateUnityData(blockedProvinces, grid);
-        deleteSomeProvinces();
+      
+        Province.generateUnityData( grid);
+        
         Country.setUnityAPI();
         
-        blockedProvinces = null;
+        seaProvinces = null;
         grid = null;
         map = null;
     }
     public void initialize()
     {
+        mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
+       
+
         makeProducts();
         market.initialize();
         makeFactoryTypes();
         makePopTypes();
 
         updateStatus("Reading provinces..");
-        Province.preReadProvinces(Game.map, blockedProvinces, this);
-
+        Province.preReadProvinces(Game.map, this);
+        seaProvinces = getSeaProvinces();
+        deleteSomeProvinces();
         updateStatus("Making grid..");
-        grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.blockedProvinces, this);
+        grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.seaProvinces, this);
 
         updateStatus("Making countries..");
         Country.makeCountries(this);
@@ -82,51 +87,50 @@ public class Game : ThreadedJob
     {
         //loadImages();
         generateMapImage();
-        mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
-        blockedProvinces = getProvinceBlockList();
+       
 
     }
     public Rect getMapBorders()
     {
         return mapBorders;
     }
-    List<Color> getProvinceBlockList()
+    List<Province> getSeaProvinces()
     {
-        List<Color> res = new List<Color>();
-        Color colorToBlock;
+        List<Province> res = new List<Province>();
+        Province seaProvince;
         for (int x = 0; x < map.getWidth(); x++)
         {
-            colorToBlock = map.GetPixel(x, 0);
-            if (!res.Contains(colorToBlock))
-                res.Add(colorToBlock);
-            colorToBlock = map.GetPixel(x, map.getHeight() - 1);
-            if (!res.Contains(colorToBlock))
-                res.Add(colorToBlock);
+            seaProvince = Province.find( map.GetPixel(x, 0));
+            if (!res.Contains(seaProvince))
+                res.Add(seaProvince);
+            seaProvince = Province.find(map.GetPixel(x, map.getHeight() - 1));
+            if (!res.Contains(seaProvince))
+                res.Add(seaProvince);
         }
         for (int y = 0; y < map.getHeight(); y++)
         {
-            colorToBlock = map.GetPixel(0, y);
-            if (!res.Contains(colorToBlock))
-                res.Add(colorToBlock);
-            colorToBlock = map.GetPixel(map.getWidth() - 1, y);
-            if (!res.Contains(colorToBlock))
-                res.Add(colorToBlock);
+            seaProvince = Province.find(map.GetPixel(0, y));
+            if (!res.Contains(seaProvince))
+                res.Add(seaProvince);
+            seaProvince = Province.find(map.GetPixel(map.getWidth() - 1, y));
+            if (!res.Contains(seaProvince))
+                res.Add(seaProvince);
         }
 
-        colorToBlock = map.getRandomPixel();
-        if (!res.Contains(colorToBlock))
-            res.Add(colorToBlock);
+        seaProvince = Province.find(map.getRandomPixel());
+        if (!res.Contains(seaProvince))
+            res.Add(seaProvince);
 
         if (Game.Random.Next(3) == 1)
         {
-            colorToBlock = map.getRandomPixel();
-            if (!res.Contains(colorToBlock))
-                res.Add(colorToBlock);
+            seaProvince = Province.find(map.getRandomPixel());
+            if (!res.Contains(seaProvince))
+                res.Add(seaProvince);
             if (Game.Random.Next(20) == 1)
             {
-                colorToBlock = map.getRandomPixel();
-                if (!res.Contains(colorToBlock))
-                    res.Add(colorToBlock);
+                seaProvince = Province.find(map.getRandomPixel());
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
             }
         }
         return res;
@@ -149,31 +153,14 @@ public class Game : ThreadedJob
     {
         //Province.allProvinces.FindAndDo(x => blockedProvinces.Contains(x.getColorID()), x => x.removeProvince());
         foreach (var item in Province.allProvinces.ToArray())
-            if (blockedProvinces.Contains(item.getColorID()))
+            if (seaProvinces.Contains(item))
             {
-                item.removeProvince();
+                Province.allProvinces.Remove(item);
+                //item.removeProvince();
             }
         int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
         for (int i = 0; i < howMuchLakes; i++)
-            Province.allProvinces.PickRandom().removeProvince();
-
-        //for (int x = 0; x < mapImage.width; x++)
-        //{
-        //    removeProvince(x, 0);
-        //    removeProvince(x, mapImage.height - 1);
-        //}
-        //for (int y = 0; y < mapImage.height; y++)
-        //{
-        //    removeProvince(0, y);
-        //    removeProvince(mapImage.width - 1, y);
-        //}
-        //Province.allProvinces.PickRandom().removeProvince();
-        //if (Game.Random.Next(3) == 1)
-        //{
-        //    Province.allProvinces.PickRandom().removeProvince();
-        //    if (Game.Random.Next(20) == 1)
-        //        Province.allProvinces.PickRandom().removeProvince();
-        //}
+            Province.allProvinces.Remove(Province.allProvinces.PickRandom());     
 
     }
 
@@ -430,7 +417,7 @@ public class Game : ThreadedJob
             allMoney.add(country.bank.getReservs());
             foreach (Province pr in country.ownedProvinces)
             {
-                foreach (var factory in pr.allProducers)
+                foreach (var factory in pr.getProducers())
                     allMoney.add(factory.cash);
             }
         }
@@ -860,7 +847,7 @@ public class Game : ThreadedJob
             {
                 province.BalanceEmployableWorkForce();
                 {
-                    foreach (var item in province.allProducers)
+                    foreach (var item in province.getProducers())
                         item.setStatisticToZero();
 
                     //    foreach (PopUnit pop in province.allPopUnits)

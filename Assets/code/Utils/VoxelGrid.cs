@@ -19,7 +19,7 @@ public class VoxelGrid
     private Material[] voxelMaterials;
 
     private MeshStructure mesh;
-    private Dictionary<Color, MeshStructure> bordersMeshes;
+    private Dictionary<Province, MeshStructure> bordersMeshes;
     //private List<Vector3> vertices;
     //private List<int> triangles;
 
@@ -28,14 +28,14 @@ public class VoxelGrid
 
     //private Color analyzingColor;
 
-    public VoxelGrid(int width, int height, float size, MyTexture texture, List<Color> blockedProvinces, Game game)
+    public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, Game game)
     {
         this.width = width;
         this.height = height;
         this.game = game;
-       // this.resolution = resolution;
+        // this.resolution = resolution;
         gridSize = size;
-        voxelSize = size / width;       
+        voxelSize = size / width;
         voxels = new Voxel[width * height];
         voxelMaterials = new Material[voxels.Length];
 
@@ -46,7 +46,7 @@ public class VoxelGrid
         //analyzingColor = color;
         Color curColor, x1y1Color, x2y1Color, x1y2Color, x2y2Color;
         for (int i = 0, y = 0; y < height; y++)
-        {           
+        {
             for (int x = 0; x < width; x++, i++)
             {
                 curColor = texture.GetPixel(x, y);
@@ -79,7 +79,7 @@ public class VoxelGrid
     public MeshStructure getMesh(Color colorID)
     {
         mesh = new MeshStructure();
-        bordersMeshes = new Dictionary<Color, MeshStructure>();
+        bordersMeshes = new Dictionary<Province, MeshStructure>();
         game.updateStatus("Triangulation .." + colorID);
         Triangulate(colorID);
         return mesh;
@@ -119,20 +119,20 @@ public class VoxelGrid
     private void TriangulateCellRows(Color colorID)
     {
         //int cells = resolution - 1;
-        for (int i = 0, y = 0; y < height -1; y++, i++)
+        for (int i = 0, y = 0; y < height - 1; y++, i++)
         {
-            for (int x = 0; x < width -1; x++, i++)
-                //if (voxels[i].color != Color.black
-                //    || voxels[i + 1].color != Color.black
-                //    || voxels[i + resolution].color != Color.black
-                //    || voxels[i + resolution + 1].color != Color.black)
-                {
-                    TriangulateCell(
-                        voxels[i],
-                        voxels[i + 1],
-                        voxels[i + width],
-                        voxels[i + width + 1], colorID);
-                }
+            for (int x = 0; x < width - 1; x++, i++)
+            //if (voxels[i].color != Color.black
+            //    || voxels[i + 1].color != Color.black
+            //    || voxels[i + resolution].color != Color.black
+            //    || voxels[i + resolution + 1].color != Color.black)
+            {
+                TriangulateCell(
+                    voxels[i],
+                    voxels[i + 1],
+                    voxels[i + width],
+                    voxels[i + width + 1], colorID);
+            }
             if (xNeighbor != null)
             {
                 TriangulateGapCell(i, colorID);
@@ -176,18 +176,27 @@ public class VoxelGrid
         return !(a.color == b.color && a.color == c.color && a.color == d.color);
     }
 
-    private MeshStructure findMesh(Color b)
+    private MeshStructure findBorderMesh(Color b)
     {
-        MeshStructure border;
-        if (!bordersMeshes.TryGetValue(b, out border))
-        {
-            border = new MeshStructure();
-            bordersMeshes.Add(b, border);
-        }
-        return border;
+        var province = Province.find(b);
+        if (province != null)
+            //if (Game.seaProvinces.Contains(province))
+            //    return null;
+            //else
+            {
+                MeshStructure border;
+                if (!bordersMeshes.TryGetValue(province, out border))
+                {
+                    border = new MeshStructure();
+                    bordersMeshes.Add(province, border);
+                }
+                return border;
+            }
+        else
+            return null;
     }
     private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
-    {    
+    {
 
 
         //bool isBorder = isBorderCell(a, b, c, d);
@@ -223,11 +232,11 @@ public class VoxelGrid
                     var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
                     AddTriangle(a.yEdgePosition, centre, a.xEdgePosition);
                     //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, centre);
-                    AddBorderQuad2(findMesh(b.color),  centre, a.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, centre);
+                    AddBorderQuad2(findBorderMesh(b.color), centre, a.xEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(d.color), a.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(d.color), a.yEdgePosition, a.xEdgePosition);
 
                 break;
             case 2:
@@ -238,12 +247,12 @@ public class VoxelGrid
                    )//&& c.color == analyzingColor)
                 {
                     var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
-                    AddTriangle(a.xEdgePosition, centre, b.yEdgePosition);                    
-                    AddBorderQuad2(findMesh(a.color), a.xEdgePosition, centre);
-                    AddBorderQuad2(findMesh(d.color), centre, b.yEdgePosition);
+                    AddTriangle(a.xEdgePosition, centre, b.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, centre);
+                    AddBorderQuad2(findBorderMesh(d.color), centre, b.yEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(c.color), a.xEdgePosition, b.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(c.color), a.xEdgePosition, b.yEdgePosition);
 
                 break;
             case 3:
@@ -251,11 +260,11 @@ public class VoxelGrid
                 if (is3ColorCornerDown(a, b, c, d) && b.color == analyzingColor)
                 {
                     AddTriangle(b.yEdgePosition, a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, b.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, b.yEdgePosition);
 
                 break;
             case 4:
@@ -268,12 +277,12 @@ public class VoxelGrid
                     var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
                     AddTriangle(c.xEdgePosition, centre, a.yEdgePosition);
                     //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(a.color), centre, a.yEdgePosition);
-                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, centre);
+                    AddBorderQuad2(findBorderMesh(a.color), centre, a.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, centre);
 
                 }
                 else
-                    AddBorderQuad2(findMesh(b.color), c.xEdgePosition, a.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(b.color), c.xEdgePosition, a.yEdgePosition);
 
                 break;
             case 5:
@@ -282,23 +291,23 @@ public class VoxelGrid
                 if (is3ColorCornerLeft(a, b, c, d) && c.color == analyzingColor)
                 {
                     AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
-                    AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, a.xEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(d.color), c.xEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, a.xEdgePosition);
                 break;
             case 6:
                 AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
                 AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
                 AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
 
-                AddBorderQuad2(findMesh(d.color), a.xEdgePosition, a.yEdgePosition);
-                AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                AddBorderQuad2(findBorderMesh(d.color), a.xEdgePosition, a.yEdgePosition);
+                AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
                 break;
             case 7:
                 AddPentagon(a.position, c.position, c.xEdgePosition, b.yEdgePosition, b.position);
-                AddBorderQuad2(findMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
 
                 break;
             case 8:
@@ -310,13 +319,13 @@ public class VoxelGrid
                 {
                     //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
                     var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
-                    AddTriangle(c.xEdgePosition,  b.yEdgePosition, centre);
+                    AddTriangle(c.xEdgePosition, b.yEdgePosition, centre);
                     //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(b.color), b.yEdgePosition, centre);
-                    AddBorderQuad2(findMesh(c.color), centre, c.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, centre);
+                    AddBorderQuad2(findBorderMesh(c.color), centre, c.xEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(a.color), b.yEdgePosition, c.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(a.color), b.yEdgePosition, c.xEdgePosition);
 
                 break;
             case 9:
@@ -324,23 +333,23 @@ public class VoxelGrid
                 AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
                 //duplicates quad in 6:
                 //AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
-                AddBorderQuad2(findMesh(c.color), a.yEdgePosition, a.xEdgePosition);
-                AddBorderQuad2(findMesh(c.color), b.yEdgePosition, c.xEdgePosition);
+                AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, a.xEdgePosition);
+                AddBorderQuad2(findBorderMesh(c.color), b.yEdgePosition, c.xEdgePosition);
                 break;
             case 10:
                 AddQuad(mesh, a.xEdgePosition, c.xEdgePosition, d.position, b.position);
                 if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
                 {
                     AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, a.yEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(c.color), a.xEdgePosition, c.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(c.color), a.xEdgePosition, c.xEdgePosition);
                 break;
             case 11:
                 AddPentagon(b.position, a.position, a.yEdgePosition, c.xEdgePosition, d.position);
-                AddBorderQuad2(findMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, c.xEdgePosition);
 
                 break;
             case 12:
@@ -348,21 +357,21 @@ public class VoxelGrid
                 if (is3ColorCornerUp(a, b, c, d) && c.color == analyzingColor)
                 {
                     AddTriangle(a.yEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                    AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, a.yEdgePosition);
                 }
                 else
-                    AddBorderQuad2(findMesh(a.color), b.yEdgePosition, a.yEdgePosition);
+                    AddBorderQuad2(findBorderMesh(a.color), b.yEdgePosition, a.yEdgePosition);
 
                 break;
             case 13:
                 AddPentagon(c.position, d.position, b.yEdgePosition, a.xEdgePosition, a.position);
-                AddBorderQuad2(findMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, a.xEdgePosition);
 
                 break;
             case 14:
                 AddPentagon(d.position, b.position, a.xEdgePosition, a.yEdgePosition, c.position);
-                AddBorderQuad2(findMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, a.yEdgePosition);
 
                 break;
             case 15:
@@ -430,17 +439,22 @@ public class VoxelGrid
     }
     private void AddBorderQuad2(MeshStructure targetMesh, Vector2 a, Vector2 b)
     {
-        //TODO put to constant
-        float borderWidth = 0.4f;
-        float borderWidth2 = -0.4f;
+        if (targetMesh != null)
+        {
+            //TODO put to constant
+            float borderWidth = 0.4f;
+            float borderWidth2 = -0.4f;
 
-        AddBorderQuad(targetMesh,
-(Vector3)a,
-MeshExtensions.makeArrow(a, b, borderWidth),
-(Vector3)b,
-MeshExtensions.makeArrow(b, a, borderWidth2),
-true
-);
+            AddBorderQuad(targetMesh,
+    (Vector3)a,
+    MeshExtensions.makeArrow(a, b, borderWidth),
+    (Vector3)b,
+    MeshExtensions.makeArrow(b, a, borderWidth2),
+    true
+    );
+        }
+        else
+            ;
     }
     private void AddBorderQuad(MeshStructure targetMesh, Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
     {
@@ -508,7 +522,7 @@ true
         }
     }
 
-    internal Dictionary<Color, MeshStructure> getBorders()
+    internal Dictionary<Province, MeshStructure> getBorders()
     {
         return bordersMeshes;
     }

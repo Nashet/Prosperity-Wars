@@ -78,6 +78,6 @@ public static class Options
     internal static readonly int FactoryMediumHighLevels = 15 + 1;
     internal static readonly int CountryTimeToForgetBattle = 30;
     internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw
-    internal static readonly int ProvinceLakeShance = 20; // bigger - less lakes
+    internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
     internal static readonly int ProvincesPerCountry = 6;
 }

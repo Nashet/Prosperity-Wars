@@ -94,7 +94,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.allProducers)
+                    foreach (Producer producer in province.getProducers())
                     {
                         //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
@@ -118,7 +118,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                 {
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.allProducers)
+                        foreach (Producer producer in province.getProducers())
                         {
                             //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
@@ -171,7 +171,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.allProducers)
+                    foreach (Producer producer in province.getProducers())
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
@@ -195,7 +195,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                 {
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.allProducers)
+                        foreach (Producer producer in province.getProducers())
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
@@ -271,7 +271,7 @@ public class Market : Agent//: PrimitiveStorageSet
         {
             foreach (Country country in Country.getExisting())
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.allProducers)
+                    foreach (Producer producer in province.getProducers())
                         if (producer.sentToMarket.getProduct() == pro) //sup.getProduct()
                             result += producer.sentToMarket.get();
             return result;
@@ -284,7 +284,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 result = 0;
                 foreach (Country country in Country.getExisting())
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.allProducers)
+                        foreach (Producer producer in province.getProducers())
                             if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.sentToMarket.get();
 
@@ -311,7 +311,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
                 foreach (Province province in country.ownedProvinces)
                 {
-                    foreach (Producer producer in province.allProducers)
+                    foreach (Producer producer in province.getProducers())
                     {
                         if (producer.gainGoodsThisTurn.getProduct() == pro) //sup.getProduct()
                             result += producer.gainGoodsThisTurn.get();
@@ -328,7 +328,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                     foreach (Province province in country.ownedProvinces)
                     {
-                        foreach (Producer producer in province.allProducers)
+                        foreach (Producer producer in province.getProducers())
                         {
                             if (producer.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.gainGoodsThisTurn.get();
