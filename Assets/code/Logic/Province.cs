@@ -395,7 +395,7 @@ public class Province
     {
         List<PopUnit> result = new List<PopUnit>();
         foreach (PopUnit pop in allPopUnits)
-            if (pop.type == ipopType)
+            if (pop.popType == ipopType)
                 result.Add(pop);
         return result;
     }
@@ -421,7 +421,7 @@ public class Province
         List<PopUnit> list = getAllPopUnits(ipopType);
         int result = 0;
         foreach (PopUnit pop in list)
-            if (pop.type == ipopType)
+            if (pop.popType == ipopType)
                 result += pop.getPopulation();
         return result;
     }
@@ -452,7 +452,7 @@ public class Province
     public PopUnit getSimilarPopUnit(PopUnit target)
     {
         foreach (PopUnit pop in allPopUnits)
-            if (pop.type == target.type && pop.culture == target.culture)
+            if (pop.popType == target.popType && pop.culture == target.culture)
                 return pop;
         return null;
     }
@@ -597,7 +597,7 @@ public class Province
         int calculatedBase = 0;
         foreach (var item in allPopUnits)
         {
-            if (item.type.canBeUnemployed())
+            if (item.popType.canBeUnemployed())
                 result.addPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
             calculatedBase += item.getPopulation();
         }
@@ -678,7 +678,7 @@ public class Province
     {
         float usedLand = 0f;
         foreach (PopUnit pop in allPopUnits)
-            switch (pop.type.type)
+            switch (pop.popType.type)
             {
                 case PopType.PopTypes.Tribemen:
                     usedLand += pop.getPopulation() * Options.PopMinLandForTribemen;
@@ -776,7 +776,7 @@ public class Province
             if (popToMerge != null)
             {
                 PopUnit targetPop = this.getBiggerPop(x => x.isStateCulture() == popToMerge.isStateCulture()
-                   && x.type == popToMerge.type
+                   && x.popType == popToMerge.popType
                    && x != popToMerge);
                 if (targetPop != null)
                     targetPop.mergeIn(popToMerge);
@@ -808,7 +808,7 @@ public class Province
         int result = 0;
         foreach (PopUnit pop in allPopUnits)
         {
-            if (pop.type == type)
+            if (pop.popType == type)
             {
                 result++;
                 if (result == 2)

@@ -92,7 +92,7 @@ public class Corps
         Value multiplier = new Value(this.getSize() / 1000f);
 
         List<Storage> result = new List<Storage>();
-        foreach (Storage next in origin.type.getMilitaryNeedsPer1000())
+        foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
             if (next.getProduct().isInvented(country))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
@@ -117,11 +117,11 @@ public class Corps
     //}
     internal float getStrenght(Army army)
     {
-        return getSize() * origin.type.getStrenght() * army.getStrenghtModifier();
+        return getSize() * origin.popType.getStrenght() * army.getStrenghtModifier();
     }
     public PopType getType()
     {
-        return origin.type;
+        return origin.popType;
     }
     public int getSize()
     {

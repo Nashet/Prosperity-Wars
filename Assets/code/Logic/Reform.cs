@@ -229,7 +229,7 @@ public class Economy : AbstractReform
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
-            if (pop.type == PopType.capitalists)
+            if (pop.popType == PopType.capitalists)
             {
                 //possitive - more liberal
                 int change = ID - pop.getCountry().economy.status.ID;
@@ -353,7 +353,7 @@ public class Serfdom : AbstractReform
         {
             Procent result;
             int change = ID - pop.getCountry().serfdom.status.ID; //positive - more liberal
-            if (pop.type == PopType.aristocrats)
+            if (pop.popType == PopType.aristocrats)
             {
                 if (change > 0)
                     result = new Procent(0f);
@@ -518,7 +518,7 @@ public class MinimalWage : AbstractReform
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
-            if (pop.type == PopType.workers)
+            if (pop.popType == PopType.workers)
             {
                 //positive - reform will be better for worker, [-5..+5]
                 int change = ID - pop.getCountry().minimalWage.status.ID;
@@ -529,7 +529,7 @@ public class MinimalWage : AbstractReform
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
                     result = new Procent(0f);
             }
-            else if (pop.type.isPoorStrata())
+            else if (pop.popType.isPoorStrata())
                 result = new Procent(0.5f);
             else // rich strata
             {
@@ -687,7 +687,7 @@ public class UnemploymentSubsidies : AbstractReform
             Procent result;
             //positive - higher subsidies
             int change = ID - pop.getCountry().unemploymentSubsidies.status.ID;
-            if (pop.type.isPoorStrata())
+            if (pop.popType.isPoorStrata())
             {                
                 if (change > 0)
                     result = new Procent(1f);
@@ -800,7 +800,7 @@ public class TaxationForPoor : AbstractReform
             Procent result;
             //positive mean higher tax
             int change = ID - pop.getCountry().taxationForPoor.status.ID;
-            if (pop.type.isPoorStrata())
+            if (pop.popType.isPoorStrata())
             {
                 if (change > 0)
                     result = new Procent(0f);
@@ -878,7 +878,7 @@ public class TaxationForRich : AbstractReform
         {
             Procent result;
             int change = ID - pop.getCountry().taxationForRich.status.ID;//positive mean higher tax
-            if (pop.type.isRichStrata())
+            if (pop.popType.isRichStrata())
             {
                 if (change > 0)
                     result = new Procent(0f);

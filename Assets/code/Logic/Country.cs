@@ -621,7 +621,7 @@ public class Country : Consumer
         float result = 0f;
         foreach (var pr in ownedProvinces)
             foreach (var po in pr.allPopUnits)
-                if (po.type.canMobilize())
+                if (po.popType.canMobilize())
                     result += po.howMuchCanMobilize();
         return result;
     }
@@ -640,7 +640,7 @@ public class Country : Consumer
                     result.add(Game.market.getCost(prod.gainGoodsThisTurn).get() - Game.market.getCost(prod.consumedTotal).get());
 
             foreach (var pop in prov.allPopUnits)
-                if (pop.type.isProducer())
+                if (pop.popType.isProducer())
                     if (pop.gainGoodsThisTurn.get() > 0f)
                         result.add(Game.market.getCost(pop.gainGoodsThisTurn));
         }

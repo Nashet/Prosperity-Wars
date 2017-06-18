@@ -48,7 +48,7 @@ public class GeneralStaff
         {
             Army newArmy = new Army(province.getCountry());
             foreach (var item in province.allPopUnits)
-                if (item.type.canMobilize() && item.howMuchCanMobilize() > 0)
+                if (item.popType.canMobilize() && item.howMuchCanMobilize() > 0)
                     newArmy.add(item.mobilize());
             //if (newArmy.getSize() > 0)
             //    addArmy(newArmy);
@@ -410,10 +410,10 @@ public class Army
             //    test += next.Value.getSize();
             //else
             //    res.Add(next.Key.type, next.Value.getSize());
-            if (res.ContainsKey(next.Key.type))
-                res[next.Key.type] += next.Value.getSize();
+            if (res.ContainsKey(next.Key.popType))
+                res[next.Key.popType] += next.Value.getSize();
             else
-                res.Add(next.Key.type, next.Value.getSize());
+                res.Add(next.Key.popType, next.Value.getSize());
         }
         return res;
     }
@@ -618,13 +618,17 @@ public class Army
             float totalStrenght = getStrenght();
             if (totalStrenght > 0f)
                 foreach (var corp in personal)
-                    if (corp.Value.getType().getStrenght() * getStrenghtModifier() > 0)//(corp.Value.getType().getStrenght() > 0f)
+                {
+                    var strenghtModifier = getStrenghtModifier();
+                    var corpsStrenght = corp.Value.getType().getStrenght();
+                    if (corpsStrenght * strenghtModifier > 0)//(corp.Value.getType().getStrenght() > 0f)
                     {
                         streghtLoss = corp.Value.getStrenght(this) * (lossStrenght / totalStrenght);
-                        menLoss = Mathf.RoundToInt(streghtLoss / (corp.Value.getType().getStrenght() * getStrenghtModifier())); // corp.Value.getType().getStrenght());
+                        menLoss = Mathf.RoundToInt(streghtLoss / (corpsStrenght * strenghtModifier)); // corp.Value.getType().getStrenght());
 
                         totalMenLoss += corp.Value.TakeLoss(menLoss);
                     }
+                }
         }
         return totalMenLoss;
     }

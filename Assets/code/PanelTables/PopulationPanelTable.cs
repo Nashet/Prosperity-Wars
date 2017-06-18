@@ -80,7 +80,7 @@ public class PopulationPanelTable : MyTable
             {               
                 //AddButton(Convert.ToString(counter), record);
                 // Adding PopType
-                AddButton(record.type.ToString(), record);
+                AddButton(record.popType.ToString(), record);
                 ////Adding population
                 AddButton(System.Convert.ToString(record.getPopulation()), record);
                 ////Adding culture

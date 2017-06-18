@@ -9,9 +9,9 @@ public class Game : ThreadedJob
     //static Texture2D mapImage;
     static MyTexture map;
     public static GameObject mapObject;
-    internal static GameObject r3dTextPrefab;   
+    internal static GameObject r3dTextPrefab;
 
-    public static Country Player;    
+    public static Country Player;
 
     static bool haveToRunSimulation;
     static bool haveToStepSimulation;
@@ -33,33 +33,20 @@ public class Game : ThreadedJob
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended = true;
-    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;    
-    private Rect mapBorders;
+    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
+    private static Rect mapBorders;
 
     internal static List<Province> seaProvinces;
     static VoxelGrid grid;
-    public static void setUnityAPI()
-    {
-        // Assigns a material named "Assets/Resources/..." to the object.
-        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-        selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-        mapObject = GameObject.Find("MapObject");
 
-      
-        Province.generateUnityData( grid);
-        
-        Country.setUnityAPI();
-        
-        seaProvinces = null;
-        grid = null;
-        map = null;
+    public Game()
+    {
+        //loadImages();
+        generateMapImage();
     }
     public void initialize()
     {
         mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
-       
 
         makeProducts();
         market.initialize();
@@ -83,24 +70,32 @@ public class Game : ThreadedJob
         makeHelloMessage();
         updateStatus("Finishing generation..");
     }
-    public Game()
+    public static void setUnityAPI()
     {
-        //loadImages();
-        generateMapImage();
-       
+        // Assigns a material named "Assets/Resources/..." to the object.
+        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
+        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+        selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
+        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
 
+        mapObject = GameObject.Find("MapObject");
+        Province.generateUnityData(grid);
+        Country.setUnityAPI();
+        seaProvinces = null;
+        grid = null;
+        map = null;
     }
     public Rect getMapBorders()
     {
         return mapBorders;
     }
-    List<Province> getSeaProvinces()
+    static List<Province> getSeaProvinces()
     {
         List<Province> res = new List<Province>();
         Province seaProvince;
         for (int x = 0; x < map.getWidth(); x++)
         {
-            seaProvince = Province.find( map.GetPixel(x, 0));
+            seaProvince = Province.find(map.GetPixel(x, 0));
             if (!res.Contains(seaProvince))
                 res.Add(seaProvince);
             seaProvince = Province.find(map.GetPixel(x, map.getHeight() - 1));
@@ -160,7 +155,7 @@ public class Game : ThreadedJob
             }
         int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
         for (int i = 0; i < howMuchLakes; i++)
-            Province.allProvinces.Remove(Province.allProvinces.PickRandom());     
+            Province.allProvinces.Remove(Province.allProvinces.PickRandom());
 
     }
 
@@ -564,7 +559,7 @@ public class Game : ThreadedJob
     {
 
         //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(200, 100);
+        Texture2D mapImage = new Texture2D(100 + Random.Next(100), 70 + Random.Next(100));
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
@@ -575,7 +570,7 @@ public class Game : ThreadedJob
             amountOfProvince = 12 + Game.Random.Next(8);
         amountOfProvince = 40 + Game.Random.Next(20);
         amountOfProvince = 160 + Game.Random.Next(20);
-        amountOfProvince = mapImage.width * mapImage.height / 150 + Game.Random.Next(5); 
+        amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
             mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
@@ -719,7 +714,7 @@ public class Game : ThreadedJob
     //        }
     //}
 
-    
+
     static bool FindProvinceCenters()
     {
         //Vector3 accu = new Vector3(0, 0, 0);
@@ -930,7 +925,7 @@ public class Game : ThreadedJob
                 //That placed here to avoid issues with Aristocrats and clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.type.basicProduction != null)// only Farmers and Tribesmen
+                    if (pop.popType.basicProduction != null)// only Farmers and Tribesmen
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
                 }
@@ -970,7 +965,7 @@ public class Game : ThreadedJob
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getCountry())))
+                    if (pop.popType == PopType.aristocrats || pop.popType == PopType.capitalists || (pop.popType == PopType.farmers && Economy.isMarket.checkIftrue(province.getCountry())))
                         pop.getMoneyFromMarket();
 
                     //because income come only after consuming, and only after FULL consumption
@@ -988,8 +983,8 @@ public class Game : ThreadedJob
                     pop.calcAssimilations();
 
                     pop.invest();
-
-                    pop.putExtraMoneyInBank();
+                    if (Game.Random.Next(20) == 1)
+                        pop.putExtraMoneyInBank();
                 }
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                

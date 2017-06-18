@@ -12,7 +12,7 @@ public class Tribemen : PopUnit
     }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
@@ -22,7 +22,7 @@ public class Tribemen : PopUnit
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.workers)
             return false;
@@ -34,9 +34,9 @@ public class Tribemen : PopUnit
         Value producedAmount;
         float overpopulation = province.getOverpopulation();
         if (overpopulation <= 1) // all is OK
-            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000f);
+            producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000f);
         else
-            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000f / overpopulation);
+            producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000f / overpopulation);
         storageNow.add(producedAmount);
         gainGoodsThisTurn.set(producedAmount);
     }
@@ -112,7 +112,7 @@ public class Farmers : PopUnit
 
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
             return false;
@@ -121,7 +121,7 @@ public class Farmers : PopUnit
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.tribeMen
             || targetType == PopType.workers)
             return false;
@@ -133,9 +133,9 @@ public class Farmers : PopUnit
         Value producedAmount;
         float overpopulation = province.getOverpopulation();
         if (overpopulation <= 1) // all is OK
-            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000 + getPopulation() * type.basicProduction.get() / 1000 * education.get());
+            producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000 + getPopulation() * popType.basicProduction.get() / 1000 * education.get());
         else
-            producedAmount = new Value(getPopulation() * type.basicProduction.get() / 1000 / overpopulation + getPopulation() * type.basicProduction.get() / 1000 / overpopulation * education.get());
+            producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000 / overpopulation + getPopulation() * popType.basicProduction.get() / 1000 / overpopulation * education.get());
         gainGoodsThisTurn.set(producedAmount);
 
         if (Economy.isMarket.checkIftrue(province.getCountry()))
@@ -230,7 +230,7 @@ public class Aristocrats : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.capitalists && Economy.isNotMarket.checkIftrue(province.getCountry()))
             return false;
@@ -328,7 +328,7 @@ public class Capitalists : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming))
             return false;
         else
@@ -415,7 +415,7 @@ public class Workers : PopUnit
 
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.farmers && !province.getCountry().isInvented(Invention.farming)
             || targetType == PopType.capitalists
             || targetType == PopType.aristocrats)
@@ -425,7 +425,7 @@ public class Workers : PopUnit
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == this.type
+        if (targetType == this.popType
             || targetType == PopType.farmers
             || targetType == PopType.tribeMen)
             return false;
