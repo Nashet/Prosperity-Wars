@@ -12,7 +12,7 @@ public class Province
     public Mesh landMesh;
     public MeshStructure meshStructure;
 
-    
+
     MeshFilter meshFilter;
     internal GameObject rootGameObject;
     MeshRenderer meshRenderer;
@@ -43,7 +43,7 @@ public class Province
             for (int i = 0; i < image.getWidth(); i++)
             {
                 if (currentProvinceColor != image.GetPixel(i, j)
-                     //&& !blockedProvinces.Contains(currentProvinceColor)
+                    //&& !blockedProvinces.Contains(currentProvinceColor)
                     && !Province.isProvinceCreated(currentProvinceColor))
                 {
                     allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
@@ -55,14 +55,14 @@ public class Province
             }
     }
 
-    internal static void generateUnityData( VoxelGrid grid)
+    internal static void generateUnityData(VoxelGrid grid)
     {
         allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
     {
         this.meshStructure = meshStructure;
-      
+
 
         //spawn object
         rootGameObject = new GameObject(string.Format("{0}", getID()));
@@ -85,15 +85,15 @@ public class Province
         landMesh.name = getID().ToString();
 
         meshRenderer.material.shader = Shader.Find("Standard");
-      
+
         meshRenderer.material.color = color;
 
         MeshCollider groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-        groundMeshCollider.sharedMesh = landMesh;     
+        groundMeshCollider.sharedMesh = landMesh;
 
-        
+
         setProvinceCenter();
-        SetLabel();
+        setLabel();
 
         // setting neighbors
         //making meshes for border
@@ -150,21 +150,21 @@ public class Province
     }
     //empty province constructor
     public Province(string iname, int iID, Color icolorID, Product inresource)
-    {             
+    {
         resource = inresource;
-        colorID = icolorID;     
+        colorID = icolorID;
         name = iname;
-        
+
         ID = iID;
 
         fertileSoil = 10000;
-     
-    }   
-    
+
+    }
+
     /// <summary>
     /// returns 
     /// </summary>
-    
+
     internal Country getCountry()
     {
         //if (owner == null)
@@ -299,7 +299,7 @@ public class Province
         return neighbors.FindAll(predicate);
 
     }
-    
+
     public IEnumerable<Producer> getProducers()
     //public System.Collections.IEnumerator GetEnumerator()
     {
@@ -390,7 +390,7 @@ public class Province
                 return true;
         return false;
     }
-    
+
     public List<PopUnit> getAllPopUnits(PopType ipopType)
     {
         List<PopUnit> result = new List<PopUnit>();
@@ -630,7 +630,7 @@ public class Province
         return false;
     }
 
-    internal void SetLabel()
+    internal void setLabel()
     {
         LODGroup group = rootGameObject.AddComponent<LODGroup>();
 
@@ -641,22 +641,21 @@ public class Province
         Renderer[] renderers = new Renderer[1];
         renderers[0] = txtMeshTransform.GetComponent<Renderer>();
         //lods[i] = new LOD(1.0F / (i + 1), renderers);
-        lods[0] = new LOD(0.19F, renderers);
+        lods[0] = new LOD(0.25F, renderers);
 
         txtMeshTransform.position = this.centre;
-        group.SetLODs(lods);
-        group.RecalculateBounds();
-
-
-
-
-        //newProvince.centre = (meshRenderer.bounds.max + meshRenderer.bounds.center) / 2f;
-
-
         TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-        txtMesh.text = this.ToString();
+        var text = this.ToString();
+        //if (text.Length < 40)
+        //{
+        //    int howMuchAdd = (40 - text.Length) / 2;
+        //    text = new string('.', howMuchAdd) + text + new string('.', howMuchAdd);
+        //}
+        txtMesh.text = text;
         txtMesh.color = Color.red; // Set the text's color to red
-
+        group.SetLODs(lods);
+        group.size = 30;
+        //group.RecalculateBounds();
     }
 
     internal Factory findFactory(FactoryType proposition)

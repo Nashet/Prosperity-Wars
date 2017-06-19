@@ -336,7 +336,7 @@ public class Country : Consumer
         txtMeshTransform.position = capitalTextPosition;
 
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
-        messhCapitalText.text = this.ToString();
+        messhCapitalText.text = getName();
         messhCapitalText.fontSize *= 2;
         if (this == Game.Player)
         {

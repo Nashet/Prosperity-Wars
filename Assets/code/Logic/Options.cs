@@ -80,4 +80,5 @@ public static class Options
     internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw
     internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
     internal static readonly int ProvincesPerCountry = 6;
+    internal static readonly int PopMinimalMobilazation = 50;
 }

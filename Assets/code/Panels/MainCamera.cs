@@ -46,8 +46,8 @@ public class MainCamera : MonoBehaviour
         {
             var position = this.transform.position;
             var mapBorders = Game.getMapBorders();
-            float xyCameraSpeed = 10f;
-            float zCameraSpeed = 150f;
+            float xyCameraSpeed = 2f;
+            float zCameraSpeed = 55f;
             float xMove = Input.GetAxis("Horizontal");
             if (xMove * xyCameraSpeed + position.x < mapBorders.x
                 || xMove * xyCameraSpeed + position.x >  mapBorders.width)
@@ -58,8 +58,8 @@ public class MainCamera : MonoBehaviour
                 yMove = 0;
             float zMove = Input.GetAxis("Mouse ScrollWheel");
             zMove = zMove * zCameraSpeed;
-            if (position.z + zMove > -70f
-                || position.z + zMove < -400f)
+            if (position.z + zMove > -40f
+                || position.z + zMove < -200f)
                 zMove = 0f;
             transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
         }
@@ -70,29 +70,27 @@ public class MainCamera : MonoBehaviour
         //starts loading thread
         if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
         {
-            Application.runInBackground = true;
-            //SceneManager.LoadScene("ES-base", LoadSceneMode.Additive);
+            Application.runInBackground = true;            
             MainCamera.Game = new Game();
-            //MainCamera.Game.initialize();
-            MainCamera.Game.Start(); //initialize is here
-            //Game = new Game();           
+            MainCamera.Game.initialize();
+            //MainCamera.Game.Start(); //initialize is here
+            
         }
         if (MainCamera.Game != null)
-            if (MainCamera.Game.IsDone && !gameIsLoaded)
+            //if (MainCamera.Game.IsDone && !gameIsLoaded)
+            if (!gameIsLoaded)
             {
                 Game.setUnityAPI();
 
-
-                camera = this.GetComponent<Camera>();
-                //Game = new Game();
+                camera = this.GetComponent<Camera>();                
                 gameObject.transform.position = new Vector3(Game.Player.getCapital().centre.x,
                     Game.Player.getCapital().centre.y, gameObject.transform.position.z);
                 loadingPanel.hide();
                 topPanel.show();
                 gameIsLoaded = true;
             }
-            else
-                loadingPanel.loadingText.text = Game.getStatus();
+            //else
+            //    loadingPanel.loadingText.text = Game.getStatus();
         if (gameIsLoaded)
         {
             if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))

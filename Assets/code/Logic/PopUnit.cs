@@ -255,7 +255,8 @@ abstract public class PopUnit : Producer
     {
         int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
         howMuchCanMobilize -= mobilized;
-        if (howMuchCanMobilize < 0) howMuchCanMobilize = 0;
+        if (howMuchCanMobilize < Options.PopMinimalMobilazation) howMuchCanMobilize = 0;
+
         return howMuchCanMobilize;
     }
     public Corps mobilize()
