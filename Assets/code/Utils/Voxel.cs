@@ -4,10 +4,9 @@ using System;
 [Serializable]
 public class Voxel
 {
+     Color color;
 
-    public Color color;
-
-    public Vector2 position, xEdgePosition, yEdgePosition;
+     Vector2 position, xEdgePosition, yEdgePosition;
 
     public Voxel(int x, int y, float size, Color state)
     {
@@ -21,7 +20,22 @@ public class Voxel
         this.color = state;
         //this.state = Game.Random.Next(3) == 1;
     }
-
+    public Color getColor()
+    {
+        return color;
+    }
+    public Vector2 getPosition()
+    {
+        return position;
+    }
+    public Vector2 getXEdgePosition()
+    {
+        return xEdgePosition;
+    }
+    public Vector2 getYEdgePosition()
+    {
+        return yEdgePosition;
+    }
     public Voxel() { }
 
     public void BecomeXDummyOf(Voxel voxel, float offset)

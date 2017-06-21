@@ -5,22 +5,20 @@ using System;
 [SelectionBase]
 public class VoxelGrid
 {
+    private readonly int width, height;
 
-    //readonly int resolution;
-    readonly int width, height;
-
-    private VoxelGrid xNeighbor, yNeighbor, xyNeighbor;
+    private readonly VoxelGrid xNeighbor, yNeighbor, xyNeighbor;
 
     private readonly Voxel[] voxels;
 
-    private readonly float voxelSize, gridSize;   
+    private readonly float voxelSize, gridSize;
 
     private MeshStructure mesh;
     private Dictionary<Province, MeshStructure> bordersMeshes;
-    
 
-    private  Voxel dummyX, dummyY, dummyT;
-    private readonly Game game;    
+
+    private Voxel dummyX, dummyY, dummyT;
+    private readonly Game game;
 
     public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, Game game)
     {
@@ -116,11 +114,11 @@ public class VoxelGrid
         //int cells = resolution - 1;
         for (int i = 0, y = 0; y < height - 1; y++)
         {
-            for (int x = 0; x < width - 1; x++ )
-            //if (voxels[i].color != Color.black
-            //    || voxels[i + 1].color != Color.black
-            //    || voxels[i + resolution].color != Color.black
-            //    || voxels[i + resolution + 1].color != Color.black)
+            for (int x = 0; x < width - 1; x++)
+            //if (voxels[i].getColor() != Color.black
+            //    || voxels[i + 1].getColor() != Color.black
+            //    || voxels[i + resolution].getColor() != Color.black
+            //    || voxels[i + resolution + 1].getColor() != Color.black)
             {
                 TriangulateCell(
                     voxels[i],
@@ -170,27 +168,26 @@ public class VoxelGrid
     }
     private bool isBorderCell(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return !(a.color == b.color && a.color == c.color && a.color == d.color);
+        return !(a.getColor() == b.getColor() && a.getColor() == c.getColor() && a.getColor() == d.getColor());
     }
 
-    private MeshStructure findBorderMesh(Color b)
+    private void findBorderMeshAndAdd(Color color, Vector2 a, Vector2 b)
     {
-        var province = Province.find(b);
+        var province = Province.find(color);
         if (province != null)
-            //if (Game.seaProvinces.Contains(province))
-            //    return null;
-            //else
+        //if (Game.seaProvinces.Contains(province))
+        //    return null;
+        //else
+        {
+            MeshStructure border;
+            if (!bordersMeshes.TryGetValue(province, out border))
             {
-                MeshStructure border;
-                if (!bordersMeshes.TryGetValue(province, out border))
-                {
-                    border = new MeshStructure();
-                    bordersMeshes.Add(province, border);
-                }
-                return border;
+                border = new MeshStructure();
+                bordersMeshes.Add(province, border);
             }
-        else
-            return null;
+            border.AddBorderQuad2(a, b);
+            
+        }        
     }
     private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
     {
@@ -198,19 +195,19 @@ public class VoxelGrid
 
         //bool isBorder = isBorderCell(a, b, c, d);
         int cellType = 0;
-        if (a.color == analyzingColor)
+        if (a.getColor() == analyzingColor)
         {
             cellType |= 1;
         }
-        if (b.color == analyzingColor)
+        if (b.getColor() == analyzingColor)
         {
             cellType |= 2;
         }
-        if (c.color == analyzingColor)
+        if (c.getColor() == analyzingColor)
         {
             cellType |= 4;
         }
-        if (d.color == analyzingColor)
+        if (d.getColor() == analyzingColor)
         {
             cellType |= 8;
         }
@@ -219,160 +216,160 @@ public class VoxelGrid
             case 0:
                 return;
             case 1:
-                AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
+                mesh.AddTriangle(a.getPosition(), a.getYEdgePosition(), a.getXEdgePosition());
 
-                if (a.color != b.color && a.color != c.color && a.color != d.color
-                    && b.color != c.color && b.color != d.color
-                    && c.color != d.color
-                    )//&& c.color == analyzingColor)
+                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
+                    && b.getColor() != c.getColor() && b.getColor() != d.getColor()
+                    && c.getColor() != d.getColor()
+                    )//&& c.getColor() == analyzingColor)
                 {
-                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
-                    AddTriangle(a.yEdgePosition, centre, a.xEdgePosition);
-                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    findBorderMesh(c.color).AddBorderQuad2( a.yEdgePosition, centre);
-                    AddBorderQuad2(findBorderMesh(b.color), centre, a.xEdgePosition);
+                    var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
+                    mesh.AddTriangle(a.getYEdgePosition(), centre, a.getXEdgePosition());
+                    //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(c.getColor(), a.getYEdgePosition(), centre);
+                    findBorderMeshAndAdd(b.getColor(), centre, a.getXEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(d.color), a.yEdgePosition, a.xEdgePosition);
+                    findBorderMeshAndAdd(d.getColor(), a.getYEdgePosition(), a.getXEdgePosition());
 
                 break;
             case 2:
-                AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
-                if (a.color != b.color && a.color != c.color && a.color != d.color
-                   && b.color != c.color && b.color != d.color
-                   && c.color != d.color
-                   )//&& c.color == analyzingColor)
+                mesh.AddTriangle(b.getPosition(), a.getXEdgePosition(), b.getYEdgePosition());
+                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
+                   && b.getColor() != c.getColor() && b.getColor() != d.getColor()
+                   && c.getColor() != d.getColor()
+                   )//&& c.getColor() == analyzingColor)
                 {
-                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
-                    AddTriangle(a.xEdgePosition, centre, b.yEdgePosition);
-                    AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, centre);
-                    AddBorderQuad2(findBorderMesh(d.color), centre, b.yEdgePosition);
+                    var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
+                    mesh.AddTriangle(a.getXEdgePosition(), centre, b.getYEdgePosition());
+                    findBorderMeshAndAdd(a.getColor(), a.getXEdgePosition(), centre);
+                    findBorderMeshAndAdd(d.getColor(), centre, b.getYEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(c.color), a.xEdgePosition, b.yEdgePosition);
+                    findBorderMeshAndAdd(c.getColor(), a.getXEdgePosition(), b.getYEdgePosition());
 
                 break;
             case 3:
-                AddQuad(mesh, a.position, a.yEdgePosition, b.yEdgePosition, b.position);
-                if (is3ColorCornerDown(a, b, c, d) && b.color == analyzingColor)
+                mesh.AddQuad(a.getPosition(), a.getYEdgePosition(), b.getYEdgePosition(), b.getPosition());
+                if (is3ColorCornerDown(a, b, c, d) && b.getColor() == analyzingColor)
                 {
-                    AddTriangle(b.yEdgePosition, a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                    mesh.AddTriangle(b.getYEdgePosition(), a.getYEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(c.getColor(), a.getYEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), b.getYEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, b.yEdgePosition);
+                    findBorderMeshAndAdd(c.getColor(), a.getYEdgePosition(), b.getYEdgePosition());
 
                 break;
             case 4:
-                AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
-                if (a.color != b.color && a.color != c.color && a.color != d.color
-                   && b.color != c.color && b.color != d.color
-                   && c.color != d.color
-                   )//&& a.color == analyzingColor)
+                mesh.AddTriangle(c.getPosition(), c.getXEdgePosition(), a.getYEdgePosition());
+                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
+                   && b.getColor() != c.getColor() && b.getColor() != d.getColor()
+                   && c.getColor() != d.getColor()
+                   )//&& a.getColor() == analyzingColor)
                 {
-                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
-                    AddTriangle(c.xEdgePosition, centre, a.yEdgePosition);
-                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(a.color), centre, a.yEdgePosition);
-                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, centre);
+                    var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
+                    mesh.AddTriangle(c.getXEdgePosition(), centre, a.getYEdgePosition());
+                    //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(a.getColor(), centre, a.getYEdgePosition());
+                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), centre);
 
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(b.color), c.xEdgePosition, a.yEdgePosition);
+                    findBorderMeshAndAdd(b.getColor(), c.getXEdgePosition(), a.getYEdgePosition());
 
                 break;
             case 5:
-                AddQuad(mesh, a.position, c.position, c.xEdgePosition, a.xEdgePosition);
+                mesh.AddQuad(a.getPosition(), c.getPosition(), c.getXEdgePosition(), a.getXEdgePosition());
 
-                if (is3ColorCornerLeft(a, b, c, d) && c.color == analyzingColor)
+                if (is3ColorCornerLeft(a, b, c, d) && c.getColor() == analyzingColor)
                 {
-                    AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
-                    AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                    mesh.AddTriangle(c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), b.getYEdgePosition());
+                    findBorderMeshAndAdd(b.getColor(), b.getYEdgePosition(), a.getXEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, a.xEdgePosition);
+                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), a.getXEdgePosition());
                 break;
             case 6:
-                AddTriangle(b.position, a.xEdgePosition, b.yEdgePosition);
-                AddTriangle(c.position, c.xEdgePosition, a.yEdgePosition);
-                AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
+                mesh.AddTriangle(b.getPosition(), a.getXEdgePosition(), b.getYEdgePosition());
+                mesh.AddTriangle(c.getPosition(), c.getXEdgePosition(), a.getYEdgePosition());
+                mesh.AddQuad(a.getXEdgePosition(), a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition());
 
-                AddBorderQuad2(findBorderMesh(d.color), a.xEdgePosition, a.yEdgePosition);
-                AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                findBorderMeshAndAdd(d.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
+                findBorderMeshAndAdd(d.getColor(),c.getXEdgePosition(), b.getYEdgePosition());
                 break;
             case 7:
-                AddPentagon(a.position, c.position, c.xEdgePosition, b.yEdgePosition, b.position);
-                AddBorderQuad2(findBorderMesh(d.color), c.xEdgePosition, b.yEdgePosition);
+                mesh.AddPentagon(a.getPosition(), c.getPosition(), c.getXEdgePosition(), b.getYEdgePosition(), b.getPosition());
+                findBorderMeshAndAdd(d.getColor(),c.getXEdgePosition(), b.getYEdgePosition());
 
                 break;
             case 8:
-                AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
-                if (a.color != b.color && a.color != c.color && a.color != d.color
-                   && b.color != c.color && b.color != d.color
-                   && c.color != d.color
-                   )//&& a.color == analyzingColor)
+                mesh.AddTriangle(d.getPosition(), b.getYEdgePosition(), c.getXEdgePosition());
+                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
+                   && b.getColor() != c.getColor() && b.getColor() != d.getColor()
+                   && c.getColor() != d.getColor()
+                   )//&& a.getColor() == analyzingColor)
                 {
-                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    var centre = new Vector2(a.xEdgePosition.x, a.yEdgePosition.y);
-                    AddTriangle(c.xEdgePosition, b.yEdgePosition, centre);
-                    //AddQuad(mesh, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, centre);
-                    AddBorderQuad2(findBorderMesh(c.color), centre, c.xEdgePosition);
+                    //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
+                    var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
+                    mesh.AddTriangle(c.getXEdgePosition(), b.getYEdgePosition(), centre);
+                    //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(b.getColor(),b.getYEdgePosition(), centre);
+                    findBorderMeshAndAdd(c.getColor(),centre, c.getXEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(a.color), b.yEdgePosition, c.xEdgePosition);
+                    findBorderMeshAndAdd(a.getColor(),b.getYEdgePosition(), c.getXEdgePosition());
 
                 break;
             case 9:
-                AddTriangle(a.position, a.yEdgePosition, a.xEdgePosition);
-                AddTriangle(d.position, b.yEdgePosition, c.xEdgePosition);
+                mesh.AddTriangle(a.getPosition(), a.getYEdgePosition(), a.getXEdgePosition());
+                mesh.AddTriangle(d.getPosition(), b.getYEdgePosition(), c.getXEdgePosition());
                 //duplicates quad in 6:
-                //AddQuad(mesh, a.xEdgePosition, a.yEdgePosition, c.xEdgePosition, b.yEdgePosition);
-                AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, a.xEdgePosition);
-                AddBorderQuad2(findBorderMesh(c.color), b.yEdgePosition, c.xEdgePosition);
+                //AddQuad(mesh, a.getXEdgePosition(), a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition());
+                findBorderMeshAndAdd(c.getColor(),a.getYEdgePosition(), a.getXEdgePosition());
+                findBorderMeshAndAdd(c.getColor(),b.getYEdgePosition(), c.getXEdgePosition());
                 break;
             case 10:
-                AddQuad(mesh, a.xEdgePosition, c.xEdgePosition, d.position, b.position);
-                if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
+                mesh.AddQuad(a.getXEdgePosition(), c.getXEdgePosition(), d.getPosition(), b.getPosition());
+                if (is3ColorCornerRight(a, b, c, d) && d.getColor() == analyzingColor)
                 {
-                    AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, c.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                    mesh.AddTriangle(a.getYEdgePosition(), c.getXEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(c.getColor(),a.getYEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(a.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(c.color), a.xEdgePosition, c.xEdgePosition);
+                    findBorderMeshAndAdd(c.getColor(),a.getXEdgePosition(), c.getXEdgePosition());
                 break;
             case 11:
-                AddPentagon(b.position, a.position, a.yEdgePosition, c.xEdgePosition, d.position);
-                AddBorderQuad2(findBorderMesh(c.color), a.yEdgePosition, c.xEdgePosition);
+                mesh.AddPentagon(b.getPosition(), a.getPosition(), a.getYEdgePosition(), c.getXEdgePosition(), d.getPosition());
+                findBorderMeshAndAdd(c.getColor(),a.getYEdgePosition(), c.getXEdgePosition());
 
                 break;
             case 12:
-                AddQuad(mesh, a.yEdgePosition, c.position, d.position, b.yEdgePosition);
-                if (is3ColorCornerUp(a, b, c, d) && c.color == analyzingColor)
+                mesh.AddQuad(a.getYEdgePosition(), c.getPosition(), d.getPosition(), b.getYEdgePosition());
+                if (is3ColorCornerUp(a, b, c, d) && c.getColor() == analyzingColor)
                 {
-                    AddTriangle(a.yEdgePosition, b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, a.xEdgePosition);
-                    AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                    mesh.AddTriangle(a.getYEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(b.getColor(),b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(a.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
                 }
                 else
-                    AddBorderQuad2(findBorderMesh(a.color), b.yEdgePosition, a.yEdgePosition);
+                    findBorderMeshAndAdd(a.getColor(),b.getYEdgePosition(), a.getYEdgePosition());
 
                 break;
             case 13:
-                AddPentagon(c.position, d.position, b.yEdgePosition, a.xEdgePosition, a.position);
-                AddBorderQuad2(findBorderMesh(b.color), b.yEdgePosition, a.xEdgePosition);
+                mesh.AddPentagon(c.getPosition(), d.getPosition(), b.getYEdgePosition(), a.getXEdgePosition(), a.getPosition());
+                findBorderMeshAndAdd(b.getColor(),b.getYEdgePosition(), a.getXEdgePosition());
 
                 break;
             case 14:
-                AddPentagon(d.position, b.position, a.xEdgePosition, a.yEdgePosition, c.position);
-                AddBorderQuad2(findBorderMesh(a.color), a.xEdgePosition, a.yEdgePosition);
+                mesh.AddPentagon(d.getPosition(), b.getPosition(), a.getXEdgePosition(), a.getYEdgePosition(), c.getPosition());
+                findBorderMeshAndAdd(a.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
 
                 break;
             case 15:
-                AddQuad(mesh, a.position, c.position, d.position, b.position);
+                mesh.AddQuad(a.getPosition(), c.getPosition(), d.getPosition(), b.getPosition());
                 //don't add borders here, it's inside mesh
                 break;
             default:
@@ -380,71 +377,38 @@ public class VoxelGrid
                 break;
         }
         //detecting 3 color connecting
-        //if (is3ColorCornerUp(a, b, c, d) && a.color == analyzingColor)
-        //    AddTriangle(c.xEdgePosition, b.yEdgePosition, a.yEdgePosition);
+        //if (is3ColorCornerUp(a, b, c, d) && a.getColor() == analyzingColor)
+        //    AddTriangle(c.getXEdgePosition(), b.getYEdgePosition(), a.getYEdgePosition());
 
-        //if (is3ColorCornerDown(a, b, c, d) && c.color == analyzingColor)
-        //    AddTriangle(b.yEdgePosition, a.xEdgePosition, a.yEdgePosition);
+        //if (is3ColorCornerDown(a, b, c, d) && c.getColor() == analyzingColor)
+        //    AddTriangle(b.getYEdgePosition(), a.getXEdgePosition(), a.getYEdgePosition());
 
-        //if (is3ColorCornerLeft(a, b, c, d) && c.color == analyzingColor)
-        //    AddTriangle(c.xEdgePosition, b.yEdgePosition, a.xEdgePosition);
+        //if (is3ColorCornerLeft(a, b, c, d) && c.getColor() == analyzingColor)
+        //    AddTriangle(c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
 
-        //if (is3ColorCornerRight(a, b, c, d) && d.color == analyzingColor)
-        //    AddTriangle(a.yEdgePosition, c.xEdgePosition, a.xEdgePosition);
+        //if (is3ColorCornerRight(a, b, c, d) && d.getColor() == analyzingColor)
+        //    AddTriangle(a.getYEdgePosition(), c.getXEdgePosition(), a.getXEdgePosition());
 
 
     }
     private static bool is3ColorCornerDown(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return a.color == b.color && a.color != c.color && b.color != d.color && c.color != d.color;
+        return a.getColor() == b.getColor() && a.getColor() != c.getColor() && b.getColor() != d.getColor() && c.getColor() != d.getColor();
     }
     private static bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return c.color == d.color && c.color != a.color && d.color != b.color && a.color != b.color;
+        return c.getColor() == d.getColor() && c.getColor() != a.getColor() && d.getColor() != b.getColor() && a.getColor() != b.getColor();
     }
     private static bool is3ColorCornerLeft(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return c.color == a.color && c.color != d.color && a.color != b.color && d.color != b.color;
+        return c.getColor() == a.getColor() && c.getColor() != d.getColor() && a.getColor() != b.getColor() && d.getColor() != b.getColor();
     }
     private static bool is3ColorCornerRight(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return d.color == b.color && d.color != c.color && b.color != a.color && c.color != a.color;
+        return d.getColor() == b.getColor() && d.getColor() != c.getColor() && b.getColor() != a.getColor() && c.getColor() != a.getColor();
     }
-    private void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
-    {
-        int vertexIndex = mesh.vertices.Count;
-        mesh.vertices.Add(a);
-        mesh.vertices.Add(b);
-        mesh.vertices.Add(c);
-        mesh.triangles.Add(vertexIndex);
-        mesh.triangles.Add(vertexIndex + 1);
-        mesh.triangles.Add(vertexIndex + 2);
-    }
-
-   
-   
-    private void AddPentagon(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 e)
-    {
-        int vertexIndex = mesh.vertices.Count;
-        mesh.vertices.Add(a);
-        mesh.vertices.Add(b);
-        mesh.vertices.Add(c);
-        mesh.vertices.Add(d);
-        mesh.vertices.Add(e);
-        mesh.triangles.Add(vertexIndex);
-        mesh.triangles.Add(vertexIndex + 1);
-        mesh.triangles.Add(vertexIndex + 2);
-        mesh.triangles.Add(vertexIndex);
-        mesh.triangles.Add(vertexIndex + 2);
-        mesh.triangles.Add(vertexIndex + 3);
-        mesh.triangles.Add(vertexIndex);
-        mesh.triangles.Add(vertexIndex + 3);
-        mesh.triangles.Add(vertexIndex + 4);
-    }
-  
-
     internal Dictionary<Province, MeshStructure> getBorders()
     {
         return bordersMeshes;
-    }  
+    }
 }

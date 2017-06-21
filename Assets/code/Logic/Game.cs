@@ -34,7 +34,7 @@ public class Game : ThreadedJob
     private static int mapMode;
     private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
-    private static Rect mapBorders;
+    private readonly Rect mapBorders;
 
     internal static List<Province> seaProvinces;
     static VoxelGrid grid;
@@ -43,10 +43,11 @@ public class Game : ThreadedJob
     {
         //loadImages();
         generateMapImage();
+        mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
     }
     public void initialize()
     {
-        mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
+       
 
         makeProducts();
         market.initialize();

@@ -78,8 +78,8 @@ public class Province
         landMesh = meshFilter.mesh;
         landMesh.Clear();
 
-        landMesh.vertices = meshStructure.vertices.ToArray();
-        landMesh.triangles = meshStructure.triangles.ToArray();
+        landMesh.vertices = meshStructure.getVertices().ToArray();
+        landMesh.triangles = meshStructure.getTriangles().ToArray();
         landMesh.RecalculateNormals();
         landMesh.RecalculateBounds();
         landMesh.name = getID().ToString();
@@ -114,9 +114,9 @@ public class Province
             Mesh borderMesh = meshFilter.mesh;
             borderMesh.Clear();
 
-            borderMesh.vertices = border.Value.vertices.ToArray();
-            borderMesh.triangles = border.Value.triangles.ToArray();
-            borderMesh.uv = border.Value.UVmap.ToArray();
+            borderMesh.vertices = border.Value.getVertices().ToArray();
+            borderMesh.triangles = border.Value.getTriangles().ToArray();
+            borderMesh.uv = border.Value.getUVmap().ToArray();
             borderMesh.RecalculateNormals();
             borderMesh.RecalculateBounds();
             meshRenderer.material = Game.defaultProvinceBorderMaterial;
@@ -297,15 +297,12 @@ public class Province
     }
     public void setProvinceCenter()
     {
-        Vector3 accu = new Vector3(0, 0, 0);
-        //foreach (Province pro in Province.allProvinces)
-        //{
-        //e accu.Set(0, 0, 0);
-        foreach (var c in this.meshStructure.vertices)
+        Vector3 accu = new Vector3(0, 0, 0);        
+        foreach (var c in this.meshStructure.getVertices())
             accu += c;
-        accu = accu / this.meshStructure.vertices.Count;
+        accu = accu / this.meshStructure.verticesCount;
         this.centre = accu;
-        // }
+        
     }
 
     internal Culture getMajorCulture()
