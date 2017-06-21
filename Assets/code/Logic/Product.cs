@@ -109,9 +109,10 @@ public class Product
         if (
             (
             (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.Metal))
+            || (!country.isInvented(Invention.SteamPower) && this == Machinery)
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
-            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Machinery || this == Cars))
+            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber  || this == Cars))            
             || (!country.isInvented(Invention.Tanks) && this == Tanks )
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
             || (!isResource() && !country.isInvented(Invention.manufactories))

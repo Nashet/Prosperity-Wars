@@ -133,7 +133,7 @@ public class Province
     }
     public void setUnselectedBorderMaterials()
     {
-        foreach (var neighbor in neighbors)
+        foreach (var neighbor in neighbors)            
             if (getCountry() == neighbor.getCountry())
             {
                 this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
@@ -257,21 +257,7 @@ public class Province
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
         setUnselectedBorderMaterials();
-        //foreach (var neighbor in neighbors)
-        //    if (getCountry() == neighbor.getCountry())
-        //    {
-        //        this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
-        //        neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
-        //    }
-        //    else
-        //    {
-        //        // if (getCountry() != Country.NullCountry && neighbor.getCountry() != Country.NullCountry)
-        //        {
-        //            this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
-        //            if (neighbor.getCountry() != null)
-        //                neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
-        //        }
-        //    }
+       
     }
 
     internal bool isCapital()
@@ -639,18 +625,12 @@ public class Province
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
         txtMeshTransform.SetParent(this.rootGameObject.transform, false);
         Renderer[] renderers = new Renderer[1];
-        renderers[0] = txtMeshTransform.GetComponent<Renderer>();
-        //lods[i] = new LOD(1.0F / (i + 1), renderers);
+        renderers[0] = txtMeshTransform.GetComponent<Renderer>();        
         lods[0] = new LOD(0.25F, renderers);
 
         txtMeshTransform.position = this.centre;
         TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-        //var text = this.ToString();
-        //if (text.Length < 40)
-        //{
-        //    int howMuchAdd = (40 - text.Length) / 2;
-        //    text = new string('.', howMuchAdd) + text + new string('.', howMuchAdd);
-        //}
+      
         txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
         group.SetLODs(lods);

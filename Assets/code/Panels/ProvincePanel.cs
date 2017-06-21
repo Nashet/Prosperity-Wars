@@ -9,7 +9,6 @@ public class ProvincePanel : MonoBehaviour
     // Use this for initialization    
     void Start()
     {
-        //generaltext = transform.FindChild("GeneralText").gameObject.GetComponent<Text>();
         MainCamera.provincePanel = this;
         hide();
     }
@@ -42,7 +41,13 @@ public class ProvincePanel : MonoBehaviour
     public void onCountryDiplomacyClick()
     {
         if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-            MainCamera.diplomacyPanel.hide();
+        {
+            if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.getCountry())
+
+                MainCamera.diplomacyPanel.hide();
+            else
+                MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
+        }
         else
             MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
     }

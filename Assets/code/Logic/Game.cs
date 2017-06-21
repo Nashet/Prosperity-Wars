@@ -559,7 +559,7 @@ public class Game : ThreadedJob
     {
 
         //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(100 + Random.Next(100), 70 + Random.Next(100));
+        Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);

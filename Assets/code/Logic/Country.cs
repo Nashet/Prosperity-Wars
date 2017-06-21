@@ -42,10 +42,6 @@ public class Country : Consumer
     //private Value minSalary = new Value(0.5f);
     public Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry;
-    static Condition condDontHaveDeposits = new Condition(x => (x as Agent).deposits.get() == 0f, "Don't have deposits", false);
-    static Condition condDontHaveLoans = new Condition(x => (x as Agent).loans.get() == 0f, "Don't have loans", false);
-    public static readonly ConditionsList condCanTakeLoan = new ConditionsList(new List<Condition> { condDontHaveDeposits });
-    public static readonly ConditionsList condCanPutOnDeposit = new ConditionsList(new List<Condition> { condDontHaveLoans });
 
     readonly Modifier modXHasMyCores;
     public ModifiersList modMyOpinionOfXCountry;
@@ -65,15 +61,15 @@ public class Country : Consumer
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
 
-
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "Has my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
             && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"Lives in peace with us", 0.005f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 10  ,"Recently attacked us", -0.05f, false),
-            new Modifier (x=> this.isThreatenBy(x as Country),"Weaker", -0.04f, false),
-            new Modifier (delegate(System.Object x) { Country bully = this.isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.02f, false)
+            new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
+            new Modifier (delegate(System.Object x) { Country bully = isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.05f, false),
+            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
         staff = new GeneralStaff(this);
@@ -137,7 +133,7 @@ public class Country : Consumer
             howMuchCountries = 7;
         for (int i = 0; i < howMuchCountries; i++)
         {
-            game.updateStatus("Making countries.."+i);
+            game.updateStatus("Making countries.." + i);
             Culture cul = new Culture(cultureNameGenerator.generateCultureName());
 
             Province province = Province.getRandomProvinceInWorld((x) => x.getCountry() == null);
@@ -157,20 +153,20 @@ public class Country : Consumer
     }
 
     /// <summary>
-    /// returns true if there is in world country  with power of X(world)
+    /// Little bugged - returns RANDOM badboy, not biggest
     /// </summary>
     /// <returns></returns>
-    public Country isThereBadboyCountry()
+    public static Country isThereBadboyCountry()
     {
         float worldStrenght = 0f;
         foreach (var item in Country.getExisting())
             worldStrenght += item.getStreght();
         float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-        Country found = Country.allCountries.Find(x => x.getStreght() >= streghtLimit);
-        if (found == Country.NullCountry)
-            return null;
-        else
-            return found;
+        Country found = Country.allCountries.Find(x => x.getStreght() >= streghtLimit && x != Country.NullCountry);
+        //if (found == Country.NullCountry)
+        //    return null;
+        //else
+        return found;
 
     }
 
@@ -511,21 +507,14 @@ public class Country : Consumer
         if (isAI() && !isOnlyCountry())
             if (Game.Random.Next(10) == 1)
             {
-                //var possibleTarget = getRandomNeighborProvince();
-                //if (possibleTarget != null)
-                //    if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
-                //        || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
-                //    {
-                //        staff.mobilize(ownedProvinces);
-                //        sendArmy(possibleTarget, Procent.HundredProcent);
-                //    }                
-
-                var possibleTarget = getNeighborProvinces().MinBy(x => modMyOpinionOfXCountry.getModifier(x.getCountry()));
-                if (possibleTarget != null && this.getStreght() > 0
-                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f || possibleTarget.getCountry() == Country.NullCountry)
+                var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
+                if (possibleTarget != null
+                    && getRelationTo(possibleTarget.getCountry()).get() < 1f
+                    && this.getStreght() > 0
+                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f 
+                        || possibleTarget.getCountry() == Country.NullCountry
+                        || possibleTarget.getCountry().isAI() && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.1f )
                     )
-                //if ((this.getStreght() * 1.5f > possibleTarget.getCountry().getStreght() && possibleTarget.getCountry() == Game.Player) || possibleTarget.getCountry() == NullCountry
-                //    || possibleTarget.getCountry() != Game.Player && this.getStreght() < possibleTarget.getCountry().getStreght() * 0.5f)
                 {
                     staff.mobilize(ownedProvinces);
                     sendArmy(possibleTarget, Procent.HundredProcent);

@@ -28,7 +28,7 @@ public class TopPanel : MonoBehaviour
     }
     public void refresh()
     {
-        generalText.text = "Economic Simulation v0.11.0 Date: " + Game.date.Date.ToShortDateString() + " Country: " + Game.Player.getName()
+        generalText.text = "Economic Simulation v0.12.0 Date: " + Game.date.Date.ToShortDateString() + " Country: " + Game.Player.getName()
             + "\nMoney: " + Game.Player.cash
             + " Science points: " + Game.Player.sciencePoints
             + " Men: " + Game.Player.getMenPopulation();
@@ -61,17 +61,7 @@ public class TopPanel : MonoBehaviour
             MainCamera.inventionsPanel.show(true);
     }
     public void onEnterprisesClick()
-    {
-        //MainCamera.productionWindow.show(null, true);
-        //MainCamera.productionWindow.onShowAllClick();
-
-        //if (MainCamera.productionWindow.isActiveAndEnabled)
-        //    MainCamera.productionWindow.hide();
-        //else
-        //{
-        //    MainCamera.productionWindow.show(null, true);
-        //    MainCamera.productionWindow.onShowAllClick();
-        //}
+    {        
         if (MainCamera.productionWindow.isActiveAndEnabled)
             if (MainCamera.productionWindow.showingProvince == null)
                 MainCamera.productionWindow.hide();
@@ -87,9 +77,7 @@ public class TopPanel : MonoBehaviour
         }
     }
     public void onPopulationClick()
-    {
-        //MainCamera.populationPanel.onShowAllClick();
-        ////MainCamera.populationPanel.show();
+    {    
 
         if (MainCamera.populationPanel.isActiveAndEnabled)
             if (MainCamera.populationPanel.showingProvince==null)

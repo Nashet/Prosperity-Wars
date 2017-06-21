@@ -37,14 +37,18 @@ public class DiplomacyPanel : DragPanel
             sb.Append("\nOpinion of myself: I'm cool!");
         else
         {
-            sb.Append("\nOpinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+            sb.Append("\n").Append(selectedCountry.getName()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
             string str;
             selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
-            sb.Append("\nDynamics: ").Append(str);
+            sb.Append(" Dynamics: ").Append(str);
         }
         //sb.Append("\nInventions: ").Append(selectedCountry.inventions.getInvented(selectedCountry).ToString());
         //selectedCountry.inventions.getInvented(selectedCountry).ToString();
         generalText.text = sb.ToString();
+    }
+    public Country getSelectedCountry()
+    {
+        return selectedCountry;
     }
     public void show(Country count)
     {
