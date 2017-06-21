@@ -38,37 +38,38 @@ public class Factory : Producer
         modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised;
     internal Condition conNotBelongsToCountry;//, conIsBuilding;
 
-    internal Factory(Province province, Agent inowner, FactoryType intype) : base(province.getCountry().bank)
+    internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(province.getCountry().bank)
     { //assuming this is level 0 building
-        type = intype;
-        needsToUpgrade = type.getBuildNeeds();
+        this.type = type;
+        needsToUpgrade = this.type.getBuildNeeds();
         province.allFactories.Add(this);
-        factoryOwner = inowner;
+        this.factoryOwner = factoryOwner;
         base.province = province;
 
-        gainGoodsThisTurn = new Storage(type.basicProduction.getProduct());
-        storageNow = new Storage(type.basicProduction.getProduct());
-        sentToMarket = new Storage(type.basicProduction.getProduct());
+        gainGoodsThisTurn = new Storage(this.type.basicProduction.getProduct());
+        storageNow = new Storage(this.type.basicProduction.getProduct());
+        sentToMarket = new Storage(this.type.basicProduction.getProduct());
 
         salary.set(base.province.getLocalMinSalary());
 
 
-        modifierHasResourceInProvince = new Modifier(x => !type.isResourceGathering() && base.province.isProducingOnFactories(type.resourceInput),
+        modifierHasResourceInProvince = new Modifier(x => !this.type.isResourceGathering() && base.province.isProducingOnFactories(this.type.resourceInput),
            "Has input resource in this province", 20f, false);
         modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", 1f, false);
         modifierInventedMiningAndIsShaft = new Modifier(
-             forWhom => (forWhom as Country).isInvented(Invention.mining) && type.isShaft(),
+             forWhom => (forWhom as Country).isInvented(Invention.mining) && this.type.isShaft(),
            new StringBuilder("Invented ").Append(Invention.mining.ToString()).ToString(), 50f, false);
-        modifierBelongsToCountry = new Modifier(x => factoryOwner is Country, "Belongs to government", -20f, false);
+        modifierBelongsToCountry = new Modifier(x => this.factoryOwner is Country, "Belongs to government", -20f, false);
 
         conNotBelongsToCountry = new Condition(
-           x => !(factoryOwner is Country),
+           x => !(this.factoryOwner is Country),
           "Doesn't belongs to government", false);
         modifierIsSubsidised = new Modifier((x) => isSubsidized(), "Is subsidized", -10f, false);
         modifierEfficiency = new ModifiersList(new List<Condition>
         {
             //x=>(x as Country).isInvented(InventionType.steamPower)
             new Modifier(Invention.SteamPowerInvented , 25f, false),
+            new Modifier(Invention.CombustionEngine , 25f, false),
             modifierInventedMiningAndIsShaft,
             new Modifier(Economy.StateCapitalism,  10f, false),
             new Modifier(Economy.Interventionism,  30f, false),
@@ -194,9 +195,7 @@ public class Factory : Producer
         return type.name + " L" + getLevel();
     }
     internal Agent getOwner()
-    {
-        //if (factoryOwner != null) return factoryOwner.wallet;
-        //else return factoryOwner.wallet;
+    {       
         return factoryOwner;
     }
     public void setOwner(Agent agent)
@@ -302,13 +301,7 @@ public class Factory : Producer
             if (link.pop == pop)
                 result += link.amount;
         return result;
-    }
-
-    internal void changeOwner(Agent player)
-    {
-
-        factoryOwner = player;
-    }
+    }   
 
     internal bool IsThereMoreWorkersToHire()
     {
@@ -361,7 +354,7 @@ public class Factory : Producer
             }
             else
             {
-                // non market
+                // non market!!
                 Storage foodSalary = new Storage(Product.Food, 1f);
                 foreach (PopLinkage link in hiredWorkForce)
                 {
@@ -504,7 +497,7 @@ public class Factory : Producer
     {
         //if (getLevel() > 0)
         if (isWorking() && Economy.isMarket.checkIftrue(province.getCountry()))
-        //        province.getOwner().isInvented(InventionType.capitalism))
+        
         {
             // rise salary to attract  workforce
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
@@ -744,7 +737,7 @@ public class Factory : Producer
                 else
                     if (isUpgrading())
                     isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
-                // what if not enough money to complete buildinG?
+                // what if there is no enough money to complete buildinG?
                 float minimalFond = cash.get() - 50f;
 
                 if (minimalFond < 0 && getOwner().canPay(new Value(minimalFond * -1f)))
@@ -794,8 +787,7 @@ public class Factory : Producer
                     province.getCountry().bank.defaultLoaner(this);
             }
         }
-        sendAllAvailableMoney(getOwner());
-        //pay(getOwner(), cash);
+        sendAllAvailableMoney(getOwner());        
         MainCamera.factoryPanel.removeFactory(this);
 
     }
@@ -831,9 +823,7 @@ public class Factory : Producer
                 pay(getOwner(), sentToOwner);
                 var owner = factoryOwner as Country;
                 if (owner != null)
-                    owner.ownedFactoriesIncomeAdd(sentToOwner);
-                //if (factoryOwner is Country)
-                //    factoryOwner.getCountry().ownedFactoriesIncomeAdd(sentToGovernment);
+                    owner.ownedFactoriesIncomeAdd(sentToOwner);               
             }
 
             if (getProfit() <= 0) // to avoid internal zero profit factories

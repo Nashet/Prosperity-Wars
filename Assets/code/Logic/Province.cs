@@ -645,13 +645,13 @@ public class Province
 
         txtMeshTransform.position = this.centre;
         TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-        var text = this.ToString();
+        //var text = this.ToString();
         //if (text.Length < 40)
         //{
         //    int howMuchAdd = (40 - text.Length) / 2;
         //    text = new string('.', howMuchAdd) + text + new string('.', howMuchAdd);
         //}
-        txtMesh.text = text;
+        txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
         group.SetLODs(lods);
         group.size = 30;
@@ -672,6 +672,16 @@ public class Province
                 if (factory.isWorking() && factory.type.basicProduction.getProduct() == stor.getProduct())
                     return true;
         return false;
+    }
+    /// <summary>
+    /// Adjusted to use in modifiers 
+    /// </summary>    
+    internal float getOverpopulationAdjusted()
+    {
+        float res = getOverpopulation();
+        res -= 1f;
+        if (res <= 0f) res = 0f;
+        return res;
     }
     internal float getOverpopulation()
     {

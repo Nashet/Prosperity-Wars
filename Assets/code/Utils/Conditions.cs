@@ -44,59 +44,86 @@ public class ConditionsList
     internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented });
     //private List<Modifier> inlist;
 
+    /// <summary>Return false if any of conditions is false</summary>    
+    public bool isAllTrue(System.Object forWhom, out string description)
+    {
+        string accu;
+        description = "";
+        bool atLeastOneNoAnswer = false;
+        foreach (var item in list)
+        {
+            if (!item.checkIftrue(forWhom, out accu))
+                atLeastOneNoAnswer = true;
+            description += accu;
+        }
+        if (atLeastOneNoAnswer) return false;
+        else
+        {
+            //description = "";
+            return true;
+        }
+    }
+    public bool isAllTrue(System.Object forWhom)
+    {
+        foreach (var item in list)
+            if (!item.checkIftrue(forWhom))
+                return false;
+        return true;
+    }
 
-    /// <summary>Return false if any of conditions is false</summary>    
-    public bool isAllTrue(Agent forWhom, out string description)
-    {
-        string accu;
-        description = "";
-        bool atLeastOneNoAnswer = false;
-        foreach (var item in list)
-        {
-            if (!item.checkIftrue(forWhom, out accu))
-                atLeastOneNoAnswer = true;
-            description += accu;
-        }
-        if (atLeastOneNoAnswer) return false;
-        else
-        {
-            //description = "";
-            return true;
-        }
-    }
-    /// <summary>Return false if any of conditions is false</summary>    
-    public bool isAllTrue(Country forWhom, out string description)
-    {
-        string accu;
-        description = "";
-        bool atLeastOneNoAnswer = false;
-        foreach (var item in list)
-        {
-            if (!item.checkIftrue(forWhom, out accu))
-                atLeastOneNoAnswer = true;
-            description += accu;
-        }
-        if (atLeastOneNoAnswer) return false;
-        else
-        {
-            //description = "";
-            return true;
-        }
-    }
-    public bool isAllTrue(Agent forWhom)
-    {
-        foreach (var item in list)
-            if (!item.checkIftrue(forWhom))
-                return false;
-        return true;
-    }
-    public bool isAllTrue(Country forWhom)
-    {
-        foreach (var item in list)
-            if (!item.checkIftrue(forWhom))
-                return false;
-        return true;
-    }
+    ///// <summary>Return false if any of conditions is false</summary>    
+    //public bool isAllTrue(Agent forWhom, out string description)
+    //{
+    //    string accu;
+    //    description = "";
+    //    bool atLeastOneNoAnswer = false;
+    //    foreach (var item in list)
+    //    {
+    //        if (!item.checkIftrue(forWhom, out accu))
+    //            atLeastOneNoAnswer = true;
+    //        description += accu;
+    //    }
+    //    if (atLeastOneNoAnswer) return false;
+    //    else
+    //    {
+    //        //description = "";
+    //        return true;
+    //    }
+    //}
+    //public bool isAllTrue(Agent forWhom)
+    //{
+    //    foreach (var item in list)
+    //        if (!item.checkIftrue(forWhom))
+    //            return false;
+    //    return true;
+    //}
+    ///// <summary>Return false if any of conditions is false</summary>    
+    //public bool isAllTrue(Country forWhom, out string description)
+    //{
+    //    string accu;
+    //    description = "";
+    //    bool atLeastOneNoAnswer = false;
+    //    foreach (var item in list)
+    //    {
+    //        if (!item.checkIftrue(forWhom, out accu))
+    //            atLeastOneNoAnswer = true;
+    //        description += accu;
+    //    }
+    //    if (atLeastOneNoAnswer) return false;
+    //    else
+    //    {
+    //        //description = "";
+    //        return true;
+    //    }
+    //}
+    
+    //public bool isAllTrue(Country forWhom)
+    //{
+    //    foreach (var item in list)
+    //        if (!item.checkIftrue(forWhom))
+    //            return false;
+    //    return true;
+    //}
 }
 //public abstract class AbstractConditionString
 //{
@@ -157,7 +184,7 @@ public class Condition : AbstractCondition
     /// <summary>to hide junk info /// </summary>
     bool showAchievedConditionDescribtion;
     Func<string> dynamicString;
-
+    protected Func<System.Object, System.Object> targetObject;
 
     internal static Condition IsNotImplemented = new Condition(delegate (System.Object forWhom) { return 2 == 0 || Game.devMode; }, "Feature is implemented", true);
 
@@ -168,6 +195,13 @@ public class Condition : AbstractCondition
         this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
+    //public Condition(Func<System.Object,  bool> myMethodName,  bool showAchievedConditionDescribtion)
+    //{
+    //    check3 = myMethodName;
+    //    //this.text = conditionIsTrue;
+    //    this.dynamicString = ;
+    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    //}
     public Condition(Func<System.Object, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion)
     {
         check3 = myMethodName;
@@ -175,7 +209,7 @@ public class Condition : AbstractCondition
         //this.conditionDescription = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
-
+    
     public Condition(Condition another)
     {
         text = another.text;
@@ -183,7 +217,15 @@ public class Condition : AbstractCondition
         showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
         dynamicString = another.dynamicString;
     }
-
+    // for scope-changing
+    public Condition(Condition another, Func<System.Object, System.Object> x)
+    {
+        targetObject = x;
+        text = another.text;
+        check3 = another.check3;
+        showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
+        dynamicString = another.dynamicString;
+    }
     ////used in tax-like modifiers
     public Condition(string conditionIsTrue, bool showAchievedConditionDescribtion)
     {
@@ -221,7 +263,7 @@ public class Condition : AbstractCondition
         this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
-    internal string getDescription()
+    protected string getDescription()
     {
         if (text == null)
             return dynamicString();
@@ -229,14 +271,20 @@ public class Condition : AbstractCondition
             return text;
 
     }
+    //public string getDynamicString()
+    //{
+
+    //}
     public override string ToString()
     {
         return getDescription();
     }
 
     /// <summary>Returns bool result and description in out description</summary>    
-    internal bool checkIftrue(Agent forWhom, out string description)
+    internal bool checkIftrue(System.Object forWhom, out string description)
     {
+        if (targetObject != null)
+            forWhom = targetObject(forWhom);
         string result = null;
         bool answer = false;
         if (check3(forWhom))
@@ -253,48 +301,50 @@ public class Condition : AbstractCondition
         return answer;
     }
     /// <summary>Fast version, without description</summary>    
-    internal bool checkIftrue(Agent forWhom)
+    internal bool checkIftrue(System.Object forWhom)
     {
+        if (targetObject != null)
+            forWhom = targetObject(forWhom); ;
         return check3(forWhom);
     }
     /// <summary>Returns bool result and description in out description</summary>    
-    virtual internal bool checkIftrue(Country forWhom, out string description)
-    {
-        string result = null;
-        bool answer = false;
+    //virtual internal bool checkIftrue(Country forWhom, out string description)
+    //{
+    //    string result = null;
+    //    bool answer = false;
 
-        if (check3(forWhom))
-        {
-            if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
-            answer = true;
-        }
-        else
-        {
-            result += "\n(-) " + getDescription();
-            answer = false;
-        }
-        description = result;
-        return answer;
+    //    if (check3(forWhom))
+    //    {
+    //        if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
+    //        answer = true;
+    //    }
+    //    else
+    //    {
+    //        result += "\n(-) " + getDescription();
+    //        answer = false;
+    //    }
+    //    description = result;
+    //    return answer;
 
 
-        //if (check2(forWhom))
-        //{
-        //    if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
-        //    answer = true;
-        //}
-        //else
-        //{
-        //    result += "\n(-) " + getDescription();
-        //    answer = false;
-        //}
-        //description = result;
-        //return answer;
-    }
-    /// <summary>Fast version, without description</summary>    
-    internal bool checkIftrue(Country forWhom)
-    {
-        return check3(forWhom);
-    }
+    //    //if (check2(forWhom))
+    //    //{
+    //    //    if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
+    //    //    answer = true;
+    //    //}
+    //    //else
+    //    //{
+    //    //    result += "\n(-) " + getDescription();
+    //    //    answer = false;
+    //    //}
+    //    //description = result;
+    //    //return answer;
+    //}
+    ///// <summary>Fast version, without description</summary>    
+    //internal bool checkIftrue(Country forWhom)
+    //{
+    //    return check3(forWhom);
+    //}
 
 }
 public class Modifier : Condition
@@ -303,11 +353,20 @@ public class Modifier : Condition
     Func<int> multiplierModifierFunction;
     Func<System.Object, float> floatModifierFunction;
     bool showZeroModifiers;
+    static public readonly Modifier modifierDefault = new Modifier(x => true, "Default", 1f, true);
     public Modifier(Func<System.Object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
     {
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
+    /// <summary>
+    /// to use with other scope modifiers
+    /// </summary>    
+    //public Modifier(Func<System.Object, bool> myMethodName, float value, bool showZeroModifiers) : base(myMethodName,  true)
+    //{
+    //    this.value = value;
+    //    this.showZeroModifiers = showZeroModifiers;
+    //}
     public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
     {
         this.value = value;
@@ -330,7 +389,12 @@ public class Modifier : Condition
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
-
+    public Modifier(Condition condition, Func<System.Object, System.Object> x, float value, bool showZeroModifiers) : base(condition, x)
+    {
+        //targetObject = x;
+        this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
+    }
 
     /// <summary>Checks if invention is invented.
     /// depreciated</summary>    
@@ -362,44 +426,47 @@ public class Modifier : Condition
     }
     /// <summary>Returns bool result and description in out description
     /// Doesn't care about showZeroModifier</summary>        
-    override internal bool checkIftrue(Country forWhom, out string description)
-    {
-        bool answer = false;
-        if (floatModifierFunction != null)
-        {
-            StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(getDescription());
-            str.Append(": ").Append(floatModifierFunction(forWhom) * getValue());
-            description = str.ToString();
-            answer = true;
-        }
-        else
-        if (multiplierModifierFunction != null)
-        {
-            StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(getDescription());
-            str.Append(" ").Append(multiplierModifierFunction() * getValue());
-            description = str.ToString();
-            answer = true;
-        }
-        else
-        if (check3(forWhom))
-        {
-            answer = true;
-            StringBuilder str = new StringBuilder("\n(+) ");
-            str.Append(getDescription());
-            str.Append(" ").Append(getValue());
-            description = str.ToString();
-        }
-        else
-        {
-            answer = false;
-            description = "";
-        }
-        return answer;
-    }
+    //override internal bool checkIftrue(Country forWhom, out string description)
+    //{
+    //    bool answer = false;
+    //    if (floatModifierFunction != null)
+    //    {
+    //        StringBuilder str = new StringBuilder("\n(+) ");
+    //        str.Append(getDescription());
+    //        str.Append(": ").Append(floatModifierFunction(forWhom) * getValue());
+    //        description = str.ToString();
+    //        answer = true;
+    //    }
+    //    else
+    //    if (multiplierModifierFunction != null)
+    //    {
+    //        StringBuilder str = new StringBuilder("\n(+) ");
+    //        str.Append(getDescription());
+    //        str.Append(" ").Append(multiplierModifierFunction() * getValue());
+    //        description = str.ToString();
+    //        answer = true;
+    //    }
+    //    else
+    //    if (check3(forWhom))
+    //    {
+    //        answer = true;
+    //        StringBuilder str = new StringBuilder("\n(+) ");
+    //        str.Append(getDescription());
+    //        str.Append(" ").Append(getValue());
+    //        description = str.ToString();
+    //    }
+    //    else
+    //    {
+    //        answer = false;
+    //        description = "";
+    //    }
+    //    return answer;
+    //}
     internal float getModifier(System.Object forWhom, out string description)
     {
+        if (targetObject != null)
+            forWhom = targetObject(forWhom); 
+
         float result;
         if (floatModifierFunction != null)
         {
@@ -450,6 +517,8 @@ public class Modifier : Condition
     }
     internal float getModifier(System.Object forWhom)
     {
+        if (targetObject != null)
+            forWhom = targetObject(forWhom);
         float result;
         if (floatModifierFunction != null)
             result = floatModifierFunction(forWhom) * getValue();
@@ -483,19 +552,21 @@ public class ModifiersList : ConditionsList
     internal float getModifier(System.Object forWhom, out string description)
     {
         StringBuilder text = new StringBuilder();
+        //text.Clear();
         float summ = 0f;
         string accu;
         foreach (Modifier item in list)
         {
             summ += item.getModifier(forWhom, out accu);
             //if (item.checkIftrue(forWhom, out accu))
-           
+
             if (accu != "")
             {
                 text.Append(accu);
             }
         }
         text.Append("\nTotal: ").Append(summ);
+        //text.
         description = text.ToString();
         return summ;
     }

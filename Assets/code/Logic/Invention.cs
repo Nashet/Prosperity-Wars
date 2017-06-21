@@ -59,7 +59,7 @@ public class Invention : AbstractCondition
         Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
         individualRights = new Invention("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
         collectivism = new Invention("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
-        steamPower = new Invention("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
+        SteamPower = new Invention("Steam Power", "Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(100f)),
         Gunpowder = new Invention("Gunpowder", "Allows Artillery & Ammunition", new Value(100f)),
         Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(200f)),
@@ -67,7 +67,8 @@ public class Invention : AbstractCondition
         Tanks = new Invention("Tanks", "Allows Tanks", new Value(800f)),
         Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f))
         ;
-    readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.steamPower), "Steam Power is invented", true);
+    readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.SteamPower), "Steam Power is invented", true);
+    readonly public static Condition CombustionEngineInvented = new Condition(x => (x as Country).isInvented(Invention.CombustionEngine), "Combustion Engine is invented", true);
     readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(Invention.individualRights), "Individual Rights are invented", true);
     internal Invention(string name, string description, Value cost)
     {
@@ -87,9 +88,9 @@ public class Invention : AbstractCondition
     {
         if (this == Invention.collectivism
             || (this == Invention.Gunpowder && !country.isInvented(Invention.Metal))
-            || (this == Invention.steamPower && !country.isInvented(Invention.Metal))
+            || (this == Invention.SteamPower && !country.isInvented(Invention.Metal))
             || (this == Invention.Firearms && !country.isInvented(Invention.Gunpowder))
-            || (this == Invention.CombustionEngine && !country.isInvented(Invention.steamPower))
+            || (this == Invention.CombustionEngine && !country.isInvented(Invention.SteamPower))
             || (this == Invention.Tanks && !country.isInvented(Invention.CombustionEngine))
             || (this == Invention.Airplanes && !country.isInvented(Invention.CombustionEngine))
             )

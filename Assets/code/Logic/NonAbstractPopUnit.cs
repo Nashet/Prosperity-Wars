@@ -132,11 +132,15 @@ public class Farmers : PopUnit
     {
         Value producedAmount;
         float overpopulation = province.getOverpopulation();
-        if (overpopulation <= 1) // all is OK
-            producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000 + getPopulation() * popType.basicProduction.get() / 1000 * education.get());
-        else
-            producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000 / overpopulation + getPopulation() * popType.basicProduction.get() / 1000 / overpopulation * education.get());
+
+        //if (overpopulation <= 1) // all is OK
+        producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000);
+        //else
+        //  producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000 / overpopulation);
+
+        producedAmount.multiple(modEfficiency.getModifier(this));
         gainGoodsThisTurn.set(producedAmount);
+
 
         if (Economy.isMarket.checkIftrue(province.getCountry()))
         {

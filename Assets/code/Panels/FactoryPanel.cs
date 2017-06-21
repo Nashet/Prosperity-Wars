@@ -226,7 +226,7 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onNationalizeClick()
     {
-        shownFactory.changeOwner(Game.Player);
+        shownFactory.setOwner(Game.Player);
         MainCamera.refreshAllActive();
     }
 

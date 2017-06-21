@@ -27,9 +27,9 @@ abstract public class PopUnit : Producer
     private int daysUpsetByForcedReform;
     private bool didntGetPromisedUnemloymentSubsidy;
 
-    public readonly static ModifiersList modifiersLoyaltyChange;
+    public readonly static ModifiersList modifiersLoyaltyChange, modEfficiency;
 
-    static Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
+    static readonly Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies,
         modifierMinorityPolicy;
 
@@ -70,6 +70,20 @@ abstract public class PopUnit : Producer
         modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
             modifierMinorityPolicy
 });
+
+        modEfficiency = new ModifiersList(new List<Condition> {
+            Modifier.modifierDefault,
+            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),
+            //new Modifier(x=>(x as PopUnit).getCountry().inventions.isInvented(Invention.SteamPower),"" , 0.25f, false),
+            new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
+
+            new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
+            new Modifier( Economy.isState, x=>(x as PopUnit).getCountry(),  0.10f, false),
+            new Modifier(Economy.isInterventionism,x=>(x as PopUnit).getCountry(),  0.30f, false),
+            new Modifier(Economy.isLF,x=>(x as PopUnit).getCountry(),  0.50f, false),
+            new Modifier(Economy.isPlanned,x=>(x as PopUnit).getCountry(),  -0.10f, false)            
+            //new Modifier(Serfdom.Allowed,  -20f, false)
+        });
     }
     protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
     {

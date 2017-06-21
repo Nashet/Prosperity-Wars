@@ -506,11 +506,6 @@ public class Country : Consumer
                 procent.add(modMyOpinionOfXCountry.getModifier(item), false);
                 procent.clamp100();
             }
-        //if (opinionOf.TryGetValue(item, out opinion))
-        //{
-        //    opinion.add(modMyOpinionOfXCountry.getModifier(item));
-        //    opinion.clamp100();
-        //}
 
 
         if (isAI() && !isOnlyCountry())

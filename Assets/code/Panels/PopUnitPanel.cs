@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class PopUnitPanel : DragPanel
 {
-    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText;
+    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText;
     private PopUnit pop;
     // Use this for initialization
     void Start()
@@ -26,6 +26,7 @@ public class PopUnitPanel : DragPanel
     {
         if (pop != null)
         {
+            efficiencyText.text ="Efficiency: "+ PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
             string demotionText;
             var target = pop.getRichestDemotionTarget();
             if (pop.wantsToDemote() && target != null && pop.getDemotionSize() > 0)
