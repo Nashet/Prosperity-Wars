@@ -195,7 +195,7 @@ public class Factory : Producer
         return type.name + " L" + getLevel();
     }
     internal Agent getOwner()
-    {       
+    {
         return factoryOwner;
     }
     public void setOwner(Agent agent)
@@ -301,7 +301,7 @@ public class Factory : Producer
             if (link.pop == pop)
                 result += link.amount;
         return result;
-    }   
+    }
 
     internal bool IsThereMoreWorkersToHire()
     {
@@ -497,7 +497,7 @@ public class Factory : Producer
     {
         //if (getLevel() > 0)
         if (isWorking() && Economy.isMarket.checkIftrue(province.getCountry()))
-        
+
         {
             // rise salary to attract  workforce
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
@@ -787,7 +787,7 @@ public class Factory : Producer
                     province.getCountry().bank.defaultLoaner(this);
             }
         }
-        sendAllAvailableMoney(getOwner());        
+        sendAllAvailableMoney(getOwner());
         MainCamera.factoryPanel.removeFactory(this);
 
     }
@@ -823,7 +823,7 @@ public class Factory : Producer
                 pay(getOwner(), sentToOwner);
                 var owner = factoryOwner as Country;
                 if (owner != null)
-                    owner.ownedFactoriesIncomeAdd(sentToOwner);               
+                    owner.ownedFactoriesIncomeAdd(sentToOwner);
             }
 
             if (getProfit() <= 0) // to avoid internal zero profit factories
@@ -1014,10 +1014,10 @@ public class MeshStructure
 {
     public List<Vector3> vertices;
     public List<int> triangles;
-    public List<Vector2> UVmap;    
-    
+    public List<Vector2> UVmap;
+
     public MeshStructure()
-    {        
+    {
         vertices = new List<Vector3>();
         triangles = new List<int>();
         UVmap = new List<Vector2>();
@@ -1026,5 +1026,75 @@ public class MeshStructure
     {
         vertices.Clear();
         triangles.Clear();
+    }
+    public void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
+    {
+        int vertexIndex = vertices.Count;
+        vertices.Add(a);
+        vertices.Add(b);
+        vertices.Add(c);
+        vertices.Add(d);
+        triangles.Add(vertexIndex);
+        triangles.Add(vertexIndex + 1);
+        triangles.Add(vertexIndex + 2);
+        triangles.Add(vertexIndex);
+        triangles.Add(vertexIndex + 2);
+        triangles.Add(vertexIndex + 3);
+    }
+    public void AddBorderQuad2(Vector2 a, Vector2 b)
+    {
+
+        //TODO put to constant
+        float borderWidth = 0.4f;
+        float borderWidth2 = -0.4f;
+
+        AddBorderQuad(
+(Vector3)a,
+MeshExtensions.makeArrow(a, b, borderWidth),
+(Vector3)b,
+MeshExtensions.makeArrow(b, a, borderWidth2),
+true
+);
+
+
+    }
+    private void AddBorderQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
+    {
+        float borderHeight = 0.1f;
+        Vector3 liftedA = a + Vector3.back * borderHeight;
+        Vector3 liftedB = b + Vector3.back * borderHeight;
+        Vector3 liftedC = c + Vector3.back * borderHeight;
+        Vector3 liftedD = d + Vector3.back * borderHeight;
+
+        int vertexIndex = vertices.Count;
+        vertices.Add(liftedA);
+        vertices.Add(liftedB);
+        vertices.Add(liftedC);
+        vertices.Add(liftedD);
+        triangles.Add(vertexIndex);
+        triangles.Add(vertexIndex + 2);
+        triangles.Add(vertexIndex + 1);
+        triangles.Add(vertexIndex + 2);
+        triangles.Add(vertexIndex + 3);
+        triangles.Add(vertexIndex + 1);
+
+        if (addUV)
+        {
+            UVmap.Add(new Vector2(0f, 1f));
+            UVmap.Add(new Vector2(1f, 1f));
+            UVmap.Add(new Vector2(0f, 0f));
+            UVmap.Add(new Vector2(1f, 0f));
+        }
+        //borderVertices[i * 2 + 0] = meshStructure.vertices[item.v1] + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 0] = new Vector2(0f, 1f);
+
+        //borderVertices[i * 2 + 1] = MeshExtensions.makeArrow(meshStructure.vertices[item.v1], meshStructure.vertices[item.v2], borderWidth) + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 1] = new Vector2(1f, 1f);
+
+        //borderVertices[i * 2 + 2] = meshStructure.vertices[item.v2] + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 2] = new Vector2(0f, 0f);
+
+        //borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(meshStructure.vertices[item.v2], meshStructure.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
+        //UVmap[i * 2 + 3] = new Vector2(1f, 0f);
     }
 }

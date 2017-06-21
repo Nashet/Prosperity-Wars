@@ -159,18 +159,6 @@ public class Game : ThreadedJob
 
     }
 
-    //static void removeProvince(int x, int y)
-    //{
-    //    var toremove = Province.findProvince(map.GetPixel(x, y));
-    //    if (Province.allProvinces.Contains(toremove))
-    //    {
-    //        toremove.removeProvince();
-    //        //UnityEngine.Object.Destroy(toremove.rootGameObject);
-
-    //        //Province.allProvinces.Remove(toremove);
-    //    }
-    //}
-
     static private void setStartResources()
     {
         //Country.allCountries[0] is null country
@@ -253,9 +241,6 @@ public class Game : ThreadedJob
                         }
                     }
                 }
-
-
-
             default:
                 return default(Color);
         }
@@ -420,8 +405,7 @@ public class Game : ThreadedJob
         return allMoney;
     }
     static void CreateRandomPopulation()
-    {
-        int chanceForA = 85;
+    {   
 
         foreach (Province province in Province.allProvinces)
         {
@@ -463,113 +447,34 @@ public class Game : ThreadedJob
                     province.allPopUnits.Add(pop);
 
                 }
-                //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
-
-                //if (Procent.GetChance(chanceForA))
-                //    province.allPopUnits.Add(
-                //    new PopUnit(PopUnit.getRandomPopulationAmount(), PopType.aristocrats, culture, province)
-                //    );
+                //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
 
             }
 
         }
-    }
-    /// <summary>
-    /// Makes polygonal Stripe and stores it vertices[] and trianglesList[]
-    /// </summary>    
-    //static void makePolygonalStripe(float x, float y, float x2, float y2, int xpos1, int ypos1, int xpos2, int ypos2)
-    ////void makePolygonalStripe(float x, float y, float x2, float y2)
-    //{
-    //    //float x = xpos1 * Options.cellMuliplier;
-    //    //float y = ypos1 * Options.cellMuliplier;
-    //    //float x2 = xpos2 * Options.cellMuliplier;
-    //    //float y2 = ypos1 * Options.cellMuliplier;
-
-    //    //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-    //    //    x -= Options.cellMuliplier;
-    //    //if (mapImage.isRightTopCorner(xpos1, ypos1))
-    //    //    x += Options.cellMuliplier;
-
-    //    //if (mapImage.isLeftBottomCorner(xpos1, ypos1))
-    //    //    vertices.Add(new Vector3(x + Options.cellMuliplier, y, 0));
-    //    //else
-    //    vertices.Add(new Vector3(x, y, 0));
-
-    //    //if (mapImage.isRightBottomCorner(xpos2 - 1, ypos1))
-    //    //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y, 0));
-    //    //else
-    //    vertices.Add(new Vector3(x2, y, 0));
-
-    //    //if (mapImage.isRightTopCorner(xpos2 - 1, ypos1))
-    //    //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y2, 0));
-    //    //else
-    //    vertices.Add(new Vector3(x2, y2, 0));
-
-    //    //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-    //    //    vertices.Add(new Vector3(x + Options.cellMuliplier, y2, 0));
-    //    //else
-    //    vertices.Add(new Vector3(x, y2, 0));
-
-    //    trianglesList.Add(0 + triangleCounter);
-    //    trianglesList.Add(2 + triangleCounter);
-    //    trianglesList.Add(1 + triangleCounter);
-
-    //    trianglesList.Add(2 + triangleCounter);
-    //    trianglesList.Add(0 + triangleCounter);
-    //    trianglesList.Add(3 + triangleCounter);
-    //    triangleCounter += 4;
-    //}
-    //static void checkCoordinateForNeighbors(Province province, int x1, int y1, int x2, int y2)
-    //{
-    //    if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
-    //    {
-    //        Province found;
-    //        found = Province.findProvince(mapImage.GetPixel(x2, y2));
-    //        if (found != null) // for remove edge provinces
-    //            province.addNeigbor(found);
-    //    }
-    //}
+    }    
 
     internal static bool isPlayerSurrended()
     {
         return surrended;
     }
-
-    //static void findNeighborprovinces()
-    //{
-    //    int f = 0;
-    //    foreach (var province in Province.allProvinces)
-    //    {
-    //        f++;
-    //        for (int j = 0; j < mapImage.height; j++)
-    //            for (int i = 0; i < mapImage.width; i++)
-    //            {
-    //                Color currentColor = mapImage.GetPixel(i, j);
-    //                if (currentColor == province.getColorID())
-    //                {
-    //                    checkCoordinateForNeighbors(province, i, j, i + 1, j);
-    //                    checkCoordinateForNeighbors(province, i, j, i - 1, j);
-    //                    checkCoordinateForNeighbors(province, i, j, i, j + 1);
-    //                    checkCoordinateForNeighbors(province, i, j, i, j - 1);
-    //                }
-    //            }
-    //    }
-    //}
+    
     static void generateMapImage()
     {
 
         //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
+        //Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
+        Texture2D mapImage = new Texture2D(120 + Random.Next(40), 60 + Random.Next(40));
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
-        if (Game.devMode)
-            amountOfProvince = 7;
-        else
-            amountOfProvince = 12 + Game.Random.Next(8);
-        amountOfProvince = 40 + Game.Random.Next(20);
-        amountOfProvince = 160 + Game.Random.Next(20);
+        //if (Game.devMode)
+        //    amountOfProvince = 7;
+        //else
+        //    amountOfProvince = 12 + Game.Random.Next(8);
+        //amountOfProvince = 40 + Game.Random.Next(20);
+        //amountOfProvince = 160 + Game.Random.Next(20);
         amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
@@ -605,114 +510,9 @@ public class Game : ThreadedJob
             if (color == all.getColorID())
                 return all.landMesh;
         return null;
-    }
-    //static Mesh getMeshID(int xpos, int ypos)
-    //{
-    //    Color color = mapImage.GetPixel(xpos, ypos);
-    //    foreach (var all in Province.allProvinces)
-    //        if (color == all.getColorID())
-    //            return all.landMesh;
-    //    return null;
-    //}
-    static private bool movePointRight(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
-    {
-        Vector3[] editingVertices = mesh.vertices;
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
-            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
-            if (editingVertices[i] == sr)
-            {
-                editingVertices[i].x += Options.cellMultiplier * xMove / 2;
-                mesh.vertices = editingVertices;
-                mesh.RecalculateBounds();
-                return true;
-            }
-        }
-        return false;
-    }
-    //static private bool movePointLeft(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
-    //{
-    //    Vector3[] mesh1Vertices = mesh.vertices;
+    }   
 
-    //    Mesh mesh2 = getMeshID(xpos + 1, ypos);
-    //    Vector3[] mesh2Vertices = mesh2.vertices;
-    //    for (int i = 0; i < mesh.vertices.Length; i++)
-    //    {
-    //        Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 2) * Options.cellMultiplier, 0f);
-    //        //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
-    //        //if (editingVertices[i] == sr || editingVertices[i] == sr2)
-    //        if (mesh1Vertices[i] == sr)
-    //        {
-    //            mesh1Vertices[i].x += Options.cellMultiplier * xMove / 2;
-    //            mesh.vertices = mesh1Vertices;
-    //            mesh.RecalculateBounds();
-    //            return true;
-    //        }
-    //    }
-    //    return false;
-    //}
-
-    //static void roundMesh()
-    //{
-    //    for (int ypos = 0; ypos < mapImage.height; ypos++)
-    //    {
-    //        for (int xpos = 0; xpos < mapImage.width; xpos++)
-    //        {
-    //            if (mapImage.isRightTopCorner(xpos, ypos))
-    //            {
-    //                movePointLeft(getMeshID(xpos, ypos), xpos + 1, ypos - 1, -1, 0);
-    //                movePointLeft(getMeshID(xpos + 1, ypos), xpos + 1, ypos - 1, -1, 0);
-    //            }
-    //            else
-    //            if (mapImage.isLeftTopCorner(xpos, ypos))
-    //            {
-    //                movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos, 1, 0);
-    //                movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos, 1, 0);
-    //            }
-    //            else
-    //            if (mapImage.isLeftBottomCorner(xpos, ypos))
-    //            {
-    //                movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
-    //                movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
-    //            }
-    //            else
-    //            if (mapImage.isRightBottomCorner(xpos, ypos))
-    //            {
-    //                movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
-    //                movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
-    //            }
-    //        }
-    //    }
-    //}
-
-    //static void makeProvinces()
-    //{
-    //    ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
-
-    //    VoxelGrid grid = new VoxelGrid(mapImage.width, Options.cellMultiplier * 100, mapImage, Game.blockedProvinces);
-    //    Color currentProvinceColor = mapImage.GetPixel(0, 0);
-    //    int provinceCounter = 0;
-    //    for (int j = 0; j < mapImage.height; j++) // circle by province        
-    //        for (int i = 0; i < mapImage.width; i++)
-    //        {
-    //            //var newProvince = Province.findProvince(currentProvinceColor);
-    //            //if (currentProvinceColor != mapImage.GetPixel(i, j) && newProvince != null)
-    //            if (currentProvinceColor != mapImage.GetPixel(i, j) && !Province.isProvinceCreated(currentProvinceColor))
-    //            {
-
-
-    //                makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName(),
-    //                    grid.getMesh(currentProvinceColor), grid.getBorders());
-    //                //Province newProvince =
-    //                //var np = new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, grid.getMesh(), Product.getRandomResource(false), mapObject);
-    //                //Province.allProvinces.Add(np);
-    //                provinceCounter++;
-    //            }
-    //            currentProvinceColor = mapImage.GetPixel(i, j);
-    //        }
-    //}
+   
 
 
     static bool FindProvinceCenters()
@@ -790,44 +590,7 @@ public class Game : ThreadedJob
         //}
         //return false;
     }
-    //static bool isThereOtherColorsIn4Negbors(int x, int y, short[,] bordersMarkers, short borderDeepLevel)
-    //{
-    //    Color color = mapImage.GetPixel(x, y);
-    //    //if (x == 0)
-    //    //    return true;
-    //    //else
-    //    //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x - 1, y), color)) return true;
-
-    //    //if (x == mapImage.width - 1)
-    //    //    return true;
-    //    //else
-    //    //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x + 1, y), color)) return true;
-    //    //if (y == 0)
-    //    //    return true;
-    //    //else
-    //    //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y - 1), color)) return true;
-    //    //if (y == mapImage.height - 1)
-    //    //    return true;
-    //    //if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y + 1), color)) return true;
-    //    //return false;
-    //    if (x == 0)
-    //        return true;
-    //    else
-    //      if (mapImage.GetPixel(x - 1, y) != color || bordersMarkers[x - 1, y] != borderDeepLevel) return true;
-
-    //    if (x == mapImage.width - 1)
-    //        return true;
-    //    else
-    //        if (mapImage.GetPixel(x + 1, y) != color || bordersMarkers[x + 1, y] != borderDeepLevel) return true;
-    //    if (y == 0)
-    //        return true;
-    //    else
-    //        if (mapImage.GetPixel(x, y - 1) != color || bordersMarkers[x, y - 1] != borderDeepLevel) return true;
-    //    if (y == mapImage.height - 1)
-    //        return true;
-    //    if (mapImage.GetPixel(x, y + 1) != color || bordersMarkers[x, y + 1] != borderDeepLevel) return true;
-    //    return false;
-    //}
+    
     public static void PrepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
@@ -843,19 +606,7 @@ public class Game : ThreadedJob
                 province.BalanceEmployableWorkForce();
                 {
                     foreach (var item in province.getProducers())
-                        item.setStatisticToZero();
-
-                    //    foreach (PopUnit pop in province.allPopUnits)
-                    //{
-
-                    //    pop.setStatisticToZero();
-
-                    //}
-                    //foreach (Factory factory in province.allFactories)
-                    //{   
-
-                    //    factory.setStatisticToZero();                        
-                    //}
+                        item.setStatisticToZero();               
                 }
             }
         }
@@ -869,9 +620,7 @@ public class Game : ThreadedJob
             + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\nEnter key to close top window, space - to pause\\unpause"
-            , "Ok");
-        ;
-
+            , "Ok");        
     }
     static void loadImages()
     {
