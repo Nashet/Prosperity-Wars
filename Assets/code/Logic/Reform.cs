@@ -237,7 +237,7 @@ public class Economy : AbstractReform
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
-            if (pop.popType == PopType.capitalists)
+            if (pop.popType == PopType.Capitalists)
             {
                 //possitive - more liberal
                 int change = ID - pop.getCountry().economy.status.ID;
@@ -361,7 +361,7 @@ public class Serfdom : AbstractReform
         {
             Procent result;
             int change = ID - pop.getCountry().serfdom.status.ID; //positive - more liberal
-            if (pop.popType == PopType.aristocrats)
+            if (pop.popType == PopType.Aristocrats)
             {
                 if (change > 0)
                     result = new Procent(0f);
@@ -478,38 +478,38 @@ public class MinimalWage : AbstractReform
                 return 0f;
             else if (this == Scanty)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 //result.multipleInside(0.5f);
                 return result.get();
             }
             else if (this == Minimal)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.02f);
                 result.add(everyDayCost);
                 return result.get();
             }
             else if (this == Trinket)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.04f);
                 result.add(everyDayCost);
                 return result.get();
             }
             else if (this == Middle)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.06f);
                 result.add(everyDayCost);
                 return result.get();
             }
             else if (this == Big)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.08f);
                 //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
                 result.add(everyDayCost);
@@ -526,7 +526,7 @@ public class MinimalWage : AbstractReform
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
-            if (pop.popType == PopType.workers)
+            if (pop.popType == PopType.Workers)
             {
                 //positive - reform will be better for worker, [-5..+5]
                 int change = ID - pop.getCountry().minimalWage.status.ID;
@@ -645,38 +645,38 @@ public class UnemploymentSubsidies : AbstractReform
                 return 0f;
             else if (this == Scanty)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 //result.multipleInside(0.5f);
                 return result.get();
             }
             else if (this == Minimal)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.02f);
                 result.add(everyDayCost);
                 return result.get();
             }
             else if (this == Trinket)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.04f);
                 result.add(everyDayCost);
                 return result.get();
             }
             else if (this == Middle)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.06f);
                 result.add(everyDayCost);
                 return result.get();
             }
             else if (this == Big)
             {
-                Value result = Game.market.getCost(PopType.workers.getLifeNeedsPer1000());
-                Value everyDayCost = Game.market.getCost(PopType.workers.getEveryDayNeedsPer1000());
+                Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
                 everyDayCost.multiple(0.08f);
                 //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
                 result.add(everyDayCost);

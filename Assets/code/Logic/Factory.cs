@@ -305,7 +305,7 @@ public class Factory : Producer
 
     internal bool IsThereMoreWorkersToHire()
     {
-        int totalAmountWorkers = province.getPopulationAmountByType(PopType.workers);
+        int totalAmountWorkers = province.getPopulationAmountByType(PopType.Workers);
         int result = totalAmountWorkers - getWorkForce();
         return (result > 0);
     }
@@ -504,7 +504,7 @@ public class Factory : Producer
                 salary.add(0.03f);
 
             //too allocate workers form other popTypes
-            if (getFreeJobSpace() > 100 && province.getPopulationAmountByType(PopType.workers) < 600
+            if (getFreeJobSpace() > 100 && province.getPopulationAmountByType(PopType.Workers) < 600
                 && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)// in that case float can store 1 exactly
                 salary.add(0.01f);
 

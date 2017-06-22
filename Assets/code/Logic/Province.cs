@@ -131,7 +131,7 @@ public class Province
     }
     public void setUnselectedBorderMaterials()
     {
-        foreach (var neighbor in neighbors)            
+        foreach (var neighbor in neighbors)
             if (getCountry() == neighbor.getCountry())
             {
                 this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
@@ -255,7 +255,7 @@ public class Province
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
         setUnselectedBorderMaterials();
-       
+
     }
 
     internal bool isCapital()
@@ -295,12 +295,12 @@ public class Province
     }
     public void setProvinceCenter()
     {
-        Vector3 accu = new Vector3(0, 0, 0);        
+        Vector3 accu = new Vector3(0, 0, 0);
         foreach (var c in this.meshStructure.getVertices())
             accu += c;
         accu = accu / this.meshStructure.verticesCount;
         this.centre = accu;
-        
+
     }
 
     internal Culture getMajorCulture()
@@ -409,7 +409,7 @@ public class Province
     //not called with capitalism
     internal void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
     {
-        List<PopUnit> allAristocratsInProvince = getAllPopUnits(PopType.aristocrats);
+        List<PopUnit> allAristocratsInProvince = getAllPopUnits(PopType.Aristocrats);
         int aristoctratAmount = 0;
         foreach (PopUnit pop in allAristocratsInProvince)
             aristoctratAmount += pop.getPopulation();
@@ -471,7 +471,7 @@ public class Province
     }
     public void BalanceEmployableWorkForce()
     {
-        List<PopUnit> workforceList = this.getAllPopUnits(PopType.workers);
+        List<PopUnit> workforceList = this.getAllPopUnits(PopType.Workers);
         int totalWorkForce = workforceList.Sum(x => x.getPopulation());
         int factoryWants = 0;
         //int factoryWantsTotal = 0;
@@ -590,7 +590,7 @@ public class Province
         //List<PopUnit> list = this.FindAllPopUnits(PopType.workers);
         //foreach (PopUnit pop in list)
         //    result += pop.getUnemployed();
-        int totalWorkforce = this.getPopulationAmountByType(PopType.workers);
+        int totalWorkforce = this.getPopulationAmountByType(PopType.Workers);
         if (totalWorkforce == 0) return 0;
         int employed = 0;
 
@@ -620,12 +620,12 @@ public class Province
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
         txtMeshTransform.SetParent(this.rootGameObject.transform, false);
         Renderer[] renderers = new Renderer[1];
-        renderers[0] = txtMeshTransform.GetComponent<Renderer>();        
+        renderers[0] = txtMeshTransform.GetComponent<Renderer>();
         lods[0] = new LOD(0.25F, renderers);
 
         txtMeshTransform.position = this.centre;
         TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-      
+
         txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
         group.SetLODs(lods);
@@ -663,18 +663,13 @@ public class Province
     {
         float usedLand = 0f;
         foreach (PopUnit pop in allPopUnits)
-            switch (pop.popType.type)
-            {
-                case PopType.PopTypes.Tribemen:
-                    usedLand += pop.getPopulation() * Options.PopMinLandForTribemen;
-                    break;
-                case PopType.PopTypes.Farmers:
-                    usedLand += pop.getPopulation() * Options.PopMinLandForFarmers;
-                    break;
-                default:
-                    usedLand += pop.getPopulation() * Options.PopMinLandForTownspeople;
-                    break;
-            }
+            if (pop.popType == PopType.TribeMen)
+                usedLand += pop.getPopulation() * Options.PopMinLandForTribemen;
+            else if (pop.popType == PopType.Farmers)
+                usedLand += pop.getPopulation() * Options.PopMinLandForFarmers;
+            else
+                usedLand += pop.getPopulation() * Options.PopMinLandForTownspeople;
+
         return usedLand / fertileSoil;
     }
     /// <summary>Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary

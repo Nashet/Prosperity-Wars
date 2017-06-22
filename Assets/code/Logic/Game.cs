@@ -5,8 +5,7 @@ using System.Text;
 using System;
 
 public class Game : ThreadedJob
-{
-    //static Texture2D mapImage;
+{   
     static MyTexture map;
     public static GameObject mapObject;
     internal static GameObject r3dTextPrefab;
@@ -50,8 +49,7 @@ public class Game : ThreadedJob
         makeProducts();
         market.initialize();
         makeFactoryTypes();
-        makePopTypes();
-
+       
         updateStatus("Reading provinces..");
         Province.preReadProvinces(Game.map, this);
         seaProvinces = getSeaProvinces();
@@ -170,28 +168,6 @@ public class Game : ThreadedJob
         Country.allCountries[5].getCapital().setResource(Product.Stone);
         Country.allCountries[6].getCapital().setResource(Product.MetallOre);
         Country.allCountries[7].getCapital().setResource(Product.Wood);
-    }
-
-    static private void makePopTypes()
-    {
-        //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribesmen");
-        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-
-        new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-
-        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 1.5f), "Farmers", 1f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-
-        new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
-            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-
-        //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
-        //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
     }
 
     internal static int getMapMode()
@@ -411,16 +387,16 @@ public class Game : ThreadedJob
         {
             if (province.getCountry() == Country.NullCountry)
             {
-                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getCountry().getCulture(), province);
+                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.TribeMen, province.getCountry().getCulture(), province);
                 province.allPopUnits.Add(f);
             }
             else
             {
                 PopUnit pop;
                 if (!Game.devMode)
-                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), PopType.tribeMen, province.getCountry().getCulture(), province);
+                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), PopType.TribeMen, province.getCountry().getCulture(), province);
                 else
-                    pop = new Tribemen(2000, PopType.tribeMen, province.getCountry().getCulture(), province);
+                    pop = new Tribemen(2000, PopType.TribeMen, province.getCountry().getCulture(), province);
                 province.allPopUnits.Add(pop);
 
                 if (province.getCountry() == Game.Player)
@@ -429,20 +405,20 @@ public class Game : ThreadedJob
                     //province.allPopUnits.Add(pop);
                 }
                 if (!Game.devMode)
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), PopType.aristocrats, province.getCountry().getCulture(), province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), PopType.Aristocrats, province.getCountry().getCulture(), province);
                 else
-                    pop = new Aristocrats(100, PopType.aristocrats, province.getCountry().getCulture(), province);
+                    pop = new Aristocrats(100, PopType.Aristocrats, province.getCountry().getCulture(), province);
 
                 pop.cash.set(9000);
                 pop.storageNow.add(60f);
                 province.allPopUnits.Add(pop);
                 if (!Game.devMode)
                 {
-                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), PopType.capitalists, province.getCountry().getCulture(), province);
+                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), PopType.Capitalists, province.getCountry().getCulture(), province);
                     pop.cash.set(9000);
                     province.allPopUnits.Add(pop);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), PopType.farmers, province.getCountry().getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), PopType.Farmers, province.getCountry().getCulture(), province);
                     pop.cash.set(20);
                     province.allPopUnits.Add(pop);
 
@@ -676,7 +652,7 @@ public class Game : ThreadedJob
                 //That placed here to avoid issues with Aristocrats and clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.popType.basicProduction != null)// only Farmers and Tribesmen
+                    if (pop.popType.getBasicProduction() != null)// only Farmers and Tribesmen
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
                 }
@@ -716,7 +692,7 @@ public class Game : ThreadedJob
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    if (pop.popType == PopType.aristocrats || pop.popType == PopType.capitalists || (pop.popType == PopType.farmers && Economy.isMarket.checkIftrue(province.getCountry())))
+                    if (pop.popType == PopType.Aristocrats || pop.popType == PopType.Capitalists || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(province.getCountry())))
                         pop.getMoneyFromMarket();
 
                     //because income come only after consuming, and only after FULL consumption
