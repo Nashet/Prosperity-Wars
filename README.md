@@ -2,7 +2,7 @@
 
 ## Demo
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
-And there is standalone (PC, Mac, Linux) version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
+And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
 
 ## Description
 Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
@@ -43,7 +43,6 @@ Map is generated randomly, you play as some country yet there is no much gamepla
 ![diplomacy](http://i.imgrpost.com/imgr/2017/06/22/VYAaersderdsdVA.png)
 ![Imgur](http://i.imgur.com/KevTH51.png)
 ![Imgur](http://i.imgur.com/uzEJCvM.png)
-![old map](http://i.imgur.com/Wm0vhz2.png)
 
 ## Contributing
 I would love to have other people providing ideas, code or questions.  You may:
