@@ -34,7 +34,7 @@ public class MilitaryPanel : DragPanel
         if (rebuildDropdown)
         {
             //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
-            //armySendLimit.value = 0; // cause extra mobilization
+            armySendLimit.value = 0; // cause extra mobilization
             rebuildDropDown();
         }
         sb.Clear();

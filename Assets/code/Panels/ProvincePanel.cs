@@ -11,13 +11,7 @@ public class ProvincePanel : MonoBehaviour
     {
         MainCamera.provincePanel = this;
         hide();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    }   
     public void hide()
     {
         gameObject.SetActive(false);

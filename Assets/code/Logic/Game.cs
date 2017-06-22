@@ -29,10 +29,10 @@ public class Game : ThreadedJob
 
     internal static StringBuilder threadDangerSB = new StringBuilder();
 
-    public static DateTime date = new DateTime(0);
+    public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = true;
+    private static bool surrended = false;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
     private readonly Rect mapBorders;
 
@@ -47,8 +47,6 @@ public class Game : ThreadedJob
     }
     public void initialize()
     {
-       
-
         makeProducts();
         market.initialize();
         makeFactoryTypes();
@@ -163,7 +161,7 @@ public class Game : ThreadedJob
     static private void setStartResources()
     {
         //Country.allCountries[0] is null country
-        Country.allCountries[1].getCapital().setResource(Product.Wood);
+        //Country.allCountries[1].getCapital().setResource(Product.Wood);// player
 
         //Country.allCountries[0].getCapital().setResource(Product.Wood;
         Country.allCountries[2].getCapital().setResource(Product.Fruit);
@@ -171,6 +169,7 @@ public class Game : ThreadedJob
         Country.allCountries[4].getCapital().setResource(Product.Wool);
         Country.allCountries[5].getCapital().setResource(Product.Stone);
         Country.allCountries[6].getCapital().setResource(Product.MetallOre);
+        Country.allCountries[7].getCapital().setResource(Product.Wood);
     }
 
     static private void makePopTypes()
@@ -183,7 +182,7 @@ public class Game : ThreadedJob
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 1.2f), "Farmers", 1f,
+        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 1.0f), "Farmers", 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
         new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
@@ -250,10 +249,7 @@ public class Game : ThreadedJob
     {
         mapMode = newMapMode;
         foreach (var item in Province.allProvinces)
-            if (item != Game.selectedProvince)
-            {
-                item.updateColor(getProvinceColorAccordingToMapMode(item));
-            }
+            item.updateColor(getProvinceColorAccordingToMapMode(item));
     }
 
     internal static void continueSimulation()
@@ -406,7 +402,7 @@ public class Game : ThreadedJob
         return allMoney;
     }
     static void CreateRandomPopulation()
-    {   
+    {
 
         foreach (Province province in Province.allProvinces)
         {
@@ -453,19 +449,19 @@ public class Game : ThreadedJob
             }
 
         }
-    }    
+    }
 
     internal static bool isPlayerSurrended()
     {
         return surrended;
     }
-    
+
     static void generateMapImage()
     {
 
         //Texture2D mapImage = new Texture2D(100, 100);
-        //Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
-        Texture2D mapImage = new Texture2D(120 + Random.Next(40), 60 + Random.Next(40));
+        Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
+        //Texture2D mapImage = new Texture2D(120 + Random.Next(40), 80 + Random.Next(40));
         //Texture2D mapImage = new Texture2D(300, 300);
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
@@ -511,9 +507,9 @@ public class Game : ThreadedJob
             if (color == all.getColorID())
                 return all.landMesh;
         return null;
-    }   
+    }
 
-   
+
 
 
     static bool FindProvinceCenters()
@@ -591,7 +587,7 @@ public class Game : ThreadedJob
         //}
         //return false;
     }
-    
+
     public static void PrepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
@@ -607,7 +603,7 @@ public class Game : ThreadedJob
                 province.BalanceEmployableWorkForce();
                 {
                     foreach (var item in province.getProducers())
-                        item.setStatisticToZero();               
+                        item.setStatisticToZero();
                 }
             }
         }
@@ -621,7 +617,7 @@ public class Game : ThreadedJob
             + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\nEnter key to close top window, space - to pause\\unpause"
-            , "Ok");        
+            , "Ok");
     }
     static void loadImages()
     {

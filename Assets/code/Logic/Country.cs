@@ -66,10 +66,11 @@ public class Country : Consumer
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
             && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"Lives in peace with us", 0.005f, false),
-            new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 10  ,"Recently attacked us", -0.05f, false),
+            new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
+            "Recently attacked us", -0.05f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(System.Object x) { Country bully = isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.05f, false),
-            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
+            new Modifier (delegate(System.Object x) { Country bully = isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.05f, false)
+            //,            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
         staff = new GeneralStaff(this);
@@ -129,8 +130,8 @@ public class Country : Consumer
         var cultureNameGenerator = new CultureNameGenerator();
         int howMuchCountries = Province.allProvinces.Count / Options.ProvincesPerCountry;
         howMuchCountries += Game.Random.Next(6);
-        if (howMuchCountries < 7)
-            howMuchCountries = 7;
+        if (howMuchCountries < 8)
+            howMuchCountries = 8;
         for (int i = 0; i < howMuchCountries; i++)
         {
             game.updateStatus("Making countries.." + i);
@@ -185,7 +186,7 @@ public class Country : Consumer
         if (myLastAttackDate.ContainsKey(country))
             return myLastAttackDate[country];
         else
-            return DateTime.MaxValue;
+            return DateTime.MinValue;
     }
     private bool hasCores(Country country)
     {
@@ -509,7 +510,7 @@ public class Country : Consumer
             {
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
-                    && getRelationTo(possibleTarget.getCountry()).get() < 1f
+                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(100)==1)
                     && this.getStreght() > 0
                     && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f 
                         || possibleTarget.getCountry() == Country.NullCountry
