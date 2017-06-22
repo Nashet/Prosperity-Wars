@@ -140,7 +140,7 @@ public class PoliticsPanel : DragPanel
                 if (Game.Player.government.status != Government.Despotism)
                 {
                     descriptionText.text += "\n\n" + procentVotersSayedYes + " of voters want this reform ( ";
-                    foreach (PopType type in PopType.allPopTypes)
+                    foreach (PopType type in PopType.getAllPopTypes())
                         if (divisionVotersResult[type] > 0)
                         {
                             Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.FindPopulationAmountByType(type));
@@ -151,7 +151,7 @@ public class PoliticsPanel : DragPanel
                 else
                     descriptionText.text += "\n\nNobody to vote - Despot rule everything";
                 descriptionText.text += "\n" + procentPopulationSayedYes + " of population want this reform ( ";
-                foreach (PopType type in PopType.allPopTypes)
+                foreach (PopType type in PopType.getAllPopTypes())
                     if (divisionPopulationResult[type] > 0)
                     {
                         Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.FindPopulationAmountByType(type));

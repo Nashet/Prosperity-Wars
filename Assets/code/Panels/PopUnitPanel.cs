@@ -27,6 +27,7 @@ public class PopUnitPanel : DragPanel
         if (pop != null)
         {
             efficiencyText.text ="Efficiency: "+ PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
+
             string demotionText;
             var target = pop.getRichestDemotionTarget();
             if (pop.wantsToDemote() && target != null && pop.getDemotionSize() > 0)

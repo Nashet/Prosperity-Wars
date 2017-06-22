@@ -462,10 +462,8 @@ public class Province
             }
             return result.divideOutside(allPopulation);
         }
-        else/// add default population - no, don't, we now fixed it
-        {
-            //PopUnit.PopListToAddToGeneralList.Add(PopUnit.Instantiate(Province.defaultPopulationSpawn, type, this.getOwner().culture, this));
-            //return new Value(float.MaxValue);// meaning always convert in type if does not exist yet
+        else
+        {           
             return new Value(1f);
         }
     }

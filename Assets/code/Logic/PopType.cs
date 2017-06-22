@@ -6,7 +6,7 @@ using System.Text;
 
 public class PopType
 {
-    public readonly static List<PopType> allPopTypes = new List<PopType>();
+    private readonly static List<PopType> allPopTypes = new List<PopType>();
     public static readonly PopType TribeMen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
 
 
@@ -96,6 +96,20 @@ public class PopType
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);
         //***************************************next type***************************
+        var soldiersLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
+        var soldiersEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Fruit, 1),
+            new Storage(Product.ColdArms, 1),
+            new Storage(Product.Clothes, 1),
+            new Storage(Product.Furniture, 1) });
+        var soldiersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Wine, 2),
+            new Storage(Product.Cars, 1f),
+            new Storage(Product.Fuel, 1f),
+            new Storage(Product.Airplanes, 1f) });
+        Soldiers = new PopType("Soldiers", null, 2f,
+            new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
+            soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
     }
@@ -112,6 +126,12 @@ public class PopType
         this.luxuryNeeds = luxuryNeeds;
         allPopTypes.Add(this);
     }
+    public static IEnumerable<PopType> getAllPopTypes()
+    {
+        foreach (var item in allPopTypes)
+            yield return item;
+    }
+
     public Storage getBasicProduction()
     {
         return basicProduction;
@@ -180,7 +200,7 @@ public class PopType
 
     internal bool isPoorStrata()
     {
-        return this == PopType.Farmers || this == PopType.Workers || this == PopType.TribeMen;
+        return this == PopType.Farmers || this == PopType.Workers || this == PopType.TribeMen || this == PopType.Soldiers;
     }
 
     internal bool isRichStrata()

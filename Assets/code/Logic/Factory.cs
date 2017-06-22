@@ -57,8 +57,8 @@ public class Factory : Producer
            "Has input resource in this province", 20f, false);
         modifierLevelBonus = new Modifier(delegate () { return this.getLevel() - 1; }, "High production concentration bonus", 1f, false);
         modifierInventedMiningAndIsShaft = new Modifier(
-             forWhom => (forWhom as Country).isInvented(Invention.mining) && this.type.isShaft(),
-           new StringBuilder("Invented ").Append(Invention.mining.ToString()).ToString(), 50f, false);
+             forWhom => (forWhom as Country).isInvented(Invention.Mining) && this.type.isShaft(),
+           new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 50f, false);
         modifierBelongsToCountry = new Modifier(x => this.factoryOwner is Country, "Belongs to government", -20f, false);
 
         conNotBelongsToCountry = new Condition(
@@ -775,7 +775,7 @@ public class Factory : Producer
         toRemove = true;
 
         //return loans only if banking invented
-        if (province.getCountry().isInvented(Invention.banking))
+        if (province.getCountry().isInvented(Invention.Banking))
         {
             if (loans.get() > 0f)
             {
@@ -843,7 +843,7 @@ public class Factory : Producer
                 markToDestroy();
             else if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
             {//take loan for reopen
-                if (province.getCountry().isInvented(Invention.banking) && this.type.getPossibleProfit(province).get() > 10f)
+                if (province.getCountry().isInvented(Invention.Banking) && this.type.getPossibleProfit(province).get() > 10f)
                 {
                     float leftOver = cash.get() - wantsMinMoneyReserv();
                     if (leftOver < 0)

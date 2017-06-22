@@ -87,6 +87,7 @@ abstract public class PopUnit : Producer
     }
     protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
     {
+        where.allPopUnits.Add(this);
         born = Game.date;
         population = iamount;
         popType = ipopType;
@@ -315,6 +316,8 @@ abstract public class PopUnit : Producer
         if (type == PopType.Workers) return new Workers(source, sizeOfNewPop, where, culture);
         else
             if (type == PopType.Capitalists) return new Capitalists(source, sizeOfNewPop, where, culture);
+        else
+            if (type == PopType.Soldiers) return new Soldiers(source, sizeOfNewPop, where, culture);
         else
         {
             Debug.Log("Unknown pop type!");
@@ -755,7 +758,7 @@ abstract public class PopUnit : Producer
     public PopType getRichestPromotionTarget()
     {
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
-        foreach (PopType nextType in PopType.allPopTypes)
+        foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisPromoteInto(nextType))
                 list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
@@ -867,10 +870,12 @@ abstract public class PopUnit : Producer
         if (result > 0)
             return result;
         else
-        if (province.hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
-            return this.getPopulation();// wipe-out
-        else
-            return 0;
+        {
+            if (province.hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
+                return this.getPopulation();// wipe-out
+            else
+                return 0;
+        }
     }
 
     public bool wantsToDemote()
@@ -883,7 +888,7 @@ abstract public class PopUnit : Producer
     public List<PopType> getPossibeDemotionsList()
     {
         List<PopType> result = new List<PopType>();
-        foreach (PopType nextType in PopType.allPopTypes)
+        foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisDemoteInto(this.popType))
                 result.Add(nextType);
         return result;
@@ -894,7 +899,7 @@ abstract public class PopUnit : Producer
     {
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
 
-        foreach (PopType nextType in PopType.allPopTypes)
+        foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisDemoteInto(nextType))
                 list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
@@ -958,7 +963,7 @@ abstract public class PopUnit : Producer
 
     internal void putExtraMoneyInBank()
     {
-        if (getCountry().isInvented(Invention.banking))
+        if (getCountry().isInvented(Invention.Banking))
         {
             Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
             if (extraMoney.get() > 5f)
@@ -1136,7 +1141,7 @@ abstract public class PopUnit : Producer
                         payWithoutRecord(found, cost);
                     }
                     else // find money in bank?
-                    if (province.getCountry().isInvented(Invention.banking))
+                    if (province.getCountry().isInvented(Invention.Banking))
                     {
                         Value needLoan = new Value(cost.get() - cash.get());
                         if (province.getCountry().bank.canGiveMoney(this, needLoan))
@@ -1164,7 +1169,7 @@ abstract public class PopUnit : Producer
                         if (canPay(cost))
                             factory.upgrade(this);
                         else // find money in bank?
-                        if (province.getCountry().isInvented(Invention.banking))
+                        if (province.getCountry().isInvented(Invention.Banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
                             if (province.getCountry().bank.canGiveMoney(this, needLoan))

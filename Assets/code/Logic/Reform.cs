@@ -262,7 +262,7 @@ public class Economy : AbstractReform
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
             //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
             new Condition(Invention.individualRights, true),
-            new Condition(Invention.banking, true),
+            new Condition(Invention.Banking, true),
             Serfdom.IsAbolishedInAnyWay
         });
     internal ReformValue status;
@@ -326,7 +326,7 @@ public class Serfdom : AbstractReform
             if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else
-            if ((requested.ID == 3) && country.isInvented(Invention.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+            if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
                 return true;
             else
             if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
@@ -391,7 +391,7 @@ public class Serfdom : AbstractReform
         new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.individualRights, true),
-            new Condition(Invention.banking, true), Condition.IsNotImplemented
+            new Condition(Invention.Banking, true), Condition.IsNotImplemented
         }));
     internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "- Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
@@ -953,7 +953,7 @@ public class MinorityPolicy : AbstractReform
             if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else
-            if ((requested.ID == 3) && country.isInvented(Invention.banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+            if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
                 return true;
             else
             if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))

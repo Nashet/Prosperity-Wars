@@ -73,7 +73,7 @@ public class FinancePanel : DragPanel
         AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
         // loanPanel.interactable = Country.condCanTakeLoan.isAllTrue(Game.player, out loanPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
         //depositPanel.interactable = Country.condCanPutOnDeposit.isAllTrue(Game.player, out depositPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
-        if (Game.Player.isInvented(Invention.banking))
+        if (Game.Player.isInvented(Invention.Banking))
             bankPanel.interactable = true;
         else
         {

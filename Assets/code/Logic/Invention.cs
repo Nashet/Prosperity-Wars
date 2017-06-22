@@ -50,11 +50,10 @@ public class Invention : AbstractCondition
     string description;
     internal Value cost;
     string inventedPhrase;
-    public static readonly Invention farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
-        //capitalism = new InventionType("Capitalism", "", new Value(50f)),
-        banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
-        manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
-        mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
+    public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),        
+        Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
+        Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
+        Mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
         //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
         Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
         individualRights = new Invention("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
@@ -65,7 +64,8 @@ public class Invention : AbstractCondition
         Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(200f)),
         CombustionEngine = new Invention("Combustion engine", "Allows Oil, Fuel, Cars, Rubber, Increases efficiency of all enterprises by 25%", new Value(400f)),
         Tanks = new Invention("Tanks", "Allows Tanks", new Value(800f)),
-        Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f))
+        Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f)),
+        ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f))
         ;
     readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.SteamPower), "Steam Power is invented", true);
     readonly public static Condition CombustionEngineInvented = new Condition(x => (x as Country).isInvented(Invention.CombustionEngine), "Combustion Engine is invented", true);

@@ -98,11 +98,12 @@ public class Country : Consumer
 
             economy.status = Economy.StateCapitalism;
 
-            inventions.markInvented(Invention.farming);
-            inventions.markInvented(Invention.manufactories);
-            inventions.markInvented(Invention.banking);
+            inventions.markInvented(Invention.Farming);
+            inventions.markInvented(Invention.Manufactories);
+            inventions.markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
+            inventions.markInvented(Invention.ProfessionalArmy);
             serfdom.status = Serfdom.Abolished;
         }
 
@@ -244,7 +245,7 @@ public class Country : Consumer
         setStatisticToZero();
 
         //take all money from bank
-        if (byWhom.isInvented(Invention.banking))
+        if (byWhom.isInvented(Invention.Banking))
             byWhom.bank.add(this.bank);
         else
             this.bank.destroy(byWhom);
@@ -437,7 +438,7 @@ public class Country : Consumer
     internal Dictionary<PopType, int> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, int> divisionPopulationResult)
     {  // division by pop types
         Dictionary<PopType, int> divisionVotersResult = new Dictionary<PopType, int>();
-        foreach (PopType type in PopType.allPopTypes)
+        foreach (PopType type in PopType.getAllPopTypes())
         {
             divisionVotersResult.Add(type, 0);
             divisionPopulationResult.Add(type, 0);
@@ -510,11 +511,11 @@ public class Country : Consumer
             {
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
-                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(100)==1)
+                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(100) == 1)
                     && this.getStreght() > 0
-                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f 
+                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
-                        || possibleTarget.getCountry().isAI() && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.1f )
+                        || possibleTarget.getCountry().isAI() && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.1f)
                     )
                 {
                     staff.mobilize(ownedProvinces);
