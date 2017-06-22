@@ -79,6 +79,6 @@ public static class Options
     internal static readonly int CountryTimeToForgetBattle = 40;
     internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw
     internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
-    internal static readonly int ProvincesPerCountry = 3;// don't do it lees than 3 - ugly
+    internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int PopMinimalMobilazation = 50;
 }

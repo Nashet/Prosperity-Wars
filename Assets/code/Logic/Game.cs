@@ -32,7 +32,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = false;
+    private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
     private readonly Rect mapBorders;
 
@@ -463,9 +463,10 @@ public class Game : ThreadedJob
     {
 
         //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
-        //Texture2D mapImage = new Texture2D(120 + Random.Next(40), 80 + Random.Next(40));
         //Texture2D mapImage = new Texture2D(300, 300);
+        Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
+        //Texture2D mapImage = new Texture2D(150 + Random.Next(100), 150 + Random.Next(100));
+
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;

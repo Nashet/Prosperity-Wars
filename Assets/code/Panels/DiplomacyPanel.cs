@@ -28,16 +28,15 @@ public class DiplomacyPanel : DragPanel
 
         sb.Clear();
         sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation());
-        sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
-        sb.Append("\nArmy: ").Append(selectedCountry.getDefenceForces().getShortName());
+        sb.Append("\nState culture: ").Append(selectedCountry.getCulture());        
         sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append("; GDP per thousand men: ").Append(selectedCountry.getGDPPer1000());
         sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append(", ").Append(selectedCountry.economy.getValue()).Append(", ").Append(selectedCountry.minorityPolicy.getValue());
-        
+        sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getShortName());
         if (selectedCountry== Game.Player)
-            sb.Append("\nOpinion of myself: I'm cool!");
+            sb.Append("\n\nOpinion of myself: I'm cool!");
         else
         {
-            sb.Append("\n").Append(selectedCountry.getName()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+            sb.Append("\n\n").Append(selectedCountry.getName()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
             string str;
             selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
             sb.Append(" Dynamics: ").Append(str);

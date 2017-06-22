@@ -63,7 +63,6 @@ public class Province
     {
         this.meshStructure = meshStructure;
 
-
         //spawn object
         rootGameObject = new GameObject(string.Format("{0}", getID()));
 
@@ -90,7 +89,6 @@ public class Province
 
         MeshCollider groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
         groundMeshCollider.sharedMesh = landMesh;
-
 
         setProvinceCenter();
         setLabel();
@@ -631,7 +629,8 @@ public class Province
         txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
         group.SetLODs(lods);
-        group.size = 30;
+        //group.size = 30; // for webgl
+        group.size = 20; // for others
         //group.RecalculateBounds();
     }
 
