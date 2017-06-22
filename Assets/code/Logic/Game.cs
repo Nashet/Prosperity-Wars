@@ -180,10 +180,13 @@ public class Game : ThreadedJob
 
         new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
+
         new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
-        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 1.0f), "Farmers", 1f,
+
+        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 1.5f), "Farmers", 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
+
         new PopType(PopType.PopTypes.Workers, null, "Workers", 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }));
 
@@ -613,10 +616,11 @@ public class Game : ThreadedJob
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurrently there is: "
             + "\n\npopulation agents \nbasic trade & production \nbasic warfare \nbasic inventions \nbasic reforms (population can vote for reforms)"
-            + " \npopulation demotion\\promotion to other classes \nmigration\\immigration\nassimilation"
+            + " \npopulation demotion\\promotion to other classes \nmigration\\immigration\\assimilation"
+            + "\npolitical\\culture\\core map mode"
             + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
-            + "\nEnter key to close top window, space - to pause\\unpause"
+            + "\n'Enter' key to close top window, space - to pause\\unpause"
             , "Ok");
     }
     static void loadImages()

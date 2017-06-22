@@ -67,9 +67,9 @@ public class Country : Consumer
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
             && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"Lives in peace with us", 0.005f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
-            "Recently attacked us", -0.05f, false),
+            "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(System.Object x) { Country bully = isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.05f, false)
+            new Modifier (delegate(System.Object x) { Country bully = isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.03f, false)
             //,            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();

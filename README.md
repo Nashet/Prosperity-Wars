@@ -1,4 +1,3 @@
-[![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) 
 # Economic simulation
 
 ## Demo
@@ -11,14 +10,15 @@ Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://gi
 Making that tool made me disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 So, main principles of that simulation are:
 * free market agent based economy simulation (currently with one currency - gold)
-* no ridiculous x5 price limits ( except 0.001 and 999), allowing realistic inflation
+* no ridiculous x5 price limits (except 0.001 and 999), allowing realistic inflation
 * population consume goods not in fixed order but - at first cheap goods, then expensive
 * factories can compete for workforce by changeable salary
 * factories have specific owner like government or population unit
 * capitalists can take loans form national bank for business expansion 
 * governments can put extra money in bank
+* player should have as much freedom as possible, even if player is going to do something stupid 
 
-## What it has now (v0.11.0)
+## What it has now (v0.12.0)
  - provinces and countries
  - population agents
  - basic production\trade\consumption
@@ -26,20 +26,24 @@ So, main principles of that simulation are:
  - basic inventions
  - basic reforms (population can vote for reforms)
  - population demotion\promotion to other classes
- - migration\immigration
- - assimilation
+ - migration\immigration\assimilation
+ - political\culture\core map mode
+ - basic diplomacy (only relations for now)
+ - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) 
 
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           
 
 ## Current targets
+ - more gameplay
  - diplomacy
- - better looking map
  - perfomance
 
 ## Screenshots
-![Image of Yaktocat](http://i.imgur.com/Wm0vhz2.png)
+![map](http://i.imgrpost.com/imgr/2017/06/22/VYAaereVAVArdsdVA.png)
+![diplomacy](http://i.imgrpost.com/imgr/2017/06/22/VYAaersderdsdVA.png)
 ![Imgur](http://i.imgur.com/KevTH51.png)
 ![Imgur](http://i.imgur.com/uzEJCvM.png)
+![old map](http://i.imgur.com/Wm0vhz2.png)
 
 ## Contributing
 I would love to have other people providing ideas, code or questions.  You may:
