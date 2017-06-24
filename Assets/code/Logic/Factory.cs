@@ -499,14 +499,14 @@ public class Factory : Producer
         if (isWorking() && Economy.isMarket.checkIftrue(province.getCountry()))
 
         {
-            // rise salary to attract  workforce
+            // rise salary to attract  workforce, including workforce from other factories
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
                 salary.add(0.03f);
 
             //too allocate workers form other popTypes
-            if (getFreeJobSpace() > 100 && province.getPopulationAmountByType(PopType.Workers) < 600
-                && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)// in that case float can store 1 exactly
-                salary.add(0.01f);
+            //if (getFreeJobSpace() > 100 && province.getPopulationAmountByType(PopType.Workers) < 600
+            //    && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)// in that case float can store 1 exactly
+            //    salary.add(0.01f);
 
             // to help factories catch up other factories salaries
             //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
@@ -517,7 +517,7 @@ public class Factory : Producer
 
             float minSalary = province.getCountry().getMinSalary();
             // reduce salary on non-profit
-            if (getProfit() < 0 && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
+            if (getProfit() < 0f && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
                     salary.subtract(0.3f);
                 else

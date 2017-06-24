@@ -67,6 +67,7 @@ public class Invention : AbstractCondition
         Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f)),
         ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f))
         ;
+    readonly public static Condition ProfessionalArmyInvented = new Condition(x => (x as Country).isInvented(Invention.ProfessionalArmy), "Professional Army is invented", true);
     readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.SteamPower), "Steam Power is invented", true);
     readonly public static Condition CombustionEngineInvented = new Condition(x => (x as Country).isInvented(Invention.CombustionEngine), "Combustion Engine is invented", true);
     readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(Invention.individualRights), "Individual Rights are invented", true);

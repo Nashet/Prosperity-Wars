@@ -134,7 +134,7 @@ public class Government : AbstractReform
     readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9, ConditionsList.IsNotImplemented);
     readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "- Everyone can vote; each vote is equal", 3, ConditionsList.AlwaysYes);
     readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "- Only capitalists have power", 6, ConditionsList.AlwaysYes);
-    readonly internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "- Only military guys have power", 7, ConditionsList.IsNotImplemented);
+    readonly internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "- Only military guys have power", 7, new ConditionsList( new List<Condition> { Invention.ProfessionalArmyInvented }));
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4, ConditionsList.IsNotImplemented);
 

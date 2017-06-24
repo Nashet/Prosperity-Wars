@@ -28,7 +28,7 @@ public static class Options
     internal static readonly int howOftenCheckForFactoryReopenning = 30;
     internal static readonly Procent savePopMoneyReserv = new Procent(0.66666f);
     internal static readonly float factoryMoneyReservPerLevel = 20f;
-    internal static readonly float minMarginToRiseSalary = 0.1f;
+    internal static readonly float minMarginToRiseSalary = 0.01f;
     internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
     //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
     internal static readonly int maxFactoryFireHireSpeed = 50;
@@ -81,4 +81,5 @@ public static class Options
     internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
     internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int PopMinimalMobilazation = 50;
+    internal static readonly float FactoryMinPossibleSallary = 0.001f;
 }

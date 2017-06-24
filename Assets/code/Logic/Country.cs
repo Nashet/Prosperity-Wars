@@ -62,11 +62,11 @@ public class Country : Consumer
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
 
-        modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "Has my cores", -0.05f, false);
+        modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
-            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "Same form of government", 0.002f, false),
+            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "You have same form of government", 0.002f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
-            && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"Lives in peace with us", 0.005f, false),
+            && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"You live in peace with us", 0.005f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
@@ -477,7 +477,9 @@ public class Country : Consumer
 
     internal float getMinSalary()
     {
-        return (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
+        var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
+        if (res == 0f) res = Options.FactoryMinPossibleSallary;
+        return res;
         //return minSalary.get();
     }
     public string getName()

@@ -463,7 +463,7 @@ public class Province
             return result.divideOutside(allPopulation);
         }
         else
-        {           
+        {
             return new Value(1f);
         }
     }
@@ -487,7 +487,7 @@ public class Province
             //if (factoryWantsTotal > 0)
             foreach (Factory factory in allFactories)
             {
-                if (factory.isWorking())
+                if (factory.isWorking() && factory.getSalary() > 0f)
                 {
                     factoryWants = factory.HowMuchWorkForceWants();
                     if (factoryWants > popsLeft)
@@ -674,8 +674,9 @@ public class Province
     /// \nCould auto-drop salary on minSalary of there is problems with inputs</summary>
     internal float getLocalMinSalary()
     {
+        float res;
         if (allFactories.Count <= 1)
-            return getCountry().getMinSalary();
+            res = getCountry().getMinSalary();
         else
         {
             float minSalary;
@@ -684,11 +685,13 @@ public class Province
             foreach (Factory fact in allFactories)
                 if (fact.isWorking() && !fact.justHiredPeople)
                 {
-                    if (minSalary > fact.getSalary())
+                    if ( fact.getSalary() < minSalary)
                         minSalary = fact.getSalary();
                 }
-            return minSalary;
+            res = minSalary;
         }
+        if (res == 0f) res = Options.FactoryMinPossibleSallary;
+        return res;
     }
 
     internal void addNeigbor(Province found)
