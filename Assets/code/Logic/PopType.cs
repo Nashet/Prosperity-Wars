@@ -13,7 +13,7 @@ public class PopType
     ///<summary> per 1000 men </summary>    
     private readonly PrimitiveStorageSet lifeNeeds = new PrimitiveStorageSet();
     private readonly PrimitiveStorageSet everyDayNeeds = new PrimitiveStorageSet();
-    private readonly  PrimitiveStorageSet luxuryNeeds = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet luxuryNeeds = new PrimitiveStorageSet();
     private readonly PrimitiveStorageSet militaryNeeds = new PrimitiveStorageSet();
 
     ///<summary> per 1000 men </summary>
@@ -92,21 +92,25 @@ public class PopType
             new Storage(Product.Cars, 1f),
             new Storage(Product.Fuel, 1f),
             new Storage(Product.Wine, 2)});
-        Workers = new PopType("Workers", null, 1f, 
+        Workers = new PopType("Workers", null, 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);
         //***************************************next type***************************
-        var soldiersLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
+        var soldiersLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 2) });
         var soldiersEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Fruit, 1),
-            new Storage(Product.ColdArms, 1),
-            new Storage(Product.Clothes, 1),
-            new Storage(Product.Furniture, 1) });
+            new Storage(Product.Fruit, 2),
+            new Storage(Product.Wine, 5),            
+            new Storage(Product.Clothes, 4),
+            new Storage(Product.Furniture, 2),
+            //new Storage(Product.Wood, 1)
+        });
         var soldiersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Wine, 2),
-            new Storage(Product.Cars, 1f),
-            new Storage(Product.Fuel, 1f),
-            new Storage(Product.Airplanes, 1f) });
+             new Storage(Product.Firearms, 1f),
+            new Storage(Product.Ammunition, 0.5f),
+            new Storage(Product.Cars, 1f), // temporally
+            new Storage(Product.Fuel, 1f),// temporally
+            new Storage(Product.Airplanes, 1f) // temporally
+            });
         Soldiers = new PopType("Soldiers", null, 2f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
@@ -120,7 +124,7 @@ public class PopType
         this.strenght = strenght;
 
         this.name = name;
-        basicProduction = produces;        
+        basicProduction = produces;
         this.lifeNeeds = lifeNeeds;
         this.everyDayNeeds = everyDayNeeds;
         this.luxuryNeeds = luxuryNeeds;

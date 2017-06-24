@@ -300,6 +300,8 @@ public class Aristocrats : PopUnit
 }
 public class Soldiers : PopUnit
 {
+    
+
     public Soldiers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Soldiers, where, culture)
     { }
     public Soldiers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Soldiers, iculture, where)
@@ -355,6 +357,22 @@ public class Soldiers : PopUnit
     public override void produce()
     {
 
+    }
+
+    internal void takePayCheck()
+    {        
+            Value payCheck = new Value (province.getCountry().getSoldierWage());
+            payCheck.multiple(getPopulation() / 1000f);
+        if (province.getCountry().canPay(payCheck))
+        {
+            province.getCountry().pay(this, payCheck);
+            province.getCountry().soldiersWageExpenseAdd(payCheck);
+        }
+        else
+        {
+            this.didntGetPromisedSalary = true;
+            province.getCountry().failedToPaySoldiers = true;
+        }
     }
 }
 public class Capitalists : PopUnit

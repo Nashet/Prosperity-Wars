@@ -239,7 +239,7 @@ public class Economy : AbstractReform
             Procent result;
             if (pop.popType == PopType.Capitalists)
             {
-                //possitive - more liberal
+                //positive - more liberal
                 int change = ID - pop.getCountry().economy.status.ID;
                 //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                 if (change > 0)
@@ -322,7 +322,7 @@ public class Serfdom : AbstractReform
         internal override bool isAvailable(Country country)
         {
             ReformValue requested = this;
-            //alowed
+            
             if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else

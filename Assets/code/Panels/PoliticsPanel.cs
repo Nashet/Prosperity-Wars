@@ -143,7 +143,7 @@ public class PoliticsPanel : DragPanel
                     foreach (PopType type in PopType.getAllPopTypes())
                         if (divisionVotersResult[type] > 0)
                         {
-                            Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.FindPopulationAmountByType(type));
+                            Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.getPopulationAmountByType(type));
                             descriptionText.text += res + " of " + type + "; ";
                         }
                     descriptionText.text += ")";
@@ -154,7 +154,7 @@ public class PoliticsPanel : DragPanel
                 foreach (PopType type in PopType.getAllPopTypes())
                     if (divisionPopulationResult[type] > 0)
                     {
-                        Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.FindPopulationAmountByType(type));
+                        Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.getPopulationAmountByType(type));
                         descriptionText.text += res + " of " + type + "; ";
                     }
                 descriptionText.text += ")";

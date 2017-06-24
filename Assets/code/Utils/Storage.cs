@@ -242,7 +242,7 @@ public class PrimitiveStorageSet
         PrimitiveStorageSet shortage = this.subtractOuside(need);
         return Procent.makeProcent(shortage, need);
     }
-    //Returns NULL if search is failed
+    /// <summary>Returns NULL if search is failed</summary>
     internal Storage findStorage(Product whom)
     {
         foreach (Storage stor in container)
@@ -250,7 +250,7 @@ public class PrimitiveStorageSet
                 return stor;
         return null;
     }
-    //Returns NEW empty storage if search is failed
+    /// <summary>Returns NEW empty storage if search is failed</summary>
     internal Storage getStorage(Product whom)
     {
         foreach (Storage stor in container)

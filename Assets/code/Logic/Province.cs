@@ -193,7 +193,7 @@ public class Province
 
 
     }
-    public void think()
+    public void simulate()
     {
         if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
             if (neighbors.Any(x => x.isCoreFor(getCountry())) && !cores.Contains(getCountry()) && getMajorCulture() == getCountry().getCulture())

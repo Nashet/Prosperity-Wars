@@ -32,7 +32,7 @@ public class Country : Consumer
     readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
     readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
 
-    public GeneralStaff staff;
+    readonly public GeneralStaff staff;
 
     TextMesh messhCapitalText;
     Material borderMaterial;
@@ -40,18 +40,19 @@ public class Country : Consumer
     /// per 1000 men
     /// </summary>
     //private Value minSalary = new Value(0.5f);
-    public Value sciencePoints = new Value(0f);
+    public readonly Value sciencePoints = new Value(0f);
     internal static readonly Country NullCountry;
 
     readonly Modifier modXHasMyCores;
-    public ModifiersList modMyOpinionOfXCountry;
+    public readonly ModifiersList modMyOpinionOfXCountry;
 
-    Value poorTaxIncome = new Value(0f);
-    Value richTaxIncome = new Value(0f);
-    Value goldMinesIncome = new Value(0f);
-    Value ownedFactoriesIncome = new Value(0f);
+    readonly Value poorTaxIncome = new Value(0f);
+    readonly Value richTaxIncome = new Value(0f);
+    readonly Value goldMinesIncome = new Value(0f);
+    readonly Value ownedFactoriesIncome = new Value(0f);
 
     Value unemploymentSubsidiesExpense = new Value(0f);
+    Value soldiersWageExpense = new Value(0f);
     Value factorySubsidiesExpense = new Value(0f);
     Value storageBuyingExpense = new Value(0f);
     static Country()
@@ -103,7 +104,7 @@ public class Country : Consumer
             inventions.markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
-            inventions.markInvented(Invention.ProfessionalArmy);
+            //inventions.markInvented(Invention.ProfessionalArmy);
             serfdom.status = Serfdom.Abolished;
         }
 
@@ -154,6 +155,14 @@ public class Country : Consumer
                 pro.InitialOwner(Country.NullCountry);
     }
 
+    internal void setSoldierWage(float value)
+    {
+        soldiersWage.set(value);
+    }
+    internal float getSoldierWage()
+    {
+        return soldiersWage.get();
+    }
     /// <summary>
     /// Little bugged - returns RANDOM badboy, not biggest
     /// </summary>
@@ -230,6 +239,8 @@ public class Country : Consumer
     }
     //internal static IEnumerable<Country> allExisting = getExisting();
     internal int autoPutInBankLimit = 2000;
+    private readonly Value soldiersWage = new Value(0f);
+    internal bool failedToPaySoldiers;
 
     static public IEnumerable<Country> getExisting()
     {
@@ -403,6 +414,8 @@ public class Country : Consumer
         return procentVotersSayedYes;
     }
 
+
+
     internal Material getBorderMaterial()
     {
         return borderMaterial;
@@ -479,7 +492,7 @@ public class Country : Consumer
         else
             return name + " country";
     }
-    internal void think()
+    internal void simulate()
     {
         if (Game.devMode)
             sciencePoints.add(this.getMenPopulation());
@@ -504,9 +517,13 @@ public class Country : Consumer
                 procent.add(modMyOpinionOfXCountry.getModifier(item), false);
                 procent.clamp100();
             }
-
-
-        if (isAI() && !isOnlyCountry())
+    }
+    /// <summary>
+    /// For AI only
+    /// </summary>
+    public void AIThink()
+    {
+        if (!isOnlyCountry())
             if (Game.Random.Next(10) == 1)
             {
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
@@ -522,10 +539,35 @@ public class Country : Consumer
                     sendArmy(possibleTarget, Procent.HundredProcent);
                 }
             }
-        if (isAI() && Game.Random.Next(30) == 1)
+        if (Game.Random.Next(30) == 1)
             aiInvent();
-    }
+        if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
+        {
+            float newWage;
+            var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get();
+            if (failedToPaySoldiers)
+            {
+                newWage = getSoldierWage() - getSoldierWage() * 0.2f;
+            }
+            else
+            {                
+                var balance = getBalance();
 
+                if (balance > 200f)
+                    newWage = getSoldierWage() + soldierAllNeedsCost * 0.002f + 1f;
+                else if (balance > 50f)
+                    newWage = getSoldierWage() + soldierAllNeedsCost * 0.0005f + 0.1f;
+                else if (balance < -800f)
+                    newWage = 0.0f;
+                else if (balance < 0f)
+                    newWage = getSoldierWage() - getSoldierWage() * 0.5f;
+                else
+                    newWage = getSoldierWage(); // don't change wage
+            }
+            newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
+            setSoldierWage(newWage);
+        }
+    }
     public IEnumerable<PopUnit> getAllPopUnits()
     {
         foreach (var province in ownedProvinces)
@@ -655,7 +697,7 @@ public class Country : Consumer
     {
         return getMenPopulation() * Options.familySize;
     }
-    public int FindPopulationAmountByType(PopType ipopType)
+    public int getPopulationAmountByType(PopType ipopType)
     {
         int result = 0;
         foreach (Province pro in ownedProvinces)
@@ -678,6 +720,7 @@ public class Country : Consumer
         result.add(unemploymentSubsidiesExpense);
         result.add(factorySubsidiesExpense);
         result.add(storageBuyingExpense);
+        result.add(soldiersWageExpense);
         return result;
     }
     internal float getBalance()
@@ -688,6 +731,7 @@ public class Country : Consumer
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
+        failedToPaySoldiers = false;
         poorTaxIncome.set(0f);
         richTaxIncome.set(0f);
         goldMinesIncome.set(0f);
@@ -696,6 +740,7 @@ public class Country : Consumer
         factorySubsidiesExpense.set(0f);
         moneyIncomethisTurn.set(0f);
         storageBuyingExpense.set(0f);
+        soldiersWageExpense.setZero();
     }
 
     internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
@@ -713,7 +758,15 @@ public class Country : Consumer
         }
 
     }
-    internal float getfactorySubsidiesExpense()
+    internal void soldiersWageExpenseAdd(Value payCheck)
+    {
+        soldiersWageExpense.add(payCheck);
+    }
+    internal float getSoldiersWageExpense()
+    {
+        return soldiersWageExpense.get();
+    }
+    internal float getFactorySubsidiesExpense()
     {
         return factorySubsidiesExpense.get();
     }

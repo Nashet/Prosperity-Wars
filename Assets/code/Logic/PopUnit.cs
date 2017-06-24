@@ -13,19 +13,20 @@ abstract public class PopUnit : Producer
     ///<summary>buffer popList of demoted. To avoid iteration breaks</summary>
     public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
 
-    public Procent loyalty;
+    public readonly Procent loyalty;
     int population;
     int mobilized;
 
-    public PopType popType;
+    public readonly PopType popType;
 
     public Culture culture;
 
-    public Procent education;
-    public Procent needsFullfilled;
+    public readonly Procent education;
+    public readonly Procent needsFullfilled;
 
     private int daysUpsetByForcedReform;
     private bool didntGetPromisedUnemloymentSubsidy;
+    protected bool didntGetPromisedSalary;
 
     public readonly static ModifiersList modifiersLoyaltyChange, modEfficiency;
 
@@ -68,7 +69,8 @@ abstract public class PopUnit : Producer
         {
            modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled,
         modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
-            modifierMinorityPolicy
+            modifierMinorityPolicy,
+            new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false)
 });
 
         modEfficiency = new ModifiersList(new List<Condition> {
@@ -268,7 +270,12 @@ abstract public class PopUnit : Producer
     { return population; }
     internal int howMuchCanMobilize()
     {
-        int howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+        int howMuchCanMobilize;
+        if (popType == PopType.Soldiers)
+            howMuchCanMobilize = (int)(getPopulation() * 0.5);
+        else
+            howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+
         howMuchCanMobilize -= mobilized;
         if (howMuchCanMobilize < Options.PopMinimalMobilazation) howMuchCanMobilize = 0;
 
@@ -825,9 +832,7 @@ abstract public class PopUnit : Producer
             }
             else
                 this.didntGetPromisedUnemloymentSubsidy = true;
-
         }
-
     }
     public void calcGrowth()
     {

@@ -72,6 +72,9 @@ public class Corps
             moral.set(0f);
         else
             moral.add(moralChange);
+        if (this.origin.popType == PopType.Soldiers && moral.isBiggerThan(origin.loyalty))
+            moral.set(origin.loyalty);
+            
         if (moral.isBiggerThan(Procent.HundredProcent))
             moral.set(1f);
     }
@@ -79,9 +82,9 @@ public class Corps
     {
         return consumption;
     }
-    internal Procent getConsumptionProcent(Product prod, Country country)
+    internal Procent getConsumptionProcent(Product product, Country country)
     {
-        return Procent.makeProcent(consumption.getStorage(prod), getRealNeeds(country).getStorage(prod), false);
+        return Procent.makeProcent(consumption.getStorage(product), getRealNeeds(country, product), false);
     }
     internal Value getConsumption(Product prod)
     {
@@ -107,17 +110,32 @@ public class Corps
         //});
         return new PrimitiveStorageSet(result);
     }
-    public Procent getMoral()
+    public Storage getRealNeeds(Country country, Product product)
     {
+        if (product.isInvented(country))
+        {
+            Storage found = origin.popType.getMilitaryNeedsPer1000().getStorage(product);
+            if (!found.isExist())
+                return found;
+            else
+            {
+                return new Storage(product, found.multipleOutside(this.getSize() / 1000f));                
+            }
+        }
+        else
+            return new Storage(product);
+    }
+    public Procent getMoral()
+    {        
         return moral;
     }
     //private float getStrenght()
     //{
     //    return getType().getStrenght(); // bonus
     //}
-    internal float getStrenght(Army army)
+    internal float getStrenght(Army army, float armyStrenghtModifier)
     {
-        return getSize() * origin.popType.getStrenght() * army.getStrenghtModifier();
+        return getSize() * origin.popType.getStrenght() * armyStrenghtModifier;
     }
     public PopType getType()
     {

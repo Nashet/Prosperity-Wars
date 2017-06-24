@@ -8,21 +8,15 @@ public class FinancePanel : DragPanel
 {
     public Text expensesText, captionText, incomeText, bankText, loanLimitText, depositLimitText, AutoPutInBankText,
         totalText;
-    public Slider loanLimit, depositLimit, autoPutInBankLimit;
+    public Slider loanLimit, depositLimit, autoPutInBankLimit, ssSoldiersWage;
     public Toggle autoSendMoneyToBank;
-    public CanvasGroup loanPanel, depositPanel, bankPanel;
+    public CanvasGroup bankPanel;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
     void Start()
     {
         MainCamera.financePanel = this;
         hide();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //refresh();
     }
     public void refresh()
     {
@@ -45,17 +39,13 @@ public class FinancePanel : DragPanel
         incomeText.text = sb.ToString();
         //sb.Append("\nScreen resolution: ").Append(Screen.currentResolution).Append(" Canvas size: ").Append(MainCamera.topPanel.transform.parent.GetComponentInParent<RectTransform>().rect);
 
-        //sb.Clear();
-        //sb.Append("Balance: ").Append(Game.player.getCountryWallet().getBalance());
-        //sb.Append("\nHave money: ").Append(Game.player.wallet.haveMoney).Append(" + ").Append(Game.player.deposits).Append(" on bank deposit");
-        ////sb.Append("\nGDP (current prices): ").Append(Game.player.getGDP()).Append("; GDP per thousand men: ").Append(Game.player.getGDPPer1000());
-        //totalText.text = sb.ToString();
-
         sb.Clear();
         sb.Append("Expenses: ");
         sb.Append("\n Unemployment subsidies: ").Append(Game.Player.getUnemploymentSubsidiesExpense())
             .Append(" unemployment: ").Append(Game.Player.getUnemployment());
-        sb.Append("\n Enterprises subsidies: ").Append(Game.Player.getfactorySubsidiesExpense());
+        sb.Append("\n Enterprises subsidies: ").Append(Game.Player.getFactorySubsidiesExpense());
+        if (Game.Player.isInvented(Invention.ProfessionalArmy))
+            sb.Append("\n Soldiers paychecks: ").Append(Game.Player.getSoldiersWageExpense());
         sb.Append("\n Storage buying: ").Append(Game.Player.getStorageBuyingExpense());
         sb.Append("\nTotal: ").Append(Game.Player.getAllExpenses());
         expensesText.text = sb.ToString();
@@ -71,8 +61,6 @@ public class FinancePanel : DragPanel
         onLoanLimitChange();
         onDepositLimitChange();
         AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
-        // loanPanel.interactable = Country.condCanTakeLoan.isAllTrue(Game.player, out loanPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
-        //depositPanel.interactable = Country.condCanPutOnDeposit.isAllTrue(Game.player, out depositPanel.GetComponentInChildren<ToolTipHandler>().tooltip);
         if (Game.Player.isInvented(Invention.Banking))
             bankPanel.interactable = true;
         else
@@ -80,6 +68,15 @@ public class FinancePanel : DragPanel
             bankPanel.interactable = false;
             autoSendMoneyToBank.isOn = false;
         }
+        if (Game.Player.isInvented(Invention.ProfessionalArmy))
+        {
+            ssSoldiersWage.maxValue = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get() * 2f;
+            ssSoldiersWage.value = Game.Player.getSoldierWage();
+            onSoldierWageChange();
+            ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
+        }
+        else
+            ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
     }
     public void show()
     {
@@ -129,7 +126,7 @@ public class FinancePanel : DragPanel
         if (loanLimit.value == 1f)
             Game.Player.bank.takeMoney(Game.Player, new Value(Game.Player.cash));
         else
-            Game.Player.bank.takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));        
+            Game.Player.bank.takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));
         MainCamera.refreshAllActive();
     }
     public void onLoanLimitChange()
@@ -140,6 +137,14 @@ public class FinancePanel : DragPanel
     public void onDepositLimitChange()
     {
         depositLimitText.text = Game.Player.cash.multipleOutside(depositLimit.value).ToString();
+    }
+    public void onSoldierWageChange()
+    {
+        sb.Clear();
+        sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.value)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
+        ssSoldiersWage.GetComponentInChildren<Text>().text = sb.ToString();
+        //if (!Game.Player.isAI())
+            Game.Player.setSoldierWage(ssSoldiersWage.value);
     }
     public void onAutoPutInBankLimitChange()
     {

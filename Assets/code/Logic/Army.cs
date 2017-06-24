@@ -392,11 +392,11 @@ public class Army
             res.add(item.Value.getRealNeeds(getOwner()));
         return res;
     }
-    Value getNeeds(Product pro)
+    Value getNeeds(Product product)
     {
         Value res = new Value(0f);
         foreach (var item in personal)
-            res.add(item.Value.getRealNeeds(getOwner()).getStorage(pro));
+            res.add(item.Value.getRealNeeds(getOwner(), product));
         return res;
     }
 
@@ -535,16 +535,16 @@ public class Army
         bool attackerWon;
         BattleResult result;
         string attackerBonus;
-        Army.modifierStrenght.getModifier(attacker, out attackerBonus);
+        var attackerModifier = Army.modifierStrenght.getModifier(attacker, out attackerBonus);
         string defenderBonus;
-        Army.modifierStrenght.getModifier(defender, out defenderBonus);
+        var defenderModifier = Army.modifierStrenght.getModifier(defender, out defenderBonus);
 
-        if (attacker.getStrenght() > defender.getStrenght())
+        if (attacker.getStrenght(attackerModifier) > defender.getStrenght(defenderModifier))
         {
             attackerWon = true;
             float winnerLossUnConverted;
-            if (attacker.getStrenght() > 0f)
-                winnerLossUnConverted = defender.getStrenght() * defender.getStrenght() / attacker.getStrenght();
+            if (attacker.getStrenght(attackerModifier) > 0f)
+                winnerLossUnConverted = defender.getStrenght(defenderModifier) * defender.getStrenght(defenderModifier) / attacker.getStrenght(attackerModifier);
             else
                 winnerLossUnConverted = 0f;
             int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted);
@@ -553,7 +553,7 @@ public class Army
             result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
             , initialDefenderSize, loserLoss, attacker.destination, attackerWon, attackerBonus, defenderBonus);
         }
-        else if (attacker.getStrenght() == defender.getStrenght())
+        else if (attacker.getStrenght(attackerModifier) == defender.getStrenght(defenderModifier))
         {
             attacker.takeLoss(attacker.getSize());
             defender.takeLoss(defender.getSize());
@@ -567,8 +567,8 @@ public class Army
 
             attackerWon = false;
             float winnerLossUnConverted;
-            if (defender.getStrenght() > 0f)
-                winnerLossUnConverted = attacker.getStrenght() * attacker.getStrenght() / (defender.getStrenght());
+            if (defender.getStrenght(defenderModifier) > 0f)
+                winnerLossUnConverted = attacker.getStrenght(attackerModifier) * attacker.getStrenght(attackerModifier) / (defender.getStrenght(defenderModifier));
             else
                 winnerLossUnConverted = 0f;
             int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted);
@@ -615,20 +615,24 @@ public class Army
         {
             float streghtLoss;
             int menLoss;
-            float totalStrenght = getStrenght();
+            var armyStrenghtModifier = getStrenghtModifier();
+            float totalStrenght = getStrenght(armyStrenghtModifier);
             if (totalStrenght > 0f)
+            {
+                
                 foreach (var corp in personal)
                 {
-                    var strenghtModifier = getStrenghtModifier();
+
                     var corpsStrenght = corp.Value.getType().getStrenght();
-                    if (corpsStrenght * strenghtModifier > 0)//(corp.Value.getType().getStrenght() > 0f)
+                    if (corpsStrenght * armyStrenghtModifier > 0)//(corp.Value.getType().getStrenght() > 0f)
                     {
-                        streghtLoss = corp.Value.getStrenght(this) * (lossStrenght / totalStrenght);
-                        menLoss = Mathf.RoundToInt(streghtLoss / (corpsStrenght * strenghtModifier)); // corp.Value.getType().getStrenght());
+                        streghtLoss = corp.Value.getStrenght(this, armyStrenghtModifier) * (lossStrenght / totalStrenght);
+                        menLoss = Mathf.RoundToInt(streghtLoss / (corpsStrenght * armyStrenghtModifier)); // corp.Value.getType().getStrenght());
 
                         totalMenLoss += corp.Value.TakeLoss(menLoss);
                     }
                 }
+            }
         }
         return totalMenLoss;
     }
@@ -640,23 +644,14 @@ public class Army
     {
         return modifierStrenght.getModifier(this);
     }
-    private float getStrenght()
+    private float getStrenght( float armyStrenghtModifier)
     {
-        float result = 0;
-        //float modifier = 0f;
+        float result = 0;        
         foreach (var c in personal)
-        {
-            //todo optimize            
-            result += c.Value.getStrenght(this);
-        }
+            result += c.Value.getStrenght(this, armyStrenghtModifier);        
         return result;
     }
 
-
-    //internal void clearEmpty()
-    //{
-    //    personal.
-    //}
     private Corps getBiggestCorpsSmallerThan(int secondArmyExpectedSize)
     {
 

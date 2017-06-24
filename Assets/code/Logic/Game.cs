@@ -5,7 +5,7 @@ using System.Text;
 using System;
 
 public class Game : ThreadedJob
-{   
+{
     static MyTexture map;
     public static GameObject mapObject;
     internal static GameObject r3dTextPrefab;
@@ -49,7 +49,7 @@ public class Game : ThreadedJob
         makeProducts();
         market.initialize();
         makeFactoryTypes();
-       
+
         updateStatus("Reading provinces..");
         Province.preReadProvinces(Game.map, this);
         seaProvinces = getSeaProvinces();
@@ -387,13 +387,13 @@ public class Game : ThreadedJob
         {
             if (province.getCountry() == Country.NullCountry)
             {
-                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);               
+                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);
             }
             else
             {
                 PopUnit pop;
                 if (Game.devMode)
-                    pop = new Tribemen(2000, province.getCountry().getCulture(), province);             
+                    pop = new Tribemen(2000, province.getCountry().getCulture(), province);
                 else
                     pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
 
@@ -407,17 +407,17 @@ public class Game : ThreadedJob
                     pop = new Aristocrats(100, province.getCountry().getCulture(), province);
                 else
                     pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.getCountry().getCulture(), province);
-                
+
 
                 pop.cash.set(9000);
-                pop.storageNow.add(60f);                
+                pop.storageNow.add(60f);
                 if (!Game.devMode)
                 {
-                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800),  province.getCountry().getCulture(), province);
-                    pop.cash.set(9000);                    
+                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    pop.cash.set(9000);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), province.getCountry().getCulture(), province);
-                    pop.cash.set(20);                   
+                    pop.cash.set(20);
 
                 }
                 //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
@@ -652,6 +652,12 @@ public class Game : ThreadedJob
                     if (pop.popType.getBasicProduction() != null)// only Farmers and Tribesmen
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
+                    if (country.isInvented(Invention.ProfessionalArmy))
+                    {
+                        var soldier = pop as Soldiers;
+                        if (soldier != null)
+                            soldier.takePayCheck();
+                    }
                 }
             }
         //Game.market.ForceDSBRecalculation();
@@ -722,9 +728,11 @@ public class Game : ThreadedJob
                 }
                 province.allPopUnits.RemoveAll(x => x.getPopulation() == 0);
                 PopUnit.PopListToAddToGeneralList.Clear();
-                province.think();
+                province.simulate();
             }
-            country.think();
+            country.simulate();
+            if (country.isAI())
+                country.AIThink();
         }
     }
 
