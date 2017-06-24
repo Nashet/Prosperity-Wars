@@ -539,7 +539,7 @@ public class Country : Consumer
                     sendArmy(possibleTarget, Procent.HundredProcent);
                 }
             }
-        if (Game.Random.Next(30) == 1)
+        if (Game.Random.Next(90) == 1)
             aiInvent();
         if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
         {

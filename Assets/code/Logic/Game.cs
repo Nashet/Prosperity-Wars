@@ -338,7 +338,7 @@ public class Game : ThreadedJob
     void makeProducts()
     {
         updateStatus("Making products..");
-        new Product("Food", false, 0.4f);
+        new Product("Food", false, 0.04f);
         new Product("Wood", true, 2.7f);
         new Product("Lumber", false, 8f);
         new Product("Gold", true, 4f);
@@ -416,7 +416,7 @@ public class Game : ThreadedJob
                     pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
                     pop.cash.set(9000);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(5000, 6000), province.getCountry().getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
                     pop.cash.set(20);
 
                 }

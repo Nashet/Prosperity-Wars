@@ -85,13 +85,15 @@ public class PopType
         //***************************************next type***************************
         var workersLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var workersEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Clothes, 1),
-            new Storage(Product.Furniture, 1) });
-        var workersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Clothes, 1f),
+            new Storage(Product.Wine, 2f),
+            new Storage(Product.Furniture, 1f)
+             });
+        var workersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {            
             new Storage(Product.Fruit, 1),
             new Storage(Product.Cars, 1f),
-            new Storage(Product.Fuel, 1f),
-            new Storage(Product.Wine, 2)});
+            new Storage(Product.Fuel, 1f)
+            });
         Workers = new PopType("Workers", null, 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);

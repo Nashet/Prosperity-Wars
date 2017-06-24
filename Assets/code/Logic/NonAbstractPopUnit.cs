@@ -14,10 +14,11 @@ public class Tribemen : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == this.popType
-            || targetType == PopType.Farmers && !province.getCountry().isInvented(Invention.Farming)
+            //|| targetType == PopType.Farmers && !province.getCountry().isInvented(Invention.Farming)
+            || targetType == PopType.Farmers
             || targetType == PopType.Capitalists
             || targetType == PopType.Aristocrats
-            || targetType == PopType.Soldiers)
+            || targetType == PopType.Soldiers && !province.getCountry().isInvented(Invention.ProfessionalArmy))
             return false;
         else
             return true;
@@ -27,7 +28,8 @@ public class Tribemen : PopUnit
         if (targetType == this.popType
             || targetType == PopType.Farmers && !province.getCountry().isInvented(Invention.Farming)
             || targetType == PopType.Workers
-            || targetType == PopType.Soldiers && !province.getCountry().isInvented(Invention.ProfessionalArmy))
+            //|| targetType == PopType.Soldiers && !province.getCountry().isInvented(Invention.ProfessionalArmy))
+            )
             return false;
         else
             return true;
