@@ -1071,14 +1071,13 @@ abstract public class PopUnit : Producer
             return this.getPopulation(); // wipe-out
         else
             return 0;
-
     }
 
     internal void invest()
     {
         if (popType == PopType.Aristocrats)
         {
-            if (!province.isThereMoreThanFactoriesInUpgrade(Options.maximumFactoriesInUpgradeToBuildNew))
+            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 if (province.getResource() != null)
                 {
@@ -1091,7 +1090,7 @@ abstract public class PopUnit : Producer
                         resourceToBuild = factory.getUpgradeNeeds();
                     //build new shownFactory
                     if (factory == null)
-                    //Has money/ resources?
+                    //Has money / resources?
                     {
                         Storage needFood = resourceToBuild.findStorage(Product.Food);
                         if (storageNow.get() >= needFood.get())
@@ -1131,7 +1130,7 @@ abstract public class PopUnit : Producer
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
-            if (!province.isThereMoreThanFactoriesInUpgrade(Options.maximumFactoriesInUpgradeToBuildNew))
+            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
                 if (proposition != null && province.CanBuildNewFactory(proposition) &&

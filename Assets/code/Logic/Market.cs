@@ -786,7 +786,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 //else
 
                 if (supply == 0)
-                    balance = 999f;
+                    balance = Options.MarketInfiniteDSB;
                 else
                     balance = demand / supply;
 
@@ -795,7 +795,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 if (demand == 0) balance = 0f; // otherwise - furniture bag
                                                // else
                 if (supply == 0)
-                    balance = 999f;
+                    balance = Options.MarketInfiniteDSB;
 
                 DSBbuffer.set(new Storage(stor.getProduct(), balance));
             }

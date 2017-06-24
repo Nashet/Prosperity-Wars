@@ -82,4 +82,5 @@ public static class Options
     internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int PopMinimalMobilazation = 50;
     internal static readonly float FactoryMinPossibleSallary = 0.001f;
+    internal static readonly float MarketInfiniteDSB = 999f;
 }

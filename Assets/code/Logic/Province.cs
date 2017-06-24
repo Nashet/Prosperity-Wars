@@ -596,7 +596,7 @@ public class Province
             employed += factory.getWorkForce();
         return totalWorkforce - employed;
     }
-    internal bool isThereMoreThanFactoriesInUpgrade(int limit)
+    internal bool isThereFactoriesInUpgradeMoreThan(int limit)
     {
         int counter = 0;
         foreach (Factory factory in allFactories)
