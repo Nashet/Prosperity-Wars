@@ -46,7 +46,7 @@ public class BuildPanelTable : MyTable
         AddButton("Potential margin");
         if (Game.selectedProvince != null)
         {
-            var factoryList = Game.selectedProvince.WhatFactoriesCouldBeBuild();
+            var factoryList = Game.selectedProvince.whatFactoriesCouldBeBuild();
 
             foreach (var next in factoryList)
             {

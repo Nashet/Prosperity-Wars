@@ -531,7 +531,7 @@ public class Province
         return null;
     }
 
-    internal List<FactoryType> WhatFactoriesCouldBeBuild()
+    internal List<FactoryType> whatFactoriesCouldBeBuild()
     {
         List<FactoryType> result = new List<FactoryType>();
         foreach (FactoryType ft in FactoryType.allTypes)

@@ -31,6 +31,7 @@ public class Agent
     }
     public Value getMoneyAvailable()
     {
+        //chk
         //return cash.addOutside(deposits);
         if (bank == null)
             return new Value(cash);
@@ -177,7 +178,7 @@ public class Agent
     {
         if (canPay(howMuch))
         {
-            if (!canPayInCash(howMuch) && bank != null)
+            if (!canPayInCash(howMuch) && bank != null)// checked for bank inv
             {
                 bank.giveLackingMoney(this, howMuch);
                 bank.giveLackingMoney(this, howMuch.multipleOutside(5));

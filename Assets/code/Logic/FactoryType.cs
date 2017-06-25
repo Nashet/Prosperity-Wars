@@ -39,16 +39,16 @@ public class FactoryType
             resourceInput = iresourceInput;
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
         upgradeResourceLowTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
-        upgradeResourceMediumTier= new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
-        upgradeResourceHighTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Cement, 10f),  new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
+        upgradeResourceMediumTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
+        upgradeResourceHighTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
         enoughMoneyOrResourcesToBuild = new Condition(
           (delegate (System.Object forWhom)
           {
               Country who = forWhom as Country;
               if (Economy.isMarket.checkIftrue(who))
                   return who.canPay(getBuildCost());
-              else              
-                  return who.storageSet.has(getBuildNeeds());              
+              else
+                  return who.storageSet.has(getBuildNeeds());
 
           }), "Have enough money or resources to build", true
           );
@@ -58,7 +58,7 @@ public class FactoryType
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
     }
-   
+
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());
@@ -119,44 +119,30 @@ public class FactoryType
     }
     internal static FactoryType getMostTeoreticalProfitable(Province province)
     {
-        List<FactoryType> possiblefactories = province.WhatFactoriesCouldBeBuild();
-        float possibleProfit = 0;
-        float maxProfitFound = 0;
-        foreach (FactoryType ft in possiblefactories)
-        {
-            //todo refactor efficiency
-            // if (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft))
+        KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
+        foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
+        {            
             {
-                possibleProfit = ft.getPossibleProfit(province).get();
-                if (possibleProfit > maxProfitFound)
-                    maxProfitFound = possibleProfit;
+                float possibleProfit = factoryType.getPossibleProfit(province).get();
+                if (possibleProfit > result.Value)
+                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
             }
         }
-        if (maxProfitFound > 0f)
-            foreach (FactoryType ft in possiblefactories)
-                if (ft.getPossibleProfit(province).get() == maxProfitFound && (province.CanBuildNewFactory(ft) || province.CanUpgradeFactory(ft)))
-                    return ft;
-        return null;
+        return result.Key;
     }
 
     internal static Factory getMostPracticlyProfitable(Province province)
     {
-        List<FactoryType> possiblefactories = province.WhatFactoriesCouldBeBuild();
-        float profit = 0;
-        float maxProfitFound = 0;
-        foreach (Factory ft in province.allFactories)
+        KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
+        foreach (Factory factory in province.allFactories)
         {
-            if (province.CanUpgradeFactory(ft.type))
+            if (province.CanUpgradeFactory(factory.type))
             {
-                profit = ft.getProfit();
-                if (profit > maxProfitFound)
-                    maxProfitFound = profit;
+                float profit = factory.getProfit();
+                if (profit > result.Value)
+                    result = new KeyValuePair<Factory, float>(factory, profit);
             }
         }
-        if (maxProfitFound > 0f)
-            foreach (Factory factory in province.allFactories)
-                if (factory.getProfit() == maxProfitFound && province.CanUpgradeFactory(factory.type))
-                    return factory;
-        return null;
+        return result.Key;
     }
 }

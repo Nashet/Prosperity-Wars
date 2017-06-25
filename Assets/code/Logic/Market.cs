@@ -669,12 +669,12 @@ public class Market : Agent//: PrimitiveStorageSet
                 return true;
             // check if buying still have enoth to subtract consumeOnThisEteration
             if (!buying.has(consumeOnThisEteration))
-                consumeOnThisEteration = buying.findStorage(what.getProduct());
+                consumeOnThisEteration = buying.getStorage(what.getProduct());
             consumeOnThisEteration.multiple(buy(buyer, consumeOnThisEteration, null));
 
             buying.subtract(consumeOnThisEteration);
 
-            if (buying.findStorage(what.getProduct()).get() > 0)
+            if (buying.getStorage(what.getProduct()).get() > 0)
                 buyingIsEmpty = false;
         }
         return buyingIsEmpty;

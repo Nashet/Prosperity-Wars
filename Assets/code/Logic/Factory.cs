@@ -215,7 +215,6 @@ public class Factory : Producer
     /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
     override internal float getLocalEffectiveDemand(Product product)
     {
-
         // need to know how much i Consumed inside my needs
         Storage need = type.resourceInput.findStorage(product);
         if (need != null)
@@ -906,7 +905,7 @@ public class Factory : Producer
     internal void upgrade(Agent byWhom)
     {
         upgrading = true;
-        needsToUpgrade = getUpgradeNeeds().getCopy();
+        //needsToUpgrade = getUpgradeNeeds().getCopy();
         byWhom.payWithoutRecord(this, getUpgradeCost());
     }
 
