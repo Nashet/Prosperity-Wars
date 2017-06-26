@@ -295,7 +295,7 @@ public class Country : Consumer
     internal bool canAttack(Province province)
     {
         //!province.isBelongsTo(this) &&
-        return province.isNeghbour(this);
+        return province.isNeighbor(this);
     }
 
     internal List<Province> getNeighborProvinces()

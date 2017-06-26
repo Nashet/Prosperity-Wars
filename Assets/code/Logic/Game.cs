@@ -31,8 +31,9 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = true;
-    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial;
+    private static bool surrended = false;
+    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial        , 
+        impassableBorder;
     private readonly Rect mapBorders;
 
     internal static List<Province> seaProvinces;
@@ -54,6 +55,7 @@ public class Game : ThreadedJob
         Province.preReadProvinces(Game.map, this);
         seaProvinces = getSeaProvinces();
         deleteSomeProvinces();
+
         updateStatus("Making grid..");
         grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.seaProvinces, this);
 
@@ -73,6 +75,7 @@ public class Game : ThreadedJob
         defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
         defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
         selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
+        impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
         r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
 
         mapObject = GameObject.Find("MapObject");
@@ -591,8 +594,8 @@ public class Game : ThreadedJob
             "\n\nCurrently there is: "
             + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
             + "\n\tbasic trade & production \n\tbasic warfare \n\tbasic inventions"
-            +" \n\tbasic reforms (population can vote for reforms)"
-            + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration\\ immigration \\ assimilation"
+            + " \n\tbasic reforms (population can vote for reforms)"
+            + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
             + "\n\tpolitical \\ culture \\ core map mode"
             + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"

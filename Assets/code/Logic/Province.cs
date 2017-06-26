@@ -5,35 +5,56 @@ using System;
 using System.Linq;
 using System.Text;
 
+enum TerrainTypes
+{
+    Plains, Mountains
+};
 public class Province
 {
+    public readonly static List<Province> allProvinces = new List<Province>();
+    private readonly string name;
+    private readonly int ID;
     readonly Color colorID;
+
+    public readonly List<PopUnit> allPopUnits = new List<PopUnit>();
+
+    //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+    private readonly List<Province> neighbors = new List<Province>();
+    Product resource;
+
+    public Vector3 centre;
+
+
     Color color;
     public Mesh landMesh;
     public MeshStructure meshStructure;
 
-
     MeshFilter meshFilter;
     internal GameObject rootGameObject;
     MeshRenderer meshRenderer;
-    //public static int maxTribeMenCapacity = 2000;
-    private readonly string name;
-    private readonly int ID;
-    Country owner;
-    public readonly List<PopUnit> allPopUnits = new List<PopUnit>();
-    public Vector3 centre;
 
-    public readonly static List<Province> allProvinces = new List<Province>();
+    Country owner;
 
     public List<Factory> allFactories = new List<Factory>();
-    //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
-    private readonly List<Province> neighbors = new List<Province>();
-    Product resource;
+
     readonly internal int fertileSoil;
     readonly List<Country> cores = new List<Country>();
-    //List<EdgeHelpers.Edge> edges;
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
+    private TerrainTypes terrain;
 
+    //empty province constructor
+    public Province(string iname, int iID, Color icolorID, Product resource)
+    {
+        setResource(resource);
+
+        colorID = icolorID;
+        name = iname;
+
+        ID = iID;
+
+        fertileSoil = 10000;
+
+    }
     public static void preReadProvinces(MyTexture image, Game game)
     {
         ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
@@ -58,6 +79,7 @@ public class Province
     internal static void generateUnityData(VoxelGrid grid)
     {
         allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
+        allProvinces.ForEach(x => x.setUnselectedBorderMaterials());
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
     {
@@ -99,7 +121,8 @@ public class Province
         {
             //each color is one neighbor (non repeating)
             var neighbor = border.Key;
-            neighbors.Add(neighbor);
+            //if (this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                neighbors.Add(neighbor);
 
             GameObject borderObject = new GameObject("Border with " + neighbor.ToString());
 
@@ -124,6 +147,12 @@ public class Province
         }
 
     }
+
+    internal TerrainTypes getTerrain()
+    {
+        return terrain;
+    }
+
     public void setBorderMaterial(Material material)
     {
         foreach (var item in bordersMeshes)
@@ -131,33 +160,45 @@ public class Province
     }
     public void setUnselectedBorderMaterials()
     {
-        foreach (var neighbor in neighbors)
-            if (getCountry() == neighbor.getCountry())
+        foreach (var border in bordersMeshes)
+        {
+            if (border.Key.isNeighbor(this))
             {
-                this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
-                neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                if (getCountry() == border.Key.getCountry())
+                {
+                    border.Value.material = Game.defaultProvinceBorderMaterial;
+                    border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                }
+                else
+                {
+                    border.Value.material = getCountry().getBorderMaterial();
+                    if (border.Key.getCountry() != null)
+                        border.Key.bordersMeshes[this].material = border.Key.getCountry().getBorderMaterial();
+                }
             }
             else
             {
-                {
-                    this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
-                    if (neighbor.getCountry() != null)
-                        neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
-                }
+                border.Value.material = Game.impassableBorder;
+                border.Key.bordersMeshes[this].material = Game.impassableBorder;
             }
+        }
+
+        //foreach (var neighbor in neighbors)
+        //    if (getCountry() == neighbor.getCountry())
+        //    {
+        //        this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
+        //        neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+        //    }
+        //    else
+        //    {
+        //        {
+        //            this.bordersMeshes[neighbor].material = getCountry().getBorderMaterial();
+        //            if (neighbor.getCountry() != null)
+        //                neighbor.bordersMeshes[this].material = neighbor.getCountry().getBorderMaterial();
+        //        }
+        //    }
     }
-    //empty province constructor
-    public Province(string iname, int iID, Color icolorID, Product inresource)
-    {
-        resource = inresource;
-        colorID = icolorID;
-        name = iname;
 
-        ID = iID;
-
-        fertileSoil = 10000;
-
-    }
 
     /// <summary>
     /// returns 
@@ -329,11 +370,14 @@ public class Province
     {
         return this.getCountry() == country;
     }
-    internal bool isNeghbour(Country country)
+    internal bool isNeighbor(Country country)
     {
         return neighbors.Any(x => x.getCountry() == country);
     }
-
+    internal bool isNeighbor(Province province)
+    {
+        return neighbors.Contains(province);
+    }
 
     public int getFamilyPopulation()
     {
@@ -514,6 +558,10 @@ public class Province
     internal void setResource(Product inres)
     {
         resource = inres;
+        if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetallOre)
+            terrain = TerrainTypes.Mountains;
+        else
+            terrain = TerrainTypes.Plains;
     }
     internal Product getResource()
     {
@@ -685,7 +733,7 @@ public class Province
             foreach (Factory fact in allFactories)
                 if (fact.isWorking() && !fact.justHiredPeople)
                 {
-                    if ( fact.getSalary() < minSalary)
+                    if (fact.getSalary() < minSalary)
                         minSalary = fact.getSalary();
                 }
             res = minSalary;

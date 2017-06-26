@@ -6,21 +6,16 @@ using System.Collections.Generic;
 public class Product
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
-    internal static List<Product> allProducts = new List<Product>();
-    // bool storable = true;
-    private string name;
-    internal bool resource = false;
-    static int resourceCounter = 0;
-    Value defaultPrice;
+    internal static readonly List<Product> allProducts = new List<Product>();
+   
+    private readonly string name;
+    internal readonly bool resource = false;
+    private static int resourceCounter = 0;
+    private readonly Value defaultPrice;
 
     internal static Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
-     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery;
-    internal static Product Oil,
-      Fuel,
-      Cars,
-   Tanks,
-     Airplanes,
-      Rubber, Machinery;
+     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery,
+    Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery;
 
     public Product(string name, bool inlanded, float defaultPrice)
     {
@@ -62,27 +57,16 @@ public class Product
         return resource;
     }
     internal static Product getRandomResource(bool ignoreGold)
-    {
-        //int random = Game.Random.Next(resourceCounter);
-        //int counter = 0;
-        //foreach (Product pro in Product.allProducts)
-        //{
-        //    if (pro.isResource())
-        //    {
-        //        if (counter == random)
-        //            return pro;
-        //        counter++;
-        //    }
-        //}
+    {       
         if (ignoreGold)
             return Product.Wood;
-        return Product.allProducts.PickRandom(x=>x.isResource());
-        
-        //return null;
+        return Product.allProducts.PickRandom(x => x.isResource());
+
     }
 
     public static Product findByName(string name)
-    {  //HashSet set = new HashSet();
+    { 
+        //HashSet set = new HashSet();
         foreach (Product next in allProducts)
         {
             if (next.getName().Equals(name))
@@ -97,7 +81,6 @@ public class Product
     }
     public bool isInventedByAnyOne()
     {
-
         foreach (var country in Country.allCountries)
             if (this.isInvented(country))
                 return true;
@@ -105,15 +88,14 @@ public class Product
     }
     public bool isInvented(Country country)
     {
-
         if (
             (
             (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.Metal))
             || (!country.isInvented(Invention.SteamPower) && this == Machinery)
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
-            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber  || this == Cars))            
-            || (!country.isInvented(Invention.Tanks) && this == Tanks )
+            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Cars))
+            || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
             || (!isResource() && !country.isInvented(Invention.Manufactories))
             )

@@ -125,6 +125,7 @@ public class ProvincePanel : MonoBehaviour
             + "\nMajor culture: " + province.getMajorCulture()
             + "\nTax income: " + province.getIncomeTax()
             + "\nResource: " + province.getResource()
+            + "\nTerrain: " + province.getTerrain()
             + "\nRural overpopulation: " + province.getOverpopulation()
             + "\nCores: " + province.getCoresDescription();
 
