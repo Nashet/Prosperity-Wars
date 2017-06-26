@@ -14,14 +14,14 @@ public class PoliticsPanelTable : MyTable
         {
             base.RemoveButtons();
             AddButtons();
-            contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
+            gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
     protected void AddButton(string text, AbstractReform type)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         //newButton.transform.SetParent(contentPanel, false);
-        newButton.transform.SetParent(contentPanel);
+        newButton.transform.SetParent(gameObject.transform);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);

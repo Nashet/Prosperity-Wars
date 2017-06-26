@@ -14,13 +14,13 @@ public class InventionsPanelTable : MyTable
         {
             base.RemoveButtons();
             AddButtons();
-            contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
+            gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
     protected void AddButton(string text, Invention inventionType)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);

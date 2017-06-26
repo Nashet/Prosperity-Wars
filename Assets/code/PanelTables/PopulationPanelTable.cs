@@ -12,12 +12,12 @@ public class PopulationPanelTable : MyTable
     {        
         base.RemoveButtons();
         AddButtons();
-        contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
+        gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
     }
     protected void AddButton(string text, PopUnit record)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
 
@@ -27,7 +27,7 @@ public class PopulationPanelTable : MyTable
     protected void AddButton(string text, PopUnit record, string toolTip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
 
@@ -39,7 +39,7 @@ public class PopulationPanelTable : MyTable
     protected void AddButton(string text, PopUnit record, Func<string> dynamicTooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;
 

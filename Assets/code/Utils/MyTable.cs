@@ -5,7 +5,7 @@ using UnityEngine.UI;
 abstract public class MyTable : MonoBehaviour
 {
     //public List<Record> recordList;
-    public Transform contentPanel; // myself
+    //public Transform contentPanel; // myself
     public SimpleObjectPool buttonObjectPool;
     //public GameObject parentPanel;
     //public ShopScrollList otherShop;
@@ -32,14 +32,14 @@ abstract public class MyTable : MonoBehaviour
     protected void AddButton(string text, Province prov)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, prov);
     }
     protected void AddButton(string text, Province prov, string tooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, prov);
         newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
@@ -48,16 +48,16 @@ abstract public class MyTable : MonoBehaviour
     protected void AddButton(string text)
     {
         GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
+        newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, null);
     }
     protected void RemoveButtons()
     {
-        int count = contentPanel.childCount;
+        int count = gameObject.transform.childCount;
         for (int i = 0; i < count; i++)
         {
-            GameObject toRemove = contentPanel.GetChild(0).gameObject;
+            GameObject toRemove = gameObject.transform.GetChild(0).gameObject;
             buttonObjectPool.ReturnObject(toRemove);
         }
     }
