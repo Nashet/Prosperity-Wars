@@ -94,7 +94,7 @@ public class GeneralStaff
     internal void sendArmy(Province possibleTarget, Procent procent)
     {
         consolidateArmies().balance(procent).sendTo(possibleTarget);
-        
+
     }
 
     internal void setStatisticToZero()
@@ -132,8 +132,9 @@ public class Army
     Province destination;
     Country owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
+    //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
     static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", 1f, true);
-    
+
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
     static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);
@@ -199,8 +200,9 @@ public class Army
 
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
-            Modifier.modifierDefault, modifierInDefense, modifierMoral, modifierColdArms, modifierFirearms, modifierArtillery,
-        modifierCars, modifierTanks, modifierAirplanes, modifierLuck
+        //modifierDefenseInMountains
+            Modifier.modifierDefault, modifierInDefense,  modifierMoral, modifierColdArms,
+        modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck
         });
     // private Army consolidatedArmy;
 
@@ -619,7 +621,7 @@ public class Army
             float totalStrenght = getStrenght(armyStrenghtModifier);
             if (totalStrenght > 0f)
             {
-                
+
                 foreach (var corp in personal)
                 {
 
@@ -644,11 +646,11 @@ public class Army
     {
         return modifierStrenght.getModifier(this);
     }
-    private float getStrenght( float armyStrenghtModifier)
+    private float getStrenght(float armyStrenghtModifier)
     {
-        float result = 0;        
+        float result = 0;
         foreach (var c in personal)
-            result += c.Value.getStrenght(this, armyStrenghtModifier);        
+            result += c.Value.getStrenght(this, armyStrenghtModifier);
         return result;
     }
 
@@ -749,7 +751,7 @@ public class BattleResult
             new Message("We won a battle!", sb.ToString(), "Fine");
         }
         else
-        if (!defender.isAI()&& isDefenderWon())
+        if (!defender.isAI() && isDefenderWon())
         {
             sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");

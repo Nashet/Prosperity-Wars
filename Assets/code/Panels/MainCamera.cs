@@ -73,13 +73,13 @@ public class MainCamera : MonoBehaviour
         {
             Application.runInBackground = true;
             MainCamera.Game = new Game();
-            MainCamera.Game.initialize();// non multi-threading
-                                         //MainCamera.Game.Start(); //initialize is here 
+            //MainCamera.Game.initialize();// non multi-threading
+            MainCamera.Game.Start(); //initialize is here 
 
         }
         if (MainCamera.Game != null)
-            //if (MainCamera.Game.IsDone && !gameIsLoaded)
-            if (!gameIsLoaded)  // non multi-threading
+            if (MainCamera.Game.IsDone && !gameIsLoaded)
+            //if (!gameIsLoaded)  // non multi-threading
             {
                 Game.setUnityAPI();
 
@@ -90,8 +90,8 @@ public class MainCamera : MonoBehaviour
                 topPanel.show();
                 gameIsLoaded = true;
             }
-        //else // multi-threading
-        //    loadingPanel.loadingText.text = Game.getStatus();
+            else // multi-threading
+                loadingPanel.loadingText.text = Game.getStatus();
         if (gameIsLoaded)
         {
             if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))

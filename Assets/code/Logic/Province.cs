@@ -121,7 +121,7 @@ public class Province
         {
             //each color is one neighbor (non repeating)
             var neighbor = border.Key;
-            //if (this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+            if (this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                 neighbors.Add(neighbor);
 
             GameObject borderObject = new GameObject("Border with " + neighbor.ToString());
