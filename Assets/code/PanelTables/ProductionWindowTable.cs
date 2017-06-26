@@ -6,29 +6,15 @@ using System;
 
 
 
-public class ProductionWindowTable : MyTable
+public class ProductionWindowTable : MyTableNew
 {
 
-    override protected void Refresh()
+    public override void refreshContent()
     {
-        if (Game.factoriesToShowInProductionPanel != null)
-        {
-            base.RemoveButtons();
-            AddButtons();
-            gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
-        }
-    }
-    protected void AddButton(string text, Factory stor)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  this, stor);
-    }
-   
-    override protected void AddButtons()
-    {
-        int counter = 0;
+        alreadyInUpdate = true;
+        base.RemoveButtons();
+        calcSize(Game.factoriesToShowInProductionPanel.Count);
+        //int counter = 0;
 
         // Adding product name 
         AddButton("Type");
@@ -51,13 +37,14 @@ public class ProductionWindowTable : MyTable
         ////Adding profit
         AddButton("% Profit");
 
-        ////Adding slary
+        ////Adding salary
         AddButton("Salary");
-        foreach (Factory next in Game.factoriesToShowInProductionPanel)
-        {           
-
+        for (int i = 0; i < howMuchRowsShow; i++)
+        //foreach (Factory next in Game.factoriesToShowInProductionPanel)
+        {
+            Factory next = Game.factoriesToShowInProductionPanel[i + offset];
             // Adding shownFactory name 
-            AddButton(next.type.name +" L"+next.getLevel(), next);
+            AddButton(next.type.name + " L" + next.getLevel(), next);
 
             // Adding province 
             AddButton(next.province.ToString(), next.province);
@@ -78,23 +65,26 @@ public class ProductionWindowTable : MyTable
             if (next.isUpgrading())
                 AddButton("Upgrading", next);
             else
-            if (next.isBuilding())
-                AddButton("Building", next);
-            else
-                if (!next.isWorking())
-                AddButton("Closed", next);
-            else
-                AddButton(next.getMargin().ToString(), next);
-
+            {
+                if (next.isBuilding())
+                    AddButton("Building", next);
+                else
+                {
+                    if (!next.isWorking())
+                        AddButton("Closed", next);
+                    else
+                        AddButton(next.getMargin().ToString(), next);
+                }
+            }
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
             if (Economy.isMarket.checkIftrue(Game.Player))
                 AddButton(next.getSalary().ToString() + " coins", next);
             else
-                AddButton(next.getSalary().ToString()+ " food", next);
-            counter++;
+                AddButton(next.getSalary().ToString() + " food", next);
+            //counter++;
             //contentPanel.r
         }
-
+        alreadyInUpdate = false;
     }
 }

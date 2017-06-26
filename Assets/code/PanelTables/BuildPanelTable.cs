@@ -7,7 +7,7 @@ using System;
 
 public class BuildPanelTable : MyTable
 {
-    override protected void Refresh()
+    override protected void refresh()
     {
         ////if (Game.date != 0)
         {

@@ -44,7 +44,7 @@ public class PoliticsPanel : DragPanel
             selectedReform.setValue(selectedReformValue);
             refresh(true);
             if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
-            if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.refresh();
+            if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.refreshContent();
             if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
 
         }

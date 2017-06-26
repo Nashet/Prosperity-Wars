@@ -8,7 +8,7 @@ using System;
 
 public class PoliticsPanelTable : MyTable
 {
-    override protected void Refresh()
+    override protected void refresh()
     {
         ////if (Game.date != 0)
         {

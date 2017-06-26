@@ -437,7 +437,7 @@ public class Game : ThreadedJob
 
         //Texture2D mapImage = new Texture2D(100, 100);
         //Texture2D mapImage = new Texture2D(300, 300);
-        Texture2D mapImage = new Texture2D(160 + Random.Next(60), 70 + Random.Next(60));
+        Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));
         //Texture2D mapImage = new Texture2D(150 + Random.Next(100), 150 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
@@ -589,12 +589,14 @@ public class Game : ThreadedJob
     {
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurrently there is: "
-            + "\n\npopulation agents \nbasic trade & production \nbasic warfare \nbasic inventions \nbasic reforms (population can vote for reforms)"
-            + " \npopulation demotion\\promotion to other classes \nmigration\\immigration\\assimilation"
-            + "\npolitical\\culture\\core map mode"
+            + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
+            + "\n\tbasic trade & production \n\tbasic warfare \n\tbasic inventions"
+            +" \n\tbasic reforms (population can vote for reforms)"
+            + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration\\ immigration \\ assimilation"
+            + "\n\tpolitical \\ culture \\ core map mode"
             + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
-            + "\n'Enter' key to close top window, space - to pause\\unpause"
+            + "\n'Enter' key to close top window, space - to pause \\ unpause"
             , "Ok");
     }
     static void loadImages()

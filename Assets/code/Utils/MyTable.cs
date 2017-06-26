@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,9 +22,15 @@ abstract public class MyTable : MonoBehaviour
     void OnEnable()
     {
         //if (Game.date !=0)
-        Refresh();
+        refresh();
     }
-    abstract protected void Refresh();
+    //void Update()
+    //{
+    //    //if (Game.date !=0)
+    //    refresh();
+    //}
+
+    abstract protected void refresh();
 
     //void Update()
     //{
@@ -98,4 +105,133 @@ abstract public class MyTable : MonoBehaviour
     //        }
     //    }
     //}
+}
+abstract public class MyTableNew : MonoBehaviour
+{    
+    public SimpleObjectPool buttonObjectPool;
+
+    protected readonly int  rowHeight = 20;
+    //public int columnsAmount;
+    public Scrollbar verticalSlider;
+    protected int howMuchRowsShow;
+    protected int offset;
+
+    protected bool alreadyInUpdate;
+
+    
+    public abstract void refreshContent();
+
+
+    /// <summary>
+    /// assuming amount of pops didn't changed
+    /// </summary>
+    public void OnVerticalScroll()
+    {
+        if (!alreadyInUpdate)
+            refreshContent();
+    }
+
+    protected void calcSize(int totalRows)
+    {
+        var rect = GetComponent<RectTransform>();
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+
+        howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header    
+
+        if (howMuchRowsShow > totalRows)
+            howMuchRowsShow = totalRows;
+
+        int hiddenRows = totalRows - howMuchRowsShow;
+        offset = (int)(hiddenRows * (1f - verticalSlider.value));
+
+        // check if scrollbar size should be changed
+        if (totalRows > 0)
+        {
+            verticalSlider.size = (float)howMuchRowsShow / (float)totalRows;
+            verticalSlider.numberOfSteps = totalRows;
+        }
+        else
+        {
+            verticalSlider.size = 1;
+            verticalSlider.numberOfSteps = 10;
+        }
+    }
+    protected void AddButton(string text, Province prov)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, prov);
+    }
+    protected void AddButton(string text, Factory stor)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, stor);
+    }
+    protected void AddButton(string text, Province prov, string tooltip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, prov);
+        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+    }
+    protected void AddButton(string text)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, null);
+    }
+
+    protected void AddButton(string text, PopUnit record)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        //newButton.transform.SetParent(contentPanel);
+        //newButton.transform.localScale = Vector3.one;
+
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, record);
+    }
+    protected void AddButton(string text, PopUnit record, string toolTip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        //newButton.transform.SetParent(contentPanel);
+        //newButton.transform.localScale = Vector3.one;
+
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, record);
+        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+    }
+    protected void AddButton(string text, PopUnit record, Func<string> dynamicTooltip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        //newButton.transform.SetParent(contentPanel);
+        //newButton.transform.localScale = Vector3.one;
+
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, record);
+        newButton.GetComponentInChildren<ToolTipHandler>().dynamicString = dynamicTooltip;
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+    }
+    protected void RemoveButtons()
+    {
+        //lock (buttonObjectPool)
+        {
+            int count = gameObject.transform.childCount;
+            for (int i = 0; i < count; i++)
+            {
+                GameObject toRemove = gameObject.transform.GetChild(0).gameObject;
+                buttonObjectPool.ReturnObject(toRemove);
+            }
+        }
+    }   
+    
 }

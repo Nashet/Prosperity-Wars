@@ -193,7 +193,7 @@ public class FactoryPanel : DragPanel//for dragging
             //if (shownFactory.whyCantReopenFactory() == null)
             shownFactory.reopen(Game.Player);
         refresh();
-        if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
+        if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();
         MainCamera.topPanel.refresh();
         if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.refresh();
     }
@@ -202,7 +202,7 @@ public class FactoryPanel : DragPanel//for dragging
         //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
         {
             shownFactory.upgrade(Game.Player);
-            if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refresh();
+            if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();
             MainCamera.topPanel.refresh();
             if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.refresh();
             this.refresh();

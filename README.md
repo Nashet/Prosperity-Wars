@@ -18,9 +18,10 @@ So, main principles of that simulation are:
 * governments can put extra money in bank
 * player should have as much freedom as possible, even if player is going to do something stupid 
 
-## What it has now (v0.12.0)
+## What it has now (v0.12.1)
  - provinces and countries
- - population agents
+ - factories and national banks
+ - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen)
  - basic production\trade\consumption
  - basic warfare
  - basic inventions

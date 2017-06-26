@@ -5,113 +5,92 @@ using System.Collections.Generic;
 using System;
 
 
-public class PopulationPanelTable : MyTable
+public class PopulationPanelTable : MyTableNew
 {
-
-    override protected void Refresh()
-    {        
-        base.RemoveButtons();
-        AddButtons();
-        gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
-    }
-    protected void AddButton(string text, PopUnit record)
+    public override void refreshContent()
     {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        //newButton.transform.SetParent(contentPanel);
-        //newButton.transform.localScale = Vector3.one;
-
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, record);
-    }
-    protected void AddButton(string text, PopUnit record, string toolTip)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        //newButton.transform.SetParent(contentPanel);
-        //newButton.transform.localScale = Vector3.one;
-
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, record);
-        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
-        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-    }
-    protected void AddButton(string text, PopUnit record, Func<string> dynamicTooltip)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        //newButton.transform.SetParent(contentPanel);
-        //newButton.transform.localScale = Vector3.one;
-
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, record);
-        newButton.GetComponentInChildren<ToolTipHandler>().dynamicString = dynamicTooltip;
-        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-    }
-   
-    override protected void AddButtons()
-    {
-        int counter = 0;
-        if (Game.popsToShowInPopulationPanel != null)
+        alreadyInUpdate = true;
+        //lock (gameObject)
         {
+            RemoveButtons();
+            calcSize(Game.popsToShowInPopulationPanel.Count);
+
             // Adding number
-            //AddButton("Number");
+            // AddButton("Number");
+
             // Adding PopType
             AddButton("Type");
+
             ////Adding population
             AddButton("Population");
+
             ////Adding culture
             AddButton("Culture");
+
             ////Adding province
             AddButton("Province");
+
             ////Adding education
             AddButton("Education");
+
             ////Adding storage
             //if (null.storage != null)
             AddButton("Cash");
             //else AddButton("Administration");
+
             ////Adding needs fulfilling
             AddButton("Needs fulfilled");
+
             ////Adding loyalty
             AddButton("Loyalty");
-            ////Adding loyalty
+
+            ////Adding Unemployment
             AddButton("Unemployment");
-            foreach (PopUnit record in Game.popsToShowInPopulationPanel)
-            {               
-                //AddButton(Convert.ToString(counter), record);
-                // Adding PopType
-                AddButton(record.popType.ToString(), record);
-                ////Adding population
-                AddButton(System.Convert.ToString(record.getPopulation()), record);
-                ////Adding culture
-                AddButton(record.culture.ToString(), record);
-                ////Adding province
-                AddButton(record.province.ToString(), record.province, "Click to select this province");
-                ////Adding education
-                AddButton(record.education.ToString(), record);   
-                
-                ////Adding cash
-                AddButton(record.cash.ToString(), record);
 
-                ////Adding needs fulfilling
+            if (Game.popsToShowInPopulationPanel.Count > 0)
+            {
+                for (int i = 0; i < howMuchRowsShow; i++)
+                //foreach (PopUnit record in Game.popsToShowInPopulationPanel)
+                {
+                    PopUnit record = Game.popsToShowInPopulationPanel[i + offset];
 
-                PopUnit ert = record;
-                AddButton(record.needsFullfilled.ToString(), record,
-                    () => ert.consumedTotal.ToStringWithLines()
-                    //delegate () { return ert.consumedTotal.ToString(); }
-                    //record.consumedTotal.ToString()
-                    );
+                    // Adding number
+                    //AddButton(Convert.ToString(i + offset), record);
 
-                ////Adding loyalty
-                string accu;
-                PopUnit.modifiersLoyaltyChange.getModifier(record, out accu);
-                AddButton(record.loyalty.ToString(), record, accu);
+                    // Adding PopType
+                    AddButton(record.popType.ToString(), record);
+                    ////Adding population
+                    AddButton(System.Convert.ToString(record.getPopulation()), record);
+                    ////Adding culture
+                    AddButton(record.culture.ToString(), record);
+                    ////Adding province
+                    AddButton(record.province.ToString(), record.province, "Click to select this province");
+                    ////Adding education
+                    AddButton(record.education.ToString(), record);
 
-                //Adding Unemployment
-                AddButton(record.getUnemployedProcent().ToString(), record);
-                counter++;
-                //contentPanel.r
+                    ////Adding cash
+                    AddButton(record.cash.ToString(), record);
+
+                    ////Adding needs fulfilling
+
+                    PopUnit ert = record;
+                    AddButton(record.needsFullfilled.ToString(), record,
+                        () => ert.consumedTotal.ToStringWithLines()
+                        //delegate () { return ert.consumedTotal.ToString(); }
+                        //record.consumedTotal.ToString()
+                        );
+
+                    ////Adding loyalty
+                    string accu;
+                    PopUnit.modifiersLoyaltyChange.getModifier(record, out accu);
+                    AddButton(record.loyalty.ToString(), record, accu);
+
+                    //Adding Unemployment
+                    AddButton(record.getUnemployedProcent().ToString(), record);
+                }
+
             }
         }
+        alreadyInUpdate = false;
     }
 }

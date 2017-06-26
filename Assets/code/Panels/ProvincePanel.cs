@@ -90,29 +90,29 @@ public class ProvincePanel : MonoBehaviour
     public void onEnterprisesClick()
     {
         if (MainCamera.productionWindow.isActiveAndEnabled)
-            if (MainCamera.productionWindow.showingProvince == null)
+            if (MainCamera.productionWindow.getShowingProvince() == null)
             {
                 MainCamera.productionWindow.hide();
                 Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-                MainCamera.productionWindow.showingProvince = Game.selectedProvince;
+                //MainCamera.productionWindow.getShowingProvince() = Game.selectedProvince;
                 MainCamera.productionWindow.show(Game.selectedProvince, true);
             }
             else
             {
-                if (MainCamera.productionWindow.showingProvince == Game.selectedProvince)
+                if (MainCamera.productionWindow.getShowingProvince() == Game.selectedProvince)
                     MainCamera.productionWindow.hide();
                 else
                 {
                     MainCamera.productionWindow.hide();
                     Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories; ;
-                    MainCamera.productionWindow.showingProvince = Game.selectedProvince;
+                    //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
                     MainCamera.productionWindow.show(Game.selectedProvince, true);
                 }
             }
         else
         {
             Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-            MainCamera.productionWindow.showingProvince = Game.selectedProvince;
+            //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
             MainCamera.productionWindow.show(Game.selectedProvince, true);
         }
     }

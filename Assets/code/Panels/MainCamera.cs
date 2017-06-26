@@ -39,6 +39,7 @@ public class MainCamera : MonoBehaviour
     void Start()
     {
         //topPanel.hide();
+        //Canvas.ForceUpdateCanvases();
     }
     void FixedUpdate()
     {
@@ -50,11 +51,11 @@ public class MainCamera : MonoBehaviour
             float zCameraSpeed = 55f;
             float xMove = Input.GetAxis("Horizontal");
             if (xMove * xyCameraSpeed + position.x < mapBorders.x
-                || xMove * xyCameraSpeed + position.x >  mapBorders.width)
+                || xMove * xyCameraSpeed + position.x > mapBorders.width)
                 xMove = 0;
             float yMove = Input.GetAxis("Vertical");
             if (yMove * xyCameraSpeed + position.y < mapBorders.y
-                || yMove * xyCameraSpeed + position.y >  mapBorders.height)
+                || yMove * xyCameraSpeed + position.y > mapBorders.height)
                 yMove = 0;
             float zMove = Input.GetAxis("Mouse ScrollWheel");
             zMove = zMove * zCameraSpeed;
@@ -70,27 +71,27 @@ public class MainCamera : MonoBehaviour
         //starts loading thread
         if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
         {
-            Application.runInBackground = true;            
+            Application.runInBackground = true;
             MainCamera.Game = new Game();
-            //MainCamera.Game.initialize();
-            MainCamera.Game.Start(); //initialize is here
-            
+            MainCamera.Game.initialize();// non multi-threading
+                                         //MainCamera.Game.Start(); //initialize is here 
+
         }
         if (MainCamera.Game != null)
-            if (MainCamera.Game.IsDone && !gameIsLoaded)
-            //if (!gameIsLoaded)
+            //if (MainCamera.Game.IsDone && !gameIsLoaded)
+            if (!gameIsLoaded)  // non multi-threading
             {
                 Game.setUnityAPI();
 
-                camera = this.GetComponent<Camera>();                
+                camera = this.GetComponent<Camera>();
                 gameObject.transform.position = new Vector3(Game.Player.getCapital().centre.x,
                     Game.Player.getCapital().centre.y, gameObject.transform.position.z);
                 loadingPanel.hide();
                 topPanel.show();
                 gameIsLoaded = true;
             }
-            else
-                loadingPanel.loadingText.text = Game.getStatus();
+        //else // multi-threading
+        //    loadingPanel.loadingText.text = Game.getStatus();
         if (gameIsLoaded)
         {
             if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))
@@ -158,10 +159,10 @@ public class MainCamera : MonoBehaviour
     {
         if (topPanel.isActiveAndEnabled) topPanel.refresh();
         if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
-        if (populationPanel.isActiveAndEnabled) populationPanel.refresh();
+        if (populationPanel.isActiveAndEnabled) populationPanel.refreshContent();
         if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
         if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
-        if (productionWindow.isActiveAndEnabled) productionWindow.refresh();
+        if (productionWindow.isActiveAndEnabled) productionWindow.refreshContent();
         if (goodsPanel.isActiveAndEnabled) goodsPanel.refresh();
         if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh();
         if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
