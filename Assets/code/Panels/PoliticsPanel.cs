@@ -3,17 +3,17 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class PoliticsPanel : DragPanel
-{   
+{
     public ScrollRect table;
-    public Text descriptionText;
+    public Text descriptionText, movementsText;
     public Button voteButton;
     public Button forceDecisionButton;
     public Dropdown dropDown;
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
     List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
-   
-    
+
+
     // Use this for initialization
     void Start()
     {
@@ -21,6 +21,11 @@ public class PoliticsPanel : DragPanel
         voteButton.interactable = false;
         dropDown.interactable = false;
         forceDecisionButton.interactable = false;
+        //var oldRect = GetComponent<RectTransform>().rect;
+        //oldRect = new Rect(0, oldRect.y, oldRect.width, oldRect.height);
+        GetComponent<RectTransform>().localPosition = new Vector2(-960f, -60f);
+
+
         hide();
     }
     //public void hide()
@@ -35,7 +40,7 @@ public class PoliticsPanel : DragPanel
             panelRectTransform.SetAsLastSibling();
 
     }
-    
+
 
     void setNewReform()
     {
@@ -112,6 +117,8 @@ public class PoliticsPanel : DragPanel
     public void refresh(bool callRebuildDropDown)
     {
         hide();
+        if (Game.Player.movements != null)
+            movementsText.text = Game.Player.movements.getDescription();
         if (selectedReform != null)
         {
             if (callRebuildDropDown) // meaning changed whole reform            
@@ -125,9 +132,9 @@ public class PoliticsPanel : DragPanel
             if (selectedReformValue != selectedReform.getValue())
                 descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
             else
-                descriptionText.text += "current";     
+                descriptionText.text += "current";
 
-           
+
             ////
             Procent procentPopulationSayedYes = new Procent(0f);
             Procent procentVotersSayedYes = Game.Player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);

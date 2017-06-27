@@ -4,10 +4,11 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 using System;
-
+/// <summary>
+/// Represents any military commander structure
+/// </summary>
 public class GeneralStaff
-{
-    //internal Army sendingArmy;
+{    
     List<Army> allArmies = new List<Army>();
     Country country;
     public GeneralStaff(Country country)
@@ -23,19 +24,21 @@ public class GeneralStaff
         if (allArmies.Count == 1)
             return allArmies[0];
         else
-            if (allArmies.Count > 0)
         {
+            if (allArmies.Count > 0)
+            {
 
-            foreach (Army next in allArmies)
-                if (next.getDestination() == null)
-                {
-                    consolidatedArmy.setOwner(next.getOwner());
-                    consolidatedArmy.joinin(next);
-                }
-            //if (addConsolidatedArmyInList)
-            allArmies.Add(consolidatedArmy);
-            allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army            
+                foreach (Army next in allArmies)
+                    if (next.getDestination() == null)
+                    {
+                        consolidatedArmy.setOwner(next.getOwner());
+                        consolidatedArmy.joinin(next);
+                    }
+                //if (addConsolidatedArmyInList)
+                allArmies.Add(consolidatedArmy);
+                allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army            
 
+            }
         }
         return consolidatedArmy;
 
@@ -72,9 +75,7 @@ public class GeneralStaff
         foreach (Army nextArmy in allArmies)
         {
             nextArmy.demobilize(predicate);
-
         }
-
         allArmies.RemoveAll(army => army.getSize() == 0);
     }
 
@@ -212,14 +213,8 @@ public class Army
         personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
     }
-    public Army(Army consolidatedArmy) : this(consolidatedArmy.getOwner())
-    { }
-    //public Army()
-    //{
-    //    //owner.staff.addArmy(this);
-    //    personal = new Dictionary<PopUnit, Corps>();
-    //    this.owner = null;
-    //}
+    //public Army(Army consolidatedArmy) : this(consolidatedArmy.getOwner())
+    //{ }    
 
     //public static bool Any<TSource>(this IEnumerable<TSource> source);
     void move(Corps item, Army destination)

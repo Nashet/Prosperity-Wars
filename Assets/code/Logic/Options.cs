@@ -83,4 +83,7 @@ public static class Options
     internal static readonly int PopMinimalMobilazation = 50;
     internal static readonly float FactoryMinPossibleSallary = 0.001f;
     internal static readonly float MarketInfiniteDSB = 999f;
+    internal static readonly Value PopLowLoyaltyToJoinMovevent = new Value(0.3f);
+    internal static readonly Value PopHighLoyaltyToleavMovevent = new Value(0.5f);
+    internal static readonly Value PopLoyaltyLimitToRevolt = new Value(0.1f);
 }

@@ -282,7 +282,13 @@ public class Province
         oldCountry.staff.demobilize(x => x.getPopUnit().province == this);
 
         // add loyalty penalty for conquered province // temp
-        allPopUnits.ForEach(x => x.loyalty.set(0f));
+        foreach (var pop in allPopUnits)
+        {
+            pop.loyalty.set(0f);
+            Movement.leave(pop);
+            //item.setMovement(null);
+        }
+        
 
         if (oldCountry != null)
             if (oldCountry.ownedProvinces != null)

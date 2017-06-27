@@ -31,7 +31,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = false;
+    private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial        , 
         impassableBorder;
     private readonly Rect mapBorders;

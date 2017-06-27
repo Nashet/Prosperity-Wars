@@ -6,6 +6,16 @@ using System;
 //public abstract class NameDescriptor
 //{ }
 public interface AbstractCondition { }
+public static class ReformExtensions
+{
+    public static bool isEnacted(this List<AbstractReform> list, AbstractReformValue reformValue)
+    {
+        foreach (var item in list)
+            if (item.getValue() == reformValue)
+                return true;
+        return false;
+    }
+}
 
 abstract public class AbstractReformValue : AbstractCondition
 {
@@ -13,13 +23,18 @@ abstract public class AbstractReformValue : AbstractCondition
     readonly string description;
     readonly internal int ID;
     readonly internal ConditionsList allowed;
-
+    //readonly internal Condition enacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", false)
+    static AbstractReformValue()
+    {
+        //allowed.add();
+    }
     internal AbstractReformValue(string inname, string indescription, int IDin, ConditionsList condition)
     {
         ID = IDin;
         name = inname;
         description = indescription;
         this.allowed = condition;
+        
         wantsReform = new Modifier(x => this.howIsItGoodForPop(x as PopUnit).get(),
                     "How much is it good for population",  1f, true);
         loyalty =  new Modifier(x => this.loyaltyBoostFor(x as PopUnit),
@@ -521,7 +536,7 @@ public class MinimalWage : AbstractReform
         }
         override public string ToString()
         {
-            return base.ToString() + ", value: " + getWage();
+            return base.ToString() + " (" + getWage()+")";
         }
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
@@ -556,29 +571,29 @@ public class MinimalWage : AbstractReform
     ReformValue status;
 
     internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal readonly static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
+    internal readonly static ReformValue None = new ReformValue("No minimal wage", "", 0, new ConditionsList(new List<Condition>()));
 
-    internal readonly static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Scanty = new ReformValue("Scanty minimal wage", "- Half-hungry", 1, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Minimal = new ReformValue("Tiny minimal wage", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Trinket = new ReformValue("Trinket minimal wage", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Middle = new ReformValue("Middle", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
+    internal readonly static ReformValue Middle = new ReformValue("Middle minimal wage", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Big = new ReformValue("Generous minimal wage", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
@@ -688,7 +703,7 @@ public class UnemploymentSubsidies : AbstractReform
         }
         override public string ToString()
         {
-            return base.ToString() + ", value: " + getSubsidiesRate();
+            return base.ToString() + " (" + getSubsidiesRate()+")";
         }
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
@@ -714,28 +729,28 @@ public class UnemploymentSubsidies : AbstractReform
     }
     ReformValue status;
     internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal readonly static ReformValue None = new ReformValue("None", "", 0, new ConditionsList(new List<Condition>()));
-    internal readonly static ReformValue Scanty = new ReformValue("Scanty", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue None = new ReformValue("No unemployment subsidies", "", 0, new ConditionsList(new List<Condition>()));
+    internal readonly static ReformValue Scanty = new ReformValue("Scanty unemployment subsidies", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Minimal = new ReformValue("Minimal", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Minimal = new ReformValue("Minimal unemployment subsidies", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Trinket = new ReformValue("Trinket", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Trinket = new ReformValue("Trinket unemployment subsidies", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Middle = new ReformValue("Middle", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Middle = new ReformValue("Middle unemployment subsidies", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
         }));
-    internal readonly static ReformValue Big = new ReformValue("Generous", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
+    internal readonly static ReformValue Big = new ReformValue("Generous unemployment subsidies", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
             new Condition(Invention.Welfare, true),
             Economy.isNotLF,
@@ -827,7 +842,7 @@ public class TaxationForPoor : AbstractReform
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax", "", new Procent(i * 0.1f), i, ConditionsList.AlwaysYes));
+            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, ConditionsList.AlwaysYes));
         status = PossibleStatuses[1];
     }
     internal override AbstractReformValue getValue()
@@ -908,7 +923,7 @@ public class TaxationForRich : AbstractReform
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax", "", new Procent(i * 0.1f), i, ConditionsList.AlwaysYes));
+            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, ConditionsList.AlwaysYes));
         status = PossibleStatuses[1];
     }
     internal override AbstractReformValue getValue()

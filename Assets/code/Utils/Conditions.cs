@@ -38,7 +38,10 @@ public class ConditionsList
                 list.Add(next as Condition);
     }
 
-
+    internal void add(Condition condition)
+    {
+        list.Add(condition);
+    }
 
     internal readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(x => 2 == 2, "Always Yes condition", true) });
     internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented });

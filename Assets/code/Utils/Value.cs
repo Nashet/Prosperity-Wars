@@ -26,6 +26,14 @@ public class Value
     {
         return this.value >= invalue.value;
     }
+    public bool isSmallerThan(Value invalue)
+    {
+        return this.value < invalue.value;
+    }
+    public bool isSmallerOrEqual(Value invalue)
+    {
+        return this.value <= invalue.value;
+    }
     //TODO overflow checks?
     public void add(Value invalue)
     {
@@ -194,7 +202,10 @@ public class Value
         else
             return new Value(get() / invalue.get());
     }
-
+    /// <summary>
+    /// Bigger than 0
+    /// </summary>
+    /// <returns></returns>
     public bool isExist()
     {
         return value > 0;

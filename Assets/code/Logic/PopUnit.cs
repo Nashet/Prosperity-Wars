@@ -38,7 +38,7 @@ abstract public class PopUnit : Producer
 
     private readonly DateTime born;
     //if add new fields make sure it's implemented in second constructor and in merge()   
-
+    private Movement movement;
     static PopUnit()
     {
         //makeModifiers();
@@ -709,12 +709,38 @@ abstract public class PopUnit : Producer
         return canVote(getCountry().government.getTypedValue());
     }
     abstract internal bool canVote(Government.ReformValue reform);
+    public AbstractReformValue getMostImportantIssue()
+    {
+        var d = new Dictionary<AbstractReformValue, Value>();
+        foreach (var reform in this.getCountry().reforms)
+            foreach (AbstractReformValue reformValue in reform)
+                if (reformValue.allowed.isAllTrue(getCountry()))
+                {
+                    var howGood = reformValue.howIsItGoodForPop(this);
+                    if (howGood.isExist())
+                        d.Add(reformValue, howGood);
+                }
+        return d.MaxBy(x => x.Value.get()).Key;
+    }
     public void calcLoyalty()
     {
         float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this) / 100f;
         loyalty.set(Mathf.Clamp01(newRes));
         if (daysUpsetByForcedReform > 0)
             daysUpsetByForcedReform--;
+        if (loyalty.isSmallerThan(Options.PopLowLoyaltyToJoinMovevent))
+            Movement.join(this);
+        else
+            if (loyalty.isBiggerThan(Options.PopLowLoyaltyToJoinMovevent))
+            Movement.leave(this);
+    }
+    public void setMovement(Movement movement)
+    {
+        this.movement = movement;
+    }
+    public Movement getMovement()
+    {
+        return movement;
     }
 
     public override void simulate()

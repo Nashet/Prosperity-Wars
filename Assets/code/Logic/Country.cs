@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 public class Country : Consumer
 {
-    readonly string name;
+    private readonly string name;
     public static List<Country> allCountries = new List<Country>();
     public List<Province> ownedProvinces = new List<Province>();
 
@@ -55,6 +55,7 @@ public class Country : Consumer
     Value soldiersWageExpense = new Value(0f);
     Value factorySubsidiesExpense = new Value(0f);
     Value storageBuyingExpense = new Value(0f);
+    public readonly List<Movement> movements = new List<Movement>();
     static Country()
     {
         NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
@@ -519,6 +520,9 @@ public class Country : Consumer
                 procent.add(modMyOpinionOfXCountry.getModifier(item), false);
                 procent.clamp100();
             }
+        foreach (var item in movements)
+            item.simulate();
+
     }
     /// <summary>
     /// For AI only
@@ -552,7 +556,7 @@ public class Country : Consumer
                 newWage = getSoldierWage() - getSoldierWage() * 0.2f;
             }
             else
-            {                
+            {
                 var balance = getBalance();
 
                 if (balance > 200f)

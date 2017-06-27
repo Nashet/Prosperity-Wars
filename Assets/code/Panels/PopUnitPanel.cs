@@ -26,7 +26,7 @@ public class PopUnitPanel : DragPanel
     {
         if (pop != null)
         {
-            efficiencyText.text ="Efficiency: "+ PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
+            efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
 
             string demotionText;
             var target = pop.getRichestDemotionTarget();
@@ -52,11 +52,11 @@ public class PopUnitPanel : DragPanel
             string immigrationText;
             var targetIM = pop.getRichestImmigrationTarget();
             if (pop.wantsToImmigrate() && targetIM != null && pop.getImmigrationSize() > 0)
-                immigrationText = targetIM + " ("+targetIM.getCountry() + ") " + pop.getImmigrationSize();
+                immigrationText = targetIM + " (" + targetIM.getCountry() + ") " + pop.getImmigrationSize();
             else
                 immigrationText = "none";
 
-            string assimilationText;            
+            string assimilationText;
             if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
                 assimilationText = pop.province.getCountry().getCulture() + " " + pop.getAssimilationSize();
             else
@@ -107,8 +107,10 @@ public class PopUnitPanel : DragPanel
                 + loans
                 + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
-                + "\nAge: " + pop.getAge()
-                ;
+                + "\nAge: " + pop.getAge();
+            if (pop.getMovement() != null)
+                generaltext.text += "\nMember of: " + pop.getMovement();
+
             //if (Game.devMode)
             //    generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
             //    + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
