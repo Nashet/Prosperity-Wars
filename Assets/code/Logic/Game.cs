@@ -32,7 +32,7 @@ public class Game : ThreadedJob
     internal static bool devMode = false;
     private static int mapMode;
     private static bool surrended = true;
-    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial        , 
+    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
         impassableBorder;
     private readonly Rect mapBorders;
 
@@ -598,7 +598,7 @@ public class Game : ThreadedJob
             + " \n\tbasic reforms (population can vote for reforms)"
             + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
             + "\n\tpolitical \\ culture \\ core map mode"
-            + "\n\nYou play as " + Game.Player.getName() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            + "\n\nYou play as " + Game.Player.getDescription() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\n'Enter' key to close top window, space - to pause \\ unpause"
             , "Ok");
@@ -612,21 +612,33 @@ public class Game : ThreadedJob
     }
     private static void calcBattles()
     {
-        foreach (Country attackerCountry in Country.getExisting())
+        foreach (Staff attacker in Staff.getAllStaffs())
         {
-            foreach (var attackerArmy in attackerCountry.getAttackingArmies())
+            foreach (var attackerArmy in attacker.getAttackingArmies())
             {
                 var result = attackerArmy.attack(attackerArmy.getDestination());
                 if (result.isAttackerWon())
                 {
-                    attackerArmy.getDestination().secedeTo(attackerCountry);
+                    var country = attacker as Country;
+                    if (country == null)
+                        (attacker as Movement).onRevolutionWon();
+                    else
+                        attackerArmy.getDestination().secedeTo(country); ;
+                }
+                else if (result.isDefenderWon())
+                {
+                    var movement = attacker as Movement;
+                    if (movement != null)
+                        movement.onRevolutionLost();
                 }
                 if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
                     result.createMessage();
                 attackerArmy.sendTo(null); // go home
             }
-            attackerCountry.consolidateArmies();
+            attacker.consolidateArmies();
         }
+       
+        
     }
     internal static void stepSimulation()
     {

@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-public class Country : GeneralStaff
+public class Country : Staff
 {
     private readonly string name;
     public static List<Country> allCountries = new List<Country>();
@@ -104,17 +104,17 @@ public class Country : GeneralStaff
         this.capital = capital;
         //if (!Game.devMode)
         {
-            government.status = Government.Aristocracy;
+            //government.status = Government.Aristocracy;
 
             economy.status = Economy.StateCapitalism;
-
+            serfdom.status = Serfdom.Abolished;
             inventions.markInvented(Invention.Farming);
             inventions.markInvented(Invention.Manufactories);
             inventions.markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
             //inventions.markInvented(Invention.ProfessionalArmy);
-            serfdom.status = Serfdom.Abolished;
+           
         }
 
 
@@ -163,7 +163,10 @@ public class Country : GeneralStaff
             if (pro.getCountry() == null)
                 pro.InitialOwner(Country.NullCountry);
     }
-
+    internal void setPrefix()
+    {
+        messhCapitalText.text = getDescription();
+    }
     internal void setSoldierWage(float value)
     {
         soldiersWage.set(value);
@@ -185,9 +188,9 @@ public class Country : GeneralStaff
             DateOfisThereBadboyCountry = Game.date;
             float worldStrenght = 0f;
             foreach (var item in Country.getExisting())
-                worldStrenght += item.getStreght();
+                worldStrenght += item.getStregth();
             float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStreght() >= streghtLimit).MaxBy(x => x.getStreght());
+            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStregth() >= streghtLimit).MaxBy(x => x.getStregth());
         }
         return BadboyCountry;
 
@@ -196,7 +199,7 @@ public class Country : GeneralStaff
     {
         if (country == this)
             return false;
-        if (country.getStreght() > this.getStreght() * 2)
+        if (country.getStregth() > this.getStregth() * 2)
             return true;
         else
             return false;
@@ -340,7 +343,7 @@ public class Country : GeneralStaff
         txtMeshTransform.position = capitalTextPosition;
 
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
-        messhCapitalText.text = getName();
+        messhCapitalText.text = getDescription();
         messhCapitalText.fontSize *= 2;
         if (this == Game.Player)
         {
@@ -479,13 +482,17 @@ public class Country : GeneralStaff
     {
         return name;
     }
+    public string getDescription()
+    {
+        if (this == Game.Player)
+            return name + " "+ government.getPrefix()+ " (you are)";
+        else
+            return name + " " + government.getPrefix();        
+    }
 
     override public string ToString()
     {
-        if (this == Game.Player)
-            return name + " country (you are)";
-        else
-            return name + " country";
+        return getDescription();
     }
     internal void simulate()
     {
@@ -512,9 +519,11 @@ public class Country : GeneralStaff
                 procent.add(modMyOpinionOfXCountry.getModifier(item), false);
                 procent.clamp100();
             }
+        movements.RemoveAll(x=>x.isEmpty());
         foreach (var item in movements)
             item.simulate();
 
+        
     }
     /// <summary>
     /// For AI only
@@ -527,10 +536,10 @@ public class Country : GeneralStaff
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
                     && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(100) == 1)
-                    && this.getStreght() > 0
-                    && (this.getStreght() > possibleTarget.getCountry().getStreght() * 0.25f
+                    && this.getStregth() > 0
+                    && (this.getStregth() > possibleTarget.getCountry().getStregth() * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
-                        || possibleTarget.getCountry().isAI() && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.1f)
+                        || possibleTarget.getCountry().isAI() && this.getStregth() > possibleTarget.getCountry().getStregth() * 0.1f)
                     )
                 {
                     mobilize(ownedProvinces);
@@ -621,25 +630,7 @@ public class Country : GeneralStaff
             storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
         }
     }
-    new public float getStreght()
-    {
-        //int size = 0;
-        //var defArmy = getDefenceForces();
-        //if (defArmy != null)
-        //    size = defArmy.getSize();
-        //return howMuchCanMobilize() + size;
-        return howMuchCanMobilize() + base.getStreght();
-    }
-
-    private float howMuchCanMobilize()
-    {
-        float result = 0f;
-        foreach (var pr in ownedProvinces)
-            foreach (var po in pr.allPopUnits)
-                if (po.popType.canMobilize())
-                    result += po.howMuchCanMobilize();
-        return result;
-    }
+   
 
 
     public Value getGDP()

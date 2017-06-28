@@ -7,21 +7,50 @@ using System;
 /// <summary>
 /// Represents any military commander structure
 /// </summary>
-public abstract class GeneralStaff : Consumer
-{    
+public abstract class Staff : Consumer
+{
     List<Army> allArmies = new List<Army>();
-    protected  Country place; //todo change class
-    public GeneralStaff(Country place):base (null)
+    protected Country place; //todo change class
+    public Staff(Country place) : base(null)
     {
         this.place = place;
     }
-    public float getStreght()
+    /// <summary>
+    /// Sum of existing armies men + unmobilized reserve
+    /// </summary>
+    /// <returns></returns>
+    public float getStregth()
+    {
+        return howMuchCanMobilize() + getAllArmiesSize();
+    }
+    public Procent getRelativeStrength(Staff toWhom)
+    {
+        //var governmentHomeArmy = country.getDefenceForces();
+        var thisStrenght = getStregth();
+        var toWhomStrenght = toWhom.getStregth();
+
+        if (toWhomStrenght == 0f && thisStrenght > 0f)
+            return new Procent(999.999f);
+        else
+            return Procent.makeProcent(thisStrenght, toWhomStrenght, false);
+
+    }
+    public float howMuchCanMobilize()
+    {
+        float result = 0f;
+        foreach (var pr in place.ownedProvinces)
+            foreach (var po in pr.allPopUnits)
+                if (po.popType.canMobilize())
+                    result += po.howMuchCanMobilize(this);
+        return result;
+    }
+    public float getAllArmiesSize()
     {
         int size = 0;
         var defArmy = getDefenceForces();
         if (defArmy != null)
             size = defArmy.getSize();
-        return  size;
+        return size;
     }
     public Country getPlaceDejure()
     {
@@ -61,16 +90,25 @@ public abstract class GeneralStaff : Consumer
         //source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
         //allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
     }
+    //internal void mobilize()
+    //{
+    //    foreach (var province in place.ownedProvinces)
+    //    {
+    //        Army newArmy = new Army(province.getCountry());
+    //        foreach (var item in province.allPopUnits)
+    //            //if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
+    //                newArmy.add(item.mobilize(this));
+    //    }
+    //    consolidateArmies();
+    //}
     internal void mobilize(IEnumerable<Province> source)
     {
         foreach (var province in source)
         {
-            Army newArmy = new Army(province.getCountry());
+            Army newArmy = new Army(this);
             foreach (var item in province.allPopUnits)
-                if (item.popType.canMobilize() && item.howMuchCanMobilize() > 0)
-                    newArmy.add(item.mobilize());
-            //if (newArmy.getSize() > 0)
-            //    addArmy(newArmy);
+                if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
+                    newArmy.add(item.mobilize(this));            
         }
         consolidateArmies();
     }
@@ -95,10 +133,10 @@ public abstract class GeneralStaff : Consumer
         allArmies.RemoveAll(army => army.getSize() == 0);
     }
 
-   //override public void buyNeeds()
-   // {
-   //     allArmies.ForEach(x => x.consume());
-   // }
+    //override public void buyNeeds()
+    // {
+    //     allArmies.ForEach(x => x.consume());
+    // }
 
     internal PrimitiveStorageSet getNeeds()
     {
@@ -108,7 +146,7 @@ public abstract class GeneralStaff : Consumer
         return res;
     }
 
-    virtual internal  void sendArmy(Province possibleTarget, Procent procent)
+    virtual internal void sendArmy(Province possibleTarget, Procent procent)
     {
         consolidateArmies().balance(procent).sendTo(possibleTarget);
 
@@ -119,7 +157,11 @@ public abstract class GeneralStaff : Consumer
         base.setStatisticToZero();
         allArmies.ForEach(x => x.setStatisticToZero());
     }
-
+    internal IEnumerable<Army> getAllArmies()
+    {
+        foreach (var army in allArmies)            
+                    yield return army;            
+    }
     internal IEnumerable<Army> getAttackingArmies()
     {
         foreach (var army in allArmies)
@@ -130,13 +172,29 @@ public abstract class GeneralStaff : Consumer
                     army.sendTo(null); // go home
     }
 
+    /// <summary>
+    /// returns Home army
+    /// </summary>
+    /// <returns></returns>
     internal Army getDefenceForces()
     {
         Army a = allArmies.Find(x => x.getSize() > 0 && x.getDestination() == null);
         if (a == null)
             return new Army(this);
         else
-            return a;        
+            return a;
+    }
+
+    internal static IEnumerable<Staff> getAllStaffs()    
+    {
+        foreach (var country in Country.allCountries)
+            if (country.isExist() && country != Country.NullCountry)
+            {
+                yield return country;
+                foreach (var staff in country.movements)
+                    yield return staff;
+            }
+
     }
 
 
@@ -151,10 +209,10 @@ public class Army
 {
     Dictionary<PopUnit, Corps> personal;
     Province destination;
-    GeneralStaff owner;
+    Staff owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
     //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
-    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Morale", 1f, true);
+    static Modifier modifierMorale = new Modifier(x => (x as Army).getMorale().get(), "Morale", 1f, true);
 
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
@@ -222,12 +280,12 @@ public class Army
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
         //modifierDefenseInMountains
-            Modifier.modifierDefault, modifierInDefense,  modifierMoral, modifierColdArms,
+            Modifier.modifierDefault, modifierInDefense,  modifierMorale, modifierColdArms,
         modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck
         });
     // private Army consolidatedArmy;
 
-    public Army(GeneralStaff owner)
+    public Army(Staff owner)
     {
         owner.addArmy(this);
         personal = new Dictionary<PopUnit, Corps>();
@@ -275,13 +333,13 @@ public class Army
         //}
         personal.ForEach((x, corps) => corps.consume(getOwner().getPlaceDejure()));
     }
-    Procent getMoral()
+    Procent getMorale()
     {
         Procent result = new Procent(0);
         int calculatedSize = 0;
         foreach (var item in personal)
         {
-            result.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getMoral());
+            result.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getMorale());
             calculatedSize += item.Value.getSize();
         }
         return result;
@@ -357,7 +415,7 @@ public class Army
             foreach (var next in getAmountByTypes())
                 sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
             sb.Append("Total size: ").Append(getSize());
-            sb.Append(" Morale: ").Append(getMoral());
+            sb.Append(" Morale: ").Append(getMorale());
             sb.Append(" Provision: ").Append(getConsumption());
             //string str;
             //modifierStrenght.getModifier(this, out str);
@@ -596,11 +654,11 @@ public class Army
         }
         return result;
     }
-    public GeneralStaff getOwner()
+    public Staff getOwner()
     {
         return owner;
     }
-    public void setOwner(GeneralStaff country)
+    public void setOwner(Staff country)
     {
         owner = country;
     }
@@ -718,7 +776,7 @@ public class Army
 }
 public class BattleResult
 {
-    GeneralStaff attacker, defender;
+    Staff attacker, defender;
     //Army attackerArmy, attackerLoss, defenderArmy, defenderLoss;
     int attackerArmy, attackerLoss, defenderArmy, defenderLoss;
     bool result;
@@ -726,7 +784,7 @@ public class BattleResult
     StringBuilder sb = new StringBuilder();
     string attackerBonus; string defenderBonus;
     //public BattleResult(Country attacker, Country defender, Army attackerArmy, Army attackerLoss, Army defenderArmy, Army defenderLoss, bool result)
-    public BattleResult(GeneralStaff attacker, GeneralStaff defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss,
+    public BattleResult(Staff attacker, Staff defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss,
         Province place, bool result, string attackerBonus, string defenderBonus)
     {
         this.attacker = attacker;
@@ -804,12 +862,12 @@ public class BattleResult
         }
     }
 
-    internal GeneralStaff getDefender()
+    internal Staff getDefender()
     {
         return defender;
     }
 
-    internal GeneralStaff getAttacker()
+    internal Staff getAttacker()
     {
         return attacker;
     }

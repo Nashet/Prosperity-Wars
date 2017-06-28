@@ -144,7 +144,7 @@ public class PoliticsPanel : DragPanel
 
             if (selectedReformValue != selectedReform.getValue())
             {
-                if (Game.Player.government.status != Government.Despotism)
+                if (Game.Player.government.getValue() != Government.Despotism)
                 {
                     descriptionText.text += "\n\n" + procentVotersSayedYes + " of voters want this reform ( ";
                     foreach (PopType type in PopType.getAllPopTypes())
@@ -170,7 +170,7 @@ public class PoliticsPanel : DragPanel
 
             if (selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
-                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.status == Government.Despotism)
+                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                 { // has enough voters
                     voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;

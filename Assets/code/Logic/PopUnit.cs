@@ -265,25 +265,35 @@ abstract public class PopUnit : Producer
         //return Game.date - born;
         return born.getYearsSince();
     }
-
     public int getPopulation()
-    { return population; }
-    internal int howMuchCanMobilize()
+    {
+        return population;
+    }
+    internal int howMuchCanMobilize(Staff byWhom)
     {
         int howMuchCanMobilize;
-        if (popType == PopType.Soldiers)
-            howMuchCanMobilize = (int)(getPopulation() * 0.5);
+        if (byWhom == getCountry())
+        {
+            if (popType == PopType.Soldiers)
+                howMuchCanMobilize = (int)(getPopulation() * 0.5);
+            else
+                howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+        }
         else
-            howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
-
-        howMuchCanMobilize -= mobilized;
-        if (howMuchCanMobilize < Options.PopMinimalMobilazation) howMuchCanMobilize = 0;
-
+        {
+            if (getMovement() == byWhom)
+                howMuchCanMobilize = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.mobilizationFactor);
+            else
+                howMuchCanMobilize = 0;
+        }
+        howMuchCanMobilize -= mobilized; //shouldn't mobilize more than howMuchCanMobilize
+        if (howMuchCanMobilize < Options.PopMinimalMobilazation)
+            howMuchCanMobilize = 0;
         return howMuchCanMobilize;
     }
-    public Corps mobilize()
+    public Corps mobilize(Staff byWho)
     {
-        int amount = howMuchCanMobilize();
+        int amount = howMuchCanMobilize(byWho);
         if (amount > 0)
         {
             mobilized += amount;
@@ -709,16 +719,16 @@ abstract public class PopUnit : Producer
         return canVote(getCountry().government.getTypedValue());
     }
     abstract internal bool canVote(Government.ReformValue reform);
-    public AbstractReformValue getMostImportantIssue()
+    public KeyValuePair<AbstractReform, AbstractReformValue> getMostImportantIssue()
     {
-        var d = new Dictionary<AbstractReformValue, Value>();
+        var d = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, Value>();
         foreach (var reform in this.getCountry().reforms)
             foreach (AbstractReformValue reformValue in reform)
                 if (reformValue.allowed.isAllTrue(getCountry()))
                 {
                     var howGood = reformValue.howIsItGoodForPop(this);
                     if (howGood.isExist())
-                        d.Add(reformValue, howGood);
+                        d.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(reform, reformValue), howGood);
                 }
         return d.MaxBy(x => x.Value.get()).Key;
     }

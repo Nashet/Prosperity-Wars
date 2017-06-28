@@ -86,4 +86,6 @@ public static class Options
     internal static readonly Value PopLowLoyaltyToJoinMovevent = new Value(0.3f);
     internal static readonly Value PopHighLoyaltyToleavMovevent = new Value(0.5f);
     internal static readonly Value PopLoyaltyLimitToRevolt = new Value(0.1f);
+    internal static readonly Procent PopLoyaltyBoostOnRevolutionWon = new Procent(0.8f);
+    internal static readonly Procent PopLoyaltyBoostOnRevolutionLost = new Procent(0.3f);
 }

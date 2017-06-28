@@ -253,7 +253,7 @@ public class Condition : AbstractCondition
     public Condition(Government.ReformValue government, bool showAchievedConditionDescribtion)
     {
         //check3 = government.isGovernmentEqualsThat;
-        check3 = x => (x as Country).government.status == government;
+        check3 = x => (x as Country).government.getValue() == government;
         this.text = "Government is " + government.ToString(); // invention.getInventedPhrase();
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
 

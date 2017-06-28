@@ -36,7 +36,7 @@ public class DiplomacyPanel : DragPanel
             sb.Append("\n\nOpinion of myself: I'm cool!");
         else
         {
-            sb.Append("\n\n").Append(selectedCountry.getName()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+            sb.Append("\n\n").Append(selectedCountry.getDescription()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
             string str;
             selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
             sb.Append(" Dynamics: ").Append(str);

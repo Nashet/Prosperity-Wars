@@ -8,13 +8,13 @@ public class Corps
 {
     PopUnit origin;
     int size;
-    Procent moral = new Procent(0f);
+    Procent morale = new Procent(0f);
     PrimitiveStorageSet consumption = new PrimitiveStorageSet();
     internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
         this.size = size;
-        this.moral.set(0f);
+        this.morale.set(0f);
         consumption.setZero();
     }
     public Corps(PopUnit origin, int size)
@@ -29,7 +29,7 @@ public class Corps
     {
         size = 0;
         origin = null;
-        moral.set(0);
+        morale.set(0);
         consumption.setZero();
         //here - delete all links on that object        
     }
@@ -66,17 +66,17 @@ public class Corps
             //    consumption.set((allNeedsAmount - shortage) / allNeedsAmount);
         }
         //float moralChange = consumption.get() - moral.get();
-        float moralChange = getConsumptionProcent(Product.Food, owner).get() - moral.get();
-        moralChange = Mathf.Clamp(moralChange, Options.MaxMoralChangePerTic * -1f, Options.MaxMoralChangePerTic);
-        if (moral.get() + moralChange < 0)
-            moral.set(0f);
+        float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
+        moraleChange = Mathf.Clamp(moraleChange, Options.MaxMoralChangePerTic * -1f, Options.MaxMoralChangePerTic);
+        if (morale.get() + moraleChange < 0)
+            morale.set(0f);
         else
-            moral.add(moralChange);
-        if (this.origin.popType == PopType.Soldiers && moral.isBiggerThan(origin.loyalty))
-            moral.set(origin.loyalty);
+            morale.add(moraleChange);
+        if (this.origin.popType == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
+            morale.set(origin.loyalty);
             
-        if (moral.isBiggerThan(Procent.HundredProcent))
-            moral.set(1f);
+        if (morale.isBiggerThan(Procent.HundredProcent))
+            morale.set(1f);
     }
     public PrimitiveStorageSet getConsumption()
     {
@@ -125,9 +125,9 @@ public class Corps
         else
             return new Storage(product);
     }
-    public Procent getMoral()
+    public Procent getMorale()
     {        
-        return moral;
+        return morale;
     }
     //private float getStrenght()
     //{
@@ -178,7 +178,7 @@ public class Corps
     internal void add(Corps another)
     {
         size += another.getSize();
-        moral.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
+        morale.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
     }
 
     internal void setStatisticToZero()
