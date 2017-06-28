@@ -109,7 +109,7 @@ public class PopUnitPanel : DragPanel
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
                 + "\nAge: " + pop.getAge();
             if (pop.getMovement() != null)
-                generaltext.text += "\nMember of: " + pop.getMovement();
+                generaltext.text += "\nMember of " + pop.getMovement();
 
             //if (Game.devMode)
             //    generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)

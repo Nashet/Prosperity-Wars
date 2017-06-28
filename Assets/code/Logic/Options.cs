@@ -73,7 +73,7 @@ public static class Options
     internal static readonly int PopRichStrataVotePower = 5;
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly int ProvinceChanceToGetCore = 50;
-    internal static readonly float CountryBadBoyWorldLimit = 0.10f;
+    internal static readonly float CountryBadBoyWorldLimit = 0.2f;
     internal static readonly int FactoryMediumTierLevels = 8 + 1;
     internal static readonly int FactoryMediumHighLevels = 15 + 1;
     internal static readonly int CountryTimeToForgetBattle = 40;

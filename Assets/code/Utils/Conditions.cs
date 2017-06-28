@@ -119,7 +119,7 @@ public class ConditionsList
     //        return true;
     //    }
     //}
-    
+
     //public bool isAllTrue(Country forWhom)
     //{
     //    foreach (var item in list)
@@ -212,7 +212,7 @@ public class Condition : AbstractCondition
         //this.conditionDescription = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
-    
+
     public Condition(Condition another)
     {
         text = another.text;
@@ -362,6 +362,11 @@ public class Modifier : Condition
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
+    public Modifier(Func<System.Object, bool> myMethodName, Func<string> dynamicString, float value, bool showZeroModifiers) : base(myMethodName, dynamicString, true)
+    {
+        this.value = value;
+        this.showZeroModifiers = showZeroModifiers;
+    }
     /// <summary>
     /// to use with other scope modifiers
     /// </summary>    
@@ -392,6 +397,10 @@ public class Modifier : Condition
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
+    /// <summary>
+    /// To change scope
+    /// </summary>
+
     public Modifier(Condition condition, Func<System.Object, System.Object> x, float value, bool showZeroModifiers) : base(condition, x)
     {
         //targetObject = x;
@@ -468,7 +477,7 @@ public class Modifier : Condition
     internal float getModifier(System.Object forWhom, out string description)
     {
         if (targetObject != null)
-            forWhom = targetObject(forWhom); 
+            forWhom = targetObject(forWhom);
 
         float result;
         if (floatModifierFunction != null)

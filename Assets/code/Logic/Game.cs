@@ -441,6 +441,7 @@ public class Game : ThreadedJob
         //Texture2D mapImage = new Texture2D(100, 100);
         //Texture2D mapImage = new Texture2D(300, 300);
         Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));
+        //Texture2D mapImage = new Texture2D(90 , 90 );
         //Texture2D mapImage = new Texture2D(150 + Random.Next(100), 150 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
@@ -577,7 +578,7 @@ public class Game : ThreadedJob
             //country.wallet.moneyIncomethisTurn.set(0);
             country.storageSet.setStatisticToZero();
             country.setStatisticToZero();
-            country.staff.setStatisticToZero();
+            country.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
                 province.BalanceEmployableWorkForce();
@@ -613,7 +614,7 @@ public class Game : ThreadedJob
     {
         foreach (Country attackerCountry in Country.getExisting())
         {
-            foreach (var attackerArmy in attackerCountry.staff.getAttackingArmies())
+            foreach (var attackerArmy in attackerCountry.getAttackingArmies())
             {
                 var result = attackerArmy.attack(attackerArmy.getDestination());
                 if (result.isAttackerWon())
@@ -624,7 +625,7 @@ public class Game : ThreadedJob
                     result.createMessage();
                 attackerArmy.sendTo(null); // go home
             }
-            attackerCountry.staff.consolidateArmies();
+            attackerCountry.consolidateArmies();
         }
     }
     internal static void stepSimulation()

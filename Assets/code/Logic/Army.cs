@@ -7,20 +7,36 @@ using System;
 /// <summary>
 /// Represents any military commander structure
 /// </summary>
-public class GeneralStaff
+public abstract class GeneralStaff : Consumer
 {    
     List<Army> allArmies = new List<Army>();
-    Country country;
-    public GeneralStaff(Country country)
+    protected  Country place; //todo change class
+    public GeneralStaff(Country place):base (null)
     {
-        this.country = country;
+        this.place = place;
+    }
+    public float getStreght()
+    {
+        int size = 0;
+        var defArmy = getDefenceForces();
+        if (defArmy != null)
+            size = defArmy.getSize();
+        return  size;
+    }
+    public Country getPlaceDejure()
+    {
+        return place;
+    }
+    public bool isAI()
+    {
+        return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
     }
     /// <summary>
     /// Unites all home armies in one. Assuming armies are alive, just needed to consolidate. If there is nothing to consolidate than returns empty army    
     /// </summary>
     public Army consolidateArmies()
     {
-        Army consolidatedArmy = new Army(country);
+        Army consolidatedArmy = new Army(this);
         if (allArmies.Count == 1)
             return allArmies[0];
         else
@@ -62,7 +78,7 @@ public class GeneralStaff
     {
         allArmies.Add(army);
     }
-    internal void demobilizeAllArmies()
+    internal void demobilize()
     {
         foreach (var item in allArmies)
         {
@@ -79,10 +95,10 @@ public class GeneralStaff
         allArmies.RemoveAll(army => army.getSize() == 0);
     }
 
-    internal void consume()
-    {
-        allArmies.ForEach(x => x.consume());
-    }
+   //override public void buyNeeds()
+   // {
+   //     allArmies.ForEach(x => x.consume());
+   // }
 
     internal PrimitiveStorageSet getNeeds()
     {
@@ -92,14 +108,15 @@ public class GeneralStaff
         return res;
     }
 
-    internal void sendArmy(Province possibleTarget, Procent procent)
+    virtual internal  void sendArmy(Province possibleTarget, Procent procent)
     {
         consolidateArmies().balance(procent).sendTo(possibleTarget);
 
     }
 
-    internal void setStatisticToZero()
+    override public void setStatisticToZero()
     {
+        base.setStatisticToZero();
         allArmies.ForEach(x => x.setStatisticToZero());
     }
 
@@ -115,8 +132,11 @@ public class GeneralStaff
 
     internal Army getDefenceForces()
     {
-        return allArmies.Find(x => x.getSize() > 0 && x.getDestination() == null);
-        //return consolidateArmies();
+        Army a = allArmies.Find(x => x.getSize() > 0 && x.getDestination() == null);
+        if (a == null)
+            return new Army(this);
+        else
+            return a;        
     }
 
 
@@ -131,10 +151,10 @@ public class Army
 {
     Dictionary<PopUnit, Corps> personal;
     Province destination;
-    Country owner;
+    GeneralStaff owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
     //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
-    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Moral", 1f, true);
+    static Modifier modifierMoral = new Modifier(x => (x as Army).getMoral().get(), "Morale", 1f, true);
 
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
@@ -147,13 +167,13 @@ public class Army
 
     private float getColdArmsSupply()
     {
-        if (Product.ColdArms.isInvented(getOwner()))
+        if (Product.ColdArms.isInvented(getOwner().getPlaceDejure()))
             return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
         else return 0f;
     }
     private float getEquippedFirearmsSupply()
     {
-        if (Product.Firearms.isInvented(getOwner()))
+        if (Product.Firearms.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
          Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -162,7 +182,7 @@ public class Army
     }
     private float getEquippedArtillerySupply()
     {
-        if (Product.Artillery.isInvented(getOwner()))
+        if (Product.Artillery.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
          Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -171,7 +191,7 @@ public class Army
     }
     private float getEquippedCarsSupply()
     {
-        if (Product.Cars.isInvented(getOwner()))
+        if (Product.Cars.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
          Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel), false).get()
@@ -180,7 +200,7 @@ public class Army
     }
     private float getEquippedTanksSupply()
     {
-        if (Product.Tanks.isInvented(getOwner()))
+        if (Product.Tanks.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
          Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel), false).get(),
@@ -190,7 +210,7 @@ public class Army
     }
     private float getEquippedAirplanesSupply()
     {
-        if (Product.Airplanes.isInvented(getOwner()))
+        if (Product.Airplanes.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
          Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel), false).get(),
@@ -207,9 +227,9 @@ public class Army
         });
     // private Army consolidatedArmy;
 
-    public Army(Country owner)
+    public Army(GeneralStaff owner)
     {
-        owner.staff.addArmy(this);
+        owner.addArmy(this);
         personal = new Dictionary<PopUnit, Corps>();
         this.owner = owner;
     }
@@ -253,7 +273,7 @@ public class Army
         //{
         //    corps.Value.consume(getOwner());
         //}
-        personal.ForEach((x, corps) => corps.consume(getOwner()));
+        personal.ForEach((x, corps) => corps.consume(getOwner().getPlaceDejure()));
     }
     Procent getMoral()
     {
@@ -337,7 +357,7 @@ public class Army
             foreach (var next in getAmountByTypes())
                 sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
             sb.Append("Total size: ").Append(getSize());
-            sb.Append(" Moral: ").Append(getMoral());
+            sb.Append(" Morale: ").Append(getMoral());
             sb.Append(" Provision: ").Append(getConsumption());
             //string str;
             //modifierStrenght.getModifier(this, out str);
@@ -386,14 +406,14 @@ public class Army
     {
         PrimitiveStorageSet res = new PrimitiveStorageSet();
         foreach (var item in personal)
-            res.add(item.Value.getRealNeeds(getOwner()));
+            res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
         return res;
     }
     Value getNeeds(Product product)
     {
         Value res = new Value(0f);
         foreach (var item in personal)
-            res.add(item.Value.getRealNeeds(getOwner(), product));
+            res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure(), product));
         return res;
     }
 
@@ -516,8 +536,8 @@ public class Army
         if (enemy == Country.NullCountry)
             prov.mobilize();
         else
-            enemy.staff.mobilize(enemy.ownedProvinces);
-        enemy.staff.consolidateArmies();
+            enemy.mobilize(enemy.ownedProvinces);
+        enemy.consolidateArmies();
         return attack(enemy.getDefenceForces());
     }
     /// <summary>
@@ -576,11 +596,11 @@ public class Army
         }
         return result;
     }
-    public Country getOwner()
+    public GeneralStaff getOwner()
     {
         return owner;
     }
-    public void setOwner(Country country)
+    public void setOwner(GeneralStaff country)
     {
         owner = country;
     }
@@ -698,7 +718,7 @@ public class Army
 }
 public class BattleResult
 {
-    Country attacker, defender;
+    GeneralStaff attacker, defender;
     //Army attackerArmy, attackerLoss, defenderArmy, defenderLoss;
     int attackerArmy, attackerLoss, defenderArmy, defenderLoss;
     bool result;
@@ -706,10 +726,11 @@ public class BattleResult
     StringBuilder sb = new StringBuilder();
     string attackerBonus; string defenderBonus;
     //public BattleResult(Country attacker, Country defender, Army attackerArmy, Army attackerLoss, Army defenderArmy, Army defenderLoss, bool result)
-    public BattleResult(Country attacker, Country defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss,
+    public BattleResult(GeneralStaff attacker, GeneralStaff defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss,
         Province place, bool result, string attackerBonus, string defenderBonus)
     {
-        this.attacker = attacker; this.defender = defender;
+        this.attacker = attacker;
+        this.defender = defender;
         //this.attackerArmy = new Army(attackerArmy); this.attackerLoss = new Army(attackerLoss); this.defenderArmy = new Army(defenderArmy); this.defenderLoss = new Army(defenderLoss);
         this.attackerArmy = attackerArmy; this.attackerLoss = attackerLoss; this.defenderArmy = defenderArmy; this.defenderLoss = defenderLoss;
         this.result = result;
@@ -783,12 +804,12 @@ public class BattleResult
         }
     }
 
-    internal Country getDefender()
+    internal GeneralStaff getDefender()
     {
         return defender;
     }
 
-    internal Country getAttacker()
+    internal GeneralStaff getAttacker()
     {
         return attacker;
     }

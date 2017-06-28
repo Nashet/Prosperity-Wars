@@ -30,7 +30,7 @@ public class MainCamera : MonoBehaviour
     internal static MilitaryPanel militaryPanel;
     static bool gameIsLoaded;
     internal static LoadingPanel loadingPanel;
-    private Camera camera;
+    private Camera myCamera;
 
     //internal static MessagePanel messagePanel;
 
@@ -83,7 +83,7 @@ public class MainCamera : MonoBehaviour
             {
                 Game.setUnityAPI();
 
-                camera = this.GetComponent<Camera>();
+                myCamera = this.GetComponent<Camera>();
                 gameObject.transform.position = new Vector3(Game.Player.getCapital().centre.x,
                     Game.Player.getCapital().centre.y, gameObject.transform.position.z);
                 loadingPanel.hide();
@@ -126,7 +126,7 @@ public class MainCamera : MonoBehaviour
                                           //Physics.DefaultRaycastLayers;
 
         if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-            if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
+            if (!Physics.Raycast(myCamera.ScreenPointToRay(Input.mousePosition), out hit))
                 return -1;
             else; // go on
         else return -3; //hovering over UI

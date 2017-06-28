@@ -72,7 +72,7 @@ public class MilitaryPanel : DragPanel
     {
         //if (Game.Player.homeArmy.getSize() == 0)
         //  Game.Player.homeArmy = new Army(Game.Player);
-        Game.Player.staff.mobilize(Game.Player.ownedProvinces);
+        Game.Player.mobilize(Game.Player.ownedProvinces);
         //onArmyLimitChanged(0f);
         //MainCamera.tradeWindow.refresh();
         refresh(false);
@@ -125,7 +125,7 @@ public class MilitaryPanel : DragPanel
         //Game.Player.staff.consolidateArmies();
         //actually creates new army here
         //virtualArmyToSend = (Game.Player.staff.consolidateArmies().getSize() * value).ToString("0");
-        virtualArmyToSend = Game.Player.staff.consolidateArmies().balance(new Procent(value));
+        virtualArmyToSend = Game.Player.consolidateArmies().balance(new Procent(value));
         //virtualArmyToSend = del.getShortName();
         refresh(false);
     }

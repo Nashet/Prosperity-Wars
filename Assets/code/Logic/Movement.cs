@@ -3,18 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-
-public class Movement
+//public class StaffOwner :Consumer
+//{
+//    protected readonly GeneralStaff staff;
+//}
+public class Movement : GeneralStaff
 {
     private readonly AbstractReformValue goal;
     private readonly List<PopUnit> members = new List<PopUnit>();
     private readonly Country country;
-    Movement(AbstractReformValue goal, PopUnit firstPop)
+    
+    Movement(AbstractReformValue goal, PopUnit firstPop, Country place) : base(place)
     {
         this.goal = goal;
         members.Add(firstPop);
         country = firstPop.getCountry();
         country.movements.Add(this);
+        //staff = new GeneralStaff(this);
     }
     public static void join(PopUnit pop)
     {
@@ -24,7 +29,7 @@ public class Movement
             //find reasonable goal and join
             var found = pop.getCountry().movements.Find(x => x.getGoal() == goal);
             if (found == null)
-                pop.setMovement(new Movement(goal, pop));
+                pop.setMovement(new Movement(goal, pop, pop.getCountry()));
             else
             {
                 found.add(pop);
@@ -81,9 +86,17 @@ public class Movement
     }
     public bool canWinUprising()
     {
-        return getMembership() > country.staff.getDefenceForces().getSize();
+        var defence = country.getDefenceForces();
+        if (defence == null)
+            return true;
+        else
+            return getMembership() > defence.getSize();
     }
-
+   
+    public Country getCountry()
+    {
+        return country;
+    }
     private Procent getMiddleLoyalty()
     {
         Procent result = new Procent(0);
@@ -94,6 +107,11 @@ public class Movement
             calculatedSize += item.getPopulation();
         }
         return result;
+    }
+
+    public override void buyNeeds()
+    {
+        throw new NotImplementedException();
     }
 }
 public static class MovementExtensions

@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-public class Country : Consumer
+public class Country : GeneralStaff
 {
     private readonly string name;
     public static List<Country> allCountries = new List<Country>();
@@ -32,7 +32,7 @@ public class Country : Consumer
     readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
     readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
 
-    readonly public GeneralStaff staff;
+    //readonly public GeneralStaff staff;
 
     TextMesh messhCapitalText;
     Material borderMaterial;
@@ -56,13 +56,18 @@ public class Country : Consumer
     Value factorySubsidiesExpense = new Value(0f);
     Value storageBuyingExpense = new Value(0f);
     public readonly List<Movement> movements = new List<Movement>();
+    internal int autoPutInBankLimit = 2000;
+    private readonly Value soldiersWage = new Value(0f);
+    internal bool failedToPaySoldiers;
+
+
     static Country()
     {
         NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
     }
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
-
+        place = this;
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "You have same form of government", 0.002f, false),
@@ -71,11 +76,14 @@ public class Country : Consumer
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(System.Object x) { Country bully = isThereBadboyCountry(); return bully != null && bully!= x as Country  && bully!= this; },"There is bigger threat to the world", 0.03f, false)
+            new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
+            //"There is bigger threat to the world", 0.03f, false)
+            delegate () { return "There is bigger threat to the world - " + BadboyCountry; }, 0.03f, false)
+            //delegate () { }
             //,            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
-        staff = new GeneralStaff(this);
+        //staff = new GeneralStaff(this);
         //homeArmy = new Army(this);
         //sendingArmy = new Army(this);
         government = new Government(this);
@@ -168,20 +176,22 @@ public class Country : Consumer
     /// Little bugged - returns RANDOM badboy, not biggest
     /// </summary>
     /// <returns></returns>
+    private static DateTime DateOfisThereBadboyCountry;
+    private static Country BadboyCountry;
     public static Country isThereBadboyCountry()
     {
-        float worldStrenght = 0f;
-        foreach (var item in Country.getExisting())
-            worldStrenght += item.getStreght();
-        float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-        Country found = Country.allCountries.Find(x => x.getStreght() >= streghtLimit && x != Country.NullCountry);
-        //if (found == Country.NullCountry)
-        //    return null;
-        //else
-        return found;
+        if (DateOfisThereBadboyCountry != Game.date)
+        {
+            DateOfisThereBadboyCountry = Game.date;
+            float worldStrenght = 0f;
+            foreach (var item in Country.getExisting())
+                worldStrenght += item.getStreght();
+            float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
+            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStreght() >= streghtLimit).MaxBy(x => x.getStreght());
+        }
+        return BadboyCountry;
 
     }
-
     private bool isThreatenBy(Country country)
     {
         if (country == this)
@@ -226,23 +236,11 @@ public class Country : Consumer
     {
         return culture;
     }
-    internal void demobilize()
-    {
-        //ownedProvinces.ForEach(x => x.demobilize());
-        //allArmies.ForEach(x => x.demobilize());
-        staff.demobilizeAllArmies();
-    }
-
 
     public bool isExist()
     {
         return ownedProvinces.Count > 0;
     }
-    //internal static IEnumerable<Country> allExisting = getExisting();
-    internal int autoPutInBankLimit = 2000;
-    private readonly Value soldiersWage = new Value(0f);
-    internal bool failedToPaySoldiers;
-
     static public IEnumerable<Country> getExisting()
     {
         foreach (var c in allCountries)
@@ -275,15 +273,13 @@ public class Country : Consumer
     {
         return ownedProvinces.Count == 1;
     }
-
     internal Province getCapital()
     {
         return capital;
     }
-
-    internal void sendArmy(Province target, Procent procent)
+    override internal void sendArmy(Province target, Procent procent)
     {
-        staff.sendArmy(target, procent);
+        base.sendArmy(target, procent);
         //myLastAttackDate.AddMy(target.getCountry(), Game.date);
         if (this.myLastAttackDate.ContainsKey(target.getCountry()))
             myLastAttackDate[target.getCountry()] = Game.date;
@@ -315,8 +311,6 @@ public class Country : Consumer
         else
             return getNeighborProvinces().PickRandom();
     }
-
-
     private bool isOnlyCountry()
     {
         foreach (var any in Country.getExisting())
@@ -415,8 +409,6 @@ public class Country : Consumer
         return procentVotersSayedYes;
     }
 
-
-
     internal Material getBorderMaterial()
     {
         return borderMaterial;
@@ -509,7 +501,7 @@ public class Country : Consumer
             if (extraMoney > 0f)
                 bank.takeMoney(this, new Value(extraMoney));
         }
-        staff.consume();
+        //buyNeeds();
 
         buyNeeds(); // Should go After all Armies consumption
         //Procent opinion;
@@ -541,7 +533,7 @@ public class Country : Consumer
                         || possibleTarget.getCountry().isAI() && this.getStreght() > possibleTarget.getCountry().getStreght() * 0.1f)
                     )
                 {
-                    staff.mobilize(ownedProvinces);
+                    mobilize(ownedProvinces);
                     sendArmy(possibleTarget, Procent.HundredProcent);
                 }
             }
@@ -599,6 +591,7 @@ public class Country : Consumer
     }
     public override void buyNeeds()
     {
+
         var needs = getNeeds();
         //if (wallet.canPay(Game.market.getCost(needs)))
         //buy 1 day needs
@@ -616,15 +609,6 @@ public class Country : Consumer
         }
     }
 
-    internal Army getDefenceForces()
-    {
-        Army a = staff.getDefenceForces();
-        if (a == null)
-            return new Army(this);
-        else
-            return a;
-    }
-
     void buyNeeds(Storage toBuy)
     {
         // if I want to buy           
@@ -637,17 +621,14 @@ public class Country : Consumer
             storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
         }
     }
-    public PrimitiveStorageSet getNeeds()
+    new public float getStreght()
     {
-        return staff.getNeeds();
-    }
-    private float getStreght()
-    {
-        int size = 0;
-        var defArmy = staff.getDefenceForces();
-        if (defArmy != null)
-            size = defArmy.getSize();
-        return howMuchCanMobilize() + size;
+        //int size = 0;
+        //var defArmy = getDefenceForces();
+        //if (defArmy != null)
+        //    size = defArmy.getSize();
+        //return howMuchCanMobilize() + size;
+        return howMuchCanMobilize() + base.getStreght();
     }
 
     private float howMuchCanMobilize()
@@ -660,10 +641,7 @@ public class Country : Consumer
         return result;
     }
 
-    public bool isAI()
-    {
-        return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
-    }
+
     public Value getGDP()
     {
         Value result = new Value(0);

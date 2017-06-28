@@ -279,7 +279,7 @@ public class Province
             oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));
 
 
-        oldCountry.staff.demobilize(x => x.getPopUnit().province == this);
+        oldCountry.demobilize(x => x.getPopUnit().province == this);
 
         // add loyalty penalty for conquered province // temp
         foreach (var pop in allPopUnits)
@@ -411,7 +411,7 @@ public class Province
 
     internal void mobilize()
     {
-        getCountry().staff.mobilize(new List<Province> { this });
+        getCountry().mobilize(new List<Province> { this });
     }
 
     public static bool isProvinceCreated(Color color)

@@ -717,11 +717,11 @@ public static class MyIEnumerableExtensions
     {
         return source.MaxBy(selector, null);
     }
-    public static string ToString<TSource, TKey>(this IEnumerable<TSource> source,
-           Func<TSource, TKey> selector)
-    {
-        return source.MaxBy(selector, null).ToString();
-    }
+    //public static string ToString<TSource, TKey>(this IEnumerable<TSource> source,
+    //       Func<TSource, TKey> selector)
+    //{
+    //    return source.MaxBy(selector, null).ToString();
+    //}
 
     /// <summary>
     /// Returns the maximal element of the given sequence, based on
