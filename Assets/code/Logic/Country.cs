@@ -130,7 +130,7 @@ public class Country : Staff
             item.borderMaterial = new Material(Game.defaultCountryBorderMaterial);
             item.borderMaterial.color = item.nationalColor.getNegative();
             //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
-            item.ownedProvinces[0].setUnselectedBorderMaterials();
+            item.ownedProvinces[0].setBorderMaterials();
         }
 
     }

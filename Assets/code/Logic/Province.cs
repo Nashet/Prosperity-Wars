@@ -5,12 +5,13 @@ using System;
 using System.Linq;
 using System.Text;
 
-enum TerrainTypes
-{
-    Plains, Mountains
-};
+
 public class Province
 {
+    public enum TerrainTypes
+    {
+        Plains, Mountains
+    };
     public readonly static List<Province> allProvinces = new List<Province>();
     private readonly string name;
     private readonly int ID;
@@ -79,7 +80,7 @@ public class Province
     internal static void generateUnityData(VoxelGrid grid)
     {
         allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
-        allProvinces.ForEach(x => x.setUnselectedBorderMaterials());
+        allProvinces.ForEach(x => x.setBorderMaterials());
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
     {
@@ -158,7 +159,7 @@ public class Province
         foreach (var item in bordersMeshes)
             item.Value.material = material;
     }
-    public void setUnselectedBorderMaterials()
+    public void setBorderMaterials()
     {
         foreach (var border in bordersMeshes)
         {
@@ -166,13 +167,16 @@ public class Province
             {
                 if (getCountry() == border.Key.getCountry())
                 {
-                    border.Value.material = Game.defaultProvinceBorderMaterial;
-                    border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                    if (this != Game.selectedProvince)
+                        border.Value.material = Game.defaultProvinceBorderMaterial;
+                    if (border.Key != Game.selectedProvince)
+                        border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
                 }
                 else
                 {
-                    border.Value.material = getCountry().getBorderMaterial();
-                    if (border.Key.getCountry() != null)
+                    if (this != Game.selectedProvince)
+                        border.Value.material = getCountry().getBorderMaterial();
+                    if (border.Key != Game.selectedProvince && border.Key.getCountry() != null)
                         border.Key.bordersMeshes[this].material = border.Key.getCountry().getBorderMaterial();
                 }
             }
@@ -302,7 +306,7 @@ public class Province
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
 
-        setUnselectedBorderMaterials();
+        setBorderMaterials();
 
     }
 

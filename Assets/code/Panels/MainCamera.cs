@@ -177,7 +177,7 @@ public class MainCamera : MonoBehaviour
         if (Game.selectedProvince != null && number >= 0)
         {
             Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-            Game.selectedProvince.setUnselectedBorderMaterials();
+            Game.selectedProvince.setBorderMaterials();
         }
         // Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
         //Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
@@ -188,7 +188,7 @@ public class MainCamera : MonoBehaviour
             {
                 //Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
                 Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                Game.selectedProvince.setUnselectedBorderMaterials();
+                Game.selectedProvince.setBorderMaterials();
                 Game.selectedProvince = null;
                 provincePanel.hide();
                 if (buildPanel.isActiveAndEnabled)
