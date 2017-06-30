@@ -47,7 +47,7 @@ public class Game : ThreadedJob
     }
     public void initialize()
     {
-        makeProducts();
+       
         market.initialize();
         makeFactoryTypes();
 
@@ -338,35 +338,7 @@ public class Game : ThreadedJob
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput, false);
     }
 
-    void makeProducts()
-    {
-        updateStatus("Making products..");
-        new Product("Food", false, 0.04f);
-        new Product("Wood", true, 2.7f);
-        new Product("Lumber", false, 8f);
-        new Product("Gold", true, 4f);
-        new Product("Metal ore", true, 3f);
-        new Product("Metal", false, 6f);
-        new Product("Wool", true, 1f);
-        new Product("Clothes", false, 3f);
-        new Product("Furniture", false, 7f);
-        new Product("Stone", true, 1f);
-        new Product("Cement", false, 2f);
-        new Product("Fruit", true, 1f);
-        new Product("Wine", false, 3f);
-        new Product("Cold arms", false, 13f);
-        new Product("Ammunition", false, 13f);
-        new Product("Firearms", false, 13f);
-        new Product("Artillery", false, 13f);
-
-        new Product("Oil", true, 10f);
-        new Product("Fuel", false, 15f);
-        new Product("Machinery", false, 8f);
-        new Product("Cars", false, 15f);
-        new Product("Tanks", false, 20f);
-        new Product("Airplanes", false, 20f);
-        new Product("Rubber", true, 10f);
-    }
+   
     internal static Value getAllMoneyInWorld()
     {
         Value allMoney = new Value(0f);
@@ -482,10 +454,6 @@ public class Game : ThreadedJob
         map = new MyTexture(mapImage);
         Texture2D.Destroy(mapImage);
     }
-    
-
-
-
 
     static bool FindProvinceCenters()
     {

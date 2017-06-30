@@ -97,9 +97,9 @@ abstract public class PopUnit : Producer
         popType = ipopType;
         culture = iculture;
 
-        storageNow = new Storage(Product.findByName("Food"), 0);
-        gainGoodsThisTurn = new Storage(Product.findByName("Food"), 0);
-        sentToMarket = new Storage(Product.findByName("Food"), 0);
+        storageNow = new Storage(Product.Food, 0);
+        gainGoodsThisTurn = new Storage(Product.Food, 0);
+        sentToMarket = new Storage(Product.Food, 0);
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
@@ -393,7 +393,7 @@ abstract public class PopUnit : Producer
     }
     private List<Storage> getNeedsInCommon(List<Storage> needs)
     {
-        Value multiplier = new Value(this.getPopulation() / 1000f);
+        Value multiplier = new Value(this.getPopulation() / 100f);
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in needs)

@@ -863,7 +863,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float highChangingSpeed = 0.04f;//%
         float antiBalance;
         foreach (Storage price in this.marketPrice)
-            if (price.getProduct() != Product.findByName("Gold"))
+            if (price.getProduct() != Product.Gold)
             {
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  

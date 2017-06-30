@@ -346,7 +346,7 @@ public class Factory : Producer
                 foreach (var link in hiredWorkForce)
                 {
                     Value howMuchPay = new Value(0);
-                    howMuchPay.set(salary.get() * link.Value / 1000f);
+                    howMuchPay.set(salary.get() * link.Value / (float)workForcePerLevel);
                     if (canPay(howMuchPay))
                         pay(link.Key, howMuchPay);
                     else
@@ -369,7 +369,7 @@ public class Factory : Producer
                 Storage foodSalary = new Storage(Product.Food, 1f);
                 foreach (var link in hiredWorkForce)
                 {
-                    Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / 1000f);
+                    Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / (float)workForcePerLevel);
                     if (factoryOwner is Country)
                     {
                         Country payer = factoryOwner as Country;
@@ -657,7 +657,7 @@ public class Factory : Producer
     /// <returns></returns>
     internal float getWorkForceFullFilling()
     {
-        return getWorkForce() / (1000f * level);
+        return getWorkForce() / (float)(workForcePerLevel * level);
     }
     /// <summary>
     /// per level
@@ -907,7 +907,7 @@ public class Factory : Producer
 
     internal float getSalaryCost()
     {
-        return getWorkForce() * getSalary() / 1000f;
+        return getWorkForce() * getSalary() / workForcePerLevel;
     }
 
     internal bool canUpgrade()

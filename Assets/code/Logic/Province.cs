@@ -24,7 +24,7 @@ public class Province : Name
     private Product resource;
     private Vector3 position;
     private Color color;
-    private Mesh landMesh;
+    //private Mesh landMesh;
     //private MeshStructure meshStructure;
 
     //private MeshFilter meshFilter;
@@ -95,7 +95,7 @@ public class Province : Name
         // of the gameobject that your script is attached to
         rootGameObject.transform.parent = Game.mapObject.transform;
 
-        landMesh = meshFilter.mesh;
+        var landMesh = meshFilter.mesh;
         landMesh.Clear();
 
         landMesh.vertices = meshStructure.getVertices().ToArray();

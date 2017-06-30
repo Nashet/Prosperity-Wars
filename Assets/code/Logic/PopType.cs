@@ -28,7 +28,7 @@ public class PopType
         var tribemenLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var tribemenEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 2) });
         var tribemenLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 3) });
-        TribeMen = new PopType("Tribesmen", new Storage(Product.findByName("Food"), 1.0f), 2f,
+        TribeMen = new PopType("Tribesmen", new Storage(Product.Food, 1.0f), 2f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             tribemenLifeNeeds, tribemenEveryDayNeeds, tribemenLuxuryNeeds);
         //***************************************next type***************************
@@ -79,7 +79,7 @@ public class PopType
             //new Storage(Product.Metal, 1),
             //new Storage(Product.Cement, 0.5f)
                                             });
-        Farmers = new PopType("Farmers", new Storage(Product.findByName("Food"), 1.5f), 1f,
+        Farmers = new PopType("Farmers", new Storage(Product.Food, 1.5f), 1f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             farmersLifeNeeds, farmersEveryDayNeeds, farmersLuxuryNeeds);
         //***************************************next type***************************
@@ -119,7 +119,7 @@ public class PopType
         //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
         //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
     }
-    public PopType(string name, Storage produces, float strenght, PrimitiveStorageSet militaryNeeds,
+    private PopType(string name, Storage produces, float strenght, PrimitiveStorageSet militaryNeeds,
         PrimitiveStorageSet lifeNeeds, PrimitiveStorageSet everyDayNeeds, PrimitiveStorageSet luxuryNeeds)
     {
         this.militaryNeeds = militaryNeeds;

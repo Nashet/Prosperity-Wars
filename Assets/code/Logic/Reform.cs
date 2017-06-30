@@ -7,7 +7,7 @@ using System;
 //{ }
 abstract public class AbstractCondition : Name
 {
-    public AbstractCondition(string name) : base(name)
+    protected AbstractCondition(string name) : base(name)
     { }
 }
 public static class ReformExtensions
@@ -22,8 +22,7 @@ public static class ReformExtensions
 }
 
 abstract public class AbstractReformValue : AbstractCondition
-{
-    //readonly string name;
+{   
     readonly string description;
     readonly internal int ID;
     readonly internal ConditionsList allowed;
@@ -32,7 +31,7 @@ abstract public class AbstractReformValue : AbstractCondition
     {
         //allowed.add();
     }
-    internal AbstractReformValue(string name, string indescription, int IDin, ConditionsList condition) : base(name)
+    protected AbstractReformValue(string name, string indescription, int IDin, ConditionsList condition) : base(name)
     {
         ID = IDin;
         // name = inname;
@@ -78,7 +77,7 @@ public abstract class AbstractReform : AbstractCondition
     readonly string description;
 
 
-    internal AbstractReform(string name, string indescription, Country incountry) : base(name)
+    protected AbstractReform(string name, string indescription, Country incountry) : base(name)
     {
         //name = inname;
         description = indescription;

@@ -120,11 +120,11 @@ public class MainCamera : MonoBehaviour
     }
     int GetRayCastMeshNumber()
     {
-        RaycastHit hit = new RaycastHit();//temp
-                                          //int layerMask = 1 << 8;
-                                          //DefaultRaycastLayers
-                                          //Physics.DefaultRaycastLayers;
-
+        //RaycastHit hit = new RaycastHit();//temp
+        //int layerMask = 1 << 8;
+        //DefaultRaycastLayers
+        //Physics.DefaultRaycastLayers;
+        RaycastHit hit;
         if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             if (!Physics.Raycast(myCamera.ScreenPointToRay(Input.mousePosition), out hit))
                 return -1;

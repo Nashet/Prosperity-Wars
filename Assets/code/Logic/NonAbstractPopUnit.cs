@@ -140,7 +140,7 @@ public class Farmers : PopUnit
     public override void produce()
     {
         Value producedAmount;
-        float overpopulation = province.getOverpopulation();
+        //float overpopulation = province.getOverpopulation();
 
         //if (overpopulation <= 1) // all is OK
         producedAmount = new Value(getPopulation() * popType.getBasicProduction().get() / 1000f);
@@ -266,7 +266,9 @@ public class Aristocrats : PopUnit
         }
     }
     public override void produce()
-    { }
+    {
+        //Aristocrats don't produce anything
+    }
     internal override bool canTrade()
     {
         if (Economy.isMarket.checkIftrue(province.getCountry()))

@@ -3,53 +3,55 @@ using System.Collections.Generic;
 
 
 
-public class Product
+public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
     internal static readonly List<Product> allProducts = new List<Product>();
-   
-    private readonly string name;
-    internal readonly bool resource = false;
-    private static int resourceCounter = 0;
+    internal static readonly Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
+    Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery,
+    Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery;
+    private static int resourceCounter;
+
+    private readonly bool resource;
     private readonly Value defaultPrice;
 
-    internal static Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
-     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery,
-    Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery;
+    static Product()
+    {
+        Food = new Product("Food", false, 0.04f);
+        Wood = new Product("Wood", true, 2.7f);
+        Lumber = new Product("Lumber", false, 8f);
+        Gold = new Product("Gold", true, 4f);
+        MetallOre = new Product("Metal ore", true, 3f);
+        Metal = new Product("Metal", false, 6f);
+        Wool = new Product("Wool", true, 1f);
+        Clothes = new Product("Clothes", false, 3f);
+        Furniture = new Product("Furniture", false, 7f);
+        Stone = new Product("Stone", true, 1f);
+        Cement = new Product("Cement", false, 2f);
+        Fruit = new Product("Fruit", true, 1f);
+        Wine = new Product("Wine", false, 3f);
+        ColdArms = new Product("Cold arms", false, 13f);
+        Ammunition = new Product("Ammunition", false, 13f);
+        Firearms = new Product("Firearms", false, 13f);
+        Artillery = new Product("Artillery", false, 13f);
 
-    public Product(string name, bool inlanded, float defaultPrice)
+        Oil = new Product("Oil", true, 10f);
+        Fuel = new Product("Fuel", false, 15f);
+        Machinery = new Product("Machinery", false, 8f);
+        Cars = new Product("Cars", false, 15f);
+        Tanks = new Product("Tanks", false, 20f);
+        Airplanes = new Product("Airplanes", false, 20f);
+        Rubber = new Product("Rubber", true, 10f);
+    }
+    private Product(string name, bool inlanded, float defaultPrice) : base(name)
     {
         this.defaultPrice = new Value(defaultPrice);
         resource = inlanded;
         if (resource) resourceCounter++;
-        this.name = name;
+        //this.name = name;
         allProducts.Add(this);
         Game.market.SetDefaultPrice(this, defaultPrice);
-        if (name == "Food") Food = this;
-        if (name == "Wood") Wood = this;
-        if (name == "Lumber") Lumber = this;
-        if (name == "Furniture") Furniture = this;
-        if (name == "Gold") Gold = this;
-        if (name == "Metal") Metal = this;
-        if (name == "Metal ore") MetallOre = this;
-        if (name == "Wool") Wool = this;
-        if (name == "Clothes") Clothes = this;
-        if (name == "Stone") Stone = this;
-        if (name == "Cement") Cement = this;
-        if (name == "Fruit") Fruit = this;
-        if (name == "Wine") Wine = this;
-        if (name == "Cold arms") ColdArms = this;
-        if (name == "Ammunition") Ammunition = this;
-        if (name == "Firearms") Firearms = this;
-        if (name == "Artillery") Artillery = this;
 
-        if (name == "Oil") Oil = this;
-        if (name == "Fuel") Fuel = this;
-        if (name == "Cars") Cars = this;
-        if (name == "Tanks") Tanks = this;
-        if (name == "Airplanes") Airplanes = this;
-        if (name == "Rubber") Rubber = this;
-        if (name == "Machinery") Machinery = this;
         //TODO checks for duplicates&
     }
     internal bool isResource()
@@ -57,28 +59,13 @@ public class Product
         return resource;
     }
     internal static Product getRandomResource(bool ignoreGold)
-    {       
+    {
         if (ignoreGold)
             return Product.Wood;
         return Product.allProducts.PickRandom(x => x.isResource());
 
     }
 
-    public static Product findByName(string name)
-    { 
-        //HashSet set = new HashSet();
-        foreach (Product next in allProducts)
-        {
-            if (next.getName().Equals(name))
-                return next;
-        }
-        return null;
-
-    }
-    public string getName()
-    {
-        return name;
-    }
     public bool isInventedByAnyOne()
     {
         foreach (var country in Country.allCountries)
@@ -110,11 +97,7 @@ public class Product
     //void setStorable(bool isStorable)
     //{
     //    storable = isStorable;
-    //}
-    override public string ToString()
-    {
-        return getName();
-    }
+    //}   
 
     internal Value getDefaultPrice()
     {
