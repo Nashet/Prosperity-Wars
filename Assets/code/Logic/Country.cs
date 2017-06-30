@@ -351,6 +351,7 @@ public class Country : Staff
 
         Vector3 capitalTextPosition = capital.centre;
         capitalTextPosition.y += 2f;
+        capitalTextPosition.z -= 1f;
         txtMeshTransform.position = capitalTextPosition;
 
         messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
@@ -376,6 +377,7 @@ public class Country : Staff
         {
             Vector3 capitalTextPosition = newCapital.centre;
             capitalTextPosition.y += 2f;
+            capitalTextPosition.z -= 1f;
             messhCapitalText.transform.position = capitalTextPosition;
         }
         capital = newCapital;
