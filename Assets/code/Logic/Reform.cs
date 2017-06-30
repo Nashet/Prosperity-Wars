@@ -23,7 +23,7 @@ abstract public class AbstractReformValue : AbstractCondition
     readonly string description;
     readonly internal int ID;
     readonly internal ConditionsList allowed;
-    readonly private Condition isEnacted;
+    readonly public Condition isEnacted;
     static AbstractReformValue()
     {
         //allowed.add();
@@ -182,8 +182,8 @@ public class Government : AbstractReform
 
     public Government(Country country) : base("Government", "Form of government", country)
     {
-        status = Tribal;
-       // status = Aristocracy;
+        //status = Tribal;
+        status = Aristocracy;
         this.country = country;
     }
     internal string getPrefix()
@@ -309,14 +309,14 @@ public class Economy : AbstractReform
             Serfdom.IsAbolishedInAnyWay
         });
     internal ReformValue status;
-    internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    internal static ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
+    internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
+    internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<AbstractCondition> {
             Invention.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
-    internal static ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList( ConditionsList.IsNotImplemented));
-    internal static ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
-    internal static ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
-    internal static ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsList(capitalism));
+    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList( ConditionsList.IsNotImplemented));
+    internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
+    internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
+    internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsList(capitalism));
 
 
     /// ////////////

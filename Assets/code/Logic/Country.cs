@@ -78,7 +78,7 @@ public class Country : Staff
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
             new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
             //"There is bigger threat to the world", 0.03f, false)
-            delegate () { return "There is bigger threat to the world - " + BadboyCountry; }, 0.03f, false)
+            delegate  { return "There is bigger threat to the world - " + BadboyCountry; }, 0.03f, false)
             //delegate () { }
             //,            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
@@ -522,7 +522,11 @@ public class Country : Staff
                 bank.takeMoney(this, new Value(extraMoney));
         }
         //buyNeeds();
-
+        foreach (var item in getAllArmies())
+        {
+            item.consume();
+        }
+        
         buyNeeds(); // Should go After all Armies consumption
         //Procent opinion;
         foreach (var item in Country.getExisting())

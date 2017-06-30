@@ -8,8 +8,8 @@ public class Corps
 {
     PopUnit origin;
     int size;
-    Procent morale = new Procent(0f);
-    PrimitiveStorageSet consumption = new PrimitiveStorageSet();
+    readonly Procent morale = new Procent(0f);
+    readonly PrimitiveStorageSet consumption = new PrimitiveStorageSet();
     internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
