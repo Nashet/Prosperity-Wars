@@ -5,7 +5,11 @@ using System;
 
 //public abstract class NameDescriptor
 //{ }
-public interface AbstractCondition { }
+abstract public class AbstractCondition : Name
+{
+    public AbstractCondition(string name) : base(name)
+    { }
+}
 public static class ReformExtensions
 {
     public static bool isEnacted(this List<AbstractReform> list, AbstractReformValue reformValue)
@@ -19,7 +23,7 @@ public static class ReformExtensions
 
 abstract public class AbstractReformValue : AbstractCondition
 {
-    readonly string name;
+    //readonly string name;
     readonly string description;
     readonly internal int ID;
     readonly internal ConditionsList allowed;
@@ -28,10 +32,10 @@ abstract public class AbstractReformValue : AbstractCondition
     {
         //allowed.add();
     }
-    internal AbstractReformValue(string inname, string indescription, int IDin, ConditionsList condition)
+    internal AbstractReformValue(string name, string indescription, int IDin, ConditionsList condition) : base(name)
     {
         ID = IDin;
-        name = inname;
+        // name = inname;
         description = indescription;
         this.allowed = condition;
         isEnacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
@@ -55,14 +59,11 @@ abstract public class AbstractReformValue : AbstractCondition
         return result;
     }
 
-    internal string getDescription()
+    new internal string getDescription()
     {
         return description;
     }
-    override public string ToString()
-    {
-        return name;
-    }
+
     abstract internal bool isAvailable(Country country);
 
     internal abstract Procent howIsItGoodForPop(PopUnit pop);
@@ -71,15 +72,15 @@ abstract public class AbstractReformValue : AbstractCondition
     Modifier wantsReform;
     public ModifiersList modVoting;
 }
-public abstract class AbstractReform
+public abstract class AbstractReform : AbstractCondition
 {
-    readonly string name;
+    //readonly string name;
     readonly string description;
 
 
-    internal AbstractReform(string inname, string indescription, Country incountry)
+    internal AbstractReform(string name, string indescription, Country incountry) : base(name)
     {
-        name = inname;
+        //name = inname;
         description = indescription;
         incountry.reforms.Add(this);
 
@@ -90,15 +91,12 @@ public abstract class AbstractReform
     internal abstract bool canChange();
     internal abstract void setValue(AbstractReformValue selectedReformValue);
 
-    internal string getDescription()
+    new internal string getDescription()
     {
         return description;
     }
 
-    override public string ToString()
-    {
-        return name;
-    }
+
     abstract internal AbstractReformValue getValue();
     abstract internal AbstractReformValue getValue(int value);
 
@@ -149,7 +147,7 @@ public class Government : AbstractReform
     private readonly Country country;
 
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
-    readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0, 
+    readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0,
         new ConditionsList(ConditionsList.AlwaysYes), "tribe");
 
     readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1,
@@ -182,8 +180,8 @@ public class Government : AbstractReform
 
     public Government(Country country) : base("Government", "Form of government", country)
     {
-        //status = Tribal;
-        status = Aristocracy;
+        status = Tribal;
+        // status = Aristocracy;
         this.country = country;
     }
     internal string getPrefix()
@@ -302,18 +300,16 @@ public class Economy : AbstractReform
     }
     static readonly ConditionsList capitalism = new ConditionsList(new List<Condition>()
         {
-            //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.individualRights); }, InventionType.individualRights.getInventedPhrase(), true),
-            //new ConditionString(delegate (Country forWhom) { return forWhom.isInvented(InventionType.banking); }, InventionType.banking.getInventedPhrase(), true)
-            new Condition(Invention.individualRights, true),
-            new Condition(Invention.Banking, true),
+            Invention.IndividualRightsInvented,
+            Invention.BankingInvented,
             Serfdom.IsAbolishedInAnyWay
         });
     internal ReformValue status;
     internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<AbstractCondition> {
-            Invention.collectivism, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
-    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList( ConditionsList.IsNotImplemented));
+            Invention.collectivismInvented, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
+    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(ConditionsList.IsNotImplemented));
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
     internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
     internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsList(capitalism));
@@ -423,15 +419,11 @@ public class Serfdom : AbstractReform
     internal static ReformValue Allowed;
     internal static ReformValue Brutal;
     internal static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
-        new ConditionsList(new List<Condition>()
-        {
-            new Condition(Invention.individualRights, true)
-        }));
+        new ConditionsList(new List<Condition>() { Invention.IndividualRightsInvented }));
     internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
         new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.individualRights, true),
-            new Condition(Invention.Banking, true), Condition.IsNotImplemented
+            Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
         }));
     internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "- Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
@@ -597,28 +589,23 @@ public class MinimalWage : AbstractReform
 
     internal readonly static ReformValue Scanty = new ReformValue("Scanty minimal wage", "- Half-hungry", 1, new ConditionsList(new List<Condition>
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Minimal = new ReformValue("Tiny minimal wage", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Trinket = new ReformValue("Trinket minimal wage", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Middle = new ReformValue("Middle minimal wage", "- Plenty good wage", 4, new ConditionsList(new List<Condition>
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Big = new ReformValue("Generous minimal wage", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
 
     public MinimalWage(Country country) : base("Minimal wage", "", country)
@@ -751,28 +738,23 @@ public class UnemploymentSubsidies : AbstractReform
     internal readonly static ReformValue None = new ReformValue("No unemployment subsidies", "", 0, new ConditionsList(new List<Condition>()));
     internal readonly static ReformValue Scanty = new ReformValue("Scanty unemployment subsidies", "- Half-hungry", 1, new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Minimal = new ReformValue("Minimal unemployment subsidies", "- Just enough to feed yourself", 2, new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Trinket = new ReformValue("Trinket unemployment subsidies", "- You can buy some small stuff", 3, new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Middle = new ReformValue("Middle unemployment subsidies", "- Plenty good subsidies", 4, new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
     internal readonly static ReformValue Big = new ReformValue("Generous unemployment subsidies", "- Can live almost like a king. Almost..", 5, new ConditionsList(new List<Condition>()
         {
-            new Condition(Invention.Welfare, true),
-            Economy.isNotLF,
+            Invention.WelfareInvented, Economy.isNotLF,
         }));
 
 
@@ -863,7 +845,7 @@ public class TaxationForPoor : AbstractReform
             PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsList(ConditionsList.AlwaysYes)));
     }
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
-    {      
+    {
         status = PossibleStatuses[1];
     }
     internal override AbstractReformValue getValue()
@@ -945,7 +927,7 @@ public class TaxationForRich : AbstractReform
             PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsList(ConditionsList.AlwaysYes)));
     }
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
-    {       
+    {
         status = PossibleStatuses[1];
     }
     internal override AbstractReformValue getValue()

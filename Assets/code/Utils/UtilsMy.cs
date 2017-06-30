@@ -1464,3 +1464,24 @@ public class MyTexture
         return map[Game.Random.Next((width * height) - 1)];
     }
 }
+public abstract class Name
+{
+    private readonly string name;
+    public Name(string name)
+    {
+        this.name = name;
+    }
+    virtual public string getName()
+    {
+        return name;
+    }
+    public string getDescription()
+    {
+    return name;
+    }
+
+public override string ToString()
+{
+    return name;
+}
+}

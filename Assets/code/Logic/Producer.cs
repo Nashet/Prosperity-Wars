@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PopLinkage
-{
-    public PopUnit pop;
-    public int amount;
-    internal PopLinkage(PopUnit p, int a)
-    {
-        pop = p;
-        amount = a;
-    }
-}
+//public class PopLinkage
+//{
+//    public PopUnit pop;
+//    public int amount;
+//    internal PopLinkage(PopUnit p, int a)
+//    {
+//        pop = p;
+//        amount = a;
+//    }
+//}
 
 /// <summary>
 /// Represent anyone who can consume (but can't produce by itself)

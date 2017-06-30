@@ -6,37 +6,40 @@ using System.Text;
 public class Factory : Producer
 {
     //public enum PopTypes { Forestry, GoldMine, MetalMine };
+    private static readonly int workForcePerLevel = 1000;
+    private static int xMoneyReservForResources = 10;
 
-    internal FactoryType type;
-    protected static readonly int workForcePerLevel = 1000;
-    protected int level = 0;
-    /// <summary>shownFactory in a process of building - level 1 </summary>
+    internal readonly FactoryType type;
+
+    private int level = 0;
+
     private bool building = true;
     private bool upgrading = false;
     private bool working = false;
     private bool toRemove = false;
+
     private bool dontHireOnSubsidies, subsidized;
     private byte priority = 0;
-    protected Value salary = new Value(0);
-    Agent factoryOwner;
-    internal PrimitiveStorageSet needsToUpgrade;
+    private readonly Value salary = new Value(0);
+    private Agent factoryOwner;
+    internal readonly PrimitiveStorageSet needsToUpgrade;
     internal readonly PrimitiveStorageSet inputReservs = new PrimitiveStorageSet();
 
-    protected List<PopLinkage> hiredWorkForce = new List<PopLinkage>();
-    private static int xMoneyReservForResources = 10;
+    private readonly Dictionary<PopUnit, int> hiredWorkForce = new Dictionary<PopUnit, int>();
+
     private int daysInConstruction;
     private int daysUnprofitable;
     private int daysClosed;
-    internal bool justHiredPeople;
+    private bool justHiredPeople;
     private int hiredLastTurn;
     internal readonly ConditionsList conditionsUpgrade, conditionsClose, conditionsReopen,
         conditionsDestroy, conditionsSell, conditionsBuy, conditionsNatinalize,
         conditionsSubsidize, conditionsDontHireOnSubsidies, conditionsChangePriority;
 
-    internal ModifiersList modifierEfficiency;
-    internal Modifier modifierHasResourceInProvince, modifierLevelBonus,
+    internal readonly ModifiersList modifierEfficiency;
+    internal readonly Modifier modifierHasResourceInProvince, modifierLevelBonus,
         modifierInventedMiningAndIsShaft, modifierBelongsToCountry, modifierIsSubsidised;
-    internal Condition conNotBelongsToCountry;//, conIsBuilding;
+    internal readonly Condition conNotBelongsToCountry;//, conIsBuilding;
 
     internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(province.getCountry().bank)
     { //assuming this is level 0 building
@@ -69,7 +72,7 @@ public class Factory : Producer
         {
             //x=>(x as Country).isInvented(InventionType.steamPower)
             new Modifier(Invention.SteamPowerInvented , 25f, false),
-            new Modifier(Invention.CombustionEngine , 25f, false),
+            new Modifier(Invention.CombustionEngineInvented , 25f, false),
             modifierInventedMiningAndIsShaft,
             new Modifier(Economy.StateCapitalism,  10f, false),
             new Modifier(Economy.Interventionism,  30f, false),
@@ -190,6 +193,10 @@ public class Factory : Producer
     {
         return building;
     }
+    public bool isJustHiredPeople()
+    {
+        return justHiredPeople;
+    }
     override public string ToString()
     {
         return type.name + " L" + getLevel();
@@ -236,8 +243,8 @@ public class Factory : Producer
     public int getWorkForce()
     {
         int result = 0;
-        foreach (PopLinkage pop in hiredWorkForce)
-            result += pop.amount;
+        foreach (var pop in hiredWorkForce)
+            result += pop.Value;
         return result;
     }
     /// <summary>
@@ -249,6 +256,11 @@ public class Factory : Producer
         //if (amount > HowMuchWorkForceWants())
         //    amount = HowMuchWorkForceWants();
         int wasWorkforce = getWorkForce();
+        if (amount > 0 && wasWorkforce == 0)
+            justHiredPeople = true;
+        else
+            justHiredPeople = false;
+
         hiredWorkForce.Clear();
         if (amount > 0)
         {
@@ -257,14 +269,14 @@ public class Factory : Producer
             {
                 if (pop.getPopulation() >= leftToHire) // satisfied demand
                 {
-                    hiredWorkForce.Add(new PopLinkage(pop, leftToHire));
+                    hiredWorkForce.Add(pop, leftToHire);
                     hiredLastTurn = getWorkForce() - wasWorkforce;
                     return hiredLastTurn;
                     //break;
                 }
                 else
                 {
-                    hiredWorkForce.Add(new PopLinkage(pop, pop.getPopulation())); // hire as we can
+                    hiredWorkForce.Add(pop, pop.getPopulation()); // hire as we can
                     leftToHire -= pop.getPopulation();
                 }
             }
@@ -293,16 +305,16 @@ public class Factory : Producer
         priority = value;
     }
 
-    internal int HowManyEmployed(PopUnit pop)
+    internal int howManyEmployed(PopUnit pop)
     {
         int result = 0;
-        foreach (PopLinkage link in hiredWorkForce)
-            if (link.pop == pop)
-                result += link.amount;
+        foreach (var link in hiredWorkForce)
+            if (link.Key== pop)
+                result += link.Value;
         return result;
     }
 
-    internal bool IsThereMoreWorkersToHire()
+    internal bool isThereMoreWorkersToHire()
     {
         int totalAmountWorkers = province.getPopulationAmountByType(PopType.Workers);
         int result = totalAmountWorkers - getWorkForce();
@@ -316,7 +328,7 @@ public class Factory : Producer
     {
         //if there is other pops && there is space on factory     
 
-        if (getFreeJobSpace() > 0 && IsThereMoreWorkersToHire())
+        if (getFreeJobSpace() > 0 && isThereMoreWorkersToHire())
             return true;
         else
             return false;
@@ -331,18 +343,18 @@ public class Factory : Producer
             // per 1000 men            
             if (Economy.isMarket.checkIftrue(province.getCountry()))
             {
-                foreach (PopLinkage link in hiredWorkForce)
+                foreach (var link in hiredWorkForce)
                 {
                     Value howMuchPay = new Value(0);
-                    howMuchPay.set(salary.get() * link.amount / 1000f);
+                    howMuchPay.set(salary.get() * link.Value / 1000f);
                     if (canPay(howMuchPay))
-                        pay(link.pop, howMuchPay);
+                        pay(link.Key, howMuchPay);
                     else
                         if (isSubsidized()) //take money and try again
                     {
                         province.getCountry().takeFactorySubsidies(this, HowMuchMoneyCanNotPay(howMuchPay));
                         if (canPay(howMuchPay))
-                            pay(link.pop, howMuchPay);
+                            pay(link.Key, howMuchPay);
                         else
                             salary.set(province.getCountry().getMinSalary());
                     }
@@ -355,17 +367,17 @@ public class Factory : Producer
             {
                 // non market!!
                 Storage foodSalary = new Storage(Product.Food, 1f);
-                foreach (PopLinkage link in hiredWorkForce)
+                foreach (var link in hiredWorkForce)
                 {
-                    Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.amount / 1000f);
+                    Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / 1000f);
                     if (factoryOwner is Country)
                     {
                         Country payer = factoryOwner as Country;
 
                         if (payer.storageSet.has(howMuchPay))
                         {
-                            payer.storageSet.send(link.pop, howMuchPay);
-                            link.pop.gainGoodsThisTurn.add(howMuchPay);
+                            payer.storageSet.send(link.Key, howMuchPay);
+                            link.Key.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
                         //todo no salary cuts yet
@@ -375,13 +387,13 @@ public class Factory : Producer
                     {
                         PopUnit payer = factoryOwner as PopUnit;
 
-                        if (payer.storageNow.has(link.pop.storageNow, howMuchPay))
+                        if (payer.storageNow.has(link.Key.storageNow, howMuchPay))
                         {
-                            payer.storageNow.send(link.pop.storageNow, howMuchPay);
-                            link.pop.gainGoodsThisTurn.add(howMuchPay);
+                            payer.storageNow.send(link.Key.storageNow, howMuchPay);
+                            link.Key.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
-                        //todo no resiuces tio pay salary
+                        //todo no resources to pay salary
                         //else salary.set(0);
                     }
                     //else dont pay if there is nothing to pay

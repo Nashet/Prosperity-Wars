@@ -482,13 +482,7 @@ public class Game : ThreadedJob
         map = new MyTexture(mapImage);
         Texture2D.Destroy(mapImage);
     }
-    static Mesh getMeshID(Color color)
-    {
-        foreach (var all in Province.allProvinces)
-            if (color == all.getColorID())
-                return all.landMesh;
-        return null;
-    }
+    
 
 
 

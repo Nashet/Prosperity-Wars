@@ -84,8 +84,8 @@ public class MainCamera : MonoBehaviour
                 Game.setUnityAPI();
 
                 myCamera = this.GetComponent<Camera>();
-                gameObject.transform.position = new Vector3(Game.Player.getCapital().centre.x,
-                    Game.Player.getCapital().centre.y, gameObject.transform.position.z);
+                gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
+                    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
                 loadingPanel.hide();
                 topPanel.show();
                 gameIsLoaded = true;

@@ -29,7 +29,7 @@ public class InventionsPanel : DragPanel
 
     public void onInventClick()
     {
-        if (!Game.Player.inventions.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
+        if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
         {
             Game.Player.invent(selectedInvention);
             inventButton.interactable = false;
@@ -51,7 +51,7 @@ public class InventionsPanel : DragPanel
                 + "\n\n" + selectedInvention + " : " + selectedInvention.getDescription();
 
             // invention available
-            if (!Game.Player.inventions.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
+            if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
             {
                 inventButton.GetComponentInChildren<Text>().text = "Invent " + selectedInvention.ToString();
                 inventButton.interactable = true;
@@ -59,7 +59,7 @@ public class InventionsPanel : DragPanel
             else
             {
                 inventButton.interactable = false;
-                if (Game.Player.inventions.isInvented(selectedInvention))
+                if (Game.Player.isInvented(selectedInvention))
                     inventButton.GetComponentInChildren<Text>().text = "Already invented " + selectedInvention.ToString();
                 else
                     inventButton.GetComponentInChildren<Text>().text = "Not enough SP to invent " + selectedInvention.ToString();

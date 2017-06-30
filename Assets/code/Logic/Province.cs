@@ -15,32 +15,29 @@ public class Province : Name
     public readonly static List<Province> allProvinces = new List<Province>();
 
     private readonly int ID;
-    readonly Color colorID;
+    private readonly Color colorID;
 
     public readonly List<PopUnit> allPopUnits = new List<PopUnit>();
 
     //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
     private readonly List<Province> neighbors = new List<Province>();
-    Product resource;
+    private Product resource;
+    private Vector3 position;
+    private Color color;
+    private Mesh landMesh;
+    //private MeshStructure meshStructure;
 
-    public Vector3 centre;
+    //private MeshFilter meshFilter;
+    private GameObject rootGameObject;
+    private MeshRenderer meshRenderer;
 
-
-    Color color;
-    public Mesh landMesh;
-    public MeshStructure meshStructure;
-
-    MeshFilter meshFilter;
-    internal GameObject rootGameObject;
-    MeshRenderer meshRenderer;
-
-    Country owner;
+    private Country owner;
 
     public List<Factory> allFactories = new List<Factory>();
 
-    readonly internal int fertileSoil;
+    private readonly int fertileSoil;
     readonly List<Country> cores = new List<Country>();
-    Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
+    private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
     private TerrainTypes terrain;
     private readonly Dictionary<Mod, DateTime> modifiers = new Dictionary<Mod, DateTime>();
 
@@ -85,13 +82,13 @@ public class Province : Name
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
     {
-        this.meshStructure = meshStructure;
+        //this.meshStructure = meshStructure;
 
         //spawn object
         rootGameObject = new GameObject(string.Format("{0}", getID()));
 
         //Add Components
-        meshFilter = rootGameObject.AddComponent<MeshFilter>();
+        var meshFilter = rootGameObject.AddComponent<MeshFilter>();
         meshRenderer = rootGameObject.AddComponent<MeshRenderer>();
 
         // in case you want the new gameobject to be a child
@@ -114,7 +111,7 @@ public class Province : Name
         MeshCollider groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
         groundMeshCollider.sharedMesh = landMesh;
 
-        setProvinceCenter();
+        position = setProvinceCenter(meshStructure);
         setLabel();
 
         // setting neighbors
@@ -129,7 +126,7 @@ public class Province : Name
             GameObject borderObject = new GameObject("Border with " + neighbor.ToString());
 
             //Add Components
-            MeshFilter meshFilter = borderObject.AddComponent<MeshFilter>();
+            meshFilter = borderObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
 
             borderObject.transform.parent = rootGameObject.transform;
@@ -154,7 +151,14 @@ public class Province : Name
     {
         return terrain;
     }
-
+    public Vector3 getPosition()
+    {
+        return position;
+    }
+    public GameObject getRootGameObject()
+    {
+        return rootGameObject;
+    }
     public void setBorderMaterial(Material material)
     {
         foreach (var item in bordersMeshes)
@@ -358,13 +362,13 @@ public class Province : Name
             //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
             yield return f;
     }
-    public void setProvinceCenter()
+    public static Vector3 setProvinceCenter(MeshStructure meshStructure)
     {
         Vector3 accu = new Vector3(0, 0, 0);
-        foreach (var c in this.meshStructure.getVertices())
+        foreach (var c in meshStructure.getVertices())
             accu += c;
-        accu = accu / this.meshStructure.verticesCount;
-        this.centre = accu;
+        accu = accu / meshStructure.verticesCount;
+        return accu;
 
     }
 
@@ -563,10 +567,7 @@ public class Province : Name
 
                     //if (factoryWants > 0)
                     //shownFactory.HireWorkforce(totalWorkForce * factoryWants / factoryWantsTotal, workforceList);
-                    if (factoryWants > 0 && factory.getWorkForce() == 0)
-                        factory.justHiredPeople = true;
-                    else
-                        factory.justHiredPeople = false;
+                    
                     //popsLeft -= factoryWants;                    
                     popsLeft -= factory.hireWorkforce(factoryWants, workforceList);
 
@@ -689,7 +690,7 @@ public class Province : Name
         renderers[0] = txtMeshTransform.GetComponent<Renderer>();
         lods[0] = new LOD(0.25F, renderers);
 
-        txtMeshTransform.position = this.centre;
+        txtMeshTransform.position = this.getPosition();
         TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
         txtMesh.text = this.ToString();
@@ -751,7 +752,7 @@ public class Province : Name
             minSalary = getLocalMaxSalary();
 
             foreach (Factory fact in allFactories)
-                if (fact.isWorking() && !fact.justHiredPeople)
+                if (fact.isWorking() && !fact.isJustHiredPeople())
                 {
                     if (fact.getSalary() < minSalary)
                         minSalary = fact.getSalary();
@@ -879,21 +880,10 @@ public class Mod : Name
     //private readonly DateTime expireDate;
     public Mod(string name) : base(name)
     { }
+    
     //public Mod(string name, int years) : base(name)
     //{
     //    expireDate = Game.date;
     //    expireDate.AddYears(years);
     //}
-}
-public class Name
-{
-    protected readonly string name;
-    public Name(string name)
-    {
-        this.name = name;
-    }
-    public override string ToString()
-    {
-        return name;
-    }
 }

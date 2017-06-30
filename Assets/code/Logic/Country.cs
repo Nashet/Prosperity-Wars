@@ -6,60 +6,55 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 public class Country : Staff
-{
-    private readonly string name;
-    public static List<Country> allCountries = new List<Country>();
+{    
+    public readonly static List<Country> allCountries = new List<Country>();
+    internal static readonly Country NullCountry;  
+
+    internal readonly Government government;
+    internal readonly Economy economy;
+    internal readonly Serfdom serfdom;
+    internal readonly MinimalWage minimalWage;
+    internal readonly UnemploymentSubsidies unemploymentSubsidies;
+    internal readonly TaxationForPoor taxationForPoor;
+    internal readonly TaxationForRich taxationForRich;
+    internal readonly MinorityPolicy minorityPolicy;
+
     public List<Province> ownedProvinces = new List<Province>();
 
-    public CountryStorageSet storageSet = new CountryStorageSet();
-    //public Procent countryTax;
-    //public Procent aristocrstTax;//= new Procent(0.10f);
-    public InventionsList inventions = new InventionsList();
+    private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
+    private readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
+    private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
-    internal Government government;
-    internal Economy economy;
-    internal Serfdom serfdom;
-    internal MinimalWage minimalWage;
-    internal UnemploymentSubsidies unemploymentSubsidies;
-    internal TaxationForPoor taxationForPoor;
-    internal TaxationForRich taxationForRich;
-    internal MinorityPolicy minorityPolicy;
-    internal List<AbstractReform> reforms = new List<AbstractReform>();
-    Culture culture;
-    Color nationalColor;
-    Province capital;
-
-    readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-    readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
-
-    //readonly public GeneralStaff staff;
-
-    TextMesh messhCapitalText;
-    Material borderMaterial;
-    /// <summary>
-    /// per 1000 men
-    /// </summary>
-    //private Value minSalary = new Value(0.5f);
-    public readonly Value sciencePoints = new Value(0f);
-    internal static readonly Country NullCountry;
-
-    readonly Modifier modXHasMyCores;
-    public readonly ModifiersList modMyOpinionOfXCountry;
-
-    readonly Value poorTaxIncome = new Value(0f);
-    readonly Value richTaxIncome = new Value(0f);
-    readonly Value goldMinesIncome = new Value(0f);
-    readonly Value ownedFactoriesIncome = new Value(0f);
-
-    Value unemploymentSubsidiesExpense = new Value(0f);
-    Value soldiersWageExpense = new Value(0f);
-    Value factorySubsidiesExpense = new Value(0f);
-    Value storageBuyingExpense = new Value(0f);
+    public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
-    internal int autoPutInBankLimit = 2000;
-    private readonly Value soldiersWage = new Value(0f);
-    internal bool failedToPaySoldiers;
+    public readonly CountryStorageSet storageSet = new CountryStorageSet();
 
+    private TextMesh meshCapitalText;
+    private Material borderMaterial;
+
+    private readonly string name;
+    private readonly Culture culture;
+    private readonly Color nationalColor;
+    private Province capital;
+
+    
+    private readonly Value soldiersWage = new Value(0f);   
+    public readonly Value sciencePoints = new Value(0f);
+    public bool failedToPaySoldiers;
+    public int autoPutInBankLimit = 2000;
+
+    private readonly Value poorTaxIncome = new Value(0f);
+    private readonly Value richTaxIncome = new Value(0f);
+    private readonly Value goldMinesIncome = new Value(0f);
+    private readonly Value ownedFactoriesIncome = new Value(0f);
+
+    private readonly Value unemploymentSubsidiesExpense = new Value(0f);
+    private readonly Value soldiersWageExpense = new Value(0f);
+    private readonly Value factorySubsidiesExpense = new Value(0f);
+    private readonly Value storageBuyingExpense = new Value(0f);
+
+    private readonly Modifier modXHasMyCores;
+    public readonly ModifiersList modMyOpinionOfXCountry;
 
     static Country()
     {
@@ -67,6 +62,8 @@ public class Country : Staff
     }
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
+        foreach (var each in Invention.allInventions)
+            inventions.Add(each, false);
         place = this;
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
@@ -103,21 +100,17 @@ public class Country : Staff
         nationalColor = color;
         this.capital = capital;
         //if (!Game.devMode)
-        {           
+        {
 
             economy.status = Economy.StateCapitalism;
             serfdom.status = Serfdom.Abolished;
-            inventions.markInvented(Invention.Farming);
-            inventions.markInvented(Invention.Manufactories);
-            inventions.markInvented(Invention.Banking);
+            markInvented(Invention.Farming);
+            markInvented(Invention.Manufactories);
+            markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             // inventions.MarkInvented(InventionType.individualRights);
-            //inventions.markInvented(Invention.ProfessionalArmy);
-           
+            //inventions.markInvented(Invention.ProfessionalArmy);           
         }
-
-
-
     }
     public static void setUnityAPI()
     {
@@ -162,9 +155,37 @@ public class Country : Staff
             if (pro.getCountry() == null)
                 pro.InitialOwner(Country.NullCountry);
     }
+    public IEnumerable<KeyValuePair<Invention, bool>> getAvailable(Country country)
+    {
+        foreach (var invention in inventions)
+            if (invention.Key.isAvailable(country))
+                yield return invention;
+    }
+    public IEnumerable<KeyValuePair<Invention, bool>> getUninvented(Country country)
+    {
+        foreach (var invention in inventions)
+            if (invention.Value == false && invention.Key.isAvailable(country))
+                yield return invention;
+    }
+    public IEnumerable<KeyValuePair<Invention, bool>> getInvented(Country country)
+    {
+        foreach (var invention in inventions)
+            if (invention.Value == true && invention.Key.isAvailable(country))
+                yield return invention;
+    }
+    public void markInvented(Invention type)
+    {
+        inventions[type] = true;
+    }
+    public bool isInvented(Invention type)
+    {
+        bool result = false;
+        inventions.TryGetValue(type, out result);
+        return result;
+    }
     internal void setPrefix()
     {
-        messhCapitalText.text = getDescription();
+        meshCapitalText.text = getDescription();
     }
     internal void setSoldierWage(float value)
     {
@@ -175,7 +196,7 @@ public class Country : Staff
         return soldiersWage.get();
     }
     public Procent getMiddleLoyalty()
-    {        
+    {
         Procent result = new Procent(0f);
         int calculatedPopulation = 0;
         foreach (var province in ownedProvinces)
@@ -183,7 +204,7 @@ public class Country : Staff
             {
                 result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.loyalty);
                 calculatedPopulation += pop.getPopulation();
-            }        
+            }
         return result;
     }
     /// <summary>
@@ -264,8 +285,8 @@ public class Country : Staff
     }
     internal void killCountry(Country byWhom)
     {
-        if (messhCapitalText != null) //todo WTF!!
-            UnityEngine.Object.Destroy(messhCapitalText.gameObject);
+        if (meshCapitalText != null) //todo WTF!!
+            UnityEngine.Object.Destroy(meshCapitalText.gameObject);
         setStatisticToZero();
 
         //take all money from bank
@@ -342,43 +363,40 @@ public class Country : Staff
         return ownedProvinces.PickRandom(predicate);
     }
 
-    //todo move to Province.cs
-    internal void makeCapitalTextMesh()
+    internal void setCapitalTextMesh(Province province)
     {
         Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
-        txtMeshTransform.SetParent(capital.rootGameObject.transform, false);
+        txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
 
-
-        Vector3 capitalTextPosition = capital.centre;
+        Vector3 capitalTextPosition = province.getPosition();
         capitalTextPosition.y += 2f;
         capitalTextPosition.z -= 1f;
         txtMeshTransform.position = capitalTextPosition;
 
-        messhCapitalText = txtMeshTransform.GetComponent<TextMesh>();
-        messhCapitalText.text = getDescription();
-        messhCapitalText.fontSize *= 2;
+        meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
+        meshCapitalText.text = getDescription();
+        meshCapitalText.fontSize *= 2;
         if (this == Game.Player)
         {
-            messhCapitalText.color = Color.blue;
-            messhCapitalText.fontSize += 10;
-
+            meshCapitalText.color = Color.blue;
+            meshCapitalText.fontSize += 10;
         }
         else
         {
-            messhCapitalText.color = Color.cyan; // Set the text's color to red
+            meshCapitalText.color = Color.cyan; // Set the text's color to red
             //messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
         }
     }
     internal void moveCapitalTo(Province newCapital)
     {
-        if (messhCapitalText == null)
-            makeCapitalTextMesh();
+        if (meshCapitalText == null)
+            setCapitalTextMesh(newCapital);
         else
         {
-            Vector3 capitalTextPosition = newCapital.centre;
+            Vector3 capitalTextPosition = newCapital.getPosition();
             capitalTextPosition.y += 2f;
             capitalTextPosition.z -= 1f;
-            messhCapitalText.transform.position = capitalTextPosition;
+            meshCapitalText.transform.position = capitalTextPosition;
         }
         capital = newCapital;
     }
@@ -478,11 +496,11 @@ public class Country : Staff
         }
         return divisionVotersResult;
     }
-    public bool isInvented(Invention type)
-    {
+    //public bool isInvented(Invention type)
+    //{
 
-        return inventions.isInvented(type);
-    }
+    //    return inventions.isInvented(type);
+    //}
 
     internal float getMinSalary()
     {
@@ -498,9 +516,9 @@ public class Country : Staff
     public string getDescription()
     {
         if (this == Game.Player)
-            return name + " "+ government.getPrefix()+ " (you are)";
+            return name + " " + government.getPrefix() + " (you are)";
         else
-            return name + " " + government.getPrefix();        
+            return name + " " + government.getPrefix();
     }
 
     override public string ToString()
@@ -526,7 +544,7 @@ public class Country : Staff
         {
             item.consume();
         }
-        
+
         buyNeeds(); // Should go After all Armies consumption
         //Procent opinion;
         foreach (var item in Country.getExisting())
@@ -536,11 +554,11 @@ public class Country : Staff
                 procent.add(modMyOpinionOfXCountry.getModifier(item), false);
                 procent.clamp100();
             }
-        movements.RemoveAll(x=>x.isEmpty());
+        movements.RemoveAll(x => x.isEmpty());
         foreach (var item in movements)
             item.simulate();
 
-        
+
     }
     /// <summary>
     /// For AI only
@@ -601,7 +619,7 @@ public class Country : Staff
 
     private void aiInvent()
     {
-        var invention = inventions.getUninvented(this).ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.cost));
+        var invention = getUninvented(this).ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.cost));
         if (invention.Key != null)
             invent(invention.Key);
     }
@@ -609,7 +627,7 @@ public class Country : Staff
     {
         if (sciencePoints.isBiggerOrEqual(invention.cost))
         {
-            inventions.markInvented(invention);
+            markInvented(invention);
             sciencePoints.subtract(invention.cost);
             return true;
         }
@@ -647,7 +665,7 @@ public class Country : Staff
             storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
         }
     }
-   
+
 
 
     public Value getGDP()

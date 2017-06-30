@@ -72,7 +72,7 @@ abstract public class PopUnit : Producer
             modifierMinorityPolicy,
             new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
             new Modifier (x => !(x as PopUnit).isStateCulture() &&
-            (x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.1f, false)
+            (x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false)
 });
 
         modEfficiency = new ModifiersList(new List<Condition> {
@@ -439,7 +439,7 @@ abstract public class PopUnit : Producer
         {
             int employed = 0;
             foreach (Factory factory in province.allFactories)
-                employed += factory.HowManyEmployed(this);
+                employed += factory.howManyEmployed(this);
             if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
                 return new Procent(0);
             return new Procent((getPopulation() - employed) / (float)getPopulation());

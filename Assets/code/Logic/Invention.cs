@@ -3,50 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class InventionsList
-{
-    Dictionary<Invention, bool> list = new Dictionary<Invention, bool>();
-    public InventionsList()
-    {
-        foreach (var each in Invention.allInventions)
-            list.Add(each, false);
-    }
-    public IEnumerable<KeyValuePair<Invention, bool>> getAvailable(Country country)
-    {
-        foreach (var invention in list)
-            if (invention.Key.isAvailable(country))
-                yield return invention;
-    }
-    public IEnumerable<KeyValuePair<Invention, bool>> getUninvented(Country country)
-    {
-        foreach (var invention in list)
-            if (invention.Value == false && invention.Key.isAvailable(country))
-                yield return invention;
-    }
-    public IEnumerable<KeyValuePair<Invention, bool>> getInvented(Country country)
-    {
-        foreach (var invention in list)
-            if (invention.Value == true && invention.Key.isAvailable(country))
-                yield return invention;
-    }
-    //TODO strange architecture
-    public void markInvented(Invention type)
-    {
-        list[type] = true;
-    }
-    public bool isInvented(Invention type)
-    {
-        bool result = false;
-        list.TryGetValue(type, out result);
-        return result;
-    }
 
-
-}
 public class Invention : AbstractCondition
 {
     internal readonly static List<Invention> allInventions = new List<Invention>();
-    string name;
+    //private readonly string name;
     string description;
     internal Value cost;
     string inventedPhrase;
@@ -71,9 +32,12 @@ public class Invention : AbstractCondition
     readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.SteamPower), "Steam Power is invented", true);
     readonly public static Condition CombustionEngineInvented = new Condition(x => (x as Country).isInvented(Invention.CombustionEngine), "Combustion Engine is invented", true);
     readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).isInvented(Invention.individualRights), "Individual Rights are invented", true);
-    internal Invention(string name, string description, Value cost)
+    readonly public static Condition BankingInvented = new Condition(x => (x as Country).isInvented(Invention.Banking), "Banking is invented", true);
+    readonly public static Condition WelfareInvented = new Condition(x => (x as Country).isInvented(Invention.Welfare), "Welfare is invented", true);
+    readonly public static Condition collectivismInvented = new Condition(x => (x as Country).isInvented(Invention.collectivism), "Collectivism is invented", true);
+    internal Invention(string name, string description, Value cost):base (name)
     {
-        this.name = name;
+        //this.name = name;
         this.description = description;
         this.cost = cost;
         inventedPhrase = "Invented " + name;
@@ -103,9 +67,5 @@ public class Invention : AbstractCondition
     internal string getDescription()
     {
         return description;
-    }
-    override public string ToString()
-    {
-        return name;
-    }
+    }    
 }

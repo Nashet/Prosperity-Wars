@@ -38,7 +38,7 @@ public class InventionsPanelTable : MyTable
         ////Adding invention price
         AddButton("Science points");
         if (Game.Player != null)
-            foreach (var next in Game.Player.inventions.getAvailable(Game.Player))
+            foreach (var next in Game.Player.getAvailable(Game.Player))
                 //if (next.Key.isAvailable(Game.Player))
                 {
                     // Adding invention name 
