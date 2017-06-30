@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
+using System.Text;
 
 public class ProvincePanel : MonoBehaviour
 {
@@ -11,7 +13,7 @@ public class ProvincePanel : MonoBehaviour
     {
         MainCamera.provincePanel = this;
         hide();
-    }   
+    }
     public void hide()
     {
         gameObject.SetActive(false);
@@ -118,16 +120,19 @@ public class ProvincePanel : MonoBehaviour
     }
     public void refresh(Province province)
     {
-        generaltext.text = "Province name: " + province
-            + "\nID: " + province.getID()
-            + "\nPopulation (with families): " + province.getFamilyPopulation()
-            + "\nMiddle loyalty: " + province.getMiddleLoyalty()
-            + "\nMajor culture: " + province.getMajorCulture()
-            + "\nTax income: " + province.getIncomeTax()
-            + "\nResource: " + province.getResource()
-            + "\nTerrain: " + province.getTerrain()
-            + "\nRural overpopulation: " + province.getOverpopulation()
-            + "\nCores: " + province.getCoresDescription();
+        var sb = new StringBuilder("Province name: ").Append(province);
+        sb.Append("\nID: ").Append(province.getID());
+        sb.Append("\nPopulation (with families): ").Append(province.getFamilyPopulation());
+        sb.Append("\nMiddle loyalty: ").Append(province.getMiddleLoyalty());
+        sb.Append("\nMajor culture: ").Append(province.getMajorCulture());
+        sb.Append("\nTax income: ").Append(province.getIncomeTax());
+        sb.Append("\nResource: ").Append(province.getResource());
+        sb.Append("\nTerrain: ").Append(province.getTerrain());
+        sb.Append("\nRural overpopulation: ").Append(province.getOverpopulation());
+        sb.Append("\nCores: ").Append(province.getCoresDescription());
+        if (province.getModifiers().Count > 0)
+            sb.Append("\nModifiers: ").Append(CollectionExtensions.getString(province.getModifiers()));
+
 
         //+ "\nNeighbors " + province.getNeigborsList()
         ;
@@ -149,13 +154,13 @@ public class ProvincePanel : MonoBehaviour
             btMobilize.interactable = false;
         }
 
-        if (Game.devMode) generaltext.text += "\nColor: " + province.getColorID();
+        if (Game.devMode) sb.Append("\nColor: ").Append( province.getColorID());
 
         btAttackThat.interactable = Game.Player.canAttack(province);
         if (!btAttackThat.interactable)
             btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "Can attack only neighbors";
         else btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-
+        generaltext.text = sb.ToString();
     }
     public void onddMapModesChange(int newMapMode)
     {

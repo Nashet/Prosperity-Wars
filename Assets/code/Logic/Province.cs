@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 
 
-public class Province
+public class Province : Name
 {
     public enum TerrainTypes
     {
         Plains, Mountains
     };
     public readonly static List<Province> allProvinces = new List<Province>();
-    private readonly string name;
+
     private readonly int ID;
     readonly Color colorID;
 
@@ -42,14 +42,15 @@ public class Province
     readonly List<Country> cores = new List<Country>();
     Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
     private TerrainTypes terrain;
+    private readonly Dictionary<Mod, DateTime> modifiers = new Dictionary<Mod, DateTime>();
 
     //empty province constructor
-    public Province(string iname, int iID, Color icolorID, Product resource)
+    public Province(string name, int iID, Color icolorID, Product resource) : base(name)
     {
         setResource(resource);
 
         colorID = icolorID;
-        name = iname;
+
 
         ID = iID;
 
@@ -243,6 +244,13 @@ public class Province
         if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
             if (neighbors.Any(x => x.isCoreFor(getCountry())) && !cores.Contains(getCountry()) && getMajorCulture() == getCountry().getCulture())
                 cores.Add(getCountry());
+        // modifiers.LastOrDefault()
+        //foreach (var item in modifiers)
+        //{
+        //    if (item.Value.isDatePassed())
+        //}
+        modifiers.RemoveAll((modifier, date) => date != default(DateTime) && date.isDatePassed());
+
     }
     public bool isCoreFor(Country country)
     {
@@ -288,7 +296,7 @@ public class Province
         // add loyalty penalty for conquered province // temp
         foreach (var pop in allPopUnits)
         {
-            pop.loyalty.set(0f);
+            //pop.loyalty.set(0f);
             Movement.leave(pop);
             //item.setMovement(null);
         }
@@ -308,15 +316,20 @@ public class Province
 
         setBorderMaterials();
 
+        if (modifiers.ContainsKey(Mod.recentlyConquered))
+            modifiers[Mod.recentlyConquered] = Game.date.AddYears(50);
+        else
+            modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(50));
+       // modifiers.Add(Mod.blockade, default(DateTime));
     }
-
+    public Dictionary<Mod, DateTime> getModifiers()
+    {
+        return modifiers;
+    }
     internal bool isCapital()
     {
         return getCountry().getCapital() == this;
     }
-
-
-
 
     internal Country getRandomCore()
     {
@@ -625,10 +638,6 @@ public class Province
                 return true;
         return false;
     }
-    override public string ToString()
-    {
-        return name;
-    }
     public Procent getUnemployment()
     {
         Procent result = new Procent(0f);
@@ -857,5 +866,34 @@ public class Province
         }
         return false;
     }
+    public bool hasModifier(Mod modifier)
+    {
+        return modifiers.ContainsKey(modifier);
+    }
+}
+public class Mod : Name
+{
+    static readonly public Mod recentlyConquered = new Mod("Recently conquered");
+    static readonly public Mod blockade = new Mod("Blockade");
 
+    //private readonly DateTime expireDate;
+    public Mod(string name) : base(name)
+    { }
+    //public Mod(string name, int years) : base(name)
+    //{
+    //    expireDate = Game.date;
+    //    expireDate.AddYears(years);
+    //}
+}
+public class Name
+{
+    protected readonly string name;
+    public Name(string name)
+    {
+        this.name = name;
+    }
+    public override string ToString()
+    {
+        return name;
+    }
 }

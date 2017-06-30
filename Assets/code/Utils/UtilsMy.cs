@@ -827,13 +827,45 @@ public static class CollectionExtensions
         {
             if (!isFirstRow)
             {
-                sb.Append("\n");              
+                sb.Append("\n");
             }
             isFirstRow = false;
             sb.Append(item.Key).Append(intermediateString).Append(item.Value);
         }
         return sb.ToString();
     }
+    public static string getString(Dictionary<Mod, DateTime> dictionary)
+    {
+        var sb = new StringBuilder();
+        bool isFirstRow = true;
+        foreach (var item in dictionary)
+        {
+            if (!isFirstRow)
+            {
+                sb.Append("\n");
+            }
+            isFirstRow = false;
+            if (item.Value == default(DateTime))
+                sb.Append(item.Key).Append(" (permanent)");
+            else
+                sb.Append(item.Key).Append(" expires in ").Append(item.Value.getYearsUntill()).Append(" years");
+
+
+
+        }
+        return sb.ToString();
+    }
+
+    public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
+        Func<TKey, TValue, bool> predicate)
+    {
+        var keys = dic.Keys.Where(k => predicate(k, dic[k])).ToList();
+        foreach (var key in keys)
+        {
+            dic.Remove(key);
+        }
+    }
+
 }
 public static class ColorExtensions
 {
@@ -1137,7 +1169,7 @@ public static class MeshExtensions
     }
 
 }
-public static class MyDateExtensions
+public static class DateExtensions
 {
     //public static int getYearsSince(this DateTime source, DateTime date2)
     //{
@@ -1147,9 +1179,17 @@ public static class MyDateExtensions
     {
         return Game.date.Year - date2.Year;
     }
+    public static int getYearsUntill(this DateTime date2)
+    {
+        return date2.Year - Game.date.Year;
+    }
     public static bool isYearsPassed(this DateTime date, int years)
     {
         return date.Year % years == 0;
+    }
+    public static bool isDatePassed(this DateTime date)
+    {
+        return date.CompareTo(Game.date) < 1;
     }
 }
 public class DontUseThatMethod : Exception
@@ -1324,7 +1364,7 @@ public static class EdgeHelpers
 public abstract class ThreadedJob
 {
     private bool m_IsDone = false;
-    private string status ="Not started yet";
+    private string status = "Not started yet";
     private object m_Handle = new object();
     private System.Threading.Thread m_Thread = null;
     public bool IsDone
