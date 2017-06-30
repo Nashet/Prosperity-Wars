@@ -61,7 +61,7 @@ abstract public class PopUnit : Producer
         modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
         new Modifier(x => !(x as PopUnit).isStateCulture()
         && ((x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.Residency
-        || (x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.1f, false);
+        || (x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
 
 
         //MinorityPolicy.IsResidency
@@ -70,7 +70,9 @@ abstract public class PopUnit : Producer
            modifierStarvation, modifierLifeNeedsNotFulfilled, modifierLifeNeedsFulfilled, modifierEverydayNeedsFulfilled,
         modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierUpsetByForcedReform, modifierNotGivenUnemploymentSubsidies,
             modifierMinorityPolicy,
-            new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false)
+            new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
+            new Modifier (x => !(x as PopUnit).isStateCulture() &&
+            (x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.1f, false)
 });
 
         modEfficiency = new ModifiersList(new List<Condition> {
@@ -80,10 +82,10 @@ abstract public class PopUnit : Producer
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
 
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
-            new Modifier( Economy.isState, x=>(x as PopUnit).getCountry(),  0.10f, false),
-            new Modifier(Economy.isInterventionism,x=>(x as PopUnit).getCountry(),  0.30f, false),
-            new Modifier(Economy.isLF,x=>(x as PopUnit).getCountry(),  0.50f, false),
-            new Modifier(Economy.isPlanned,x=>(x as PopUnit).getCountry(),  -0.10f, false)            
+            new Modifier(Economy.isState, x=>(x as PopUnit).getCountry(),  0.10f, false),
+            new Modifier(Economy.isInterventionism, x=>(x as PopUnit).getCountry(),  0.30f, false),
+            new Modifier(Economy.isLF, x=>(x as PopUnit).getCountry(),  0.50f, false),
+            new Modifier(Economy.isPlanned, x=>(x as PopUnit).getCountry(),  -0.10f, false)            
             //new Modifier(Serfdom.Allowed,  -20f, false)
         });
     }
