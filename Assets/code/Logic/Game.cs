@@ -637,8 +637,8 @@ public class Game : ThreadedJob
             }
             attacker.consolidateArmies();
         }
-       
-        
+
+
     }
     internal static void stepSimulation()
     {
@@ -723,12 +723,18 @@ public class Game : ThreadedJob
                         pop.payTaxes();
 
                     pop.calcLoyalty();
-                    pop.calcGrowth();
-                    pop.calcPromotions();
-                    pop.calcDemotions();
-                    pop.calcMigrations();
-                    pop.calcImmigrations();
-                    pop.calcAssimilations();
+                    //if (Game.Random.Next(10) == 1)
+                        pop.calcGrowth();
+                    //if (Game.Random.Next(10) == 1)
+                        pop.calcPromotions();
+                    //if (Game.Random.Next(10) == 1)
+                        pop.calcDemotions();
+                    //if (Game.Random.Next(10) == 1)
+                        pop.calcMigrations();
+                    //if (Game.Random.Next(10) == 1)
+                        pop.calcImmigrations();
+                    //if (Game.Random.Next(10) == 1)
+                        pop.calcAssimilations();
 
                     pop.invest();
                     if (Game.Random.Next(20) == 1)

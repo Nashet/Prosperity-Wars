@@ -39,7 +39,7 @@ public class PoliticsPanelTable : MyTable
         AddButton("Status", null);
 
         ////Adding Can change possibility
-        AddButton("Can change", null);
+       // AddButton("Can change", null);
 
         if (Game.Player != null)
         {
@@ -55,10 +55,10 @@ public class PoliticsPanelTable : MyTable
                 AddButton(next.getValue().ToString(), next);
 
                 ////Adding Can change possibility
-                if (next.canChange())
-                    AddButton("Yep", next);
-                else
-                    AddButton("Nope", next);
+                //if (next.canChange())
+                //    AddButton("Yep", next);
+                //else
+                //    AddButton("Nope", next);
 
                 counter++;
             }

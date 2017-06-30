@@ -3,14 +3,15 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class PoliticsPanel : DragPanel
-{
-    public ScrollRect table;
+{   
     public Text descriptionText, movementsText;
     public Button voteButton;
     public Button forceDecisionButton;
     public Dropdown dropDown;
+    public Scrollbar movementsHorizontalScrollBar;
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
+
     List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
 
 
@@ -28,19 +29,14 @@ public class PoliticsPanel : DragPanel
 
         hide();
     }
-    //public void hide()
-    //{
-    //    politicsPanel.SetActive(false);
-    //    //todo add button removal?      
-    //}
+
     public void show(bool bringOnTop)
     {
         gameObject.SetActive(true);
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
-
+        //refresh(true); - recursion
     }
-
 
     void setNewReform()
     {
@@ -77,18 +73,8 @@ public class PoliticsPanel : DragPanel
 
     public void onChoiceValueChanged()
     {
-        ////if current reform does not contain reform value
-        //bool contain = false;
-        //foreach (AbstractReformValue reformValue in selectedReform)
-        //{
-        //    if (reformValue == selectedReformValue) contain = true;
-        //}
-        //if (!contain)
-        {
-            //selectedReformValue = selectedReform.getValue(assotiateTable[choise.value]);
-            selectedReformValue = assotiateTable[dropDown.value];
-            refresh(false);
-        }
+        selectedReformValue = assotiateTable[dropDown.value];
+        refresh(false);
     }
     void rebuildDropDown()
     {
@@ -117,8 +103,9 @@ public class PoliticsPanel : DragPanel
     public void refresh(bool callRebuildDropDown)
     {
         hide();
-        if (Game.Player.movements != null)
-            movementsText.text = Game.Player.movements.getDescription();
+        //if (Game.Player.movements != null)
+        movementsText.text = Game.Player.movements.getDescription() +"\n\n\n\n";
+        movementsHorizontalScrollBar.value = 0;
         if (selectedReform != null)
         {
             if (callRebuildDropDown) // meaning changed whole reform            
@@ -157,6 +144,7 @@ public class PoliticsPanel : DragPanel
                 }
                 else
                     descriptionText.text += "\n\nNobody to vote - Despot rule everything";
+
                 descriptionText.text += "\n" + procentPopulationSayedYes + " of population want this reform ( ";
                 foreach (PopType type in PopType.getAllPopTypes())
                     if (divisionPopulationResult[type] > 0)
@@ -168,7 +156,7 @@ public class PoliticsPanel : DragPanel
             }
 
 
-            if (selectedReformValue != null && selectedReformValue != selectedReform.getValue())
+            if (selectedReformValue != null)// && selectedReformValue != selectedReform.getValue())
             {
                 if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                 { // has enough voters
@@ -185,13 +173,13 @@ public class PoliticsPanel : DragPanel
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }
             }
-            else // this reform already enacted
-            {
-                voteButton.interactable = false;
-                forceDecisionButton.interactable = false;
-                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-                voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-            }
+            //else // this reform already enacted
+            //{
+            //    voteButton.interactable = false;
+            //    forceDecisionButton.interactable = false;
+            //    forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+            //    voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+            //}
         } //didn't selected reform
         else
         {

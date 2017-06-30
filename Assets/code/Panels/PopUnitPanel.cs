@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class PopUnitPanel : DragPanel
 {
-    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText;
+    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText, issues;
     private PopUnit pop;
     // Use this for initialization
     void Start()
@@ -27,6 +27,8 @@ public class PopUnitPanel : DragPanel
         if (pop != null)
         {
             efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
+
+            issues.GetComponentInChildren<ToolTipHandler>().dynamicString = () => pop.getIssues().getString(" willing ");
 
             string demotionText;
             var target = pop.getRichestDemotionTarget();
@@ -107,7 +109,8 @@ public class PopUnitPanel : DragPanel
                 + loans
                 + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
                 + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
-                + "\nAge: " + pop.getAge();
+                + "\nAge: " + pop.getAge()
+                + "\nMobilized: " + pop.getMobilized();
             if (pop.getMovement() != null)
                 generaltext.text += "\nMember of " + pop.getMovement();
 

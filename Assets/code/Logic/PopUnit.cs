@@ -246,6 +246,10 @@ abstract public class PopUnit : Producer
         didntGetPromisedUnemloymentSubsidy = false;
         // pop.storageNow.set(0f);
     }
+    public int getMobilized()
+    {
+        return mobilized;
+    }
     //abstract public Procent howIsItGoodForMe(AbstractReformValue reform);
     public List<Factory> getOwnedFactories()
     {
@@ -271,17 +275,20 @@ abstract public class PopUnit : Producer
     }
     internal int howMuchCanMobilize(Staff byWhom)
     {
-        int howMuchCanMobilize;
+        int howMuchCanMobilize = 0;
         if (byWhom == getCountry())
         {
-            if (popType == PopType.Soldiers)
-                howMuchCanMobilize = (int)(getPopulation() * 0.5);
-            else
-                howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+            if (this.getMovement() == null || !this.getMovement().isInRevolt())
+            {
+                if (popType == PopType.Soldiers)
+                    howMuchCanMobilize = (int)(getPopulation() * 0.5);
+                else
+                    howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+            }
         }
         else
         {
-            if (getMovement() == byWhom)
+            if (byWhom == getMovement())
                 howMuchCanMobilize = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.mobilizationFactor);
             else
                 howMuchCanMobilize = 0;
@@ -719,18 +726,31 @@ abstract public class PopUnit : Producer
         return canVote(getCountry().government.getTypedValue());
     }
     abstract internal bool canVote(Government.ReformValue reform);
+    public Dictionary<AbstractReformValue, Value> getIssues()
+    {
+        var result = new Dictionary<AbstractReformValue, Value>();
+        foreach (var reform in this.getCountry().reforms)
+            foreach (AbstractReformValue reformValue in reform)
+                if (reformValue.allowed.isAllTrue(getCountry()))
+                {
+                    var howGood = reformValue.howIsItGoodForPop(this);
+                    //if (howGood.isExist())
+                    result.Add(reformValue, howGood);
+                }
+        return result;
+    }
     public KeyValuePair<AbstractReform, AbstractReformValue> getMostImportantIssue()
     {
-        var d = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, Value>();
+        var list = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, Value>();
         foreach (var reform in this.getCountry().reforms)
             foreach (AbstractReformValue reformValue in reform)
                 if (reformValue.allowed.isAllTrue(getCountry()))
                 {
                     var howGood = reformValue.howIsItGoodForPop(this);
                     if (howGood.isExist())
-                        d.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(reform, reformValue), howGood);
+                        list.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(reform, reformValue), howGood);
                 }
-        return d.MaxBy(x => x.Value.get()).Key;
+        return list.MaxBy(x => x.Value.get()).Key;
     }
     public void calcLoyalty()
     {

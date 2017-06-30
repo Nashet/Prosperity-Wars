@@ -288,7 +288,7 @@ public class Province
             Movement.leave(pop);
             //item.setMovement(null);
         }
-        
+
 
         if (oldCountry != null)
             if (oldCountry.ownedProvinces != null)
@@ -301,6 +301,7 @@ public class Province
 
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
+
         setUnselectedBorderMaterials();
 
     }

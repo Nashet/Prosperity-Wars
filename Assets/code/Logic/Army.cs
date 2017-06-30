@@ -108,7 +108,7 @@ public abstract class Staff : Consumer
             Army newArmy = new Army(this);
             foreach (var item in province.allPopUnits)
                 if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
-                    newArmy.add(item.mobilize(this));            
+                    newArmy.add(item.mobilize(this));
         }
         consolidateArmies();
     }
@@ -159,8 +159,8 @@ public abstract class Staff : Consumer
     }
     internal IEnumerable<Army> getAllArmies()
     {
-        foreach (var army in allArmies)            
-                    yield return army;            
+        foreach (var army in allArmies)
+            yield return army;
     }
     internal IEnumerable<Army> getAttackingArmies()
     {
@@ -185,7 +185,7 @@ public abstract class Staff : Consumer
             return a;
     }
 
-    internal static IEnumerable<Staff> getAllStaffs()    
+    internal static IEnumerable<Staff> getAllStaffs()
     {
         foreach (var country in Country.allCountries)
             if (country.isExist() && country != Country.NullCountry)
@@ -827,7 +827,7 @@ public class BattleResult
         else
         if (!defender.isAI() && isDefenderWon())
         {
-            sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorious army attacked in province ").Append(place).Append(" by evil ").Append(attacker)
                 .Append(" with army of ").Append(attackerArmy).Append(" men.");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
@@ -851,12 +851,16 @@ public class BattleResult
             if (!defender.isAI() && isAttackerWon())
 
         {
-            sb.Append("Our glorious army attacked by evil ").Append(attacker).Append(" in province ").Append(place)
+            sb.Append("Our glorious army attacked in province ").Append(place).Append(" by evil ").Append(attacker)
                 .Append(" with army of ").Append(attackerArmy).Append(" men");
             sb.Append(" Modifiers: ").Append(attackerBonus);
             sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
             sb.Append("\n\nWe lost, our home army is destroyed, while enemy lost  ").Append(attackerLoss).Append(" men");
-            sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
+            var movement = attacker as Movement;
+            if (movement == null)
+                sb.Append("\nProvince ").Append(place).Append(" is not our anymore!");
+            else
+                sb.Append("\nWe had to enact ").Append(movement.getGoal());
             // sb.Append("\nDate is ").Append(Game.date);
             new Message("We lost a battle!", sb.ToString(), "Not fine really");
         }

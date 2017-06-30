@@ -103,8 +103,7 @@ public class Country : Staff
         nationalColor = color;
         this.capital = capital;
         //if (!Game.devMode)
-        {
-            //government.status = Government.Aristocracy;
+        {           
 
             economy.status = Economy.StateCapitalism;
             serfdom.status = Serfdom.Abolished;
@@ -174,6 +173,18 @@ public class Country : Staff
     internal float getSoldierWage()
     {
         return soldiersWage.get();
+    }
+    public Procent getMiddleLoyalty()
+    {        
+        Procent result = new Procent(0f);
+        int calculatedPopulation = 0;
+        foreach (var province in ownedProvinces)
+            foreach (var pop in province.allPopUnits)
+            {
+                result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.loyalty);
+                calculatedPopulation += pop.getPopulation();
+            }        
+        return result;
     }
     /// <summary>
     /// Little bugged - returns RANDOM badboy, not biggest

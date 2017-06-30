@@ -19,7 +19,11 @@ public class ConditionsList
     {
         list = inlist;
     }
-
+    //copy constructor
+    public ConditionsList(ConditionsList conditionsList)
+    {
+        list = new List<Condition>(conditionsList.list);
+    }
     //short constructor, allowing predicates of several types to be checked
     public ConditionsList(List<AbstractCondition> inlist)
     {

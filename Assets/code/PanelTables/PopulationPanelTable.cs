@@ -47,6 +47,9 @@ public class PopulationPanelTable : MyTableNew
             ////Adding Unemployment
             AddButton("Unemployment");
 
+            //Adding Movement
+            AddButton("Movement");
+
             if (Game.popsToShowInPopulationPanel.Count > 0)
             {
                 for (int i = 0; i < howMuchRowsShow; i++)
@@ -87,6 +90,12 @@ public class PopulationPanelTable : MyTableNew
 
                     //Adding Unemployment
                     AddButton(record.getUnemployedProcent().ToString(), record);
+
+                    //Adding Movement
+                    if (record.getMovement() == null)
+                        AddButton("", record);
+                    else
+                        AddButton(record.getMovement().getShortName(), record);
                 }
 
             }

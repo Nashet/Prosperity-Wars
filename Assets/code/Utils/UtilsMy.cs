@@ -817,6 +817,24 @@ public static class MyIEnumerableExtensions
     }
 
 }
+public static class CollectionExtensions
+{
+    public static string getString<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, string intermediateString)
+    {
+        var sb = new StringBuilder();
+        bool isFirstRow = true;
+        foreach (var item in dictionary)
+        {
+            if (!isFirstRow)
+            {
+                sb.Append("\n");              
+            }
+            isFirstRow = false;
+            sb.Append(item.Key).Append(intermediateString).Append(item.Value);
+        }
+        return sb.ToString();
+    }
+}
 public static class ColorExtensions
 {
     public static Color getNegative(this Color color)
