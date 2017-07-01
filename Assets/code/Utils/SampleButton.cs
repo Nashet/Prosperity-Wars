@@ -2,33 +2,29 @@
 using System.Collections;
 using UnityEngine.UI;
 using System;
+using UnityEngine.EventSystems;
 
-public class SampleButton : MonoBehaviour
+public class SampleButton : MonoBehaviour, IPointerDownHandler
 {
 
     public Button buttonComponent;
     public Text nameLabel;
     public Image iconImage;
-    public Text priceText;
-    private System.Object obj;
-
-    //private UnityEngine.Events.UnityAction call;
-
-    //private string item;
+    private System.Object link;
+    private DragPanel parent;
     private MyTable scrollList;
-    //private PopUnit popUnit;
+
     // Use this for initialization
     void Start()
     {
         buttonComponent.onClick.AddListener(HandleClick);
-        
     }
 
     //public void Setup(string text, PopUnit ipopUnit, MyTable currentScrollList)
     public void Setup(string text, MyTable currentScrollList, System.Object pr)
     {
         //item = currentItem;
-        obj = pr;
+        link = pr;
         nameLabel.text = text; // item.name;
                                //call = incall;  UnityEngine.Events.UnityAction incall,
                                //popUnit = ipopUnit; // currentItem.popUnit;
@@ -36,47 +32,53 @@ public class SampleButton : MonoBehaviour
                                // priceText.text = item.price.ToString();
 
         scrollList = currentScrollList;
-
+        parent = GetComponentInParent<DragPanel>();
+    }
+    public void OnPointerDown(PointerEventData data)
+    {
+        parent.OnPointerDown(data);
     }
     private void HandleClick()
     {
-        if (obj is Factory)
+
+
+        if (link is Factory)
         {
-            MainCamera.factoryPanel.Show((Factory)obj);
+            MainCamera.factoryPanel.Show((Factory)link);
             MainCamera.factoryPanel.refresh();
         }
-        else if (obj is PopUnit)
+        else if (link is PopUnit)
         {
-            MainCamera.popUnitPanel.show((PopUnit)obj);
+            MainCamera.popUnitPanel.show((PopUnit)link);
             MainCamera.popUnitPanel.refresh();
         }
-        else if (obj is Product)
+        else if (link is Product)
         {
-            MainCamera.goodsPanel.Show((Product)obj, true);
+            MainCamera.goodsPanel.Show((Product)link, true);
             MainCamera.goodsPanel.refresh();
         }
-        else if (obj is Invention)
+        else if (link is Invention)
         {
-            MainCamera.inventionsPanel.selectedInvention = (Invention)obj;
+            MainCamera.inventionsPanel.selectedInvention = (Invention)link;
             MainCamera.inventionsPanel.refresh();
         }
-        else if (obj is FactoryType)
+        else if (link is FactoryType)
         {
-            MainCamera.buildPanel.selectedFactoryType = (FactoryType)obj;
+            MainCamera.buildPanel.selectedFactoryType = (FactoryType)link;
             MainCamera.buildPanel.refresh();
         }
-        else if (obj is AbstractReform)
+        else if (link is AbstractReform)
         {
-            MainCamera.politicsPanel.selectedReform = (AbstractReform)obj;
+            MainCamera.politicsPanel.selectedReform = (AbstractReform)link;
             MainCamera.politicsPanel.refresh(true);
             //MainCamera.politicsPanel.selectedReformValue = null;
         }
-        else if (obj is Province)
+        else if (link is Province)
         {
             //MainCamera.politicsPanel.selectedReform = (AbstractReform)obj;
             //MainCamera.politicsPanel.refresh(true);
             //MainCamera.politicsPanel.selectedReformValue = null;
-            Province temp = (Province)(obj);
+            Province temp = (Province)(link);
             MainCamera.SelectProvince(temp.getID());
 
         }

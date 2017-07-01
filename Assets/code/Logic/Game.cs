@@ -409,12 +409,9 @@ public class Game : ThreadedJob
 
     static void generateMapImage()
     {
-
-        //Texture2D mapImage = new Texture2D(100, 100);
-        //Texture2D mapImage = new Texture2D(300, 300);
-        Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));
-        //Texture2D mapImage = new Texture2D(90 , 90 );
-        //Texture2D mapImage = new Texture2D(150 + Random.Next(100), 150 + Random.Next(100));
+                
+        Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));        
+        //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
