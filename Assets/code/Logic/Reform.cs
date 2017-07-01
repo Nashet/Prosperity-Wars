@@ -152,7 +152,7 @@ public class Government : AbstractReform
     readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1,
         new ConditionsList(ConditionsList.AlwaysYes), "kingdom");
 
-    readonly internal static ReformValue AnticRespublic = new ReformValue("Antique republic", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8,
+    readonly internal static ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8,
         new ConditionsList(ConditionsList.AlwaysYes), "polis");
 
     readonly internal static ReformValue Despotism = new ReformValue("Despotism", "- Despot does what he wants", 2,

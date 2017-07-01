@@ -220,7 +220,7 @@ public class Farmers : PopUnit
     //}
     internal override bool canVote(Government.ReformValue reform)
     {
-        if ((reform == Government.Democracy || reform == Government.AnticRespublic || reform == Government.WealthDemocracy)
+        if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
             && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else
@@ -283,7 +283,7 @@ public class Aristocrats : PopUnit
 
     internal override bool canVote(Government.ReformValue reform)
     {
-        if ((reform == Government.Democracy || reform == Government.AnticRespublic || reform == Government.WealthDemocracy
+        if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.Aristocracy || reform == Government.Tribal)
             && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
@@ -450,7 +450,7 @@ public class Capitalists : PopUnit
     //}
     internal override bool canVote(Government.ReformValue reform)
     {
-        if ((reform == Government.Democracy || reform == Government.AnticRespublic || reform == Government.WealthDemocracy
+        if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.BourgeoisDictatorship)
             && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;

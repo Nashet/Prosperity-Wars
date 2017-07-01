@@ -41,19 +41,20 @@ public class FactoryType
         upgradeResourceLowTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
         upgradeResourceMediumTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
         upgradeResourceHighTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
-        enoughMoneyOrResourcesToBuild = new Condition(
-          (delegate (System.Object forWhom)
-          {
-              Country who = forWhom as Country;
-              if (Economy.isMarket.checkIftrue(who))
-                  return who.canPay(getBuildCost());
-              else
-                  return who.storageSet.has(getBuildNeeds());
 
-          }), "Have enough money or resources to build", true
-          );
-        //Condition factoryPlacedInOurCountry = new Condition((Owner forWhom) => province.getOwner() == forWhom, "Enterprise placed in our country", false);
-        //, factoryPlacedInOurCountry
+        enoughMoneyOrResourcesToBuild = new Condition(
+            delegate (System.Object forWhom)
+            {
+                Value cost = this.getBuildCost();
+                return (forWhom as Agent).canPay(cost);
+            },
+            delegate
+            {
+                Game.threadDangerSB.Clear();
+                Game.threadDangerSB.Append("Have ").Append(getBuildCost()).Append(" coins");
+                return Game.threadDangerSB.ToString();
+            }, true);
+      
         conditionsBuild = new ConditionsList(new List<AbstractCondition>() {
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
@@ -110,18 +111,14 @@ public class FactoryType
         return income.subtractOutside(outCome, false);
     }
     internal Procent getPossibleMargin(Province province)
-    {
-        Value cost = Game.market.getCost(getBuildNeeds());
-        cost.add(Options.factoryMoneyReservPerLevel);
-        //if (cost.get() > 0)
-        //return new Procent(getPossibleProfit(province) / cost.get());
-        return Procent.makeProcent(getPossibleProfit(province), cost);
+    {   
+        return Procent.makeProcent(getPossibleProfit(province), getBuildCost());
     }
     internal static FactoryType getMostTeoreticalProfitable(Province province)
     {
         KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
         foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
-        {            
+        {
             {
                 float possibleProfit = factoryType.getPossibleProfit(province).get();
                 if (possibleProfit > result.Value)
