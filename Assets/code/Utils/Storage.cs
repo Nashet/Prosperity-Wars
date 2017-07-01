@@ -188,6 +188,10 @@ public class PrimitiveStorageSet
             yield return container[i];
         }
     }
+    public List<Storage> getContainer()
+    {
+        return container;
+    }
     //// Implementing the enumerable pattern
     //public IEnumerable SampleIterator(int start, int end)
     //{
@@ -260,38 +264,8 @@ public class PrimitiveStorageSet
     }
     override public string ToString()
     {
-
-        if (container.Count > 0)
-        {
-            Game.threadDangerSB.Clear();
-            foreach (Storage stor in container)
-                if (stor.get() > 0)
-                {
-                    Game.threadDangerSB.Append(stor.ToString());
-                    Game.threadDangerSB.Append("; ");
-                }
-            return Game.threadDangerSB.ToString();
-        }
-        else return "none";
+        return container.getString(", ");        
     }
-    public string ToStringWithLines()
-    {
-
-        if (container.Count > 0)
-        {
-            Game.threadDangerSB.Clear();
-            foreach (Storage stor in container)
-                if (stor.get() > 0)
-                {
-                    Game.threadDangerSB.AppendLine();
-                    Game.threadDangerSB.Append(stor.ToString());
-                }
-            return Game.threadDangerSB.ToString();
-        }
-        else return "none";
-    }
-
-
     internal void setZero()
     {
         foreach (Storage st in this)

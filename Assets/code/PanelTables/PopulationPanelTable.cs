@@ -78,9 +78,8 @@ public class PopulationPanelTable : MyTableNew
 
                     PopUnit ert = record;
                     AddButton(record.needsFullfilled.ToString(), record,
-                        () => ert.consumedTotal.ToStringWithLines()
-                        //delegate () { return ert.consumedTotal.ToString(); }
-                        //record.consumedTotal.ToString()
+                        //() => ert.consumedTotal.ToStringWithLines()                        
+                        () => ert.consumedTotal.getContainer().getString("\n")
                         );
 
                     ////Adding loyalty

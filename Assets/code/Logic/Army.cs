@@ -200,18 +200,19 @@ public class Army
             sb.Append("None");
         return sb.ToString();
     }
-    internal string getShortName()
+    internal string getName()
     {
         StringBuilder sb = new StringBuilder();
 
         int size = getSize();
         if (size > 0)
         {
-            foreach (var next in getAmountByTypes())
-                sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
-            sb.Append("Total size: ").Append(getSize());
-            sb.Append(" Morale: ").Append(getMorale());
-            sb.Append(" Provision: ").Append(getConsumption());
+            //foreach (var next in getAmountByTypes())
+            //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
+            sb.Append(getAmountByTypes().getString(": ", ", "));
+            sb.Append(", Total size: ").Append(getSize());
+            sb.Append(", Morale: ").Append(getMorale());
+            sb.Append(", Provision: ").Append(getConsumption());
             //string str;
             //modifierStrenght.getModifier(this, out str);
             //sb.Append(" Bonuses: ").Append(str);

@@ -47,7 +47,7 @@ public class Game : ThreadedJob
     }
     public void initialize()
     {
-       
+
         market.initialize();
         makeFactoryTypes();
 
@@ -338,7 +338,7 @@ public class Game : ThreadedJob
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput, false);
     }
 
-   
+
     internal static Value getAllMoneyInWorld()
     {
         Value allMoney = new Value(0f);
@@ -409,8 +409,8 @@ public class Game : ThreadedJob
 
     static void generateMapImage()
     {
-                
-        Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));        
+        Texture2D mapImage = new Texture2D(100, 100);
+        //Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));        
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
@@ -683,17 +683,17 @@ public class Game : ThreadedJob
 
                     pop.calcLoyalty();
                     //if (Game.Random.Next(10) == 1)
-                        pop.calcGrowth();
+                    pop.calcGrowth();
                     //if (Game.Random.Next(10) == 1)
-                        pop.calcPromotions();
+                    pop.calcPromotions();
                     //if (Game.Random.Next(10) == 1)
-                        pop.calcDemotions();
+                    pop.calcDemotions();
                     //if (Game.Random.Next(10) == 1)
-                        pop.calcMigrations();
+                    pop.calcMigrations();
                     //if (Game.Random.Next(10) == 1)
-                        pop.calcImmigrations();
+                    pop.calcImmigrations();
                     //if (Game.Random.Next(10) == 1)
-                        pop.calcAssimilations();
+                    pop.calcAssimilations();
 
                     pop.invest();
                     if (Game.Random.Next(20) == 1)

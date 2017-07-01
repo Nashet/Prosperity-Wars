@@ -42,13 +42,13 @@ public class MilitaryPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.Player.getDefenceForces().getShortName());
+        sb.Append("Have army: ").Append(Game.Player.getDefenceForces().getName());
         allArmySizeText.text = sb.ToString();
 
         if (virtualArmyToSend == null)
             virtualArmyToSend = new Army(Game.Player);
         sb.Clear();
-        sb.Append("Sending army: ").Append(virtualArmyToSend.getShortName());
+        sb.Append("Sending army: ").Append(virtualArmyToSend.getName());
         sendingArmySizeText.text = sb.ToString();
         //sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
         sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;

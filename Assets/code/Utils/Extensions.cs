@@ -303,7 +303,54 @@ public static class CollectionExtensions
         //return source.ElementAt(Game.random.Next(source.Count));
 
     }
-    public static string getString<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, string intermediateString)
+    public static string getString(this List<Storage> list, string lineBreaker)
+    {
+        if (list.Count > 0)
+        {
+            var sb = new StringBuilder();
+            bool isFirstRow = true;
+            bool haveAnyNonZeroItem = false;
+            foreach (var item in list)
+                if (item.isExist())
+                {
+                    haveAnyNonZeroItem = true;
+                    if (!isFirstRow)
+                    {
+                        sb.Append(lineBreaker);
+                    }
+                    isFirstRow = false;
+                    sb.Append(item);
+                }
+            if (haveAnyNonZeroItem)
+                return sb.ToString();
+            else
+                return "none";
+        }
+        else
+            return "none";
+    }
+    
+    public static string getString<TValue>(this List<TValue> list, string lineBreaker)
+    {
+        if (list.Count > 0)
+        {
+            var sb = new StringBuilder();
+            bool isFirstRow = true;
+            foreach (var item in list)
+            {
+                if (!isFirstRow)
+                {
+                    sb.Append(lineBreaker);
+                }
+                isFirstRow = false;
+                sb.Append(item);
+            }
+            return sb.ToString();
+        }
+        else
+            return "none";
+    }
+    public static string getString<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, string intermediateString, string lineBreaker)
     {
         var sb = new StringBuilder();
         bool isFirstRow = true;
@@ -311,7 +358,7 @@ public static class CollectionExtensions
         {
             if (!isFirstRow)
             {
-                sb.Append("\n");
+                sb.Append(lineBreaker);
             }
             isFirstRow = false;
             sb.Append(item.Key).Append(intermediateString).Append(item.Value);

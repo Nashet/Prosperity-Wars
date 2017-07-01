@@ -28,7 +28,7 @@ public class PopUnitPanel : DragPanel
         {
             efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-            issues.GetComponentInChildren<ToolTipHandler>().dynamicString = () => pop.getIssues().getString(" willing ");
+            issues.GetComponentInChildren<ToolTipHandler>().dynamicString = () => pop.getIssues().getString(" willing ", "\n");
 
             string demotionText;
             var target = pop.getRichestDemotionTarget();

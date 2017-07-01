@@ -103,54 +103,77 @@ public class MainTooltip : MonoBehaviour
         //init tooltip string
         thisText.text = text;
 
+        
         //call the position function
+
         OnScreenSpaceCamera();
+        LayoutInit();
+        firstUpdate = true;
+        //LayoutInit();
     }
+   
+    
 
-
-    //multi string/line input tooltip (each string of the input array is a new line)
-    public void SetTooltip(string[] texts)
+    // Update is called once per frame
+    void Update()
     {
-        NewTooltip();
-
-        //build up the tooltip line after line with the input
-        string tooltipText = "";
-        int index = 0;
-        foreach (string newLine in texts)
+        LayoutInit();
+        if (inside)
         {
-            if (index == 0)
-            {
-                tooltipText += newLine;
-            }
-            else
-            {
-                tooltipText += ("\n" + newLine);
-            }
-            index++;
+        //    if (GUIMode == RenderMode.ScreenSpaceCamera)
+           
+                OnScreenSpaceCamera();
+           
         }
-
-        //init tooltip string
-        thisText.text = tooltipText;
-
-        //call the position function
-        OnScreenSpaceCamera();
     }
 
-
-
-    //temporary call to don't fuck up old code, will be removed
-    public void SetTooltip(string text, bool test)
+    //this function is used in order to setup the size of the tooltip by cheating on the HorizontalLayoutBehavior. The resize is done in the first update.
+    void LayoutInit()
     {
-        NewTooltip();
+        if (firstUpdate)
+        {
+            firstUpdate = false;
 
-        //init tooltip string
-        thisText.text = text;
+            bgImage.sizeDelta = new Vector2(hlG.preferredWidth + horizontalPadding, hlG.preferredHeight + verticalPadding);
 
-        //call the position function
-        OnScreenSpaceCamera();
+            defaultYOffset = (bgImage.sizeDelta.y * currentYScaleFactor * (bgImage.pivot.y));
+            defaultXOffset = (bgImage.sizeDelta.x * currentXScaleFactor * (bgImage.pivot.x));
+
+            tooltipRealHeight = bgImage.sizeDelta.y * currentYScaleFactor;
+            tooltipRealWidth = bgImage.sizeDelta.x * currentXScaleFactor;
+
+            ActivateTooltipVisibility();
+        }
     }
 
+    //init basic variables on a new tooltip set
+    void NewTooltip()
+    {
+        firstUpdate = true;
 
+        lowerLeft = GUICamera.ViewportToScreenPoint(new Vector3(0.0f, 0.0f, 0.0f));
+        upperRight = GUICamera.ViewportToScreenPoint(new Vector3(1.0f, 1.0f, 0.0f));
+
+        currentYScaleFactor = Screen.height / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.y;
+        currentXScaleFactor = Screen.width / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.x;
+
+    }
+
+    //used to visualize the tooltip one update call after it has been built (to avoid flickers)
+    public void ActivateTooltipVisibility()
+    {
+        Color textColor = thisText.color;
+        thisText.color = new Color(textColor.r, textColor.g, textColor.b, 1f);
+        bgImageSource.color = new Color(bgImageSource.color.r, bgImageSource.color.g, bgImageSource.color.b, 0.8f);
+    }
+
+    //used to hide the tooltip so that it can be made visible one update call after it has been built (to avoid flickers)
+    public void HideTooltipVisibility()
+    {
+        Color textColor = thisText.color;
+        thisText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
+        bgImageSource.color = new Color(bgImageSource.color.r, bgImageSource.color.g, bgImageSource.color.b, 0f);
+    }
     //position function, currently not working correctly due to the use of pivots and not manual offsets, soon to be fixed
     public void OnScreenSpaceCamera()
     {
@@ -278,66 +301,4 @@ public class MainTooltip : MonoBehaviour
             }
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        LayoutInit();
-        if (inside)
-        {
-        //    if (GUIMode == RenderMode.ScreenSpaceCamera)
-            {
-                OnScreenSpaceCamera();
-            }
-        }
-    }
-
-    //this function is used in order to setup the size of the tooltip by cheating on the HorizontalLayoutBehavior. The resize is done in the first update.
-    void LayoutInit()
-    {
-        if (firstUpdate)
-        {
-            firstUpdate = false;
-
-            bgImage.sizeDelta = new Vector2(hlG.preferredWidth + horizontalPadding, hlG.preferredHeight + verticalPadding);
-
-            defaultYOffset = (bgImage.sizeDelta.y * currentYScaleFactor * (bgImage.pivot.y));
-            defaultXOffset = (bgImage.sizeDelta.x * currentXScaleFactor * (bgImage.pivot.x));
-
-            tooltipRealHeight = bgImage.sizeDelta.y * currentYScaleFactor;
-            tooltipRealWidth = bgImage.sizeDelta.x * currentXScaleFactor;
-
-            ActivateTooltipVisibility();
-        }
-    }
-
-    //init basic variables on a new tooltip set
-    void NewTooltip()
-    {
-        firstUpdate = true;
-
-        lowerLeft = GUICamera.ViewportToScreenPoint(new Vector3(0.0f, 0.0f, 0.0f));
-        upperRight = GUICamera.ViewportToScreenPoint(new Vector3(1.0f, 1.0f, 0.0f));
-
-        currentYScaleFactor = Screen.height / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.y;
-        currentXScaleFactor = Screen.width / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.x;
-
-    }
-
-    //used to visualize the tooltip one update call after it has been built (to avoid flickers)
-    public void ActivateTooltipVisibility()
-    {
-        Color textColor = thisText.color;
-        thisText.color = new Color(textColor.r, textColor.g, textColor.b, 1f);
-        bgImageSource.color = new Color(bgImageSource.color.r, bgImageSource.color.g, bgImageSource.color.b, 0.8f);
-    }
-
-    //used to hide the tooltip so that it can be made visible one update call after it has been built (to avoid flickers)
-    public void HideTooltipVisibility()
-    {
-        Color textColor = thisText.color;
-        thisText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
-        bgImageSource.color = new Color(bgImageSource.color.r, bgImageSource.color.g, bgImageSource.color.b, 0f);
-    }
-
 }

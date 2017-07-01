@@ -26,10 +26,7 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 tip.SetTooltip(dynamicString());
 
             counter = 0;
-        }
-        // }
-
-
+        }       // }
     }
 
     public void OnPointerExit(PointerEventData eventData)
