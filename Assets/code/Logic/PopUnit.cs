@@ -14,8 +14,8 @@ abstract public class PopUnit : Producer
     public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
 
     public readonly Procent loyalty;
-    int population;
-    int mobilized;
+    private int population;
+    private int mobilized;
 
     public readonly PopType popType;
 

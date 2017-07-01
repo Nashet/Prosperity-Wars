@@ -538,7 +538,10 @@ public class Province : Name
                 allPopulation += pop.getPopulation();
                 result.add(pop.needsFullfilled.multipleOutside(pop.getPopulation()));
             }
-            return result.divideOutside(allPopulation);
+            if (allPopulation > 0)
+                return result.divideOutside(allPopulation);
+            else
+                return new Value(1f);
         }
         else
         {
