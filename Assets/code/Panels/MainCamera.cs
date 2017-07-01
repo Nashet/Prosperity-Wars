@@ -174,40 +174,41 @@ public class MainCamera : MonoBehaviour
 
     internal static void SelectProvince(int number)
     {
-        if (Game.selectedProvince != null && number >= 0)
-        {
-            Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-            Game.selectedProvince.setBorderMaterials();
-        }
-        // Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
-        //Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
+        //if (Game.selectedProvince != null && number >= 0)
+        //{
+        //    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+        //    Game.selectedProvince.setBorderMaterials();
+        //}
+        
 
         if (number >= 0)
         {
             if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
             {
-                //Game.selectedProvince.updateColor(Game.getProvinceColorAccordingToMapMode(Game.selectedProvince));
-                Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                Game.selectedProvince.setBorderMaterials();
+                var lastSelected = Game.selectedProvince;
                 Game.selectedProvince = null;
+                lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                lastSelected.setBorderMaterials(true);
+
                 provincePanel.hide();
-                if (buildPanel.isActiveAndEnabled)
-                    buildPanel.refresh();
+                
             }
             else // new province selected
             {
-                //Province.findByID(number).updateColor(Color.gray);
-
-                //Game.selectedProvince = Province.allProvinces[GetRayCastMeshNumber()];
+                if (Game.selectedProvince != null)//deal with previous selection
+                {
+                    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                    Game.selectedProvince.setBorderMaterials(true);
+                }
                 Game.selectedProvince = Province.find(number);
                 Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
-                provincePanel.show();
-                if (buildPanel.isActiveAndEnabled)
-                    buildPanel.refresh();
+                provincePanel.show();                
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
-                //Province.findByID(number).updateColor(Color.gray);
+
             }
+            if (buildPanel.isActiveAndEnabled)
+                buildPanel.refresh();
 
         }
     }

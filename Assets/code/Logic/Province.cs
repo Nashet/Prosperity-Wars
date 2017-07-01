@@ -78,7 +78,7 @@ public class Province : Name
     internal static void generateUnityData(VoxelGrid grid)
     {
         allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
-        allProvinces.ForEach(x => x.setBorderMaterials());
+        allProvinces.ForEach(x => x.setBorderMaterials(false));
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
     {
@@ -164,7 +164,7 @@ public class Province : Name
         foreach (var item in bordersMeshes)
             item.Value.material = material;
     }
-    public void setBorderMaterials()
+    public void setBorderMaterials(bool reWriteSelection)
     {
         foreach (var border in bordersMeshes)
         {
@@ -172,17 +172,23 @@ public class Province : Name
             {
                 if (getCountry() == border.Key.getCountry())
                 {
-                    if (this != Game.selectedProvince)
+                    if (this != Game.selectedProvince || reWriteSelection)
                         border.Value.material = Game.defaultProvinceBorderMaterial;
-                    if (border.Key != Game.selectedProvince)
+                    if (border.Key != Game.selectedProvince || reWriteSelection)
                         border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
                 }
                 else
                 {
-                    if (this != Game.selectedProvince)
-                        border.Value.material = getCountry().getBorderMaterial();
-                    if (border.Key != Game.selectedProvince && border.Key.getCountry() != null)
-                        border.Key.bordersMeshes[this].material = border.Key.getCountry().getBorderMaterial();
+                    if (this != Game.selectedProvince || reWriteSelection)
+                        if (getCountry() == Country.NullCountry)
+                            border.Value.material = Game.defaultProvinceBorderMaterial;
+                        else
+                            border.Value.material = getCountry().getBorderMaterial();
+                    if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.getCountry() != null)
+                        if (border.Key.getCountry() == Country.NullCountry)
+                            border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                        else
+                            border.Key.bordersMeshes[this].material = border.Key.getCountry().getBorderMaterial();
                 }
             }
             else
@@ -318,13 +324,13 @@ public class Province : Name
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
 
-        setBorderMaterials();
+        setBorderMaterials(false);
 
         if (modifiers.ContainsKey(Mod.recentlyConquered))
             modifiers[Mod.recentlyConquered] = Game.date.AddYears(50);
         else
             modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(50));
-       // modifiers.Add(Mod.blockade, default(DateTime));
+        // modifiers.Add(Mod.blockade, default(DateTime));
     }
     public Dictionary<Mod, DateTime> getModifiers()
     {
@@ -567,7 +573,7 @@ public class Province : Name
 
                     //if (factoryWants > 0)
                     //shownFactory.HireWorkforce(totalWorkForce * factoryWants / factoryWantsTotal, workforceList);
-                    
+
                     //popsLeft -= factoryWants;                    
                     popsLeft -= factory.hireWorkforce(factoryWants, workforceList);
 
@@ -880,7 +886,7 @@ public class Mod : Name
     //private readonly DateTime expireDate;
     public Mod(string name) : base(name)
     { }
-    
+
     //public Mod(string name, int years) : base(name)
     //{
     //    expireDate = Game.date;

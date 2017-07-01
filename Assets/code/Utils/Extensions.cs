@@ -629,9 +629,9 @@ public static class MeshExtensions
     }
     public static Vector3 makeArrow(Vector3 arrowStart, Vector3 arrowEnd, float arrowBaseWidth) // true - water
     {
-
-        Vector3 directionPoint, leftBasePoint, rightBasePoint;
-        Vector3[] result = new Vector3[3];
+        //Vector3 directionPoint, leftBasePoint, rightBasePoint;
+        Vector3 leftBasePoint;
+        // Vector3[] result = new Vector3[3];
 
         //if (value > 0f)
         Vector3 arrowDirection = arrowEnd - arrowStart;
@@ -644,8 +644,8 @@ public static class MeshExtensions
 
 
 
-        rightBasePoint = leftBasePoint * -1f;
-        rightBasePoint += arrowStart;
+        //rightBasePoint = leftBasePoint * -1f;
+        //rightBasePoint += arrowStart;
         leftBasePoint += arrowStart;
         //directionPoint = arrowStart + (arrowDirection.normalized * value * 250f * arrowMuliplier);
 
