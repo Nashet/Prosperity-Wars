@@ -36,7 +36,6 @@ public class Country : Staff
     private readonly Culture culture;
     private readonly Color nationalColor;
     private Province capital;
-
     
     private readonly Value soldiersWage = new Value(0f);   
     public readonly Value sciencePoints = new Value(0f);
@@ -73,11 +72,9 @@ public class Country : Staff
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
-            //"There is bigger threat to the world", 0.03f, false)
-            delegate  { return "There is bigger threat to the world - " + BadboyCountry; }, 0.03f, false)
-            //delegate () { }
-            //,            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
+            new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },            
+            delegate  { return "There is bigger threat to the world - " + BadboyCountry; }, 0.03f, false),
+            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
         //staff = new GeneralStaff(this);

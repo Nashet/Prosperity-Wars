@@ -37,8 +37,10 @@ abstract public class PopUnit : Producer
     public Value incomeTaxPayed = new Value(0);
 
     private readonly DateTime born;
-    //if add new fields make sure it's implemented in second constructor and in merge()   
     private Movement movement;
+    //if add new fields make sure it's implemented in second constructor and in merge()   
+
+
     static PopUnit()
     {
         //makeModifiers();
@@ -239,6 +241,8 @@ abstract public class PopUnit : Producer
         getOwnedFactories().ForEach(x => x.setOwner(province.getCountry()));
         sendAllAvailableMoney(getCountry().bank); // just in case if there is something
         getCountry().bank.defaultLoaner(this);
+
+        Movement.leave(this);
     }
     override public void setStatisticToZero()
     {
@@ -763,8 +767,10 @@ abstract public class PopUnit : Producer
         if (loyalty.isSmallerThan(Options.PopLowLoyaltyToJoinMovevent))
             Movement.join(this);
         else
+        {
             if (loyalty.isBiggerThan(Options.PopLowLoyaltyToJoinMovevent))
-            Movement.leave(this);
+                Movement.leave(this);
+        }
     }
     public void setMovement(Movement movement)
     {

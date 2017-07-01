@@ -49,10 +49,14 @@ public class Movement : Staff
     {
         if (pop.getMovement() != null)
         {
+            pop.getMovement().demobilize(x => x.getPopUnit() == pop);
             pop.getMovement().members.Remove(pop);
 
             if (pop.getMovement().members.Count == 0)
+            {
+                pop.getMovement().demobilize();
                 pop.getCountry().movements.Remove(pop.getMovement());
+            }
             pop.setMovement(null);
         }
     }
