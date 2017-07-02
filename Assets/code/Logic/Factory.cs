@@ -145,7 +145,7 @@ public class Factory : Producer
 
         conditionsDontHireOnSubsidies = new ConditionsList(new List<Condition>
         {
-            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented,factoryPlacedInOurCountry
+            Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented, factoryPlacedInOurCountry
         });
 
         conditionsChangePriority = new ConditionsList(new List<Condition> { Economy.isNotLF, Condition.IsNotImplemented, factoryPlacedInOurCountry });

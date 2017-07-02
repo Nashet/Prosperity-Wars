@@ -22,7 +22,7 @@ public static class ReformExtensions
 }
 
 abstract public class AbstractReformValue : AbstractCondition
-{   
+{
     readonly string description;
     readonly internal int ID;
     readonly internal ConditionsList allowed;
@@ -101,7 +101,7 @@ public abstract class AbstractReform : AbstractCondition
 
 }
 public class Government : AbstractReform
-{
+{    
     public class ReformValue : AbstractReformValue
     {
         readonly private string prefix;
@@ -146,6 +146,7 @@ public class Government : AbstractReform
     private readonly Country country;
 
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
+
     readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0,
         new ConditionsList(ConditionsList.AlwaysYes), "tribe");
 
@@ -170,17 +171,28 @@ public class Government : AbstractReform
     readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "- Only capitalists have power", 6,
         new ConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "");
 
-    readonly internal static ReformValue MilitaryJunta = new ReformValue("Military junta", "- Only military guys have power", 7,
+    readonly internal static ReformValue Junta = new ReformValue("Military junta", "- Only military guys have power", 7,
         new ConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta");
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
         new ConditionsList(ConditionsList.IsNotImplemented), "ssr");
 
+    internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
+    internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.getName(), true);
+    internal readonly static Condition isAristocracy = new Condition(x => (x as Country).government.getValue() == Government.Aristocracy, "Government is " + Government.Aristocracy.getName(), true);
+
+    internal readonly static Condition isDespotism = new Condition(x => (x as Country).government.getValue() == Government.Despotism, "Government is " + Government.Despotism.getName(), true);
+    internal readonly static Condition isTheocracy = new Condition(x => (x as Country).government.getValue() == Government.Theocracy, "Government is " + Government.Theocracy.getName(), true);
+    internal readonly static Condition isWealthDemocracy = new Condition(x => (x as Country).government.getValue() == Government.WealthDemocracy, "Government is " + Government.WealthDemocracy.getName(), true);
+    internal readonly static Condition isDemocracy = new Condition(x => (x as Country).government.getValue() == Government.Democracy, "Government is " + Government.Democracy.getName(), true);
+    internal readonly static Condition isBourgeoisDictatorship = new Condition(x => (x as Country).government.getValue() == Government.BourgeoisDictatorship, "Government is " + Government.BourgeoisDictatorship.getName(), true);
+    internal readonly static Condition isMilitaryJunta = new Condition(x => (x as Country).government.getValue() == Government.Junta, "Government is " + Government.Junta.getName(), true);
+    internal readonly static Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == Government.ProletarianDictatorship, "Government is " + Government.ProletarianDictatorship.getName(), true);
 
     public Government(Country country) : base("Government", "Form of government", country)
     {
-        status = Tribal;
-        // status = Aristocracy;
+        //status = Tribal;
+         status = Aristocracy;
         this.country = country;
     }
     internal string getPrefix()

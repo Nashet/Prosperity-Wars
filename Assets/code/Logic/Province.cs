@@ -266,6 +266,11 @@ public class Province : Name
     {
         return cores.Contains(country);
     }
+    public bool isCoreFor(PopUnit pop)
+    {
+        return cores.Any(x => x.getCulture() == pop.culture);
+        
+    }
     public string getCoresDescription()
     {
         if (cores.Count == 0)

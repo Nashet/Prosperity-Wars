@@ -409,8 +409,8 @@ public class Game : ThreadedJob
 
     static void generateMapImage()
     {
-        Texture2D mapImage = new Texture2D(100, 100);
-        //Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));        
+        //Texture2D mapImage = new Texture2D(100, 100);
+        Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));        // standard for webGL
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
@@ -692,7 +692,7 @@ public class Game : ThreadedJob
                     pop.calcMigrations();
                     //if (Game.Random.Next(10) == 1)
                     pop.calcImmigrations();
-                    //if (Game.Random.Next(10) == 1)
+                    if (Game.Random.Next(10) == 1)
                     pop.calcAssimilations();
 
                     pop.invest();

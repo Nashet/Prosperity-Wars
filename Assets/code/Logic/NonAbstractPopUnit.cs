@@ -344,7 +344,7 @@ public class Soldiers : PopUnit
 
     internal override bool canVote(Government.ReformValue reform)
     {
-        if ((reform == Government.Democracy || reform == Government.MilitaryJunta)
+        if ((reform == Government.Democracy || reform == Government.Junta)
             && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
             return true;
         else

@@ -6,14 +6,13 @@ using System;
 
 public class Invention : AbstractCondition
 {
-    internal readonly static List<Invention> allInventions = new List<Invention>();
-    //private readonly string name;
+    internal readonly static List<Invention> allInventions = new List<Invention>();   
     string description;
     internal Value cost;
     string inventedPhrase;
     public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),        
         Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
-        Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product\n Testes testosterone testes test", new Value(100f)),
+        Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(100f)),
         Mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
         //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
         Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),

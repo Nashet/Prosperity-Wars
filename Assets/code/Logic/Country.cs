@@ -6,9 +6,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 public class Country : Staff
-{    
+{
     public readonly static List<Country> allCountries = new List<Country>();
-    internal static readonly Country NullCountry;  
+    internal static readonly Country NullCountry;
 
     internal readonly Government government;
     internal readonly Economy economy;
@@ -36,8 +36,8 @@ public class Country : Staff
     private readonly Culture culture;
     private readonly Color nationalColor;
     private Province capital;
-    
-    private readonly Value soldiersWage = new Value(0f);   
+
+    private readonly Value soldiersWage = new Value(0f);
     public readonly Value sciencePoints = new Value(0f);
     public bool failedToPaySoldiers;
     public int autoPutInBankLimit = 2000;
@@ -54,6 +54,19 @@ public class Country : Staff
 
     private readonly Modifier modXHasMyCores;
     public readonly ModifiersList modMyOpinionOfXCountry;
+    public readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
+        {
+        //new Modifier(Government.isTribal, 0f, false),
+        //new Modifier(Government.isTheocracy, 0f, false),
+        new Modifier(Government.isDespotism, 0.25f, false),
+        new Modifier(Government.isMilitaryJunta, 0.3f, false),
+        new Modifier(Government.isAristocracy, 0.5f, false),
+        new Modifier(Government.isProletarianDictatorship, 0.5f, false),
+        new Modifier(Government.isDemocracy, 1f, false),
+        new Modifier(Government.isPolis, 1f, false),  
+        new Modifier(Government.isWealthDemocracy, 1f, false),        
+        new Modifier(Government.isBourgeoisDictatorship, 1f, false), 
+    });
 
     static Country()
     {
@@ -72,7 +85,7 @@ public class Country : Staff
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },            
+            new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
             delegate  { return "There is bigger threat to the world - " + BadboyCountry; }, 0.05f, false),
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
@@ -381,7 +394,7 @@ public class Country : Staff
         else
         {
             meshCapitalText.color = Color.cyan; // Set the text's color to red
-            //messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
+                                                //messhCapitalText.fontSize += messhCapitalText.fontSize / 3;
         }
     }
     internal void moveCapitalTo(Province newCapital)
@@ -522,13 +535,18 @@ public class Country : Staff
     {
         return getDescription();
     }
-    internal void simulate()
+    public Value getSciencePointsBase()
     {
         if (Game.devMode)
-            sciencePoints.add(this.getMenPopulation());
+            return new Value(this.getMenPopulation());
         else
-            sciencePoints.add(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-        //sciencePoints.add(this.getMenPopulation());
+            return new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
+    }
+    internal void simulate()
+    {
+        var spBase = getSciencePointsBase();
+        spBase.multiple(modSciencePoints.getModifier(this));
+        sciencePoints.add(spBase);
 
         if (this.autoPutInBankLimit > 0f)
         {
@@ -543,7 +561,7 @@ public class Country : Staff
         }
 
         buyNeeds(); // Should go After all Armies consumption
-        //Procent opinion;
+                    //Procent opinion;
         foreach (var item in Country.getExisting())
             if (item != this)
             {

@@ -55,7 +55,7 @@ public static class Options
     public static readonly Procent PopDemotionSpeed = new Procent(0.01f);
     ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
     public static readonly Procent PopPromotionSpeed = new Procent(0.01f);
-    public static readonly Procent PopAssimilationSpeed = new Procent(0.002f);
+    public static readonly Procent PopAssimilationSpeed = new Procent(0.001f);
     public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
     public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
 

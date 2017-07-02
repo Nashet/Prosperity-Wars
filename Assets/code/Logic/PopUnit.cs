@@ -19,7 +19,7 @@ abstract public class PopUnit : Producer
 
     public readonly PopType popType;
 
-    public Culture culture;
+    public readonly Culture culture;
 
     public readonly Procent education;
     public readonly Procent needsFullfilled;
@@ -170,7 +170,10 @@ abstract public class PopUnit : Producer
         //kill in the end
         source.subtractPopulation(sizeOfNewPop);
     }
-
+    //public Culture getCulture()
+    //{
+    //    return culture;
+    //}
     internal abstract int getVotingPower(Government.ReformValue reformValue);
     internal int getVotingPower()
     {
@@ -794,11 +797,7 @@ abstract public class PopUnit : Producer
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
-
     abstract public bool ShouldPayAristocratTax();
-
-
-
 
     public void calcPromotions()
     {
@@ -1128,13 +1127,21 @@ abstract public class PopUnit : Producer
 
     public int getAssimilationSize()
     {
-        int result = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
-        if (result > 0)
-            return result;
-        else if (getAge() > Options.PopAgeLimitToWipeOut)
-            return this.getPopulation(); // wipe-out
-        else
+        if (province.isCoreFor(this))
             return 0;
+        else
+        {
+            int result = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
+            if (result > 0)
+                return result;
+            else
+            {
+                if (getAge() > Options.PopAgeLimitToWipeOut)
+                    return this.getPopulation(); // wipe-out
+                else
+                    return 0;
+            }
+        }
     }
 
     internal void invest()
