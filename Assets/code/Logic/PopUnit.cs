@@ -463,11 +463,7 @@ abstract public class PopUnit : Producer
         else return new Procent(0);
     }
 
-    internal Country getCountry()
-    {
-        return province.getCountry();
-    }
-
+    
     ////abstract public override void produce();
     ////{
     ////    float tribeMenOverPopulationFactor = 1f; //goes to zero with 20
@@ -1186,7 +1182,7 @@ abstract public class PopUnit : Producer
                             //&& factory.canUpgrade()
                             //&& !factory.isUpgrading()
                             //&& !factory.isBuilding()
-                            && factory.conditionsUpgrade.isAllTrue(this)
+                            && Factory.conditionsUpgrade.isAllTrue(factory, this)
                             && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory
                             && factory.getMargin().get() >= Options.minMarginToUpgrade)
                         {

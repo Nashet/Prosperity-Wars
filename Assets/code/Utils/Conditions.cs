@@ -6,20 +6,29 @@ using UnityEngine.UI;
 using System.IO;
 using System;
 using System.Text;
+using System.ComponentModel;
 
 public class ConditionsList
 {
+    internal readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(x => 2 * 2 == 4, "Always Yes condition", true) });
+    internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented });
+
     protected List<Condition> list;
-    //public ConditionsList()
-    //{
-    //    list = new List<Condition>();
-    //}
-    // basic constructor
+    /// <summary>
+    /// Only for descendants
+    /// </summary>
+    //protected ConditionsList()
+    //{ }
+    /// <summary>
+    /// basic constructor
+    /// </summary>    
     public ConditionsList(List<Condition> inlist)
     {
         list = inlist;
     }
-    //copy constructor
+    /// <summary>
+    /// copy constructor
+    /// </summary>    
     public ConditionsList(ConditionsList conditionsList)
     {
         list = new List<Condition>(conditionsList.list);
@@ -49,30 +58,27 @@ public class ConditionsList
         list.Add(condition);
     }
 
-    internal readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(x => 2 == 2, "Always Yes condition", true) });
-    internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented });
-    //private List<Modifier> inlist;
-
-    /// <summary>Return false if any of conditions is false</summary>    
-    public bool isAllTrue(System.Object forWhom, out string description)
+    /// <summary>Return false if any of conditions is false, also makes description</summary>    
+    public bool isAllTrue(object forWhom, out string description)
     {
         string accu;
         description = "";
         bool atLeastOneNoAnswer = false;
         foreach (var item in list)
         {
+
             if (!item.checkIftrue(forWhom, out accu))
                 atLeastOneNoAnswer = true;
             description += accu;
         }
-        if (atLeastOneNoAnswer) return false;
+        if (atLeastOneNoAnswer)
+            return false;
         else
-        {
-            //description = "";
             return true;
-        }
     }
-    public bool isAllTrue(System.Object forWhom)
+
+    /// <summary>Return false if any of conditions is false</summary>    
+    public bool isAllTrue(object forWhom)
     {
         foreach (var item in list)
             if (!item.checkIftrue(forWhom))
@@ -80,168 +86,70 @@ public class ConditionsList
         return true;
     }
 
-    ///// <summary>Return false if any of conditions is false</summary>    
-    //public bool isAllTrue(Agent forWhom, out string description)
-    //{
-    //    string accu;
-    //    description = "";
-    //    bool atLeastOneNoAnswer = false;
-    //    foreach (var item in list)
-    //    {
-    //        if (!item.checkIftrue(forWhom, out accu))
-    //            atLeastOneNoAnswer = true;
-    //        description += accu;
-    //    }
-    //    if (atLeastOneNoAnswer) return false;
-    //    else
-    //    {
-    //        //description = "";
-    //        return true;
-    //    }
-    //}
-    //public bool isAllTrue(Agent forWhom)
-    //{
-    //    foreach (var item in list)
-    //        if (!item.checkIftrue(forWhom))
-    //            return false;
-    //    return true;
-    //}
-    ///// <summary>Return false if any of conditions is false</summary>    
-    //public bool isAllTrue(Country forWhom, out string description)
-    //{
-    //    string accu;
-    //    description = "";
-    //    bool atLeastOneNoAnswer = false;
-    //    foreach (var item in list)
-    //    {
-    //        if (!item.checkIftrue(forWhom, out accu))
-    //            atLeastOneNoAnswer = true;
-    //        description += accu;
-    //    }
-    //    if (atLeastOneNoAnswer) return false;
-    //    else
-    //    {
-    //        //description = "";
-    //        return true;
-    //    }
-    //}
-
-    //public bool isAllTrue(Country forWhom)
-    //{
-    //    foreach (var item in list)
-    //        if (!item.checkIftrue(forWhom))
-    //            return false;
-    //    return true;
-    //}
 }
-//public abstract class AbstractConditionString
-//{
-//    //internal bool checkIftrue(Owner forWhom)
-//    //{
-//    //    throw new NotImplementedException();
-//    //}
 
-//    //internal bool checkIftrue(Owner forWhom, out string accu)
-//    //{
-//    //    throw new NotImplementedException();
-//    //}
-//}
-//public class ConditionStringCountry //: AbstractConditionString
-//{
-//    public string conditionIsTrue; //, conditionIsFalse;
-//    public Func<Country, bool> check;
-//    /// <summary>to hide juncky info /// </summary>
-//    bool showAchievedConditionDescribtion;
-
-//    public ConditionStringCountry(Func<Country, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion)
-//    {
-//        check = myMethodName;
-//        this.conditionIsTrue = conditionIsTrue;
-//        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-//        //this.conditionIsFalse = conditionIsFalse;
-//    }
-//    /// <summary></summary>    
-//    internal bool checkIftrue(Country forWhom, out string description)
-//    {
-//        string result = null;
-//        bool answer = false;
-//        if (check(forWhom))
-//        {
-//            if (showAchievedConditionDescribtion) result += "\n(+) " + conditionIsTrue;
-//            answer = true;
-//        }
-//        else
-//        {
-//            result += "\n(-) " + conditionIsTrue;
-//            answer = false;
-//        }
-//        description = result;
-//        return answer;
-//    }
-//    /// <summary></summary>    
-//    internal bool checkIftrue(Country forWhom)
-//    {
-//        return check(forWhom);
-//    }
-//}
-public class Condition : Name //AbstractCondition
+/// <summary>
+/// Represents condition, which can return bool value or string describing that value
+/// </summary> 
+public class Condition : Name
 {
-    //string text; //, conditionIsFalse;
-    //protected Func<Owner, bool> check;
-    //protected Func<Country, bool> check2;
-    protected Func<System.Object, bool> check3;
+    internal static Condition IsNotImplemented = new Condition(delegate (object forWhom) { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
+    internal static Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
+
+    protected readonly Func<object, bool> checkingFunction;
     /// <summary>to hide junk info /// </summary>
-    bool showAchievedConditionDescribtion;
-    Func<string> dynamicString;
-    protected Func<System.Object, System.Object> targetObject;
+    protected readonly bool showAchievedConditionDescribtion;
+    protected readonly Func<object, string> dynamicString;
+    protected readonly Func<object, object> changeTargetObject;
+    //private readonly object dynamicStringTarget;
 
-    internal static Condition IsNotImplemented = new Condition(delegate (System.Object forWhom) { return 2 == 0 || Game.devMode; }, "Feature is implemented", true);
-
-
-    public Condition(Func<System.Object, bool> myMethodName, string conditionIsTrue, bool showAchievedConditionDescribtion) : base(conditionIsTrue)
+    public Condition(Func<object, bool> checkingFunction, string conditionIsTrue, bool showAchievedConditionDescribtion) : base(conditionIsTrue)
     {
-        check3 = myMethodName;
-        //this.text = conditionIsTrue;
+        this.checkingFunction = checkingFunction;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
-    //public Condition(Func<System.Object,  bool> myMethodName,  bool showAchievedConditionDescribtion)
-    //{
-    //    check3 = myMethodName;
-    //    //this.text = conditionIsTrue;
-    //    this.dynamicString = ;
-    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-    //}
-    public Condition(Func<System.Object, bool> myMethodName, Func<string> dynamicString, bool showAchievedConditionDescribtion):base (null)
+
+    /// <summary>
+    /// Supports dynamic string
+    /// </summary>    
+    public Condition(Func<object, bool> checkingFunction, Func<object, string> dynamicString, bool showAchievedConditionDescribtion) : base(null)
     {
-        check3 = myMethodName;
+
+        this.checkingFunction = checkingFunction;
         this.dynamicString = dynamicString;
-        //this.conditionDescription = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
 
-    public Condition(Condition another):base (another.getName())
+    /// <summary>
+    /// Used to build Modifier on Condition (Copy constructor)
+    /// </summary>    
+    protected Condition(Condition another) : base(another.getName())
     {
-        //text = another.text;
-        check3 = another.check3;
+        checkingFunction = another.checkingFunction;
+        showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
+        dynamicString = another.dynamicString;
+        this.changeTargetObject = another.changeTargetObject;
+        //this.dynamicStringTarget = another.dynamicStringTarget;
+    }
+
+    /// <summary>
+    /// Allows scope-changing
+    /// </summary>    
+    /// <param name="changeTargetObject"> Select another scope</param>
+    public Condition(Condition another, Func<object, object> changeTargetObject) : base(another.getName())
+    {
+        this.changeTargetObject = changeTargetObject;
+        checkingFunction = another.checkingFunction;
         showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
         dynamicString = another.dynamicString;
     }
-
-    
-
-    // for scope-changing
-    public Condition(Condition another, Func<System.Object, System.Object> x):base (another.getName())
+    /// <summary>
+    /// used in tax-like list based Modifiers
+    /// </summary>
+    /// <param name="conditionIsTrue"></param>
+    /// <param name="showAchievedConditionDescribtion"></param>
+    public Condition(string conditionIsTrue, bool showAchievedConditionDescribtion) : base(conditionIsTrue)
     {
-        targetObject = x;
-        //text = another.text;
-        check3 = another.check3;
-        showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
-        dynamicString = another.dynamicString;
-    }
-    ////used in tax-like modifiers
-    public Condition(string conditionIsTrue, bool showAchievedConditionDescribtion):base(conditionIsTrue)
-    {
-        //this.text = conditionIsTrue;
         this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     }
 
@@ -249,7 +157,7 @@ public class Condition : Name //AbstractCondition
     //public Condition(Invention invention, bool showAchievedConditionDescribtion)
     //{
     //    check3 = x => (x as Country).isInvented(invention);
-        
+
     //    //this.text = invention.getInventedPhrase();
     //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;        
     //}
@@ -270,24 +178,27 @@ public class Condition : Name //AbstractCondition
     //    //this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
     //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
     //}
-    override public string getName()
+    public string getName(object some)
     {
-        if (base.getName() == null)
-            return dynamicString();
+        if (getName() == null)
+        {
+            //if (dynamicStringTarget == null)
+            return dynamicString(some);
+            //else
+            // return dynamicString(dynamicStringTarget);
+        }
         else
-            return base.getName();
+            return getName();
     }
-    
-   
 
     /// <summary>Returns bool result and description in out description</summary>    
-    internal bool checkIftrue(System.Object forWhom, out string description)
+    internal bool checkIftrue(object forWhom, out string description)
     {
-        if (targetObject != null)
-            forWhom = targetObject(forWhom);
+        if (changeTargetObject != null)
+            forWhom = changeTargetObject(forWhom);
         string result = null;
         bool answer = false;
-        if (check3(forWhom))
+        if (checkingFunction(forWhom))
         {
             if (showAchievedConditionDescribtion) result += "\n(+) " + getName();
             answer = true;
@@ -300,66 +211,171 @@ public class Condition : Name //AbstractCondition
         description = result;
         return answer;
     }
-    /// <summary>Fast version, without description</summary>    
-    internal bool checkIftrue(System.Object forWhom)
+    /// <summary>Returns bool result, fast version, without description</summary>    
+    internal bool checkIftrue(object forWhom)
     {
-        if (targetObject != null)
-            forWhom = targetObject(forWhom); ;
-        return check3(forWhom);
+        if (changeTargetObject != null)
+            forWhom = changeTargetObject(forWhom); ;
+        return checkingFunction(forWhom);
     }
-    /// <summary>Returns bool result and description in out description</summary>    
-    //virtual internal bool checkIftrue(Country forWhom, out string description)
-    //{
-    //    string result = null;
-    //    bool answer = false;
 
-    //    if (check3(forWhom))
-    //    {
-    //        if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
-    //        answer = true;
-    //    }
-    //    else
-    //    {
-    //        result += "\n(-) " + getDescription();
-    //        answer = false;
-    //    }
-    //    description = result;
-    //    return answer;
+}
+/// <summary>
+/// Supports second object to compare & dynamic string
+/// </summary>
+public class ConditionsListForDoubleObjects : ConditionsList
+{
+    protected List<Condition> listForSecondObject;
+    /// <summary>
+    /// basic constructor
+    /// </summary>    
+    public ConditionsListForDoubleObjects(List<Condition> inlist) : base(inlist)
+    {
 
-
-    //    //if (check2(forWhom))
-    //    //{
-    //    //    if (showAchievedConditionDescribtion) result += "\n(+) " + getDescription();
-    //    //    answer = true;
-    //    //}
-    //    //else
-    //    //{
-    //    //    result += "\n(-) " + getDescription();
-    //    //    answer = false;
-    //    //}
-    //    //description = result;
-    //    //return answer;
-    //}
-    ///// <summary>Fast version, without description</summary>    
-    //internal bool checkIftrue(Country forWhom)
-    //{
-    //    return check3(forWhom);
-    //}
-
+    }
+    public ConditionsListForDoubleObjects addForSecondObject(List<Condition> toAdd)
+    {
+        listForSecondObject = toAdd;
+        return this;
+    }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
+    public bool isAllTrue(object forWhom, out string description)
+    {
+        throw new DontUseThatMethod();
+        description = "";
+        return false;
+    }
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
+    public bool isAllTrue(object forWhom)
+    {
+        throw new DontUseThatMethod();
+        return false;
+    }
+    /// <summary>Return false if any of conditions is false, supports two objects, also makes description</summary>    
+    public bool isAllTrue(object firstObject, object secondObject, out string description)
+    {
+        string accu;
+        description = "";
+        bool atLeastOneNoAnswer = false;
+        foreach (var item in list)
+        {
+            var doubleCondition = item as ConditionForDoubleObjects;
+            if (doubleCondition == null)
+            {
+                if (!item.checkIftrue(firstObject, out accu))
+                    atLeastOneNoAnswer = true;
+            }
+            else
+            {
+                if (!doubleCondition.checkIftrue(firstObject, secondObject, out accu))
+                    atLeastOneNoAnswer = true;
+            }
+            description += accu;
+        }
+        if (listForSecondObject != null)
+            foreach (var item in listForSecondObject)
+            {
+                if (!item.checkIftrue(secondObject, out accu))
+                    atLeastOneNoAnswer = true;
+                description += accu;
+            }
+        if (atLeastOneNoAnswer)
+            return false;
+        else
+            return true;
+    }
+    /// <summary>Return false if any of conditions is false, supports two objects</summary>    
+    public bool isAllTrue(object firstObject, object secondObject)
+    {
+        foreach (var item in list)
+        {
+            var doubleCondition = item as ConditionForDoubleObjects;
+            if (doubleCondition == null)
+            {
+                if (!item.checkIftrue(firstObject))
+                    return false;
+            }
+            else
+            {
+                if (!doubleCondition.checkIftrue(firstObject, secondObject))
+                    return false;
+            }
+        }
+        if (listForSecondObject != null)
+            foreach (var item in listForSecondObject)
+            {
+                if (!item.checkIftrue(secondObject))
+                    return false;
+            }
+        return true;
+    }
+}
+/// <summary>
+/// Supports second object to compare & dynamic string
+/// </summary>
+public class ConditionForDoubleObjects : Condition
+{
+    protected readonly Func<object, object, bool> checkingFunctionForTwoObjects;
+    /// <summary>
+    /// Supports second object to compare & dynamic string
+    /// </summary>    
+    public ConditionForDoubleObjects(Func<object, object, bool> checkingFunctionForTwoObjects, Func<object, string> dynamicString, bool showAchievedConditionDescribtion)
+        : base(null, dynamicString, showAchievedConditionDescribtion)
+    {
+        this.checkingFunctionForTwoObjects = checkingFunctionForTwoObjects;
+    }
+    /// <summary>Returns bool result and description in out description, supports two objects</summary>    
+    internal bool checkIftrue(object firstObject, object secondObject, out string description)
+    {
+        if (changeTargetObject != null)
+            firstObject = changeTargetObject(firstObject);
+        string result = null;
+        bool answer = false;
+        if (checkingFunctionForTwoObjects(firstObject, secondObject))
+        {
+            if (showAchievedConditionDescribtion) result += "\n(+) " + getName(firstObject);
+            //if (base.getName() == null)
+            //{
+            //    //if (dynamicStringTarget == null)
+            //    result += dynamicString(firstObject);
+            //    //else
+            //    // return dynamicString(dynamicStringTarget);
+            //}
+            //else
+            //    result += name;
+            answer = true;
+        }
+        else
+        {
+            result += "\n(-) " + getName(firstObject);
+            answer = false;
+        }
+        description = result;
+        return answer;
+    }
+    /// <summary>Returns bool result, fast version, without description, supports two objects</summary>    
+    internal bool checkIftrue(object firstObject, object secondObject)
+    {
+        if (changeTargetObject != null)
+            firstObject = changeTargetObject(firstObject); ;
+        return checkingFunctionForTwoObjects(firstObject, secondObject);
+    }
 }
 public class Modifier : Condition
 {
     float value;
     Func<int> multiplierModifierFunction;
-    Func<System.Object, float> floatModifierFunction;
+    Func<object, float> floatModifierFunction;
     bool showZeroModifiers;
     static public readonly Modifier modifierDefault = new Modifier(x => true, "Default", 1f, true);
-    public Modifier(Func<System.Object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
+    public Modifier(Func<object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
     {
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
-    public Modifier(Func<System.Object, bool> myMethodName, Func<string> dynamicString, float value, bool showZeroModifiers) : base(myMethodName, dynamicString, true)
+    public Modifier(Func<object, bool> myMethodName, Func<object, string> dynamicString, float value, bool showZeroModifiers) : base(myMethodName, dynamicString, true)
     {
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
@@ -367,12 +383,12 @@ public class Modifier : Condition
     /// <summary>
     /// to use with other scope modifiers
     /// </summary>    
-    //public Modifier(Func<System.Object, bool> myMethodName, float value, bool showZeroModifiers) : base(myMethodName,  true)
+    //public Modifier(Func<object, bool> myMethodName, float value, bool showZeroModifiers) : base(myMethodName,  true)
     //{
     //    this.value = value;
     //    this.showZeroModifiers = showZeroModifiers;
     //}
-    public Modifier(Func<System.Object, float> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
+    public Modifier(Func<object, float> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
     {
         this.value = value;
         floatModifierFunction = myMethodName;
@@ -381,7 +397,7 @@ public class Modifier : Condition
     /// <summary></summary>
     public Modifier(Func<int> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
     {
-        check3 = null;
+        //checkingFunction = null;
         multiplierModifierFunction = myMethodName;
 
         //isMultiplier = true;
@@ -398,7 +414,7 @@ public class Modifier : Condition
     /// To change scope
     /// </summary>
 
-    public Modifier(Condition condition, Func<System.Object, System.Object> x, float value, bool showZeroModifiers) : base(condition, x)
+    public Modifier(Condition condition, Func<object, object> x, float value, bool showZeroModifiers) : base(condition, x)
     {
         //targetObject = x;
         this.value = value;
@@ -471,10 +487,10 @@ public class Modifier : Condition
     //    }
     //    return answer;
     //}
-    internal float getModifier(System.Object forWhom, out string description)
+    internal float getModifier(object forWhom, out string description)
     {
-        if (targetObject != null)
-            forWhom = targetObject(forWhom);
+        if (changeTargetObject != null)
+            forWhom = changeTargetObject(forWhom);
 
         float result;
         if (floatModifierFunction != null)
@@ -504,7 +520,7 @@ public class Modifier : Condition
         }
         else
         {
-            if (check3(forWhom))
+            if (checkingFunction(forWhom))
                 result = getValue();
             else
                 result = 0f;
@@ -524,10 +540,10 @@ public class Modifier : Condition
         //}
         return result;
     }
-    internal float getModifier(System.Object forWhom)
+    internal float getModifier(object forWhom)
     {
-        if (targetObject != null)
-            forWhom = targetObject(forWhom);
+        if (changeTargetObject != null)
+            forWhom = changeTargetObject(forWhom);
         float result;
         if (floatModifierFunction != null)
             result = floatModifierFunction(forWhom) * getValue();
@@ -535,7 +551,7 @@ public class Modifier : Condition
         if (multiplierModifierFunction != null)
             result = multiplierModifierFunction() * getValue();
         else
-        if (check3(forWhom))
+        if (checkingFunction(forWhom))
             result = getValue();
         else
             result = 0;
@@ -558,7 +574,7 @@ public class ModifiersList : ConditionsList
     //internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
     //internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
 
-    internal float getModifier(System.Object forWhom, out string description)
+    internal float getModifier(object forWhom, out string description)
     {
         StringBuilder text = new StringBuilder();
         //text.Clear();
@@ -579,7 +595,7 @@ public class ModifiersList : ConditionsList
         description = text.ToString();
         return summ;
     }
-    internal float getModifier(System.Object forWhom)
+    internal float getModifier(object forWhom)
     {
         float summ = 0f;
         foreach (Modifier item in list)

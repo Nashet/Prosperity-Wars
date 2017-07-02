@@ -83,6 +83,11 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.HowMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
+    internal Country getCountry()
+    {
+        return province.getCountry();
+    }
+
 }
 
 

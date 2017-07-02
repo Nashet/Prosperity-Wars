@@ -793,7 +793,7 @@ public class MyTexture
 }
 public abstract class Name
 {
-    private readonly string name;
+    protected readonly string name;
     protected Name(string name)
     {
         this.name = name;

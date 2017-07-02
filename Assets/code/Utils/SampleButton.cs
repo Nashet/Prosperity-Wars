@@ -10,7 +10,7 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
     public Button buttonComponent;
     public Text nameLabel;
     public Image iconImage;
-    private System.Object link;
+    private object link;
     private DragPanel parent;
     private MyTable scrollList;
 
@@ -21,7 +21,7 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
     }
 
     //public void Setup(string text, PopUnit ipopUnit, MyTable currentScrollList)
-    public void Setup(string text, MyTable currentScrollList, System.Object pr)
+    public void Setup(string text, MyTable currentScrollList, object pr)
     {
         //item = currentItem;
         link = pr;

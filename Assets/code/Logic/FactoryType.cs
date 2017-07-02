@@ -34,7 +34,8 @@ public class FactoryType
         if (iname == "Metal smelter") MetalSmelter = this;
         allTypes.Add(this);
         basicProduction = ibasicProduction;
-        if (iresourceInput == null) resourceInput = new PrimitiveStorageSet();
+        if (iresourceInput == null)
+            resourceInput = new PrimitiveStorageSet();
         else
             resourceInput = iresourceInput;
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
@@ -43,7 +44,7 @@ public class FactoryType
         upgradeResourceHighTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
 
         enoughMoneyOrResourcesToBuild = new Condition(
-            delegate (System.Object forWhom)
+            delegate (object forWhom)
             {
                 Value cost = this.getBuildCost();
                 return (forWhom as Agent).canPay(cost);

@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 
 public class FactoryPanel : DragPanel//for dragging
-{    
+{
     public Button upgradeButton, reopenButton, destroyButton, buyButton, sellButton, nationalizeButton;
     public Toggle subidize, dontHireOnSubsidies;
     public Slider priority;
@@ -50,9 +50,9 @@ public class FactoryPanel : DragPanel//for dragging
         //upgradeButton.interactable = economy.allowsFactoryUpgradeByGovernment();
         //setButtonTooltip(upgradeButton, shownFactory.whyCantUpgradeFactory(Game.player));
         //upgradeButton.interactable = shownFactory.getConditionsForFactoryUpgrade(Game.player,  out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-        upgradeButton.interactable = shownFactory.conditionsUpgrade.isAllTrue(Game.Player, out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+        upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(shownFactory, Game.Player, out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-        subidize.interactable = shownFactory.conditionsSubsidize.isAllTrue(Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
+        subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
         //subidize.interactable = shownFactory.con
         if (shownFactory.isWorking())
             reopenButtonflag = reopenButtonStatus.close;
@@ -63,31 +63,31 @@ public class FactoryPanel : DragPanel//for dragging
             //reopenButton.interactable = economy.allowsFactoryCloseByGovernment();
             reopenButton.GetComponentInChildren<Text>().text = "Close";
             //setButtonTooltip(reopenButton, shownFactory.whyCantCloseFactory());
-            reopenButton.interactable = shownFactory.conditionsClose.isAllTrue(Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            reopenButton.interactable = Factory.conditionsClose.isAllTrue(shownFactory, Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().tooltip);
         }
         else
         {
             //reopenButton.interactable = economy.allowsFactoryReopenByGovernment();
             //setButtonTooltip(reopenButton, shownFactory.whyCantReopenFactory());
-            reopenButton.interactable = shownFactory.conditionsReopen.isAllTrue(Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            reopenButton.interactable = Factory.conditionsReopen.isAllTrue(shownFactory, Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().tooltip);
             reopenButton.GetComponentInChildren<Text>().text = "Reopen";
         }
 
         //destroyButton.interactable = economy.allowsFactoryDestroyByGovernment();
         // hint = shownFactory.whyCantDestroyFactory();
         //setButtonTooltip(destroyButton, shownFactory.whyCantDestroyFactory());
-        destroyButton.interactable = shownFactory.conditionsDestroy.isAllTrue(Game.Player, out destroyButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+        destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(shownFactory, Game.Player, out destroyButton.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-        sellButton.interactable = shownFactory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-        buyButton.interactable = shownFactory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-        nationalizeButton.interactable = shownFactory.conditionsNatinalize.isAllTrue(Game.Player, out nationalizeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+        sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+        buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+        nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(shownFactory, Game.Player, out nationalizeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
 
         //sellButton.interactable = economy.allowsFactorySellByGovernment();
         //buyButton.interactable = economy.allowsFactoryBuyByGovernment();
         //nationalizeButton.interactable = economy.allowsFactoryNatonalizeByGovernment();
-        this.priority.interactable = shownFactory.conditionsChangePriority.isAllTrue(Game.Player, out priority.GetComponentInChildren<ToolTipHandler>().tooltip);
-        this.subidize.interactable = shownFactory.conditionsSubsidize.isAllTrue(Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
-        this.dontHireOnSubsidies.interactable = shownFactory.conditionsDontHireOnSubsidies.isAllTrue(Game.Player, out dontHireOnSubsidies.GetComponentInChildren<ToolTipHandler>().tooltip);
+        this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(shownFactory, Game.Player, out priority.GetComponentInChildren<ToolTipHandler>().tooltip);
+        this.subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
+        this.dontHireOnSubsidies.interactable = Factory.conditionsDontHireOnSubsidies.isAllTrue(shownFactory, Game.Player, out dontHireOnSubsidies.GetComponentInChildren<ToolTipHandler>().tooltip);
 
         priority.value = shownFactory.getPriority();
         subidize.isOn = shownFactory.isSubsidized();
@@ -99,15 +99,15 @@ public class FactoryPanel : DragPanel//for dragging
         {
             setGUIElementsAccesability();
 
-            shownFactory.modifierEfficiency.getModifier(Game.Player, out generaltext.GetComponentInChildren<ToolTipHandler>().tooltip);
-            
+            Factory.modifierEfficiency.getModifier(shownFactory, out generaltext.GetComponentInChildren<ToolTipHandler>().tooltip);
+
             //var temp = shownFactory.getLifeNeeds();
             //foreach (Storage next in temp)
             //    lifeNeeds += next.ToString() + "; ";
             //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fulfilled";
             string InputRequired = "";
             //var temp = shownFactory.getLifeNeeds();
-            
+
             string construction = "";
             if (shownFactory.getDaysInConstruction() > 0)
                 construction = "\nDays in construction: " + shownFactory.getDaysInConstruction();
@@ -130,7 +130,7 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nUnsold: " + shownFactory.storageNow.ToString()
                 + "\nGain goods: " + shownFactory.gainGoodsThisTurn.ToString()
                 + "\nBasic production: " + shownFactory.type.basicProduction
-                + "\nEfficiency: " + shownFactory.modifierEfficiency.getModifier(Game.Player)
+                + "\nEfficiency: " + Factory.modifierEfficiency.getModifier(shownFactory)
                 + "\nSent to market: " + shownFactory.sentToMarket
                 + "\nCash: " + shownFactory.cash.ToString()
                 + "\nMoney income: " + shownFactory.moneyIncomethisTurn
@@ -145,7 +145,7 @@ public class FactoryPanel : DragPanel//for dragging
                 + upgradeNeeds
                 + construction + unprofitable + daysClosed + loans
                 + "\nHowMuchHiredLastTurn " + shownFactory.getHowMuchHiredLastTurn()
-                
+
                 ;
             //+ "\nExpenses:"
         }
@@ -169,7 +169,7 @@ public class FactoryPanel : DragPanel//for dragging
     {
         gameObject.SetActive(false);
     }
-   
+
     public void onSubsidizeValueChanged()
     {
         shownFactory.setSubsidized(subidize.isOn);

@@ -85,8 +85,8 @@ public class Country : Staff
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(System.Object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
-            delegate  { return "There is bigger threat to the world - " + BadboyCountry; }, 0.05f, false),
+            new Modifier (delegate(object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
+            delegate  { return "There is bigger threat to the world - " + BadboyCountry; },  0.05f, false),
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
@@ -380,7 +380,7 @@ public class Country : Staff
 
         Vector3 capitalTextPosition = province.getPosition();
         capitalTextPosition.y += 2f;
-        capitalTextPosition.z -= 1f;
+        capitalTextPosition.z -=5f;
         txtMeshTransform.position = capitalTextPosition;
 
         meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
@@ -405,7 +405,7 @@ public class Country : Staff
         {
             Vector3 capitalTextPosition = newCapital.getPosition();
             capitalTextPosition.y += 2f;
-            capitalTextPosition.z -= 1f;
+            capitalTextPosition.z -= 5f;
             meshCapitalText.transform.position = capitalTextPosition;
         }
         capital = newCapital;

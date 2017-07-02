@@ -139,7 +139,7 @@ public static class CollectionExtensions
             invokeMe(keyValue.Key, keyValue.Value);
         }
     }
-    //public static void AddMy(this Dictionary<System.Object, int> dictionary, System.Object what, int size)
+    //public static void AddMy(this Dictionary<object, int> dictionary, object what, int size)
     //{
     //    if (dictionary.ContainsKey(what))
     //        dictionary[what] += size;
