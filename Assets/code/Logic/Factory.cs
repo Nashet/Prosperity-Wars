@@ -74,12 +74,13 @@ public class Factory : Producer
             new Modifier(Invention.SteamPowerInvented , 25f, false),
             new Modifier(Invention.CombustionEngineInvented , 25f, false),
             modifierInventedMiningAndIsShaft,
-            new Modifier(Economy.StateCapitalism,  10f, false),
-            new Modifier(Economy.Interventionism,  30f, false),
-            new Modifier(Economy.LaissezFaire,  50f, false),
-            new Modifier(Economy.PlannedEconomy,  -10f, false),
+            new Modifier(Economy.isStateCapitlism,  10f, false),
+            new Modifier(Economy.isInterventionism,  30f, false),
+            new Modifier(Economy.isLF,  50f, false),
+            new Modifier(Economy.isPlanned,  -10f, false),
             modifierHasResourceInProvince, modifierLevelBonus,
-            modifierBelongsToCountry, modifierIsSubsidised
+            modifierBelongsToCountry, modifierIsSubsidised,
+            //new Modifier(Government.isPolis + Economy.isLF, )
         });
         Condition factoryPlacedInOurCountry = new Condition((forWhom) => base.province.getCountry() == forWhom, "Enterprise placed in our country", false);
         conditionsUpgrade = new ConditionsList(new List<Condition>

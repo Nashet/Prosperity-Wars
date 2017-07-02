@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System;
 
 
-public class Invention : AbstractCondition
+public class Invention : Name
 {
-    internal readonly static List<Invention> allInventions = new List<Invention>();   
+    internal readonly static List<Invention> allInventions = new List<Invention>();
     string description;
     internal Value cost;
     string inventedPhrase;
-    public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),        
+    public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
         Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
         Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(100f)),
         Mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
@@ -34,7 +34,7 @@ public class Invention : AbstractCondition
     readonly public static Condition BankingInvented = new Condition(x => (x as Country).isInvented(Invention.Banking), "Banking is invented", true);
     readonly public static Condition WelfareInvented = new Condition(x => (x as Country).isInvented(Invention.Welfare), "Welfare is invented", true);
     readonly public static Condition collectivismInvented = new Condition(x => (x as Country).isInvented(Invention.collectivism), "Collectivism is invented", true);
-    internal Invention(string name, string description, Value cost):base (name)
+    internal Invention(string name, string description, Value cost) : base(name)
     {
         //this.name = name;
         this.description = description;
@@ -66,5 +66,5 @@ public class Invention : AbstractCondition
     internal string getDescription()
     {
         return description;
-    }    
+    }
 }

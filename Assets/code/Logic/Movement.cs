@@ -192,9 +192,9 @@ public class Movement : Staff
     //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Procent.HundredProcent)
                 && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt))
-        {
+        {            
             //revolt
-            if (place == Game.Player)
+            if (place == Game.Player && !Game.Player.isAI())
                 new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
             mobilize(place.ownedProvinces);
             sendArmy(place.getCapital(), Procent.HundredProcent);

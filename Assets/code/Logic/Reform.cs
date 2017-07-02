@@ -5,11 +5,11 @@ using System;
 
 //public abstract class NameDescriptor
 //{ }
-abstract public class AbstractCondition : Name
-{
-    protected AbstractCondition(string name) : base(name)
-    { }
-}
+//abstract public class AbstractCondition : Name
+//{
+//    protected AbstractCondition(string name) : base(name)
+//    { }
+//}
 public static class ReformExtensions
 {
     public static bool isEnacted(this List<AbstractReform> list, AbstractReformValue reformValue)
@@ -21,7 +21,7 @@ public static class ReformExtensions
     }
 }
 
-abstract public class AbstractReformValue : AbstractCondition
+abstract public class AbstractReformValue :Name
 {
     readonly string description;
     readonly internal int ID;
@@ -71,7 +71,7 @@ abstract public class AbstractReformValue : AbstractCondition
     Modifier wantsReform;
     public ModifiersList modVoting;
 }
-public abstract class AbstractReform : AbstractCondition
+public abstract class AbstractReform : Name
 {
     //readonly string name;
     readonly string description;
@@ -244,7 +244,7 @@ public class Economy : AbstractReform
     internal readonly static Condition isNatural = new Condition(x => (x as Country).economy.status == Economy.NaturalEconomy, "Economy policy is Natural Economy", true);
 
     internal readonly static Condition isNotState = new Condition(x => (x as Country).economy.status != Economy.StateCapitalism, "Economy policy is not State Capitalism", true);
-    internal readonly static Condition isState = new Condition(x => (x as Country).economy.status == Economy.StateCapitalism, "Economy policy is State Capitalism", true);
+    internal readonly static Condition isStateCapitlism = new Condition(x => (x as Country).economy.status == Economy.StateCapitalism, "Economy policy is State Capitalism", true);
 
     internal readonly static Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Economy.Interventionism, "Economy policy is not Limited Interventionism", true);
     internal readonly static Condition isInterventionism = new Condition(x => (x as Country).economy.status == Economy.Interventionism, "Economy policy is Limited Interventionism", true);
@@ -318,8 +318,8 @@ public class Economy : AbstractReform
     internal ReformValue status;
     internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
-        new ConditionsList(new List<AbstractCondition> {
-            Invention.collectivismInvented, Government.ProletarianDictatorship, Condition.IsNotImplemented }));
+        new ConditionsList(new List<Condition> {
+            Invention.collectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
     internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(ConditionsList.IsNotImplemented));
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
     internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
@@ -439,7 +439,7 @@ public class Serfdom : AbstractReform
     internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "- Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
         {
-            new Condition( Government.ProletarianDictatorship, true), Condition.IsNotImplemented
+            Government.isProletarianDictatorship, Condition.IsNotImplemented
         }));
     public Serfdom(Country country) : base("Serfdom", "- Aristocrats privileges", country)
     {

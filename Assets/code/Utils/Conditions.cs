@@ -25,24 +25,24 @@ public class ConditionsList
         list = new List<Condition>(conditionsList.list);
     }
     //short constructor, allowing predicates of several types to be checked
-    public ConditionsList(List<AbstractCondition> inlist)
-    {
-        list = new List<Condition>();
-        foreach (var next in inlist)
-            if (next is Government.ReformValue)
-                list.Add(new Condition(next as Government.ReformValue, true));
-            else
-                if (next is Economy.ReformValue)
-                list.Add(new Condition(next as Economy.ReformValue, true));
-            //else
-            //    if (next is Invention)
-            //    list.Add(new Condition(next as Invention, true));
-            else
-                if (next is Condition)
-                list.Add(next as Condition);
-            else
-                throw new NotImplementedException();
-    }
+    //public ConditionsList(List<Condition> inlist)
+    //{
+    //    list = new List<Condition>();
+    //    foreach (var next in inlist)
+    //        if (next is Government.ReformValue)
+    //            list.Add(new Condition(next as Government.ReformValue, true));
+    //        else
+    //            if (next is Economy.ReformValue)
+    //            list.Add(new Condition(next as Economy.ReformValue, true));
+    //        //else
+    //        //    if (next is Invention)
+    //        //    list.Add(new Condition(next as Invention, true));
+    //        else
+    //            if (next is Condition)
+    //            list.Add(next as Condition);
+    //        else
+    //            throw new NotImplementedException();
+    //}
 
     internal void add(Condition condition)
     {
@@ -184,7 +184,7 @@ public class ConditionsList
 //        return check(forWhom);
 //    }
 //}
-public class Condition : AbstractCondition
+public class Condition : Name //AbstractCondition
 {
     //string text; //, conditionIsFalse;
     //protected Func<Owner, bool> check;
@@ -254,22 +254,22 @@ public class Condition : AbstractCondition
     //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;        
     //}
     ///// <summary>Checks if government == CheckingCountry.government</summary>    
-    public Condition(Government.ReformValue government, bool showAchievedConditionDescribtion): base ("Government is " + government.ToString())
-    {
-        //check3 = government.isGovernmentEqualsThat;
-        check3 = x => (x as Country).government.getValue() == government;
-        //this.text = "Government is " + government.ToString(); // invention.getInventedPhrase();
-        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    //public Condition(Government.ReformValue government, bool showAchievedConditionDescribtion): base ("Government is " + government.ToString())
+    //{
+    //    //check3 = government.isGovernmentEqualsThat;
+    //    check3 = x => (x as Country).government.getValue() == government;
+    //    //this.text = "Government is " + government.ToString(); // invention.getInventedPhrase();
+    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
 
-    }
-    ///// <summary>Checks if economy == CheckingCountry.economy</summary>    
-    public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion):base("Economical policy is " + economy.ToString())
-    {
-        //check2 = economy.isEconomyEqualsThat;
-        check3 = x => (x as Country).economy.status == economy;
-        //this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
-        this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
-    }
+    //}
+    /////// <summary>Checks if economy == CheckingCountry.economy</summary>    
+    //public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion):base("Economical policy is " + economy.ToString())
+    //{
+    //    //check2 = economy.isEconomyEqualsThat;
+    //    check3 = x => (x as Country).economy.status == economy;
+    //    //this.text = "Economical policy is " + economy.ToString(); // invention.getInventedPhrase();
+    //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
+    //}
     override public string getName()
     {
         if (base.getName() == null)
@@ -413,17 +413,17 @@ public class Modifier : Condition
     //    this.showZeroModifiers = showZeroModifiers;
     //}
     /// <summary>Checks if government == CheckingCountry.government/// depreciated</summary>  
-    public Modifier(Government.ReformValue government, float value, bool showZeroModifiers) : base(government, true)
-    {
-        this.value = value;
-        this.showZeroModifiers = showZeroModifiers;
-    }
+    //public Modifier(Government.ReformValue government, float value, bool showZeroModifiers) : base(government, true)
+    //{
+    //    this.value = value;
+    //    this.showZeroModifiers = showZeroModifiers;
+    //}
     /// <summary>Checks if economy == CheckingCountry.economy/// depreciated</summary>  
-    public Modifier(Economy.ReformValue economy, float value, bool showZeroModifiers) : base(economy, true)
-    {
-        this.value = value;
-        this.showZeroModifiers = showZeroModifiers;
-    }
+    //public Modifier(Economy.ReformValue economy, float value, bool showZeroModifiers) : base(economy, true)
+    //{
+    //    this.value = value;
+    //    this.showZeroModifiers = showZeroModifiers;
+    //}
     public override string ToString()
     {
         return getName();
@@ -551,10 +551,10 @@ public class ModifiersList : ConditionsList
 
     }
     //short constructor, allowing predicates of several types to be checked
-    public ModifiersList(List<AbstractCondition> inlist) : base(inlist)
-    {
+    //public ModifiersList(List<AbstractCondition> inlist) : base(inlist)
+    //{
 
-    }
+    //}
     //internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
     //internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
 

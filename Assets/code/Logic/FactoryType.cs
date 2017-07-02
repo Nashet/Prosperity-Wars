@@ -55,7 +55,7 @@ public class FactoryType
                 return Game.threadDangerSB.ToString();
             }, true);
       
-        conditionsBuild = new ConditionsList(new List<AbstractCondition>() {
+        conditionsBuild = new ConditionsList(new List<Condition>() {
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
     }
