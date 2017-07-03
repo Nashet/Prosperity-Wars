@@ -86,7 +86,7 @@ public class Country : Staff
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
             new Modifier (delegate(object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
-            delegate  { return "There is bigger threat to the world - " + BadboyCountry; },  0.05f, false),
+                delegate  { return "There is bigger threat to the world - " + BadboyCountry; },  0.05f, false),
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
@@ -118,7 +118,7 @@ public class Country : Staff
             markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
-            // inventions.MarkInvented(InventionType.individualRights);
+            markInvented(Invention.individualRights);
             //inventions.markInvented(Invention.ProfessionalArmy);           
         }
     }
@@ -585,7 +585,7 @@ public class Country : Staff
             {
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
-                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(100) == 1)
+                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f)// || Game.Random.Next(100) == 1)
                     && this.getStregth() > 0
                     && (this.getStregth() > possibleTarget.getCountry().getStregth() * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry

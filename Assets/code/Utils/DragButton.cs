@@ -14,11 +14,5 @@ public class DragButton : MonoBehaviour, IPointerDownHandler
     void Start()
     {
         parent = GetComponentInParent<DragPanel>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    }   
 }

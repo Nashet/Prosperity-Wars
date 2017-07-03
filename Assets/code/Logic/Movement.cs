@@ -80,17 +80,17 @@ public class Movement : Staff
     {
         return getName();
     }
+    //public string getName()
+    //{
+    //    return "Movement for " + targetReformValue.ToString();
+    //}
     public string getName()
     {
-        return "Movement for " + targetReformValue.ToString();
-    }
-    public string getShortName()
-    {
-        return targetReformValue.ToString();
+        return "For "+targetReformValue.ToString();
     }
     public string getDescription()
     {
-        return targetReformValue + ". Members: " + getMembership() + ", mid. loyalty: " + getMiddleLoyalty() + ", rel. strength: " + getRelativeStrength(getPlaceDejure());
+        return getName() + ", members: " + getMembership() + ", mid. loyalty: " + getMiddleLoyalty() + ", rel. strength: " + getRelativeStrength(getPlaceDejure());
     }
     /// <summary>
     /// Size of all members

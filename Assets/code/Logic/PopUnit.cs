@@ -400,7 +400,7 @@ abstract public class PopUnit : Producer
     }
     private List<Storage> getNeedsInCommon(List<Storage> needs)
     {
-        Value multiplier = new Value(this.getPopulation() / 100f);
+        Value multiplier = new Value(this.getPopulation() / 1000f);
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in needs)
@@ -463,7 +463,7 @@ abstract public class PopUnit : Producer
         else return new Procent(0);
     }
 
-    
+
     ////abstract public override void produce();
     ////{
     ////    float tribeMenOverPopulationFactor = 1f; //goes to zero with 20
@@ -739,8 +739,8 @@ abstract public class PopUnit : Producer
                 if (reformValue.allowed.isAllTrue(getCountry()))
                 {
                     var howGood = reformValue.howIsItGoodForPop(this);
-                    //if (howGood.isExist())
-                    result.Add(reformValue, howGood);
+                    if (howGood.isExist())
+                        result.Add(reformValue, howGood);
                 }
         return result;
     }

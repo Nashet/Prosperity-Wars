@@ -136,7 +136,7 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nMoney income: " + shownFactory.moneyIncomethisTurn
                 + "\nProfit: " + shownFactory.getProfit()
                 + "\nInput required: " + InputRequired
-                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + shownFactory.getConsumedCost().ToString()
+                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + Game.market.getCost(shownFactory.consumedTotal)
                 + "\nConsumed LT: " + shownFactory.consumedLastTurn
                 + "\nInput reserves: " + shownFactory.inputReservs
                 + "\nInput factor: " + shownFactory.getInputFactor()

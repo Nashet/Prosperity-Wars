@@ -20,8 +20,26 @@ public static class ReformExtensions
         return false;
     }
 }
-
-abstract public class AbstractReformValue :Name
+abstract public class AbstractReformStepValue : AbstractReformValue
+{
+    //private readonly int totalSteps;
+    public AbstractReformStepValue(string name, string indescription, int ID, ConditionsList condition, int totalSteps)
+        : base(name, indescription, ID, condition)
+    {
+        var previousID = ID - 1;
+        var nextID = ID + 1;
+        if (previousID >= 0 && nextID < totalSteps)
+            condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID)
+            || (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
+        else
+        if (nextID < totalSteps)
+            condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
+        else
+        if (previousID >= 0)
+            condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID), "Previous reform enacted", true));
+    }
+}
+abstract public class AbstractReformValue : Name
 {
     readonly string description;
     readonly internal int ID;
@@ -31,9 +49,9 @@ abstract public class AbstractReformValue :Name
     {
         //allowed.add();
     }
-    protected AbstractReformValue(string name, string indescription, int IDin, ConditionsList condition) : base(name)
+    protected AbstractReformValue(string name, string indescription, int ID, ConditionsList condition) : base(name)
     {
-        ID = IDin;
+        this.ID = ID;
         // name = inname;
         description = indescription;
         this.allowed = condition;
@@ -97,11 +115,11 @@ public abstract class AbstractReform : Name
 
 
     abstract internal AbstractReformValue getValue();
-    abstract internal AbstractReformValue getValue(int value);
+    //abstract internal AbstractReformValue getValue(int value);
 
 }
 public class Government : AbstractReform
-{    
+{
     public class ReformValue : AbstractReformValue
     {
         readonly private string prefix;
@@ -148,22 +166,22 @@ public class Government : AbstractReform
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Tribal, Aristocracy, Despotism, Democracy, ProletarianDictatorship };
 
     readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0,
-        new ConditionsList(ConditionsList.AlwaysYes), "tribe");
+        new ConditionsList(Condition.AlwaysYes), "tribe");
 
     readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1,
-        new ConditionsList(ConditionsList.AlwaysYes), "kingdom");
+        new ConditionsList(Condition.AlwaysYes), "kingdom");
 
     readonly internal static ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8,
-        new ConditionsList(ConditionsList.AlwaysYes), "polis");
+        new ConditionsList(Condition.AlwaysYes), "polis");
 
     readonly internal static ReformValue Despotism = new ReformValue("Despotism", "- Despot does what he wants", 2,
-        new ConditionsList(ConditionsList.AlwaysYes), "empire");
+        new ConditionsList(Condition.AlwaysYes), "empire");
 
     readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- Only Clerics have power", 5,
-        new ConditionsList(ConditionsList.AlwaysYes), "");
+        new ConditionsList(Condition.AlwaysYes), "");
 
     readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9,
-        new ConditionsList(ConditionsList.IsNotImplemented), "states");
+        new ConditionsList(Condition.IsNotImplemented), "states");
 
     readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "- Everyone can vote; each vote is equal", 3,
         new ConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "republic");
@@ -175,7 +193,7 @@ public class Government : AbstractReform
         new ConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta");
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
-        new ConditionsList(ConditionsList.IsNotImplemented), "ssr");
+        new ConditionsList(Condition.IsNotImplemented), "ssr");
 
     internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
     internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.getName(), true);
@@ -192,7 +210,7 @@ public class Government : AbstractReform
     public Government(Country country) : base("Government", "Form of government", country)
     {
         //status = Tribal;
-         status = Aristocracy;
+        status = Aristocracy;
         this.country = country;
     }
     internal string getPrefix()
@@ -207,10 +225,10 @@ public class Government : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;
@@ -282,10 +300,7 @@ public class Economy : AbstractReform
                 return false;
         }
 
-        internal bool isEconomyEqualsThat(Country forWhom)
-        {
-            return forWhom.economy.status == this;
-        }
+
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
@@ -305,7 +320,6 @@ public class Economy : AbstractReform
                 result = new Procent(0f);
             else
                 result = new Procent(0.5f);
-
             return result;
         }
     }
@@ -320,7 +334,7 @@ public class Economy : AbstractReform
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<Condition> {
             Invention.collectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
-    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(ConditionsList.IsNotImplemented));
+    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(Condition.IsNotImplemented));
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
     internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
     internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsList(capitalism));
@@ -335,10 +349,10 @@ public class Economy : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;
@@ -462,11 +476,11 @@ public class Serfdom : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        //return PossibleStatuses.Find(x => x.ID == value);
-        return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    //return PossibleStatuses.Find(x => x.ID == value);
+    //    return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;
@@ -627,11 +641,11 @@ public class MinimalWage : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        return PossibleStatuses.Find(x => x.ID == value);
-        //return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    return PossibleStatuses.Find(x => x.ID == value);
+    //    //return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;
@@ -777,11 +791,11 @@ public class UnemploymentSubsidies : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        return PossibleStatuses.Find(x => x.ID == value);
-        //return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    return PossibleStatuses.Find(x => x.ID == value);
+    //    //return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;
@@ -808,13 +822,12 @@ public class UnemploymentSubsidies : AbstractReform
 
 public class TaxationForPoor : AbstractReform
 {
-    public class ReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformStepValue
     {
-
         internal Procent tax;
-        public ReformValue(string inname, string indescription, Procent intarrif, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string name, string description, Procent tarrif, int ID, ConditionsList condition) : base(name, description, ID, condition, 11)
         {
-            tax = intarrif;
+            tax = tarrif;
         }
 
         override public string ToString()
@@ -853,7 +866,7 @@ public class TaxationForPoor : AbstractReform
     static TaxationForPoor()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsList(ConditionsList.AlwaysYes)));
+            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsList(Condition.AlwaysYes)));
     }
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
@@ -863,9 +876,9 @@ public class TaxationForPoor : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
+    internal bool isThatReformEnacted(int value)
     {
-        return PossibleStatuses[value];
+        return status == PossibleStatuses[value];
     }
     internal override bool canChange()
     {
@@ -890,10 +903,10 @@ public class TaxationForPoor : AbstractReform
 
 public class TaxationForRich : AbstractReform
 {
-    public class ReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformStepValue
     {
         internal Procent tax;
-        public ReformValue(string inname, string indescription, Procent intarrif, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, Procent intarrif, int idin, ConditionsList condition) : base(inname, indescription, idin, condition, 11)
         {
             tax = intarrif;
         }
@@ -935,7 +948,7 @@ public class TaxationForRich : AbstractReform
     static TaxationForRich()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsList(ConditionsList.AlwaysYes)));
+            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsList(Condition.AlwaysYes)));
     }
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
@@ -945,10 +958,10 @@ public class TaxationForRich : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;
@@ -997,20 +1010,6 @@ public class MinorityPolicy : AbstractReform
             else
                 return false;
         }
-
-        static readonly Procent br = new Procent(0.2f);
-        static readonly Procent al = new Procent(0.1f);
-        static readonly Procent nu = new Procent(0.0f);
-        internal Procent getTax()
-        {
-            if (this == Residency)
-                return br;
-            else
-                if (this == Equality)
-                return al;
-            else
-                return nu;
-        }
         internal override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
@@ -1037,7 +1036,7 @@ public class MinorityPolicy : AbstractReform
     internal static ReformValue Equality; // all can vote
     internal static ReformValue Residency; // state culture only can vote
                                            //todo add no-individual rights condition check?
-    internal readonly static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, ConditionsList.IsNotImplemented);
+    internal readonly static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, new ConditionsList(Condition.IsNotImplemented));
 
     //internal static Condition IsResidencyPop;
     public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)
@@ -1046,7 +1045,7 @@ public class MinorityPolicy : AbstractReform
             Equality = new ReformValue("Equality for minorities", "- All cultures have same rights", 2,
                 new ConditionsList(new List<Condition>() { Invention.IndividualRightsInvented }));
         if (Residency == null)
-            Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote", 1, new ConditionsList(ConditionsList.AlwaysYes));
+            Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote", 1, new ConditionsList(Condition.AlwaysYes));
 
         status = Residency;
         //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
@@ -1056,10 +1055,10 @@ public class MinorityPolicy : AbstractReform
     {
         return status;
     }
-    internal override AbstractReformValue getValue(int value)
-    {
-        return PossibleStatuses[value];
-    }
+    //internal override AbstractReformValue getValue(int value)
+    //{
+    //    return PossibleStatuses[value];
+    //}
     internal override bool canChange()
     {
         return true;

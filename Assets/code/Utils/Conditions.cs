@@ -10,8 +10,8 @@ using System.ComponentModel;
 
 public class ConditionsList
 {
-    internal readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(x => 2 * 2 == 4, "Always Yes condition", true) });
-    internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { Condition.IsNotImplemented });
+    //internal readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition> { new Condition(x => 2 * 2 == 4, "Always Yes condition", true) });
+    //internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition> { Condition.IsNotImplemented });
 
     protected List<Condition> list;
     /// <summary>
@@ -25,6 +25,14 @@ public class ConditionsList
     public ConditionsList(List<Condition> inlist)
     {
         list = inlist;
+    }
+    /// <summary>
+    /// basic constructor
+    /// </summary>    
+    public ConditionsList(Condition inlist)
+    {
+        list = new List<Condition>();
+        list.Add(inlist);
     }
     /// <summary>
     /// copy constructor
@@ -93,8 +101,8 @@ public class ConditionsList
 /// </summary> 
 public class Condition : Name
 {
-    internal static Condition IsNotImplemented = new Condition(delegate (object forWhom) { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
-    internal static Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
+    internal static readonly Condition  IsNotImplemented = new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
+    internal static readonly Condition  AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
 
     protected readonly Func<object, bool> checkingFunction;
     /// <summary>to hide junk info /// </summary>
@@ -200,12 +208,12 @@ public class Condition : Name
         bool answer = false;
         if (checkingFunction(forWhom))
         {
-            if (showAchievedConditionDescribtion) result += "\n(+) " + getName();
+            if (showAchievedConditionDescribtion) result += "\n(+) " + getName(forWhom);
             answer = true;
         }
         else
         {
-            result += "\n(-) " + getName();
+            result += "\n(-) " + getName(forWhom);
             answer = false;
         }
         description = result;
@@ -365,11 +373,12 @@ public class ConditionForDoubleObjects : Condition
 }
 public class Modifier : Condition
 {
-    float value;
-    Func<int> multiplierModifierFunction;
-    Func<object, float> floatModifierFunction;
-    bool showZeroModifiers;
     static public readonly Modifier modifierDefault = new Modifier(x => true, "Default", 1f, true);
+    readonly float value;
+    readonly Func<int> multiplierModifierFunction;
+    readonly Func<object, float> floatModifierFunction;
+    readonly bool showZeroModifiers;    
+
     public Modifier(Func<object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
     {
         this.value = value;
@@ -499,7 +508,7 @@ public class Modifier : Condition
             if (result != 0f || showZeroModifiers)
             {
                 StringBuilder str = new StringBuilder("\n(+) ");
-                str.Append(getName());
+                str.Append(getName(forWhom));
                 str.Append(": ").Append(result);
                 description = str.ToString();
             }
@@ -512,7 +521,7 @@ public class Modifier : Condition
             if (result != 0f || showZeroModifiers)
             {
                 StringBuilder str = new StringBuilder("\n(+) ");
-                str.Append(getName());
+                str.Append(getName(forWhom));
                 str.Append(": ").Append(result);
                 description = str.ToString();
             }
@@ -527,7 +536,7 @@ public class Modifier : Condition
             if (result != 0f || showZeroModifiers)
             {
                 StringBuilder str = new StringBuilder("\n(+) ");
-                str.Append(getName());
+                str.Append(getName(forWhom));
                 str.Append(": ").Append(result);
                 description = str.ToString();
             }
