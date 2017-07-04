@@ -50,7 +50,7 @@ public class InventionsPanel : DragPanel
         hide();
         var sb = new StringBuilder();
         string scienceModifier;
-        var spModifier = Game.Player.modSciencePoints.getModifier(Game.Player, out scienceModifier);
+        var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
         sb.Append("Science points: ").Append(Game.Player.sciencePoints).Append(" + ");
         sb.Append(Game.Player.getSciencePointsBase().multipleOutside(spModifier)).Append(" Modifiers: ").Append(scienceModifier);        
         if (selectedInvention != null)

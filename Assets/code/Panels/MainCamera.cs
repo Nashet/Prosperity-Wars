@@ -108,7 +108,7 @@ public class MainCamera : MonoBehaviour
                 closeToppestPanel();
             if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
             {
-                Game.stepSimulation();
+                Game.simulate();
                 refreshAllActive();
             }
 

@@ -40,9 +40,15 @@ public class Value
         return this.value <= invalue.value;
     }
     //TODO overflow checks?
-    public void add(Value invalue)
+    public void add(Value invalue, bool showMessageAboutNegativeValue = true)
     {
-        value += invalue.value;
+        if (value + invalue.value  < 0f)
+        {
+            if (showMessageAboutNegativeValue) Debug.Log("Value Add-Value failed");
+            set(0);
+        }
+        else
+            value += invalue.value;
     }
 
     public void add(float invalue, bool showMessageAboutNegativeValue = true)

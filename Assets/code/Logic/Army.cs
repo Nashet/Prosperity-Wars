@@ -79,7 +79,7 @@ public class Army
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
         //modifierDefenseInMountains
-            Modifier.modifierDefault, modifierInDefense,  modifierMorale, modifierColdArms,
+            Modifier.modifierDefault1, modifierInDefense,  modifierMorale, modifierColdArms,
         modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck
         });
     // private Army consolidatedArmy;

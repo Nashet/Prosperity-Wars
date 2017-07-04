@@ -41,31 +41,15 @@ public class ConditionsList
     {
         list = new List<Condition>(conditionsList.list);
     }
-    //short constructor, allowing predicates of several types to be checked
-    //public ConditionsList(List<Condition> inlist)
-    //{
-    //    list = new List<Condition>();
-    //    foreach (var next in inlist)
-    //        if (next is Government.ReformValue)
-    //            list.Add(new Condition(next as Government.ReformValue, true));
-    //        else
-    //            if (next is Economy.ReformValue)
-    //            list.Add(new Condition(next as Economy.ReformValue, true));
-    //        //else
-    //        //    if (next is Invention)
-    //        //    list.Add(new Condition(next as Invention, true));
-    //        else
-    //            if (next is Condition)
-    //            list.Add(next as Condition);
-    //        else
-    //            throw new NotImplementedException();
-    //}
-
+    
     internal void add(Condition condition)
     {
         list.Add(condition);
     }
-
+    public bool contains(Condition condition)
+    {
+        return list.Contains(condition);
+    }
     /// <summary>Return false if any of conditions is false, also makes description</summary>    
     public bool isAllTrue(object forWhom, out string description)
     {
@@ -101,8 +85,8 @@ public class ConditionsList
 /// </summary> 
 public class Condition : Name
 {
-    internal static readonly Condition  IsNotImplemented = new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
-    internal static readonly Condition  AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
+    internal static readonly Condition IsNotImplemented = new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
+    internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
 
     protected readonly Func<object, bool> checkingFunction;
     /// <summary>to hide junk info /// </summary>
@@ -373,11 +357,12 @@ public class ConditionForDoubleObjects : Condition
 }
 public class Modifier : Condition
 {
-    static public readonly Modifier modifierDefault = new Modifier(x => true, "Default", 1f, true);
+    static public readonly Modifier modifierDefault1 = new Modifier(x => true, "Default", 1f, true);
+    static public readonly Modifier modifierDefault100 = new Modifier(x => true, "Default", 100f, true);
     readonly float value;
     readonly Func<int> multiplierModifierFunction;
     readonly Func<object, float> floatModifierFunction;
-    readonly bool showZeroModifiers;    
+    readonly bool showZeroModifiers;
 
     public Modifier(Func<object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
     {
@@ -569,7 +554,6 @@ public class Modifier : Condition
 }
 public class ModifiersList : ConditionsList
 {
-    //List<Modifier> list;
     // basic constructor
     public ModifiersList(List<Condition> inlist) : base(inlist)
     {
@@ -610,5 +594,14 @@ public class ModifiersList : ConditionsList
         foreach (Modifier item in list)
             summ += item.getModifier(forWhom);
         return summ;
+    }
+
+    internal float find(AbstractReformValue reformValue)
+    {
+        var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;              
+        if (foundModifier == null)
+            return 0f;
+        else
+            return foundModifier.getValue();
     }
 }

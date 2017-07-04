@@ -802,7 +802,7 @@ public abstract class Name
     {
         return name;
     }
-    public string getDescription()
+    virtual public string getDescription()
     {
         return name;
     }

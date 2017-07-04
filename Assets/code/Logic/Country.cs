@@ -29,6 +29,11 @@ public class Country : Staff
     public readonly List<Movement> movements = new List<Movement>();
     public readonly CountryStorageSet storageSet = new CountryStorageSet();
 
+    internal int getSize()
+    {
+        return ownedProvinces.Count;
+    }
+
     private TextMesh meshCapitalText;
     private Material borderMaterial;
 
@@ -55,18 +60,18 @@ public class Country : Staff
 
     private readonly Modifier modXHasMyCores;
     public readonly ModifiersList modMyOpinionOfXCountry;
-    public readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
+    public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
         //new Modifier(Government.isTribal, 0f, false),
         //new Modifier(Government.isTheocracy, 0f, false),
-        new Modifier(Government.isDespotism, 0.25f, false),
-        new Modifier(Government.isJunta, 0.3f, false),
-        new Modifier(Government.isAristocracy, 0.5f, false),
-        new Modifier(Government.isProletarianDictatorship, 0.5f, false),
-        new Modifier(Government.isDemocracy, 1f, false),
-        new Modifier(Government.isPolis, 1f, false),
-        new Modifier(Government.isWealthDemocracy, 1f, false),
-        new Modifier(Government.isBourgeoisDictatorship, 1f, false),
+        new Modifier(Government.isDespotism, Government.Despotism.getScienceModifier(), false),
+        new Modifier(Government.isJunta, Government.Junta.getScienceModifier(), false),
+        new Modifier(Government.isAristocracy, Government.Aristocracy.getScienceModifier(), false),
+        new Modifier(Government.isProletarianDictatorship, Government.ProletarianDictatorship.getScienceModifier(), false),
+        new Modifier(Government.isDemocracy, Government.Democracy.getScienceModifier(), false),
+        new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
+        new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
+        new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
     });
 
     static Country()
@@ -86,8 +91,8 @@ public class Country : Staff
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
             "Recently attacked us", -0.06f, false),
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
-            new Modifier (delegate(object x) {isThereBadboyCountry();  return BadboyCountry!= null && BadboyCountry!= x as Country  && BadboyCountry!= this; },
-                delegate  { return "There is bigger threat to the world - " + BadboyCountry; },  0.05f, false),
+            new Modifier (delegate(object x) {isThereBadboyCountry();  return isThereBadboyCountry()!= null && isThereBadboyCountry()!= x as Country  && isThereBadboyCountry()!= this; },
+                delegate  { return "There is bigger threat to the world - " + isThereBadboyCountry(); },  0.05f, false),
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
         bank = new Bank();
@@ -115,13 +120,15 @@ public class Country : Staff
 
             economy.status = Economy.StateCapitalism;
             serfdom.status = Serfdom.Abolished;
+            //government.setValue(Government.Tribal, false);
+            government.status = Government.Aristocracy;
             markInvented(Invention.Farming);
             markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
-            markInvented(Invention.individualRights);
-            markInvented(Invention.ProfessionalArmy);
-            markInvented(Invention.Welfare);
+            //markInvented(Invention.individualRights);
+            //markInvented(Invention.ProfessionalArmy);
+            //markInvented(Invention.Welfare);
         }
     }
 
@@ -272,9 +279,9 @@ public class Country : Staff
             DateOfisThereBadboyCountry = Game.date;
             float worldStrenght = 0f;
             foreach (var item in Country.getExisting())
-                worldStrenght += item.getStregth();
+                worldStrenght += item.getStregth(null);
             float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStregth() >= streghtLimit).MaxBy(x => x.getStregth());
+            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStregth(null) >= streghtLimit).MaxBy(x => x.getStregth(null));
         }
         return BadboyCountry;
 
@@ -283,7 +290,7 @@ public class Country : Staff
     {
         if (country == this)
             return false;
-        if (country.getStregth() > this.getStregth() * 2)
+        if (country.getStregth(null) > this.getStregth(null) * 2)
             return true;
         else
             return false;
@@ -587,6 +594,7 @@ public class Country : Staff
     }
     internal void simulate()
     {
+        base.simulate();
         var spBase = getSciencePointsBase();
         spBase.multiple(modSciencePoints.getModifier(this));
         sciencePoints.add(spBase);
@@ -629,10 +637,10 @@ public class Country : Staff
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
                     && (getRelationTo(possibleTarget.getCountry()).get() < 1f)// || Game.Random.Next(100) == 1)
-                    && this.getStregth() > 0
-                    && (this.getStregth() > possibleTarget.getCountry().getStregth() * 0.25f
+                    && this.getStregth(null) > 0
+                    && (this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
-                        || possibleTarget.getCountry().isAI() && this.getStregth() > possibleTarget.getCountry().getStregth() * 0.1f)
+                        || possibleTarget.getCountry().isAI() && this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.1f)
                     )
                 {
                     mobilize(ownedProvinces);

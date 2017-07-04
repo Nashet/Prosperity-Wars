@@ -574,7 +574,7 @@ public class Game : ThreadedJob
     {
         foreach (Staff attacker in Staff.getAllStaffs().ToList())
         {
-            foreach (var attackerArmy in attacker.getAttackingArmies())
+            foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
             {
                 var result = attackerArmy.attack(attackerArmy.getDestination());
                 if (result.isAttackerWon())
@@ -600,11 +600,11 @@ public class Game : ThreadedJob
 
 
     }
-    internal static void stepSimulation()
+    internal static void simulate()
     {
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
-        //date = date.AddDays(23);
+        
         date = date.AddYears(1);
         // strongly before PrepareForNewTick
         Game.market.simulatePriceChangeBasingOnLastTurnDate();
@@ -683,6 +683,7 @@ public class Game : ThreadedJob
                         pop.payTaxes();
 
                     pop.calcLoyalty();
+
                     if (Game.Random.Next(10) == 1)
                     {
                         pop.calcGrowth();

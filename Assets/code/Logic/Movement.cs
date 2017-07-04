@@ -99,7 +99,10 @@ public class Movement : Staff
     }
     public string getDescription()
     {
-        return getShortName() + ", members: " + getMembership() + ", mid. loyalty: " + getMiddleLoyalty() + ", rel. strength: " + getRelativeStrength(getPlaceDejure());
+        var sb = new StringBuilder(getShortName());
+        sb.Append(", members: ").Append(getMembership()).Append(", mid. loyalty: ").Append(getMiddleLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(getPlaceDejure()));
+        sb.Append(", str: ").Append(getStregth(this));
+        return sb.ToString();
     }
     /// <summary>
     /// Size of all members
@@ -161,9 +164,8 @@ public class Movement : Staff
         //_isInRevolt = false;
         if (targetReform == null) // meaning separatism
         {
-            new Message("", "Separatists won revolution - " + targetReformValue, "hmm");
+            new Message("", "Separatists won revolution - " + (targetReformValue as Separatism).getCountry().getDescription(), "hmm");
             (targetReformValue as Separatism).getCountry().onSeparatismWon(getPlaceDejure());
-            
         }
         else
             targetReform.setValue(targetReformValue);
@@ -193,6 +195,7 @@ public class Movement : Staff
     }
     public void simulate()
     {
+        base.simulate();
         //assuming movement already won or lost
         if (isInRevolt())
         {
@@ -205,7 +208,7 @@ public class Movement : Staff
             return;
         }
         //&& canWinUprising())
-        if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Procent.HundredProcent)
+        if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
                 && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt))
         {
             //revolt

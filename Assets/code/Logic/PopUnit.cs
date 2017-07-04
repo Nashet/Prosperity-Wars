@@ -33,6 +33,7 @@ abstract public class PopUnit : Producer
     static readonly Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
         modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies,
         modifierMinorityPolicy;
+    static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).getCountry().getSize() > (x as PopUnit).getCountry().government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
 
     public Value incomeTaxPayed = new Value(0);
 
@@ -74,11 +75,12 @@ abstract public class PopUnit : Producer
             modifierMinorityPolicy,
             new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
             new Modifier (x => !(x as PopUnit).isStateCulture() &&
-            (x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false)
+            (x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false),
+            modCountryIsToBig
 });
 
         modEfficiency = new ModifiersList(new List<Condition> {
-            Modifier.modifierDefault,
+            Modifier.modifierDefault1,
             new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),
             //new Modifier(x=>(x as PopUnit).getCountry().inventions.isInvented(Invention.SteamPower),"" , 0.25f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
@@ -282,12 +284,12 @@ abstract public class PopUnit : Producer
     {
         return population;
     }
-    internal int howMuchCanMobilize(Staff byWhom)
+    internal int howMuchCanMobilize(Staff byWhom, Movement againstWho)
     {
         int howMuchCanMobilize = 0;
         if (byWhom == getCountry())
         {
-            if (this.getMovement() == null || !this.getMovement().isInRevolt())
+            if (this.getMovement() == null || (!this.getMovement().isInRevolt() && this.getMovement() != againstWho))
             {
                 if (popType == PopType.Soldiers)
                     howMuchCanMobilize = (int)(getPopulation() * 0.5);
@@ -309,7 +311,7 @@ abstract public class PopUnit : Producer
     }
     public Corps mobilize(Staff byWho)
     {
-        int amount = howMuchCanMobilize(byWho);
+        int amount = howMuchCanMobilize(byWho, null);
         if (amount > 0)
         {
             mobilized += amount;
@@ -809,7 +811,7 @@ abstract public class PopUnit : Producer
 
     public override void simulate()
     {
-
+        // it's in game.simulate
     }
 
     // Not called in capitalism
@@ -1132,7 +1134,8 @@ abstract public class PopUnit : Producer
     }
     internal void calcAssimilations()
     {
-        if (this.culture != province.getCountry().getCulture())
+       
+        if (!this.isStateCulture() && getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
         {
             int assimilationSize = getAssimilationSize();
             if (assimilationSize > 0 && this.getPopulation() >= assimilationSize)

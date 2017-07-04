@@ -269,7 +269,7 @@ public class Province : Name
     public bool isCoreFor(PopUnit pop)
     {
         return cores.Any(x => x.getCulture() == pop.culture);
-        
+
     }
     public string getCoresDescription()
     {
@@ -310,7 +310,11 @@ public class Province : Name
         // add loyalty penalty for conquered province // temp
         foreach (var pop in allPopUnits)
         {
-            //pop.loyalty.set(0f);
+            if (pop.culture == taker.getCulture())
+                pop.loyalty.add(Options.PopLoyaltyChangeOnAnnexStateCulture);
+            else
+                pop.loyalty.subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
+            pop.loyalty.clamp100();
             Movement.leave(pop);
             //item.setMovement(null);
         }
@@ -331,10 +335,14 @@ public class Province : Name
         setBorderMaterials(false);
 
         if (modifiers.ContainsKey(Mod.recentlyConquered))
-            modifiers[Mod.recentlyConquered] = Game.date.AddYears(50);
+            modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
         else
-            modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(50));
+            modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
         // modifiers.Add(Mod.blockade, default(DateTime));
+    }
+    public int howFarFromCapital()
+    {
+        return 0;
     }
     public Dictionary<Mod, DateTime> getModifiers()
     {
@@ -344,9 +352,9 @@ public class Province : Name
     {
         return getCountry().getCapital() == this;
     }
-    public IEnumerable<Country> getCores()    
-    {        
-        foreach (var core in cores)        
+    public IEnumerable<Country> getCores()
+    {
+        foreach (var core in cores)
             yield return core;
     }
     internal Country getRandomCore()

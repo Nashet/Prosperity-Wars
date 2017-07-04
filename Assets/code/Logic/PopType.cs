@@ -142,10 +142,15 @@ public class PopType
     {
         return basicProduction;
     }
-    public bool canMobilize()
+    public bool canMobilize(Staff byWhom)
     {
-        if (this == PopType.Capitalists)
-            return false;
+        if (byWhom is Country)
+        {
+            if (this == PopType.Capitalists)
+                return false;
+            else
+                return true;
+        }
         else
             return true;
     }

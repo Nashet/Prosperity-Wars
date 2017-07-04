@@ -28,6 +28,8 @@ public class DiplomacyPanel : DragPanel
 
         sb.Clear();
         sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation());
+        sb.Append(", size: ").Append(selectedCountry.getSize());
+        sb.Append(", str: ").Append(selectedCountry.getStregth(null));
         sb.Append("\nState culture: ").Append(selectedCountry.getCulture());        
         sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append("; GDP per thousand men: ").Append(selectedCountry.getGDPPer1000());
         sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append(", ").Append(selectedCountry.economy.getValue()).Append(", ").Append(selectedCountry.minorityPolicy.getValue());

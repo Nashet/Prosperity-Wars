@@ -18,15 +18,22 @@ public abstract class Staff : Consumer
     /// Sum of existing armies men + unmobilized reserve
     /// </summary>
     /// <returns></returns>
-    public float getStregth()
+    public float getStregth(Movement againstWho)
     {
-        return howMuchCanMobilize() + getAllArmiesSize();
+        return howMuchCanMobilize(againstWho) + getAllArmiesSize();
+    }
+    public void simulate()
+    {
+
     }
     public Procent getRelativeStrength(Staff toWhom)
     {
         //var governmentHomeArmy = country.getDefenceForces();
-        var thisStrenght = getStregth();
-        var toWhomStrenght = toWhom.getStregth();
+        Movement isToWhomMovement = toWhom as Movement;
+        var thisStrenght = getStregth(isToWhomMovement); // null or not null
+
+        Movement isThisMovement = this as Movement;
+        var toWhomStrenght = toWhom.getStregth(isThisMovement);// null or not null
 
         if (toWhomStrenght == 0f && thisStrenght > 0f)
             return new Procent(999.999f);
@@ -34,13 +41,13 @@ public abstract class Staff : Consumer
             return Procent.makeProcent(thisStrenght, toWhomStrenght, false);
 
     }
-    public float howMuchCanMobilize()
+    public float howMuchCanMobilize(Movement againstWho)
     {
         float result = 0f;
-        foreach (var pr in place.ownedProvinces)
-            foreach (var po in pr.allPopUnits)
-                if (po.popType.canMobilize())
-                    result += po.howMuchCanMobilize(this);
+        foreach (var province in place.ownedProvinces)
+            foreach (var pop in province.allPopUnits)
+                if (pop.popType.canMobilize(this))
+                    result += pop.howMuchCanMobilize(this, againstWho);
         return result;
     }
     public float getAllArmiesSize()
@@ -106,7 +113,7 @@ public abstract class Staff : Consumer
         {
             Army newArmy = new Army(this);
             foreach (var item in province.allPopUnits)
-                if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
+                if (item.popType.canMobilize(this) && item.howMuchCanMobilize(this, null) > 0)
                     newArmy.add(item.mobilize(this));
         }
         consolidateArmies();

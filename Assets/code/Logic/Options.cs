@@ -73,7 +73,7 @@ public static class Options
     internal static readonly int PopRichStrataVotePower = 5;
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly int ProvinceChanceToGetCore = 70;
-    internal static readonly float CountryBadBoyWorldLimit = 0.2f;
+    internal static readonly float CountryBadBoyWorldLimit = 0.1f;
     internal static readonly int FactoryMediumTierLevels = 8 + 1;
     internal static readonly int FactoryMediumHighLevels = 15 + 1;
     internal static readonly int CountryTimeToForgetBattle = 40;
@@ -89,4 +89,7 @@ public static class Options
     internal static readonly Procent PopLoyaltyBoostOnRevolutionWon = new Procent(0.8f);
     internal static readonly Procent PopLoyaltyBoostOnRevolutionLost = new Procent(0.3f);
     internal static readonly int PopChangeMovementRate = 30;
+    internal static readonly Procent MovementStrenthToStartRebellion = new Procent(0.50f);
+    internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
+    internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
 }

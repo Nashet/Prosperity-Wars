@@ -113,6 +113,7 @@ public class Factory : Producer
     internal static readonly ModifiersList
         modifierEfficiency = new ModifiersList(new List<Condition>
         {
+           Modifier.modifierDefault100,
             new Modifier(Invention.SteamPowerInvented, x => (x as Factory).getCountry(), 25f, false),
             new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).getCountry(), 25f, false),
 
@@ -122,7 +123,10 @@ public class Factory : Producer
             new Modifier(Economy.isPlanned, x => (x as Factory).getCountry(), -10f, false),
             modifierInventedMiningAndIsShaft, modifierHasResourceInProvince, modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
              new Modifier(x => Government.isPolis.checkIftrue((x as Factory).getCountry())
-             && (x as Factory).province.isCapital(), "Capital of Polis", 100f, false)
+             && (x as Factory).province.isCapital(), "Capital of Polis", 100f, false),
+             new Modifier(x=>(x as Factory).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -20f, false),
+             new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -100f, false),
+             new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -30f, false) // remove this?
         });
 
     internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(province.getCountry().bank)
@@ -655,7 +659,7 @@ public class Factory : Producer
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-            result.set(result.get() * (1f + modifierEfficiency.getModifier(this) / 100f));
+            result.set(result.get() * (modifierEfficiency.getModifier(this) / 100f));        
         return result;
     }
 

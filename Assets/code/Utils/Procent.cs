@@ -100,11 +100,11 @@ public class Procent : Value
         return result;
     }
 
-    public void add(Procent pro)
+    public void add(Procent pro, bool showMessageAboutNegativeValue = true)
     {
-        base.add(pro);
-        if (base.get() > 1f)
-            set(1f);
+        base.add(pro, showMessageAboutNegativeValue);
+        //if (base.get() > 1f)
+        //    set(1f);
     }
     public void addPoportionally(int baseValue, int secondValue, Procent secondProcent)
     {
