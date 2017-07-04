@@ -731,31 +731,58 @@ abstract public class PopUnit : Producer
         return canVote(getCountry().government.getTypedValue());
     }
     abstract internal bool canVote(Government.ReformValue reform);
-    public Dictionary<AbstractReformValue, Value> getIssues()
+    public Dictionary<AbstractReformValue, float> getIssues()
     {
-        var result = new Dictionary<AbstractReformValue, Value>();
+        var result = new Dictionary<AbstractReformValue, float>();
         foreach (var reform in this.getCountry().reforms)
             foreach (AbstractReformValue reformValue in reform)
                 if (reformValue.allowed.isAllTrue(getCountry()))
                 {
-                    var howGood = reformValue.howIsItGoodForPop(this);
-                    if (howGood.isExist())
-                        result.Add(reformValue, howGood);
+                    var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
+                    //if (howGood.isExist())
+                    if (howGood > 0f)
+                        result.Add(reformValue, Value.Convert(howGood));
                 }
+        var target = canBeSeparatis();
+        if (target != null)
+        {
+            var howGood = target.modVoting.getModifier(this);
+            if (howGood > 0f)
+                result.Add(target, Value.Convert(howGood));
+        }
         return result;
     }
     public KeyValuePair<AbstractReform, AbstractReformValue> getMostImportantIssue()
     {
-        var list = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, Value>();
+        var list = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, float>();
         foreach (var reform in this.getCountry().reforms)
             foreach (AbstractReformValue reformValue in reform)
                 if (reformValue.allowed.isAllTrue(getCountry()))
                 {
-                    var howGood = reformValue.howIsItGoodForPop(this);
-                    if (howGood.isExist())
+                    var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
+                    //if (howGood.isExist())
+                    if (howGood > 0f)
                         list.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(reform, reformValue), howGood);
                 }
-        return list.MaxBy(x => x.Value.get()).Key;
+        var target = canBeSeparatis();
+        if (target != null)
+        {
+            var howGood = target.modVoting.getModifier(this);
+            if (howGood > 0f)
+                list.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(null, target), howGood);
+        }
+        return list.MaxByRandom(x => x.Value).Key;
+    }
+    private Separatism canBeSeparatis()
+    {
+        foreach (var item in province.getCores())
+        {
+            if (!item.isAlive() && item != getCountry() && item.getCulture() == this.culture)//todo doesn't supports different countries for same culture
+            {
+                return Separatism.find(item);
+            }
+        }
+        return null;
     }
     public void calcLoyalty()
     {

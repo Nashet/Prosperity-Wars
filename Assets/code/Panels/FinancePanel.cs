@@ -106,7 +106,7 @@ public class FinancePanel : DragPanel
                 if (fact.getOwner() is Country)
                 {
                     var c = fact.getOwner() as Country;
-                    if (!c.isExist())
+                    if (!c.isAlive())
                         new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
                 }
             }

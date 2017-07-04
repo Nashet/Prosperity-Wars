@@ -26,18 +26,9 @@ abstract public class AbstractReformStepValue : AbstractReformValue
     public AbstractReformStepValue(string name, string indescription, int ID, ConditionsList condition, int totalSteps)
         : base(name, indescription, ID, condition)
     {
-        var previousID = ID - 1;
-        var nextID = ID + 1;
-        if (previousID >= 0 && nextID < totalSteps)
-            condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID)
-            || (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
-        else
-        if (nextID < totalSteps)
-            condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
-        else
-        if (previousID >= 0)
-            condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID), "Previous reform enacted", true));
+
     }
+
 }
 abstract public class AbstractReformValue : Name
 {
@@ -52,7 +43,6 @@ abstract public class AbstractReformValue : Name
     protected AbstractReformValue(string name, string indescription, int ID, ConditionsList condition) : base(name)
     {
         this.ID = ID;
-        // name = inname;
         description = indescription;
         this.allowed = condition;
         isEnacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
@@ -62,7 +52,7 @@ abstract public class AbstractReformValue : Name
         loyalty = new Modifier(x => this.loyaltyBoostFor(x as PopUnit),
                     "Loyalty", 1f, false);
         modVoting = new ModifiersList(new List<Condition>{
-        wantsReform, loyalty,education
+        wantsReform, loyalty, education
         });
     }
 
@@ -83,24 +73,20 @@ abstract public class AbstractReformValue : Name
 
     abstract internal bool isAvailable(Country country);
 
-    internal abstract Procent howIsItGoodForPop(PopUnit pop);
-    Modifier loyalty = new Modifier(Condition.IsNotImplemented, 0f, false);
-    Modifier education = new Modifier(Condition.IsNotImplemented, 0f, false);
-    Modifier wantsReform;
-    public ModifiersList modVoting;
+    protected abstract Procent howIsItGoodForPop(PopUnit pop);
+    private readonly Modifier loyalty;
+    private readonly Modifier education = new Modifier(Condition.IsNotImplemented, 0f, false);
+    private readonly Modifier wantsReform;
+    public readonly ModifiersList modVoting;
 }
 public abstract class AbstractReform : Name
 {
-    //readonly string name;
     readonly string description;
-
 
     protected AbstractReform(string name, string indescription, Country incountry) : base(name)
     {
-        //name = inname;
         description = indescription;
         incountry.reforms.Add(this);
-
     }
 
     internal abstract bool isAvailable(Country country);
@@ -141,11 +127,7 @@ public class Government : AbstractReform
                 return true;
         }
 
-        //internal bool isGovernmentEqualsThat(Country forWhom)
-        //{
-        //    return forWhom.government.status == this;
-        //}
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             if (pop.getVotingPower(this) > pop.getVotingPower(pop.getCountry().government.getTypedValue()))
@@ -189,7 +171,7 @@ public class Government : AbstractReform
     readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "- Only capitalists have power", 6,
         new ConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "");
 
-    readonly internal static ReformValue Junta = new ReformValue("Military junta", "- Only military guys have power", 7,
+    readonly internal static ReformValue Junta = new ReformValue("Junta", "- Only military guys have power", 7,
         new ConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta");
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
@@ -204,13 +186,13 @@ public class Government : AbstractReform
     internal readonly static Condition isWealthDemocracy = new Condition(x => (x as Country).government.getValue() == Government.WealthDemocracy, "Government is " + Government.WealthDemocracy.getName(), true);
     internal readonly static Condition isDemocracy = new Condition(x => (x as Country).government.getValue() == Government.Democracy, "Government is " + Government.Democracy.getName(), true);
     internal readonly static Condition isBourgeoisDictatorship = new Condition(x => (x as Country).government.getValue() == Government.BourgeoisDictatorship, "Government is " + Government.BourgeoisDictatorship.getName(), true);
-    internal readonly static Condition isMilitaryJunta = new Condition(x => (x as Country).government.getValue() == Government.Junta, "Government is " + Government.Junta.getName(), true);
+    internal readonly static Condition isJunta = new Condition(x => (x as Country).government.getValue() == Government.Junta, "Government is " + Government.Junta.getName(), true);
     internal readonly static Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == Government.ProletarianDictatorship, "Government is " + Government.ProletarianDictatorship.getName(), true);
 
     public Government(Country country) : base("Government", "Form of government", country)
     {
-        //status = Tribal;
-        status = Aristocracy;
+        status = Tribal;
+        //status = Aristocracy;
         this.country = country;
     }
     internal string getPrefix()
@@ -301,7 +283,7 @@ public class Economy : AbstractReform
         }
 
 
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             if (pop.popType == PopType.Capitalists)
@@ -418,7 +400,7 @@ public class Serfdom : AbstractReform
             else
                 return nu;
         }
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             int change = ID - pop.getCountry().serfdom.status.ID; //positive - more liberal
@@ -509,14 +491,25 @@ public class Serfdom : AbstractReform
 }
 public class MinimalWage : AbstractReform
 {
-    public class ReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformStepValue
     {
         public ReformValue(string inname, string indescription, int idin, ConditionsList condition)
-            : base(inname, indescription, idin, condition)
+            : base(inname, indescription, idin, condition, 6)
         {
             // if (!PossibleStatuses.Contains(this))
             PossibleStatuses.Add(this);
-
+            var totalSteps = 6;
+            var previousID = ID - 1;
+            var nextID = ID + 1;
+            if (previousID >= 0 && nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).minimalWage.isThatReformEnacted(previousID)
+                || (x as Country).minimalWage.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).minimalWage.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (previousID >= 0)
+                condition.add(new Condition(x => (x as Country).minimalWage.isThatReformEnacted(previousID), "Previous reform enacted", true));
         }
         internal override bool isAvailable(Country country)
         {
@@ -577,7 +570,7 @@ public class MinimalWage : AbstractReform
         {
             return base.ToString() + " (" + getWage() + ")";
         }
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             if (pop.popType == PopType.Workers)
@@ -637,6 +630,10 @@ public class MinimalWage : AbstractReform
     {
         status = None;
     }
+    internal bool isThatReformEnacted(int value)
+    {
+        return status == PossibleStatuses[value];
+    }
     internal override AbstractReformValue getValue()
     {
         return status;
@@ -670,12 +667,25 @@ public class MinimalWage : AbstractReform
 }
 public class UnemploymentSubsidies : AbstractReform
 {
-    public class ReformValue : AbstractReformValue
+    public class ReformValue : AbstractReformStepValue
     {
-        public ReformValue(string inname, string indescription, int idin, ConditionsList condition) : base(inname, indescription, idin, condition)
+        public ReformValue(string inname, string indescription, int idin, ConditionsList condition)
+            : base(inname, indescription, idin, condition, 6)
         {
             //if (!PossibleStatuses.Contains(this))
             PossibleStatuses.Add(this);
+            var totalSteps = 6;
+            var previousID = ID - 1;
+            var nextID = ID + 1;
+            if (previousID >= 0 && nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID)
+                || (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (previousID >= 0)
+                condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID), "Previous reform enacted", true));
         }
         internal override bool isAvailable(Country country)
         {
@@ -736,7 +746,7 @@ public class UnemploymentSubsidies : AbstractReform
         {
             return base.ToString() + " (" + getSubsidiesRate() + ")";
         }
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             //positive - higher subsidies
@@ -787,6 +797,10 @@ public class UnemploymentSubsidies : AbstractReform
     {
         status = None;
     }
+    internal bool isThatReformEnacted(int value)
+    {
+        return status == PossibleStatuses[value];
+    }
     internal override AbstractReformValue getValue()
     {
         return status;
@@ -828,6 +842,18 @@ public class TaxationForPoor : AbstractReform
         public ReformValue(string name, string description, Procent tarrif, int ID, ConditionsList condition) : base(name, description, ID, condition, 11)
         {
             tax = tarrif;
+            var totalSteps = 11;
+            var previousID = ID - 1;
+            var nextID = ID + 1;
+            if (previousID >= 0 && nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID)
+                || (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (previousID >= 0)
+                condition.add(new Condition(x => (x as Country).taxationForPoor.isThatReformEnacted(previousID), "Previous reform enacted", true));
         }
 
         override public string ToString()
@@ -842,7 +868,7 @@ public class TaxationForPoor : AbstractReform
             return true;
         }
 
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             //positive mean higher tax
@@ -872,14 +898,15 @@ public class TaxationForPoor : AbstractReform
     {
         status = PossibleStatuses[1];
     }
-    internal override AbstractReformValue getValue()
-    {
-        return status;
-    }
     internal bool isThatReformEnacted(int value)
     {
         return status == PossibleStatuses[value];
     }
+    internal override AbstractReformValue getValue()
+    {
+        return status;
+    }
+
     internal override bool canChange()
     {
         return true;
@@ -909,6 +936,18 @@ public class TaxationForRich : AbstractReform
         public ReformValue(string inname, string indescription, Procent intarrif, int idin, ConditionsList condition) : base(inname, indescription, idin, condition, 11)
         {
             tax = intarrif;
+            var totalSteps = 11;
+            var previousID = ID - 1;
+            var nextID = ID + 1;
+            if (previousID >= 0 && nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).taxationForRich.isThatReformEnacted(previousID)
+                || (x as Country).taxationForRich.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (nextID < totalSteps)
+                condition.add(new Condition(x => (x as Country).taxationForRich.isThatReformEnacted(nextID), "Previous reform enacted", true));
+            else
+            if (previousID >= 0)
+                condition.add(new Condition(x => (x as Country).taxationForRich.isThatReformEnacted(previousID), "Previous reform enacted", true));
         }
         override public string ToString()
         {
@@ -922,7 +961,7 @@ public class TaxationForRich : AbstractReform
             return true;
         }
 
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             int change = ID - pop.getCountry().taxationForRich.status.ID;//positive mean higher tax
@@ -953,6 +992,10 @@ public class TaxationForRich : AbstractReform
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
         status = PossibleStatuses[1];
+    }
+    internal bool isThatReformEnacted(int value)
+    {
+        return status == PossibleStatuses[value];
     }
     internal override AbstractReformValue getValue()
     {
@@ -1010,7 +1053,7 @@ public class MinorityPolicy : AbstractReform
             else
                 return false;
         }
-        internal override Procent howIsItGoodForPop(PopUnit pop)
+        protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
             if (pop.isStateCulture())
@@ -1084,4 +1127,39 @@ public class MinorityPolicy : AbstractReform
     //internal static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
     //    Equality.getDescription(), true);
 
+}
+public class Separatism : AbstractReformValue
+{
+    static private readonly Procent willing = new Procent(3f);
+    private readonly Country separatismTarget;
+    private static readonly List<Separatism> allSeparatists = new List<Separatism>();
+    private Separatism(Country country) : base(country.getName() + " independence", "", 0, new ConditionsList(Condition.AlwaysYes))
+    {
+        separatismTarget = country;
+        allSeparatists.Add(this);
+    }
+
+    internal static Separatism find(Country country)
+    {
+        var found = allSeparatists.Find(x => x.separatismTarget == country);
+        if (found == null)
+            return new Separatism(country);
+        else
+            return found;
+    }
+    protected override Procent howIsItGoodForPop(PopUnit pop)
+    {
+        //return Procent.HundredProcent;
+        return willing;
+    }
+
+    internal override bool isAvailable(Country country)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal Country getCountry()
+    {
+        return separatismTarget;
+    }
 }

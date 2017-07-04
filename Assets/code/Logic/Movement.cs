@@ -11,7 +11,7 @@ public class Movement : Staff
 {
     private readonly AbstractReformValue targetReformValue;
     private readonly AbstractReform targetReform;
-    private readonly Country separatism;
+    //private readonly Country separatism;
     private readonly List<PopUnit> members = new List<PopUnit>();
     private bool _isInRevolt;
     //private readonly Country country;
@@ -25,24 +25,33 @@ public class Movement : Staff
         this.targetReform = reform;
         this.targetReformValue = goal;
     }
-    Movement(Country separatism, PopUnit firstPop, Country place) : this(firstPop, place)
-    {
-        this.separatism = separatism;
-    }
+    //Movement(Country separatism, PopUnit firstPop, Country place) : this(firstPop, place)
+    //{
+    //    this.separatism = separatism;
+    //}
     public static void join(PopUnit pop)
     {
         if (pop.getMovement() == null)
         {
             var goal = pop.getMostImportantIssue();
-            //find reasonable goal and join
-            var found = pop.getCountry().movements.Find(x => x.getGoal() == goal.Value);
-            if (found == null)
-                pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.getCountry()));
-            else
+            if (!goal.Equals(default(KeyValuePair<AbstractReform, AbstractReformValue>)))
             {
-                found.add(pop);
-                pop.setMovement(found);
+                //find reasonable goal and join
+                var found = pop.getCountry().movements.Find(x => x.getGoal() == goal.Value);
+                if (found == null)
+                    pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.getCountry()));
+                else
+                {
+                    found.add(pop);
+                    pop.setMovement(found);
+                }
             }
+        }
+        else // change movement
+            if (Game.Random.Next(Options.PopChangeMovementRate) == 1)
+        {
+            leave(pop);
+            join(pop);
         }
     }
     public static void leave(PopUnit pop)
@@ -80,17 +89,17 @@ public class Movement : Staff
     {
         return getName();
     }
-    //public string getName()
-    //{
-    //    return "Movement for " + targetReformValue.ToString();
-    //}
+    public string getShortName()
+    {
+        return targetReformValue.ToString();
+    }
     public string getName()
     {
-        return "For "+targetReformValue.ToString();
+        return "Movement for " + targetReformValue.ToString();
     }
     public string getDescription()
     {
-        return getName() + ", members: " + getMembership() + ", mid. loyalty: " + getMiddleLoyalty() + ", rel. strength: " + getRelativeStrength(getPlaceDejure());
+        return getShortName() + ", members: " + getMembership() + ", mid. loyalty: " + getMiddleLoyalty() + ", rel. strength: " + getRelativeStrength(getPlaceDejure());
     }
     /// <summary>
     /// Size of all members
@@ -150,7 +159,14 @@ public class Movement : Staff
     {
         //demobilize();
         //_isInRevolt = false;
-        targetReform.setValue(targetReformValue);
+        if (targetReform == null) // meaning separatism
+        {
+            new Message("", "Separatists won revolution - " + targetReformValue, "hmm");
+            (targetReformValue as Separatism).getCountry().onSeparatismWon(getPlaceDejure());
+            
+        }
+        else
+            targetReform.setValue(targetReformValue);
         foreach (var pop in members)
         {
             pop.loyalty.add(Options.PopLoyaltyBoostOnRevolutionWon);
@@ -158,7 +174,7 @@ public class Movement : Staff
         }
         removeAllMembers();
         //getPlaceDejure().movements.Remove(this);
-        
+
     }
 
     internal void onRevolutionLost()
@@ -188,11 +204,10 @@ public class Movement : Staff
             removeAllMembers();
             return;
         }
-     
-    //&& canWinUprising())
+        //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Procent.HundredProcent)
                 && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt))
-        {            
+        {
             //revolt
             if (place == Game.Player && !Game.Player.isAI())
                 new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
@@ -215,7 +230,7 @@ public static class MovementExtensions
         StringBuilder sb = new StringBuilder();
         foreach (var item in list)
         {
-            sb.Append(" ").Append(item.getDescription()).Append("\n");
+            sb.Append(" ").Append(item.getDescription()).Append("\n ");
         }
         return sb.ToString();
     }

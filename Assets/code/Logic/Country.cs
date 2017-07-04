@@ -36,6 +36,7 @@ public class Country : Staff
     private readonly Culture culture;
     private readonly Color nationalColor;
     private Province capital;
+    private bool alive = true;
 
     private readonly Value soldiersWage = new Value(0f);
     public readonly Value sciencePoints = new Value(0f);
@@ -59,13 +60,13 @@ public class Country : Staff
         //new Modifier(Government.isTribal, 0f, false),
         //new Modifier(Government.isTheocracy, 0f, false),
         new Modifier(Government.isDespotism, 0.25f, false),
-        new Modifier(Government.isMilitaryJunta, 0.3f, false),
+        new Modifier(Government.isJunta, 0.3f, false),
         new Modifier(Government.isAristocracy, 0.5f, false),
         new Modifier(Government.isProletarianDictatorship, 0.5f, false),
         new Modifier(Government.isDemocracy, 1f, false),
-        new Modifier(Government.isPolis, 1f, false),  
-        new Modifier(Government.isWealthDemocracy, 1f, false),        
-        new Modifier(Government.isBourgeoisDictatorship, 1f, false), 
+        new Modifier(Government.isPolis, 1f, false),
+        new Modifier(Government.isWealthDemocracy, 1f, false),
+        new Modifier(Government.isBourgeoisDictatorship, 1f, false),
     });
 
     static Country()
@@ -119,9 +120,27 @@ public class Country : Staff
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             markInvented(Invention.individualRights);
-            //inventions.markInvented(Invention.ProfessionalArmy);           
+            markInvented(Invention.ProfessionalArmy);
+            markInvented(Invention.Welfare);
         }
     }
+
+    internal void onSeparatismWon(Country oldCountry)
+    {
+        foreach (var item in oldCountry.ownedProvinces.ToList())
+            if (item.isCoreFor(this))
+            {
+                item.secedeTo(this);
+            }
+        moveCapitalTo(getRandomOwnedProvince());
+        foreach (var item in oldCountry.getInvented()) // copying inventions
+        {
+            this.markInvented(item.Key);
+        }
+        setPrefix();
+        alive = true;
+    }
+
     public static void setUnityAPI()
     {
         foreach (var item in allCountries)
@@ -165,22 +184,22 @@ public class Country : Staff
             if (pro.getCountry() == null)
                 pro.InitialOwner(Country.NullCountry);
     }
-    public IEnumerable<KeyValuePair<Invention, bool>> getAvailable(Country country)
+    public IEnumerable<KeyValuePair<Invention, bool>> getAvailable()
     {
         foreach (var invention in inventions)
-            if (invention.Key.isAvailable(country))
+            if (invention.Key.isAvailable(this))
                 yield return invention;
     }
-    public IEnumerable<KeyValuePair<Invention, bool>> getUninvented(Country country)
+    public IEnumerable<KeyValuePair<Invention, bool>> getUninvented()
     {
         foreach (var invention in inventions)
-            if (invention.Value == false && invention.Key.isAvailable(country))
+            if (invention.Value == false && invention.Key.isAvailable(this))
                 yield return invention;
     }
-    public IEnumerable<KeyValuePair<Invention, bool>> getInvented(Country country)
+    public IEnumerable<KeyValuePair<Invention, bool>> getInvented()
     {
         foreach (var invention in inventions)
-            if (invention.Value == true && invention.Key.isAvailable(country))
+            if (invention.Value == true && invention.Key.isAvailable(this))
                 yield return invention;
     }
     public void markInvented(Invention type)
@@ -196,6 +215,29 @@ public class Country : Staff
     internal void setPrefix()
     {
         meshCapitalText.text = getDescription();
+    }
+    public List<Country> getAllCoresOnMyland()
+    {
+        var res = new List<Country>();
+        foreach (var province in ownedProvinces)
+        {
+            foreach (var core in province.getCores())
+            {
+                if (!res.Contains(core))
+                    res.Add(core);
+            }
+        }
+        return res;
+    }
+    public List<Country> getPotentialSeparatists()
+    {
+        var res = new List<Country>();
+        foreach (var item in getAllCoresOnMyland())
+        {
+            if (!item.isAlive())
+                res.Add(item);
+        }
+        return res;
     }
     internal void setSoldierWage(float value)
     {
@@ -282,14 +324,14 @@ public class Country : Staff
         return culture;
     }
 
-    public bool isExist()
+    public bool isAlive()
     {
-        return ownedProvinces.Count > 0;
+        return alive;        
     }
     static public IEnumerable<Country> getExisting()
     {
         foreach (var c in allCountries)
-            if (c.isExist() && c != Country.NullCountry)
+            if (c.isAlive() && c != Country.NullCountry)
                 yield return c;
 
     }
@@ -312,6 +354,7 @@ public class Country : Staff
 
         if (!this.isAI())
             new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
+        alive = false;
     }
 
     internal bool isOneProvince()
@@ -380,7 +423,7 @@ public class Country : Staff
 
         Vector3 capitalTextPosition = province.getPosition();
         capitalTextPosition.y += 2f;
-        capitalTextPosition.z -=5f;
+        capitalTextPosition.z -= 5f;
         txtMeshTransform.position = capitalTextPosition;
 
         meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
@@ -634,7 +677,7 @@ public class Country : Staff
 
     private void aiInvent()
     {
-        var invention = getUninvented(this).ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.cost));
+        var invention = getUninvented().ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.cost));
         if (invention.Key != null)
             invent(invention.Key);
     }

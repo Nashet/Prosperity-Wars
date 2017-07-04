@@ -284,7 +284,6 @@ public class Province : Name
             cores.ForEach(x => sb.Append(x.getName()).Append("; "));
             return sb.ToString();
         }
-
     }
     public void secedeTo(Country taker)
     {
@@ -345,7 +344,11 @@ public class Province : Name
     {
         return getCountry().getCapital() == this;
     }
-
+    public IEnumerable<Country> getCores()    
+    {        
+        foreach (var core in cores)        
+            yield return core;
+    }
     internal Country getRandomCore()
     {
         return cores.PickRandom();

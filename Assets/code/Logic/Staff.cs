@@ -187,7 +187,7 @@ public abstract class Staff : Consumer
     internal static IEnumerable<Staff> getAllStaffs()
     {
         foreach (var country in Country.allCountries)
-            if (country.isExist() && country != Country.NullCountry)
+            if (country.isAlive() && country != Country.NullCountry)
             {
                 yield return country;
                 foreach (var staff in country.movements)

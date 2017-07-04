@@ -259,6 +259,49 @@ public static class CollectionExtensions
             return max;
         }
     }
+    public static TSource MaxByRandom<TSource, TKey>(this IEnumerable<TSource> source,
+        Func<TSource, TKey> selector)
+    {
+        IComparer<TKey> comparer = Comparer<TKey>.Default;
+        TKey maxKey;
+        using (var sourceIterator = source.GetEnumerator())
+        {
+            if (!sourceIterator.MoveNext())
+            {
+                return default(TSource);
+            }
+            var max = sourceIterator.Current;
+            maxKey = selector(max);
+            while (sourceIterator.MoveNext())
+            {
+                var candidate = sourceIterator.Current;
+                var candidateProjected = selector(candidate);
+                if (comparer.Compare(candidateProjected, maxKey) > 0)
+                {
+                    max = candidate;
+                    maxKey = candidateProjected;
+                }
+            }
+        }
+        var reslist = new List<TSource>();
+        //var foundMaximum = source.MaxBy(selector);
+        using (var sourceIterator = source.GetEnumerator())
+        {
+            if (!sourceIterator.MoveNext())
+            {
+                return default(TSource);
+            }
+            do
+            {
+                var candidate = sourceIterator.Current;
+                var candidateProjected = selector(candidate);
+                if (maxKey.Equals(candidateProjected))
+                    reslist.Add(candidate);
+            }
+            while (sourceIterator.MoveNext());
+        }
+        return reslist.PickRandom();
+    }
     private static System.Random rng = new System.Random();
 
     public static void Shuffle<T>(this IList<T> list)
@@ -329,7 +372,7 @@ public static class CollectionExtensions
         else
             return "none";
     }
-    
+
     public static string getString<TValue>(this List<TValue> list, string lineBreaker)
     {
         if (list.Count > 0)

@@ -94,7 +94,7 @@ public class PopulationPanelTable : MyTableNew
                     if (record.getMovement() == null)
                         AddButton("", record);
                     else
-                        AddButton(record.getMovement().getName(), record);
+                        AddButton(record.getMovement().getShortName(), record);
                 }
 
             }

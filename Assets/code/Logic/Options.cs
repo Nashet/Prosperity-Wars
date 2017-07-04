@@ -88,4 +88,5 @@ public static class Options
     internal static readonly Value PopLoyaltyLimitToRevolt = new Value(0.1f);
     internal static readonly Procent PopLoyaltyBoostOnRevolutionWon = new Procent(0.8f);
     internal static readonly Procent PopLoyaltyBoostOnRevolutionLost = new Procent(0.3f);
+    internal static readonly int PopChangeMovementRate = 30;
 }

@@ -18,6 +18,11 @@ public class Value
     {
         set(number); // set already have multiplier
     }
+    public static float Convert(float invalue)
+    {
+        uint intermediate = (uint)Mathf.RoundToInt(invalue * precision);
+        return (float)intermediate / (float)precision;
+    }
     public bool isBiggerThan(Value invalue)
     {
         return this.value > invalue.value;

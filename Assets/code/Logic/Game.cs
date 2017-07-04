@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
 using System;
+using System.Linq;
 
 public class Game : ThreadedJob
 {
@@ -209,7 +210,7 @@ public class Game : ThreadedJob
                             return province.getCountry().getColor();
                         else
                         {
-                            var so = province.getRandomCore(x => x.isExist());
+                            var so = province.getRandomCore(x => x.isAlive());
                             if (so != null)
                                 return so.getColor();
                             else
@@ -571,7 +572,7 @@ public class Game : ThreadedJob
     }
     private static void calcBattles()
     {
-        foreach (Staff attacker in Staff.getAllStaffs())
+        foreach (Staff attacker in Staff.getAllStaffs().ToList())
         {
             foreach (var attackerArmy in attacker.getAttackingArmies())
             {
@@ -682,19 +683,15 @@ public class Game : ThreadedJob
                         pop.payTaxes();
 
                     pop.calcLoyalty();
-                    //if (Game.Random.Next(10) == 1)
-                    pop.calcGrowth();
-                    //if (Game.Random.Next(10) == 1)
-                    pop.calcPromotions();
-                    //if (Game.Random.Next(10) == 1)
-                    pop.calcDemotions();
-                    //if (Game.Random.Next(10) == 1)
-                    pop.calcMigrations();
-                    //if (Game.Random.Next(10) == 1)
-                    pop.calcImmigrations();
                     if (Game.Random.Next(10) == 1)
-                    pop.calcAssimilations();
-
+                    {
+                        pop.calcGrowth();
+                        pop.calcPromotions();
+                        pop.calcDemotions();
+                        pop.calcMigrations();
+                        pop.calcImmigrations();
+                        pop.calcAssimilations();
+                    }
                     pop.invest();
                     if (Game.Random.Next(20) == 1)
                         pop.putExtraMoneyInBank();
