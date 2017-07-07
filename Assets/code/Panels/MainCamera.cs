@@ -60,7 +60,7 @@ public class MainCamera : MonoBehaviour
             float zMove = Input.GetAxis("Mouse ScrollWheel");
             zMove = zMove * zCameraSpeed;
             if (position.z + zMove > -40f
-                || position.z + zMove < -200f)
+                || position.z + zMove < -500f)
                 zMove = 0f;
             transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
         }

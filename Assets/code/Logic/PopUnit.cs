@@ -1134,8 +1134,8 @@ abstract public class PopUnit : Producer
     }
     internal void calcAssimilations()
     {
-       
-        if (!this.isStateCulture() && getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
+
+        if (!this.isStateCulture())
         {
             int assimilationSize = getAssimilationSize();
             if (assimilationSize > 0 && this.getPopulation() >= assimilationSize)
@@ -1153,7 +1153,7 @@ abstract public class PopUnit : Producer
 
     public int getAssimilationSize()
     {
-        if (province.isCoreFor(this))
+        if (province.isCoreFor(this) || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
             return 0;
         else
         {

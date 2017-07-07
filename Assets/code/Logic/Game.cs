@@ -7,6 +7,7 @@ using System.Linq;
 
 public class Game : ThreadedJob
 {
+    private static readonly bool readMapFormFile = false;
     static MyTexture map;
     public static GameObject mapObject;
     internal static GameObject r3dTextPrefab;
@@ -42,8 +43,13 @@ public class Game : ThreadedJob
 
     public Game()
     {
-        //loadImages();
-        generateMapImage();
+        if (readMapFormFile)
+        {
+            Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;                
+            map = new MyTexture(mapImage);
+        }
+        else
+            generateMapImage();
         mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
     }
     public void initialize()
@@ -58,7 +64,7 @@ public class Game : ThreadedJob
         deleteSomeProvinces();
 
         updateStatus("Making grid..");
-        grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.seaProvinces, this);
+        grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.seaProvinces, this, Province.allProvinces);
 
         updateStatus("Making countries..");
         Country.makeCountries(this);
@@ -93,40 +99,54 @@ public class Game : ThreadedJob
     static List<Province> getSeaProvinces()
     {
         List<Province> res = new List<Province>();
-        Province seaProvince;
-        for (int x = 0; x < map.getWidth(); x++)
+        if (!readMapFormFile)
         {
-            seaProvince = Province.find(map.GetPixel(x, 0));
-            if (!res.Contains(seaProvince))
-                res.Add(seaProvince);
-            seaProvince = Province.find(map.GetPixel(x, map.getHeight() - 1));
-            if (!res.Contains(seaProvince))
-                res.Add(seaProvince);
-        }
-        for (int y = 0; y < map.getHeight(); y++)
-        {
-            seaProvince = Province.find(map.GetPixel(0, y));
-            if (!res.Contains(seaProvince))
-                res.Add(seaProvince);
-            seaProvince = Province.find(map.GetPixel(map.getWidth() - 1, y));
-            if (!res.Contains(seaProvince))
-                res.Add(seaProvince);
-        }
+            Province seaProvince;
+            for (int x = 0; x < map.getWidth(); x++)
+            {
+                seaProvince = Province.find(map.GetPixel(x, 0));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+                seaProvince = Province.find(map.GetPixel(x, map.getHeight() - 1));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+            }
+            for (int y = 0; y < map.getHeight(); y++)
+            {
+                seaProvince = Province.find(map.GetPixel(0, y));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+                seaProvince = Province.find(map.GetPixel(map.getWidth() - 1, y));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+            }
 
-        seaProvince = Province.find(map.getRandomPixel());
-        if (!res.Contains(seaProvince))
-            res.Add(seaProvince);
-
-        if (Game.Random.Next(3) == 1)
-        {
             seaProvince = Province.find(map.getRandomPixel());
             if (!res.Contains(seaProvince))
                 res.Add(seaProvince);
-            if (Game.Random.Next(20) == 1)
+
+            if (Game.Random.Next(3) == 1)
             {
                 seaProvince = Province.find(map.getRandomPixel());
                 if (!res.Contains(seaProvince))
                     res.Add(seaProvince);
+                if (Game.Random.Next(20) == 1)
+                {
+                    seaProvince = Province.find(map.getRandomPixel());
+                    if (!res.Contains(seaProvince))
+                        res.Add(seaProvince);
+                }
+            }
+        }
+        else
+        {
+            foreach (var item in Province.allProvinces)
+            {
+                var color = item.getColorID();
+                if (color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f)
+                //if (color.g + color.b + color.r > 492f / 255f)
+                    res.Add(item);
+
             }
         }
         return res;
@@ -154,10 +174,13 @@ public class Game : ThreadedJob
                 Province.allProvinces.Remove(item);
                 //item.removeProvince();
             }
-        int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
-        for (int i = 0; i < howMuchLakes; i++)
-            Province.allProvinces.Remove(Province.allProvinces.PickRandom());
-
+        //todo move it in seaProvinces
+        if (!readMapFormFile)
+        {
+            int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
+            for (int i = 0; i < howMuchLakes; i++)
+                Province.allProvinces.Remove(Province.allProvinces.PickRandom());
+        }
     }
 
     static private void setStartResources()
@@ -563,13 +586,7 @@ public class Game : ThreadedJob
             + "\n'Enter' key to close top window, space - to pause \\ unpause"
             , "Ok");
     }
-    static void loadImages()
-    {
-        Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
-        //RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
-        //ri.texture = mapImage;
-        map = new MyTexture(mapImage);
-    }
+
     private static void calcBattles()
     {
         foreach (Staff attacker in Staff.getAllStaffs().ToList())
@@ -604,7 +621,7 @@ public class Game : ThreadedJob
     {
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
-        
+
         date = date.AddYears(1);
         // strongly before PrepareForNewTick
         Game.market.simulatePriceChangeBasingOnLastTurnDate();

@@ -20,7 +20,8 @@ public class VoxelGrid
     private Voxel dummyX, dummyY, dummyT;
     private readonly Game game;
 
-    public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, Game game)
+    public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, Game game, List<Province> provinces
+        )
     {
         this.width = width;
         this.height = height;
@@ -36,14 +37,14 @@ public class VoxelGrid
         dummyT = new Voxel();
 
         //analyzingColor = color;
-        Color curColor, x1y1Color, x2y1Color, x1y2Color, x2y2Color;
+        //Color curColor, x1y1Color, x2y1Color, x1y2Color, x2y2Color;
         for (int i = 0, y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                curColor = texture.GetPixel(x, y);
+                //curColor = texture.GetPixel(x, y);
                 //if (!blockedProvinces.Contains(curColor))
-                CreateVoxel(i, x, y, curColor);
+                CreateVoxel(i, x, y, provinces.Find(province => province.getColorID() == texture.GetPixel(x, y)));
                 i++;
             }
         }
@@ -69,28 +70,22 @@ public class VoxelGrid
         //}
 
     }
-    public MeshStructure getMesh(Color colorID)
+    public MeshStructure getMesh(Province analysingProvince)
     {
         mesh = new MeshStructure();
         bordersMeshes = new Dictionary<Province, MeshStructure>();
-        game.updateStatus("Triangulation .." + colorID);
-        Triangulate(colorID);
+        game.updateStatus("Triangulation .." + analysingProvince);
+        Triangulate(analysingProvince);
         return mesh;
     }
-    private void CreateVoxel(int i, int x, int y, Color state)
+    private void CreateVoxel(int i, int x, int y, Province state)
     {
-        //GameObject o = Instantiate(voxelPrefab) as GameObject;
-        //o.transform.parent = transform;
-        //o.transform.localPosition = new Vector3((x + 0.5f) * voxelSize, (y + 0.5f) * voxelSize, -0.01f);
-        //o.transform.localScale = Vector3.one * voxelSize * 0.1f;
-        //voxelMaterials[i] = o.GetComponent<MeshRenderer>().material;
         voxels[i] = new Voxel(x, y, voxelSize, state);
-
     }
 
 
 
-    private void Triangulate(Color colorID)
+    private void Triangulate(Province analysingProvince)
     {
 
         //mesh.Clear();
@@ -99,17 +94,17 @@ public class VoxelGrid
         {
             dummyX.BecomeXDummyOf(xNeighbor.voxels[0], gridSize);
         }
-        TriangulateCellRows(colorID);
+        TriangulateCellRows(analysingProvince);
         if (yNeighbor != null)
         {
-            TriangulateGapRow(colorID);
+            TriangulateGapRow(analysingProvince);
         }
 
         //mesh.vertices = vertices.ToArray();
         //mesh.triangles = triangles.ToArray();
     }
 
-    private void TriangulateCellRows(Color colorID)
+    private void TriangulateCellRows(Province analysingProvince)
     {
         //int cells = resolution - 1;
         for (int i = 0, y = 0; y < height - 1; y++)
@@ -124,27 +119,27 @@ public class VoxelGrid
                     voxels[i],
                     voxels[i + 1],
                     voxels[i + width],
-                    voxels[i + width + 1], colorID);
+                    voxels[i + width + 1], analysingProvince);
                 i++;
             }
             if (xNeighbor != null)
             {
-                TriangulateGapCell(i, colorID);
+                TriangulateGapCell(i, analysingProvince);
             }
             i++;
         }
     }
 
-    private void TriangulateGapCell(int i, Color colorID)
+    private void TriangulateGapCell(int i, Province analysingProvince)
     {
         Voxel dummySwap = dummyT;
         dummySwap.BecomeXDummyOf(xNeighbor.voxels[i + 1], gridSize);
         dummyT = dummyX;
         dummyX = dummySwap;
-        TriangulateCell(voxels[i], dummyT, voxels[i + width], dummyX, colorID);
+        TriangulateCell(voxels[i], dummyT, voxels[i + width], dummyX, analysingProvince);
     }
 
-    private void TriangulateGapRow(Color colorID)
+    private void TriangulateGapRow(Province analysingProvince)
     {
         dummyY.BecomeYDummyOf(yNeighbor.voxels[0], gridSize);
         //int cells = width - 1;
@@ -157,23 +152,23 @@ public class VoxelGrid
             dummySwap.BecomeYDummyOf(yNeighbor.voxels[x + 1], gridSize);
             dummyT = dummyY;
             dummyY = dummySwap;
-            TriangulateCell(voxels[x + offset], voxels[x + offset + 1], dummyT, dummyY, colorID);
+            TriangulateCell(voxels[x + offset], voxels[x + offset + 1], dummyT, dummyY, analysingProvince);
         }
 
         if (xNeighbor != null)
         {
             dummyT.BecomeXYDummyOf(xyNeighbor.voxels[0], gridSize);
-            TriangulateCell(voxels[voxels.Length - 1], dummyX, dummyY, dummyT, colorID);
+            TriangulateCell(voxels[voxels.Length - 1], dummyX, dummyY, dummyT, analysingProvince);
         }
     }
     private bool isBorderCell(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return !(a.getColor() == b.getColor() && a.getColor() == c.getColor() && a.getColor() == d.getColor());
+        return !(a.getState() == b.getState() && a.getState() == c.getState() && a.getState() == d.getState());
     }
 
-    private void findBorderMeshAndAdd(Color color, Vector2 a, Vector2 b)
+    private void findBorderMeshAndAdd(Province province, Vector2 a, Vector2 b)
     {
-        var province = Province.find(color);
+        //var province = Province.find(color);
         if (province != null)
         //if (Game.seaProvinces.Contains(province))
         //    return null;
@@ -186,28 +181,26 @@ public class VoxelGrid
                 bordersMeshes.Add(province, border);
             }
             border.AddBorderQuad2(a, b);
-            
-        }        
+
+        }
     }
-    private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Color analyzingColor)
+    private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Province analyzingState)
     {
-
-
         //bool isBorder = isBorderCell(a, b, c, d);
         int cellType = 0;
-        if (a.getColor() == analyzingColor)
+        if (a.getState() == analyzingState)
         {
             cellType |= 1;
         }
-        if (b.getColor() == analyzingColor)
+        if (b.getState() == analyzingState)
         {
             cellType |= 2;
         }
-        if (c.getColor() == analyzingColor)
+        if (c.getState() == analyzingState)
         {
             cellType |= 4;
         }
-        if (d.getColor() == analyzingColor)
+        if (d.getState() == analyzingState)
         {
             cellType |= 8;
         }
@@ -218,108 +211,108 @@ public class VoxelGrid
             case 1:
                 mesh.AddTriangle(a.getPosition(), a.getYEdgePosition(), a.getXEdgePosition());
 
-                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
-                    && b.getColor() != c.getColor() && b.getColor() != d.getColor()
-                    && c.getColor() != d.getColor()
+                if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
+                    && b.getState() != c.getState() && b.getState() != d.getState()
+                    && c.getState() != d.getState()
                     )//&& c.getColor() == analyzingColor)
                 {
                     var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
                     mesh.AddTriangle(a.getYEdgePosition(), centre, a.getXEdgePosition());
                     //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(c.getColor(), a.getYEdgePosition(), centre);
-                    findBorderMeshAndAdd(b.getColor(), centre, a.getXEdgePosition());
+                    findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), centre);
+                    findBorderMeshAndAdd(b.getState(), centre, a.getXEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(d.getColor(), a.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(d.getState(), a.getYEdgePosition(), a.getXEdgePosition());
 
                 break;
             case 2:
                 mesh.AddTriangle(b.getPosition(), a.getXEdgePosition(), b.getYEdgePosition());
-                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
-                   && b.getColor() != c.getColor() && b.getColor() != d.getColor()
-                   && c.getColor() != d.getColor()
+                if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
+                   && b.getState() != c.getState() && b.getState() != d.getState()
+                   && c.getState() != d.getState()
                    )//&& c.getColor() == analyzingColor)
                 {
                     var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
                     mesh.AddTriangle(a.getXEdgePosition(), centre, b.getYEdgePosition());
-                    findBorderMeshAndAdd(a.getColor(), a.getXEdgePosition(), centre);
-                    findBorderMeshAndAdd(d.getColor(), centre, b.getYEdgePosition());
+                    findBorderMeshAndAdd(a.getState(), a.getXEdgePosition(), centre);
+                    findBorderMeshAndAdd(d.getState(), centre, b.getYEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(c.getColor(), a.getXEdgePosition(), b.getYEdgePosition());
+                    findBorderMeshAndAdd(c.getState(), a.getXEdgePosition(), b.getYEdgePosition());
 
                 break;
             case 3:
                 mesh.AddQuad(a.getPosition(), a.getYEdgePosition(), b.getYEdgePosition(), b.getPosition());
-                if (is3ColorCornerDown(a, b, c, d) && b.getColor() == analyzingColor)
+                if (is3ColorCornerDown(a, b, c, d) && b.getState() == analyzingState)
                 {
                     mesh.AddTriangle(b.getYEdgePosition(), a.getYEdgePosition(), c.getXEdgePosition());
-                    findBorderMeshAndAdd(c.getColor(), a.getYEdgePosition(), c.getXEdgePosition());
-                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), b.getYEdgePosition());
+                    findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), b.getYEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(c.getColor(), a.getYEdgePosition(), b.getYEdgePosition());
+                    findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), b.getYEdgePosition());
 
                 break;
             case 4:
                 mesh.AddTriangle(c.getPosition(), c.getXEdgePosition(), a.getYEdgePosition());
-                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
-                   && b.getColor() != c.getColor() && b.getColor() != d.getColor()
-                   && c.getColor() != d.getColor()
+                if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
+                   && b.getState() != c.getState() && b.getState() != d.getState()
+                   && c.getState() != d.getState()
                    )//&& a.getColor() == analyzingColor)
                 {
                     var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
                     mesh.AddTriangle(c.getXEdgePosition(), centre, a.getYEdgePosition());
                     //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(a.getColor(), centre, a.getYEdgePosition());
-                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), centre);
+                    findBorderMeshAndAdd(a.getState(), centre, a.getYEdgePosition());
+                    findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), centre);
 
                 }
                 else
-                    findBorderMeshAndAdd(b.getColor(), c.getXEdgePosition(), a.getYEdgePosition());
+                    findBorderMeshAndAdd(b.getState(), c.getXEdgePosition(), a.getYEdgePosition());
 
                 break;
             case 5:
                 mesh.AddQuad(a.getPosition(), c.getPosition(), c.getXEdgePosition(), a.getXEdgePosition());
 
-                if (is3ColorCornerLeft(a, b, c, d) && c.getColor() == analyzingColor)
+                if (is3ColorCornerLeft(a, b, c, d) && c.getState() == analyzingState)
                 {
                     mesh.AddTriangle(c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), b.getYEdgePosition());
-                    findBorderMeshAndAdd(b.getColor(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), b.getYEdgePosition());
+                    findBorderMeshAndAdd(b.getState(), b.getYEdgePosition(), a.getXEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(d.getColor(), c.getXEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), a.getXEdgePosition());
                 break;
             case 6:
                 mesh.AddTriangle(b.getPosition(), a.getXEdgePosition(), b.getYEdgePosition());
                 mesh.AddTriangle(c.getPosition(), c.getXEdgePosition(), a.getYEdgePosition());
                 mesh.AddQuad(a.getXEdgePosition(), a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition());
 
-                findBorderMeshAndAdd(d.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
-                findBorderMeshAndAdd(d.getColor(),c.getXEdgePosition(), b.getYEdgePosition());
+                findBorderMeshAndAdd(d.getState(), a.getXEdgePosition(), a.getYEdgePosition());
+                findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), b.getYEdgePosition());
                 break;
             case 7:
                 mesh.AddPentagon(a.getPosition(), c.getPosition(), c.getXEdgePosition(), b.getYEdgePosition(), b.getPosition());
-                findBorderMeshAndAdd(d.getColor(),c.getXEdgePosition(), b.getYEdgePosition());
+                findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), b.getYEdgePosition());
 
                 break;
             case 8:
                 mesh.AddTriangle(d.getPosition(), b.getYEdgePosition(), c.getXEdgePosition());
-                if (a.getColor() != b.getColor() && a.getColor() != c.getColor() && a.getColor() != d.getColor()
-                   && b.getColor() != c.getColor() && b.getColor() != d.getColor()
-                   && c.getColor() != d.getColor()
+                if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
+                   && b.getState() != c.getState() && b.getState() != d.getState()
+                   && c.getState() != d.getState()
                    )//&& a.getColor() == analyzingColor)
                 {
                     //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
                     var centre = new Vector2(a.getXEdgePosition().x, a.getYEdgePosition().y);
                     mesh.AddTriangle(c.getXEdgePosition(), b.getYEdgePosition(), centre);
                     //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(b.getColor(),b.getYEdgePosition(), centre);
-                    findBorderMeshAndAdd(c.getColor(),centre, c.getXEdgePosition());
+                    findBorderMeshAndAdd(b.getState(), b.getYEdgePosition(), centre);
+                    findBorderMeshAndAdd(c.getState(), centre, c.getXEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(a.getColor(),b.getYEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(a.getState(), b.getYEdgePosition(), c.getXEdgePosition());
 
                 break;
             case 9:
@@ -327,45 +320,45 @@ public class VoxelGrid
                 mesh.AddTriangle(d.getPosition(), b.getYEdgePosition(), c.getXEdgePosition());
                 //duplicates quad in 6:
                 //AddQuad(mesh, a.getXEdgePosition(), a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition());
-                findBorderMeshAndAdd(c.getColor(),a.getYEdgePosition(), a.getXEdgePosition());
-                findBorderMeshAndAdd(c.getColor(),b.getYEdgePosition(), c.getXEdgePosition());
+                findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), a.getXEdgePosition());
+                findBorderMeshAndAdd(c.getState(), b.getYEdgePosition(), c.getXEdgePosition());
                 break;
             case 10:
                 mesh.AddQuad(a.getXEdgePosition(), c.getXEdgePosition(), d.getPosition(), b.getPosition());
-                if (is3ColorCornerRight(a, b, c, d) && d.getColor() == analyzingColor)
+                if (is3ColorCornerRight(a, b, c, d) && d.getState() == analyzingState)
                 {
                     mesh.AddTriangle(a.getYEdgePosition(), c.getXEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(c.getColor(),a.getYEdgePosition(), c.getXEdgePosition());
-                    findBorderMeshAndAdd(a.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
+                    findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(a.getState(), a.getXEdgePosition(), a.getYEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(c.getColor(),a.getXEdgePosition(), c.getXEdgePosition());
+                    findBorderMeshAndAdd(c.getState(), a.getXEdgePosition(), c.getXEdgePosition());
                 break;
             case 11:
                 mesh.AddPentagon(b.getPosition(), a.getPosition(), a.getYEdgePosition(), c.getXEdgePosition(), d.getPosition());
-                findBorderMeshAndAdd(c.getColor(),a.getYEdgePosition(), c.getXEdgePosition());
+                findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), c.getXEdgePosition());
 
                 break;
             case 12:
                 mesh.AddQuad(a.getYEdgePosition(), c.getPosition(), d.getPosition(), b.getYEdgePosition());
-                if (is3ColorCornerUp(a, b, c, d) && c.getColor() == analyzingColor)
+                if (is3ColorCornerUp(a, b, c, d) && c.getState() == analyzingState)
                 {
                     mesh.AddTriangle(a.getYEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(b.getColor(),b.getYEdgePosition(), a.getXEdgePosition());
-                    findBorderMeshAndAdd(a.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
+                    findBorderMeshAndAdd(b.getState(), b.getYEdgePosition(), a.getXEdgePosition());
+                    findBorderMeshAndAdd(a.getState(), a.getXEdgePosition(), a.getYEdgePosition());
                 }
                 else
-                    findBorderMeshAndAdd(a.getColor(),b.getYEdgePosition(), a.getYEdgePosition());
+                    findBorderMeshAndAdd(a.getState(), b.getYEdgePosition(), a.getYEdgePosition());
 
                 break;
             case 13:
                 mesh.AddPentagon(c.getPosition(), d.getPosition(), b.getYEdgePosition(), a.getXEdgePosition(), a.getPosition());
-                findBorderMeshAndAdd(b.getColor(),b.getYEdgePosition(), a.getXEdgePosition());
+                findBorderMeshAndAdd(b.getState(), b.getYEdgePosition(), a.getXEdgePosition());
 
                 break;
             case 14:
                 mesh.AddPentagon(d.getPosition(), b.getPosition(), a.getXEdgePosition(), a.getYEdgePosition(), c.getPosition());
-                findBorderMeshAndAdd(a.getColor(),a.getXEdgePosition(), a.getYEdgePosition());
+                findBorderMeshAndAdd(a.getState(), a.getXEdgePosition(), a.getYEdgePosition());
 
                 break;
             case 15:
@@ -393,19 +386,19 @@ public class VoxelGrid
     }
     private static bool is3ColorCornerDown(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return a.getColor() == b.getColor() && a.getColor() != c.getColor() && b.getColor() != d.getColor() && c.getColor() != d.getColor();
+        return a.getState() == b.getState() && a.getState() != c.getState() && b.getState() != d.getState() && c.getState() != d.getState();
     }
     private static bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return c.getColor() == d.getColor() && c.getColor() != a.getColor() && d.getColor() != b.getColor() && a.getColor() != b.getColor();
+        return c.getState() == d.getState() && c.getState() != a.getState() && d.getState() != b.getState() && a.getState() != b.getState();
     }
     private static bool is3ColorCornerLeft(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return c.getColor() == a.getColor() && c.getColor() != d.getColor() && a.getColor() != b.getColor() && d.getColor() != b.getColor();
+        return c.getState() == a.getState() && c.getState() != d.getState() && a.getState() != b.getState() && d.getState() != b.getState();
     }
     private static bool is3ColorCornerRight(Voxel a, Voxel b, Voxel c, Voxel d)
     {
-        return d.getColor() == b.getColor() && d.getColor() != c.getColor() && b.getColor() != a.getColor() && c.getColor() != a.getColor();
+        return d.getState() == b.getState() && d.getState() != c.getState() && b.getState() != a.getState() && c.getState() != a.getState();
     }
     internal Dictionary<Province, MeshStructure> getBorders()
     {

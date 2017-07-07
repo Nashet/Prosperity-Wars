@@ -77,7 +77,7 @@ public class Province : Name
 
     internal static void generateUnityData(VoxelGrid grid)
     {
-        allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x.colorID), grid.getBorders()));
+        allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
         allProvinces.ForEach(x => x.setBorderMaterials(false));
     }
     void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)

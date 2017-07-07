@@ -4,11 +4,11 @@ using System;
 [Serializable]
 public class Voxel
 {
-     Color color;
+     Province state;
 
      Vector2 position, xEdgePosition, yEdgePosition;
 
-    public Voxel(int x, int y, float size, Color state)
+    public Voxel(int x, int y, float size, Province state)
     {
         position.x = (x + 0.5f) * size;
         position.y = (y + 0.5f) * size;
@@ -17,12 +17,12 @@ public class Voxel
         xEdgePosition.x += size * 0.5f;
         yEdgePosition = position;
         yEdgePosition.y += size * 0.5f;
-        this.color = state;
+        this.state = state;
         //this.state = Game.Random.Next(3) == 1;
     }
-    public Color getColor()
+    public Province getState()
     {
-        return color;
+        return state;
     }
     public Vector2 getPosition()
     {
@@ -40,7 +40,7 @@ public class Voxel
 
     public void BecomeXDummyOf(Voxel voxel, float offset)
     {
-        color = voxel.color;
+        state = voxel.state;
         position = voxel.position;
         xEdgePosition = voxel.xEdgePosition;
         yEdgePosition = voxel.yEdgePosition;
@@ -51,7 +51,7 @@ public class Voxel
 
     public void BecomeYDummyOf(Voxel voxel, float offset)
     {
-        color = voxel.color;
+        state = voxel.state;
         position = voxel.position;
         xEdgePosition = voxel.xEdgePosition;
         yEdgePosition = voxel.yEdgePosition;
@@ -62,7 +62,7 @@ public class Voxel
 
     public void BecomeXYDummyOf(Voxel voxel, float offset)
     {
-        color = voxel.color;
+        state = voxel.state;
         position = voxel.position;
         xEdgePosition = voxel.xEdgePosition;
         yEdgePosition = voxel.yEdgePosition;
