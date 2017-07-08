@@ -434,7 +434,9 @@ public class Game : ThreadedJob
     static void generateMapImage()
     {
         //Texture2D mapImage = new Texture2D(100, 100);
-        Texture2D mapImage = new Texture2D(120 + Random.Next(80), 120 + Random.Next(80));        // standard for webGL
+        int mapSize = 30000;
+        int width = 150 + Random.Next(150);
+        Texture2D mapImage = new Texture2D(width, mapSize /width);        // standard for webGL
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();

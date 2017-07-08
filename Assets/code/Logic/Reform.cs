@@ -173,7 +173,7 @@ public class Government : AbstractReform
         new ConditionsList(Condition.AlwaysYes), "tribe", 10, 0f);
 
     readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1,
-        new ConditionsList(Condition.AlwaysYes), "kingdom", 20,0.5f);
+        new ConditionsList(Condition.AlwaysYes), "kingdom", 20, 0.5f);
 
     readonly internal static ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8,
         new ConditionsList(Condition.AlwaysYes), "polis", 5, 1f);
@@ -1158,11 +1158,17 @@ public class MinorityPolicy : AbstractReform
 }
 public class Separatism : AbstractReformValue
 {
-    static private readonly Procent willing = new Procent(3f);
-    private readonly Country separatismTarget;
     private static readonly List<Separatism> allSeparatists = new List<Separatism>();
-    private Separatism(Country country) : base(country.getName() + " independence", "", 0, new ConditionsList(Condition.AlwaysYes))
+    private static readonly Procent willing = new Procent(3f);
+    public readonly Condition separatismAllowed;
+
+    private readonly Country separatismTarget;
+
+    private Separatism(Country country) : base(country.getName() + " independence", "", 0,
+        new ConditionsList())//new ConditionsList(Condition.AlwaysYes))
     {
+        separatismAllowed = new Condition(x => isAvailable(x as Country), "Separatism target is valid", true);
+        allowed.add(separatismAllowed);
         separatismTarget = country;
         allSeparatists.Add(this);
     }
@@ -1183,7 +1189,7 @@ public class Separatism : AbstractReformValue
 
     internal override bool isAvailable(Country country)
     {
-        throw new NotImplementedException();
+        return !separatismTarget.isAlive();
     }
 
     internal Country getCountry()

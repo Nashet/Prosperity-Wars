@@ -17,8 +17,10 @@ public class ConditionsList
     /// <summary>
     /// Only for descendants
     /// </summary>
-    //protected ConditionsList()
-    //{ }
+    public ConditionsList()
+    {
+        list = new List<Condition>();
+    }
     /// <summary>
     /// basic constructor
     /// </summary>    

@@ -14,7 +14,7 @@ public class Movement : Staff
     //private readonly Country separatism;
     private readonly List<PopUnit> members = new List<PopUnit>();
     private bool _isInRevolt;
-    //private readonly Country country;
+    
     Movement(PopUnit firstPop, Country place) : base(place)
     {
         members.Add(firstPop);
@@ -164,8 +164,10 @@ public class Movement : Staff
         //_isInRevolt = false;
         if (targetReform == null) // meaning separatism
         {
-            new Message("", "Separatists won revolution - " + (targetReformValue as Separatism).getCountry().getDescription(), "hmm");
-            (targetReformValue as Separatism).getCountry().onSeparatismWon(getPlaceDejure());
+            var rebels = targetReformValue as Separatism;
+            rebels.getCountry().onSeparatismWon(getPlaceDejure());
+            if (!rebels.getCountry().isAI())
+                new Message("", "Separatists won revolution - " + rebels.getCountry().getDescription(), "hmm");
         }
         else
             targetReform.setValue(targetReformValue);
@@ -209,15 +211,20 @@ public class Movement : Staff
         }
         //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
-                && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt))
+                && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
+                && isValidGoal())
         {
-            //revolt
-            if (place == Game.Player && !Game.Player.isAI())
-                new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
-            mobilize(place.ownedProvinces);
-            sendArmy(place.getCapital(), Procent.HundredProcent);
-            _isInRevolt = true;
+            doRevolt();
         }
+    }
+    private void doRevolt()
+    {
+        //revolt
+        if (place == Game.Player && !Game.Player.isAI())
+            new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
+        mobilize(place.ownedProvinces);
+        sendArmy(place.getCapital(), Procent.HundredProcent);
+        _isInRevolt = true;
     }
     internal void mobilize(IEnumerable<Province> source)
     {
@@ -226,6 +233,7 @@ public class Movement : Staff
     }
 }
 
+// todo make generic
 public static class MovementExtensions
 {
     public static string getDescription(this List<Movement> list)

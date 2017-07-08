@@ -745,7 +745,7 @@ abstract public class PopUnit : Producer
                     if (howGood > 0f)
                         result.Add(reformValue, Value.Convert(howGood));
                 }
-        var target = canBeSeparatis();
+        var target = getPotentialSeparatismTarget();
         if (target != null)
         {
             var howGood = target.modVoting.getModifier(this);
@@ -766,7 +766,7 @@ abstract public class PopUnit : Producer
                     if (howGood > 0f)
                         list.Add(new KeyValuePair<AbstractReform, AbstractReformValue>(reform, reformValue), howGood);
                 }
-        var target = canBeSeparatis();
+        var target = getPotentialSeparatismTarget();
         if (target != null)
         {
             var howGood = target.modVoting.getModifier(this);
@@ -775,7 +775,7 @@ abstract public class PopUnit : Producer
         }
         return list.MaxByRandom(x => x.Value).Key;
     }
-    private Separatism canBeSeparatis()
+    private Separatism getPotentialSeparatismTarget()
     {
         foreach (var item in province.getCores())
         {
