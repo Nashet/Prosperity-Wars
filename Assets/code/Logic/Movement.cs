@@ -145,18 +145,18 @@ public class Movement : Staff
     {
         throw new NotImplementedException();
     }
-    private void removeAllMembers()
+    private void killMovement()
     {
-        foreach (var item in getAllArmies())
+        //foreach (var item in getAllArmies())
+        //{
+        //    item.demobilize();
+        //}
+        foreach (var pop in members.ToArray())
         {
-            item.demobilize();
+            leave(pop);
+            //pop.setMovement(null);
         }
-        foreach (var pop in members)
-        {
-            //leave(pop);
-            pop.setMovement(null);
-        }
-        members.Clear();
+        //members.Clear();
     }
     internal void onRevolutionWon()
     {
@@ -176,7 +176,7 @@ public class Movement : Staff
             pop.loyalty.add(Options.PopLoyaltyBoostOnRevolutionWon);
             pop.loyalty.clamp100();
         }
-        removeAllMembers();
+        killMovement();
         //getPlaceDejure().movements.Remove(this);
 
     }
@@ -206,13 +206,13 @@ public class Movement : Staff
         }
         if (!isValidGoal())
         {
-            removeAllMembers();
+            killMovement();
             return;
         }
         //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
                 && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
-                && isValidGoal())
+                )//&& isValidGoal()) do it in before battle
         {
             doRevolt();
         }
@@ -222,15 +222,15 @@ public class Movement : Staff
         //revolt
         if (place == Game.Player && !Game.Player.isAI())
             new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
-        mobilize(place.ownedProvinces);
+        
+        getPlaceDejure().rebelTo(x => x.getPopUnit().getMovement() == this, this);
+
+        base.mobilize(place.ownedProvinces);
+
         sendArmy(place.getCapital(), Procent.HundredProcent);
         _isInRevolt = true;
     }
-    internal void mobilize(IEnumerable<Province> source)
-    {
-        getPlaceDejure().demobilize(x => x.getPopUnit().getMovement() == this);
-        base.mobilize(source);
-    }
+    
 }
 
 // todo make generic

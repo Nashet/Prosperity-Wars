@@ -144,7 +144,7 @@ public class Game : ThreadedJob
             {
                 var color = item.getColorID();
                 if (color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f)
-                //if (color.g + color.b + color.r > 492f / 255f)
+                    //if (color.g + color.b + color.r > 492f / 255f)
                     res.Add(item);
 
             }
@@ -436,7 +436,7 @@ public class Game : ThreadedJob
         //Texture2D mapImage = new Texture2D(100, 100);
         int mapSize = 30000;
         int width = 150 + Random.Next(150);
-        Texture2D mapImage = new Texture2D(width, mapSize /width);        // standard for webGL
+        Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
@@ -595,23 +595,28 @@ public class Game : ThreadedJob
         {
             foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
             {
-                var result = attackerArmy.attack(attackerArmy.getDestination());
-                if (result.isAttackerWon())
+                var movement = attacker as Movement;
+                if (movement == null || movement.isValidGoal())
                 {
-                    var country = attacker as Country;
-                    if (country == null)
-                        (attacker as Movement).onRevolutionWon();
+                    var result = attackerArmy.attack(attackerArmy.getDestination());
+                    if (result.isAttackerWon())
+                    {
+
+                        if (movement == null)
+                            attackerArmy.getDestination().secedeTo(attacker as Country);
+                        else
+                            movement.onRevolutionWon();
+                    }
                     else
-                        attackerArmy.getDestination().secedeTo(country); ;
+                        if (result.isDefenderWon())
+                    {
+                        //var movement = attacker as Movement;
+                        if (movement != null)
+                            movement.onRevolutionLost();
+                    }
+                    if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+                        result.createMessage();
                 }
-                else if (result.isDefenderWon())
-                {
-                    var movement = attacker as Movement;
-                    if (movement != null)
-                        movement.onRevolutionLost();
-                }
-                if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-                    result.createMessage();
                 attackerArmy.sendTo(null); // go home
             }
             attacker.consolidateArmies();

@@ -147,7 +147,6 @@ public class Country : Staff
         setPrefix();
         alive = true;
     }
-
     public static void setUnityAPI()
     {
         foreach (var item in allCountries)
@@ -333,7 +332,7 @@ public class Country : Staff
 
     public bool isAlive()
     {
-        return alive;        
+        return alive;
     }
     static public IEnumerable<Country> getExisting()
     {
@@ -590,7 +589,8 @@ public class Country : Staff
         if (Game.devMode)
             return new Value(this.getMenPopulation());
         else
-            return new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
+            return //new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
+            new Value(Options.defaultSciencePointMultiplier);
     }
     internal void simulate()
     {
@@ -621,7 +621,7 @@ public class Country : Staff
                 procent.clamp100();
             }
         movements.RemoveAll(x => x.isEmpty());
-        foreach (var item in movements)
+        foreach (var item in movements.ToArray())
             item.simulate();
 
 
@@ -636,8 +636,9 @@ public class Country : Staff
             {
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
-                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f)// || Game.Random.Next(100) == 1)
+                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(800) == 1)
                     && this.getStregth(null) > 0
+                    && (this.getAverageMorale().get() > 0.5f || this.isOneProvince())
                     && (this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
                         || possibleTarget.getCountry().isAI() && this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.1f)

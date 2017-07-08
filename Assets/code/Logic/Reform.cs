@@ -1160,7 +1160,7 @@ public class Separatism : AbstractReformValue
 {
     private static readonly List<Separatism> allSeparatists = new List<Separatism>();
     private static readonly Procent willing = new Procent(3f);
-    public readonly Condition separatismAllowed;
+    private readonly Condition separatismAllowed;
 
     private readonly Country separatismTarget;
 

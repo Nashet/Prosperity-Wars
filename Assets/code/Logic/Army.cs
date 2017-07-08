@@ -6,12 +6,9 @@ using System.Linq;
 using System;
 public class Army
 {
-    Dictionary<PopUnit, Corps> personal;
-    Province destination;
-    Staff owner;
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
     //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
-    static Modifier modifierMorale = new Modifier(x => (x as Army).getMorale().get(), "Morale", 1f, true);
+    static Modifier modifierMorale = new Modifier(x => (x as Army).getAverageMorale().get(), "Morale", 1f, true);
 
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
@@ -21,6 +18,12 @@ public class Army
     static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped Tanks", 1f, false);
     static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped Airplanes", 1f, false);
     static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
+
+
+    private readonly Dictionary<PopUnit, Corps> personal;
+    Province destination;
+    private readonly Staff owner;
+    
 
     private float getColdArmsSupply()
     {
@@ -99,6 +102,9 @@ public class Army
         if (this.personal.Remove(item.getPopUnit())) // don't remove this
             destination.personal.Add(item.getPopUnit(), item);
     }
+
+    
+
     //public Army(Army army)
     //{
     //    personal = new List<Corps>(army.personal);
@@ -116,7 +122,6 @@ public class Army
     }
     public void demobilize(Func<Corps, bool> predicate)
     {
-
         foreach (var corps in personal.Values.ToList())
             if (predicate(corps))
             {
@@ -124,11 +129,21 @@ public class Army
                 Pool.ReleaseObject(corps);
             }
     }
+    internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
+    {
+        var takerArmy = movement.getDefenceForces();
+        foreach (var corps in personal.Values.ToList())
+            if (popSelector(corps))
+            {
+                personal.Remove(corps.getPopUnit());
+                takerArmy.add(corps);
+            }
+    }
     public void consume()
     {        
         personal.ForEach((x, corps) => corps.consume(getOwner().getPlaceDejure()));
     }
-    Procent getMorale()
+    public Procent getAverageMorale()
     {
         Procent result = new Procent(0);
         int calculatedSize = 0;
@@ -211,7 +226,7 @@ public class Army
             //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
             sb.Append(getAmountByTypes().getString(": ", ", "));
             sb.Append(", Total size: ").Append(getSize());
-            sb.Append(", Morale: ").Append(getMorale());
+            sb.Append(", Morale: ").Append(getAverageMorale());
             sb.Append(", Provision: ").Append(getConsumption());
             //string str;
             //modifierStrenght.getModifier(this, out str);
@@ -454,10 +469,10 @@ public class Army
     {
         return owner;
     }
-    public void setOwner(Staff country)
-    {
-        owner = country;
-    }
+    //public void setOwner(Staff country)
+    //{
+    //    owner = country;
+    //}
 
     private int takeLoss(int loss)
     {

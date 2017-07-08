@@ -50,6 +50,19 @@ public abstract class Staff : Consumer
                     result += pop.howMuchCanMobilize(this, againstWho);
         return result;
     }
+
+    public Procent getAverageMorale()
+    {
+        Procent result = new Procent(0);
+        int calculatedSize = 0;
+        foreach (var item in allArmies)
+        {
+            result.addPoportionally(calculatedSize, item.getSize(), item.getAverageMorale());
+            calculatedSize += item.getSize();
+        }
+        return result;
+    }
+
     public float getAllArmiesSize()
     {
         int size = 0;
@@ -82,7 +95,7 @@ public abstract class Staff : Consumer
                 foreach (Army next in allArmies)
                     if (next.getDestination() == null)
                     {
-                        consolidatedArmy.setOwner(next.getOwner());
+                        //consolidatedArmy.setOwner(next.getOwner());
                         consolidatedArmy.joinin(next);
                     }
                 //if (addConsolidatedArmyInList)
@@ -138,7 +151,10 @@ public abstract class Staff : Consumer
         }
         allArmies.RemoveAll(army => army.getSize() == 0);
     }
-
+    internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
+    {
+        allArmies.ForEach(x => x.rebelTo(popSelector, movement));
+    }
     //override public void buyNeeds()
     // {
     //     allArmies.ForEach(x => x.consume());
