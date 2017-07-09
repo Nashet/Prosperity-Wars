@@ -290,12 +290,13 @@ abstract public class PopUnit : Producer
         if (byWhom == getCountry())
         {
             if (this.getMovement() == null || (!this.getMovement().isInRevolt() && this.getMovement() != againstWho))
-            {
-                if (popType == PopType.Soldiers)
-                    howMuchCanMobilize = (int)(getPopulation() * 0.5);
-                else
-                    howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
-            }
+                //if (this.loyalty.isBiggerOrEqual(Options.PopMinLoyaltyToMobilizeForGovernment))
+                {
+                    if (popType == PopType.Soldiers)
+                        howMuchCanMobilize = (int)(getPopulation() * 0.5);
+                    else
+                        howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+                }
         }
         else
         {
@@ -309,16 +310,16 @@ abstract public class PopUnit : Producer
             howMuchCanMobilize = 0;
         return howMuchCanMobilize;
     }
-    public Corps mobilize(Staff byWho)
+    public int mobilize(Staff byWho)
     {
         int amount = howMuchCanMobilize(byWho, null);
         if (amount > 0)
         {
             mobilized += amount;
-            return Pool.GetObject(this, amount);
+            return amount;// CorpsPool.GetObject(this, amount);
         }
         else
-            return null;
+            return 0;// null;
     }
     public void demobilize()
     {
@@ -792,13 +793,15 @@ abstract public class PopUnit : Producer
         loyalty.set(Mathf.Clamp01(newRes));
         if (daysUpsetByForcedReform > 0)
             daysUpsetByForcedReform--;
+
         if (loyalty.isSmallerThan(Options.PopLowLoyaltyToJoinMovevent))
             Movement.join(this);
         else
         {
-            if (loyalty.isBiggerThan(Options.PopLowLoyaltyToJoinMovevent))
+            if (loyalty.isBiggerThan(Options.PopHighLoyaltyToleaveMovevent))
                 Movement.leave(this);
-        }
+        }        
+
     }
     public void setMovement(Movement movement)
     {

@@ -84,12 +84,13 @@ public static class Options
     internal static readonly float FactoryMinPossibleSallary = 0.001f;
     internal static readonly float MarketInfiniteDSB = 999f;
     internal static readonly Value PopLowLoyaltyToJoinMovevent = new Value(0.3f);
-    internal static readonly Value PopHighLoyaltyToleavMovevent = new Value(0.5f);
+    internal static readonly Value PopHighLoyaltyToleaveMovevent = new Value(0.4f);
     internal static readonly Value PopLoyaltyLimitToRevolt = new Value(0.1f);
     internal static readonly Procent PopLoyaltyBoostOnRevolutionWon = new Procent(0.8f);
     internal static readonly Procent PopLoyaltyBoostOnRevolutionLost = new Procent(0.3f);
     internal static readonly int PopChangeMovementRate = 30;
-    internal static readonly Procent MovementStrenthToStartRebellion = new Procent(0.50f);
+    internal static readonly Procent MovementStrenthToStartRebellion = new Procent(1f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
+    //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
 }

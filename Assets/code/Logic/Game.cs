@@ -596,21 +596,18 @@ public class Game : ThreadedJob
             foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
             {
                 var movement = attacker as Movement;
-                if (movement == null || movement.isValidGoal())
+                if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
                 {
                     var result = attackerArmy.attack(attackerArmy.getDestination());
                     if (result.isAttackerWon())
                     {
-
                         if (movement == null)
-                            attackerArmy.getDestination().secedeTo(attacker as Country);
+                            attackerArmy.getDestination().secedeTo(attacker as Country, true);
                         else
                             movement.onRevolutionWon();
                     }
-                    else
-                        if (result.isDefenderWon())
+                    else if (result.isDefenderWon())
                     {
-                        //var movement = attacker as Movement;
                         if (movement != null)
                             movement.onRevolutionLost();
                     }

@@ -151,7 +151,7 @@ public class PopType
             else
                 return true;
         }
-        else
+        else // movement
             return true;
     }
     public PrimitiveStorageSet getMilitaryNeedsPer1000()

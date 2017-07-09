@@ -285,7 +285,7 @@ public class Province : Name
             return sb.ToString();
         }
     }
-    public void secedeTo(Country taker)
+    public void secedeTo(Country taker, bool addModifier)
     {
         Country oldCountry = getCountry();
         //refuse loans to old country bank
@@ -333,11 +333,11 @@ public class Province : Name
         meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
 
         setBorderMaterials(false);
-
-        if (modifiers.ContainsKey(Mod.recentlyConquered))
-            modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
-        else
-            modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
+        if (addModifier)
+            if (modifiers.ContainsKey(Mod.recentlyConquered))
+                modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
+            else
+                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
         // modifiers.Add(Mod.blockade, default(DateTime));
     }
     public int howFarFromCapital()

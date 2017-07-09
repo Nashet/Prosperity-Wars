@@ -29,11 +29,6 @@ public class Country : Staff
     public readonly List<Movement> movements = new List<Movement>();
     public readonly CountryStorageSet storageSet = new CountryStorageSet();
 
-    internal int getSize()
-    {
-        return ownedProvinces.Count;
-    }
-
     private TextMesh meshCapitalText;
     private Material borderMaterial;
 
@@ -60,6 +55,13 @@ public class Country : Staff
 
     private readonly Modifier modXHasMyCores;
     public readonly ModifiersList modMyOpinionOfXCountry;
+    public static readonly ConditionsListForDoubleObjects canAttack = new ConditionsListForDoubleObjects(new List<Condition>
+    {   
+        new ConditionForDoubleObjects((country, province)=>(province as Province).isNeighbor(country as Country), x=>"Is neighbor province", true),
+        //new ConditionForDoubleObjects((country, province)=>(province as Province).getCountry().government.getValue, x=>"Is neighbor province", false),
+        new ConditionForDoubleObjects((country, province)=>!Government.isDemocracy.checkIftrue(country) 
+        || !Government.isDemocracy.checkIftrue((province as Province).getCountry()), x=>"Democracies can't attack each other", true),
+    });
     public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
         //new Modifier(Government.isTribal, 0f, false),
@@ -85,7 +87,7 @@ public class Country : Staff
         place = this;
         modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
         modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
-            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue(), "You have same form of government", 0.002f, false),
+            new Modifier(x=>(x as Country).government.getValue() != this.government.getValue(), "You have different form of government", -0.002f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
             && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"You live in peace with us", 0.005f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
@@ -137,7 +139,7 @@ public class Country : Staff
         foreach (var item in oldCountry.ownedProvinces.ToList())
             if (item.isCoreFor(this))
             {
-                item.secedeTo(this);
+                item.secedeTo(this, false);
             }
         moveCapitalTo(getRandomOwnedProvince());
         foreach (var item in oldCountry.getInvented()) // copying inventions
@@ -190,6 +192,11 @@ public class Country : Staff
             if (pro.getCountry() == null)
                 pro.InitialOwner(Country.NullCountry);
     }
+    internal int getSize()
+    {
+        return ownedProvinces.Count;
+    }
+
     public IEnumerable<KeyValuePair<Invention, bool>> getAvailable()
     {
         foreach (var invention in inventions)
@@ -383,11 +390,11 @@ public class Country : Staff
 
     }
 
-    internal bool canAttack(Province province)
-    {
-        //!province.isBelongsTo(this) &&
-        return province.isNeighbor(this);
-    }
+    //internal bool canAttack(Province province)
+    //{
+    //    //!province.isBelongsTo(this) &&
+    //    return province.isNeighbor(this);
+    //}
 
     internal List<Province> getNeighborProvinces()
     {
@@ -636,12 +643,13 @@ public class Country : Staff
             {
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
-                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(800) == 1)
+                    && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(200) == 1)
                     && this.getStregth(null) > 0
-                    && (this.getAverageMorale().get() > 0.5f || this.isOneProvince())
+                    && (this.getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
                     && (this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
                         || possibleTarget.getCountry().isAI() && this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.1f)
+                    && Country.canAttack.isAllTrue(this, possibleTarget)
                     )
                 {
                     mobilize(ownedProvinces);

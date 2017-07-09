@@ -156,10 +156,11 @@ public class ProvincePanel : MonoBehaviour
 
         if (Game.devMode) sb.Append("\nColor: ").Append( province.getColorID());
 
-        btAttackThat.interactable = Game.Player.canAttack(province);
-        if (!btAttackThat.interactable)
-            btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "Can attack only neighbors";
-        else btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+        //btAttackThat.interactable = Game.Player.canAttack(province);
+        btAttackThat.interactable = Country.canAttack.isAllTrue(Game.Player, province, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
+        //if (!btAttackThat.interactable)
+        //    btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "Can attack only neighbors";
+        //else btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip = "";
         generaltext.text = sb.ToString();
     }
     public void onddMapModesChange(int newMapMode)

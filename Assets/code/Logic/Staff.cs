@@ -24,7 +24,12 @@ public abstract class Staff : Consumer
     }
     public void simulate()
     {
-
+        foreach (var item in getAllCorps())
+        {
+            item.reMobilize(this);
+        }
+        //if (Game.Random.Next(20) == 1)
+        //    ;
     }
     public Procent getRelativeStrength(Staff toWhom)
     {
@@ -125,9 +130,10 @@ public abstract class Staff : Consumer
         foreach (var province in source)
         {
             Army newArmy = new Army(this);
-            foreach (var item in province.allPopUnits)
-                if (item.popType.canMobilize(this) && item.howMuchCanMobilize(this, null) > 0)
-                    newArmy.add(item.mobilize(this));
+            foreach (var pop in province.allPopUnits)
+                if (pop.popType.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0)
+                    //newArmy.add(item.mobilize(this));
+                    newArmy.add(Corps.mobilize(this, pop));
         }
         consolidateArmies();
     }
@@ -183,6 +189,12 @@ public abstract class Staff : Consumer
     {
         foreach (var army in allArmies)
             yield return army;
+    }
+    internal IEnumerable<Corps> getAllCorps()
+    {
+        foreach (var army in allArmies)
+            foreach (var corps in army.getCorps())
+                yield return corps;
     }
     internal IEnumerable<Army> getAttackingArmies()
     {

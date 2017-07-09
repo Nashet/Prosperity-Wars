@@ -21,6 +21,23 @@ public class Corps
     {
         initialize(origin, size);
     }
+    public static Corps mobilize(Staff staff, PopUnit origin)
+    {
+        int howMuch = origin.mobilize(staff);
+        if (howMuch > 0)
+            return CorpsPool.GetObject(origin, howMuch);
+        else
+            return null;
+    }
+    internal void reMobilize(Staff staff)
+    {
+        //int howMuchCanMobilize = getPopUnit().howMuchCanMobilize(staff, null);
+        //int change = howMuchCanMobilize - getPopUnit().getMobilized();
+
+        getPopUnit().demobilize();
+        getPopUnit().mobilize(staff);
+        //if ()
+    }
     //public Corps(Corps corps):this(corps.getPopUnit(), corps.getSize())
     //{
 
@@ -33,6 +50,9 @@ public class Corps
         consumption.setZero();
         //here - delete all links on that object        
     }
+
+
+
     //internal void demobilizeFrom(Army army)
     //{
     //    //army.remove(this);
@@ -74,9 +94,11 @@ public class Corps
             morale.add(moraleChange);
         if (this.origin.popType == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
             morale.set(origin.loyalty);
-            
+
         if (morale.isBiggerThan(Procent.HundredProcent))
             morale.set(1f);
+        //if (getPopUnit().loyalty.isSmallerThan(Options.PopMinLoyaltyToMobilizeForGovernment))
+        //    getCountry().demobilize(x => x.getPopUnit() == this);
     }
     public PrimitiveStorageSet getConsumption()
     {
@@ -119,14 +141,14 @@ public class Corps
                 return found;
             else
             {
-                return new Storage(product, found.multipleOutside(this.getSize() / 1000f));                
+                return new Storage(product, found.multipleOutside(this.getSize() / 1000f));
             }
         }
         else
             return new Storage(product);
     }
     public Procent getMorale()
-    {        
+    {
         return morale;
     }
     //private float getStrenght()
@@ -195,7 +217,7 @@ public class Corps
 // pooled objects, maintaining a list of available objects and a collection of objects that have already been
 // requested from the pool and are still in use. The pool also ensures that objects that have been released
 // are returned to a suitable state, ready for the next time they are requested. 
-public static class Pool
+public static class CorpsPool
 {
     private static List<Corps> _available = new List<Corps>();
     private static List<Corps> _inUse = new List<Corps>();

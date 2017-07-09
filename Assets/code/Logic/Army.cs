@@ -117,7 +117,7 @@ public class Army
         foreach (var corps in personal.Values.ToList())
         {
             personal.Remove(corps.getPopUnit());
-            Pool.ReleaseObject(corps);
+            CorpsPool.ReleaseObject(corps);
         }
     }
     public void demobilize(Func<Corps, bool> predicate)
@@ -126,7 +126,7 @@ public class Army
             if (predicate(corps))
             {
                 personal.Remove(corps.getPopUnit());
-                Pool.ReleaseObject(corps);
+                CorpsPool.ReleaseObject(corps);
             }
     }
     internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
@@ -181,7 +181,7 @@ public class Army
                 else
                 {
                     armyToAdd.personal.Remove(corpsToTransfert.Key);
-                    Pool.ReleaseObject(corpsToTransfert.Value);
+                    CorpsPool.ReleaseObject(corpsToTransfert.Value);
                 }
             armyToAdd.personal.Clear();
         }
