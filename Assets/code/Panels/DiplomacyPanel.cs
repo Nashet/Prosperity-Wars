@@ -7,6 +7,7 @@ using System.Text;
 public class DiplomacyPanel : DragPanel
 {
     public Text  captionText, generalText;
+    public Button giveControlToAi, giveControlToPlayer;
     Country selectedCountry;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
@@ -22,6 +23,7 @@ public class DiplomacyPanel : DragPanel
     }
     public void refresh()
     {
+        setButtonsState();
         sb.Clear();
         sb.Append("Diplomacy of ").Append(selectedCountry);
         captionText.text = sb.ToString();
@@ -58,12 +60,19 @@ public class DiplomacyPanel : DragPanel
         selectedCountry = count;
         refresh();
     }
+    private void setButtonsState()
+    {
+        giveControlToPlayer.interactable = selectedCountry.isAI();
+        giveControlToAi.interactable = !selectedCountry.isAI();
+    }
     public void onSurrenderClick()
     {
         Game.givePlayerControlToAI();
+        setButtonsState();
     }
     public void onRegainControlClick()
     {
         Game.takePlayerControlOfThatCountry(selectedCountry);
+        setButtonsState();
     }
 }

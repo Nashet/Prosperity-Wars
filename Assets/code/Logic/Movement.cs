@@ -100,7 +100,7 @@ public class Movement : Staff
     public string getDescription()
     {
         var sb = new StringBuilder(getShortName());
-        sb.Append(", members: ").Append(getMembership()).Append(", mid. loyalty: ").Append(getMiddleLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(getPlaceDejure()));
+        sb.Append(", members: ").Append(getMembership()).Append(", avg. loyalty: ").Append(getAverageLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(getPlaceDejure()));
         sb.Append(", str: ").Append(getStregth(this));
         return sb.ToString();
     }
@@ -129,7 +129,7 @@ public class Movement : Staff
     //}
 
 
-    private Procent getMiddleLoyalty()
+    private Procent getAverageLoyalty()
     {
         Procent result = new Procent(0);
         int calculatedSize = 0;
@@ -211,7 +211,7 @@ public class Movement : Staff
         }
         //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
-                && getMiddleLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
+                && getAverageLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
                 )//&& isValidGoal()) do it in before battle
         {
             doRevolt();
@@ -241,7 +241,7 @@ public static class MovementExtensions
         StringBuilder sb = new StringBuilder();
         foreach (var item in list)
         {
-            sb.Append(" ").Append(item.getDescription()).Append("\n ");
+            sb.Append("  ").Append(item.getDescription()).Append(" \n");
         }
         return sb.ToString();
     }

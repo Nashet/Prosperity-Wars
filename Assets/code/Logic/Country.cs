@@ -260,7 +260,7 @@ public class Country : Staff
     {
         return soldiersWage.get();
     }
-    public Procent getMiddleLoyalty()
+    public Procent getAverageLoyalty()
     {
         Procent result = new Procent(0f);
         int calculatedPopulation = 0;

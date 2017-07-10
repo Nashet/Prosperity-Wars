@@ -170,19 +170,19 @@ public class Government : AbstractReform
     }
 
     readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0,
-        new ConditionsList(Condition.AlwaysYes), "tribe", 10, 0f);
+        new ConditionsList(), "tribe", 10, 0f);
 
     readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1,
-        new ConditionsList(Condition.AlwaysYes), "kingdom", 20, 0.5f);
+        new ConditionsList(), "kingdom", 20, 0.5f);
 
     readonly internal static ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8,
-        new ConditionsList(Condition.AlwaysYes), "polis", 5, 1f);
+        new ConditionsList(), "polis", 5, 1f);
 
     readonly internal static ReformValue Despotism = new ReformValue("Despotism", "- Despot does what he wants", 2,
-        new ConditionsList(Condition.AlwaysYes), "empire", 40, 0.25f);
+        new ConditionsList(), "empire", 40, 0.25f);
 
     readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- Only Clerics have power", 5,
-        new ConditionsList(Condition.AlwaysYes), "", 40, 0f);
+        new ConditionsList(), "", 40, 0f);
 
     readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9,
         new ConditionsList(Condition.IsNotImplemented), "states", 40, 1f);
@@ -920,7 +920,7 @@ public class TaxationForPoor : AbstractReform
     static TaxationForPoor()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsList(Condition.AlwaysYes)));
+            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsList()));
     }
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
@@ -1015,7 +1015,7 @@ public class TaxationForRich : AbstractReform
     static TaxationForRich()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsList(Condition.AlwaysYes)));
+            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsList()));
     }
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
@@ -1116,7 +1116,7 @@ public class MinorityPolicy : AbstractReform
             Equality = new ReformValue("Equality for minorities", "- All cultures have same rights, assimilation is off", 2,
                 new ConditionsList(new List<Condition>() { Invention.IndividualRightsInvented }));
         if (Residency == null)
-            Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote, assimilation is on except alien cores", 1, new ConditionsList(Condition.AlwaysYes));
+            Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote, assimilation is on except alien cores", 1, new ConditionsList());
 
         status = Residency;
         //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,

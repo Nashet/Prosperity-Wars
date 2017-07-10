@@ -870,7 +870,7 @@ abstract public class PopUnit : Producer
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
         foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisPromoteInto(nextType))
-                list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
+                list.Add(nextType, province.getAverageNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
         if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
             return result.Key;
@@ -1009,7 +1009,7 @@ abstract public class PopUnit : Producer
 
         foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisDemoteInto(nextType))
-                list.Add(nextType, province.getMiddleNeedsFulfilling(nextType));
+                list.Add(nextType, province.getAverageNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
         if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
             return result.Key;
@@ -1062,7 +1062,7 @@ abstract public class PopUnit : Producer
                 if (country != this.getCountry())
                     foreach (var pro in country.ownedProvinces)
                     {
-                        var needsInTargetProvince = pro.getMiddleNeedsFulfilling(this.popType);
+                        var needsInTargetProvince = pro.getAverageNeedsFulfilling(this.popType);
                         if (needsInTargetProvince.get() >= this.needsFullfilled.get())
                             provinces.Add(pro, needsInTargetProvince);
                     }
@@ -1114,7 +1114,7 @@ abstract public class PopUnit : Producer
         foreach (var pro in province.getNeigbors(x => x.getCountry() == province.getCountry()))
         //if (pro != this.province)
         {
-            var needsInProvince = pro.getMiddleNeedsFulfilling(this.popType);
+            var needsInProvince = pro.getAverageNeedsFulfilling(this.popType);
             if (needsInProvince.get() > needsFullfilled.get())
                 provinces.Add(pro, needsInProvince);
         }
@@ -1246,7 +1246,7 @@ abstract public class PopUnit : Producer
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
                 if (proposition != null && province.CanBuildNewFactory(proposition) &&
-                    (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getMiddleFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
+                    (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
                     PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
                     Value cost = Game.market.getCost(resourceToBuild);

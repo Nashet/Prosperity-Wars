@@ -441,7 +441,7 @@ public class Province : Name
         return res;
     }
 
-    public Procent getMiddleLoyalty()
+    public Procent getAverageLoyalty()
     {
         Procent result = new Procent(0f);
         int calculatedPopulation = 0;
@@ -541,7 +541,7 @@ public class Province : Name
         return color;
     }
 
-    public Value getMiddleNeedsFulfilling(PopType type)
+    public Value getAverageNeedsFulfilling(PopType type)
     {
         Value result = new Value(0);
         int allPopulation = 0;
@@ -827,7 +827,7 @@ public class Province : Name
             return maxSalary;
         }
     }
-    internal float getMiddleFactoryWorkforceFullfilling()
+    internal float getAverageFactoryWorkforceFullfilling()
     {
         int workForce = 0;
         int capacity = 0;

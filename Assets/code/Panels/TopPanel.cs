@@ -32,7 +32,7 @@ public class TopPanel : MonoBehaviour
             + "\nMoney: " + Game.Player.cash
             + " Science points: " + Game.Player.sciencePoints
             + " Men: " + Game.Player.getMenPopulation()
-            + " mid. loyalty: " + Game.Player.getMiddleLoyalty();
+            + " avg. loyalty: " + Game.Player.getAverageLoyalty();
     }
     public void onTradeClick()
     {

@@ -3,8 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class PoliticsPanel : DragPanel
-{   
+{
     public Text descriptionText, movementsText;
+    public ScrollRect movementsScrollView;
     public Button voteButton;
     public Button forceDecisionButton;
     public Dropdown dropDown;
@@ -104,16 +105,20 @@ public class PoliticsPanel : DragPanel
     {
         hide();
         //if (Game.Player.movements != null)
-        movementsText.text = Game.Player.movements.getDescription() +"\n\n\n\n";
+        movementsText.text = Game.Player.movements.getDescription();// +"\n\n\n\n";
+        if (movementsText.preferredHeight > 115 && movementsText.preferredHeight < 130)
+            movementsText.text += "\n\n\n\n";
+
+        //GetComponent<RectTransform>().si
+        //movementsScrollView.he
         movementsHorizontalScrollBar.value = 0;
         if (selectedReform != null)
         {
             if (callRebuildDropDown) // meaning changed whole reform            
                 rebuildDropDown();
-
             descriptionText.text = selectedReform + " reforms " + selectedReform.getDescription()
-           + "\n\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
-           + "\n\nSelected: ";
+           + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
+           + "\nSelected: ";
 
             //if (selectedReformValue != null)
             if (selectedReformValue != selectedReform.getValue())
@@ -133,7 +138,7 @@ public class PoliticsPanel : DragPanel
             {
                 if (Game.Player.government.getValue() != Government.Despotism)
                 {
-                    descriptionText.text += "\n\n" + procentVotersSayedYes + " of voters want this reform ( ";
+                    descriptionText.text += "\n" + procentVotersSayedYes + " of voters want this reform ( ";
                     foreach (PopType type in PopType.getAllPopTypes())
                         if (divisionVotersResult[type] > 0)
                         {
@@ -143,7 +148,7 @@ public class PoliticsPanel : DragPanel
                     descriptionText.text += ")";
                 }
                 else
-                    descriptionText.text += "\n\nNobody to vote - Despot rule everything";
+                    descriptionText.text += "\nNobody to vote - Despot rule everything";
 
                 descriptionText.text += "\n" + procentPopulationSayedYes + " of population want this reform ( ";
                 foreach (PopType type in PopType.getAllPopTypes())

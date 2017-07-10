@@ -8,6 +8,7 @@ public class ProvincePanel : MonoBehaviour
 {
     public Text generaltext;
     public Button btnOwner, btnBuild, btAttackThat, btMobilize;
+    
     // Use this for initialization    
     void Start()
     {
@@ -123,7 +124,7 @@ public class ProvincePanel : MonoBehaviour
         var sb = new StringBuilder("Province name: ").Append(province);
         sb.Append("\nID: ").Append(province.getID());
         sb.Append("\nPopulation (with families): ").Append(province.getFamilyPopulation());
-        sb.Append("\nMiddle loyalty: ").Append(province.getMiddleLoyalty());
+        sb.Append("\nAverage loyalty: ").Append(province.getAverageLoyalty());
         sb.Append("\nMajor culture: ").Append(province.getMajorCulture());
         sb.Append("\nTax income: ").Append(province.getIncomeTax());
         sb.Append("\nResource: ").Append(province.getResource());
