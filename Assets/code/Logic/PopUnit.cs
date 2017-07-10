@@ -286,29 +286,41 @@ abstract public class PopUnit : Producer
     }
     internal int howMuchCanMobilize(Staff byWhom, Movement againstWho)
     {
-        int howMuchCanMobilize = 0;
+        int howMuchCanMobilizeTotal = 0;
         if (byWhom == getCountry())
         {
             if (this.getMovement() == null || (!this.getMovement().isInRevolt() && this.getMovement() != againstWho))
-                //if (this.loyalty.isBiggerOrEqual(Options.PopMinLoyaltyToMobilizeForGovernment))
-                {
-                    if (popType == PopType.Soldiers)
-                        howMuchCanMobilize = (int)(getPopulation() * 0.5);
-                    else
-                        howMuchCanMobilize = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
-                }
+            //if (this.loyalty.isBiggerOrEqual(Options.PopMinLoyaltyToMobilizeForGovernment))
+            {
+                if (popType == PopType.Soldiers)
+                    howMuchCanMobilizeTotal = (int)(getPopulation() * 0.5);
+                else
+                    howMuchCanMobilizeTotal = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+            }
         }
         else
         {
             if (byWhom == getMovement())
-                howMuchCanMobilize = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.mobilizationFactor);
+                howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.mobilizationFactor);
             else
-                howMuchCanMobilize = 0;
+                howMuchCanMobilizeTotal = 0;
         }
-        howMuchCanMobilize -= mobilized; //shouldn't mobilize more than howMuchCanMobilize
-        if (howMuchCanMobilize < Options.PopMinimalMobilazation)
-            howMuchCanMobilize = 0;
-        return howMuchCanMobilize;
+        howMuchCanMobilizeTotal -= mobilized; //shouldn't mobilize more than howMuchCanMobilize
+        if (howMuchCanMobilizeTotal + mobilized < Options.PopMinimalMobilazation) // except if it's remobilization
+            howMuchCanMobilizeTotal = 0;
+        return howMuchCanMobilizeTotal;
+    }
+    public Staff whoMobilized()
+    {
+        if (getMobilized() == 0)
+            return null;
+        else
+        {
+            if (getMovement() != null && getMovement().isInRevolt())
+                return getMovement();
+            else
+                return getCountry();
+        }
     }
     public int mobilize(Staff byWho)
     {
@@ -800,7 +812,7 @@ abstract public class PopUnit : Producer
         {
             if (loyalty.isBiggerThan(Options.PopHighLoyaltyToleaveMovevent))
                 Movement.leave(this);
-        }        
+        }
 
     }
     public void setMovement(Movement movement)
