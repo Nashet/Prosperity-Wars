@@ -659,7 +659,7 @@ public class Factory : Producer
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-            result.set(result.get() * (modifierEfficiency.getModifier(this) / 100f));        
+            result.set(result.get() * (modifierEfficiency.getModifier(this) / 100f));
         return result;
     }
 
@@ -902,7 +902,7 @@ public class Factory : Producer
     internal void upgrade(Agent byWhom)
     {
         upgrading = true;
-        //needsToUpgrade = getUpgradeNeeds().getCopy();
+        needsToUpgrade.add(getUpgradeNeeds().getCopy());
         byWhom.payWithoutRecord(this, getUpgradeCost());
     }
 

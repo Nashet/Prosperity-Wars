@@ -460,7 +460,7 @@ public class Serfdom : AbstractReform
         {
             Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
         }));
-    internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalization land", "- Aristocrats loose property", 4,
+    internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalized land", "- Aristocrats loose property", 4,
         new ConditionsList(new List<Condition>()
         {
             Government.isProletarianDictatorship, Condition.IsNotImplemented

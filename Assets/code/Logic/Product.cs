@@ -78,7 +78,7 @@ public class Product : Name
         if (
             (
             (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.Metal))
-            || (!country.isInvented(Invention.SteamPower) && this == Machinery)
+            || (!country.isInvented(Invention.SteamPower) && (this == Machinery || this == Cement))
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
             || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Cars))

@@ -18,7 +18,7 @@ public class Invention : Name
         Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
         individualRights = new Invention("Individual rights", "Allows Capitalism, Serfdom & Slavery abolishments", new Value(100f)),
         collectivism = new Invention("Collectivism", "Allows Proletarian dictatorship & Planned Economy", new Value(100f)),
-        SteamPower = new Invention("Steam Power", "Allows Machinery, Increases efficiency of all enterprises by 25%", new Value(100f)),
+        SteamPower = new Invention("Steam Power", "Allows Machinery & cement, Increases efficiency of all enterprises by 25%", new Value(100f)),
         Welfare = new Invention("Welfare", "Allows min wage and.. other", new Value(100f)),
         Gunpowder = new Invention("Gunpowder", "Allows Artillery & Ammunition", new Value(100f)),
         Firearms = new Invention("Hand-held cannons", "Allows Firearms, very efficient in battles", new Value(200f)),
