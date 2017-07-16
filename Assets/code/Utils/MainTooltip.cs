@@ -15,7 +15,7 @@ public class MainTooltip : MonoBehaviour
 
     //horizontal layout of the tooltip
     public HorizontalLayoutGroup hlG;
-    public bool Brazor;
+    
 
     public MainTooltip getThis
     {
@@ -26,6 +26,15 @@ public class MainTooltip : MonoBehaviour
     }
     //tooltip background image
     public RectTransform bgImage;
+
+    internal void redrawDynamicString(string text)
+    {       
+
+        //init tooltip string
+        thisText.text = text;
+
+    }
+
     Image bgImageSource;
 
     //needed as the layout refreshes only on the first Update() call
@@ -102,10 +111,8 @@ public class MainTooltip : MonoBehaviour
 
         //init tooltip string
         thisText.text = text;
-
         
         //call the position function
-
         OnScreenSpaceCamera();
         LayoutInit();
         firstUpdate = true;

@@ -2,15 +2,17 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Text;
 
 public class PopUnitPanel : DragPanel
 {
-    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText, issues;
+    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText, issues, money;
     private PopUnit pop;
     // Use this for initialization
     void Start()
     {
         MainCamera.popUnitPanel = this;
+        GetComponent<RectTransform>().position = new Vector2(900f, -58 + Screen.height);
         hide();
     }
     public PopUnit whomShowing()
@@ -26,9 +28,10 @@ public class PopUnitPanel : DragPanel
     {
         if (pop != null)
         {
+            var sb = new StringBuilder();
             efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-            issues.GetComponentInChildren<ToolTipHandler>().dynamicString = () => pop.getIssues().getString(" willing ", "\n");
+            issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));
 
             string demotionText;
             var target = pop.getRichestDemotionTarget();
@@ -63,62 +66,64 @@ public class PopUnitPanel : DragPanel
                 assimilationText = pop.province.getCountry().getCulture() + " " + pop.getAssimilationSize();
             else
                 assimilationText = "none";
-            string lifeNeeds = ""; string everyDayNeeds = ""; string luxuryNeeds = "";
 
-            var temp = pop.getRealLifeNeeds();
-            foreach (Storage next in temp)
-                lifeNeeds += next.ToString() + "; ";
-            lifeNeeds += pop.getLifeNeedsFullfilling().ToString() + " fulfilled";
-
-            temp = pop.getRealEveryDayNeeds();
-            foreach (Storage next in temp)
-                everyDayNeeds += next.ToString() + "; ";
-            everyDayNeeds += pop.getEveryDayNeedsFullfilling().ToString() + " fulfilled";
-
-            temp = pop.getRealLuxuryNeeds();
-            foreach (Storage next in temp)
-                luxuryNeeds += next.ToString() + "; ";
-            luxuryNeeds += pop.getLuxuryNeedsFullfilling().ToString() + " fulfilled";
-
-            //foreach (Storage next in pop.consumedTotal)
-            //    consumedTotal+= next.ToString() + "; ";
-            //luxuryNeeds += pop.getLuxuryNeedsFullfilling().ToString() + " fulfilled";
-
-            string loans = "";
-            if (pop.loans.get() > 0f)
-                loans = "\nLoan: " + pop.loans.ToString();
-            if (pop.deposits.get() > 0f)
-                loans = "\nDeposit: " + pop.deposits.ToString();
-
-            generaltext.text = pop + "\n" + "Population: " + pop.getPopulation()
-                + "\nCulture: " + pop.culture
-                + "\nStorage: " + pop.storageNow.ToString()
-                + "\nGain goods: " + pop.gainGoodsThisTurn.ToString()
-                + "\nSent to market: " + pop.sentToMarket
-                + "\nCash: " + pop.cash.ToString()
-                + "\nMoney income: " + pop.moneyIncomethisTurn
-                + "\nIncome tax: " + pop.incomeTaxPayed
-
-                + "\nDemotion: " + demotionText
-                + "\nPromotion: " + promotionText
-                + "\nMigration: " + migrationText
-                + "\nImmigration: " + immigrationText
-                + "\nAssimilation: " + assimilationText
-                + "\nGrowth: " + pop.getGrowthSize()
-                + "\nUnemployment: " + pop.getUnemployedProcent()
-                + loans
-                + "\nConsumed: " + pop.consumedTotal + " cost: " + Game.market.getCost(pop.consumedTotal)
-                + "\n\nLife needs: " + lifeNeeds + "\nEveryday needs: " + everyDayNeeds + "\nLuxury needs: " + luxuryNeeds
-                + "\nAge: " + pop.getAge()
-                + "\nMobilized: " + pop.getMobilized();
-            if (pop.getMovement() != null)
-                generaltext.text += "\nMember of " + pop.getMovement();
+            sb.Append(pop);
+            sb.Append("\nPopulation: ").Append(pop.getPopulation());
 
             //if (Game.devMode)
-            //    generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
-            //    + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
+            sb.Append("\nStorage: ").Append(pop.storageNow.ToString());
+            sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
+            sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
 
-            //+ "\nExpenses:"
+            sb.Append("\nDemotion: ").Append(demotionText);
+            sb.Append("\nPromotion: ").Append(promotionText);
+            sb.Append("\nMigration: ").Append(migrationText);
+            sb.Append("\nImmigration: ").Append(immigrationText);
+            sb.Append("\nAssimilation: ").Append(assimilationText);
+            sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
+            sb.Append("\nUnemployment: ").Append(pop.getUnemployedProcent());
+            sb.Append("\nLoyalty: ").Append(pop.loyalty);
+
+            if (pop.loans.get() > 0f)
+                sb.Append("\nLoan: ").Append(pop.loans.ToString());// hide it
+            if (pop.deposits.get() > 0f)
+                sb.Append("\nDeposit: ").Append(pop.deposits.ToString());// hide it
+
+
+
+            sb.Append("\nAge: ").Append(pop.getAge());
+            sb.Append("\nMobilized: ").Append(pop.getMobilized());
+            if (pop.getMovement() != null)
+                sb.Append("\nMember of ").Append(pop.getMovement());
+            sb.Append("\nConsumed: ").Append(pop.consumedTotal);
+
+            if (Game.devMode)
+                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
+                + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
+
+            generaltext.text = sb.ToString();
+
+            sb.Clear();
+            sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
+            lifeNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+            lifeNeedsText.text = sb.ToString();
+
+            sb.Clear();
+            sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
+            everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+            everyDayNeedsText.text = sb.ToString();
+
+            sb.Clear();
+            sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
+            luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+            luxuryNeedsText.text = sb.ToString();
+
+            sb.Clear();
+            sb.Append("Cash: ").Append(pop.cash.ToString());
+            money.text = sb.ToString();
+            money.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
+            + "\nIncome tax: " + pop.incomeTaxPayed
+            + "\nConsumed cost: " + Game.market.getCost(pop.consumedTotal));
         }
     }
     public void show(PopUnit ipopUnit)

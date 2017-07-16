@@ -11,7 +11,7 @@ public class MainCamera : MonoBehaviour
     //static GameObject mapPointer;
 
     public SimpleObjectPool buttonObjectPool;
-    public Transform panelParent;
+    //public Transform panelParent;
     public GameObject messagePanelPrefab;
     public Canvas canvas;
     public static TopPanel topPanel;
@@ -73,13 +73,19 @@ public class MainCamera : MonoBehaviour
         {
             Application.runInBackground = true;
             MainCamera.Game = new Game();
-            //MainCamera.Game.initialize();// non multi-threading
+#if UNITY_WEBGL
+                        MainCamera.Game.initialize(); // non multi-threading
+#else
             MainCamera.Game.Start(); //initialize is here 
-
+#endif
         }
         if (MainCamera.Game != null)
+#if UNITY_WEBGL
+                        if (!gameIsLoaded)  // non multi-threading
+#else
             if (MainCamera.Game.IsDone && !gameIsLoaded)
-            //if (!gameIsLoaded)  // non multi-threading
+#endif
+
             {
                 Game.setUnityAPI();
 
@@ -90,8 +96,10 @@ public class MainCamera : MonoBehaviour
                 topPanel.show();
                 gameIsLoaded = true;
             }
+#if !UNITY_WEBGL
             else // multi-threading
                 loadingPanel.loadingText.text = Game.getStatus();
+#endif
         if (gameIsLoaded)
         {
             if (Game.getMapMode() != 0 && Game.date.isYearsPassed(Options.MapRedrawRate))
@@ -157,8 +165,7 @@ public class MainCamera : MonoBehaviour
 
     internal static void refreshAllActive()
     {
-        if (topPanel.isActiveAndEnabled) topPanel.refresh();
-        if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
+        if (topPanel.isActiveAndEnabled) topPanel.refresh();        
         if (populationPanel.isActiveAndEnabled) populationPanel.refreshContent();
         if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
         if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
@@ -170,6 +177,7 @@ public class MainCamera : MonoBehaviour
         if (financePanel.isActiveAndEnabled) financePanel.refresh();
         if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
         if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
+        if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
     }
 
     internal static void SelectProvince(int number)
@@ -179,7 +187,7 @@ public class MainCamera : MonoBehaviour
         //    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
         //    Game.selectedProvince.setBorderMaterials();
         //}
-        
+
 
         if (number >= 0)
         {
@@ -191,7 +199,7 @@ public class MainCamera : MonoBehaviour
                 lastSelected.setBorderMaterials(true);
 
                 provincePanel.hide();
-                
+
             }
             else // new province selected
             {
@@ -202,7 +210,7 @@ public class MainCamera : MonoBehaviour
                 }
                 Game.selectedProvince = Province.find(number);
                 Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
-                provincePanel.show();                
+                provincePanel.show();
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
 
@@ -242,6 +250,4 @@ public class MainCamera : MonoBehaviour
         mesPanel.show(mes);
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
-
-
 }

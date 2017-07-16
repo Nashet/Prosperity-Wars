@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 
 public class InventionsPanel : DragPanel
-{  
+{
     public ScrollRect table;
     public Text descriptionText;
     public Button inventButton;
@@ -14,10 +14,10 @@ public class InventionsPanel : DragPanel
     void Start()
     {
         MainCamera.inventionsPanel = this;
-        inventButton.interactable = false;
-        GetComponent<RectTransform>().localPosition = new Vector2(-960f, 480f);
+        inventButton.interactable = false;              
+        GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
         hide();
-    }       
+    }
     //public void hide()
     //{
     //    inventionsPanel.SetActive(false);
@@ -52,10 +52,10 @@ public class InventionsPanel : DragPanel
         string scienceModifier;
         var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
         sb.Append("Science points: ").Append(Game.Player.sciencePoints).Append(" + ");
-        sb.Append(Game.Player.getSciencePointsBase().multipleOutside(spModifier)).Append(" Modifiers: ").Append(scienceModifier);        
+        sb.Append(Game.Player.getSciencePointsBase().multipleOutside(spModifier)).Append(" Modifiers: ").Append(scienceModifier);
         if (selectedInvention != null)
         {
-            sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());            
+            sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());
 
             // invention available
             if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
@@ -75,7 +75,7 @@ public class InventionsPanel : DragPanel
         else
         {
             inventButton.interactable = false;
-            sb.Append( "\n\nSelect invention from left panel");
+            sb.Append("\n\nSelect invention from left panel");
         }
         descriptionText.text = sb.ToString();
         show(false);

@@ -107,10 +107,10 @@ abstract public class MyTable : MonoBehaviour
     //}
 }
 abstract public class MyTableNew : MonoBehaviour
-{    
+{
     public SimpleObjectPool buttonObjectPool;
 
-    protected readonly int  rowHeight = 20;
+    protected readonly int rowHeight = 20;
     //public int columnsAmount;
     public Scrollbar verticalSlider;
     protected int howMuchRowsShow;
@@ -118,7 +118,7 @@ abstract public class MyTableNew : MonoBehaviour
 
     protected bool alreadyInUpdate;
 
-    
+
     public abstract void refreshContent();
 
 
@@ -218,7 +218,7 @@ abstract public class MyTableNew : MonoBehaviour
 
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, null, record);
-        newButton.GetComponentInChildren<ToolTipHandler>().dynamicString = dynamicTooltip;
+        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
     protected void RemoveButtons()
@@ -232,6 +232,6 @@ abstract public class MyTableNew : MonoBehaviour
                 buttonObjectPool.ReturnObject(toRemove);
             }
         }
-    }   
-    
+    }
+
 }

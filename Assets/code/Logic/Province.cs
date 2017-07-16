@@ -144,9 +144,7 @@ public class Province : Name
 
             bordersMeshes.Add(neighbor, meshRenderer);
         }
-
     }
-
     internal TerrainTypes getTerrain()
     {
         return terrain;
@@ -721,8 +719,11 @@ public class Province : Name
         txtMesh.text = this.ToString();
         txtMesh.color = Color.red; // Set the text's color to red
         group.SetLODs(lods);
-        //group.size = 30; // for webgl
+#if UNITY_WEBGL
+        group.size = 30; // for webgl
+#else
         group.size = 20; // for others
+#endif
         //group.RecalculateBounds();
     }
 

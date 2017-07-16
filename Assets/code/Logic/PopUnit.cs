@@ -1302,6 +1302,9 @@ abstract public class PopUnit : Producer
 
     override public string ToString()
     {
-        return popType + " from " + province;
+        var sb = new StringBuilder();
+        sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(province);
+        //return popType + " from " + province;
+        return sb.ToString();
     }
 }

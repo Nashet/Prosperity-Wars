@@ -33,7 +33,7 @@ public static class Options
     //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
     internal static readonly int maxFactoryFireHireSpeed = 50;
     internal static readonly float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
-    internal static readonly float defaultSciencePointMultiplier = 1.3f;//0.00001f; 
+    internal static readonly float defaultSciencePointMultiplier = 1.1f;//0.00001f; 
     internal static readonly int fabricConstructionTimeWithoutCapitalism = 20;
     internal static readonly float aristocratsFoodReserv = 50;
     internal static readonly float votingPassBillLimit = 0.5f;

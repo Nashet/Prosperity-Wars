@@ -5,28 +5,34 @@ using System;
 
 public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-
+    private Func<string> dynamicString;
     public string tooltip;
     public MainTooltip tip;
 
-    int counter = 0;
-    internal Func<string> dynamicString;
+    //int counter = 0;
 
+
+    public void setDynamicString(Func<string> dynamicString)
+    {
+        this.dynamicString = dynamicString;
+        //if (dynamicString != null && tip != null)
+        //{
+        //    //tip.HideTooltip();
+        //    //tip.SetTooltip(dynamicString());
+        //    tip.redrawDynamicString(dynamicString());
+        //    //OnPointerExit(null);
+        //    //OnPointerEnter(null);
+        //}
+    }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        //counter++
-        //    ;
-        //if (counter > 6 && tooltip != "")
-        //{
         if (tooltip != "" || dynamicString != null)
         {
             if (dynamicString == null)
                 tip.SetTooltip(tooltip);
             else
                 tip.SetTooltip(dynamicString());
-
-            counter = 0;
-        }       // }
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -34,22 +40,9 @@ public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (tip != null)
             tip.HideTooltip();
     }
-
-    //public void FixedUpdate()
-    //{
-    //    //if (counter > 300 && tip != null)
-    //    //{
-    //    //    tip.HideTooltip();
-    //    //    counter = 0;
-    //    //}
-    //    //if (counter > 300 && tip != null)
-    //    //{
-    //    //    tip.HideTooltip();
-    //    //    counter = 0;
-    //    //}
-
-    //    //counter++;
-    //}
-
-
+    public void OnMouseOver()
+    {
+        if (dynamicString != null && tip != null)
+            tip.SetTooltip(dynamicString());
+    }
 }
