@@ -55,7 +55,9 @@ public static class Options
     public static readonly Procent PopDemotionSpeed = new Procent(0.01f);
     ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
     public static readonly Procent PopPromotionSpeed = new Procent(0.01f);
-    public static readonly Procent PopAssimilationSpeed = new Procent(0.001f);
+    public static readonly Procent PopAssimilationSpeed = new Procent(0.002f);
+    public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.001f);
+    
     public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
     public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
 
@@ -67,7 +69,7 @@ public static class Options
 
     public static readonly int PopSizeConsolidationLimit = 100;
     /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>
-    public static readonly int PopAgeLimitToWipeOut = 250;
+    public static readonly int PopAgeLimitToWipeOut = 50; //250;
 
     internal static readonly float MaxMoralChangePerTic = 0.05f;
     internal static readonly int PopRichStrataVotePower = 5;

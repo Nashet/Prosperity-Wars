@@ -1113,10 +1113,10 @@ public class MinorityPolicy : AbstractReform
     public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)
     {
         if (Equality == null)
-            Equality = new ReformValue("Equality for minorities", "- All cultures have same rights, assimilation is off", 2,
+            Equality = new ReformValue("Equality for minorities", "- All cultures have same rights, assimilation is slower", 2,
                 new ConditionsList(new List<Condition>() { Invention.IndividualRightsInvented }));
         if (Residency == null)
-            Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote, assimilation is on except alien cores", 1, new ConditionsList());
+            Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote, assimilation is on except foreign core provinces", 1, new ConditionsList());
 
         status = Residency;
         //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,

@@ -583,7 +583,8 @@ public class Game : ThreadedJob
             + " \n\tbasic reforms (population can vote for reforms)"
             + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
             + "\n\tpolitical \\ culture \\ core map mode"
-            + "\n\nYou play as " + Game.Player.getDescription() + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            + "\n\nYou play as " + Game.Player.getDescription() + " yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            + "\nOr, You can give control to AI and watch it"
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\n'Enter' key to close top window, space - to pause \\ unpause"
             , "Ok");
@@ -705,7 +706,7 @@ public class Game : ThreadedJob
 
                     pop.calcLoyalty();
 
-                    if (Game.Random.Next(10) == 1)
+                    //if (Game.Random.Next(10) == 1)
                     {
                         pop.calcGrowth();
                         pop.calcPromotions();

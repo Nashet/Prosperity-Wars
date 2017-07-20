@@ -1168,13 +1168,17 @@ abstract public class PopUnit : Producer
 
     public int getAssimilationSize()
     {
-        if (province.isCoreFor(this) || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
+        if (province.isCoreFor(this))
             return 0;
         else
         {
-            int result = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
-            if (result > 0)
-                return result;
+            int assimilationSpeed;
+            if (getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
+                assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeedWithEquality.get() );
+            else
+                assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
+            if (assimilationSpeed > 0)
+                return assimilationSpeed;
             else
             {
                 if (getAge() > Options.PopAgeLimitToWipeOut)

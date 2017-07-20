@@ -29,43 +29,6 @@ public class PopUnitPanel : DragPanel
         if (pop != null)
         {
             var sb = new StringBuilder();
-            efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
-
-            issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));
-
-            string demotionText;
-            var target = pop.getRichestDemotionTarget();
-            if (pop.wantsToDemote() && target != null && pop.getDemotionSize() > 0)
-                demotionText = target + " " + pop.getDemotionSize();
-            else
-                demotionText = "none";
-
-            string promotionText;
-            var targetPro = pop.getRichestPromotionTarget();
-            if (pop.wantsToPromote() && targetPro != null && pop.getPromotionSize() > 0)
-                promotionText = targetPro + " " + pop.getPromotionSize();
-            else
-                promotionText = "none";
-
-            string migrationText;
-            var targetM = pop.getRichestMigrationTarget();
-            if (pop.wantsToMigrate() && targetM != null && pop.getMigrationSize() > 0)
-                migrationText = targetM + " " + pop.getMigrationSize();
-            else
-                migrationText = "none";
-
-            string immigrationText;
-            var targetIM = pop.getRichestImmigrationTarget();
-            if (pop.wantsToImmigrate() && targetIM != null && pop.getImmigrationSize() > 0)
-                immigrationText = targetIM + " (" + targetIM.getCountry() + ") " + pop.getImmigrationSize();
-            else
-                immigrationText = "none";
-
-            string assimilationText;
-            if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
-                assimilationText = pop.province.getCountry().getCulture() + " " + pop.getAssimilationSize();
-            else
-                assimilationText = "none";
 
             sb.Append(pop);
             sb.Append("\nPopulation: ").Append(pop.getPopulation());
@@ -75,11 +38,18 @@ public class PopUnitPanel : DragPanel
             sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
             sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
 
-            sb.Append("\nDemotion: ").Append(demotionText);
-            sb.Append("\nPromotion: ").Append(promotionText);
-            sb.Append("\nMigration: ").Append(migrationText);
-            sb.Append("\nImmigration: ").Append(immigrationText);
-            sb.Append("\nAssimilation: ").Append(assimilationText);
+            makeLine(sb, pop.getRichestDemotionTarget(), pop.getDemotionSize(), "Demotion: ", pop.wantsToDemote());
+            makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
+
+            makeLine(sb, pop.getRichestMigrationTarget(), pop.getMigrationSize(), "Migration: ", pop.wantsToMigrate());
+            makeLine(sb, pop.getRichestImmigrationTarget(), pop.getImmigrationSize(), "Immigration: ", pop.wantsToImmigrate());
+
+            sb.Append("\nAssimilation: ");
+            if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
+                sb.Append(pop.province.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
+            else
+                sb.Append("none");
+
             sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
             sb.Append("\nUnemployment: ").Append(pop.getUnemployedProcent());
             sb.Append("\nLoyalty: ").Append(pop.loyalty);
@@ -88,8 +58,6 @@ public class PopUnitPanel : DragPanel
                 sb.Append("\nLoan: ").Append(pop.loans.ToString());// hide it
             if (pop.deposits.get() > 0f)
                 sb.Append("\nDeposit: ").Append(pop.deposits.ToString());// hide it
-
-
 
             sb.Append("\nAge: ").Append(pop.getAge());
             sb.Append("\nMobilized: ").Append(pop.getMobilized());
@@ -124,7 +92,29 @@ public class PopUnitPanel : DragPanel
             money.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
             + "\nIncome tax: " + pop.incomeTaxPayed
             + "\nConsumed cost: " + Game.market.getCost(pop.consumedTotal));
+
+            efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
+            issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));
         }
+    }
+    private void makeLine(StringBuilder sb, PopType target, int size, string header, bool boolCheck)
+    {
+        //sb.Clear();
+        sb.Append("\n").Append(header);
+
+        if (boolCheck && target != null && size > 0)
+            sb.Append(target).Append(" ").Append(size);
+        else
+            sb.Append("none");
+    }
+    private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
+    {
+        //sb.Clear();
+        sb.Append("\n").Append(header);
+        if (boolCheck && target != null && size > 0)
+            sb.Append(target).Append(" ").Append(size);
+        else
+            sb.Append("none");
     }
     public void show(PopUnit ipopUnit)
     {
