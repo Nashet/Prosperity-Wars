@@ -33,7 +33,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = true;
+    private static bool surrended = false;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
         impassableBorder;
     private readonly Rect mapBorders;
@@ -434,7 +434,11 @@ public class Game : ThreadedJob
     static void generateMapImage()
     {
         //Texture2D mapImage = new Texture2D(100, 100);
+#if UNITY_WEBGL
         int mapSize = 30000;
+#else
+        int mapSize = 60000;
+#endif
         int width = 150 + Random.Next(150);
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
@@ -583,7 +587,8 @@ public class Game : ThreadedJob
             + " \n\tbasic reforms (population can vote for reforms)"
             + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
             + "\n\tpolitical \\ culture \\ core map mode"
-            + "\n\nYou play as " + Game.Player.getDescription() + " yet there is no much gameplay for now. You can try to growth economy or conquer the world."
+            + "\n\tMovements and Rebellions"
+            + "\n\nYou play as " + Game.Player.getDescription() + " You can try to growth economy or conquer the world."
             + "\nOr, You can give control to AI and watch it"
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\n'Enter' key to close top window, space - to pause \\ unpause"

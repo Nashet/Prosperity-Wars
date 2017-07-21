@@ -16,10 +16,10 @@ So, main principles of that simulation are:
 * factories have specific owner like government or population unit
 * capitalists can take loans form national bank for business expansion 
 * governments can put extra money in bank
-* player should have as much freedom as possible, even if player is going to do something stupid 
 
-## What it has now (v0.12.1)
+## What it has now (v0.13.0)
  - provinces and countries
+ - Movements and Rebellions
  - factories and national banks
  - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen)
  - basic production\trade\consumption

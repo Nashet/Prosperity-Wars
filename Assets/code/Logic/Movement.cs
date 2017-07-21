@@ -101,7 +101,7 @@ public class Movement : Staff
     {
         var sb = new StringBuilder(getShortName());
         sb.Append(", members: ").Append(getMembership()).Append(", avg. loyalty: ").Append(getAverageLoyalty()).Append(", rel. strength: ").Append(getRelativeStrength(getPlaceDejure()));
-        sb.Append(", str: ").Append(getStregth(this));
+        //sb.Append(", str: ").Append(getStregth(this));
         return sb.ToString();
     }
     /// <summary>

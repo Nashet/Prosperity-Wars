@@ -27,8 +27,6 @@ public class PoliticsPanel : DragPanel
         //oldRect = new Rect(0, oldRect.y, oldRect.width, oldRect.height);
         //GetComponent<RectTransform>().localPosition = new Vector2(-960f, -60f);
         GetComponent<RectTransform>().position = new Vector2(0f, -57f + Screen.height);
-
-
         hide();
     }
 
@@ -107,11 +105,10 @@ public class PoliticsPanel : DragPanel
         hide();
         //if (Game.Player.movements != null)
         movementsText.text = Game.Player.movements.getDescription();// +"\n\n\n\n";
-        if (movementsText.preferredHeight > 115 && movementsText.preferredHeight < 130)
+        if (movementsText.preferredHeight > 100 && movementsText.preferredHeight < 130)
             movementsText.text += "\n\n\n\n";
 
-        //GetComponent<RectTransform>().si
-        //movementsScrollView.he
+       
         movementsHorizontalScrollBar.value = 0;
         if (selectedReform != null)
         {
@@ -126,7 +123,6 @@ public class PoliticsPanel : DragPanel
                 descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
             else
                 descriptionText.text += "current";
-
 
             ////
             Procent procentPopulationSayedYes = new Procent(0f);
@@ -161,7 +157,6 @@ public class PoliticsPanel : DragPanel
                 descriptionText.text += ")";
             }
 
-
             if (selectedReformValue != null)// && selectedReformValue != selectedReform.getValue())
             {
                 if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
@@ -179,13 +174,7 @@ public class PoliticsPanel : DragPanel
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }
             }
-            //else // this reform already enacted
-            //{
-            //    voteButton.interactable = false;
-            //    forceDecisionButton.interactable = false;
-            //    forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-            //    voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-            //}
+           
         } //didn't selected reform
         else
         {
@@ -195,11 +184,6 @@ public class PoliticsPanel : DragPanel
             forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
             voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
         }
-
         show(false);
-    }
-    // Update is called once per frame
-    //   void Update () {
-
-    //}
+    }    
 }
