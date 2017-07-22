@@ -33,7 +33,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = false;
+    private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
         impassableBorder;
     private readonly Rect mapBorders;
@@ -734,7 +734,7 @@ public class Game : ThreadedJob
                     else
                         targetToMerge.mergeIn(pop);
                 }
-                province.allPopUnits.RemoveAll(x => x.getPopulation() == 0);
+                province.allPopUnits.RemoveAll(x => !x.isAlive());
                 PopUnit.PopListToAddToGeneralList.Clear();
                 province.simulate();
             }

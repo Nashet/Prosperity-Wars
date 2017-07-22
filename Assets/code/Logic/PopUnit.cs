@@ -413,6 +413,12 @@ abstract public class PopUnit : Producer
         }
         return result;
     }
+
+    internal bool isAlive()
+    {
+        return getPopulation() > 0;
+    }
+
     private List<Storage> getNeedsInCommon(List<Storage> needs)
     {
         Value multiplier = new Value(this.getPopulation() / 1000f);
@@ -1015,40 +1021,22 @@ abstract public class PopUnit : Producer
             return result.Key;
         else
             return null;
-
-
-        //List<PopLinkageValue> list = new List<PopLinkageValue>();
-        //foreach (PopType nextType in PopType.allPopTypes)
-        //    if (CanThisDemoteInto(nextType))
-        //        list.Add(new PopLinkageValue(nextType,
-        //            province.getMiddleNeedsFulfilling(nextType)
-        //            ));
-        //list = list.OrderByDescending(o => o.amount.get()).ToList();
-        //if (list.Count == 0)
-        //    return null;
-        //else
-        //    if (list[0].amount.get() > this.needsFullfilled.get())
-        //    return list[0].type;
-        //else return null;
     }
 
     abstract public bool canThisDemoteInto(PopType popType);
-
 
     //**********************************************
     internal void calcImmigrations()
     {
         int immigrationSize = getImmigrationSize();
         if (wantsToImmigrate() && immigrationSize > 0 && this.getPopulation() >= immigrationSize)
-            immigrate(getRichestImmigrationTarget(), immigrationSize);
-    }
-    private void immigrate(Province where, int immigrationSize)
-    {
-        if (where != null)
+        //immigrate(getRichestImmigrationTarget(), immigrationSize);
         {
-            PopUnit.makeVirtualPop(popType, this, immigrationSize, where, this.culture);
+            var where = getRichestImmigrationTarget();
+            if (where != null)            
+                PopUnit.makeVirtualPop(popType, this, immigrationSize, where, this.culture);           
         }
-    }
+    }    
     /// <summary>
     /// return null if there is no better place to live
     /// </summary>    
@@ -1069,15 +1057,7 @@ abstract public class PopUnit : Producer
         return provinces.MaxBy(x => x.Value.get()).Key;
     }
 
-    internal void putExtraMoneyInBank()
-    {
-        if (getCountry().isInvented(Invention.Banking))
-        {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
-            if (extraMoney.get() > 5f)
-                getCountry().bank.takeMoney(this, extraMoney);
-        }
-    }
+   
 
     public bool wantsToImmigrate()
     {
@@ -1120,7 +1100,6 @@ abstract public class PopUnit : Producer
         }
         return provinces.MaxBy(x => x.Value.get()).Key;
     }
-
     private void migrate(Province where, int migrationSize)
     {
         if (where != null)
@@ -1128,7 +1107,6 @@ abstract public class PopUnit : Producer
             PopUnit.makeVirtualPop(popType, this, migrationSize, where, this.culture);
         }
     }
-
     public bool wantsToMigrate()
     {
 
@@ -1147,6 +1125,7 @@ abstract public class PopUnit : Producer
         else
             return 0;
     }
+    //**********************************************
     internal void calcAssimilations()
     {
 
@@ -1157,7 +1136,6 @@ abstract public class PopUnit : Producer
                 assimilate(province.getCountry().getCulture(), assimilationSize);
         }
     }
-
     private void assimilate(Culture toWhom, int assimilationSize)
     {
         //if (toWhom != null)
@@ -1165,7 +1143,6 @@ abstract public class PopUnit : Producer
         PopUnit.makeVirtualPop(popType, this, assimilationSize, this.province, toWhom);
         //}
     }
-
     public int getAssimilationSize()
     {
         if (province.isCoreFor(this))
@@ -1188,7 +1165,15 @@ abstract public class PopUnit : Producer
             }
         }
     }
-
+    internal void putExtraMoneyInBank()
+    {
+        if (getCountry().isInvented(Invention.Banking))
+        {
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
+            if (extraMoney.get() > 5f)
+                getCountry().bank.takeMoney(this, extraMoney);
+        }
+    }
     internal void invest()
     {
         if (popType == PopType.Aristocrats)

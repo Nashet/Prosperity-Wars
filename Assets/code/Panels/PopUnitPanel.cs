@@ -42,7 +42,7 @@ public class PopUnitPanel : DragPanel
             makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
 
             makeLine(sb, pop.getRichestMigrationTarget(), pop.getMigrationSize(), "Migration: ", pop.wantsToMigrate());
-            makeLine(sb, pop.getRichestImmigrationTarget(), pop.getImmigrationSize(), "Immigration: ", pop.wantsToImmigrate());
+            makeLineC(sb, pop.getRichestImmigrationTarget(), pop.getImmigrationSize(), "Immigration: ", pop.wantsToImmigrate());
 
             sb.Append("\nAssimilation: ");
             if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
@@ -97,7 +97,7 @@ public class PopUnitPanel : DragPanel
             issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));
         }
     }
-    private void makeLine(StringBuilder sb, PopType target, int size, string header, bool boolCheck)
+    static private void makeLine(StringBuilder sb, PopType target, int size, string header, bool boolCheck)
     {
         //sb.Clear();
         sb.Append("\n").Append(header);
@@ -107,12 +107,21 @@ public class PopUnitPanel : DragPanel
         else
             sb.Append("none");
     }
-    private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
+    static private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
     {
         //sb.Clear();
         sb.Append("\n").Append(header);
         if (boolCheck && target != null && size > 0)
             sb.Append(target).Append(" ").Append(size);
+        else
+            sb.Append("none");
+    }
+    static private void makeLineC(StringBuilder sb, Province target, int size, string header, bool boolCheck)
+    {
+        //sb.Clear();
+        sb.Append("\n").Append(header);
+        if (boolCheck && target != null && size > 0)
+            sb.Append(target.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
         else
             sb.Append("none");
     }

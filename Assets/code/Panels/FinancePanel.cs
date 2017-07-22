@@ -98,8 +98,8 @@ public class FinancePanel : DragPanel
                 else
                 if (fact.getOwner() is PopUnit)
                 {
-                    var c = fact.getOwner() as PopUnit;
-                    if (c.getPopulation() == 0)
+                    var owner = fact.getOwner() as PopUnit;
+                    if (!owner.isAlive())
                         new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
                 }
                 else

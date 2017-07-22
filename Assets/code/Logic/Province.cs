@@ -525,7 +525,7 @@ public class Province : Name
     public PopUnit getSimilarPopUnit(PopUnit target)
     {
         foreach (PopUnit pop in allPopUnits)
-            if (pop.popType == target.popType && pop.culture == target.culture)
+            if (pop.popType == target.popType && pop.culture == target.culture && pop.isAlive())
                 return pop;
         return null;
     }
