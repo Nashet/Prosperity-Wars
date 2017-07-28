@@ -217,11 +217,14 @@ public class Value
     /// Bigger than 0
     /// </summary>
     /// <returns></returns>
-    public bool isExist()
+    public bool isNotZero()
     {
         return value > 0;
     }
-
+    public bool isZero()
+    {
+        return value == 0;
+    }
     internal Procent HowMuchHaveOf(Value need)
     {
         if (need.value == 0)

@@ -146,7 +146,7 @@ abstract public class PopUnit : Producer
         //bank - could be different, set in constructor
         //loans - keep it in old unit        
         //take deposit share?
-        if (source.deposits.isExist())
+        if (source.deposits.isNotZero())
         {
             Value takeDeposit = source.deposits.multipleOutside(newPopShare);
             if (source.getCountry().bank.canGiveMoney(this, takeDeposit))
@@ -633,10 +633,7 @@ abstract public class PopUnit : Producer
     }
     /// <summary>
     /// !!Recursion is here!!
-    /// </summary>
-    /// <param name="needs"></param>
-    /// <param name="maxLevel"></param>
-    /// <param name="howDeep"></param>
+    /// </summary>    
     private void consumeEveryDayAndLuxury(List<Storage> needs, byte howDeep)
     {
         howDeep--;
@@ -659,9 +656,10 @@ abstract public class PopUnit : Producer
                 }
     }
     /// <summary> </summary>
-    void subConsumeOnMarket(List<Storage> lifeNeeds, bool skipKifeneeds)
+    void subConsumeOnMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
-        if (!skipKifeneeds)
+        //buy life needs
+        if (!skipLifeneeds)
             foreach (Storage need in lifeNeeds)
             {
                 if (storageNow.has(need))// dont need to buy on market
@@ -677,40 +675,52 @@ abstract public class PopUnit : Producer
             }
 
         //if (NeedsFullfilled.get() > 0.33f) NeedsFullfilled.set(0.33f);
-
+        // buy everyday needs
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
-            Agent reserv = new Agent(0f, null);
-            payWithoutRecord(reserv, cash.multipleOutside(Options.savePopMoneyReserv));
-            var everyDayNeeds = (getRealEveryDayNeeds());
+            // save some money in reserve to avoid spending all money on luxury 
+            Agent reserve = new Agent(0f, null);
+            payWithoutRecord(reserve, cash.multipleOutside(Options.savePopMoneyReserv));
+            var everyDayNeeds = getRealEveryDayNeeds();
             Value needsCost = Game.market.getCost(everyDayNeeds);
             float moneyWas = cash.get();
-            Value spentMoney;
 
             foreach (Storage need in everyDayNeeds)
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                 Game.market.buy(this, need, null);
             }
-            spentMoney = new Value(moneyWas - cash.get());
+            Value spentMoney = new Value(moneyWas - cash.get());
             if (spentMoney.get() != 0f)
                 needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
+            // buy luxury needs
             if (getEveryDayNeedsFullfilling().get() >= 0.95f)
             {
-                var luxuryNeeds = (getRealLuxuryNeeds());
+                var luxuryNeeds = getRealLuxuryNeeds();
                 needsCost = Game.market.getCost(luxuryNeeds);
                 moneyWas = cash.get();
-                foreach (Storage need in luxuryNeeds)
+                bool someProductUnavailable = false;
+                foreach (Storage nextNeed in luxuryNeeds)
                 {
-                    Game.market.buy(this, need, null);
-                    //NeedsFullfilled.set(0.66f + Game.market.Consume(this, need).get() / 3f);
+                    if (Game.market.buy(this, nextNeed, null).isZero())
+                        someProductUnavailable = true;
+                }
 
+                // unlimited consumption
+                if (!someProductUnavailable && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))
+                {
+                    Value canBuyExtraGoods = cash.divideOutside(needsCost);
+                    foreach (Storage nextNeed in luxuryNeeds)
+                    {
+                        nextNeed.multiple(canBuyExtraGoods);
+                        Game.market.buy(this, nextNeed, null);
+                    }
                 }
                 spentMoney = new Value(moneyWas - cash.get());
                 if (spentMoney.get() != 0f)
                     needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             }
-            reserv.payWithoutRecord(this, reserv.cash);
+            reserve.payWithoutRecord(this, reserve.cash);
         }
     }
     /// <summary> </summary>
@@ -718,8 +728,6 @@ abstract public class PopUnit : Producer
     {
         //life needs First
         List<Storage> needs = getRealLifeNeeds();
-
-        //if (province.getOwner().isInvented(InventionType.capitalism) && type != PopType.tribeMen)
         if (canTrade())
         {
             subConsumeOnMarket(needs, false);
@@ -1033,10 +1041,10 @@ abstract public class PopUnit : Producer
         //immigrate(getRichestImmigrationTarget(), immigrationSize);
         {
             var where = getRichestImmigrationTarget();
-            if (where != null)            
-                PopUnit.makeVirtualPop(popType, this, immigrationSize, where, this.culture);           
+            if (where != null)
+                PopUnit.makeVirtualPop(popType, this, immigrationSize, where, this.culture);
         }
-    }    
+    }
     /// <summary>
     /// return null if there is no better place to live
     /// </summary>    
@@ -1057,7 +1065,7 @@ abstract public class PopUnit : Producer
         return provinces.MaxBy(x => x.Value.get()).Key;
     }
 
-   
+
 
     public bool wantsToImmigrate()
     {
@@ -1151,7 +1159,7 @@ abstract public class PopUnit : Producer
         {
             int assimilationSpeed;
             if (getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
-                assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeedWithEquality.get() );
+                assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeedWithEquality.get());
             else
                 assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
             if (assimilationSpeed > 0)

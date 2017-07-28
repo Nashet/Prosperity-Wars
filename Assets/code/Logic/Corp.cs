@@ -137,7 +137,7 @@ public class Corps
         if (product.isInvented(country))
         {
             Storage found = origin.popType.getMilitaryNeedsPer1000().getStorage(product);
-            if (!found.isExist())
+            if (found.isZero())
                 return found;
             else
             {

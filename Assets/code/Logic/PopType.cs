@@ -50,10 +50,10 @@ public class PopType
         var capitalistsLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var capitalistsEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
             new Storage(Product.Clothes, 1f),
-            new Storage(Product.Furniture, 1f),
-            new Storage(Product.Wine, 2f),
+            new Storage(Product.Furniture, 1f),            
             new Storage(Product.Fruit, 1f) });
         var capitalistsLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Wine, 2f),
             new Storage(Product.Firearms, 1f),
             new Storage(Product.Ammunition, 0.5f),
             new Storage(Product.Cars, 1f),

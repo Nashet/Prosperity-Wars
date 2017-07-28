@@ -131,7 +131,7 @@ public class Bank : Agent
     }
     bool isItEnoughReserves(Value sum)
     {
-        return cash.subtractOutside(getMinimalReservs()).isExist();
+        return cash.subtractOutside(getMinimalReservs()).isNotZero();
     }
 
     /// <summary>

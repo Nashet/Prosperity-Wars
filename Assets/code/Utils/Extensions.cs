@@ -354,7 +354,7 @@ public static class CollectionExtensions
             bool isFirstRow = true;
             bool haveAnyNonZeroItem = false;
             foreach (var item in list)
-                if (item.isExist())
+                if (item.isNotZero())
                 {
                     haveAnyNonZeroItem = true;
                     if (!isFirstRow)

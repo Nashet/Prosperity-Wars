@@ -105,7 +105,7 @@ public class PoliticsPanel : DragPanel
         hide();
         //if (Game.Player.movements != null)
         movementsText.text = Game.Player.movements.getDescription();// +"\n\n\n\n";
-        if (movementsText.preferredHeight > 100 && movementsText.preferredHeight < 130)
+        if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
             movementsText.text += "\n\n\n\n";
 
        

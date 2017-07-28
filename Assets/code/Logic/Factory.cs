@@ -50,7 +50,7 @@ public class Factory : Producer
         conNotUpgrading = new Condition(x => !(x as Factory).isUpgrading(), "Not upgrading", false),
         conNotBuilding = new Condition(x => !(x as Factory).isBuilding(), "Not building", false),
         conOpen = new Condition(x => (x as Factory).isWorking(), "Open", false),
-        conClosed = new Condition(x => !(x as Factory).isWorking(), "Close", false),
+        conClosed = new Condition(x => !(x as Factory).isWorking(), "Closed", false),
         conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
         conNotLForNotCountry = new Condition(x => (x as Factory).getCountry().economy.status != Economy.LaissezFaire || !(x is Country), "Economy policy is not Laissez Faire", true),
         conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)

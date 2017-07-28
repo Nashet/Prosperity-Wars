@@ -435,7 +435,7 @@ public class Game : ThreadedJob
     {
         //Texture2D mapImage = new Texture2D(100, 100);
 #if UNITY_WEBGL
-        int mapSize = 30000;
+        int mapSize = 20000;//30000;
 #else
         int mapSize = 60000;
 #endif
