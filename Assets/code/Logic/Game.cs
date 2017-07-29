@@ -412,8 +412,11 @@ public class Game : ThreadedJob
                 pop.storageNow.add(60f);
                 if (!Game.devMode)
                 {
-                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
-                    pop.cash.set(9000);
+                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    //pop.cash.set(9000);
+
+                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    pop.cash.set(900);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
                     pop.cash.set(20);
@@ -693,18 +696,19 @@ public class Game : ThreadedJob
             {
                 foreach (Factory factory in province.allFactories)
                 {
-                    factory.getMoneyFromMarket();
+                    factory.getMoneyForSoldProduct();
                     factory.changeSalary();
                     factory.PayDividend();
                 }
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
-                {
-                    if (pop.popType == PopType.Aristocrats || pop.popType == PopType.Capitalists || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(province.getCountry())))
-                        pop.getMoneyFromMarket();
+                {                    
+                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(province.getCountry())))
+                    if (pop.canSellProducts())
+                        pop.getMoneyForSoldProduct();
 
                     //because income come only after consuming, and only after FULL consumption
-                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                    if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();

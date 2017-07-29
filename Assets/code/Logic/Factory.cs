@@ -416,7 +416,7 @@ public class Factory : Producer
     }
 
     /// <summary>
-    /// Feels storageNow and gainGoodsThisTurn
+    /// Fills storageNow and gainGoodsThisTurn
     /// </summary>
     public override void produce()
     {
@@ -430,7 +430,9 @@ public class Factory : Producer
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);
-                consumeInputResources(getRealNeeds());
+                //consumeInputResources
+                foreach (Storage next in getRealNeeds())
+                    inputReservs.subtract(next, false);
 
                 if (type == FactoryType.GoldMine)
                 {
@@ -445,37 +447,19 @@ public class Factory : Producer
                     sentToMarket.set(gainGoodsThisTurn);
                     storageNow.set(0f);
                     Game.market.sentToMarket.add(gainGoodsThisTurn);
-                }
-
-                //if (province.getOwner().isInvented(InventionType.capitalism))
+                }                
                 if (Economy.isMarket.checkIftrue(province.getCountry()))
                 {
                     // Buyers should come and buy something...
                     // its in other files.
                 }
                 else // send all production to owner
-                    ; // todo write ! capitalism
+                    ; // todo write !capitalism
                       //storageNow.sendAll(owner.storageSet);
             }
         }
     }
-
-    private void consumeInputResources(List<Storage> list)
-    {
-        foreach (Storage next in list)
-        {
-            inputReservs.subtract(next, false);
-            //var storage = inputReservs.findStorage(next.getProduct());
-            //if (storage != null)
-            //    if (storage.isBiggerOrEqual(next))
-            //        storage.subtract(next);
-            //    else
-            //        storage.setZero();
-        }
-    }
-
-
-
+    
     /// <summary> only make sense if called before HireWorkforce()
     ///  PEr 1000 men!!!
     /// !!! Mirroring PaySalary
@@ -653,8 +637,10 @@ public class Factory : Producer
         float efficencyFactor = 0;
         float workforceProcent = getWorkForceFullFilling();
         float inputFactor = getInputFactor();
-        if (inputFactor < workforceProcent) efficencyFactor = inputFactor;
-        else efficencyFactor = workforceProcent;
+        if (inputFactor < workforceProcent)
+            efficencyFactor = inputFactor;
+        else
+            efficencyFactor = workforceProcent;
         //float basicEff = efficencyFactor * getLevel();
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);

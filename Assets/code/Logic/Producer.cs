@@ -63,7 +63,11 @@ public abstract class Producer : Consumer
         gainGoodsThisTurn.set(0f);
         sentToMarket.set(0f);
     }
-    public void getMoneyFromMarket()
+    public Value getProducing()
+    {
+        return gainGoodsThisTurn;
+    }
+    public void getMoneyForSoldProduct()
     {
         if (sentToMarket.get() > 0f)
         {

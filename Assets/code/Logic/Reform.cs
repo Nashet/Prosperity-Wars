@@ -310,7 +310,6 @@ public class Economy : AbstractReform
                 return false;
         }
 
-
         protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
@@ -326,10 +325,12 @@ public class Economy : AbstractReform
                     result = new Procent(0f);
             }
             else
-            if (this == Economy.PlannedEconomy)
-                result = new Procent(0f);
-            else
-                result = new Procent(0.5f);
+            {
+                if (this == Economy.PlannedEconomy)
+                    result = new Procent(0f);
+                else
+                    result = new Procent(0.5f);
+            }
             return result;
         }
     }

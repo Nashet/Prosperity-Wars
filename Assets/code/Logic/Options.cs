@@ -72,7 +72,8 @@ public static class Options
     public static readonly int PopAgeLimitToWipeOut = 50; //250;
 
     internal static readonly float MaxMoralChangePerTic = 0.05f;
-    internal static readonly int PopRichStrataVotePower = 5;
+    internal static readonly int PopRichStrataVotePower = 10;
+    internal static readonly int PopMiddleStrataVotePower = 3;
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly int ProvinceChanceToGetCore = 70;
     internal static readonly float CountryBadBoyWorldLimit = 0.1f;

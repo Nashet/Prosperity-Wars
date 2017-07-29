@@ -176,6 +176,7 @@ abstract public class PopUnit : Producer
     //{
     //    return culture;
     //}
+    // have to be this way!
     internal abstract int getVotingPower(Government.ReformValue reformValue);
     internal int getVotingPower()
     {
@@ -357,15 +358,17 @@ abstract public class PopUnit : Producer
     {
         if (type == PopType.TribeMen) return new Tribemen(source, sizeOfNewPop, where, culture);
         else
-        if (type == PopType.Farmers) return new Farmers(source, sizeOfNewPop, where, culture);
+            if (type == PopType.Farmers) return new Farmers(source, sizeOfNewPop, where, culture);
         else
-        if (type == PopType.Aristocrats) return new Aristocrats(source, sizeOfNewPop, where, culture);
+            if (type == PopType.Aristocrats) return new Aristocrats(source, sizeOfNewPop, where, culture);
         else
-        if (type == PopType.Workers) return new Workers(source, sizeOfNewPop, where, culture);
+            if (type == PopType.Workers) return new Workers(source, sizeOfNewPop, where, culture);
         else
             if (type == PopType.Capitalists) return new Capitalists(source, sizeOfNewPop, where, culture);
         else
             if (type == PopType.Soldiers) return new Soldiers(source, sizeOfNewPop, where, culture);
+        else
+            if (type == PopType.Artisans) return new Artisans(source, sizeOfNewPop, where, culture);
         else
         {
             Debug.Log("Unknown pop type!");
@@ -728,7 +731,7 @@ abstract public class PopUnit : Producer
     {
         //life needs First
         List<Storage> needs = getRealLifeNeeds();
-        if (canTrade())
+        if (canBuyProducts())
         {
             subConsumeOnMarket(needs, false);
         }
@@ -754,7 +757,17 @@ abstract public class PopUnit : Producer
                 subConsumeOnMarket(needs, true);
         }
     }
-    abstract internal bool canTrade();
+    virtual internal bool canBuyProducts()
+    {
+        if (Economy.isMarket.checkIftrue(province.getCountry()))
+            return true;
+        else
+            return false;
+    }
+    virtual internal bool canSellProducts()
+    {        
+            return false;
+    }
     internal bool canVote()
     {
         return canVote(getCountry().government.getTypedValue());

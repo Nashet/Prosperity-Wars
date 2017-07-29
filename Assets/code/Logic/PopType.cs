@@ -63,6 +63,24 @@ public class PopType
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
             capitalistsLifeNeeds, capitalistsEveryDayNeeds, capitalistsLuxuryNeeds);
         //***************************************next type***************************
+        {
+            var artisansLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
+            var artisansEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Clothes, 1f),
+            new Storage(Product.Furniture, 1f),
+            new Storage(Product.Fruit, 1f) });
+            var artisansLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Wine, 2f),
+            new Storage(Product.Firearms, 1f),
+            new Storage(Product.Ammunition, 0.5f),
+            new Storage(Product.Cars, 1f),
+            new Storage(Product.Fuel, 1f),
+            new Storage(Product.Airplanes, 1f)});
+            Artisans = new PopType("Artisans", null, 1f,
+                new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
+                artisansLifeNeeds, artisansEveryDayNeeds, artisansLuxuryNeeds);
+        }
+        //***************************************next type***************************
         var farmersLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var farmersEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
            //everyDayNeeds.Set(new Storage(Product.Fruit, 1),
@@ -216,7 +234,7 @@ public class PopType
 
     internal bool isRichStrata()
     {
-        return this == PopType.Aristocrats || this == PopType.Capitalists;
+        return this == PopType.Aristocrats || this == PopType.Capitalists || this == PopType.Artisans;
     }
 
     internal float getStrenght()
@@ -232,6 +250,7 @@ public class PopType
     /// </summary>    
     internal bool isProducer()
     {
-        return this == PopType.Farmers || this == PopType.TribeMen;
+        return this == PopType.Farmers || this == PopType.TribeMen || this == PopType.Artisans;
     }
+
 }
