@@ -400,7 +400,7 @@ public class Factory : Producer
     internal Procent getMargin()
     {
         float x = getProfit() / (getUpgradeCost().get() * level);
-        return new Procent(x);
+        return new Procent(x, false);
     }
     internal Value getReopenCost()
     {
@@ -425,8 +425,8 @@ public class Factory : Producer
             int workers = getWorkForce();
             if (workers > 0)
             {
-                Value producedAmount;
-                producedAmount = new Value(type.basicProduction.get() * getEfficiency(true).get() * getLevel()); // * getLevel());
+
+                Storage producedAmount = new Storage(type.basicProduction.getProduct(), type.basicProduction.get() * getEfficiency(true).get() * getLevel()); // * getLevel());
 
                 storageNow.add(producedAmount);
                 gainGoodsThisTurn.set(producedAmount);
@@ -445,9 +445,9 @@ public class Factory : Producer
                 else
                 {
                     sentToMarket.set(gainGoodsThisTurn);
-                    storageNow.set(0f);
+                    storageNow.setZero();
                     Game.market.sentToMarket.add(gainGoodsThisTurn);
-                }                
+                }
                 if (Economy.isMarket.checkIftrue(province.getCountry()))
                 {
                     // Buyers should come and buy something...
@@ -459,7 +459,7 @@ public class Factory : Producer
             }
         }
     }
-    
+
     /// <summary> only make sense if called before HireWorkforce()
     ///  PEr 1000 men!!!
     /// !!! Mirroring PaySalary
@@ -645,15 +645,13 @@ public class Factory : Producer
         //Procent result = new Procent(basicEff);
         Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-            result.set(result.get() * (modifierEfficiency.getModifier(this) / 100f));
+            result.set(result.get() * (modifierEfficiency.getModifier(this) / 100f), false);
         return result;
     }
 
     public List<Storage> getHowMuchReservesWants()
     {
-        Value multiplier = new Value(getWorkForceFullFilling() * getLevel() * Options.factoryInputReservInDays);
-
-
+        Value multiplier = new Value(getWorkForceFullFilling() * getLevel() * Options.FactoryInputReservInDays);
 
         List<Storage> result = new List<Storage>();
 
@@ -665,14 +663,13 @@ public class Factory : Producer
             if (reserv == null)
                 result.Add(howMuchWantBuy);
             else
-                if (howMuchWantBuy.has(reserv))
             {
-                howMuchWantBuy.subtract(reserv);
-                result.Add(howMuchWantBuy);
-            }//else  - there is enough reservs, don't buy that
-
-
-
+                if (howMuchWantBuy.isBiggerOrEqual(reserv))
+                {
+                    howMuchWantBuy.subtract(reserv);
+                    result.Add(howMuchWantBuy);
+                }//else  - there is enough reservs, don't buy that
+            }
         }
         return result;
     }

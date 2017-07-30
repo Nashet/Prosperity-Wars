@@ -9,8 +9,8 @@ public class Procent : Value
     internal static readonly Procent HundredProcent = new Procent(1f);
     internal static readonly Procent ZeroProcent = new Procent(0f);
 
-   
-    public Procent(float number) : base(number)
+
+    public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
     {
     }
     public Procent(Procent number) : base(number.get())
@@ -21,7 +21,8 @@ public class Procent : Value
     {
         if (denominator.get() == 0f)
         {
-            if (showMessageAboutOperationFails)Debug.Log("Division by zero in Procent.makeProcent(Value)");
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");
             return new Procent(0f);
         }
         else
@@ -31,21 +32,23 @@ public class Procent : Value
     {
         if (denominator == 0f)
         {
-            if (showMessageAboutOperationFails) Debug.Log("Division by zero in Procent.makeProcent(float)");
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(float)");
             return new Procent(0f);
         }
         else
-            return new Procent(numerator / denominator);
+            return new Procent(numerator / denominator, showMessageAboutOperationFails);
     }
     public static Procent makeProcent(int numerator, int denominator, bool showMessageAboutOperationFails = true)
     {
         if (denominator == 0)
         {
-           if(showMessageAboutOperationFails) Debug.Log("Division by zero in Procent.makeProcent(int)");
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(int)");
             return new Procent(0f);
         }
         else
-            return new Procent(numerator / (float)denominator);
+            return new Procent(numerator / (float)denominator, showMessageAboutOperationFails);
     }
     //TODO check it
     public static Procent makeProcent(PrimitiveStorageSet numerator, PrimitiveStorageSet denominator)
@@ -126,16 +129,16 @@ public class Procent : Value
     {
         return Mathf.RoundToInt(get() * population);
     }
-    override public void set(float invalue)
-    {
-        if (invalue < 0f)
-            base.set(0f);
-        //else
-        //    if (invalue > 1f)
-        //    base.set(1f);
-        else
-            base.set(invalue);
-    }
+    //override public void set(float invalue)
+    //{
+    //    if (invalue < 0f)
+    //        base.set(0f);
+    //    //else
+    //    //    if (invalue > 1f)
+    //    //    base.set(1f);
+    //    else
+    //        base.set(invalue);
+    //}
 
     internal void clamp100()
     {

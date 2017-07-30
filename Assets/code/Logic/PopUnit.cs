@@ -158,9 +158,13 @@ abstract public class PopUnit : Producer
         source.payWithoutRecord(this, source.cash.multipleOutside(newPopShare));
 
         //Producer's fields:
+        // must be OK since this method used for same pop type
         storageNow = newPopShare.sendProcentToNew(source.storageNow);
-        gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
-        sentToMarket = new Storage(source.sentToMarket.getProduct());
+
+        // looks I don't need - it erases every tick anyway
+        //gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
+        // looks I don't need - it erases every tick anyway
+        //sentToMarket = new Storage(source.sentToMarket.getProduct());
 
         province = where;//source.province;
 
@@ -210,9 +214,15 @@ abstract public class PopUnit : Producer
         // Bank - stays same
 
         //Producer's fields:
-        storageNow.add(source.storageNow);
-        gainGoodsThisTurn.add(source.gainGoodsThisTurn);
-        sentToMarket.add(source.sentToMarket);
+        if (storageNow.isSameProduct(source.storageNow))
+            storageNow.add(source.storageNow);
+        // looks I don't need - it erases every tick anyway
+        //if (gainGoodsThisTurn.isSameProduct(source.gainGoodsThisTurn))
+        //    gainGoodsThisTurn.add(source.gainGoodsThisTurn);        
+        // looks I don't need - it erases every tick anyway
+        //if (sentToMarket.isSameProduct(source.sentToMarket))
+        //    sentToMarket.add(source.sentToMarket);
+
         //province - read header
 
         //consumer's fields
@@ -296,13 +306,13 @@ abstract public class PopUnit : Producer
                 if (popType == PopType.Soldiers)
                     howMuchCanMobilizeTotal = (int)(getPopulation() * 0.5);
                 else
-                    howMuchCanMobilizeTotal = (int)(getPopulation() * loyalty.get() * Options.mobilizationFactor);
+                    howMuchCanMobilizeTotal = (int)(getPopulation() * loyalty.get() * Options.ArmyMobilizationFactor);
             }
         }
         else
         {
             if (byWhom == getMovement())
-                howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.mobilizationFactor);
+                howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.ArmyMobilizationFactor);
             else
                 howMuchCanMobilizeTotal = 0;
         }
@@ -542,9 +552,10 @@ abstract public class PopUnit : Producer
     }
     public override void payTaxes() // should be abstract 
     {
-        Value taxSize = new Value(0);
+
         if (Economy.isMarket.checkIftrue(province.getCountry()) && popType != PopType.TribeMen)
         {
+            Value taxSize = new Value(0);
             if (this.popType.isPoorStrata())
             {
                 taxSize = moneyIncomethisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
@@ -584,16 +595,16 @@ abstract public class PopUnit : Producer
         else// non market
         if (this.popType != PopType.Aristocrats)
         {
-            // taxSize = gainGoodsThisTurn.multiple(province.getOwner().countryTax);
-
+            Storage howMuchSend;
             if (this.popType.isPoorStrata())
-                taxSize = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                howMuchSend = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
-            if (this.popType.isRichStrata())
-                taxSize = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
-
-            if (storageNow.has(taxSize))
-                storageNow.send(province.getCountry().storageSet, taxSize);
+            {
+                //if (this.popType.isRichStrata())
+                howMuchSend = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+            }
+            if (storageNow.isBiggerOrEqual(howMuchSend))
+                storageNow.send(province.getCountry().storageSet, howMuchSend);
             else
                 storageNow.sendAll(province.getCountry().storageSet);
         }
@@ -642,8 +653,8 @@ abstract public class PopUnit : Producer
         howDeep--;
         //List<Storage> needs = getEveryDayNeeds();
         foreach (Storage need in needs)
-            if (storageNow.getProduct() == need.getProduct())
-                if (storageNow.get() > need.get())
+            if (storageNow.isSameProduct(need))
+                if (storageNow.isBiggerOrEqual(need))
                 {
                     storageNow.subtract(need);
                     consumedTotal.add(need);
@@ -665,7 +676,7 @@ abstract public class PopUnit : Producer
         if (!skipLifeneeds)
             foreach (Storage need in lifeNeeds)
             {
-                if (storageNow.has(need))// dont need to buy on market
+                if (storageNow.isBiggerOrEqual(need))// dont need to buy on market
                 {
                     storageNow.subtract(need);
                     consumedTotal.set(need);
@@ -693,7 +704,7 @@ abstract public class PopUnit : Producer
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                 Game.market.buy(this, need, null);
             }
-            Value spentMoney = new Value(moneyWas - cash.get());
+            Value spentMoney = new Value(moneyWas - cash.get(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
             if (spentMoney.get() != 0f)
                 needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             // buy luxury needs
@@ -719,7 +730,9 @@ abstract public class PopUnit : Producer
                         Game.market.buy(this, nextNeed, null);
                     }
                 }
-                spentMoney = new Value(moneyWas - cash.get());
+
+                spentMoney = new Value(moneyWas - cash.get(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                // meaning wrong consumption calculation?
                 if (spentMoney.get() != 0f)
                     needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
             }
@@ -739,7 +752,7 @@ abstract public class PopUnit : Producer
         {//non - market consumption
             payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive
             foreach (Storage need in needs)
-                if (storageNow.get() > need.get())
+                if (storageNow.isBiggerOrEqual(need))
                 {
                     storageNow.subtract(need);
                     consumedTotal.set(need);
@@ -765,8 +778,8 @@ abstract public class PopUnit : Producer
             return false;
     }
     virtual internal bool canSellProducts()
-    {        
-            return false;
+    {
+        return false;
     }
     internal bool canVote()
     {
@@ -1190,7 +1203,7 @@ abstract public class PopUnit : Producer
     {
         if (getCountry().isInvented(Invention.Banking))
         {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f);
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f, false);
             if (extraMoney.get() > 5f)
                 getCountry().bank.takeMoney(this, extraMoney);
         }
@@ -1215,7 +1228,7 @@ abstract public class PopUnit : Producer
                     //Has money / resources?
                     {
                         Storage needFood = resourceToBuild.findStorage(Product.Food);
-                        if (storageNow.get() >= needFood.get())
+                        if (storageNow.isBiggerOrEqual(needFood))
                         {
                             Factory fact = new Factory(province, this, ftype);
                             //wallet.pay(fact.wallet, new Value(100f));

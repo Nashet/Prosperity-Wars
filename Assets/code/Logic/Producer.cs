@@ -40,12 +40,15 @@ public abstract class Consumer : Agent
 /// </summary>
 public abstract class Producer : Consumer
 {
-    /// <summary>How much product actually left for now. Goes to zero each turn. Early used for food storage (without capitalism)</summary>
+    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
     public Storage storageNow;
+
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
+
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
+
     //protected Country owner; //Could be any Country or POP
     public Province province;
 
@@ -60,8 +63,8 @@ public abstract class Producer : Consumer
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
-        gainGoodsThisTurn.set(0f);
-        sentToMarket.set(0f);
+        gainGoodsThisTurn.setZero();
+        sentToMarket.setZero();
     }
     public Value getProducing()
     {
@@ -76,11 +79,17 @@ public abstract class Producer : Consumer
             Storage realSold = new Storage(sentToMarket);
             realSold.multiple(DSB);
             Value cost = new Value(Game.market.getCost(realSold));
-            storageNow.add(gainGoodsThisTurn.get() - realSold.get());//!!
+
+            // assuming gainGoodsThisTurn & realSold have same product
+            if (storageNow.isSameProduct(gainGoodsThisTurn))            
+                storageNow.add(gainGoodsThisTurn);                
+            else            
+                storageNow = new Storage(gainGoodsThisTurn);            
+            storageNow.subtract(realSold.get());
+
             if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {
                 Game.market.pay(this, cost);
-
                 //Game.market.sentToMarket.subtract(realSold);
             }
             else if (Game.market.HowMuchMoneyCanNotPay(cost).get() > 10f)

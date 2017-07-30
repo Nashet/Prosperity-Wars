@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System;
 public class FactoryType
 {
-    internal readonly string name;
     static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
+    internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
+
+    internal readonly string name;
+
 
     ///<summary> per 1000 workers </summary>
     public Storage basicProduction;
@@ -18,7 +21,7 @@ public class FactoryType
     public readonly PrimitiveStorageSet upgradeResourceLowTier;
     public readonly PrimitiveStorageSet upgradeResourceMediumTier;
     public readonly PrimitiveStorageSet upgradeResourceHighTier;
-    internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
+
 
     //internal ConditionsList conditionsBuild;
     internal Condition enoughMoneyOrResourcesToBuild;
@@ -55,12 +58,57 @@ public class FactoryType
                 Game.threadDangerSB.Append("Have ").Append(getBuildCost()).Append(" coins");
                 return Game.threadDangerSB.ToString();
             }, true);
-      
+
         conditionsBuild = new ConditionsList(new List<Condition>() {
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
     }
+    public static IEnumerable<FactoryType> getInventedTypes(Country country)
+    {
+        foreach (var next in allTypes)
+            if (next.basicProduction.getProduct().isInvented(country))
+                yield return next;
+    }
+    public static IEnumerable<FactoryType> getResourceTypes(Country country)
+    {
+        foreach (var next in getInventedTypes(country))
+            if (next.isResourceGathering())
+                yield return next;
+    }
+    public static IEnumerable<FactoryType> getNonResourceTypes(Country country)
+    {
+        foreach (var next in getInventedTypes(country))
+            if (!next.isResourceGathering())
+                yield return next;
+    }
+    internal static FactoryType getMostTeoreticalProfitable(Province province)
+    {
+        KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
+        foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
+        {
+            {
+                float possibleProfit = factoryType.getPossibleProfit(province).get();
+                if (possibleProfit > result.Value)
+                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
+            }
+        }
+        return result.Key;
+    }
 
+    internal static Factory getMostPracticlyProfitable(Province province)
+    {
+        KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
+        foreach (Factory factory in province.allFactories)
+        {
+            if (province.CanUpgradeFactory(factory.type))
+            {
+                float profit = factory.getProfit();
+                if (profit > result.Value)
+                    result = new KeyValuePair<Factory, float>(factory, profit);
+            }
+        }
+        return result.Key;
+    }
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());
@@ -112,35 +160,8 @@ public class FactoryType
         return income.subtractOutside(outCome, false);
     }
     internal Procent getPossibleMargin(Province province)
-    {   
+    {
         return Procent.makeProcent(getPossibleProfit(province), getBuildCost());
     }
-    internal static FactoryType getMostTeoreticalProfitable(Province province)
-    {
-        KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-        foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
-        {
-            {
-                float possibleProfit = factoryType.getPossibleProfit(province).get();
-                if (possibleProfit > result.Value)
-                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
-            }
-        }
-        return result.Key;
-    }
 
-    internal static Factory getMostPracticlyProfitable(Province province)
-    {
-        KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
-        foreach (Factory factory in province.allFactories)
-        {
-            if (province.CanUpgradeFactory(factory.type))
-            {
-                float profit = factory.getProfit();
-                if (profit > result.Value)
-                    result = new KeyValuePair<Factory, float>(factory, profit);
-            }
-        }
-        return result.Key;
-    }
 }

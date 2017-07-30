@@ -32,12 +32,12 @@ public class Tribemen : PopUnit
     }
     public override void produce()
     {
-        Value producedAmount;
+        Storage producedAmount;
         float overpopulation = province.getOverpopulation();
         if (overpopulation <= 1) // all is OK
-            producedAmount = new Value(getPopulation() * popType.getBasicProduction().get() / 1000f);
+            producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
-            producedAmount = new Value(getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
+            producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
         storageNow.add(producedAmount);
         gainGoodsThisTurn.set(producedAmount);
     }
@@ -132,13 +132,9 @@ public class Farmers : PopUnit
     }
     public override void produce()
     {
-        Value producedAmount;
-        //float overpopulation = province.getOverpopulation();
 
-        //if (overpopulation <= 1) // all is OK
-        producedAmount = new Value(getPopulation() * popType.getBasicProduction().get() / 1000f);
-        //else
-        //  producedAmount = new Value(getPopulation() * popType.basicProduction.get() / 1000 / overpopulation);
+
+        Storage producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
 
         producedAmount.multiple(modEfficiency.getModifier(this));
         gainGoodsThisTurn.set(producedAmount);
@@ -488,21 +484,20 @@ public class Artisans : PopUnit
         if (Game.Random.Next(50) == 1)
             selectProductionType();
 
-        //consumeInputResources(getRealNeeds());
-
-        Value producedAmount = new Value(getPopulation() * producingType.basicProduction.get() / 1000f);
-
-        producedAmount.multiple(modEfficiency.getModifier(this));
-        gainGoodsThisTurn.set(producedAmount);
-
-
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        //consumeInputResources(getRealNeeds());        
+        if (producingType != null)
         {
-            sentToMarket.set(gainGoodsThisTurn);
-            Game.market.sentToMarket.add(gainGoodsThisTurn);
+            gainGoodsThisTurn = producingType.basicProduction
+                .multipleOutside(getPopulation() * modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
+
+            if (Economy.isMarket.checkIftrue(province.getCountry()))
+            {
+                sentToMarket.set(gainGoodsThisTurn);
+                Game.market.sentToMarket.add(gainGoodsThisTurn);
+            }
+            else
+                ;// storageNow.add(gainGoodsThisTurn);
         }
-        else
-            storageNow.add(gainGoodsThisTurn);
     }
     internal override bool canBuyProducts()
     {
@@ -573,13 +568,11 @@ public class Artisans : PopUnit
     private void selectProductionType()
     {
         KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-        foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
+        foreach (FactoryType factoryType in FactoryType.getNonResourceTypes(getCountry()))
         {
-            {
-                float possibleProfit = factoryType.getPossibleProfit(province).get();
-                if (possibleProfit > result.Value)
-                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
-            }
+            float possibleProfit = factoryType.getPossibleProfit(province).get();
+            if (possibleProfit > result.Value)
+                result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
         producingType = result.Key;
     }
@@ -594,7 +587,7 @@ public class Workers : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == PopType.TribeMen
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy))            
+            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy))
             return true;
         else
             return false;

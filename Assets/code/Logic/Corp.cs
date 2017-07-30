@@ -87,7 +87,7 @@ public class Corps
         }
         //float moralChange = consumption.get() - moral.get();
         float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
-        moraleChange = Mathf.Clamp(moraleChange, Options.MaxMoralChangePerTic * -1f, Options.MaxMoralChangePerTic);
+        moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
         if (morale.get() + moraleChange < 0)
             morale.set(0f);
         else

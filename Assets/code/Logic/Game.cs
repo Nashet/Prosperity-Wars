@@ -409,7 +409,7 @@ public class Game : ThreadedJob
 
 
                 pop.cash.set(9000);
-                pop.storageNow.add(60f);
+                pop.storageNow.add(new Storage(Product.Food, 60f));
                 if (!Game.devMode)
                 {
                     //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
@@ -657,7 +657,7 @@ public class Game : ThreadedJob
                 //That placed here to avoid issues with Aristocrats and clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.popType.getBasicProduction() != null)// only Farmers and Tribesmen
+                    if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
                     if (country.isInvented(Invention.ProfessionalArmy))

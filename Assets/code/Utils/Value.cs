@@ -8,11 +8,17 @@ public class Value
     internal readonly static uint precision = 1000; // 0.01
     internal static readonly Value Zero = new Value(0);
 
-    public Value(float number)
+    public Value(float number, bool showMessageAboutNegativeValue = true)
     {
-        if (number < 0f)
-            number = 0;
-        set(number); // set already have multiplier
+        if (number >= 0f)
+            set(number); // set already have multiplier
+        else
+        {
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Can't create negative Value");
+            set(0);           
+        }
+        
     }
     public Value(Value number)
     {
@@ -40,22 +46,24 @@ public class Value
         return this.value <= invalue.value;
     }
     //TODO overflow checks?
-    public void add(Value invalue, bool showMessageAboutNegativeValue = true)
+    virtual public void add(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (value + invalue.value  < 0f)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value Add-Value failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value Add-Value failed");
             set(0);
         }
         else
             value += invalue.value;
     }
 
-    public void add(float invalue, bool showMessageAboutNegativeValue = true)
+    virtual public void add(float invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue + get() < 0f)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value Add-float failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value Add-float failed");
             set(0);
         }
         else
@@ -71,7 +79,8 @@ public class Value
     {
         if (invalue.value > value)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value subtract gave negative result");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value subtract gave negative result");
             set(0);
             return false;
         }
@@ -85,7 +94,8 @@ public class Value
     {
         if (invalue.value > value)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value subtrackOutside failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value subtrackOutside failed");
             return new Value(0);
         }
         else
@@ -95,7 +105,8 @@ public class Value
     {
         if (invalue > value)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value subtract failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value subtract failed");
             value = 0;
         }
         else
@@ -114,7 +125,8 @@ public class Value
     {
         if (invalue.get() < 0)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value multiple failed");
             value = 0;
         }
         else
@@ -125,7 +137,8 @@ public class Value
     {
         if (invalue < 0f)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value multiple failed");
             value = 0;
         }
         else
@@ -138,17 +151,19 @@ public class Value
     {
         if (invalue < 0)
         {
-            if (showMessageAboutOperationFails) Debug.Log("Value multiple failed");
+            if (showMessageAboutOperationFails)
+                Debug.Log("Value multiple failed");
             return new Value(0f);
         }
         else
             return new Value(get() * invalue);
     }
-    internal Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
+   virtual public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
     {
         if (invalue < 0f)
         {
-            if (showMessageAboutOperationFails) Debug.Log("Value multiple failed");
+            if (showMessageAboutOperationFails)
+                Debug.Log("Value multiple failed");
             return new Value(0f);
         }
         else
@@ -157,11 +172,12 @@ public class Value
     /// <summary>
     /// returns new value
     /// </summary>    
-    public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    virtual public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() < 0)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value multiple failed");
             return new Value(0);
         }
         else
@@ -172,7 +188,8 @@ public class Value
     {
         if (invalue.get() <= 0)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value multiple failed");
             value = 0;
         }
         else
@@ -183,7 +200,8 @@ public class Value
     {
         if (v <= 0)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value multiple failed");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value multiple failed");
             value = 0;
         }
         else
@@ -196,7 +214,8 @@ public class Value
     {
         if (invalue == 0)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value divide by zero");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value divide by zero");
             return new Value(0);
         }
         else
@@ -207,7 +226,8 @@ public class Value
     {
         if (invalue.get() == 0)
         {
-            if (showMessageAboutNegativeValue) Debug.Log("Value divide by zero");
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value divide by zero");
             return new Value(0);
         }
         else
@@ -251,23 +271,24 @@ public class Value
     {
         if (this.get() >= amount.get())
         {
-            this.subtract(amount);
+            subtract(amount);
             another.add(amount);
             return true;
         }
         else
         {
-            if (showMessageAboutOperationFails) Debug.Log("No enough value to send");
+            if (showMessageAboutOperationFails)
+                Debug.Log("No enough value to send");
             sendAll(another);
             return false;
         }
     }
-    public bool has(Value HowMuch)
-    {
-        if (HowMuch.value >= this.value)
-            return false;
-        else return true;
-    }
+    //public bool has(Value HowMuch)
+    //{
+    //    if (HowMuch.value >= this.value)
+    //        return false;
+    //    else return true;
+    //}
     public void sendAll(Value another)
     {
         another.add(this);
@@ -284,11 +305,19 @@ public class Value
         value = 0;
     }
 
-    virtual public void set(float invalue)
+    virtual public void set(float invalue, bool showMessageAboutOperationFails = true)
     {
-        value = (uint)Mathf.RoundToInt(invalue * precision);
+        if (invalue >=0)
+            value = (uint)Mathf.RoundToInt(invalue * precision);
+        else
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Can't set negative value");
+            value = 0;
+        }
+        
     }
-    public void set(Value invalue)
+    virtual public void set(Value invalue)
     {
         value = invalue.value;
     }

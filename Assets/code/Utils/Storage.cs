@@ -65,7 +65,7 @@ public class CountryStorageSet : PrimitiveStorageSet
             return false;
     }
 
-    public void take(Storage fromHhom, Value howMuch)
+    public void take(Storage fromHhom, Storage howMuch)
     {
         base.take(fromHhom, howMuch);
         throw new DontUseThatMethod();
@@ -210,20 +210,15 @@ public class PrimitiveStorageSet
         return storage.send(whom.storageNow, what);
     }
 
-    public void take(Storage fromHhom, Value howMuch)
+    public void take(Storage fromWhom, Storage howMuch)
     {
-        Storage stor = findStorage(fromHhom.getProduct());
+        Storage stor = findStorage(fromWhom.getProduct());
         if (stor == null)
         {
-            stor = new Storage(fromHhom.getProduct());
+            stor = new Storage(fromWhom.getProduct());
             container.Add(stor);
         }
-
-        fromHhom.send(stor, howMuch);
-        //fromHhom.
-
-
-        //stor.pay(fromHhom, howMuchPay);
+        fromWhom.send(stor, howMuch);
     }
     public bool has(Storage what)
     {
@@ -264,7 +259,7 @@ public class PrimitiveStorageSet
     }
     override public string ToString()
     {
-        return container.getString(", ");        
+        return container.getString(", ");
     }
     internal void setZero()
     {
@@ -357,11 +352,6 @@ public class PrimitiveStorageSet
 
     }
 
-    internal void add(object p)
-    {
-        throw new NotImplementedException();
-    }
-
 
 
     //internal PrimitiveStorageSet Copy()
@@ -381,7 +371,7 @@ public class Storage : Value
     //{
     //    //  Auto-generated constructor stub
     //}
-    public Storage(Product inProduct, float inAmount) : base(inAmount)
+    public Storage(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true) : base(inAmount, showMessageAboutNegativeValue)
     {
         product = inProduct;
         //value = new Value(inAmount);
@@ -390,52 +380,62 @@ public class Storage : Value
     public Storage(Product inProduct, Value inAmount) : base(inAmount)
     {
         product = inProduct;
-
-
     }
 
     public Storage(Product product) : this(product, 0f)
     {
-
-        //value = new Value(0);
+        
     }
-    public Storage(Storage storage) : this(storage.getProduct(), storage.get())
+    public Storage(Storage storage) : this(storage.getProduct(), storage)
     {
-        //    this.Storage();
-        //value = new Value(0);
+        
     }
-    public void set(Product inProduct, float inAmount)
+    public void set(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true)
     {
         product = inProduct;
-        //value = new Value(inAmount);
-        set(inAmount);
+        set(inAmount, showMessageAboutNegativeValue);
     }
-    //public void set(Value inAmount)
+    public void set(Storage storage)
+    {
+        product = storage.getProduct();
+        base.set(storage);
+    }
+    //[System.Obsolete("Method is deprecated, need product specified")]
+    //override public void set(Value invalue)
     //{
-    //    //value = inAmount;
-    //    set(inAmount);
+    //    throw new DontUseThatMethod();
     //}
-    //public void set(float inAmount)
+    //[System.Obsolete("Method is deprecated, need product specified")]
+    //override public void set(float inAmount, bool showMessageAboutOperationFails = true)
     //{
-    //    set(inAmount);
-    //    //value = new Value(inAmount);
+    //    // need product specified
+    //    throw new DontUseThatMethod();
     //}
+    [System.Obsolete("Method is deprecated, need product specified")]
+    override public void add(Value invalue, bool showMessageAboutNegativeValue = true)
+    {
+        throw new DontUseThatMethod();
+    }
+    [System.Obsolete("Method is deprecated, need product specified")]
+    override public void add(float invalue, bool showMessageAboutNegativeValue = true)
+    {
+        throw new DontUseThatMethod();
+    }
+    public void add(Storage storage, bool showMessageAboutNegativeValue = true)
+    {
+        if (storage.getProduct() == this.getProduct())
+            base.add(storage, showMessageAboutNegativeValue);
+        else
+        {
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Attempt to add wrong product to Storage");
+        }        
+    }
     public Product getProduct()
     {
         return product;
     }
-    //public float getValue()
-    //{
-    //    return value.get();
-    //}
-    //public void add(float amount)
-    //{
-    //    this.value += amount;
-    //}
-    //void setValue(float value)
-    //{
-    //    this.value = value; ;
-    //}
+
     override public string ToString()
     {
         return get() + " " + getProduct().getName();
@@ -452,7 +452,7 @@ public class Storage : Value
         else
             base.sendAll(another);
     }
-    public void send(PrimitiveStorageSet whom, Value HowMuch)
+    public void send(PrimitiveStorageSet whom, Storage HowMuch)
     {
         whom.take(this, HowMuch);
     }
@@ -464,45 +464,13 @@ public class Storage : Value
         if (this.getProduct() != another.getProduct())
             Debug.Log("Attempt to give wrong product");
         else
-            base.send(another, amount);
-        //{
-        //    if (this.get() >= amount)
-        //    {
-        //        another.add(amount);
-        //        this.subtract(amount);
-
-        //    }
-        //    else
-        //        Debug.Log("value payment failed");
-        //}
+            base.send(another, amount);        
     }
+    
     /// <summary>
     /// checks inside, returns true if succeeded
     /// </summary>    
-    //public bool send(Producer toWhom, Storage what)
-    //{
-    //    if (this.getProduct() != toWhom.storageNow.getProduct())
-    //    {
-    //        Debug.Log("Attempt to give wrong product in bool send(Producer toWhom, Storage what)");
-    //        return false;
-    //    }
-    //    if (this.get() >= what.get())
-    //    {
-    //        toWhom.storageNow.add(what);
-    //        this.subtract(what);
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("value payment failed");
-    //        return false;
-    //    }
-
-    //}
-    /// <summary>
-    /// checks inside, returns true if succeeded
-    /// </summary>    
-    public bool send(Storage toWhom, Value amount)
+    public bool send(Storage toWhom, Storage amount, bool showMessageAboutOperationFails = true)
     {
         if (this.getProduct() != toWhom.getProduct())
         {
@@ -511,31 +479,23 @@ public class Storage : Value
         }
         else
         {
-            return base.send(toWhom, amount);
+            //base.send(toWhom, amount, showMessageAboutOperationFails);
+            //return true;
+            if (this.get() >= amount.get())
+            {
+                subtract(amount);
+                toWhom.add(amount);
+                return true;
+            }
+            else
+            {
+                if (showMessageAboutOperationFails)
+                    Debug.Log("No enough value to send");
+                sendAll(toWhom);
+                return false;
+            }
         }
-        //if (this.get() >= amount.get())
-        //{
-        //    toWhom.add(amount);
-        //    this.subtract(amount);
-        //    return true;
-        //}
-        //else
-        //{
-        //    Debug.Log("value payment failed");
-        //    return false;
-        //}
-
     }
-
-    //public void pay(Storage another, float amount)
-    //{
-    //    if (this.get() >= amount)
-    //    {
-    //        this.subtract(amount);
-    //        another.add(amount);
-    //    }
-    //    else Debug.Log("value payment failed");
-    //}
     public bool has(Storage Whom, Value HowMuch)
     {
         if (this.getProduct() != Whom.getProduct())
@@ -544,14 +504,46 @@ public class Storage : Value
             return false;
         }
         else
-            return has(HowMuch);
-        //if (this.get() < HowMuch.get()) return false;
-        //else return true;
-
-
+            return isBiggerOrEqual(HowMuch);       
     }
-    /*public String toString(){
-   return getProduct().getName();
+    internal Storage multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
+    {
+        if (invalue < 0f)
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Storage multiple failed");
+            return new Storage(this.getProduct(), 0f);
+        }
+        else
+            return new Storage(this.getProduct(), get() * invalue);
+    }
+    /// <summary>
+    /// returns new value
+    /// </summary>    
+    public Storage multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    {
+        if (invalue.get() < 0)
+        {
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value multiple failed");
+            return new Storage(this.getProduct(), 0f);
+        }
+        else
+            return new Storage(this.getProduct(), get() * invalue.get());
+    }
 
-}*/
+    internal bool isSameProduct(Storage anotherStorage)
+    {
+        return this.getProduct() == anotherStorage.getProduct();
+    }
+    //[System.Obsolete("Method is deprecated, need product specified")]
+    //override public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
+    //{
+    //    throw new DontUseThatMethod();       
+    //}    
+    //[System.Obsolete("Method is deprecated, need product specified")]
+    //override public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    //{     
+    //    throw new DontUseThatMethod();        
+    //}
 }
