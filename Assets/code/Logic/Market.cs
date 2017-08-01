@@ -548,7 +548,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 buyer.pay(Game.market, cost);
                 Game.market.sentToMarket.subtract(buying);
                 if (buyer is Factory)
-                    (buyer as Factory).inputReservs.add(buying);
+                    (buyer as Factory).getInputProducts().add(buying);
                 howMuchCanConsume = buying;
             }
             else
@@ -559,7 +559,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 buyer.pay(Game.market, howMuchCanConsume.multipleOutside(price));
                 Game.market.sentToMarket.subtract(howMuchCanConsume);
                 if (buyer is Factory)
-                    (buyer as Factory).inputReservs.add(howMuchCanConsume);
+                    (buyer as Factory).getInputProducts().add(howMuchCanConsume);
             }
         }
         else
@@ -576,7 +576,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     buyer.pay(Game.market, cost);
                     Game.market.sentToMarket.subtract(available);
                     if (buyer is Factory)
-                        (buyer as Factory).inputReservs.add(available);
+                        (buyer as Factory).getInputProducts().add(available);
                     howMuchCanConsume = available;
                 }
                 else
@@ -587,7 +587,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     if (buyer is Factory)
-                        (buyer as Factory).inputReservs.add(howMuchCanConsume);
+                        (buyer as Factory).getInputProducts().add(howMuchCanConsume);
                 }
             }
             else
@@ -656,6 +656,14 @@ public class Market : Agent//: PrimitiveStorageSet
 
         return new Storage(need.getProduct(), actuallyNeedsFullfilled);
     }
+    internal void buy(Consumer buyer, PrimitiveStorageSet buying, Country subsidizer)
+    {
+        // Storage actualConsumption;
+        foreach (Storage input in buying)
+        {
+            buy(buyer, input, subsidizer);
+        }
+    }
     /// <summary>
     /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
@@ -678,16 +686,8 @@ public class Market : Agent//: PrimitiveStorageSet
                 buyingIsEmpty = false;
         }
         return buyingIsEmpty;
-
     }
-    internal void buy(Factory buyer, PrimitiveStorageSet buying, Country subsidizer)
-    {
-        // Storage actualConsumption;
-        foreach (Storage input in buying)
-        {
-            buy(buyer, input, subsidizer);
-        }
-    }
+   
     /// <summary>
     /// Date actual for how much produced on turn start, not how much left
     /// </summary>

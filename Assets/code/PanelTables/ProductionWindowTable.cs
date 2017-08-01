@@ -44,7 +44,7 @@ public class ProductionWindowTable : MyTableNew
         {
             Factory next = Game.factoriesToShowInProductionPanel[i + offset];
             // Adding shownFactory name 
-            AddButton(next.type.name + " L" + next.getLevel(), next);
+            AddButton(next.getType().name + " L" + next.getLevel(), next);
 
             // Adding province 
             AddButton(next.province.ToString(), next.province);
@@ -53,7 +53,7 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.gainGoodsThisTurn.ToString(), next);
 
             ////Adding effective resource income
-            AddButton(next.getResouceFullfillig().ToString(), next);
+            AddButton(next.getInputFactor().ToString(), next);
 
             ////Adding workforce
             AddButton(next.getWorkForce().ToString(), next);

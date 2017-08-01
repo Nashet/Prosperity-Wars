@@ -23,9 +23,9 @@ public abstract class Consumer : Agent
     public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void buyNeeds();
-    //public Consumer() : base(this as Country) { }
-    protected Consumer(Bank bank) : base(0, bank) { }
-    //public Consumer(CountryWallet wallet) : base(wallet) { }
+    public abstract List<Storage> getRealNeeds();    
+    protected Consumer(Bank bank) : base(0, bank)
+    { }    
     public virtual void setStatisticToZero()
     {
         moneyIncomethisTurn.set(0f);
@@ -53,13 +53,15 @@ public abstract class Producer : Consumer
     public Province province;
 
     /// <summary> /// Return in pieces  /// </summary>    
-    abstract internal float getLocalEffectiveDemand(Product product);
+    public abstract float getLocalEffectiveDemand(Product product);
     public abstract void simulate(); ///!!!
     public abstract void produce();
-
     public abstract void payTaxes();
-    protected Producer(Bank bank) : base(bank)
-    { }
+
+    protected Producer(Province province) : base(province.getCountry().bank)
+    {
+        this.province = province;
+    }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();

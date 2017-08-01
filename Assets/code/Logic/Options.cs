@@ -29,7 +29,7 @@ public static class Options
 
     //FACTORIES
     internal static readonly float goldToCoinsConvert = 10f;
-    internal static readonly float minWorkforceFullfillingToUpgradeFactory = 0.75f;
+    internal static readonly Procent minWorkforceFullfillingToUpgradeFactory = new Procent(0.75f);
     internal static readonly Procent BuyInTimeFactoryUpgradeNeeds = new Procent(0.1f);
     internal static readonly int minUnemploymentToBuldFactory = 10;
     internal static readonly int maximumFactoriesInUpgradeToBuildNew = 2;

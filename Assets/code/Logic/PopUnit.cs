@@ -93,7 +93,7 @@ abstract public class PopUnit : Producer
             //new Modifier(Serfdom.Allowed,  -20f, false)
         });
     }
-    protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
+    protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where)
     {
         where.allPopUnits.Add(this);
         born = Game.date;
@@ -107,12 +107,12 @@ abstract public class PopUnit : Producer
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
-        province = where;
+        //province = where;
     }
     /// <summary> Creates new PopUnit basing on part of other PopUnit.
     /// And transfers sizeOfNewPop population.
     /// </summary>    
-    protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where.getCountry().bank)
+    protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where)
     {
         born = Game.date;
         PopListToAddToGeneralList.Add(this);
@@ -165,12 +165,12 @@ abstract public class PopUnit : Producer
         }
         else
         {
-            storageNow = newPopShare.sendProcentToNew(source.storageNow);            
-            gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());            
+            storageNow = newPopShare.sendProcentToNew(source.storageNow);
+            gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
             sentToMarket = new Storage(source.sentToMarket.getProduct());
         }
 
-        province = where;//source.province;
+        //province = where;//source.province;
 
         //Consumer's fields:
         consumedTotal = new PrimitiveStorageSet();
@@ -238,7 +238,7 @@ abstract public class PopUnit : Producer
     /// <summary>
     /// Sets population to zero as a mark to delete this Pop
     /// </summary>
-    private void deleteData()
+    virtual protected void deleteData()
     {
         population = 0;
         //province.allPopUnits.Remove(this); // gives exception        
@@ -250,7 +250,7 @@ abstract public class PopUnit : Producer
         getOwnedFactories().ForEach(x => x.setOwner(province.getCountry()));
         sendAllAvailableMoney(getCountry().bank); // just in case if there is something
         getCountry().bank.defaultLoaner(this);
-
+        var art = this as Artisans;        
         Movement.leave(this);
     }
     //public Culture getCulture()
@@ -264,7 +264,7 @@ abstract public class PopUnit : Producer
         return getVotingPower(getCountry().government.getTypedValue());
     }
 
-   
+
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
@@ -404,7 +404,7 @@ abstract public class PopUnit : Producer
 
 
     /// <summary> /// Return in pieces  /// </summary>    
-    override internal float getLocalEffectiveDemand(Product product)
+    override public float getLocalEffectiveDemand(Product product)
     {
         float result = 0;
         // need to know how much i Consumed inside my needs
@@ -473,7 +473,7 @@ abstract public class PopUnit : Producer
     {
         return getNeedsInCommon(this.popType.getLuxuryNeedsPer1000());
     }
-    public List<Storage> getRealAllNeeds()
+    override public List<Storage> getRealNeeds()
     {
         return getNeedsInCommon(this.popType.getAllNeedsPer1000());
     }
@@ -1208,7 +1208,7 @@ abstract public class PopUnit : Producer
     {
         if (getCountry().isInvented(Invention.Banking))
         {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f, false);
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * 10f, false);
             if (extraMoney.get() > 5f)
                 getCountry().bank.takeMoney(this, extraMoney);
         }
@@ -1256,7 +1256,7 @@ abstract public class PopUnit : Producer
                             //&& !factory.isUpgrading()
                             //&& !factory.isBuilding()
                             && Factory.conditionsUpgrade.isAllTrue(factory, this)
-                            && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory
+                            && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
                             && factory.getMargin().get() >= Options.minMarginToUpgrade)
                         {
                             factory.upgrade(this);
@@ -1305,7 +1305,7 @@ abstract public class PopUnit : Producer
                     if (factory != null
                         && factory.canUpgrade()
                         && factory.getMargin().get() >= Options.minMarginToUpgrade
-                        && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory)
+                        && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
                     {
                         //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
                         //Value cost = Game.market.getCost(resourceToBuild);

@@ -166,12 +166,14 @@ public abstract class Staff : Consumer
     //     allArmies.ForEach(x => x.consume());
     // }
 
-    internal PrimitiveStorageSet getNeeds()
+    //override public PrimitiveStorageSet getRealNeeds()
+    override public List<Storage> getRealNeeds()
     {
         PrimitiveStorageSet res = new PrimitiveStorageSet();
+        //var res = new List<Storage>();
         foreach (var item in allArmies)
             res.add(item.getNeeds());
-        return res;
+        return res.getContainer();
     }
 
     virtual internal void sendArmy(Province possibleTarget, Procent procent)

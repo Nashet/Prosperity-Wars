@@ -52,7 +52,7 @@ public class TradeWindowCountryMarketTable   : MyTable
         //AddButton(null.loyalty.ToString(), null);
         if (Game.Player != null)
         {
-            var needs = Game.Player.getNeeds();
+            var needs = Game.Player.getRealNeeds();
             foreach (Storage next in Game.market.marketPrice)
 
             {
@@ -64,7 +64,6 @@ public class TradeWindowCountryMarketTable   : MyTable
 
                     ////Adding storage amount
                     AddButton(Game.Player.storageSet.getStorage(next.getProduct()).ToString(), next);
-
 
                     ////Adding needs
                     AddButton(needs.getStorage(next.getProduct()).ToString(), next);

@@ -384,7 +384,7 @@ public class Province : Name
     public IEnumerable<Producer> getBuyers()
     {
         foreach (Factory factory in allFactories)
-            if (!factory.type.isResourceGathering())
+            if (!factory.getType().isResourceGathering())
                 yield return factory;
         foreach (PopUnit pop in allPopUnits)
             if (pop.canBuyProducts())
@@ -393,7 +393,7 @@ public class Province : Name
     public IEnumerable<Producer> getConsumers()
     {
         foreach (Factory factory in allFactories)
-            if (!factory.type.isResourceGathering())
+            if (!factory.getType().isResourceGathering())
                 yield return factory;
         foreach (PopUnit pop in allPopUnits)
             //if (pop.canBuyProducts())
@@ -645,9 +645,9 @@ public class Province : Name
     }
     internal Factory getResourceFactory()
     {
-        foreach (Factory f in allFactories)
-            if (f.type.basicProduction.getProduct() == resource)
-                return f;
+        foreach (Factory factory in allFactories)
+            if (factory.getType().basicProduction.getProduct() == resource)
+                return factory;
         return null;
     }
 
@@ -682,7 +682,7 @@ public class Province : Name
     internal bool HaveFactory(FactoryType ft)
     {
         foreach (Factory f in allFactories)
-            if (f.type == ft)
+            if (f.getType() == ft)
                 return true;
         return false;
     }
@@ -754,7 +754,7 @@ public class Province : Name
     internal Factory findFactory(FactoryType proposition)
     {
         foreach (Factory f in allFactories)
-            if (f.type == proposition)
+            if (f.getType() == proposition)
                 return f;
         return null;
     }
@@ -762,7 +762,7 @@ public class Province : Name
     {
         foreach (Storage stor in resourceInput)
             foreach (Factory factory in allFactories)
-                if (factory.isWorking() && factory.type.basicProduction.getProduct() == stor.getProduct())
+                if (factory.isWorking() && factory.getType().basicProduction.getProduct() == stor.getProduct())
                     return true;
         return false;
     }

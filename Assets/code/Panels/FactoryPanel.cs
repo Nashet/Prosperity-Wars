@@ -124,12 +124,12 @@ public class FactoryPanel : DragPanel//for dragging
             if (shownFactory.needsToUpgrade.Count() > 0)
                 upgradeNeeds = "\nUpgrade needs: " + shownFactory.needsToUpgrade;
 
-            foreach (Storage next in shownFactory.type.resourceInput)
-                InputRequired += next.get() * shownFactory.getWorkForceFullFilling() + " " + next.getProduct().ToString() + ";";
-            generaltext.text = shownFactory.type.name + " level: " + shownFactory.getLevel() + "\n" + "Workforce: " + shownFactory.getWorkForce()
+            foreach (Storage next in shownFactory.getType().resourceInput)
+                InputRequired += next.get() * shownFactory.getWorkForceFulFilling().get() + " " + next.getProduct().ToString() + ";";
+            generaltext.text = shownFactory.getType().name + " level: " + shownFactory.getLevel() + "\n" + "Workforce: " + shownFactory.getWorkForce()
                 + "\nUnsold: " + shownFactory.storageNow.ToString()
                 + "\nGain goods: " + shownFactory.gainGoodsThisTurn.ToString()
-                + "\nBasic production: " + shownFactory.type.basicProduction
+                + "\nBasic production: " + shownFactory.getType().basicProduction
                 + "\nEfficiency: " + Factory.modifierEfficiency.getModifier(shownFactory)
                 + "\nSent to market: " + shownFactory.sentToMarket
                 + "\nCash: " + shownFactory.cash.ToString()
@@ -138,7 +138,7 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nInput required: " + InputRequired
                 + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + Game.market.getCost(shownFactory.consumedTotal)
                 + "\nConsumed LT: " + shownFactory.consumedLastTurn
-                + "\nInput reserves: " + shownFactory.inputReservs
+                + "\nInput reserves: " + shownFactory.getInputProducts()
                 + "\nInput factor: " + shownFactory.getInputFactor()
                 + "\nSalary (per 1000 men):" + shownFactory.getSalary() + " Salary(total):" + shownFactory.getSalaryCost()
                 + "\nOwner: " + shownFactory.getOwner()
