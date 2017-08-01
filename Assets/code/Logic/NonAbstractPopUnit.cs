@@ -452,7 +452,7 @@ public class Capitalists : PopUnit
 }
 public class Artisans : PopUnit
 {
-    private FactoryType producingType;
+    private Factory producingType;
     public Artisans(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Artisans, where, culture)
     {
         selectProductionType();
@@ -486,18 +486,24 @@ public class Artisans : PopUnit
 
         //consumeInputResources(getRealNeeds());        
         if (producingType != null)
-        {
-            gainGoodsThisTurn = producingType.basicProduction
-                .multipleOutside(getPopulation() * modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
+            producingType.produce();
+        //{
+        //    gainGoodsThisTurn = producingType.basicProduction
+                //.multipleOutside(getPopulation() * modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
 
-            if (Economy.isMarket.checkIftrue(province.getCountry()))
-            {
-                sentToMarket.set(gainGoodsThisTurn);
-                Game.market.sentToMarket.add(gainGoodsThisTurn);
-            }
-            else
-                ;// storageNow.add(gainGoodsThisTurn);
-        }
+            //    if (Economy.isMarket.checkIftrue(province.getCountry()))
+            //    {
+            //        sentToMarket.set(gainGoodsThisTurn);
+            //        Game.market.sentToMarket.add(gainGoodsThisTurn);
+            //    }
+            //    else
+            //        ;// storageNow.add(gainGoodsThisTurn);
+            //}
+    }
+    public override void buyNeeds()
+    {
+        base.buyNeeds();
+        producingType.buyNeeds();
     }
     internal override bool canBuyProducts()
     {
@@ -574,7 +580,8 @@ public class Artisans : PopUnit
             if (possibleProfit > result.Value)
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
-        producingType = result.Key;
+        //producingType = result.Key;
+        producingType = new Factory(province, this, result.Key);
     }
 }
 public class Workers : PopUnit

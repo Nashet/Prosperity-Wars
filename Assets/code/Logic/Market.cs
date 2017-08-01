@@ -94,7 +94,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.getProducers())
+                    foreach (Producer producer in province.getBuyers())
                     {
                         //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
@@ -118,7 +118,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                 {
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.getProducers())
+                        foreach (Producer producer in province.getBuyers())
                         {
                             //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
@@ -171,7 +171,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.getProducers())
+                    foreach (Producer producer in province.getConsumers())
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
@@ -195,7 +195,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                 {
                     foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.getProducers())
+                        foreach (Producer producer in province.getConsumers())
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
@@ -875,15 +875,18 @@ public class Market : Agent//: PrimitiveStorageSet
                 priceChangeSpeed = 0;
                 if (balance == 1f) priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
-                //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
-                // else
-                //(0.0001f <= balance &&
-                if (balance <= 0.75f)
-                    priceChangeSpeed = -0.001f + price.get() * -0.02f;
-                else
-                if (balance > 1f)
-                    ChangePrice(price, price.getProduct().getDefaultPrice().get() - price.get());
-
+                {
+                    //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
+                    // else
+                    //(0.0001f <= balance &&
+                    if (balance <= 0.75f)
+                        priceChangeSpeed = -0.001f + price.get() * -0.02f;
+                    else
+                    {
+                        if (balance > 1f)
+                            ChangePrice(price, price.getProduct().getDefaultPrice().get() - price.get());
+                    }
+                }
                 // antiBalance = price.get();
                 //if (antiBalance > 10) antiBalance = 10;
                 // old DSB

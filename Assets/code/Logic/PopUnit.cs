@@ -101,14 +101,13 @@ abstract public class PopUnit : Producer
         popType = ipopType;
         culture = iculture;
 
-        storageNow = new Storage(Product.Food, 0);
-        gainGoodsThisTurn = new Storage(Product.Food, 0);
-        sentToMarket = new Storage(Product.Food, 0);
+        storageNow = new Storage(Product.Food);
+        gainGoodsThisTurn = new Storage(Product.Food);
+        sentToMarket = new Storage(Product.Food);
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
         province = where;
-
     }
     /// <summary> Creates new PopUnit basing on part of other PopUnit.
     /// And transfers sizeOfNewPop population.
@@ -158,13 +157,18 @@ abstract public class PopUnit : Producer
         source.payWithoutRecord(this, source.cash.multipleOutside(newPopShare));
 
         //Producer's fields:
-        // must be OK since this method used for same pop type
-        storageNow = newPopShare.sendProcentToNew(source.storageNow);
-
-        // looks I don't need - it erases every tick anyway
-        //gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
-        // looks I don't need - it erases every tick anyway
-        //sentToMarket = new Storage(source.sentToMarket.getProduct());
+        if (source.popType == PopType.Artisans && newPopType != PopType.Artisans)
+        {
+            storageNow = new Storage(Product.Food);
+            gainGoodsThisTurn = new Storage(Product.Food);
+            sentToMarket = new Storage(Product.Food);
+        }
+        else
+        {
+            storageNow = newPopShare.sendProcentToNew(source.storageNow);            
+            gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());            
+            sentToMarket = new Storage(source.sentToMarket.getProduct());
+        }
 
         province = where;//source.province;
 
@@ -176,17 +180,6 @@ abstract public class PopUnit : Producer
         //kill in the end
         source.subtractPopulation(sizeOfNewPop);
     }
-    //public Culture getCulture()
-    //{
-    //    return culture;
-    //}
-    // have to be this way!
-    internal abstract int getVotingPower(Government.ReformValue reformValue);
-    internal int getVotingPower()
-    {
-        return getVotingPower(getCountry().government.getTypedValue());
-    }
-
     /// <summary>
     /// Merging source into this pop
     /// assuming that both pops are in same province, and has same type
@@ -260,6 +253,18 @@ abstract public class PopUnit : Producer
 
         Movement.leave(this);
     }
+    //public Culture getCulture()
+    //{
+    //    return culture;
+    //}
+    // have to be this way!
+    internal abstract int getVotingPower(Government.ReformValue reformValue);
+    internal int getVotingPower()
+    {
+        return getVotingPower(getCountry().government.getTypedValue());
+    }
+
+   
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
@@ -364,21 +369,21 @@ abstract public class PopUnit : Producer
     /// <summary>
     /// Creates Pop in PopListToAddToGeneralList, later in will go to proper List
     /// </summary>    
-    public static PopUnit makeVirtualPop(PopType type, PopUnit source, int sizeOfNewPop, Province where, Culture culture)
+    public static PopUnit makeVirtualPop(PopType targetType, PopUnit source, int sizeOfNewPop, Province where, Culture culture)
     {
-        if (type == PopType.TribeMen) return new Tribemen(source, sizeOfNewPop, where, culture);
+        if (targetType == PopType.TribeMen) return new Tribemen(source, sizeOfNewPop, where, culture);
         else
-            if (type == PopType.Farmers) return new Farmers(source, sizeOfNewPop, where, culture);
+            if (targetType == PopType.Farmers) return new Farmers(source, sizeOfNewPop, where, culture);
         else
-            if (type == PopType.Aristocrats) return new Aristocrats(source, sizeOfNewPop, where, culture);
+            if (targetType == PopType.Aristocrats) return new Aristocrats(source, sizeOfNewPop, where, culture);
         else
-            if (type == PopType.Workers) return new Workers(source, sizeOfNewPop, where, culture);
+            if (targetType == PopType.Workers) return new Workers(source, sizeOfNewPop, where, culture);
         else
-            if (type == PopType.Capitalists) return new Capitalists(source, sizeOfNewPop, where, culture);
+            if (targetType == PopType.Capitalists) return new Capitalists(source, sizeOfNewPop, where, culture);
         else
-            if (type == PopType.Soldiers) return new Soldiers(source, sizeOfNewPop, where, culture);
+            if (targetType == PopType.Soldiers) return new Soldiers(source, sizeOfNewPop, where, culture);
         else
-            if (type == PopType.Artisans) return new Artisans(source, sizeOfNewPop, where, culture);
+            if (targetType == PopType.Artisans) return new Artisans(source, sizeOfNewPop, where, culture);
         else
         {
             Debug.Log("Unknown pop type!");

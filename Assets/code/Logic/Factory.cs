@@ -439,8 +439,8 @@ public class Factory : Producer
                     this.ConvertFromGoldAndAdd(storageNow);
                     //send 50% to government
                     Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
-                    pay(province.getCountry(), sentToGovernment);
-                    province.getCountry().goldMinesIncomeAdd(sentToGovernment);
+                    pay(getCountry(), sentToGovernment);
+                    getCountry().goldMinesIncomeAdd(sentToGovernment);
                 }
                 else
                 {
@@ -459,7 +459,52 @@ public class Factory : Producer
             }
         }
     }
+    /// <summary>
+    /// Fills storageNow and gainGoodsThisTurn
+    /// </summary>
+    public void produceAsArtisan(Artisans artisans)
+    {
+        if (isWorking())
+        {            
+            //if (workers > 0)
+            {
 
+                //Storage producedAmount = new Storage(type.basicProduction.getProduct(), type.basicProduction.get() * getEfficiency(true).get() * getLevel()); // * getLevel());
+                gainGoodsThisTurn = type.basicProduction
+                .multipleOutside(artisans.getPopulation() * PopUnit.modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
+
+                storageNow.add(gainGoodsThisTurn);
+                //gainGoodsThisTurn.set(producedAmount);
+
+                //consumeInputResources
+                foreach (Storage next in getRealNeeds())
+                    inputReservs.subtract(next, false);
+
+                if (type == FactoryType.GoldMine)
+                {
+                    this.ConvertFromGoldAndAdd(storageNow);
+                    //send 50% to government
+                    Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
+                    pay(getCountry(), sentToGovernment);
+                    getCountry().goldMinesIncomeAdd(sentToGovernment);
+                }
+                else
+                {
+                    sentToMarket.set(gainGoodsThisTurn);
+                    storageNow.setZero();
+                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                }
+                if (Economy.isMarket.checkIftrue(province.getCountry()))
+                {
+                    // Buyers should come and buy something...
+                    // its in other files.
+                }
+                else // send all production to owner
+                    ; // todo write !capitalism
+                      //storageNow.sendAll(owner.storageSet);
+            }
+        }
+    }
     /// <summary> only make sense if called before HireWorkforce()
     ///  PEr 1000 men!!!
     /// !!! Mirroring PaySalary
@@ -689,7 +734,7 @@ public class Factory : Producer
         return result;
     }
     /// <summary>
-    /// Now includes workforce/efficineneece. Here also happening buying dor upgrading\building
+    /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
     /// </summary>
     override public void buyNeeds()
     {

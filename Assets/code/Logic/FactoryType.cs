@@ -141,7 +141,8 @@ public class FactoryType
     {
         if (resourceInput.Count() == 0)
             return true;
-        else return false;
+        else
+            return false;
     }
     internal bool isShaft()
     {

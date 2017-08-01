@@ -370,9 +370,9 @@ public class Game : ThreadedJob
         {
             allMoney.add(country.cash);
             allMoney.add(country.bank.getReservs());
-            foreach (Province pr in country.ownedProvinces)
+            foreach (Province province in country.ownedProvinces)
             {
-                foreach (var factory in pr.getProducers())
+                foreach (var factory in province.getEveryOne())
                     allMoney.add(factory.cash);
             }
         }
@@ -575,7 +575,7 @@ public class Game : ThreadedJob
             {
                 province.BalanceEmployableWorkForce();
                 {
-                    foreach (var item in province.getProducers())
+                    foreach (var item in province.getEveryOne())
                         item.setStatisticToZero();
                 }
             }
@@ -590,7 +590,7 @@ public class Game : ThreadedJob
             + " \n\tbasic reforms (population can vote for reforms)"
             + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
             + "\n\tpolitical \\ culture \\ core map mode"
-            + "\n\tMovements and Rebellions"
+            + "\n\tmovements and rebellions"
             + "\n\nYou play as " + Game.Player.getDescription() + " You can try to growth economy or conquer the world."
             + "\nOr, You can give control to AI and watch it"
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"

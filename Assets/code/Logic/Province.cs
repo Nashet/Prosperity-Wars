@@ -287,7 +287,7 @@ public class Province : Name
     {
         Country oldCountry = getCountry();
         //refuse loans to old country bank
-        foreach (var producer in getProducers())
+        foreach (var producer in getEveryOne())
         {
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
@@ -372,15 +372,39 @@ public class Province : Name
         return neighbors.FindAll(predicate);
 
     }
-
     public IEnumerable<Producer> getProducers()
-    //public System.Collections.IEnumerator GetEnumerator()
     {
-        foreach (Factory f in allFactories)
-            yield return f;
-        foreach (PopUnit f in allPopUnits)
-            //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
-            yield return f;
+        foreach (Factory factory in allFactories)
+            yield return factory;
+        foreach (PopUnit pop in allPopUnits)
+            if (pop.popType.isProducer())
+                //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
+                yield return pop;
+    }
+    public IEnumerable<Producer> getBuyers()
+    {
+        foreach (Factory factory in allFactories)
+            if (!factory.type.isResourceGathering())
+                yield return factory;
+        foreach (PopUnit pop in allPopUnits)
+            if (pop.canBuyProducts())
+                yield return pop;
+    }
+    public IEnumerable<Producer> getConsumers()
+    {
+        foreach (Factory factory in allFactories)
+            if (!factory.type.isResourceGathering())
+                yield return factory;
+        foreach (PopUnit pop in allPopUnits)
+            //if (pop.canBuyProducts())
+                yield return pop;
+    }
+    public IEnumerable<Producer> getEveryOne()
+    {
+        foreach (Factory factory in allFactories)            
+                yield return factory;
+        foreach (PopUnit pop in allPopUnits)            
+            yield return pop;
     }
     public static Vector3 setProvinceCenter(MeshStructure meshStructure)
     {

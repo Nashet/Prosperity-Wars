@@ -81,10 +81,10 @@ public abstract class Producer : Consumer
             Value cost = new Value(Game.market.getCost(realSold));
 
             // assuming gainGoodsThisTurn & realSold have same product
-            if (storageNow.isSameProduct(gainGoodsThisTurn))            
-                storageNow.add(gainGoodsThisTurn);                
-            else            
-                storageNow = new Storage(gainGoodsThisTurn);            
+            if (storageNow.isSameProduct(gainGoodsThisTurn))
+                storageNow.add(gainGoodsThisTurn);
+            else
+                storageNow = new Storage(gainGoodsThisTurn);
             storageNow.subtract(realSold.get());
 
             if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
