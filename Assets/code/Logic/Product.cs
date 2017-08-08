@@ -24,7 +24,7 @@ public class Product : Name
         MetallOre = new Product("Metal ore", true, 3f);
         Metal = new Product("Metal", false, 6f);
         Wool = new Product("Wool", true, 1f);
-        Clothes = new Product("Clothes", false, 3f);
+        Clothes = new Product("Clothes", false, 6f);
         Furniture = new Product("Furniture", false, 7f);
         Stone = new Product("Stone", true, 1f);
         Cement = new Product("Cement", false, 2f);

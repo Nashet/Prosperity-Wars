@@ -45,7 +45,7 @@ public class FactoryPanel : DragPanel//for dragging
     }
     void setGUIElementsAccesability()
     {
-        var economy = shownFactory.province.getCountry().economy;
+        var economy = shownFactory.getCountry().economy;
 
         //upgradeButton.interactable = economy.allowsFactoryUpgradeByGovernment();
         //setButtonTooltip(upgradeButton, shownFactory.whyCantUpgradeFactory(Game.player));

@@ -22,9 +22,11 @@ public static class Options
     internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int ProvinceChanceToGetCore = 70;
 
+    // MARKET
     internal static readonly float minPrice = 0.001f;
     internal static readonly float maxPrice = 999.99f;
     internal static readonly float MarketInfiniteDSB = 999f;
+    internal static readonly float MarketEqualityDSB = 1f;
     internal static readonly Value defaultPriceLimitMultiplier = new Value(5f);
 
     //FACTORIES
@@ -108,5 +110,9 @@ public static class Options
     internal static readonly float aristocratsFoodReserv = 50;
     internal static readonly float ArtisansProductionModifier = 0.5f;
     internal static readonly int ArtisansChangeProductionRate = 20;
+    internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
+    /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
+    internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
+
     //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
 }

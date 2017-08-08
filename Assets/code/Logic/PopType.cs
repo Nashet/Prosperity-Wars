@@ -37,9 +37,10 @@ public class PopType
             new Storage(Product.Fruit, 1),
             new Storage(Product.ColdArms, 1),
             new Storage(Product.Clothes, 1),
-            new Storage(Product.Furniture, 1) });
+            new Storage(Product.Furniture, 1),
+            new Storage(Product.Wine, 2),});
         var aristocratsLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Wine, 2),
+            
             new Storage(Product.Cars, 1f),
             new Storage(Product.Fuel, 1f),
             new Storage(Product.Airplanes, 1f) });

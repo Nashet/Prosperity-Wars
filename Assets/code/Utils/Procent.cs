@@ -19,7 +19,7 @@ public class Procent : Value
     }
     public static Procent makeProcent(Value numerator, Value denominator, bool showMessageAboutOperationFails = true)
     {
-        if (denominator.get() == 0f)
+        if (denominator.isZero())
         {
             if (showMessageAboutOperationFails)
                 Debug.Log("Division by zero in Procent.makeProcent(Value)");
@@ -88,7 +88,6 @@ public class Procent : Value
         return get() - 0.5f;
     }
 
-
     public Value sendProcentToNew(Value source)
     {
 
@@ -121,13 +120,9 @@ public class Procent : Value
         else return "0%";
     }
 
-    //internal uint getProcent(int population)
-    //{
-    //    return (uint)Mathf.RoundToInt(get() * population);
-    //}
-    internal int getProcent(int population)
+    internal int getProcent(int value)
     {
-        return Mathf.RoundToInt(get() * population);
+        return Mathf.RoundToInt(get() * value);
     }
     //override public void set(float invalue)
     //{
@@ -144,5 +139,15 @@ public class Procent : Value
     {
         if (this.isBiggerThan(Procent.HundredProcent))
             this.set(1f);
+    }
+    public void set(Storage numerator, Storage denominator, bool showMessageAboutOperationFails = true)
+    {
+        if (denominator.isZero())
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");            
+        }
+        else
+            set(numerator.get() / denominator.get());
     }
 }

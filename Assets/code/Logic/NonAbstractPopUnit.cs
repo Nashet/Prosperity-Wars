@@ -14,8 +14,8 @@ public class Tribemen : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == PopType.Workers
-            //|| targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy))
+            //|| targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy))
             return true;
         else
             return false;
@@ -23,8 +23,8 @@ public class Tribemen : PopUnit
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == PopType.Aristocrats
-            //|| targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
-            //|| targetType == PopType.Soldiers && !province.getCountry().isInvented(Invention.ProfessionalArmy))
+            //|| targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            //|| targetType == PopType.Soldiers && !getCountry().isInvented(Invention.ProfessionalArmy))
             )
             return true;
         else
@@ -113,7 +113,7 @@ public class Farmers : PopUnit
 
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
          || targetType == PopType.TribeMen
          || targetType == PopType.Workers
             )
@@ -140,7 +140,7 @@ public class Farmers : PopUnit
         gainGoodsThisTurn.set(producedAmount);
 
 
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        if (Economy.isMarket.checkIftrue(getCountry()))
         {
             sentToMarket.set(gainGoodsThisTurn);
             Game.market.sentToMarket.add(gainGoodsThisTurn);
@@ -150,7 +150,7 @@ public class Farmers : PopUnit
     }
     override internal bool canSellProducts()
     {
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        if (Economy.isMarket.checkIftrue(getCountry()))
             return true;
         else
             return false;
@@ -232,8 +232,8 @@ public class Aristocrats : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
             || targetType == PopType.TribeMen)
             return true;
         else
@@ -301,7 +301,7 @@ public class Soldiers : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (//targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
+        if (//targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
             //||
             targetType == PopType.TribeMen
             || targetType == PopType.Workers
@@ -314,7 +314,7 @@ public class Soldiers : PopUnit
     {
         if (targetType == PopType.Aristocrats // should be officers
          || targetType == PopType.Artisans
-         || targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
+         || targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
          )
             return true;
         else
@@ -349,17 +349,17 @@ public class Soldiers : PopUnit
 
     internal void takePayCheck()
     {
-        Value payCheck = new Value(province.getCountry().getSoldierWage());
+        Value payCheck = new Value(getCountry().getSoldierWage());
         payCheck.multiple(getPopulation() / 1000f);
-        if (province.getCountry().canPay(payCheck))
+        if (getCountry().canPay(payCheck))
         {
-            province.getCountry().pay(this, payCheck);
-            province.getCountry().soldiersWageExpenseAdd(payCheck);
+            getCountry().pay(this, payCheck);
+            getCountry().soldiersWageExpenseAdd(payCheck);
         }
         else
         {
             this.didntGetPromisedSalary = true;
-            province.getCountry().failedToPaySoldiers = true;
+            getCountry().failedToPaySoldiers = true;
         }
     }
 }
@@ -371,8 +371,8 @@ public class Capitalists : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
             || targetType == PopType.Artisans
             )
             return true;
@@ -468,8 +468,8 @@ public class Artisans : PopUnit
     }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (//|| targetType == PopType.Farmers && !province.getCountry().isInvented(Invention.Farming)
-            targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (//|| targetType == PopType.Farmers && !getCountry().isInvented(Invention.Farming)
+            targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
             || targetType == PopType.Workers
             )
             return true;
@@ -485,12 +485,13 @@ public class Artisans : PopUnit
     }
     public override void produce()
     {
-        if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1)
+        if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
+            && (artisansProduction==null 
+            || (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
             selectProductionType();
-
-        //consumeInputResources(getRealNeeds());        
+                
         if (artisansProduction != null)
-            if (artisansProduction.isAllInputProductsAvailable())
+            if (artisansProduction.isAllInputProductsCollected())
             {
                 artisansProduction.produce();
                 sentToMarket.set(gainGoodsThisTurn);
@@ -506,6 +507,21 @@ public class Artisans : PopUnit
         if (artisansProduction != null)
         {
             payWithoutRecord(artisansProduction, cash);
+
+            // take loan if don't have enough money to buy inputs            
+            if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
+            {
+                var needs = artisansProduction.getRealNeeds();
+                if (!artisansProduction.canAfford(needs))
+                {
+                    var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed
+                    if (getCountry().bank.canGiveMoney(this, loanSize))
+                        getCountry().bank.giveMoney(this, loanSize);
+                    payWithoutRecord(artisansProduction, cash);
+                }
+            }
+            //if (artisansProduction.CanAfford(artisansProduction.))
+
             artisansProduction.buyNeeds();
             artisansProduction.payWithoutRecord(this, artisansProduction.cash);
             this.consumedInMarket.add(artisansProduction.consumedInMarket);
@@ -581,14 +597,14 @@ public class Workers : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == PopType.TribeMen
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy))
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy))
             return true;
         else
             return false;
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
+        if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
          || targetType == PopType.Artisans
          )
             return true;

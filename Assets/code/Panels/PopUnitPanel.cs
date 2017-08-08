@@ -48,8 +48,8 @@ public class PopUnitPanel : DragPanel
             makeLineC(sb, pop.getRichestImmigrationTarget(), pop.getImmigrationSize(), "Immigration: ", pop.wantsToImmigrate());
 
             sb.Append("\nAssimilation: ");
-            if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
-                sb.Append(pop.province.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
+            if (pop.culture != pop.getCountry().getCulture() && pop.getAssimilationSize() > 0)
+                sb.Append(pop.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
             else
                 sb.Append("none");
 

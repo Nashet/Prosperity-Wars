@@ -419,7 +419,7 @@ public class Game : ThreadedJob
                 pop.storageNow.add(new Storage(Product.Food, 60f));
                 if (!Game.devMode)
                 {
-                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
                     //pop.cash.set(9000);
 
                     pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
@@ -705,12 +705,12 @@ public class Game : ThreadedJob
                 {
                     factory.getMoneyForSoldProduct();
                     factory.changeSalary();
-                    factory.PayDividend();
+                    factory.payDividend();
                 }
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {                    
-                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(province.getCountry())))
+                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(getCountry())))
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
 

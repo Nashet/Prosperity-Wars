@@ -756,10 +756,11 @@ public class Country : Staff
         //Storage toBuy = new Storage(pro, needs.getStorage(pro).get()* days - storageSet.getStorage(pro).get());
         if (toBuy.isNotZero())
         {
+            Storage realyBougth = Game.market.buy(this, toBuy, null);
             //if (toBuy.get() < 10f) toBuy.set(10);
-            toBuy.multiple(Game.market.buy(this, toBuy, null));
-            storageSet.add(toBuy);
-            storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
+            //toBuy.multiple();
+            storageSet.add(realyBougth);
+            storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
         }
     }
 
@@ -931,5 +932,8 @@ public class Country : Staff
     {
         ownedFactoriesIncome.add(toAdd);
     }
-
+   override internal Country getCountry()
+    {
+        return this;
+    }
 }

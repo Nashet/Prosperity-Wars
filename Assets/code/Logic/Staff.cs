@@ -10,7 +10,7 @@ public abstract class Staff : Consumer
 {
     List<Army> allArmies = new List<Army>();
     protected Country place; //todo change class
-    protected Staff(Country place) : base(null)
+    protected Staff(Country place) : base(null, null)
     {
         this.place = place;
     }
@@ -118,7 +118,7 @@ public abstract class Staff : Consumer
     //{
     //    foreach (var province in place.ownedProvinces)
     //    {
-    //        Army newArmy = new Army(province.getCountry());
+    //        Army newArmy = new Army(getCountry());
     //        foreach (var item in province.allPopUnits)
     //            //if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
     //                newArmy.add(item.mobilize(this));

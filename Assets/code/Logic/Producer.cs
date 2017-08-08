@@ -23,15 +23,22 @@ public abstract class Consumer : Agent
     public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void buyNeeds();
-    public abstract List<Storage> getRealNeeds();    
-    protected Consumer(Bank bank) : base(0, bank)
-    { }    
+    public abstract List<Storage> getRealNeeds();
+    public readonly Province province;
+    protected Consumer(Bank bank, Province province) : base(0, bank)
+    {
+        this.province = province;
+    }    
     public virtual void setStatisticToZero()
     {
         moneyIncomethisTurn.set(0f);
         consumedLastTurn.copyDataFrom(consumedTotal); // temp   
         consumedTotal.setZero();
         consumedInMarket.setZero();
+    }
+    virtual internal Country getCountry()
+    {
+        return province.getCountry();
     }
 }
 /// <summary>
@@ -50,7 +57,7 @@ public abstract class Producer : Consumer
     public Storage sentToMarket;
 
     //protected Country owner; //Could be any Country or POP
-    public Province province;
+    
 
     /// <summary> /// Return in pieces  /// </summary>    
     public abstract float getLocalEffectiveDemand(Product product);
@@ -58,9 +65,8 @@ public abstract class Producer : Consumer
     public abstract void produce();
     public abstract void payTaxes();
 
-    protected Producer(Province province) : base(province.getCountry().bank)
-    {
-        this.province = province;
+    protected Producer(Province province) : base(province.getCountry().bank, province)
+    {        
     }
     override public void setStatisticToZero()
     {
@@ -98,10 +104,7 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.HowMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
-    internal Country getCountry()
-    {
-        return province.getCountry();
-    }
+   
 
 }
 

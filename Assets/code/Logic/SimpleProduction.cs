@@ -63,7 +63,7 @@ abstract public class SimpleProduction : Producer
             getInputProductsReserve().subtract(next, false);
 
 
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        if (Economy.isMarket.checkIftrue(getCountry()))
         {
             // Buyers should come and buy something...
             // its in other files.
@@ -204,7 +204,7 @@ abstract public class SimpleProduction : Producer
             //Storage realNeed = new Storage(need.getProduct(), need.get() * multiplier.get());
             Storage realNeed = need.multipleOutside(multiplier.get());
             //Storage realNeed = new Storage(need.getProduct(), need.get() * getInputFactor());
-            Storage canAfford = HowMuchCanAfford(realNeed);
+            Storage canAfford = howMuchCanAfford(realNeed);
             return canAfford.get();
         }
     }
@@ -212,9 +212,10 @@ abstract public class SimpleProduction : Producer
     {
         return Game.market.getCost(consumedTotal).get();
     }
-    public bool isAllInputProductsAvailable()
+    public bool isAllInputProductsCollected()
     {
-        foreach (var item in type.resourceInput)
+        var realNeeds = getRealNeeds();
+        foreach (var item in realNeeds)
         {
             if (!inputProductsReserve.has(item))
                 return false;
@@ -270,8 +271,10 @@ public class ArtisanProduction : SimpleProduction
 
         //todo !CAPITALISM part
         //if (isSubsidized())
-        //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getCountry());
+        //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
         //else
         Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
     }
+
+    
 }

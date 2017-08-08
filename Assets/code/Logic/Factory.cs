@@ -56,8 +56,7 @@ public class Factory : SimpleProduction
             return Game.threadDangerSB.ToString();
         }, true);
     internal static readonly ConditionForDoubleObjects
-        conHaveMoneyToUpgrade = new ConditionForDoubleObjects((factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),
-            //x=> "Have "+" coins"
+        conHaveMoneyToUpgrade = new ConditionForDoubleObjects((factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),            
             (factory) => "Have " + (factory as Factory).getUpgradeCost() + " coins"
             //delegate (object x)
             //{
@@ -66,7 +65,7 @@ public class Factory : SimpleProduction
             //    return Game.threadDangerSB.ToString();
             //}
             , true),
-        conPlacedInOurCountry = new ConditionForDoubleObjects((factory, country) => (factory as Factory).getCountry() == country as Country,
+        conPlacedInOurCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
         (factory) => "Enterprise placed in our country", true)
         ;
 
@@ -288,7 +287,7 @@ public class Factory : SimpleProduction
         if (isWorking())
         {
             // per 1000 men            
-            if (Economy.isMarket.checkIftrue(province.getCountry()))
+            if (Economy.isMarket.checkIftrue(getCountry()))
             {
                 foreach (var link in hiredWorkForce)
                 {
@@ -299,14 +298,14 @@ public class Factory : SimpleProduction
                     else
                         if (isSubsidized()) //take money and try again
                     {
-                        province.getCountry().takeFactorySubsidies(this, HowMuchMoneyCanNotPay(howMuchPay));
+                        getCountry().takeFactorySubsidies(this, HowMuchMoneyCanNotPay(howMuchPay));
                         if (canPay(howMuchPay))
                             pay(link.Key, howMuchPay);
                         else
-                            salary.set(province.getCountry().getMinSalary());
+                            salary.set(getCountry().getMinSalary());
                     }
                     else
-                        salary.set(province.getCountry().getMinSalary());
+                        salary.set(getCountry().getMinSalary());
                     //todo else dont pay if there is nothing to pay
                 }
             }
@@ -384,7 +383,7 @@ public class Factory : SimpleProduction
     internal void changeSalary()
     {
         //if (getLevel() > 0)
-        if (isWorking() && Economy.isMarket.checkIftrue(province.getCountry()))
+        if (isWorking() && Economy.isMarket.checkIftrue(getCountry()))
 
         {
             // rise salary to attract  workforce, including workforce from other factories
@@ -403,7 +402,7 @@ public class Factory : SimpleProduction
             if (getWorkForce() < 100 && province.getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.09f);
 
-            float minSalary = province.getCountry().getMinSalary();
+            float minSalary = getCountry().getMinSalary();
             // reduce salary on non-profit
             if (getProfit() < 0f && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
@@ -518,16 +517,16 @@ public class Factory : SimpleProduction
         toRemove = true;
 
         //return loans only if banking invented
-        if (province.getCountry().isInvented(Invention.Banking))
+        if (getCountry().isInvented(Invention.Banking))
         {
             if (loans.get() > 0f)
             {
                 Value howMuchToReturn = new Value(loans);
                 if (howMuchToReturn.get() <= cash.get())
                     howMuchToReturn.set(cash);
-                province.getCountry().bank.takeMoney(this, howMuchToReturn);
+                getCountry().bank.takeMoney(this, howMuchToReturn);
                 if (loans.get() > 0f)
-                    province.getCountry().bank.defaultLoaner(this);
+                    getCountry().bank.defaultLoaner(this);
             }
         }
         sendAllAvailableMoney(getOwner());
@@ -551,7 +550,7 @@ public class Factory : SimpleProduction
     {
         return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservPerLevel * level;
     }
-    internal void PayDividend()
+    internal void payDividend()
     {
         //if (getLevel() > 0)
         if (isWorking())
@@ -587,14 +586,14 @@ public class Factory : SimpleProduction
                 else
                 if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
                 {//take loan for reopen
-                    if (province.getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(province).get() > 10f)
+                    if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(province).get() > 10f)
                     {
                         float leftOver = cash.get() - wantsMinMoneyReserv();
                         if (leftOver < 0)
                         {
                             Value loanSize = new Value(leftOver * -1f);
-                            if (province.getCountry().bank.canGiveMoney(this, loanSize))
-                                province.getCountry().bank.giveMoney(this, loanSize);
+                            if (getCountry().bank.canGiveMoney(this, loanSize))
+                                getCountry().bank.giveMoney(this, loanSize);
                         }
                         leftOver = cash.get() - wantsMinMoneyReserv();
                         if (leftOver >= 0f)
@@ -717,7 +716,7 @@ public class Factory : SimpleProduction
 
             //todo !CAPITALISM part
             if (isSubsidized())
-                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), province.getCountry());
+                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
             else
                 Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
         }
@@ -725,14 +724,16 @@ public class Factory : SimpleProduction
         {
             bool isBuyingComplete = false;
             daysInConstruction++;
-            bool isMarket = Economy.isMarket.checkIftrue(province.getCountry());// province.getOwner().isInvented(InventionType.capitalism);
+            bool isMarket = Economy.isMarket.checkIftrue(getCountry());// province.getOwner().isInvented(InventionType.capitalism);
             if (isMarket)
             {
                 if (isBuilding())
                     isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());
                 else
+                {
                     if (isUpgrading())
-                    isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
+                        isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
+                }
                 // what if there is no enough money to complete buildinG?
                 float minimalFond = cash.get() - 50f;
 
