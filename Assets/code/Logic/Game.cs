@@ -75,6 +75,8 @@ public class Game : ThreadedJob
         setStartResources();
         makeHelloMessage();
         updateStatus("Finishing generation..");
+        
+
     }
     public static void setUnityAPI()
     {
@@ -91,6 +93,11 @@ public class Game : ThreadedJob
         seaProvinces = null;
         grid = null;
         map = null;
+        //
+        foreach (var item in Country.allCountries)
+        {
+            item.annexTo(Game.Player);
+        }
     }
     public Rect getMapBorders()
     {

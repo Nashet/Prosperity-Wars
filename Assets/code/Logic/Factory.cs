@@ -128,7 +128,7 @@ public class Factory : SimpleProduction
     internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(type, province)
     {
         //assuming this is level 0 building        
-        needsToUpgrade = this.getType().getBuildNeeds();
+        needsToUpgrade = getType().getBuildNeeds();
         province.allFactories.Add(this);
         this.factoryOwner = factoryOwner;
         salary.set(province.getLocalMinSalary());
@@ -577,31 +577,33 @@ public class Factory : SimpleProduction
             else
                 daysUnprofitable = 0;
         }
-        else //closed
-        if (!isBuilding())
-        {
-            daysClosed++;
-            if (daysClosed == Options.maxDaysClosedBeforeRemovingFactory)
-                markToDestroy();
-            else if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
-            {//take loan for reopen
-                if (province.getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(province).get() > 10f)
-                {
-                    float leftOver = cash.get() - wantsMinMoneyReserv();
-                    if (leftOver < 0)
+        else
+        {//closed
+            if (!isBuilding())
+            {
+                daysClosed++;
+                if (daysClosed == Options.maxDaysClosedBeforeRemovingFactory)
+                    markToDestroy();
+                else
+                if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
+                {//take loan for reopen
+                    if (province.getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(province).get() > 10f)
                     {
-                        Value loanSize = new Value(leftOver * -1f);
-                        if (province.getCountry().bank.canGiveMoney(this, loanSize))
-                            province.getCountry().bank.giveMoney(this, loanSize);
+                        float leftOver = cash.get() - wantsMinMoneyReserv();
+                        if (leftOver < 0)
+                        {
+                            Value loanSize = new Value(leftOver * -1f);
+                            if (province.getCountry().bank.canGiveMoney(this, loanSize))
+                                province.getCountry().bank.giveMoney(this, loanSize);
+                        }
+                        leftOver = cash.get() - wantsMinMoneyReserv();
+                        if (leftOver >= 0f)
+                            reopen(this);
                     }
-                    leftOver = cash.get() - wantsMinMoneyReserv();
-                    if (leftOver >= 0f)
-                        reopen(this);
                 }
             }
         }
     }
-
     //public bool isClosed()
     //{
     //    return !working;
@@ -686,6 +688,20 @@ public class Factory : SimpleProduction
             {
                 //Storage producedAmount = new Storage(getType().basicProduction.getProduct(), ); // * getLevel());
                 produce(new Value(getType().basicProduction.get() * getEfficiency(true).get() * getLevel()));
+                if (getType() == FactoryType.GoldMine)
+                {
+                    this.ConvertFromGoldAndAdd(storageNow);
+                    //send 50% to government
+                    Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
+                    pay(getCountry(), sentToGovernment);
+                    getCountry().goldMinesIncomeAdd(sentToGovernment);
+                }
+                else
+                {
+                    sentToMarket.set(gainGoodsThisTurn);
+                    storageNow.setZero();
+                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                }
             }
         }
     }
@@ -730,8 +746,8 @@ public class Factory : SimpleProduction
                 upgrading = false;
                 needsToUpgrade.setZero();
                 daysInConstruction = 0;
-                getInputProducts().subtract(getType().getBuildNeeds(), false);
-                getInputProducts().subtract(getUpgradeNeeds(), false);
+                getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
+                getInputProductsReserve().subtract(getUpgradeNeeds(), false);
 
                 reopen(this);
             }

@@ -107,5 +107,6 @@ public static class Options
 
     internal static readonly float aristocratsFoodReserv = 50;
     internal static readonly float ArtisansProductionModifier = 0.5f;
+    internal static readonly int ArtisansChangeProductionRate = 20;
     //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
 }

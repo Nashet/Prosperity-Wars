@@ -249,8 +249,7 @@ abstract public class PopUnit : Producer
         //secede property... to government
         getOwnedFactories().ForEach(x => x.setOwner(province.getCountry()));
         sendAllAvailableMoney(getCountry().bank); // just in case if there is something
-        getCountry().bank.defaultLoaner(this);
-        var art = this as Artisans;        
+        getCountry().bank.defaultLoaner(this);        
         Movement.leave(this);
     }
     //public Culture getCulture()

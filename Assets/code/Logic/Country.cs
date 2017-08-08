@@ -62,6 +62,15 @@ public class Country : Staff
         new ConditionForDoubleObjects((country, province)=>!Government.isDemocracy.checkIftrue(country) 
         || !Government.isDemocracy.checkIftrue((province as Province).getCountry()), x=>"Democracies can't attack each other", true),
     });
+
+    internal void annexTo(Country country)
+    {
+        foreach (var item in ownedProvinces.ToList())
+        {
+            item.secedeTo(country, false);
+        }
+    }
+
     public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
         //new Modifier(Government.isTribal, 0f, false),
@@ -125,7 +134,7 @@ public class Country : Staff
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
             markInvented(Invention.Farming);
-            markInvented(Invention.Manufactories);
+            //markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             //markInvented(Invention.individualRights);

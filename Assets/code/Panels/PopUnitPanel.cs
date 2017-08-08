@@ -35,6 +35,9 @@ public class PopUnitPanel : DragPanel
 
             //if (Game.devMode)
             sb.Append("\nStorage: ").Append(pop.storageNow.ToString());
+            Artisans isArtisan = pop as Artisans;
+            if (isArtisan != null)
+                sb.Append(", input products:  ").Append(isArtisan.getInputProducts());
             sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
             sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
 

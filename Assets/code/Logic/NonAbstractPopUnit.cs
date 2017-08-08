@@ -124,7 +124,7 @@ public class Farmers : PopUnit
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == PopType.Aristocrats
-          || targetType == PopType.Capitalists
+          || targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories)
             )
             return true;
         else
@@ -478,24 +478,40 @@ public class Artisans : PopUnit
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == PopType.Capitalists)
+        if (targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories))
             return true;
         else
             return false;
     }
     public override void produce()
     {
-        if (Game.Random.Next(50) == 1)
+        if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1)
             selectProductionType();
+
         //consumeInputResources(getRealNeeds());        
         if (artisansProduction != null)
-            artisansProduction.produce();        
+            if (artisansProduction.isAllInputProductsAvailable())
+            {
+                artisansProduction.produce();
+                sentToMarket.set(gainGoodsThisTurn);
+                storageNow.setZero();
+                Game.market.sentToMarket.add(gainGoodsThisTurn);
+            }
+            else
+                selectProductionType();
     }
     public override void buyNeeds()
     {
         base.buyNeeds();
         if (artisansProduction != null)
+        {
+            payWithoutRecord(artisansProduction, cash);
             artisansProduction.buyNeeds();
+            artisansProduction.payWithoutRecord(this, artisansProduction.cash);
+            this.consumedInMarket.add(artisansProduction.consumedInMarket);
+            this.consumedTotal.add(artisansProduction.consumedTotal);
+            this.consumedLastTurn.add(artisansProduction.consumedLastTurn);
+        }
     }
     internal override bool canBuyProducts()
     {
@@ -509,41 +525,7 @@ public class Artisans : PopUnit
     {
         return true;
     }
-    //internal override bool getSayingYes(AbstractReformValue reform)
-    //{
-    //    if (reform == Government.Tribal)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Aristocracy)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Democracy)
-    //    {
-    //        var baseOpinion = new Procent(0.8f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Despotism)
-    //    {
-    //        var baseOpinion = new Procent(0.3f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.ProletarianDictatorship)
-    //    {
-    //        var baseOpinion = new Procent(0.1f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else
-    //        return false;
-    //}
+
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
@@ -574,6 +556,19 @@ public class Artisans : PopUnit
         }
         if (result.Key != null)
             artisansProduction = new ArtisanProduction(result.Key, province, this);
+    }
+    public PrimitiveStorageSet getInputProducts()
+    {
+        if (artisansProduction == null)
+            return null;
+        else
+            return artisansProduction.getInputProductsReserve();
+    }
+    override public void setStatisticToZero()
+    {
+        base.setStatisticToZero();
+        if (artisansProduction != null)
+            artisansProduction.setStatisticToZero();
     }
 }
 public class Workers : PopUnit
@@ -607,44 +602,7 @@ public class Workers : PopUnit
     {
         return true;
     }
-    //internal override bool getSayingYes(AbstractReform reform)
-    //{
-    //    return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
 
-
-    //if (reform == Government.Tribal)
-    //{
-    //    var baseOpinion = new Procent(0f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.Aristocracy)
-    //{
-    //    var baseOpinion = new Procent(0f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.Democracy)
-    //{
-    //    var baseOpinion = new Procent(0.6f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.Despotism)
-    //{
-    //    var baseOpinion = new Procent(0.3f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.ProletarianDictatorship)
-    //{
-    //    var baseOpinion = new Procent(0.8f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else
-    //    return false;
-    // }
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy)
@@ -653,9 +611,7 @@ public class Workers : PopUnit
         else
             return false;
     }
-    //public class UnknownReform : Exception
-    //{
-    //}
+
     internal override int getVotingPower(Government.ReformValue reformValue)
     {
         if (canVote(reformValue))

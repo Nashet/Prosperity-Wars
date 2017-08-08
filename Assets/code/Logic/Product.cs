@@ -84,7 +84,7 @@ public class Product : Name
             || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Cars))
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
-            || (!isResource() && !country.isInvented(Invention.Manufactories))
+            //|| (!isResource() && !country.isInvented(Invention.Manufactories))
             )
             return false;
         else
