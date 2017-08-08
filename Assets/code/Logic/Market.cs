@@ -241,7 +241,7 @@ public class Market : Agent//: PrimitiveStorageSet
     internal bool isAvailable(Product item)
     {
         var DSB = getDemandSupplyBalance(item);
-        if (DSB == Options.MarketInfiniteDSB)// || DSB == Options.MarketEqualityDSB)
+        if (DSB == Options.MarketInfiniteDSB || DSB == Options.MarketEqualityDSB)
             return false;
         else
             return true;
@@ -478,7 +478,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Buying needs in circle, by Procent in time
     /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
-    internal bool buy(Producer buyer, PrimitiveStorageSet buying, Procent buyInTime, PrimitiveStorageSet ofWhat)
+    internal bool buy(Producer buyer, PrimitiveStorageSet stillHaveToBuy, Procent buyInTime, PrimitiveStorageSet ofWhat)
     {
         bool buyingIsFinished = true;
         foreach (Storage what in ofWhat)
@@ -487,13 +487,13 @@ public class Market : Agent//: PrimitiveStorageSet
             if (consumeOnThisEteration.isZero())
                 return true;
             // check if buying still have enough to subtract consumeOnThisEteration
-            if (!buying.has(consumeOnThisEteration))
-                consumeOnThisEteration = buying.getStorage(what.getProduct());            
+            if (!stillHaveToBuy.has(consumeOnThisEteration))
+                consumeOnThisEteration = stillHaveToBuy.getStorage(what.getProduct());            
             var reallyBought = buy(buyer, consumeOnThisEteration, null);
 
-            buying.subtract(reallyBought);
+            stillHaveToBuy.subtract(reallyBought);
 
-            if (buying.getStorage(what.getProduct()).isNotZero())
+            if (stillHaveToBuy.getStorage(what.getProduct()).isNotZero())
                 buyingIsFinished = false;
         }
         return buyingIsFinished;
@@ -682,7 +682,8 @@ public class Market : Agent//: PrimitiveStorageSet
                 //if (balance < 1f) antiBalance = 1 / balance;
                 //else antiBalance = balance;
                 priceChangeSpeed = 0;
-                if (balance == 1f) priceChangeSpeed = 0.001f + price.get() * 0.1f;
+                if (balance == 1f)
+                    priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
                 {
                     //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
@@ -692,8 +693,9 @@ public class Market : Agent//: PrimitiveStorageSet
                         priceChangeSpeed = -0.001f + price.get() * -0.02f;
                     else
                     {
-                        if (balance > 1f)
-                            ChangePrice(price, price.getProduct().getDefaultPrice().get() - price.get());
+                        priceChangeSpeed = 0.001f + price.get() * 0.1f;
+                        //if (balance > 1f) // including infinity!
+                        //   priceChangeSpeed = price.getProduct().getDefaultPrice().get() - price.get();                        
                     }
                 }
                 // antiBalance = price.get();

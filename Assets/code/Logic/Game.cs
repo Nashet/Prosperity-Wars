@@ -294,7 +294,7 @@ public class Game : ThreadedJob
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, false);
+        new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 1f));
@@ -311,11 +311,11 @@ public class Game : ThreadedJob
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 0.5f));
-        resourceInput.set(new Storage(Product.Stone, 1f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, false);
+        resourceInput.set(new Storage(Product.Stone, 2f));
+        new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Fruit, 0.3333f));
+        resourceInput.set(new Storage(Product.Fruit, 1f));
         new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();

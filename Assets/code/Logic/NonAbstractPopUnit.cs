@@ -486,8 +486,8 @@ public class Artisans : PopUnit
     public override void produce()
     {
         if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
-            && (artisansProduction==null 
-            || (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
+           )// && (artisansProduction==null 
+            //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
             selectProductionType();
                 
         if (artisansProduction != null)
@@ -570,7 +570,7 @@ public class Artisans : PopUnit
             if (possibleProfit > result.Value)
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
-        if (result.Key != null)
+        if (result.Key != null && (artisansProduction==null || artisansProduction != null && result.Key != artisansProduction.getType()))
             artisansProduction = new ArtisanProduction(result.Key, province, this);
     }
     public PrimitiveStorageSet getInputProducts()

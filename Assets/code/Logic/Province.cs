@@ -384,8 +384,8 @@ public class Province : Name
     public IEnumerable<Producer> getBuyers()
     {
         foreach (Factory factory in allFactories)
-            if (!factory.getType().isResourceGathering())
-                yield return factory;
+            // if (!factory.getType().isResourceGathering()) // every fabric is buyer (upgrading)
+            yield return factory;
         foreach (PopUnit pop in allPopUnits)
             if (pop.canBuyProducts())
                 yield return pop;
@@ -393,8 +393,8 @@ public class Province : Name
     public IEnumerable<Producer> getConsumers()
     {
         foreach (Factory factory in allFactories)
-            if (!factory.getType().isResourceGathering())
-                yield return factory;
+            //if (!factory.getType().isResourceGathering())// every fabric is consumer (upgrading)
+            yield return factory;
         foreach (PopUnit pop in allPopUnits)
             //if (pop.canBuyProducts())
                 yield return pop;
