@@ -93,11 +93,11 @@ public class Game : ThreadedJob
         seaProvinces = null;
         grid = null;
         map = null;
-        //
-        foreach (var item in Country.allCountries)
-        {
-            item.annexTo(Game.Player);
-        }
+        // Annex all countries to P)layer
+        //foreach (var item in Country.allCountries)
+        //{
+        //    item.annexTo(Game.Player);
+        //}
     }
     public Rect getMapBorders()
     {
@@ -713,7 +713,14 @@ public class Game : ThreadedJob
                     //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(getCountry())))
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
-
+                    // this is no good cause it changes production type only if someone is unprofitable
+                    // alternative is in Artisans.produce
+                    //if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1)
+                    //{
+                    //    var artisan = pop as Artisans;
+                    //    if (artisan != null)
+                    //        artisan.checkProfit();
+                    //}
                     //because income come only after consuming, and only after FULL consumption
                     if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
@@ -754,6 +761,8 @@ public class Game : ThreadedJob
                 country.AIThink();
         }
     }
+
+    
 
     protected override void ThreadFunction()
     {

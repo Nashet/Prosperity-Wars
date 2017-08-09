@@ -43,7 +43,7 @@ abstract public class SimpleProduction : Producer
     }
     virtual internal float getProfit()
     {
-        return moneyIncomethisTurn.get() - Game.market.getCost(consumedTotal).get();
+        return moneyIncomethisTurn.get() - getExpences();
     }
 
     /// <summary>

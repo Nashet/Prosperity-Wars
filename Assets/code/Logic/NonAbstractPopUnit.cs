@@ -132,13 +132,9 @@ public class Farmers : PopUnit
     }
     public override void produce()
     {
-
-
         Storage producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
-
         producedAmount.multiple(modEfficiency.getModifier(this));
         gainGoodsThisTurn.set(producedAmount);
-
 
         if (Economy.isMarket.checkIftrue(getCountry()))
         {
@@ -455,11 +451,11 @@ public class Artisans : PopUnit
     private ArtisanProduction artisansProduction;
     public Artisans(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Artisans, where, culture)
     {
-        selectProductionType();
+        changeProductionType();
     }
     public Artisans(int amount, Culture culture, Province where) : base(amount, PopType.Artisans, culture, where)
     {
-        selectProductionType();
+        changeProductionType();
     }
     override protected void deleteData()
     {
@@ -488,9 +484,10 @@ public class Artisans : PopUnit
         if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
            )// && (artisansProduction==null 
             //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
-            selectProductionType();
-                
+            changeProductionType();
+
         if (artisansProduction != null)
+        {
             if (artisansProduction.isAllInputProductsCollected())
             {
                 artisansProduction.produce();
@@ -499,7 +496,9 @@ public class Artisans : PopUnit
                 Game.market.sentToMarket.add(gainGoodsThisTurn);
             }
             else
-                selectProductionType();
+                changeProductionType();
+            
+        }
     }
     public override void buyNeeds()
     {
@@ -519,8 +518,7 @@ public class Artisans : PopUnit
                         getCountry().bank.giveMoney(this, loanSize);
                     payWithoutRecord(artisansProduction, cash);
                 }
-            }
-            //if (artisansProduction.CanAfford(artisansProduction.))
+            }            
 
             artisansProduction.buyNeeds();
             artisansProduction.payWithoutRecord(this, artisansProduction.cash);
@@ -561,7 +559,7 @@ public class Artisans : PopUnit
         else
             return 0;
     }
-    private void selectProductionType()
+    private void changeProductionType()
     {
         KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
         foreach (FactoryType factoryType in FactoryType.getNonResourceTypes(getCountry()))
@@ -570,7 +568,7 @@ public class Artisans : PopUnit
             if (possibleProfit > result.Value)
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
-        if (result.Key != null && (artisansProduction==null || artisansProduction != null && result.Key != artisansProduction.getType()))
+        if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
             artisansProduction = new ArtisanProduction(result.Key, province, this);
     }
     public PrimitiveStorageSet getInputProducts()
@@ -588,7 +586,17 @@ public class Artisans : PopUnit
     }
     public FactoryType getType()
     {
-        return artisansProduction.getType();
+        if (artisansProduction == null)
+            return null;
+        else
+            return artisansProduction.getType();
+    }
+
+    internal void checkProfit()
+    {
+        // todo doesn't include taxes. Should it?
+        if (artisansProduction==null || moneyIncomethisTurn.get() - artisansProduction.getExpences() <= 0f)
+            changeProductionType();
     }
 }
 public class Workers : PopUnit

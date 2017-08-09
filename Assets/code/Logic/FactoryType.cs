@@ -152,9 +152,9 @@ public class FactoryType
     //todo improve getPossibleProfit
     internal Value getPossibleProfit(Province province)
     {
-        foreach (Storage st in resourceInput)
+        foreach (Storage inputProduct in resourceInput)
             //if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
-            if (!Game.market.isAvailable(st.getProduct()) && Game.market.getDemandSupplyBalance(st.getProduct()) == Options.MarketZeroDSB)
+            if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                 return new Value(0);
         Value income = Game.market.getCost(basicProduction);
         Value outCome = Game.market.getCost(resourceInput);

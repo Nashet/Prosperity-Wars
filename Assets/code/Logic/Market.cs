@@ -241,10 +241,10 @@ public class Market : Agent//: PrimitiveStorageSet
     internal bool isAvailable(Product item)
     {
         var DSB = getDemandSupplyBalance(item);
-        if (DSB == Options.MarketInfiniteDSB || DSB == Options.MarketEqualityDSB)
-            return false;
-        else
+        if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
             return true;
+        else
+            return false;
     }
 
     internal float getGlobalEffectiveDemandOlder(Product pro)
@@ -691,9 +691,9 @@ public class Market : Agent//: PrimitiveStorageSet
                     //(0.0001f <= balance &&
                     if (balance <= 0.75f)
                         priceChangeSpeed = -0.001f + price.get() * -0.02f;
-                    else
+                    else // balance > 1
                     {
-                        priceChangeSpeed = 0.001f + price.get() * 0.1f;
+                        priceChangeSpeed = 0.001f + price.get() * 0.01f;
                         //if (balance > 1f) // including infinity!
                         //   priceChangeSpeed = price.getProduct().getDefaultPrice().get() - price.get();                        
                     }
