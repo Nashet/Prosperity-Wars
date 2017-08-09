@@ -90,7 +90,7 @@ public class BuildPanel : DragPanel
             descriptionText.text = sb.ToString();
            
             buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, out buildButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-            if (!Game.selectedProvince.CanBuildNewFactory(selectedFactoryType))
+            if (!Game.selectedProvince.canBuildNewFactory(selectedFactoryType))
                 buildButton.interactable = false;
             if (buildButton.interactable)
                 buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;

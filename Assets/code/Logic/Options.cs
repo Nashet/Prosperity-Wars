@@ -80,11 +80,11 @@ public static class Options
     public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
     public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
 
-    public static readonly Procent PopNeedsDemotionLimit = new Procent(0.5f);
+    public static readonly Procent PopNeedsDemotionLimit = new Procent(0.33f);
     public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
     internal static readonly Procent PopNeedsImmigrationLimit = new Procent(0.33f);
     /// <summary> Pops richer than that would promote</summary>
-    internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.5f); //0.5f);
+    internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.4f); //0.5f);
 
     public static readonly int PopSizeConsolidationLimit = 100;
     /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>

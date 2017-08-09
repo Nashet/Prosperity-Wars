@@ -655,19 +655,20 @@ public class Province : Name
     {
         List<FactoryType> result = new List<FactoryType>();
         foreach (FactoryType ft in FactoryType.allTypes)
-            if (CanBuildNewFactory(ft))
+            if (canBuildNewFactory(ft))
                 result.Add(ft);
         return result;
     }
 
-
-    internal bool CanBuildNewFactory(FactoryType ft)
+    internal bool canBuildNewFactory(FactoryType ft)
     {
         if (HaveFactory(ft))
             return false;
-        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !ft.basicProduction.getProduct().isInvented(getCountry()))
+        if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource
+            || !ft.basicProduction.getProduct().isInvented(getCountry())
+            || !ft.isResourceGathering() && !getCountry().isInvented(Invention.Manufactories)
+            )
             return false;
-
         return true;
     }
     internal bool CanUpgradeFactory(FactoryType ft)

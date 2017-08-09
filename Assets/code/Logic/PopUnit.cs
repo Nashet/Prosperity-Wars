@@ -1037,7 +1037,7 @@ abstract public class PopUnit : Producer
     public bool wantsToDemote()
     {
         //float demotionLimit = 0.50f;
-        if (this.needsFullfilled.get() < Options.PopNeedsDemotionLimit.get())
+        if (this.needsFullfilled.isSmallerThan( Options.PopNeedsDemotionLimit))
             return true;
         else return false;
     }
@@ -1269,14 +1269,15 @@ abstract public class PopUnit : Producer
                 }
             }
         }
-        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists && Game.Random.Next(10) == 1)
+        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists 
+            && Game.Random.Next(10) == 1 && getCountry().isInvented(Invention.Manufactories))
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
             if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
-                if (proposition != null && province.CanBuildNewFactory(proposition) &&
+                if (proposition != null && province.canBuildNewFactory(proposition) &&
                     (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
                     PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();

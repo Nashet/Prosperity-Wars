@@ -586,6 +586,10 @@ public class Artisans : PopUnit
         if (artisansProduction != null)
             artisansProduction.setStatisticToZero();
     }
+    public FactoryType getType()
+    {
+        return artisansProduction.getType();
+    }
 }
 public class Workers : PopUnit
 {
