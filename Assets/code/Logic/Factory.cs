@@ -101,8 +101,6 @@ public class Factory : SimpleProduction
         // !Planned and ! State fabricIsOur
         //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
         conditionsBuy = new ConditionsList(Condition.IsNotImplemented) // ! LF and !Planned fabricIsOur
-
-
         ;
 
     internal static readonly ModifiersList
@@ -116,9 +114,11 @@ public class Factory : SimpleProduction
             new Modifier(Economy.isInterventionism, x => (x as Factory).getCountry(),  30f, false),
             new Modifier(Economy.isLF, x => (x as Factory).getCountry(), 50f, false),
             new Modifier(Economy.isPlanned, x => (x as Factory).getCountry(), -10f, false),
+
             modifierInventedMiningAndIsShaft, modifierHasResourceInProvince, modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
+            // copied in popUnit
              new Modifier(x => Government.isPolis.checkIftrue((x as Factory).getCountry())
-             && (x as Factory).province.isCapital(), "Capital of Polis", 100f, false),
+             && (x as Factory).province.isCapital(), "Capital of Polis", 50f, false),
              new Modifier(x=>(x as Factory).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -100f, false),
              new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -30f, false) // remove this?

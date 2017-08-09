@@ -9,7 +9,6 @@ public class FactoryType
 
     internal readonly string name;
 
-
     ///<summary> per 1000 workers </summary>
     public Storage basicProduction;
 

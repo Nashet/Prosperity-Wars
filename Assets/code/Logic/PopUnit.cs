@@ -41,7 +41,6 @@ abstract public class PopUnit : Producer
     private Movement movement;
     //if add new fields make sure it's implemented in second constructor and in merge()   
 
-
     static PopUnit()
     {
         //makeModifiers();
@@ -81,16 +80,23 @@ abstract public class PopUnit : Producer
 
         modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),
-            //new Modifier(x=>(x as PopUnit).getCountry().inventions.isInvented(Invention.SteamPower),"" , 0.25f, false),
+            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),            
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
-
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
+
             new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).getCountry(),  0.10f, false),
             new Modifier(Economy.isInterventionism, x=>(x as PopUnit).getCountry(),  0.30f, false),
             new Modifier(Economy.isLF, x=>(x as PopUnit).getCountry(),  0.50f, false),
-            new Modifier(Economy.isPlanned, x=>(x as PopUnit).getCountry(),  -0.10f, false)            
+            new Modifier(Economy.isPlanned, x=>(x as PopUnit).getCountry(),  -0.10f, false),
+
             //new Modifier(Serfdom.Allowed,  -20f, false)
+
+            // copied in Factory
+             new Modifier(x => Government.isPolis.checkIftrue((x as PopUnit).getCountry())
+             && (x as PopUnit).province.isCapital(), "Capital of Polis", 1f, false),
+             new Modifier(x=>(x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             new Modifier(Government.isTribal, x=>(x as PopUnit).getCountry(), -0.5f, false),
+             new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
     }
     protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where)
