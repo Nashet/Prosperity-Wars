@@ -14,8 +14,8 @@ public class Tribemen : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == PopType.Workers
-            //|| targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy))
+            //|| targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy))
             return true;
         else
             return false;
@@ -23,8 +23,8 @@ public class Tribemen : PopUnit
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == PopType.Aristocrats
-            //|| targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
-            //|| targetType == PopType.Soldiers && !province.getCountry().isInvented(Invention.ProfessionalArmy))
+            //|| targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            //|| targetType == PopType.Soldiers && !getCountry().isInvented(Invention.ProfessionalArmy))
             )
             return true;
         else
@@ -113,7 +113,7 @@ public class Farmers : PopUnit
 
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
          || targetType == PopType.TribeMen
          || targetType == PopType.Workers
             )
@@ -124,7 +124,7 @@ public class Farmers : PopUnit
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == PopType.Aristocrats
-          || targetType == PopType.Capitalists
+          || targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories)
             )
             return true;
         else
@@ -132,15 +132,11 @@ public class Farmers : PopUnit
     }
     public override void produce()
     {
-
-
         Storage producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
-
         producedAmount.multiple(modEfficiency.getModifier(this));
         gainGoodsThisTurn.set(producedAmount);
 
-
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        if (Economy.isMarket.checkIftrue(getCountry()))
         {
             sentToMarket.set(gainGoodsThisTurn);
             Game.market.sentToMarket.add(gainGoodsThisTurn);
@@ -150,7 +146,7 @@ public class Farmers : PopUnit
     }
     override internal bool canSellProducts()
     {
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        if (Economy.isMarket.checkIftrue(getCountry()))
             return true;
         else
             return false;
@@ -232,8 +228,8 @@ public class Aristocrats : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
             || targetType == PopType.TribeMen)
             return true;
         else
@@ -301,7 +297,7 @@ public class Soldiers : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (//targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
+        if (//targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
             //||
             targetType == PopType.TribeMen
             || targetType == PopType.Workers
@@ -314,7 +310,7 @@ public class Soldiers : PopUnit
     {
         if (targetType == PopType.Aristocrats // should be officers
          || targetType == PopType.Artisans
-         || targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
+         || targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
          )
             return true;
         else
@@ -349,17 +345,17 @@ public class Soldiers : PopUnit
 
     internal void takePayCheck()
     {
-        Value payCheck = new Value(province.getCountry().getSoldierWage());
+        Value payCheck = new Value(getCountry().getSoldierWage());
         payCheck.multiple(getPopulation() / 1000f);
-        if (province.getCountry().canPay(payCheck))
+        if (getCountry().canPay(payCheck))
         {
-            province.getCountry().pay(this, payCheck);
-            province.getCountry().soldiersWageExpenseAdd(payCheck);
+            getCountry().pay(this, payCheck);
+            getCountry().soldiersWageExpenseAdd(payCheck);
         }
         else
         {
             this.didntGetPromisedSalary = true;
-            province.getCountry().failedToPaySoldiers = true;
+            getCountry().failedToPaySoldiers = true;
         }
     }
 }
@@ -371,8 +367,8 @@ public class Capitalists : PopUnit
     { }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
             || targetType == PopType.Artisans
             )
             return true;
@@ -452,20 +448,24 @@ public class Capitalists : PopUnit
 }
 public class Artisans : PopUnit
 {
-    private Factory producingType;
+    private ArtisanProduction artisansProduction;
     public Artisans(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Artisans, where, culture)
     {
-        selectProductionType();
+        changeProductionType();
     }
     public Artisans(int amount, Culture culture, Province where) : base(amount, PopType.Artisans, culture, where)
     {
-        selectProductionType();
+        changeProductionType();
     }
-
+    override protected void deleteData()
+    {
+        base.deleteData();
+        artisansProduction = null;
+    }
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (//|| targetType == PopType.Farmers && !province.getCountry().isInvented(Invention.Farming)
-            targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy)
+        if (//|| targetType == PopType.Farmers && !getCountry().isInvented(Invention.Farming)
+            targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
             || targetType == PopType.Workers
             )
             return true;
@@ -474,36 +474,58 @@ public class Artisans : PopUnit
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == PopType.Capitalists)
+        if (targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories))
             return true;
         else
             return false;
     }
     public override void produce()
     {
-        if (Game.Random.Next(50) == 1)
-            selectProductionType();
+        if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
+           )// && (artisansProduction==null 
+            //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
+            changeProductionType();
 
-        //consumeInputResources(getRealNeeds());        
-        if (producingType != null)
-            producingType.produce();
-        //{
-        //    gainGoodsThisTurn = producingType.basicProduction
-                //.multipleOutside(getPopulation() * modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
-
-            //    if (Economy.isMarket.checkIftrue(province.getCountry()))
-            //    {
-            //        sentToMarket.set(gainGoodsThisTurn);
-            //        Game.market.sentToMarket.add(gainGoodsThisTurn);
-            //    }
-            //    else
-            //        ;// storageNow.add(gainGoodsThisTurn);
-            //}
+        if (artisansProduction != null)
+        {
+            if (artisansProduction.isAllInputProductsCollected())
+            {
+                artisansProduction.produce();
+                sentToMarket.set(gainGoodsThisTurn);
+                storageNow.setZero();
+                Game.market.sentToMarket.add(gainGoodsThisTurn);
+            }
+            else
+                changeProductionType();
+            
+        }
     }
     public override void buyNeeds()
     {
         base.buyNeeds();
-        producingType.buyNeeds();
+        if (artisansProduction != null)
+        {
+            payWithoutRecord(artisansProduction, cash);
+
+            // take loan if don't have enough money to buy inputs            
+            if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
+            {
+                var needs = artisansProduction.getRealNeeds();
+                if (!artisansProduction.canAfford(needs))
+                {
+                    var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed
+                    if (getCountry().bank.canGiveMoney(this, loanSize))
+                        getCountry().bank.giveMoney(this, loanSize);
+                    payWithoutRecord(artisansProduction, cash);
+                }
+            }            
+
+            artisansProduction.buyNeeds();
+            artisansProduction.payWithoutRecord(this, artisansProduction.cash);
+            this.consumedInMarket.add(artisansProduction.consumedInMarket);
+            this.consumedTotal.add(artisansProduction.consumedTotal);
+            this.consumedLastTurn.add(artisansProduction.consumedLastTurn);
+        }
     }
     internal override bool canBuyProducts()
     {
@@ -517,41 +539,7 @@ public class Artisans : PopUnit
     {
         return true;
     }
-    //internal override bool getSayingYes(AbstractReformValue reform)
-    //{
-    //    if (reform == Government.Tribal)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Aristocracy)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Democracy)
-    //    {
-    //        var baseOpinion = new Procent(0.8f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Despotism)
-    //    {
-    //        var baseOpinion = new Procent(0.3f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.ProletarianDictatorship)
-    //    {
-    //        var baseOpinion = new Procent(0.1f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else
-    //        return false;
-    //}
+
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
@@ -571,7 +559,7 @@ public class Artisans : PopUnit
         else
             return 0;
     }
-    private void selectProductionType()
+    private void changeProductionType()
     {
         KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
         foreach (FactoryType factoryType in FactoryType.getNonResourceTypes(getCountry()))
@@ -580,8 +568,35 @@ public class Artisans : PopUnit
             if (possibleProfit > result.Value)
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
-        //producingType = result.Key;
-        producingType = new Factory(province, this, result.Key);
+        if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
+            artisansProduction = new ArtisanProduction(result.Key, province, this);
+    }
+    public PrimitiveStorageSet getInputProducts()
+    {
+        if (artisansProduction == null)
+            return null;
+        else
+            return artisansProduction.getInputProductsReserve();
+    }
+    override public void setStatisticToZero()
+    {
+        base.setStatisticToZero();
+        if (artisansProduction != null)
+            artisansProduction.setStatisticToZero();
+    }
+    public FactoryType getType()
+    {
+        if (artisansProduction == null)
+            return null;
+        else
+            return artisansProduction.getType();
+    }
+
+    internal void checkProfit()
+    {
+        // todo doesn't include taxes. Should it?
+        if (artisansProduction==null || moneyIncomethisTurn.get() - artisansProduction.getExpences() <= 0f)
+            changeProductionType();
     }
 }
 public class Workers : PopUnit
@@ -594,14 +609,14 @@ public class Workers : PopUnit
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == PopType.TribeMen
-            || targetType == PopType.Soldiers && province.getCountry().isInvented(Invention.ProfessionalArmy))
+            || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy))
             return true;
         else
             return false;
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == PopType.Farmers && province.getCountry().isInvented(Invention.Farming)
+        if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
          || targetType == PopType.Artisans
          )
             return true;
@@ -615,44 +630,7 @@ public class Workers : PopUnit
     {
         return true;
     }
-    //internal override bool getSayingYes(AbstractReform reform)
-    //{
-    //    return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
 
-
-    //if (reform == Government.Tribal)
-    //{
-    //    var baseOpinion = new Procent(0f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.Aristocracy)
-    //{
-    //    var baseOpinion = new Procent(0f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.Democracy)
-    //{
-    //    var baseOpinion = new Procent(0.6f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.Despotism)
-    //{
-    //    var baseOpinion = new Procent(0.3f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else if (reform == Government.ProletarianDictatorship)
-    //{
-    //    var baseOpinion = new Procent(0.8f);
-    //    baseOpinion.add(this.loyalty);
-    //    return baseOpinion.get() > Options.votingPassBillLimit;
-    //}
-    //else
-    //    return false;
-    // }
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy)
@@ -661,9 +639,7 @@ public class Workers : PopUnit
         else
             return false;
     }
-    //public class UnknownReform : Exception
-    //{
-    //}
+
     internal override int getVotingPower(Government.ReformValue reformValue)
     {
         if (canVote(reformValue))

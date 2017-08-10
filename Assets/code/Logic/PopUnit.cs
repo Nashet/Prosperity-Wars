@@ -41,7 +41,6 @@ abstract public class PopUnit : Producer
     private Movement movement;
     //if add new fields make sure it's implemented in second constructor and in merge()   
 
-
     static PopUnit()
     {
         //makeModifiers();
@@ -63,8 +62,8 @@ abstract public class PopUnit : Producer
         modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
         modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
         new Modifier(x => !(x as PopUnit).isStateCulture()
-        && ((x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.Residency
-        || (x as PopUnit).province.getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
+        && ((x as PopUnit).getCountry().minorityPolicy.status == MinorityPolicy.Residency
+        || (x as PopUnit).getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
 
 
         //MinorityPolicy.IsResidency
@@ -81,19 +80,26 @@ abstract public class PopUnit : Producer
 
         modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),
-            //new Modifier(x=>(x as PopUnit).getCountry().inventions.isInvented(Invention.SteamPower),"" , 0.25f, false),
+            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),            
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
-
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
+
             new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).getCountry(),  0.10f, false),
             new Modifier(Economy.isInterventionism, x=>(x as PopUnit).getCountry(),  0.30f, false),
             new Modifier(Economy.isLF, x=>(x as PopUnit).getCountry(),  0.50f, false),
-            new Modifier(Economy.isPlanned, x=>(x as PopUnit).getCountry(),  -0.10f, false)            
+            new Modifier(Economy.isPlanned, x=>(x as PopUnit).getCountry(),  -0.10f, false),
+
             //new Modifier(Serfdom.Allowed,  -20f, false)
+
+            // copied in Factory
+             new Modifier(x => Government.isPolis.checkIftrue((x as PopUnit).getCountry())
+             && (x as PopUnit).province.isCapital(), "Capital of Polis", 1f, false),
+             new Modifier(x=>(x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             new Modifier(Government.isTribal, x=>(x as PopUnit).getCountry(), -0.5f, false),
+             new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
     }
-    protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where.getCountry().bank)
+    protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where)
     {
         where.allPopUnits.Add(this);
         born = Game.date;
@@ -107,12 +113,12 @@ abstract public class PopUnit : Producer
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
-        province = where;
+        //province = where;
     }
     /// <summary> Creates new PopUnit basing on part of other PopUnit.
     /// And transfers sizeOfNewPop population.
     /// </summary>    
-    protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where.getCountry().bank)
+    protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where)
     {
         born = Game.date;
         PopListToAddToGeneralList.Add(this);
@@ -165,12 +171,12 @@ abstract public class PopUnit : Producer
         }
         else
         {
-            storageNow = newPopShare.sendProcentToNew(source.storageNow);            
-            gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());            
+            storageNow = newPopShare.sendProcentToNew(source.storageNow);
+            gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
             sentToMarket = new Storage(source.sentToMarket.getProduct());
         }
 
-        province = where;//source.province;
+        //province = where;//source.province;
 
         //Consumer's fields:
         consumedTotal = new PrimitiveStorageSet();
@@ -238,7 +244,7 @@ abstract public class PopUnit : Producer
     /// <summary>
     /// Sets population to zero as a mark to delete this Pop
     /// </summary>
-    private void deleteData()
+    virtual protected void deleteData()
     {
         population = 0;
         //province.allPopUnits.Remove(this); // gives exception        
@@ -247,10 +253,9 @@ abstract public class PopUnit : Producer
             MainCamera.popUnitPanel.hide();
         //remove from population panel.. Would do it automatically        
         //secede property... to government
-        getOwnedFactories().ForEach(x => x.setOwner(province.getCountry()));
+        getOwnedFactories().ForEach(x => x.setOwner(getCountry()));
         sendAllAvailableMoney(getCountry().bank); // just in case if there is something
         getCountry().bank.defaultLoaner(this);
-
         Movement.leave(this);
     }
     //public Culture getCulture()
@@ -264,7 +269,7 @@ abstract public class PopUnit : Producer
         return getVotingPower(getCountry().government.getTypedValue());
     }
 
-   
+
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
@@ -404,7 +409,7 @@ abstract public class PopUnit : Producer
 
 
     /// <summary> /// Return in pieces  /// </summary>    
-    override internal float getLocalEffectiveDemand(Product product)
+    override public float getLocalEffectiveDemand(Product product)
     {
         float result = 0;
         // need to know how much i Consumed inside my needs
@@ -412,21 +417,21 @@ abstract public class PopUnit : Producer
         Storage need = needs.findStorage(product);
         if (need != null)
         {
-            Storage canAfford = HowMuchCanAfford(need);
+            Storage canAfford = howMuchCanAfford(need);
             result += canAfford.get();
         }
         needs = new PrimitiveStorageSet(getRealEveryDayNeeds());
         need = needs.findStorage(product);
         if (need != null)
         {
-            Storage canAfford = HowMuchCanAfford(need);
+            Storage canAfford = howMuchCanAfford(need);
             result += canAfford.get();
         }
         needs = new PrimitiveStorageSet(getRealLuxuryNeeds());
         need = needs.findStorage(product);
         if (need != null)
         {
-            Storage canAfford = HowMuchCanAfford(need);
+            Storage canAfford = howMuchCanAfford(need);
             result += canAfford.get();
         }
         return result;
@@ -473,7 +478,7 @@ abstract public class PopUnit : Producer
     {
         return getNeedsInCommon(this.popType.getLuxuryNeedsPer1000());
     }
-    public List<Storage> getRealAllNeeds()
+    override public List<Storage> getRealNeeds()
     {
         return getNeedsInCommon(this.popType.getAllNeedsPer1000());
     }
@@ -551,48 +556,48 @@ abstract public class PopUnit : Producer
     ////}
     internal bool hasToPayGovernmentTaxes()
     {
-        if (this.popType == PopType.Aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((province.getCountry())))
+        if (this.popType == PopType.Aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((getCountry())))
             return false;
         else return true;
     }
     public override void payTaxes() // should be abstract 
     {
 
-        if (Economy.isMarket.checkIftrue(province.getCountry()) && popType != PopType.TribeMen)
+        if (Economy.isMarket.checkIftrue(getCountry()) && popType != PopType.TribeMen)
         {
             Value taxSize = new Value(0);
             if (this.popType.isPoorStrata())
             {
-                taxSize = moneyIncomethisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                taxSize = moneyIncomethisTurn.multipleOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                 if (canPay(taxSize))
                 {
                     incomeTaxPayed = taxSize;
-                    province.getCountry().poorTaxIncomeAdd(taxSize);
-                    pay(province.getCountry(), taxSize);
+                    getCountry().poorTaxIncomeAdd(taxSize);
+                    pay(getCountry(), taxSize);
                 }
                 else
                 {
                     incomeTaxPayed.set(cash);
-                    province.getCountry().poorTaxIncomeAdd(cash);
-                    sendAllAvailableMoney(province.getCountry());
+                    getCountry().poorTaxIncomeAdd(cash);
+                    sendAllAvailableMoney(getCountry());
 
                 }
             }
             else
             if (this.popType.isRichStrata())
             {
-                taxSize = moneyIncomethisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                taxSize = moneyIncomethisTurn.multipleOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                 if (canPay(taxSize))
                 {
                     incomeTaxPayed.set(taxSize);
-                    province.getCountry().richTaxIncomeAdd(taxSize);
-                    pay(province.getCountry(), taxSize);
+                    getCountry().richTaxIncomeAdd(taxSize);
+                    pay(getCountry(), taxSize);
                 }
                 else
                 {
                     incomeTaxPayed.set(cash);
-                    province.getCountry().richTaxIncomeAdd(cash);
-                    sendAllAvailableMoney(province.getCountry());
+                    getCountry().richTaxIncomeAdd(cash);
+                    sendAllAvailableMoney(getCountry());
                 }
             }
 
@@ -602,22 +607,22 @@ abstract public class PopUnit : Producer
         {
             Storage howMuchSend;
             if (this.popType.isPoorStrata())
-                howMuchSend = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                howMuchSend = gainGoodsThisTurn.multipleOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
             {
                 //if (this.popType.isRichStrata())
-                howMuchSend = gainGoodsThisTurn.multipleOutside((province.getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+                howMuchSend = gainGoodsThisTurn.multipleOutside((getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
             }
             if (storageNow.isBiggerOrEqual(howMuchSend))
-                storageNow.send(province.getCountry().storageSet, howMuchSend);
+                storageNow.send(getCountry().storageSet, howMuchSend);
             else
-                storageNow.sendAll(province.getCountry().storageSet);
+                storageNow.sendAll(getCountry().storageSet);
         }
     }
 
     internal bool isStateCulture()
     {
-        return this.culture == this.province.getCountry().getCulture();
+        return this.culture == this.getCountry().getCulture();
     }
 
     public Procent getLifeNeedsFullfilling()
@@ -690,7 +695,11 @@ abstract public class PopUnit : Producer
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
                 }
                 else
-                    needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
+                //needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
+                {
+                    needsFullfilled.set(Game.market.buy(this, need, null), need);
+                    needsFullfilled.divide(Options.PopStrataWeight);
+                }                
             }
 
         //if (NeedsFullfilled.get() > 0.33f) NeedsFullfilled.set(0.33f);
@@ -718,15 +727,15 @@ abstract public class PopUnit : Producer
                 var luxuryNeeds = getRealLuxuryNeeds();
                 needsCost = Game.market.getCost(luxuryNeeds);
                 moneyWas = cash.get();
-                bool someProductUnavailable = false;
+                bool someLuxuryProductUnavailable = false;
                 foreach (Storage nextNeed in luxuryNeeds)
                 {
                     if (Game.market.buy(this, nextNeed, null).isZero())
-                        someProductUnavailable = true;
+                        someLuxuryProductUnavailable = true;
                 }
 
                 // unlimited consumption
-                if (!someProductUnavailable && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))
+                if (!someLuxuryProductUnavailable && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))
                 {
                     Value canBuyExtraGoods = cash.divideOutside(needsCost);
                     foreach (Storage nextNeed in luxuryNeeds)
@@ -777,7 +786,7 @@ abstract public class PopUnit : Producer
     }
     virtual internal bool canBuyProducts()
     {
-        if (Economy.isMarket.checkIftrue(province.getCountry()))
+        if (Economy.isMarket.checkIftrue(getCountry()))
             return true;
         else
             return false;
@@ -878,7 +887,7 @@ abstract public class PopUnit : Producer
     public void PayTaxToAllAristocrats()
     {
         {
-            Value taxSize = gainGoodsThisTurn.multipleOutside(province.getCountry().serfdom.status.getTax());
+            Value taxSize = gainGoodsThisTurn.multipleOutside(getCountry().serfdom.status.getTax());
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
@@ -967,16 +976,16 @@ abstract public class PopUnit : Producer
     }
     internal void takeUnemploymentSubsidies()
     {
-        var reform = province.getCountry().unemploymentSubsidies.getValue();
+        var reform = getCountry().unemploymentSubsidies.getValue();
         if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
         {
             Value subsidy = getUnemployedProcent();
             subsidy.multiple(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
             //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
-            if (province.getCountry().canPay(subsidy))
+            if (getCountry().canPay(subsidy))
             {
-                province.getCountry().pay(this, subsidy);
-                province.getCountry().unemploymentSubsidiesExpenseAdd(subsidy);
+                getCountry().pay(this, subsidy);
+                getCountry().unemploymentSubsidiesExpenseAdd(subsidy);
             }
             else
                 this.didntGetPromisedUnemloymentSubsidy = true;
@@ -1034,7 +1043,7 @@ abstract public class PopUnit : Producer
     public bool wantsToDemote()
     {
         //float demotionLimit = 0.50f;
-        if (this.needsFullfilled.get() < Options.PopNeedsDemotionLimit.get())
+        if (this.needsFullfilled.isSmallerThan( Options.PopNeedsDemotionLimit))
             return true;
         else return false;
     }
@@ -1129,8 +1138,8 @@ abstract public class PopUnit : Producer
     public Province getRichestMigrationTarget()
     {
         Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
-        //foreach (var pro in province.getCountry().ownedProvinces)            
-        foreach (var pro in province.getNeigbors(x => x.getCountry() == province.getCountry()))
+        //foreach (var pro in getCountry().ownedProvinces)            
+        foreach (var pro in province.getNeigbors(x => x.getCountry() == getCountry()))
         //if (pro != this.province)
         {
             var needsInProvince = pro.getAverageNeedsFulfilling(this.popType);
@@ -1172,7 +1181,7 @@ abstract public class PopUnit : Producer
         {
             int assimilationSize = getAssimilationSize();
             if (assimilationSize > 0 && this.getPopulation() >= assimilationSize)
-                assimilate(province.getCountry().getCulture(), assimilationSize);
+                assimilate(getCountry().getCulture(), assimilationSize);
         }
     }
     private void assimilate(Culture toWhom, int assimilationSize)
@@ -1208,7 +1217,7 @@ abstract public class PopUnit : Producer
     {
         if (getCountry().isInvented(Invention.Banking))
         {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * 10f, false);
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * 10f, false);
             if (extraMoney.get() > 5f)
                 getCountry().bank.takeMoney(this, extraMoney);
         }
@@ -1256,7 +1265,7 @@ abstract public class PopUnit : Producer
                             //&& !factory.isUpgrading()
                             //&& !factory.isBuilding()
                             && Factory.conditionsUpgrade.isAllTrue(factory, this)
-                            && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory
+                            && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
                             && factory.getMargin().get() >= Options.minMarginToUpgrade)
                         {
                             factory.upgrade(this);
@@ -1266,14 +1275,15 @@ abstract public class PopUnit : Producer
                 }
             }
         }
-        if (Economy.isMarket.checkIftrue(province.getCountry()) && popType == PopType.Capitalists && Game.Random.Next(10) == 1)
+        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists 
+            && Game.Random.Next(10) == 1 && getCountry().isInvented(Invention.Manufactories))
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
             if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
-                if (proposition != null && province.CanBuildNewFactory(proposition) &&
+                if (proposition != null && province.canBuildNewFactory(proposition) &&
                     (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
                     PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
@@ -1285,12 +1295,12 @@ abstract public class PopUnit : Producer
                         payWithoutRecord(found, cost);
                     }
                     else // find money in bank?
-                    if (province.getCountry().isInvented(Invention.Banking))
+                    if (getCountry().isInvented(Invention.Banking))
                     {
                         Value needLoan = new Value(cost.get() - cash.get());
-                        if (province.getCountry().bank.canGiveMoney(this, needLoan))
+                        if (getCountry().bank.canGiveMoney(this, needLoan))
                         {
-                            province.getCountry().bank.giveMoney(this, needLoan);
+                            getCountry().bank.giveMoney(this, needLoan);
                             Factory found = new Factory(province, this, proposition);
                             payWithoutRecord(found, cost);
                         }
@@ -1305,7 +1315,7 @@ abstract public class PopUnit : Producer
                     if (factory != null
                         && factory.canUpgrade()
                         && factory.getMargin().get() >= Options.minMarginToUpgrade
-                        && factory.getWorkForceFullFilling() > Options.minWorkforceFullfillingToUpgradeFactory)
+                        && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
                     {
                         //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
                         //Value cost = Game.market.getCost(resourceToBuild);
@@ -1313,12 +1323,12 @@ abstract public class PopUnit : Producer
                         if (canPay(cost))
                             factory.upgrade(this);
                         else // find money in bank?
-                        if (province.getCountry().isInvented(Invention.Banking))
+                        if (getCountry().isInvented(Invention.Banking))
                         {
                             Value needLoan = new Value(cost.get() - cash.get());
-                            if (province.getCountry().bank.canGiveMoney(this, needLoan))
+                            if (getCountry().bank.canGiveMoney(this, needLoan))
                             {
-                                province.getCountry().bank.giveMoney(this, needLoan);
+                                getCountry().bank.giveMoney(this, needLoan);
                                 factory.upgrade(this);
                             }
                         }

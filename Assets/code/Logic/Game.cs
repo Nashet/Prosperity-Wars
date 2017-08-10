@@ -75,6 +75,8 @@ public class Game : ThreadedJob
         setStartResources();
         makeHelloMessage();
         updateStatus("Finishing generation..");
+        
+
     }
     public static void setUnityAPI()
     {
@@ -91,6 +93,11 @@ public class Game : ThreadedJob
         seaProvinces = null;
         grid = null;
         map = null;
+        // Annex all countries to P)layer
+        //foreach (var item in Country.allCountries)
+        //{
+        //    item.annexTo(Game.Player);
+        //}
     }
     public Rect getMapBorders()
     {
@@ -287,7 +294,7 @@ public class Game : ThreadedJob
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, false);
+        new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 1f));
@@ -304,11 +311,11 @@ public class Game : ThreadedJob
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 0.5f));
-        resourceInput.set(new Storage(Product.Stone, 1f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, false);
+        resourceInput.set(new Storage(Product.Stone, 2f));
+        new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Fruit, 0.3333f));
+        resourceInput.set(new Storage(Product.Fruit, 1f));
         new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
 
         resourceInput = new PrimitiveStorageSet();
@@ -412,7 +419,7 @@ public class Game : ThreadedJob
                 pop.storageNow.add(new Storage(Product.Food, 60f));
                 if (!Game.devMode)
                 {
-                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
                     //pop.cash.set(9000);
 
                     pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
@@ -561,7 +568,7 @@ public class Game : ThreadedJob
         //return false;
     }
 
-    public static void PrepareForNewTick()
+    public static void prepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
         foreach (Country country in Country.getExisting())
@@ -640,7 +647,7 @@ public class Game : ThreadedJob
         Game.market.simulatePriceChangeBasingOnLastTurnDate();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-        PrepareForNewTick();
+        prepareForNewTick(); // including workforce balancing
 
         // big PRODUCE circle
         foreach (Country country in Country.getExisting())
@@ -698,15 +705,22 @@ public class Game : ThreadedJob
                 {
                     factory.getMoneyForSoldProduct();
                     factory.changeSalary();
-                    factory.PayDividend();
+                    factory.payDividend();
                 }
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {                    
-                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(province.getCountry())))
+                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(getCountry())))
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
-
+                    // this is no good cause it changes production type only if someone is unprofitable
+                    // alternative is in Artisans.produce
+                    //if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1)
+                    //{
+                    //    var artisan = pop as Artisans;
+                    //    if (artisan != null)
+                    //        artisan.checkProfit();
+                    //}
                     //because income come only after consuming, and only after FULL consumption
                     if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
@@ -747,6 +761,8 @@ public class Game : ThreadedJob
                 country.AIThink();
         }
     }
+
+    
 
     protected override void ThreadFunction()
     {

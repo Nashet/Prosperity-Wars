@@ -384,8 +384,8 @@ public class Province : Name
     public IEnumerable<Producer> getBuyers()
     {
         foreach (Factory factory in allFactories)
-            if (!factory.type.isResourceGathering())
-                yield return factory;
+            // if (!factory.getType().isResourceGathering()) // every fabric is buyer (upgrading)
+            yield return factory;
         foreach (PopUnit pop in allPopUnits)
             if (pop.canBuyProducts())
                 yield return pop;
@@ -393,8 +393,8 @@ public class Province : Name
     public IEnumerable<Producer> getConsumers()
     {
         foreach (Factory factory in allFactories)
-            if (!factory.type.isResourceGathering())
-                yield return factory;
+            //if (!factory.getType().isResourceGathering())// every fabric is consumer (upgrading)
+            yield return factory;
         foreach (PopUnit pop in allPopUnits)
             //if (pop.canBuyProducts())
                 yield return pop;
@@ -645,9 +645,9 @@ public class Province : Name
     }
     internal Factory getResourceFactory()
     {
-        foreach (Factory f in allFactories)
-            if (f.type.basicProduction.getProduct() == resource)
-                return f;
+        foreach (Factory factory in allFactories)
+            if (factory.getType().basicProduction.getProduct() == resource)
+                return factory;
         return null;
     }
 
@@ -655,19 +655,20 @@ public class Province : Name
     {
         List<FactoryType> result = new List<FactoryType>();
         foreach (FactoryType ft in FactoryType.allTypes)
-            if (CanBuildNewFactory(ft))
+            if (canBuildNewFactory(ft))
                 result.Add(ft);
         return result;
     }
 
-
-    internal bool CanBuildNewFactory(FactoryType ft)
+    internal bool canBuildNewFactory(FactoryType ft)
     {
         if (HaveFactory(ft))
             return false;
-        if ((ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource) || !ft.basicProduction.getProduct().isInvented(getCountry()))
+        if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource
+            || !ft.basicProduction.getProduct().isInvented(getCountry())
+            || !ft.isResourceGathering() && !getCountry().isInvented(Invention.Manufactories)
+            )
             return false;
-
         return true;
     }
     internal bool CanUpgradeFactory(FactoryType ft)
@@ -682,7 +683,7 @@ public class Province : Name
     internal bool HaveFactory(FactoryType ft)
     {
         foreach (Factory f in allFactories)
-            if (f.type == ft)
+            if (f.getType() == ft)
                 return true;
         return false;
     }
@@ -754,7 +755,7 @@ public class Province : Name
     internal Factory findFactory(FactoryType proposition)
     {
         foreach (Factory f in allFactories)
-            if (f.type == proposition)
+            if (f.getType() == proposition)
                 return f;
         return null;
     }
@@ -762,7 +763,7 @@ public class Province : Name
     {
         foreach (Storage stor in resourceInput)
             foreach (Factory factory in allFactories)
-                if (factory.isWorking() && factory.type.basicProduction.getProduct() == stor.getProduct())
+                if (factory.isWorking() && factory.getType().basicProduction.getProduct() == stor.getProduct())
                     return true;
         return false;
     }

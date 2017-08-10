@@ -439,7 +439,13 @@ public static class CollectionExtensions
             dic.Remove(key);
         }
     }
-
+    public static Storage getStorage(this List<Storage> list, Product product)
+    {
+        foreach (Storage stor in list)            
+            if (stor.getProduct() == product)
+                return stor;
+        return new Storage(product, 0f);
+    }
 }
 public static class ColorExtensions
 {

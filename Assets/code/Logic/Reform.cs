@@ -130,7 +130,7 @@ public class Government : AbstractReform
 
         internal override bool isAvailable(Country country)
         {
-            if (ID == 4 && !country.isInvented(Invention.collectivism))
+            if (ID == 4 && !country.isInvented(Invention.Collectivism))
                 return false;
             else
                 return true;
@@ -301,7 +301,7 @@ public class Economy : AbstractReform
             if (requested.ID == 1)
                 return true;
             else
-            if (requested.ID == 2 && country.isInvented(Invention.collectivism))
+            if (requested.ID == 2 && country.isInvented(Invention.Collectivism))
                 return true;
             else
             if (requested.ID == 3)
@@ -398,7 +398,7 @@ public class Serfdom : AbstractReform
         {
             ReformValue requested = this;
 
-            if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+            if ((requested.ID == 4) && country.isInvented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else
             if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
@@ -1065,7 +1065,7 @@ public class MinorityPolicy : AbstractReform
         internal override bool isAvailable(Country country)
         {
             ReformValue requested = this;
-            if ((requested.ID == 4) && country.isInvented(Invention.collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+            if ((requested.ID == 4) && country.isInvented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                 return true;
             else
             if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))

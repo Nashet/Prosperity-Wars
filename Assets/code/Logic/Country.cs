@@ -62,6 +62,15 @@ public class Country : Staff
         new ConditionForDoubleObjects((country, province)=>!Government.isDemocracy.checkIftrue(country) 
         || !Government.isDemocracy.checkIftrue((province as Province).getCountry()), x=>"Democracies can't attack each other", true),
     });
+
+    internal void annexTo(Country country)
+    {
+        foreach (var item in ownedProvinces.ToList())
+        {
+            item.secedeTo(country, false);
+        }
+    }
+
     public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
         //new Modifier(Government.isTribal, 0f, false),
@@ -125,7 +134,7 @@ public class Country : Staff
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
             markInvented(Invention.Farming);
-            markInvented(Invention.Manufactories);
+            //markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             //markInvented(Invention.individualRights);
@@ -711,7 +720,7 @@ public class Country : Staff
     public override void buyNeeds()
     {
 
-        var needs = getNeeds();
+        var needs = getRealNeeds();
 
         //buy 1 day needs
         foreach (var need in needs)
@@ -747,10 +756,11 @@ public class Country : Staff
         //Storage toBuy = new Storage(pro, needs.getStorage(pro).get()* days - storageSet.getStorage(pro).get());
         if (toBuy.isNotZero())
         {
+            Storage realyBougth = Game.market.buy(this, toBuy, null);
             //if (toBuy.get() < 10f) toBuy.set(10);
-            toBuy.multiple(Game.market.buy(this, toBuy, null));
-            storageSet.add(toBuy);
-            storageBuyingExpenseAdd(new Value(Game.market.getCost(toBuy)));
+            //toBuy.multiple();
+            storageSet.add(realyBougth);
+            storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
         }
     }
 
@@ -922,5 +932,8 @@ public class Country : Staff
     {
         ownedFactoriesIncome.add(toAdd);
     }
-
+   override internal Country getCountry()
+    {
+        return this;
+    }
 }

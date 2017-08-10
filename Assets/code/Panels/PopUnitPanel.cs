@@ -35,6 +35,13 @@ public class PopUnitPanel : DragPanel
 
             //if (Game.devMode)
             sb.Append("\nStorage: ").Append(pop.storageNow.ToString());
+            Artisans isArtisan = pop as Artisans;
+            if (isArtisan != null)
+            {
+                sb.Append(", input products:  ").Append(isArtisan.getInputProducts());
+                if (isArtisan.getType() != null)
+                    sb.Append("\nProducing: ").Append(isArtisan.getType().basicProduction.getProduct());
+            }
             sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
             sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
 
@@ -45,8 +52,8 @@ public class PopUnitPanel : DragPanel
             makeLineC(sb, pop.getRichestImmigrationTarget(), pop.getImmigrationSize(), "Immigration: ", pop.wantsToImmigrate());
 
             sb.Append("\nAssimilation: ");
-            if (pop.culture != pop.province.getCountry().getCulture() && pop.getAssimilationSize() > 0)
-                sb.Append(pop.province.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
+            if (pop.culture != pop.getCountry().getCulture() && pop.getAssimilationSize() > 0)
+                sb.Append(pop.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
             else
                 sb.Append("none");
 

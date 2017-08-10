@@ -72,21 +72,28 @@ public class Agent
     //        return loans.get() * -1f;
     //}
     //***************
-    internal bool CanAfford(Storage need)
+    internal bool canAfford(Storage need)
     {
-        if (need.get() == HowMuchCanAfford(need).get())
+        if (need.get() == howMuchCanAfford(need).get())
             return true;
         else
             return false;
     }
 
-    internal bool CanAfford(PrimitiveStorageSet need)
+    internal bool canAfford(PrimitiveStorageSet need)
     {
         foreach (Storage stor in need)
         {
-            if (HowMuchCanAfford(stor).get() < stor.get())
+            if (howMuchCanAfford(stor).get() < stor.get())
                 return false;
         }
+        return true;
+    }
+    internal bool canAfford(List<Storage> need)
+    {
+        foreach (Storage stor in need)        
+            if (howMuchCanAfford(stor).isSmallerThan(stor))
+                return false;        
         return true;
     }
     /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
@@ -115,9 +122,8 @@ public class Agent
     //{
     //    return new Value(Game.market.getCost(need) - this.cash.get());
     //}
-    internal Storage HowMuchCanAfford(Storage need)
-    {    
-
+    internal Storage howMuchCanAfford(Storage need)
+    {
         Value cost = Game.market.getCost(need);
         if (canPay(cost))
             return new Storage(need);
@@ -189,8 +195,8 @@ public class Agent
         }
         else
         {
-            if(showMessageAboutNegativeValue)
-                Debug.Log("Not enough money to pay in Agent.payWithoutRecord");            
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
             return false;
         }
 

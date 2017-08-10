@@ -22,14 +22,17 @@ public static class Options
     internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int ProvinceChanceToGetCore = 70;
 
+    // MARKET
     internal static readonly float minPrice = 0.001f;
     internal static readonly float maxPrice = 999.99f;
     internal static readonly float MarketInfiniteDSB = 999f;
+    internal static readonly float MarketEqualityDSB = 1f;
+    internal static readonly float MarketZeroDSB = 0f;
     internal static readonly Value defaultPriceLimitMultiplier = new Value(5f);
 
     //FACTORIES
     internal static readonly float goldToCoinsConvert = 10f;
-    internal static readonly float minWorkforceFullfillingToUpgradeFactory = 0.75f;
+    internal static readonly Procent minWorkforceFullfillingToUpgradeFactory = new Procent(0.75f);
     internal static readonly Procent BuyInTimeFactoryUpgradeNeeds = new Procent(0.1f);
     internal static readonly int minUnemploymentToBuldFactory = 10;
     internal static readonly int maximumFactoriesInUpgradeToBuildNew = 2;
@@ -77,11 +80,11 @@ public static class Options
     public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
     public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
 
-    public static readonly Procent PopNeedsDemotionLimit = new Procent(0.5f);
+    public static readonly Procent PopNeedsDemotionLimit = new Procent(0.33f);
     public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
     internal static readonly Procent PopNeedsImmigrationLimit = new Procent(0.33f);
     /// <summary> Pops richer than that would promote</summary>
-    internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.5f); //0.5f);
+    internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.4f); //0.5f);
 
     public static readonly int PopSizeConsolidationLimit = 100;
     /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>
@@ -107,5 +110,11 @@ public static class Options
 
     internal static readonly float aristocratsFoodReserv = 50;
     internal static readonly float ArtisansProductionModifier = 0.5f;
+    internal static readonly int ArtisansChangeProductionRate = 60;
+    internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
+    /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
+    internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
+    
+
     //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
 }

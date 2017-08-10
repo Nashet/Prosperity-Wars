@@ -17,19 +17,25 @@ public class Product : Name
 
     static Product()
     {
+        Gold = new Product("Gold", true, 4f);
         Food = new Product("Food", false, 0.04f);
+
         Wood = new Product("Wood", true, 2.7f);
         Lumber = new Product("Lumber", false, 8f);
-        Gold = new Product("Gold", true, 4f);
-        MetallOre = new Product("Metal ore", true, 3f);
-        Metal = new Product("Metal", false, 6f);
+        Furniture = new Product("Furniture", false, 7f);       
+        
         Wool = new Product("Wool", true, 1f);
-        Clothes = new Product("Clothes", false, 3f);
-        Furniture = new Product("Furniture", false, 7f);
-        Stone = new Product("Stone", true, 1f);
-        Cement = new Product("Cement", false, 2f);
+        Clothes = new Product("Clothes", false, 6f);        
+        
         Fruit = new Product("Fruit", true, 1f);
         Wine = new Product("Wine", false, 3f);
+
+        Stone = new Product("Stone", true, 1f);
+        Cement = new Product("Cement", false, 2f);
+
+        MetallOre = new Product("Metal ore", true, 3f);
+        Metal = new Product("Metal", false, 6f);
+
         ColdArms = new Product("Cold arms", false, 13f);
         Ammunition = new Product("Ammunition", false, 13f);
         Firearms = new Product("Firearms", false, 13f);
@@ -38,10 +44,11 @@ public class Product : Name
         Oil = new Product("Oil", true, 10f);
         Fuel = new Product("Fuel", false, 15f);
         Machinery = new Product("Machinery", false, 8f);
+        Rubber = new Product("Rubber", true, 10f);
         Cars = new Product("Cars", false, 15f);
         Tanks = new Product("Tanks", false, 20f);
         Airplanes = new Product("Airplanes", false, 20f);
-        Rubber = new Product("Rubber", true, 10f);
+        
     }
     private Product(string name, bool inlanded, float defaultPrice) : base(name)
     {
@@ -84,7 +91,7 @@ public class Product : Name
             || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Cars))
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
-            || (!isResource() && !country.isInvented(Invention.Manufactories))
+            //|| (!isResource() && !country.isInvented(Invention.Manufactories))
             )
             return false;
         else

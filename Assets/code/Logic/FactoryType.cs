@@ -9,7 +9,6 @@ public class FactoryType
 
     internal readonly string name;
 
-
     ///<summary> per 1000 workers </summary>
     public Storage basicProduction;
 
@@ -100,7 +99,7 @@ public class FactoryType
         KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
         foreach (Factory factory in province.allFactories)
         {
-            if (province.CanUpgradeFactory(factory.type))
+            if (province.CanUpgradeFactory(factory.getType()))
             {
                 float profit = factory.getProfit();
                 if (profit > result.Value)
@@ -152,9 +151,9 @@ public class FactoryType
     //todo improve getPossibleProfit
     internal Value getPossibleProfit(Province province)
     {
-        foreach (Storage st in resourceInput)
+        foreach (Storage inputProduct in resourceInput)
             //if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
-            if (Game.market.getDemandSupplyBalance(st.getProduct()) == Options.MarketInfiniteDSB)
+            if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                 return new Value(0);
         Value income = Game.market.getCost(basicProduction);
         Value outCome = Game.market.getCost(resourceInput);
