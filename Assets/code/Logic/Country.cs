@@ -134,7 +134,7 @@ public class Country : Staff
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
             markInvented(Invention.Farming);
-            //markInvented(Invention.Manufactories);
+            markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             //markInvented(Invention.individualRights);

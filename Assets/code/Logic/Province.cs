@@ -287,7 +287,7 @@ public class Province : Name
     {
         Country oldCountry = getCountry();
         //refuse loans to old country bank
-        foreach (var producer in getEveryOne())
+        foreach (var producer in getAgents())
         {
             if (producer.loans.get() != 0f)
                 getCountry().bank.defaultLoaner(producer);
@@ -397,15 +397,17 @@ public class Province : Name
             yield return factory;
         foreach (PopUnit pop in allPopUnits)
             //if (pop.canBuyProducts())
-                yield return pop;
-    }
-    public IEnumerable<Producer> getEveryOne()
-    {
-        foreach (Factory factory in allFactories)            
-                yield return factory;
-        foreach (PopUnit pop in allPopUnits)            
             yield return pop;
     }
+    public IEnumerable<Producer> getAgents()
+    {
+        foreach (Factory factory in allFactories)
+            yield return factory;
+        foreach (PopUnit pop in allPopUnits)
+            yield return pop;
+    }
+
+
     public static Vector3 setProvinceCenter(MeshStructure meshStructure)
     {
         Vector3 accu = new Vector3(0, 0, 0);
@@ -585,45 +587,86 @@ public class Province : Name
         {
             return new Value(1f);
         }
+    }   
+    public IEnumerable<List<Factory>> getFactoriesSalaryDescendingOrder()
+    {
+
+        var sortedfactories = allFactories.OrderByDescending(o => o.getSalary());
+        var iterator = sortedfactories.GetEnumerator();
+        // Pre read first element
+        if (iterator.MoveNext())
+        {
+            List<Factory> result = new List<Factory>();
+            var previousFactory = iterator.Current;
+            result.Add(previousFactory);
+
+            while (iterator.MoveNext())
+            {
+                if (iterator.Current.getSalary() == previousFactory.getSalary())
+                    result.Add(iterator.Current);
+                else
+                {
+                    yield return result; // same salary sequence ended
+                    result = new List<Factory>();
+                    result.Add(iterator.Current);
+                }
+                previousFactory = iterator.Current;
+            }
+            yield return result; // final sequence ended
+        }
     }
     public void BalanceEmployableWorkForce()
     {
         List<PopUnit> workforceList = this.getAllPopUnits(PopType.Workers);
-        int totalWorkForce = workforceList.Sum(x => x.getPopulation());
-        int factoryWants = 0;
-        //int factoryWantsTotal = 0;
+        int unemplyedWorkForce = workforceList.Sum(x => x.getPopulation());
 
         //foreach (PopUnit pop in workforceList)
         //    totalWorkForce += pop.getPopulation();
 
-        int popsLeft = totalWorkForce;
-        if (totalWorkForce > 0)
+        //int popsLeft = totalWorkForce;
+        if (unemplyedWorkForce > 0)
         {
-            // workforceList = workforceList.OrderByDescending(o => o.population).ToList();
-            allFactories = allFactories.OrderByDescending(o => o.getSalary()).ToList();
-            //foreach (Factory shownFactory in allFactories)
-            //    factoryWantsTotal += shownFactory.HowMuchWorkForceWants();
-            //if (factoryWantsTotal > 0)
-            foreach (Factory factory in allFactories)
+            // workforceList = workforceList.OrderByDescending(o => o.population).ToList();            
+            foreach (List<Factory> factoryGroup in getFactoriesSalaryDescendingOrder())
             {
-                if (factory.isWorking() && factory.getSalary() > 0f)
+                // if there is no enough workforce to fill all factories in group then
+                // workforce should be distributed proportionally
+                int factoriesInGroupWantsTotal = 0;
+                foreach (Factory factory in factoryGroup)
                 {
-                    factoryWants = factory.HowMuchWorkForceWants();
-                    if (factoryWants > popsLeft)
-                        factoryWants = popsLeft;
-
-                    //if (factoryWants > 0)
-                    //shownFactory.HireWorkforce(totalWorkForce * factoryWants / factoryWantsTotal, workforceList);
-
-                    //popsLeft -= factoryWants;                    
-                    popsLeft -= factory.hireWorkforce(factoryWants, workforceList);
-
-                    //if (popsLeft <= 0) break;
+                    factoriesInGroupWantsTotal += factory.howMuchWorkForceWants();
+                    //factory.clearWorkforce();
                 }
-                else
-                {
-                    factory.hireWorkforce(0, null);
-                }
+                //if (factoriesInGroupWantsTotal > 0)
+                int hiredInThatGroup = 0;
+                foreach (var factory in factoryGroup)
+                    if (factory.getSalary() > 0f)//factory.isWorking() &&
+                    {
+                        int factoryWants = factory.howMuchWorkForceWants();
+                        //if (factoryWants > popsLeft)
+                        //    factoryWants = popsLeft;
+
+                        int toHire;
+                        if (factoriesInGroupWantsTotal == 0 || unemplyedWorkForce == 0 || factoryWants == 0)
+                            toHire = 0;
+                        else
+                            toHire = unemplyedWorkForce * factoryWants / factoriesInGroupWantsTotal;
+                        if (toHire > factoryWants)
+                            toHire = factoryWants;
+                        //totalWorkForce -= 
+                        hiredInThatGroup += factory.hireWorkforce(toHire, workforceList);
+
+                        //popsLeft -= factoryWants;                    
+                        //popsLeft -= factory.hireWorkforce(factoryWants, workforceList);
+
+                        //if (popsLeft <= 0) break;
+                        // don't do breaks to clear old workforce records
+                    }
+                    else
+                    {
+                        factory.hireWorkforce(0, null);
+                    }
+                unemplyedWorkForce -= hiredInThatGroup;
             }
         }
     }

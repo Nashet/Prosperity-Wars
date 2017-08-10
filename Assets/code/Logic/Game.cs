@@ -379,7 +379,7 @@ public class Game : ThreadedJob
             allMoney.add(country.bank.getReservs());
             foreach (Province province in country.ownedProvinces)
             {
-                foreach (var factory in province.getEveryOne())
+                foreach (var factory in province.getAgents())
                     allMoney.add(factory.cash);
             }
         }
@@ -582,7 +582,7 @@ public class Game : ThreadedJob
             {
                 province.BalanceEmployableWorkForce();
                 {
-                    foreach (var item in province.getEveryOne())
+                    foreach (var item in province.getAgents())
                         item.setStatisticToZero();
                 }
             }

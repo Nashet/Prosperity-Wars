@@ -197,7 +197,10 @@ public class Factory : SimpleProduction
     }
 
 
-
+    public void clearWorkforce()
+    {
+        hiredWorkForce.Clear();
+    }
     /// <summary>
     /// returns how much factory hired in reality
     /// </summary>    
@@ -212,7 +215,7 @@ public class Factory : SimpleProduction
         else
             justHiredPeople = false;
 
-        hiredWorkForce.Clear();
+        clearWorkforce();
         if (amount > 0)
         {
             int leftToHire = amount;
@@ -426,13 +429,13 @@ public class Factory : SimpleProduction
         return Options.maxFactoryFireHireSpeed * getLevel();
     }
     /// <summary>
-    /// max - max capacity
+    /// 
     /// </summary>    
-    public int HowMuchWorkForceWants()
-    {
-        //if (getLevel() == 0) return 0;
-        if (!isWorking()) return 0;
-        int wants = Mathf.RoundToInt(getMaxWorkforceCapacity());// * getInputFactor());
+    public int howMuchWorkForceWants()
+    {        
+        if (!isWorking())
+            return 0;
+        int wants = getMaxWorkforceCapacity();// * getInputFactor());
 
         int difference = wants - getWorkForce();
 
@@ -443,7 +446,8 @@ public class Factory : SimpleProduction
         else
             if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
 
-        //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
+        //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error. Looks its correct for
+        //current version where we have input reserves
         //if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
         if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
             difference = -1 * maxHiringSpeed;
@@ -458,14 +462,14 @@ public class Factory : SimpleProduction
 
         //todo optimize getWorkforce()
         int result = getWorkForce() + difference;
-        if (result < 0) return 0;
+        if (result < 0)
+            return 0;
         return result;
     }
     internal int getHowMuchHiredLastTurn()
     {
         return hiredLastTurn;
     }
-
 
     /// <summary>
     /// per 1000 men    
