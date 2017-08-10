@@ -588,9 +588,11 @@ public class Province : Name
             return new Value(1f);
         }
     }   
+    /// <summary>
+    /// Returns result divided on groups of factories (List) each with own level of salary
+    /// </summary>    
     public IEnumerable<List<Factory>> getFactoriesSalaryDescendingOrder()
     {
-
         var sortedfactories = allFactories.OrderByDescending(o => o.getSalary());
         var iterator = sortedfactories.GetEnumerator();
         // Pre read first element
@@ -619,11 +621,7 @@ public class Province : Name
     {
         List<PopUnit> workforceList = this.getAllPopUnits(PopType.Workers);
         int unemplyedWorkForce = workforceList.Sum(x => x.getPopulation());
-
-        //foreach (PopUnit pop in workforceList)
-        //    totalWorkForce += pop.getPopulation();
-
-        //int popsLeft = totalWorkForce;
+        
         if (unemplyedWorkForce > 0)
         {
             // workforceList = workforceList.OrderByDescending(o => o.population).ToList();            
@@ -637,27 +635,21 @@ public class Province : Name
                     factoriesInGroupWantsTotal += factory.howMuchWorkForceWants();
                     //factory.clearWorkforce();
                 }
-                //if (factoriesInGroupWantsTotal > 0)
+               
                 int hiredInThatGroup = 0;
                 foreach (var factory in factoryGroup)
                     if (factory.getSalary() > 0f)//factory.isWorking() &&
                     {
                         int factoryWants = factory.howMuchWorkForceWants();
-                        //if (factoryWants > popsLeft)
-                        //    factoryWants = popsLeft;
-
+                        
                         int toHire;
                         if (factoriesInGroupWantsTotal == 0 || unemplyedWorkForce == 0 || factoryWants == 0)
                             toHire = 0;
                         else
                             toHire = unemplyedWorkForce * factoryWants / factoriesInGroupWantsTotal;
                         if (toHire > factoryWants)
-                            toHire = factoryWants;
-                        //totalWorkForce -= 
-                        hiredInThatGroup += factory.hireWorkforce(toHire, workforceList);
-
-                        //popsLeft -= factoryWants;                    
-                        //popsLeft -= factory.hireWorkforce(factoryWants, workforceList);
+                            toHire = factoryWants;                        
+                        hiredInThatGroup += factory.hireWorkforce(toHire, workforceList);                       
 
                         //if (popsLeft <= 0) break;
                         // don't do breaks to clear old workforce records

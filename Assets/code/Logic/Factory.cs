@@ -220,8 +220,10 @@ public class Factory : SimpleProduction
         {
             int leftToHire = amount;
             hiredLastTurn = 0;
-            foreach (PopUnit pop in popList)
+            //foreach (PopUnit pop in popList)
+            for (int i = popList.Count-1; i>=0; i-- )
             {
+                var pop = popList[i];
                 if (pop.getPopulation() >= leftToHire) // satisfied demand
                 {
                     hiredWorkForce.Add(pop, leftToHire);
