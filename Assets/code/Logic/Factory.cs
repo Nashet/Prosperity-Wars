@@ -216,25 +216,29 @@ public class Factory : SimpleProduction
         if (amount > 0)
         {
             int leftToHire = amount;
+            hiredLastTurn = 0;
             foreach (PopUnit pop in popList)
             {
                 if (pop.getPopulation() >= leftToHire) // satisfied demand
                 {
                     hiredWorkForce.Add(pop, leftToHire);
-                    hiredLastTurn = getWorkForce() - wasWorkforce;
+                    //hiredLastTurn = getWorkForce() - wasWorkforce;
+                    hiredLastTurn += leftToHire;
                     return hiredLastTurn;
                     //break;
                 }
                 else
                 {
                     hiredWorkForce.Add(pop, pop.getPopulation()); // hire as we can
+                    hiredLastTurn += pop.getPopulation();
                     leftToHire -= pop.getPopulation();
                 }
             }
-            hiredLastTurn = getWorkForce() - wasWorkforce;
+            //hiredLastTurn = getWorkForce() - wasWorkforce;
             return hiredLastTurn;
         }
-        else return 0;
+        else
+            return 0;
     }
 
     internal void setDontHireOnSubsidies(bool isOn)
@@ -440,7 +444,8 @@ public class Factory : SimpleProduction
             if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
 
         //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error
-        if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+        //if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+        if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
             difference = -1 * maxHiringSpeed;
 
         //fire people if unprofitable. 

@@ -568,7 +568,7 @@ public class Game : ThreadedJob
         //return false;
     }
 
-    public static void PrepareForNewTick()
+    public static void prepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
         foreach (Country country in Country.getExisting())
@@ -647,7 +647,7 @@ public class Game : ThreadedJob
         Game.market.simulatePriceChangeBasingOnLastTurnDate();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-        PrepareForNewTick();
+        prepareForNewTick(); // including workforce balancing
 
         // big PRODUCE circle
         foreach (Country country in Country.getExisting())
