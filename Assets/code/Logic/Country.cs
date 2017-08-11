@@ -719,9 +719,7 @@ public class Country : Staff
     }
     public override void buyNeeds()
     {
-
         var needs = getRealNeeds();
-
         //buy 1 day needs
         foreach (var need in needs)
         {

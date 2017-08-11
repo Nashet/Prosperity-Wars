@@ -677,6 +677,7 @@ public class Game : ThreadedJob
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
+        PopType.sortNeeds();
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {

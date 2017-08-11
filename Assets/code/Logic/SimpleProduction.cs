@@ -8,7 +8,7 @@ abstract public class SimpleProduction : Producer
     private readonly FactoryType type;
     private readonly PrimitiveStorageSet inputProductsReserve = new PrimitiveStorageSet();
 
-    public SimpleProduction(FactoryType type, Province province) : base(province)
+    protected SimpleProduction(FactoryType type, Province province) : base(province)
     {
         this.type = type;
         gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
@@ -225,7 +225,7 @@ abstract public class SimpleProduction : Producer
 }
 public class ArtisanProduction : SimpleProduction
 {
-    private Artisans owner;
+    private readonly Artisans owner;
     public ArtisanProduction(FactoryType type, Province province, Artisans artisan) : base(type, province)
     {
         this.owner = artisan;
@@ -235,10 +235,10 @@ public class ArtisanProduction : SimpleProduction
         return getRealNeeds(new Value(owner.getPopulation() / 1000f));
     }
     /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
-    override public float getLocalEffectiveDemand(Product product)
-    {
-        return getLocalEffectiveDemand(product, new Procent(owner.getPopulation() / 1000f));
-    }
+    //override public float getLocalEffectiveDemand(Product product)
+    //{
+    //    return getLocalEffectiveDemand(product, new Procent(owner.getPopulation() / 1000f));
+    //}
     public override List<Storage> getHowMuchInputProductsReservesWants()
     {
         return getHowMuchInputProductsReservesWants(new Value(owner.getPopulation() / 1000f * Options.FactoryInputReservInDays));

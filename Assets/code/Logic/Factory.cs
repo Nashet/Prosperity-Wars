@@ -487,10 +487,10 @@ public class Factory : SimpleProduction
         return getRealNeeds(new Value(getEfficiency(false).get() * getLevel()));
     }
     /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
-    override public float getLocalEffectiveDemand(Product product)
-    {
-        return getLocalEffectiveDemand(product, getWorkForceFulFilling());
-    }
+    //override public float getLocalEffectiveDemand(Product product)
+    //{
+    //    return getLocalEffectiveDemand(product, getWorkForceFulFilling());
+    //}
 
     /// <summary>
     /// per level

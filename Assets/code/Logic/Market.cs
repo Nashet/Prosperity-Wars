@@ -73,13 +73,11 @@ public class Market : Agent//: PrimitiveStorageSet
     }
     internal Value getCost(Storage need)
     {
-        float cost = 0;
-        float price;
+        //float price;
+        //price = Game.market.findPrice(need.getProduct()).get();
+        //cost = need.get() * price;
 
-        price = Game.market.findPrice(need.getProduct()).get();
-        cost = need.get() * price;
-
-        return new Value(cost);
+        return need.multipleOutside(Game.market.findPrice(need.getProduct())) as Value;
     }
     /// <summary>
     /// Meaning demander actually can pay for item in current prices
@@ -247,26 +245,26 @@ public class Market : Agent//: PrimitiveStorageSet
             return false;
     }
 
-    internal float getGlobalEffectiveDemandOlder(Product pro)
-    {
-        float result = 0f;
-        foreach (Country country in Country.getExisting())
-            foreach (Province province in country.ownedProvinces)
-            {
-                foreach (Factory factory in province.allFactories)
-                    result += factory.getLocalEffectiveDemand(pro);
-                //if (shownFactory.consumedTotal.findStorage(pro) != null)
-                //    result += shownFactory.consumedTotal.findStorage(pro).get();
+    //internal float getGlobalEffectiveDemandOlder(Product pro)
+    //{
+    //    float result = 0f;
+    //    foreach (Country country in Country.getExisting())
+    //        foreach (Province province in country.ownedProvinces)
+    //        {
+    //            foreach (Factory factory in province.allFactories)
+    //                result += factory.getLocalEffectiveDemand(pro);
+    //            //if (shownFactory.consumedTotal.findStorage(pro) != null)
+    //            //    result += shownFactory.consumedTotal.findStorage(pro).get();
 
 
-                foreach (PopUnit pop in province.allPopUnits)
-                    result += pop.getLocalEffectiveDemand(pro);
-                //if (pop.consumedTotal.findStorage(pro) != null)
-                //    result += pop.consumedTotal.findStorage(pro).get();
-                // todo add same for country and any demander
-            }
-        return result;
-    }
+    //            foreach (PopUnit pop in province.allPopUnits)
+    //                result += pop.getLocalEffectiveDemand(pro);
+    //            //if (pop.consumedTotal.findStorage(pro) != null)
+    //            //    result += pop.consumedTotal.findStorage(pro).get();
+    //            // todo add same for country and any demander
+    //        }
+    //    return result;
+    //}
 
 
 
@@ -370,8 +368,8 @@ public class Market : Agent//: PrimitiveStorageSet
     public void SetDefaultPrice(Product pro, float inprice)
     {
         marketPrice.set(new Storage(pro, inprice));
-    }    
-    
+    }
+
     /// <summary>
     /// returns how much was sold de-facto
     /// new version of buy-old,
@@ -453,7 +451,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// <summary>
     /// returns actually bought, subsidizations allowed
     /// </summary>    
-    public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
+   public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
     {
         if (forWhom.canAfford(need) || subsidizer == null)
             return buy(forWhom, need);
@@ -478,7 +476,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Buying needs in circle, by Procent in time
     /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
-    internal bool buy(Producer buyer, PrimitiveStorageSet stillHaveToBuy, Procent buyInTime, PrimitiveStorageSet ofWhat)
+   internal bool buy(Producer buyer, PrimitiveStorageSet stillHaveToBuy, Procent buyInTime, PrimitiveStorageSet ofWhat)
     {
         bool buyingIsFinished = true;
         foreach (Storage what in ofWhat)

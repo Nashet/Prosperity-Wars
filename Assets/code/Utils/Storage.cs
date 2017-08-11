@@ -146,7 +146,7 @@ public class PrimitiveStorageSet
             res.container.Add(new Storage(stor.getProduct(), stor.get()));
         return res;
     }
-    public void Sort(Comparison<Storage> comparison)
+    public void sort(Comparison<Storage> comparison)
     {
         container.Sort(comparison);
     }

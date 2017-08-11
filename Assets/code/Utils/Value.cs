@@ -317,7 +317,7 @@ public class Value
         }
         
     }
-    virtual public void set(Value invalue)
+    public void set(Value invalue)
     {
         value = invalue.value;
     }
@@ -327,6 +327,14 @@ public class Value
             return System.Convert.ToString(get());
         else return "0";
     }
-
-
+    //public int Compare(Value x, Value y)
+    //{
+    //    if (x.value == y.value)
+    //        return 0;
+    //    else
+    //        if (x.value > y.value)
+    //        return -1;
+    //    else
+    //        return 1;
+    //}
 }

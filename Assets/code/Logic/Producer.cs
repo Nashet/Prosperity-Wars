@@ -60,7 +60,7 @@ public abstract class Producer : Consumer
     
 
     /// <summary> /// Return in pieces  /// </summary>    
-    public abstract float getLocalEffectiveDemand(Product product);
+    //public abstract float getLocalEffectiveDemand(Product product);
     public abstract void simulate(); ///!!!
     public abstract void produce();
     public abstract void payTaxes();

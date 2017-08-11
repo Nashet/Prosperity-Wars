@@ -34,7 +34,7 @@ public class PopType
         //***************************************next type***************************
         var aristocratsLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var aristocratsEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
-            
+
             new Storage(Product.ColdArms, 1),
             new Storage(Product.Clothes, 1),
             new Storage(Product.Furniture, 1),
@@ -132,7 +132,7 @@ public class PopType
             });
         Soldiers = new PopType("Soldiers", null, 2f,
             new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.Fuel, 0.6f) }),
-            soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);        
+            soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
     }
     private PopType(string name, Storage produces, float strenght, PrimitiveStorageSet militaryNeeds,
         PrimitiveStorageSet lifeNeeds, PrimitiveStorageSet everyDayNeeds, PrimitiveStorageSet luxuryNeeds)
@@ -182,42 +182,40 @@ public class PopType
     //            return next.needs;
     //    return null;
     //}
-    ///<summary> per 1000 men </summary>
+    ///<summary> per 1000 men. Be careful, its direct links </summary>
     public List<Storage> getLifeNeedsPer1000()
     {
-        List<Storage> result = new List<Storage>();
-        foreach (Storage next in lifeNeeds)
-            //if (next.popType == this)
-            result.Add(next);
-        return result;
+        //List<Storage> result = new List<Storage>();
+        //foreach (Storage next in lifeNeeds)        
+        //    result.Add(next);
+        //return result;
+        return lifeNeeds.getContainer();
     }
-    ///<summary> per 1000 men </summary>
+    ///<summary> per 1000 men. Be careful, its direct links </summary>
     public List<Storage> getEveryDayNeedsPer1000()
     {
-        List<Storage> result = new List<Storage>();
-        foreach (Storage next in everyDayNeeds)
-            // (next.popType == this)
-            result.Add(next);
-        return result;
+        //List<Storage> result = new List<Storage>();
+        //foreach (Storage next in everyDayNeeds)            
+        //    result.Add(next);
+        //return result;
+        return everyDayNeeds.getContainer();
     }
-    ///<summary> per 1000 men </summary>
+    ///<summary> per 1000 men. Be careful, its direct links </summary>
     public List<Storage> getLuxuryNeedsPer1000()
     {
-        List<Storage> result = new List<Storage>();
-        foreach (Storage next in luxuryNeeds)
-            // if (next.popType == this)
-            result.Add(next);
-        return result;
-        // Needs
+        //List<Storage> result = new List<Storage>();
+        //foreach (Storage next in luxuryNeeds)            
+        //    result.Add(next);
+        //return result;        
+        return luxuryNeeds.getContainer();
     }
-    ///<summary> per 1000 men </summary>
+    ///<summary> per 1000 men. Be careful, its direct links </summary>
     public List<Storage> getAllNeedsPer1000()
     {
-        List<Storage> result = getLifeNeedsPer1000();
+        List<Storage> result = new List<Storage>(getLifeNeedsPer1000());
         result.AddRange(getEveryDayNeedsPer1000());
         result.AddRange(getLuxuryNeedsPer1000());
         return result;
-
     }
     override public string ToString()
     {
@@ -250,5 +248,29 @@ public class PopType
         return this == PopType.Farmers || this == PopType.TribeMen || this == PopType.Artisans;
     }
 
+    internal static void sortNeeds()
+    {
+        foreach (var item in allPopTypes)
+        {
+            item.everyDayNeeds.sort(delegate (Storage x, Storage y)
+                {
+                    //eats less memory
+                    float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
+                    float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
+                    return sumX.CompareTo(sumY);
+
+                    //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
+                });
+            item.luxuryNeeds.sort(delegate (Storage x, Storage y)
+            {
+                //eats less memory
+                float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
+                float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
+                return sumX.CompareTo(sumY);
+
+                //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
+            });
+        }
+    }
 }
 

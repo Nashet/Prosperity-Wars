@@ -54,7 +54,6 @@ public class TradeWindowCountryMarketTable   : MyTable
         {
             var needs = Game.Player.getRealNeeds();
             foreach (Storage next in Game.market.marketPrice)
-
             {
                 Product product = next.getProduct();
                 if (product != Product.Gold && product.isInventedByAnyOne())

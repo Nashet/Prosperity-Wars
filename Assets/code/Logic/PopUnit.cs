@@ -80,7 +80,7 @@ abstract public class PopUnit : Producer
 
         modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),            
+            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
 
@@ -407,45 +407,16 @@ abstract public class PopUnit : Producer
     }
 
 
-
-    /// <summary> /// Return in pieces  /// </summary>    
-    override public float getLocalEffectiveDemand(Product product)
-    {
-        float result = 0;
-        // need to know how much i Consumed inside my needs
-        PrimitiveStorageSet needs = new PrimitiveStorageSet(getRealLifeNeeds());
-        Storage need = needs.findStorage(product);
-        if (need != null)
-        {
-            Storage canAfford = howMuchCanAfford(need);
-            result += canAfford.get();
-        }
-        needs = new PrimitiveStorageSet(getRealEveryDayNeeds());
-        need = needs.findStorage(product);
-        if (need != null)
-        {
-            Storage canAfford = howMuchCanAfford(need);
-            result += canAfford.get();
-        }
-        needs = new PrimitiveStorageSet(getRealLuxuryNeeds());
-        need = needs.findStorage(product);
-        if (need != null)
-        {
-            Storage canAfford = howMuchCanAfford(need);
-            result += canAfford.get();
-        }
-        return result;
-    }
-
     internal bool isAlive()
     {
         return getPopulation() > 0;
     }
-
+    /// <summary>
+    /// makes new list of new elements
+    /// </summary>
     private List<Storage> getNeedsInCommon(List<Storage> needs)
     {
         Value multiplier = new Value(this.getPopulation() / 1000f);
-
         List<Storage> result = new List<Storage>();
         foreach (Storage next in needs)
             if (next.getProduct().isInventedByAnyOne())
@@ -453,14 +424,7 @@ abstract public class PopUnit : Producer
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiple(multiplier);
                 result.Add(nStor);
-            }
-        if (Game.Random.Next(20) == 1)
-            result.Sort(delegate (Storage x, Storage y)
-            {
-                float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
-                float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
-                return sumX.CompareTo(sumY);
-            });
+            }        
         return result;
     }
 
@@ -565,7 +529,7 @@ abstract public class PopUnit : Producer
 
         if (Economy.isMarket.checkIftrue(getCountry()) && popType != PopType.TribeMen)
         {
-            Value taxSize = new Value(0);
+            Value taxSize;
             if (this.popType.isPoorStrata())
             {
                 taxSize = moneyIncomethisTurn.multipleOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
@@ -656,7 +620,7 @@ abstract public class PopUnit : Producer
 
     }
     /// <summary>
-    /// !!Recursion is here!!
+    /// !!Recursion is here!! Used for non-market consumption
     /// </summary>    
     private void consumeEveryDayAndLuxury(List<Storage> needs, byte howDeep)
     {
@@ -686,7 +650,7 @@ abstract public class PopUnit : Producer
         if (!skipLifeneeds)
             foreach (Storage need in lifeNeeds)
             {
-                if (storageNow.isBiggerOrEqual(need))// dont need to buy on market
+                if (storageNow.isBiggerOrEqual(need))// don't need to buy on market
                 {
                     storageNow.subtract(need);
                     consumedTotal.set(need);
@@ -699,7 +663,7 @@ abstract public class PopUnit : Producer
                 {
                     needsFullfilled.set(Game.market.buy(this, need, null), need);
                     needsFullfilled.divide(Options.PopStrataWeight);
-                }                
+                }
             }
 
         //if (NeedsFullfilled.get() > 0.33f) NeedsFullfilled.set(0.33f);
@@ -1043,7 +1007,7 @@ abstract public class PopUnit : Producer
     public bool wantsToDemote()
     {
         //float demotionLimit = 0.50f;
-        if (this.needsFullfilled.isSmallerThan( Options.PopNeedsDemotionLimit))
+        if (this.needsFullfilled.isSmallerThan(Options.PopNeedsDemotionLimit))
             return true;
         else return false;
     }
@@ -1275,7 +1239,7 @@ abstract public class PopUnit : Producer
                 }
             }
         }
-        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists 
+        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists
             && Game.Random.Next(10) == 1 && getCountry().isInvented(Invention.Manufactories))
         {
             //should I build?
