@@ -671,7 +671,7 @@ abstract public class PopUnit : Producer
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
             // save some money in reserve to avoid spending all money on luxury 
-            Agent reserve = new Agent(0f, null);
+            Agent reserve = new Agent(0f, null, null);
             payWithoutRecord(reserve, cash.multipleOutside(Options.savePopMoneyReserv));
             var everyDayNeeds = getRealEveryDayNeeds();
             Value needsCost = Game.market.getCost(everyDayNeeds);
@@ -1177,7 +1177,8 @@ abstract public class PopUnit : Producer
             }
         }
     }
-    internal void putExtraMoneyInBank()
+   
+    virtual internal void invest()
     {
         if (getCountry().isInvented(Invention.Banking))
         {
@@ -1185,10 +1186,6 @@ abstract public class PopUnit : Producer
             if (extraMoney.get() > 5f)
                 getCountry().bank.takeMoney(this, extraMoney);
         }
-    }
-    virtual internal void invest()
-    {
-        
     }
 
     override public string ToString()

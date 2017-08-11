@@ -6,7 +6,7 @@ public class Bank : Agent
 {
     Value givenLoans = new Value(0);
 
-    public Bank() : base(0f, null)
+    public Bank() : base(0f, null, null)
     {
         //setBank(this);
     }
@@ -62,13 +62,35 @@ public class Bank : Agent
         }
     }
     /// <summary>
+    ///checks outside 
+    /// </summary>   
+    //internal bool giveMoneyIf(Consumer taker, Value howMuch)
+    //{
+    //    
+    //        Value needLoan = howMuch.subtractOutside(taker.cash);
+    //        if (this.canGiveMoney(taker, needLoan))
+    //        {
+    //            this.giveMoney(taker, needLoan);
+    //            return true;
+    //        }
+    //   
+    //    return false;
+    //}
+    /// <summary>
     /// checks inside. Just wouldn't give money if can't
     /// </summary>    
-    internal void giveLackingMoney(Agent agent, Value sum)
+    internal bool giveLackingMoney(Agent taker, Value sum)
     {
-        Value lackOfSum = sum.subtractOutside(agent.cash);
-        if (canGiveMoney(agent, lackOfSum))
-            giveMoney(agent, lackOfSum);
+        if (taker.getCountry().isInvented(Invention.Banking))// find money in bank?
+        {
+            Value lackOfSum = sum.subtractOutside(taker.cash);
+            if (canGiveMoney(taker, lackOfSum))
+            {
+                giveMoney(taker, lackOfSum);
+                return true;
+            }            
+        }
+        return false;
     }
     /// <summary>
     /// Returns deposits only. As much as possible. checks inside. Just wouldn't give money if can't

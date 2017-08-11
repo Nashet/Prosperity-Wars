@@ -21,7 +21,7 @@ public class Market : Agent//: PrimitiveStorageSet
     PrimitiveStorageSet getBouthBuffer = new PrimitiveStorageSet();
     internal PricePool priceHistory;
     internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
-    public Market() : base(0f, null)
+    public Market() : base(0f, null, null)
     { }
     internal Storage findPrice(Product whom)
     {

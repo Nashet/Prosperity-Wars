@@ -291,7 +291,7 @@ public class Aristocrats : PopUnit
         if (province.getResource() != null && !province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
         {
             FactoryType ftype = FactoryType.whoCanProduce(province.getResource());
-            Factory factory = province.getResourceFactory();
+            Factory factory = province.getExistingResourceFactory();
             if (factory == null) //build new factory
             {
                 //Has money / resources?
@@ -299,7 +299,7 @@ public class Aristocrats : PopUnit
                 Storage needFood = resourceToBuild.findStorage(Product.Food);
                 // try to build for food
                 if (storageNow.isBiggerOrEqual(needFood))
-                {                    
+                {
                     var newFactory = new Factory(province, this, ftype);
                     storageNow.send(newFactory.getInputProductsReserve(), needFood);
                     newFactory.constructionNeeds.setZero();
@@ -311,20 +311,20 @@ public class Aristocrats : PopUnit
                     {
                         var newFactory = new Factory(province, this, ftype);  // build new one              
                         pay(newFactory, cost);
-                    }// take loans?
+                    }// take loans? Aristocrats wouldn't take loans for upgrades
                 }
             }
             else
             {
                 //upgrade existing resource factory
                 // upgrade is only for money? Yes, because its complicated - lots of various products               
-                if (factory != null
-                    && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
+                if (factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
                     && factory.getMargin().get() >= Options.minMarginToUpgrade
                     && Factory.conditionsUpgrade.isAllTrue(factory, this))
                     factory.upgrade(this);
             }
         }
+        base.invest();
     }
 }
 public class Soldiers : PopUnit
@@ -452,8 +452,7 @@ public class Capitalists : PopUnit
     }
     internal override void invest()
     {
-        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists
-            && Game.Random.Next(10) == 1 && getCountry().isInvented(Invention.Manufactories))
+        if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactories))
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
@@ -462,57 +461,42 @@ public class Capitalists : PopUnit
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
                 if (proposition != null && province.canBuildNewFactory(proposition) &&
                     (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
-                {
-                    PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
-                    Value cost = Game.market.getCost(resourceToBuild);
-                    cost.add(Options.factoryMoneyReservPerLevel);
-                    if (canPay(cost))
+                {                   
+                    Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
+                    buildCost.add(Options.factoryMoneyReservPerLevel);
+                    if (canPay(buildCost))
                     {
                         Factory found = new Factory(province, this, proposition);
-                        payWithoutRecord(found, cost);
+                        payWithoutRecord(found, buildCost);
                     }
-                    else // find money in bank?
-                    if (getCountry().isInvented(Invention.Banking))
+                    else
+                        if (getCountry().bank.giveLackingMoney(this, buildCost))
                     {
-                        Value needLoan = new Value(cost.get() - cash.get());
-                        if (getCountry().bank.canGiveMoney(this, needLoan))
-                        {
-                            getCountry().bank.giveMoney(this, needLoan);
-                            Factory found = new Factory(province, this, proposition);
-                            payWithoutRecord(found, cost);
-                        }
+                        Factory found = new Factory(province, this, proposition);
+                        payWithoutRecord(found, buildCost);
                     }
                 }
+            }
+            else
+            {
                 //upgrade section
-
-                // if (Game.random.Next(10) == 1) // is there factories to upgrde?
+                Factory factory = FactoryType.getMostPracticlyProfitable(province);               
+                if (factory != null
+                    && factory.canUpgrade() // don't change it to Modifier  - it would prevent loan takes
+                    && factory.getMargin().get() >= Options.minMarginToUpgrade
+                    && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
                 {
-                    Factory factory = FactoryType.getMostPracticlyProfitable(province);
-                    //Factory f = province.findFactory(proposition);
-                    if (factory != null
-                        && factory.canUpgrade()
-                        && factory.getMargin().get() >= Options.minMarginToUpgrade
-                        && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
+                    Value upgradeCost = factory.getUpgradeCost();
+                    if (canPay(upgradeCost))
+                        factory.upgrade(this);
+                    else if (getCountry().bank.giveLackingMoney(this, upgradeCost))
                     {
-                        //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
-                        //Value cost = Game.market.getCost(resourceToBuild);
-                        Value cost = factory.getUpgradeCost();
-                        if (canPay(cost))
-                            factory.upgrade(this);
-                        else // find money in bank?
-                        if (getCountry().isInvented(Invention.Banking))
-                        {
-                            Value needLoan = new Value(cost.get() - cash.get());
-                            if (getCountry().bank.canGiveMoney(this, needLoan))
-                            {
-                                getCountry().bank.giveMoney(this, needLoan);
-                                factory.upgrade(this);
-                            }
-                        }
+                        factory.upgrade(this);
                     }
                 }
             }
         }
+        base.invest();
     }
 }
 public class Artisans : PopUnit

@@ -56,10 +56,10 @@ public class Country : Staff
     private readonly Modifier modXHasMyCores;
     public readonly ModifiersList modMyOpinionOfXCountry;
     public static readonly ConditionsListForDoubleObjects canAttack = new ConditionsListForDoubleObjects(new List<Condition>
-    {   
+    {
         new ConditionForDoubleObjects((country, province)=>(province as Province).isNeighbor(country as Country), x=>"Is neighbor province", true),
         //new ConditionForDoubleObjects((country, province)=>(province as Province).getCountry().government.getValue, x=>"Is neighbor province", false),
-        new ConditionForDoubleObjects((country, province)=>!Government.isDemocracy.checkIftrue(country) 
+        new ConditionForDoubleObjects((country, province)=>!Government.isDemocracy.checkIftrue(country)
         || !Government.isDemocracy.checkIftrue((province as Province).getCountry()), x=>"Democracies can't attack each other", true),
     });
 
@@ -930,7 +930,7 @@ public class Country : Staff
     {
         ownedFactoriesIncome.add(toAdd);
     }
-   override internal Country getCountry()
+    override internal Country getCountry()
     {
         return this;
     }

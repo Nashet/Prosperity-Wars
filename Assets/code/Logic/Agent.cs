@@ -19,15 +19,17 @@ public class Agent
 
     public Value loans = new Value(0);
     public Value deposits = new Value(0);
-
-    //public Agent(Bank bank) : base(0f, bank)
-    //{
-
-    //}
-    public Agent(float inAmount, Bank bank)
+    public readonly Province province;
+    
+    public Agent(float inAmount, Bank bank, Province province)
     {
         cash.set(inAmount);
         this.bank = bank;
+        this.province = province;
+    }
+    virtual internal Country getCountry()
+    {
+        return province.getCountry();
     }
     public Value getMoneyAvailable()
     {
@@ -165,18 +167,6 @@ public class Agent
         return cash.get();
     }
 
-    //internal void pay(Wallet whom, float howMuch)
-    //{
-    //    if (canPay(howMuch))
-    //    {
-    //        whom.haveMoney.add(howMuch);
-    //        whom.moneyIncomethisTurn.add(howMuch);
-    //        this.haveMoney.subtract(howMuch);
-
-    //    }
-    //    else
-    //        Debug.Log("Failed payment in wallet");
-    //}
     /// <summary>
     /// checks inside. Wouldn't pay if can't
     /// </summary>    

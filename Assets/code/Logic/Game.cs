@@ -740,11 +740,9 @@ public class Game : ThreadedJob
                         pop.calcAssimilations();
                     }
                     
-                    if (Game.Random.Next(20) == 1)
-                    {
+                    if (Game.Random.Next(20) == 1)                   
                         pop.invest();
-                        pop.putExtraMoneyInBank();
-                    }
+                       
                 }
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                

@@ -678,7 +678,7 @@ public class Province : Name
         else
             return null;
     }
-    internal Factory getResourceFactory()
+    internal Factory getExistingResourceFactory()
     {
         foreach (Factory factory in allFactories)
             if (factory.getType().basicProduction.getProduct() == resource)
@@ -706,13 +706,12 @@ public class Province : Name
             return false;
         return true;
     }
-    internal bool CanUpgradeFactory(FactoryType ft)
+    internal bool canUpgradeFactory(FactoryType ft)
     {
         if (!HaveFactory(ft))
             return false;
         // if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource)
         //     return false;
-
         return true;
     }
     internal bool HaveFactory(FactoryType ft)

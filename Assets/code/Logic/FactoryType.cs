@@ -99,7 +99,7 @@ public class FactoryType
         KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
         foreach (Factory factory in province.allFactories)
         {
-            if (province.CanUpgradeFactory(factory.getType()))
+            if (province.canUpgradeFactory(factory.getType()))
             {
                 float profit = factory.getProfit();
                 if (profit > result.Value)

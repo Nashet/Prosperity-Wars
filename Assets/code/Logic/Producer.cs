@@ -24,11 +24,11 @@ public abstract class Consumer : Agent
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void buyNeeds();
     public abstract List<Storage> getRealNeeds();
-    public readonly Province province;
-    protected Consumer(Bank bank, Province province) : base(0, bank)
+
+    protected Consumer(Bank bank, Province province) : base(0f, bank, province)
     {
-        this.province = province;
-    }    
+
+    }
     public virtual void setStatisticToZero()
     {
         moneyIncomethisTurn.set(0f);
@@ -36,10 +36,7 @@ public abstract class Consumer : Agent
         consumedTotal.setZero();
         consumedInMarket.setZero();
     }
-    virtual internal Country getCountry()
-    {
-        return province.getCountry();
-    }
+
 }
 /// <summary>
 /// Represents anyone who can produce, store and sell product (1 product)
@@ -57,7 +54,7 @@ public abstract class Producer : Consumer
     public Storage sentToMarket;
 
     //protected Country owner; //Could be any Country or POP
-    
+
 
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
@@ -66,7 +63,7 @@ public abstract class Producer : Consumer
     public abstract void payTaxes();
 
     protected Producer(Province province) : base(province.getCountry().bank, province)
-    {        
+    {
     }
     override public void setStatisticToZero()
     {
@@ -104,7 +101,7 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.HowMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
-   
+
 
 }
 

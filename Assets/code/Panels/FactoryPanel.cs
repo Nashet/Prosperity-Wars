@@ -101,12 +101,9 @@ public class FactoryPanel : DragPanel//for dragging
 
             Factory.modifierEfficiency.getModifier(shownFactory, out generaltext.GetComponentInChildren<ToolTipHandler>().tooltip);
 
-            //var temp = shownFactory.getLifeNeeds();
-            //foreach (Storage next in temp)
-            //    lifeNeeds += next.ToString() + "; ";
-            //lifeNeeds += shownFactory.getLifeNeedsFullfilling().ToString() + " fulfilled";
+           
             string InputRequired = "";
-            //var temp = shownFactory.getLifeNeeds();
+            
 
             string construction = "";
             if (shownFactory.getDaysInConstruction() > 0)
