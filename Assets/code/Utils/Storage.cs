@@ -384,11 +384,20 @@ public class Storage : Value
 
     public Storage(Product product) : this(product, 0f)
     {
-        
+
     }
     public Storage(Storage storage) : this(storage.getProduct(), storage)
     {
-        
+
+    }
+    static public int CostOrder(Storage x, Storage y)
+    {
+        //eats less memory
+        float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
+        float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
+        return sumX.CompareTo(sumY);
+
+        //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
     }
     public void set(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true)
     {
@@ -429,7 +438,7 @@ public class Storage : Value
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Attempt to add wrong product to Storage");
-        }        
+        }
     }
     public Product getProduct()
     {
@@ -464,9 +473,9 @@ public class Storage : Value
         if (this.getProduct() != another.getProduct())
             Debug.Log("Attempt to give wrong product");
         else
-            base.send(another, amount);        
+            base.send(another, amount);
     }
-    
+
     /// <summary>
     /// checks inside, returns true if succeeded
     /// </summary>    
@@ -504,7 +513,7 @@ public class Storage : Value
             return false;
         }
         else
-            return isBiggerOrEqual(HowMuch);       
+            return isBiggerOrEqual(HowMuch);
     }
     internal Storage multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
     {

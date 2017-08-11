@@ -285,7 +285,47 @@ public class Aristocrats : PopUnit
         else
             return 0;
     }
-
+    internal override void invest()
+    {
+        // Aristocrats invests only in resource factories (and banks)
+        if (province.getResource() != null && !province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
+        {
+            FactoryType ftype = FactoryType.whoCanProduce(province.getResource());
+            Factory factory = province.getResourceFactory();
+            if (factory == null) //build new factory
+            {
+                //Has money / resources?
+                PrimitiveStorageSet resourceToBuild = ftype.getBuildNeeds();
+                Storage needFood = resourceToBuild.findStorage(Product.Food);
+                // try to build for food
+                if (storageNow.isBiggerOrEqual(needFood))
+                {                    
+                    var newFactory = new Factory(province, this, ftype);
+                    storageNow.send(newFactory.getInputProductsReserve(), needFood);
+                    newFactory.constructionNeeds.setZero();
+                }
+                else
+                {
+                    Value cost = Game.market.getCost(resourceToBuild);
+                    if (canPay(cost))  //try to build for money  
+                    {
+                        var newFactory = new Factory(province, this, ftype);  // build new one              
+                        pay(newFactory, cost);
+                    }// take loans?
+                }
+            }
+            else
+            {
+                //upgrade existing resource factory
+                // upgrade is only for money? Yes, because its complicated - lots of various products               
+                if (factory != null
+                    && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
+                    && factory.getMargin().get() >= Options.minMarginToUpgrade
+                    && Factory.conditionsUpgrade.isAllTrue(factory, this))
+                    factory.upgrade(this);
+            }
+        }
+    }
 }
 public class Soldiers : PopUnit
 {
@@ -391,41 +431,6 @@ public class Capitalists : PopUnit
     {
         return false;
     }
-    //internal override bool getSayingYes(AbstractReformValue reform)
-    //{
-    //    if (reform == Government.Tribal)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Aristocracy)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Democracy)
-    //    {
-    //        var baseOpinion = new Procent(0.8f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Despotism)
-    //    {
-    //        var baseOpinion = new Procent(0.3f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.ProletarianDictatorship)
-    //    {
-    //        var baseOpinion = new Procent(0.1f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else
-    //        return false;
-    //}
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
@@ -444,6 +449,70 @@ public class Capitalists : PopUnit
                 return 1;
         else
             return 0;
+    }
+    internal override void invest()
+    {
+        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists
+            && Game.Random.Next(10) == 1 && getCountry().isInvented(Invention.Manufactories))
+        {
+            //should I build?
+            //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
+            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
+            {
+                FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
+                if (proposition != null && province.canBuildNewFactory(proposition) &&
+                    (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
+                {
+                    PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
+                    Value cost = Game.market.getCost(resourceToBuild);
+                    cost.add(Options.factoryMoneyReservPerLevel);
+                    if (canPay(cost))
+                    {
+                        Factory found = new Factory(province, this, proposition);
+                        payWithoutRecord(found, cost);
+                    }
+                    else // find money in bank?
+                    if (getCountry().isInvented(Invention.Banking))
+                    {
+                        Value needLoan = new Value(cost.get() - cash.get());
+                        if (getCountry().bank.canGiveMoney(this, needLoan))
+                        {
+                            getCountry().bank.giveMoney(this, needLoan);
+                            Factory found = new Factory(province, this, proposition);
+                            payWithoutRecord(found, cost);
+                        }
+                    }
+                }
+                //upgrade section
+
+                // if (Game.random.Next(10) == 1) // is there factories to upgrde?
+                {
+                    Factory factory = FactoryType.getMostPracticlyProfitable(province);
+                    //Factory f = province.findFactory(proposition);
+                    if (factory != null
+                        && factory.canUpgrade()
+                        && factory.getMargin().get() >= Options.minMarginToUpgrade
+                        && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
+                    {
+                        //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
+                        //Value cost = Game.market.getCost(resourceToBuild);
+                        Value cost = factory.getUpgradeCost();
+                        if (canPay(cost))
+                            factory.upgrade(this);
+                        else // find money in bank?
+                        if (getCountry().isInvented(Invention.Banking))
+                        {
+                            Value needLoan = new Value(cost.get() - cash.get());
+                            if (getCountry().bank.canGiveMoney(this, needLoan))
+                            {
+                                getCountry().bank.giveMoney(this, needLoan);
+                                factory.upgrade(this);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 public class Artisans : PopUnit
@@ -497,7 +566,7 @@ public class Artisans : PopUnit
             }
             else
                 changeProductionType();
-            
+
         }
     }
     public override void buyNeeds()
@@ -518,7 +587,7 @@ public class Artisans : PopUnit
                         getCountry().bank.giveMoney(this, loanSize);
                     payWithoutRecord(artisansProduction, cash);
                 }
-            }            
+            }
 
             artisansProduction.buyNeeds();
             artisansProduction.payWithoutRecord(this, artisansProduction.cash);
@@ -595,7 +664,7 @@ public class Artisans : PopUnit
     internal void checkProfit()
     {
         // todo doesn't include taxes. Should it?
-        if (artisansProduction==null || moneyIncomethisTurn.get() - artisansProduction.getExpences() <= 0f)
+        if (artisansProduction == null || moneyIncomethisTurn.get() - artisansProduction.getExpences() <= 0f)
             changeProductionType();
     }
 }

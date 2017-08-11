@@ -121,8 +121,8 @@ public class FactoryPanel : DragPanel//for dragging
             if (shownFactory.loans.get() > 0f)
                 loans = "\nLoan: " + shownFactory.loans.ToString();
             string upgradeNeeds = "";
-            if (shownFactory.needsToUpgrade.Count() > 0)
-                upgradeNeeds = "\nUpgrade needs: " + shownFactory.needsToUpgrade;
+            if (shownFactory.constructionNeeds.Count() > 0)
+                upgradeNeeds = "\nUpgrade needs: " + shownFactory.constructionNeeds;
 
             foreach (Storage next in shownFactory.getType().resourceInput)
                 InputRequired += next.get() * shownFactory.getWorkForceFulFilling().get() + " " + next.getProduct().ToString() + ";";
@@ -191,7 +191,7 @@ public class FactoryPanel : DragPanel//for dragging
             shownFactory.close();
         else
             //if (shownFactory.whyCantReopenFactory() == null)
-            shownFactory.reopen(Game.Player);
+            shownFactory.open(Game.Player);
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();
         MainCamera.topPanel.refresh();

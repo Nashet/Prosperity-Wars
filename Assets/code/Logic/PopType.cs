@@ -252,24 +252,8 @@ public class PopType
     {
         foreach (var item in allPopTypes)
         {
-            item.everyDayNeeds.sort(delegate (Storage x, Storage y)
-                {
-                    //eats less memory
-                    float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
-                    float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
-                    return sumX.CompareTo(sumY);
-
-                    //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
-                });
-            item.luxuryNeeds.sort(delegate (Storage x, Storage y)
-            {
-                //eats less memory
-                float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
-                float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
-                return sumX.CompareTo(sumY);
-
-                //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
-            });
+            item.everyDayNeeds.sort(Storage.CostOrder);
+            item.luxuryNeeds.sort(Storage.CostOrder);
         }
     }
 }

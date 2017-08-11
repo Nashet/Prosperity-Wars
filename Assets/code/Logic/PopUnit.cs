@@ -424,7 +424,7 @@ abstract public class PopUnit : Producer
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiple(multiplier);
                 result.Add(nStor);
-            }        
+            }
         return result;
     }
 
@@ -1186,120 +1186,9 @@ abstract public class PopUnit : Producer
                 getCountry().bank.takeMoney(this, extraMoney);
         }
     }
-    internal void invest()
+    virtual internal void invest()
     {
-        if (popType == PopType.Aristocrats)
-        {
-            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
-            {
-                if (province.getResource() != null)
-                {
-                    FactoryType ftype = FactoryType.whoCanProduce(province.getResource());
-                    PrimitiveStorageSet resourceToBuild;
-                    Factory factory = province.getResourceFactory();
-                    if (factory == null)
-                        resourceToBuild = ftype.getBuildNeeds();
-                    else
-                        resourceToBuild = factory.getUpgradeNeeds();
-                    //build new shownFactory
-                    if (factory == null)
-                    //Has money / resources?
-                    {
-                        Storage needFood = resourceToBuild.findStorage(Product.Food);
-                        if (storageNow.isBiggerOrEqual(needFood))
-                        {
-                            Factory fact = new Factory(province, this, ftype);
-                            //wallet.pay(fact.wallet, new Value(100f));
-                            storageNow.subtract(needFood);
-                        }
-                        //if (wallet.CanAfford(resourceToBuild))
-                        //{// build new one
-                        //    Factory fact = new Factory(province, this, ftype);
-                        //    wallet.pay(fact.wallet, new Value(100f));
-                        //}
-                        //else;
-                    }
-                    else//upgrade shownFactory
-                    {
-                        Value cost = Game.market.getCost(resourceToBuild);
-
-                        if (factory != null
-                            //&& wallet.canPay(cost)
-                            //&& factory.canUpgrade()
-                            //&& !factory.isUpgrading()
-                            //&& !factory.isBuilding()
-                            && Factory.conditionsUpgrade.isAllTrue(factory, this)
-                            && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
-                            && factory.getMargin().get() >= Options.minMarginToUpgrade)
-                        {
-                            factory.upgrade(this);
-                            //wallet.pay(factory.wallet, cost); // upgrade
-                        }
-                    }
-                }
-            }
-        }
-        if (Economy.isMarket.checkIftrue(getCountry()) && popType == PopType.Capitalists
-            && Game.Random.Next(10) == 1 && getCountry().isInvented(Invention.Manufactories))
-        {
-            //should I build?
-            //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
-            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
-            {
-                FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
-                if (proposition != null && province.canBuildNewFactory(proposition) &&
-                    (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
-                {
-                    PrimitiveStorageSet resourceToBuild = proposition.getBuildNeeds();
-                    Value cost = Game.market.getCost(resourceToBuild);
-                    cost.add(Options.factoryMoneyReservPerLevel);
-                    if (canPay(cost))
-                    {
-                        Factory found = new Factory(province, this, proposition);
-                        payWithoutRecord(found, cost);
-                    }
-                    else // find money in bank?
-                    if (getCountry().isInvented(Invention.Banking))
-                    {
-                        Value needLoan = new Value(cost.get() - cash.get());
-                        if (getCountry().bank.canGiveMoney(this, needLoan))
-                        {
-                            getCountry().bank.giveMoney(this, needLoan);
-                            Factory found = new Factory(province, this, proposition);
-                            payWithoutRecord(found, cost);
-                        }
-                    }
-                }
-                //upgrade section
-
-                // if (Game.random.Next(10) == 1) // is there factories to upgrde?
-                {
-                    Factory factory = FactoryType.getMostPracticlyProfitable(province);
-                    //Factory f = province.findFactory(proposition);
-                    if (factory != null
-                        && factory.canUpgrade()
-                        && factory.getMargin().get() >= Options.minMarginToUpgrade
-                        && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
-                    {
-                        //PrimitiveStorageSet resourceToBuild = proposition.getUpgradeNeeds();
-                        //Value cost = Game.market.getCost(resourceToBuild);
-                        Value cost = factory.getUpgradeCost();
-                        if (canPay(cost))
-                            factory.upgrade(this);
-                        else // find money in bank?
-                        if (getCountry().isInvented(Invention.Banking))
-                        {
-                            Value needLoan = new Value(cost.get() - cash.get());
-                            if (getCountry().bank.canGiveMoney(this, needLoan))
-                            {
-                                getCountry().bank.giveMoney(this, needLoan);
-                                factory.upgrade(this);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        
     }
 
     override public string ToString()

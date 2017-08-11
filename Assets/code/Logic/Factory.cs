@@ -18,7 +18,7 @@ public class Factory : SimpleProduction
     private byte priority = 0;
     private readonly Value salary = new Value(0);
     private Agent factoryOwner;
-    internal readonly PrimitiveStorageSet needsToUpgrade;
+    internal readonly PrimitiveStorageSet constructionNeeds;
 
 
     private readonly Dictionary<PopUnit, int> hiredWorkForce = new Dictionary<PopUnit, int>();
@@ -56,7 +56,7 @@ public class Factory : SimpleProduction
             return Game.threadDangerSB.ToString();
         }, true);
     internal static readonly ConditionForDoubleObjects
-        conHaveMoneyToUpgrade = new ConditionForDoubleObjects((factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),            
+        conHaveMoneyToUpgrade = new ConditionForDoubleObjects((factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),
             (factory) => "Have " + (factory as Factory).getUpgradeCost() + " coins"
             //delegate (object x)
             //{
@@ -127,7 +127,7 @@ public class Factory : SimpleProduction
     internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(type, province)
     {
         //assuming this is level 0 building        
-        needsToUpgrade = getType().getBuildNeeds();
+        constructionNeeds = getType().getBuildNeeds();
         province.allFactories.Add(this);
         this.factoryOwner = factoryOwner;
         salary.set(province.getLocalMinSalary());
@@ -221,7 +221,7 @@ public class Factory : SimpleProduction
             int leftToHire = amount;
             hiredLastTurn = 0;
             //foreach (PopUnit pop in popList)
-            for (int i = popList.Count-1; i>=0; i-- )
+            for (int i = popList.Count - 1; i >= 0; i--)
             {
                 var pop = popList[i];
                 if (pop.getPopulation() >= leftToHire) // satisfied demand
@@ -434,7 +434,7 @@ public class Factory : SimpleProduction
     /// 
     /// </summary>    
     public int howMuchWorkForceWants()
-    {        
+    {
         if (!isWorking())
             return 0;
         int wants = getMaxWorkforceCapacity();// * getInputFactor());
@@ -520,7 +520,7 @@ public class Factory : SimpleProduction
     {
         building = false;
         upgrading = false;
-        needsToUpgrade.setZero();
+        constructionNeeds.setZero();
         daysInConstruction = 0;
     }
     internal void markToDestroy()
@@ -608,7 +608,7 @@ public class Factory : SimpleProduction
                         }
                         leftOver = cash.get() - wantsMinMoneyReserv();
                         if (leftOver >= 0f)
-                            reopen(this);
+                            open(this);
                     }
                 }
             }
@@ -623,10 +623,10 @@ public class Factory : SimpleProduction
     {
         working = false;
         upgrading = false;
-        needsToUpgrade.setZero();
+        constructionNeeds.setZero();
         daysInConstruction = 0;
     }
-    internal void reopen(Agent byWhom)
+    internal void open(Agent byWhom)
     {
         working = true;
         if (daysUnprofitable > 20)
@@ -635,7 +635,6 @@ public class Factory : SimpleProduction
         daysClosed = 0;
         if (byWhom != this)
             byWhom.payWithoutRecord(this, getReopenCost());
-
     }
 
     internal bool isWorking()
@@ -655,7 +654,7 @@ public class Factory : SimpleProduction
     internal void upgrade(Agent byWhom)
     {
         upgrading = true;
-        needsToUpgrade.add(getUpgradeNeeds().getCopy());
+        constructionNeeds.add(getUpgradeNeeds().getCopy());
         byWhom.payWithoutRecord(this, getUpgradeCost());
     }
 
@@ -715,6 +714,15 @@ public class Factory : SimpleProduction
             }
         }
     }
+    private void onConstructionComplete()
+    {
+        level++;
+        building = false;
+        upgrading = false;
+        constructionNeeds.setZero();
+        daysInConstruction = 0;
+        open(this);
+    }
     /// <summary>
     /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
     /// </summary>
@@ -731,20 +739,19 @@ public class Factory : SimpleProduction
             else
                 Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
         }
+        // Include construction needs into getHowMuchInputProductsReservesWants()? No, cause I need graduated buying
         if (isUpgrading() || isBuilding())
         {
-            bool isBuyingComplete = false;
             daysInConstruction++;
+            bool isBuyingComplete = false;
             bool isMarket = Economy.isMarket.checkIftrue(getCountry());// province.getOwner().isInvented(InventionType.capitalism);
             if (isMarket)
             {
                 if (isBuilding())
-                    isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());
-                else
-                {
-                    if (isUpgrading())
-                        isBuyingComplete = Game.market.buy(this, needsToUpgrade, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
-                }
+                    isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());                
+                else if (isUpgrading())
+                    isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
+
                 // what if there is no enough money to complete buildinG?
                 float minimalFond = cash.get() - 50f;
 
@@ -753,18 +760,13 @@ public class Factory : SimpleProduction
             }
             if (isBuyingComplete || (!isMarket && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
             {
-                level++;
-                building = false;
-                upgrading = false;
-                needsToUpgrade.setZero();
-                daysInConstruction = 0;
-                getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
-                getInputProductsReserve().subtract(getUpgradeNeeds(), false);
-
-                reopen(this);
+                onConstructionComplete();
+                if (isBuilding())
+                    getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
+                else // assuming isUpgrading()
+                    getInputProductsReserve().subtract(getUpgradeNeeds(), false);
             }
-            else
-            if (daysInConstruction == Options.maxDaysBuildingBeforeRemoving)
+            else if (daysInConstruction == Options.maxDaysBuildingBeforeRemoving)
                 if (isBuilding())
                     markToDestroy();
                 else // upgrading
