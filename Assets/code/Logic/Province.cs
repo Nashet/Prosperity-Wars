@@ -804,12 +804,18 @@ public class Province : Name
     /// <summary>
     /// Adjusted to use in modifiers 
     /// </summary>    
-    internal float getOverpopulationAdjusted()
+    internal float getOverpopulationAdjusted(PopUnit pop)
     {
-        float res = getOverpopulation();
-        res -= 1f;
-        if (res <= 0f) res = 0f;
-        return res;
+        if (pop.popType == PopType.TribeMen || pop.popType == PopType.Farmers)
+        {
+            float res = getOverpopulation();
+            res -= 1f;
+            if (res <= 0f)
+                res = 0f;
+            return res;
+        }
+        else
+            return 0f;
     }
     internal float getOverpopulation()
     {

@@ -78,9 +78,10 @@ abstract public class PopUnit : Producer
             modCountryIsToBig
 });
 
+        // can increase performance by making separate modifiers for different popTypes
         modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(),"Overpopulation", -1f, true),
+            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(x as PopUnit),"Overpopulation", -1f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
 
@@ -95,7 +96,8 @@ abstract public class PopUnit : Producer
              new Modifier(x => Government.isPolis.checkIftrue((x as PopUnit).getCountry())
              && (x as PopUnit).province.isCapital(), "Capital of Polis", 1f, false),
              new Modifier(x=>(x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(Government.isTribal, x=>(x as PopUnit).getCountry(), -0.5f, false),
+             new Modifier(x=>(x as PopUnit).getCountry().government.getValue() == Government.Tribal
+             && (x as PopUnit).popType!=PopType.TribeMen, "Government is Tribal", -0.5f, false),
              new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
     }
@@ -1177,7 +1179,7 @@ abstract public class PopUnit : Producer
             }
         }
     }
-   
+
     virtual internal void invest()
     {
         if (getCountry().isInvented(Invention.Banking))

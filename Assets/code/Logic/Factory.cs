@@ -31,15 +31,15 @@ public class Factory : SimpleProduction
 
     internal static readonly Modifier
         modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() && (x as Factory).province.isProducingOnFactories((x as Factory).getType().resourceInput),
-              "Has input resource in this province", 20f, false),
+              "Has input resource in this province", 0.20f, false),
 
-        modifierLevelBonus = new Modifier(x => (x as Factory).getLevel() - 1, "High production concentration bonus", 1f, false),
+        modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 1f, false),
 
         modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).getCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
-           new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 50f, false),
+           new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
 
-        modifierBelongsToCountry = new Modifier(x => (x as Factory).factoryOwner is Country, "Belongs to government", -20f, false),
-        modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -10f, false);
+        modifierBelongsToCountry = new Modifier(x => (x as Factory).factoryOwner is Country, "Belongs to government", -0.20f, false),
+        modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.10f, false);
 
     internal static readonly Condition
         conNotBelongsToCountry = new Condition(x => !((x as Factory).factoryOwner is Country), "Doesn't belongs to government", false),
@@ -106,22 +106,22 @@ public class Factory : SimpleProduction
     internal static readonly ModifiersList
         modifierEfficiency = new ModifiersList(new List<Condition>
         {
-           Modifier.modifierDefault100,
-            new Modifier(Invention.SteamPowerInvented, x => (x as Factory).getCountry(), 25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).getCountry(), 25f, false),
+           Modifier.modifierDefault1,
+            new Modifier(Invention.SteamPowerInvented, x => (x as Factory).getCountry(), 0.25f, false),
+            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).getCountry(), 0.25f, false),
 
-            new Modifier(Economy.isStateCapitlism, x => (x as Factory).getCountry(),  10f, false),
-            new Modifier(Economy.isInterventionism, x => (x as Factory).getCountry(),  30f, false),
-            new Modifier(Economy.isLF, x => (x as Factory).getCountry(), 50f, false),
-            new Modifier(Economy.isPlanned, x => (x as Factory).getCountry(), -10f, false),
+            new Modifier(Economy.isStateCapitlism, x => (x as Factory).getCountry(),  0.10f, false),
+            new Modifier(Economy.isInterventionism, x => (x as Factory).getCountry(),  0.30f, false),
+            new Modifier(Economy.isLF, x => (x as Factory).getCountry(), 0.50f, false),
+            new Modifier(Economy.isPlanned, x => (x as Factory).getCountry(), -0.10f, false),
 
             modifierInventedMiningAndIsShaft, modifierHasResourceInProvince, modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
              new Modifier(x => Government.isPolis.checkIftrue((x as Factory).getCountry())
-             && (x as Factory).province.isCapital(), "Capital of Polis", 50f, false),
-             new Modifier(x=>(x as Factory).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -20f, false),
-             new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -100f, false),
-             new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -30f, false) // remove this?
+             && (x as Factory).province.isCapital(), "Capital of Polis", 0.50f, false),
+             new Modifier(x=>(x as Factory).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -1.0f, false),
+             new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -0.30f, false) // remove this?
         });
 
     internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(type, province)
@@ -510,7 +510,7 @@ public class Factory : SimpleProduction
         //Procent result = new Procent(basicEff);
         //Procent result = new Procent(efficencyFactor);
         if (useBonuses)
-            efficencyFactor.set(efficencyFactor.get() * (modifierEfficiency.getModifier(this) / 100f), false);
+            efficencyFactor.set(efficencyFactor.get() * modifierEfficiency.getModifier(this), false);
         return efficencyFactor;
     }
 

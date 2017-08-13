@@ -366,37 +366,38 @@ public class Modifier : Condition
     readonly Func<object, float> floatModifierFunction;
     readonly bool showZeroModifiers;
 
+    /// <summary>
+    /// regular modifier
+    /// </summary>    
     public Modifier(Func<object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
     {
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
+    /// <summary>
+    /// regular modifier with description generated on run
+    /// </summary>    
     public Modifier(Func<object, bool> myMethodName, Func<object, string> dynamicString, float value, bool showZeroModifiers) : base(myMethodName, dynamicString, true)
     {
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
+    
     /// <summary>
-    /// to use with other scope modifiers
+    /// modifier based on float function
     /// </summary>    
-    //public Modifier(Func<object, bool> myMethodName, float value, bool showZeroModifiers) : base(myMethodName,  true)
-    //{
-    //    this.value = value;
-    //    this.showZeroModifiers = showZeroModifiers;
-    //}
     public Modifier(Func<object, float> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
     {
         this.value = value;
         floatModifierFunction = myMethodName;
         this.showZeroModifiers = showZeroModifiers;
     }
-    /// <summary></summary>
+    /// <summary>
+    /// modifier based on int function
+    /// </summary>    
     public Modifier(Func<int> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
-    {
-        //checkingFunction = null;
-        multiplierModifierFunction = myMethodName;
-
-        //isMultiplier = true;
+    {        
+        multiplierModifierFunction = myMethodName;        
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
@@ -407,35 +408,14 @@ public class Modifier : Condition
         this.showZeroModifiers = showZeroModifiers;
     }
     /// <summary>
-    /// To change scope
+    /// Modifier where you can change scope
     /// </summary>
-
-    public Modifier(Condition condition, Func<object, object> x, float value, bool showZeroModifiers) : base(condition, x)
-    {
-        //targetObject = x;
+    public Modifier(Condition condition, Func<object, object> changeScopeTo, float value, bool showZeroModifiers) : base(condition, changeScopeTo)
+    {        
         this.value = value;
         this.showZeroModifiers = showZeroModifiers;
     }
-
-    /// <summary>Checks if invention is invented.
-    /// depreciated</summary>    
-    //public Modifier(Invention invention, float value, bool showZeroModifiers) : base(invention, true)
-    //{
-    //    this.value = value;
-    //    this.showZeroModifiers = showZeroModifiers;
-    //}
-    /// <summary>Checks if government == CheckingCountry.government/// depreciated</summary>  
-    //public Modifier(Government.ReformValue government, float value, bool showZeroModifiers) : base(government, true)
-    //{
-    //    this.value = value;
-    //    this.showZeroModifiers = showZeroModifiers;
-    //}
-    /// <summary>Checks if economy == CheckingCountry.economy/// depreciated</summary>  
-    //public Modifier(Economy.ReformValue economy, float value, bool showZeroModifiers) : base(economy, true)
-    //{
-    //    this.value = value;
-    //    this.showZeroModifiers = showZeroModifiers;
-    //}
+    
     public override string ToString()
     {
         return getName();
