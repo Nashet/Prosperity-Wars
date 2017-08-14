@@ -40,8 +40,11 @@ Map is generated randomly, you play as some country yet there is no much gamepla
  - perfomance
 
 ## Screenshots
+![map](http://i.imgrpost.com/imgr/2017/08/14/VYsdffAaererdsdVA.png)
+![map](http://i.imgrpost.com/imgr/2017/08/14/VYAaererrerdsdVA.png)
 ![map](http://i.imgrpost.com/imgr/2017/06/22/VYAaereVAVArdsdVA.png)
 ![diplomacy](http://i.imgrpost.com/imgr/2017/06/22/VYAaersderdsdVA.png)
+![panels](http://i.imgrpost.com/imgr/2017/08/14/ES-14.png)
 ![Imgur](http://i.imgur.com/KevTH51.png)
 ![Imgur](http://i.imgur.com/uzEJCvM.png)
 
