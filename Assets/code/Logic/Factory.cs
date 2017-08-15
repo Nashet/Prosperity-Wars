@@ -307,7 +307,7 @@ public class Factory : SimpleProduction
                     else
                         if (isSubsidized()) //take money and try again
                     {
-                        getCountry().takeFactorySubsidies(this, HowMuchMoneyCanNotPay(howMuchPay));
+                        getCountry().takeFactorySubsidies(this, howMuchMoneyCanNotPay(howMuchPay));
                         if (canPay(howMuchPay))
                             pay(link.Key, howMuchPay);
                         else
@@ -535,9 +535,9 @@ public class Factory : SimpleProduction
                 Value howMuchToReturn = new Value(loans);
                 if (howMuchToReturn.get() <= cash.get())
                     howMuchToReturn.set(cash);
-                getCountry().bank.takeMoney(this, howMuchToReturn);
+                getBank().takeMoney(this, howMuchToReturn);
                 if (loans.get() > 0f)
-                    getCountry().bank.defaultLoaner(this);
+                    getBank().defaultLoaner(this);
             }
         }
         sendAllAvailableMoney(getOwner());
@@ -603,8 +603,8 @@ public class Factory : SimpleProduction
                         if (leftOver < 0)
                         {
                             Value loanSize = new Value(leftOver * -1f);
-                            if (getCountry().bank.canGiveMoney(this, loanSize))
-                                getCountry().bank.giveMoney(this, loanSize);
+                            if (getBank().canGiveMoney(this, loanSize))
+                                getBank().giveMoney(this, loanSize);
                         }
                         leftOver = cash.get() - wantsMinMoneyReserv();
                         if (leftOver >= 0f)

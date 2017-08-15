@@ -461,7 +461,7 @@ public class Capitalists : PopUnit
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
                 if (proposition != null && province.canBuildNewFactory(proposition) &&
                     (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
-                {                   
+                {
                     Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
                     buildCost.add(Options.factoryMoneyReservPerLevel);
                     if (canPay(buildCost))
@@ -470,7 +470,7 @@ public class Capitalists : PopUnit
                         payWithoutRecord(found, buildCost);
                     }
                     else
-                        if (getCountry().bank.giveLackingMoney(this, buildCost))
+                        if (getBank().giveLackingMoney(this, buildCost))
                     {
                         Factory found = new Factory(province, this, proposition);
                         payWithoutRecord(found, buildCost);
@@ -480,7 +480,7 @@ public class Capitalists : PopUnit
             else
             {
                 //upgrade section
-                Factory factory = FactoryType.getMostPracticlyProfitable(province);               
+                Factory factory = FactoryType.getMostPracticlyProfitable(province);
                 if (factory != null
                     && factory.canUpgrade() // don't change it to Modifier  - it would prevent loan takes
                     && factory.getMargin().get() >= Options.minMarginToUpgrade
@@ -489,7 +489,7 @@ public class Capitalists : PopUnit
                     Value upgradeCost = factory.getUpgradeCost();
                     if (canPay(upgradeCost))
                         factory.upgrade(this);
-                    else if (getCountry().bank.giveLackingMoney(this, upgradeCost))
+                    else if (getBank().giveLackingMoney(this, upgradeCost))
                     {
                         factory.upgrade(this);
                     }
@@ -548,8 +548,8 @@ public class Artisans : PopUnit
                 storageNow.setZero();
                 Game.market.sentToMarket.add(gainGoodsThisTurn);
             }
-            else
-                changeProductionType();
+            //else
+            //   changeProductionType();
 
         }
     }
@@ -562,16 +562,17 @@ public class Artisans : PopUnit
 
             // take loan if don't have enough money to buy inputs            
             if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
-            {
-                var needs = artisansProduction.getRealNeeds();
-                if (!artisansProduction.canAfford(needs))
+                if (artisansProduction.getType().getPossibleProfit(province).isNotZero())
                 {
-                    var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed
-                    if (getCountry().bank.canGiveMoney(this, loanSize))
-                        getCountry().bank.giveMoney(this, loanSize);
-                    payWithoutRecord(artisansProduction, cash);
+                    var needs = artisansProduction.getRealNeeds();
+                    if (!artisansProduction.canAfford(needs))
+                    {
+                        var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed
+                        if (getBank().canGiveMoney(this, loanSize))
+                            getBank().giveMoney(this, loanSize);
+                        payWithoutRecord(artisansProduction, cash);
+                    }
                 }
-            }
 
             artisansProduction.buyNeeds();
             artisansProduction.payWithoutRecord(this, artisansProduction.cash);

@@ -80,34 +80,7 @@ public class FactoryType
             if (!next.isResourceGathering())
                 yield return next;
     }
-    internal static FactoryType getMostTeoreticalProfitable(Province province)
-    {
-        KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-        foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
-        {
-            {
-                float possibleProfit = factoryType.getPossibleProfit(province).get();
-                if (possibleProfit > result.Value)
-                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
-            }
-        }
-        return result.Key;
-    }
-
-    internal static Factory getMostPracticlyProfitable(Province province)
-    {
-        KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
-        foreach (Factory factory in province.allFactories)
-        {
-            if (province.canUpgradeFactory(factory.getType()))
-            {
-                float profit = factory.getProfit();
-                if (profit > result.Value)
-                    result = new KeyValuePair<Factory, float>(factory, profit);
-            }
-        }
-        return result.Key;
-    }
+    
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());
@@ -147,7 +120,34 @@ public class FactoryType
     {
         return shaft;
     }
+    internal static FactoryType getMostTeoreticalProfitable(Province province)
+    {
+        KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
+        foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
+        {
+            {
+                float possibleProfit = factoryType.getPossibleProfit(province).get();
+                if (possibleProfit > result.Value)
+                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
+            }
+        }
+        return result.Key;
+    }
 
+    internal static Factory getMostPracticlyProfitable(Province province)
+    {
+        KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
+        foreach (Factory factory in province.allFactories)
+        {
+            if (province.canUpgradeFactory(factory.getType()))
+            {
+                float profit = factory.getProfit();
+                if (profit > result.Value)
+                    result = new KeyValuePair<Factory, float>(factory, profit);
+            }
+        }
+        return result.Key;
+    }
     //todo improve getPossibleProfit
     internal Value getPossibleProfit(Province province)
     {

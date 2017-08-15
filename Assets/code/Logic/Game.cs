@@ -376,10 +376,10 @@ public class Game : ThreadedJob
         foreach (Country country in Country.allCountries)
         {
             allMoney.add(country.cash);
-            allMoney.add(country.bank.getReservs());
+            allMoney.add(country.getBank().getReservs());
             foreach (Province province in country.ownedProvinces)
             {
-                foreach (var factory in province.getAgents())
+                foreach (var factory in province.getAllAgents())
                     allMoney.add(factory.cash);
             }
         }
@@ -582,7 +582,7 @@ public class Game : ThreadedJob
             {
                 province.BalanceEmployableWorkForce();
                 {
-                    foreach (var item in province.getAgents())
+                    foreach (var item in province.getAllAgents())
                         item.setStatisticToZero();
                 }
             }
@@ -740,7 +740,7 @@ public class Game : ThreadedJob
                         pop.calcAssimilations();
                     }
                     
-                    if (Game.Random.Next(20) == 1)                   
+                    if (Game.Random.Next(15) == 1)                   
                         pop.invest();
                        
                 }
@@ -762,9 +762,7 @@ public class Game : ThreadedJob
             if (country.isAI())
                 country.AIThink();
         }
-    }
-
-    
+    }    
 
     protected override void ThreadFunction()
     {

@@ -344,7 +344,7 @@ public class Economy : AbstractReform
     internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<Condition> {
-            Invention.collectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
+            Invention.CollectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
     internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(Condition.IsNotImplemented));
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
     internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));

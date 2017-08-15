@@ -31,6 +31,7 @@ public abstract class Consumer : Agent
     }
     public virtual void setStatisticToZero()
     {
+        moneyIncomeLastTurn.set(moneyIncomethisTurn);
         moneyIncomethisTurn.set(0f);
         consumedLastTurn.copyDataFrom(consumedTotal); // temp   
         consumedTotal.setZero();
@@ -62,7 +63,7 @@ public abstract class Producer : Consumer
     public abstract void produce();
     public abstract void payTaxes();
 
-    protected Producer(Province province) : base(province.getCountry().bank, province)
+    protected Producer(Province province) : base(province.getCountry().getBank(), province)
     {
     }
     override public void setStatisticToZero()
@@ -97,8 +98,8 @@ public abstract class Producer : Consumer
                 Game.market.pay(this, cost);
                 //Game.market.sentToMarket.subtract(realSold);
             }
-            else if (Game.market.HowMuchMoneyCanNotPay(cost).get() > 10f)
-                Debug.Log("Failed market - producer payment: " + Game.market.HowMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
+            else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
+                Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
 

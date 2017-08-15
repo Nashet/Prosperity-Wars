@@ -11,16 +11,17 @@ public class Agent
     /// Must be filled together with wallet
     /// </summary>
     public Value moneyIncomethisTurn = new Value(0);
+    public Value moneyIncomeLastTurn = new Value(0);
     public Value cash = new Value(0);
     /// <summary>
     /// could be null
     /// </summary>
-    public Bank bank;
+    private Bank bank;
 
     public Value loans = new Value(0);
     public Value deposits = new Value(0);
     public readonly Province province;
-    
+
     public Agent(float inAmount, Bank bank, Province province)
     {
         cash.set(inAmount);
@@ -31,10 +32,17 @@ public class Agent
     {
         return province.getCountry();
     }
+    public Bank getBank()
+    {
+        return bank;
+    }
+    public void setBank(Bank bank)
+    {
+        this.bank = bank;
+    }
+    /// <summary> Includes deposits </summary>    
     public Value getMoneyAvailable()
     {
-        //chk
-        //return cash.addOutside(deposits);
         if (bank == null)
             return new Value(cash);
         else
@@ -93,9 +101,9 @@ public class Agent
     }
     internal bool canAfford(List<Storage> need)
     {
-        foreach (Storage stor in need)        
+        foreach (Storage stor in need)
             if (howMuchCanAfford(stor).isSmallerThan(stor))
-                return false;        
+                return false;
         return true;
     }
     /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
@@ -109,7 +117,7 @@ public class Agent
     //    return new Value(need - this.cash.get());
     //}
     /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-    internal Value HowMuchMoneyCanNotPay(Value need)
+    internal Value howMuchMoneyCanNotPay(Value need)
     {
         //return new Value(need - this.cash.get());
         //return need.subtractOutside(cash);
@@ -124,6 +132,7 @@ public class Agent
     //{
     //    return new Value(Game.market.getCost(need) - this.cash.get());
     //}
+    /// <summary> Including deposits </summary>    
     internal Storage howMuchCanAfford(Storage need)
     {
         Value cost = Game.market.getCost(need);
@@ -153,11 +162,12 @@ public class Agent
     //    else
     //        return false;
     //}
+    /// <summary> Includes deposits </summary>    
     internal bool canPay(Value howMuchPay)
     {
         return getMoneyAvailable().isBiggerOrEqual(howMuchPay);
     }
-    internal bool canPayInCash(Value howMuchPay)
+    internal bool canPayCashOnly(Value howMuchPay)
     {
         return cash.isBiggerOrEqual(howMuchPay);
     }
@@ -174,7 +184,7 @@ public class Agent
     {
         if (canPay(howMuch))
         {
-            if (!canPayInCash(howMuch) && bank != null)// checked for bank inv
+            if (!canPayCashOnly(howMuch) && bank != null)// checked for bank inv
             {
                 bank.giveLackingMoney(this, howMuch);
                 bank.giveLackingMoney(this, howMuch.multipleOutside(5));

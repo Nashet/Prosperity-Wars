@@ -73,24 +73,24 @@ public class PopUnitPanel : DragPanel
             sb.Append("\nConsumed: ").Append(pop.consumedTotal);
 
             if (Game.devMode)
-                generaltext.text += "\nConsumedLT: " + pop.consumedLastTurn + " cost: " + Game.market.getCost(pop.consumedLastTurn)
-                + "\nConsumedIM: " + pop.consumedInMarket + " cost: " + Game.market.getCost(pop.consumedInMarket);
+            sb.Append("\nConsumedLT: ").Append(pop.consumedLastTurn).Append(" cost: ").Append(Game.market.getCost(pop.consumedLastTurn)
+                ).Append("\nConsumedIM: ").Append(pop.consumedInMarket).Append(" cost: ").Append(Game.market.getCost(pop.consumedInMarket));
 
             generaltext.text = sb.ToString();
 
             sb.Clear();
             sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
-            lifeNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+            lifeNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
             lifeNeedsText.text = sb.ToString();
 
             sb.Clear();
             sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
-            everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+            everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
             everyDayNeedsText.text = sb.ToString();
 
             sb.Clear();
             sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
-            luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+            luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
             luxuryNeedsText.text = sb.ToString();
 
             sb.Clear();

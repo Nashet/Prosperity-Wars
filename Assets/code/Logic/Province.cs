@@ -287,23 +287,22 @@ public class Province : Name
     {
         Country oldCountry = getCountry();
         //refuse loans to old country bank
-        foreach (var producer in getAgents())
+        foreach (var agent in getAllAgents())
         {
-            if (producer.loans.get() != 0f)
-                getCountry().bank.defaultLoaner(producer);
+            if (agent.loans.isNotZero())
+                agent.getBank().defaultLoaner(agent);
             //take back deposits            
-            oldCountry.bank.returnAllMoney(producer);
+            oldCountry.getBank().returnAllMoney(agent);
+            agent.setBank(taker.getBank());
         }
-        //allFactories.Where(x => x.getOwner() == oldCountry)o;
+        
         allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
+        oldCountry.demobilize(x => x.getPopUnit().province == this);
         if (oldCountry.isOneProvince())
             oldCountry.killCountry(taker);
         else
             if (isCapital())
-            oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));
-
-
-        oldCountry.demobilize(x => x.getPopUnit().province == this);
+            oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));       
 
         // add loyalty penalty for conquered province // temp
         foreach (var pop in allPopUnits)
@@ -313,10 +312,8 @@ public class Province : Name
             else
                 pop.loyalty.subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
             pop.loyalty.clamp100();
-            Movement.leave(pop);
-            //item.setMovement(null);
+            Movement.leave(pop);            
         }
-
 
         if (oldCountry != null)
             if (oldCountry.ownedProvinces != null)
@@ -399,7 +396,7 @@ public class Province : Name
             //if (pop.canBuyProducts())
             yield return pop;
     }
-    public IEnumerable<Producer> getAgents()
+    public IEnumerable<Producer> getAllAgents()
     {
         foreach (Factory factory in allFactories)
             yield return factory;

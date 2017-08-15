@@ -449,7 +449,7 @@ public class Market : Agent//: PrimitiveStorageSet
     }
 
     /// <summary>
-    /// returns actually bought, subsidizations allowed
+    /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
     /// </summary>    
    public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
     {
@@ -457,13 +457,13 @@ public class Market : Agent//: PrimitiveStorageSet
             return buy(forWhom, need);
         else
         {
-            subsidizer.takeFactorySubsidies(forWhom, forWhom.HowMuchMoneyCanNotPay(need));
+            subsidizer.takeFactorySubsidies(forWhom, forWhom.howMuchMoneyCanNotPay(need));
             return buy(forWhom, need);
         }
     }
 
     /// <summary>
-    /// Buying PrimitiveStorageSet
+    /// Buying PrimitiveStorageSet, subsidizations allowed
     /// </summary>
     internal void buy(Consumer buyer, PrimitiveStorageSet buying, Country subsidizer)
     {

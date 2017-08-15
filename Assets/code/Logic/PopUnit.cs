@@ -156,9 +156,9 @@ abstract public class PopUnit : Producer
         if (source.deposits.isNotZero())
         {
             Value takeDeposit = source.deposits.multipleOutside(newPopShare);
-            if (source.getCountry().bank.canGiveMoney(this, takeDeposit))
+            if (source.getBank().canGiveMoney(this, takeDeposit))
             {
-                source.getCountry().bank.giveMoney(source, takeDeposit);
+                source.getBank().giveMoney(source, takeDeposit);
                 source.payWithoutRecord(this, takeDeposit);
             }
         }
@@ -256,8 +256,8 @@ abstract public class PopUnit : Producer
         //remove from population panel.. Would do it automatically        
         //secede property... to government
         getOwnedFactories().ForEach(x => x.setOwner(getCountry()));
-        sendAllAvailableMoney(getCountry().bank); // just in case if there is something
-        getCountry().bank.defaultLoaner(this);
+        sendAllAvailableMoney(getBank()); // just in case if there is something
+        getBank().defaultLoaner(this);
         Movement.leave(this);
     }
     //public Culture getCulture()
@@ -646,9 +646,10 @@ abstract public class PopUnit : Producer
                 }
     }
     /// <summary> </summary>
-    void subConsumeOnMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
+    void buyNeeds(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
         //buy life needs
+        Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
         if (!skipLifeneeds)
             foreach (Storage need in lifeNeeds)
             {
@@ -656,7 +657,6 @@ abstract public class PopUnit : Producer
                 {
                     storageNow.subtract(need);
                     consumedTotal.set(need);
-                    //consumedInMarket.Set(need); are you crazy?
                     needsFullfilled.set(1f / 3f);
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
                 }
@@ -673,50 +673,63 @@ abstract public class PopUnit : Producer
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
             // save some money in reserve to avoid spending all money on luxury 
-            Agent reserve = new Agent(0f, null, null);
-            payWithoutRecord(reserve, cash.multipleOutside(Options.savePopMoneyReserv));
-            var everyDayNeeds = getRealEveryDayNeeds();
-            Value needsCost = Game.market.getCost(everyDayNeeds);
-            float moneyWas = cash.get();
+            //Agent reserve = new Agent(0f, null, null); // temporally removed for testing
+            // payWithoutRecord(reserve, cash.multipleOutside(Options.savePopMoneyReserv));            
 
+            Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
+            var everyDayNeeds = getRealEveryDayNeeds();
             foreach (Storage need in everyDayNeeds)
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                 Game.market.buy(this, need, null);
             }
-            Value spentMoney = new Value(moneyWas - cash.get(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-            if (spentMoney.get() != 0f)
-                needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
+            Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+            if (spentMoneyOnEveryDayNeeds.isNotZero())
+                needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
+
             // buy luxury needs
             if (getEveryDayNeedsFullfilling().get() >= 0.95f)
             {
                 var luxuryNeeds = getRealLuxuryNeeds();
-                needsCost = Game.market.getCost(luxuryNeeds);
-                moneyWas = cash.get();
+                
+                Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                 bool someLuxuryProductUnavailable = false;
-                foreach (Storage nextNeed in luxuryNeeds)
-                {
+                foreach (Storage nextNeed in luxuryNeeds)               
                     if (Game.market.buy(this, nextNeed, null).isZero())
                         someLuxuryProductUnavailable = true;
-                }
+                Value luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
 
                 // unlimited consumption
-                if (!someLuxuryProductUnavailable && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))
+                // unlimited luxury spending should be limited by money income and already spent money
+                // I also can limit regular luxury consumption but should I?:
+                if (!someLuxuryProductUnavailable
+                    && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                 {
-                    Value canBuyExtraGoods = cash.divideOutside(needsCost);
-                    foreach (Storage nextNeed in luxuryNeeds)
+                    Value spentOnUnlimitedConsumption = new Value(cash);
+                    Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                    Value spendingLimit = moneyIncomeLastTurn.subtractOutside(spentMoneyOnAllNeeds, false);// reduce limit by already spent money
+
+                    if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
+                        spentOnUnlimitedConsumption.set(spendingLimit); // don't spent more than gained                    
+
+                    if (spentOnUnlimitedConsumption.get() > 5f)// to avoid zero values
                     {
-                        nextNeed.multiple(canBuyExtraGoods);
-                        Game.market.buy(this, nextNeed, null);
+                        // how much pop wants to spent on unlimited consumption. Pop should spent cash only..
+                        Value buyExtraGoodsMultiplier = spentOnUnlimitedConsumption.divideOutside(luxuryNeedsCost);
+                        foreach (Storage nextNeed in luxuryNeeds)
+                        {
+                            nextNeed.multiple(buyExtraGoodsMultiplier);
+                            Game.market.buy(this, nextNeed, null);
+                        }
                     }
                 }
 
-                spentMoney = new Value(moneyWas - cash.get(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-                // meaning wrong consumption calculation?
-                if (spentMoney.get() != 0f)
-                    needsFullfilled.add(spentMoney.get() / needsCost.get() / 3f);
+                Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                // wrong consumption calculation?
+                if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
+                    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
             }
-            reserve.payWithoutRecord(this, reserve.cash);
+            // reserve.payWithoutRecord(this, reserve.cash);
         }
     }
     /// <summary> </summary>
@@ -726,7 +739,7 @@ abstract public class PopUnit : Producer
         List<Storage> needs = getRealLifeNeeds();
         if (canBuyProducts())
         {
-            subConsumeOnMarket(needs, false);
+            buyNeeds(needs, false);
         }
         else
         {//non - market consumption
@@ -747,7 +760,7 @@ abstract public class PopUnit : Producer
                     needsFullfilled.set(canConsume / need.get() / 3f);
                 }
             if (popType == PopType.Aristocrats) // to allow trade without capitalism
-                subConsumeOnMarket(needs, true);
+                buyNeeds(needs, true);
         }
     }
     virtual internal bool canBuyProducts()
@@ -1184,9 +1197,9 @@ abstract public class PopUnit : Producer
     {
         if (getCountry().isInvented(Invention.Banking))
         {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * 10f, false);
-            if (extraMoney.get() > 5f)
-                getCountry().bank.takeMoney(this, extraMoney);
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
+            if (extraMoney.isNotZero())
+                getBank().takeMoney(this, extraMoney);
         }
     }
 

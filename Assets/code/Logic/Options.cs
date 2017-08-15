@@ -105,7 +105,7 @@ public static class Options
     internal static readonly Procent MovementStrenthToStartRebellion = new Procent(1f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
-    internal static readonly Value PopUnlimitedConsumptionLimit = new Value(20f);
+    internal static readonly Value PopUnlimitedConsumptionLimit = new Value(50f);
 
 
     internal static readonly float aristocratsFoodReserv = 50;
@@ -114,7 +114,8 @@ public static class Options
     internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
     /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
     internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
-    
+    internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;
+
 
     //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
 }

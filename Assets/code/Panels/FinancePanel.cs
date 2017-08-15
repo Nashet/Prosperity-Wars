@@ -52,7 +52,7 @@ public class FinancePanel : DragPanel
 
         sb.Clear();
 
-        sb.Append("\nNational bank: ").Append(Game.Player.bank).Append(" loans: ").Append(Game.Player.bank.getGivenLoans());
+        sb.Append("\nNational bank: ").Append(Game.Player.getBank()).Append(" loans: ").Append(Game.Player.getBank().getGivenLoans());
         //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
         sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
         sb.Append("\n*Government and others could automatically take money from deposits");
@@ -114,24 +114,24 @@ public class FinancePanel : DragPanel
     }
     public void onTakeLoan()
     {
-        Value loan = Game.Player.bank.howMuchCanGive(Game.Player);
+        Value loan = Game.Player.getBank().howMuchCanGive(Game.Player);
         if (loanLimit.value != 1f)
             loan.multiple(loanLimit.value);
-        if (Game.Player.bank.canGiveMoney(Game.Player, loan))
-            Game.Player.bank.giveMoney(Game.Player, loan);
+        if (Game.Player.getBank().canGiveMoney(Game.Player, loan))
+            Game.Player.getBank().giveMoney(Game.Player, loan);
         MainCamera.refreshAllActive();
     }
     public void onPutInDeposit()
     {
         if (loanLimit.value == 1f)
-            Game.Player.bank.takeMoney(Game.Player, new Value(Game.Player.cash));
+            Game.Player.getBank().takeMoney(Game.Player, new Value(Game.Player.cash));
         else
-            Game.Player.bank.takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));
+            Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));
         MainCamera.refreshAllActive();
     }
     public void onLoanLimitChange()
     {
-        loanLimitText.text = Game.Player.bank.howMuchCanGive(Game.Player).multipleOutside(loanLimit.value).ToString();
+        loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).multipleOutside(loanLimit.value).ToString();
     }
 
     public void onDepositLimitChange()

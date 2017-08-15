@@ -106,7 +106,7 @@ public class Country : Staff
                 delegate  { return "There is bigger threat to the world - " + isThereBadboyCountry(); },  0.05f, false),
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
             });
-        bank = new Bank();
+        setBank(new Bank());
         //staff = new GeneralStaff(this);
         //homeArmy = new Army(this);
         //sendingArmy = new Army(this);
@@ -134,7 +134,7 @@ public class Country : Staff
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
             markInvented(Invention.Farming);
-            //markInvented(Invention.Manufactories);
+           // markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
             // inventions.markInvented(Invention.metal);
             //markInvented(Invention.individualRights);
@@ -365,13 +365,13 @@ public class Country : Staff
 
         //take all money from bank
         if (byWhom.isInvented(Invention.Banking))
-            byWhom.bank.add(this.bank);
+            byWhom.getBank().add(this.getBank());
         else
-            this.bank.destroy(byWhom);
+            this.getBank().destroy(byWhom);
 
         //byWhom.storageSet.
         this.sendAllAvailableMoney(byWhom);
-        this.bank.defaultLoaner(this);
+        this.getBank().defaultLoaner(this);
         storageSet.sendAll(byWhom.storageSet);
 
         if (!this.isAI())
@@ -619,7 +619,7 @@ public class Country : Staff
         {
             float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
             if (extraMoney > 0f)
-                bank.takeMoney(this, new Value(extraMoney));
+                getBank().takeMoney(this, new Value(extraMoney));
         }
         //buyNeeds();
         foreach (var item in getAllArmies())
@@ -844,6 +844,7 @@ public class Country : Staff
         unemploymentSubsidiesExpense.set(0f);
         ownedFactoriesIncome.set(0f);
         factorySubsidiesExpense.set(0f);
+        moneyIncomeLastTurn.set(moneyIncomethisTurn);
         moneyIncomethisTurn.set(0f);
         storageBuyingExpense.set(0f);
         soldiersWageExpense.setZero();
