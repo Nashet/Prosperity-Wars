@@ -116,7 +116,7 @@ public class FinancePanel : DragPanel
     {
         Value loan = Game.Player.getBank().howMuchCanGive(Game.Player);
         if (loanLimit.value != 1f)
-            loan.multiple(loanLimit.value);
+            loan.multiply(loanLimit.value);
         if (Game.Player.getBank().canGiveMoney(Game.Player, loan))
             Game.Player.getBank().giveMoney(Game.Player, loan);
         MainCamera.refreshAllActive();
@@ -126,17 +126,17 @@ public class FinancePanel : DragPanel
         if (loanLimit.value == 1f)
             Game.Player.getBank().takeMoney(Game.Player, new Value(Game.Player.cash));
         else
-            Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.multipleOutside(depositLimit.value));
+            Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.multiplyOutside(depositLimit.value));
         MainCamera.refreshAllActive();
     }
     public void onLoanLimitChange()
     {
-        loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).multipleOutside(loanLimit.value).ToString();
+        loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).multiplyOutside(loanLimit.value).ToString();
     }
 
     public void onDepositLimitChange()
     {
-        depositLimitText.text = Game.Player.cash.multipleOutside(depositLimit.value).ToString();
+        depositLimitText.text = Game.Player.cash.multiplyOutside(depositLimit.value).ToString();
     }
     public void onSoldierWageChange()
     {

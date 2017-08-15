@@ -573,7 +573,7 @@ public class Province : Name
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multipleOutside(pop.getPopulation()));
+                result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
             }
             if (allPopulation > 0)
                 return result.divideOutside(allPopulation);

@@ -187,7 +187,7 @@ public class Agent
             if (!canPayCashOnly(howMuch) && bank != null)// checked for bank inv
             {
                 bank.giveLackingMoney(this, howMuch);
-                bank.giveLackingMoney(this, howMuch.multipleOutside(5));
+                bank.giveLackingMoney(this, howMuch.multiplyOutside(5));
             }
             whom.cash.add(howMuch);
             this.cash.subtract(howMuch);

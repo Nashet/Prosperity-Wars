@@ -515,12 +515,12 @@ public class Storage : Value
         else
             return isBiggerOrEqual(HowMuch);
     }
-    internal Storage multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
+    internal Storage multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
     {
         if (invalue < 0f)
         {
             if (showMessageAboutOperationFails)
-                Debug.Log("Storage multiple failed");
+                Debug.Log("Storage multiply failed");
             return new Storage(this.getProduct(), 0f);
         }
         else
@@ -529,12 +529,12 @@ public class Storage : Value
     /// <summary>
     /// returns new value
     /// </summary>    
-    public Storage multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    public Storage multiplyOutside(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() < 0)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value multiply failed");
             return new Storage(this.getProduct(), 0f);
         }
         else

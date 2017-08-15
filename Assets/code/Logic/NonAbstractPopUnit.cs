@@ -133,7 +133,7 @@ public class Farmers : PopUnit
     public override void produce()
     {
         Storage producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
-        producedAmount.multiple(modEfficiency.getModifier(this));
+        producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
         gainGoodsThisTurn.set(producedAmount);
 
         if (Economy.isMarket.checkIftrue(getCountry()))
@@ -386,7 +386,7 @@ public class Soldiers : PopUnit
     internal void takePayCheck()
     {
         Value payCheck = new Value(getCountry().getSoldierWage());
-        payCheck.multiple(getPopulation() / 1000f);
+        payCheck.multiply(getPopulation() / 1000f);
         if (getCountry().canPay(payCheck))
         {
             getCountry().pay(this, payCheck);

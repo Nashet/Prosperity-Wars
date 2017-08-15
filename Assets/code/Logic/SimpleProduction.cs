@@ -53,7 +53,7 @@ abstract public class SimpleProduction : Producer
     {
         //Storage producedAmount = new Storage(type.basicProduction.getProduct(), type.basicProduction.get() * getEfficiency(true).get() * getLevel()); // * getLevel());
         //gainGoodsThisTurn = getType().basicProduction.multipleOutside(artisans.getPopulation() * PopUnit.modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
-        gainGoodsThisTurn = getType().basicProduction.multipleOutside(multiplier);
+        gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
 
         storageNow.add(gainGoodsThisTurn);
         //gainGoodsThisTurn.set(producedAmount);
@@ -82,7 +82,7 @@ abstract public class SimpleProduction : Producer
         // how much we really want
         foreach (Storage input in getType().resourceInput)
         {
-            realInput.Add(input.multipleOutside(multiplier));
+            realInput.Add(input.multiplyOutside(multiplier));
         }
 
         // checking if there is enough in market
@@ -146,7 +146,7 @@ abstract public class SimpleProduction : Producer
         foreach (Storage next in getType().resourceInput)
         {
             Storage howMuchWantBuy = new Storage(next);
-            howMuchWantBuy.multiple(multiplier);
+            howMuchWantBuy.multiply(multiplier);
             Storage reserv = getInputProductsReserve().findStorage(next.getProduct());
             if (reserv == null)
                 result.Add(howMuchWantBuy);
@@ -186,7 +186,7 @@ abstract public class SimpleProduction : Producer
         foreach (Storage next in getType().resourceInput)
         {
             Storage nStor = new Storage(next.getProduct(), next.get());
-            nStor.multiple(multiplier);
+            nStor.multiply(multiplier);
             result.Add(nStor);
         }
         return result;
@@ -202,7 +202,7 @@ abstract public class SimpleProduction : Producer
         else
         {
             //Storage realNeed = new Storage(need.getProduct(), need.get() * multiplier.get());
-            Storage realNeed = need.multipleOutside(multiplier.get());
+            Storage realNeed = need.multiplyOutside(multiplier.get());
             //Storage realNeed = new Storage(need.getProduct(), need.get() * getInputFactor());
             Storage canAfford = howMuchCanAfford(realNeed);
             return canAfford.get();

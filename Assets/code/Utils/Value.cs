@@ -112,33 +112,27 @@ public class Value
         else
             value -= (uint)Mathf.RoundToInt(invalue * precision);
     }
-    //public void multiple(Value invalue)
-    //{
-    //    if (invalue.get() < 0 )
-    //        Debug.Log("Value multiple failed");
-    //    value = (uint)(value * invalue.get());
-    //}
-
+    
 
     /// <summary>Keeps result inside</summary>    
-    public void multiple(Value invalue, bool showMessageAboutNegativeValue = true)
+    public void multiply(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() < 0)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value multiply failed");
             value = 0;
         }
         else
             set(invalue.get() * this.get());
     }
     /// <summary>Keeps result inside</summary>    
-    public void multiple(float invalue, bool showMessageAboutNegativeValue = true)
+    public void multiply(float invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue < 0f)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value multiply failed");
             value = 0;
         }
         else
@@ -147,23 +141,23 @@ public class Value
     /// <summary>
     /// returns new value
     /// </summary>
-    internal Value multipleOutside(int invalue, bool showMessageAboutOperationFails = true)
+    internal Value multiplyOutside(int invalue, bool showMessageAboutOperationFails = true)
     {
         if (invalue < 0)
         {
             if (showMessageAboutOperationFails)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value multiply failed");
             return new Value(0f);
         }
         else
             return new Value(get() * invalue);
     }
-   virtual public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
+   virtual public Value multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
     {
         if (invalue < 0f)
         {
             if (showMessageAboutOperationFails)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value multiply failed");
             return new Value(0f);
         }
         else
@@ -172,12 +166,12 @@ public class Value
     /// <summary>
     /// returns new value
     /// </summary>    
-    virtual public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    virtual public Value multiplyOutside(Value invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue.get() < 0)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value multiply failed");
             return new Value(0);
         }
         else
@@ -189,7 +183,7 @@ public class Value
         if (invalue.get() <= 0)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value divide failed");
             value = 0;
         }
         else
@@ -201,7 +195,7 @@ public class Value
         if (v <= 0)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiple failed");
+                Debug.Log("Value divide failed");
             value = 0;
         }
         else

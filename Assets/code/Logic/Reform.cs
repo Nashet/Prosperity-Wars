@@ -562,7 +562,7 @@ public class MinimalWage : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.02f);
+                everyDayCost.multiply(0.02f);
                 result.add(everyDayCost);
                 return result.get();
             }
@@ -570,7 +570,7 @@ public class MinimalWage : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.04f);
+                everyDayCost.multiply(0.04f);
                 result.add(everyDayCost);
                 return result.get();
             }
@@ -578,7 +578,7 @@ public class MinimalWage : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.06f);
+                everyDayCost.multiply(0.06f);
                 result.add(everyDayCost);
                 return result.get();
             }
@@ -586,7 +586,7 @@ public class MinimalWage : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.08f);
+                everyDayCost.multiply(0.08f);
                 //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
                 result.add(everyDayCost);
                 //result.add(luxuryCost);
@@ -738,7 +738,7 @@ public class UnemploymentSubsidies : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.02f);
+                everyDayCost.multiply(0.02f);
                 result.add(everyDayCost);
                 return result.get();
             }
@@ -746,7 +746,7 @@ public class UnemploymentSubsidies : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.04f);
+                everyDayCost.multiply(0.04f);
                 result.add(everyDayCost);
                 return result.get();
             }
@@ -754,7 +754,7 @@ public class UnemploymentSubsidies : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.06f);
+                everyDayCost.multiply(0.06f);
                 result.add(everyDayCost);
                 return result.get();
             }
@@ -762,7 +762,7 @@ public class UnemploymentSubsidies : AbstractReform
             {
                 Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
                 Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
-                everyDayCost.multiple(0.08f);
+                everyDayCost.multiply(0.08f);
                 //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
                 result.add(everyDayCost);
                 //result.add(luxuryCost);

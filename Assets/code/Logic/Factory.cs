@@ -479,7 +479,7 @@ public class Factory : SimpleProduction
     /// <returns></returns>
     internal Procent getWorkForceFulFilling()
     {
-        return Procent.makeProcent(getWorkForce(), workForcePerLevel * level);
+        return Procent.makeProcent(getWorkForce(), workForcePerLevel * level, false);
         //return getWorkForce() / (float)(workForcePerLevel * level);
     }
     override public List<Storage> getRealNeeds()

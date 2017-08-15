@@ -612,7 +612,7 @@ public class Country : Staff
     {
         base.simulate();
         var spBase = getSciencePointsBase();
-        spBase.multiple(modSciencePoints.getModifier(this));
+        spBase.multiply(modSciencePoints.getModifier(this));
         sciencePoints.add(spBase);
 
         if (this.autoPutInBankLimit > 0f)
@@ -814,7 +814,7 @@ public class Country : Staff
     internal Value getGDPPer1000()
     {
         Value res = getGDP();
-        res.multiple(1000);
+        res.multiply(1000);
         res.divide(getMenPopulation());
 
         return res;

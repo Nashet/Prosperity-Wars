@@ -121,7 +121,7 @@ public class Corps
             if (next.getProduct().isInvented(country))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
-                nStor.multiple(multiplier);
+                nStor.multiply(multiplier);
                 result.Add(nStor);
             }
         //result.Sort(delegate (Storage x, Storage y)
@@ -141,7 +141,7 @@ public class Corps
                 return found;
             else
             {
-                return new Storage(product, found.multipleOutside(this.getSize() / 1000f));
+                return new Storage(product, found.multiplyOutside(this.getSize() / 1000f));
             }
         }
         else

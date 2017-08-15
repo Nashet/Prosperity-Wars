@@ -77,7 +77,7 @@ public class Market : Agent//: PrimitiveStorageSet
         //price = Game.market.findPrice(need.getProduct()).get();
         //cost = need.get() * price;
 
-        return need.multipleOutside(Game.market.findPrice(need.getProduct())) as Value;
+        return need.multiplyOutside(Game.market.findPrice(need.getProduct())) as Value;
     }
     /// <summary>
     /// Meaning demander actually can pay for item in current prices
@@ -384,7 +384,7 @@ public class Market : Agent//: PrimitiveStorageSet
             Value cost;
             if (Game.market.sentToMarket.has(buying))
             {
-                cost = buying.multipleOutside(price);
+                cost = buying.multiplyOutside(price);
                 if (buyer.canPay(cost))
                 {
                     buyer.pay(Game.market, cost);
@@ -401,7 +401,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     float val = buyer.cash.get() / price.get();
                     val = Mathf.Floor(val * Value.precision) / Value.precision;
                     howMuchCanConsume = new Storage(price.getProduct(), val);
-                    buyer.pay(Game.market, howMuchCanConsume.multipleOutside(price));
+                    buyer.pay(Game.market, howMuchCanConsume.multiplyOutside(price));
                     Game.market.sentToMarket.subtract(howMuchCanConsume);
                     buyer.consumedTotal.add(howMuchCanConsume);
                     buyer.consumedInMarket.add(howMuchCanConsume);
@@ -415,7 +415,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 Storage howMuchAvailable = Game.market.HowMuchAvailable(buying);
                 if (howMuchAvailable.get() > 0f)
                 {
-                    cost = howMuchAvailable.multipleOutside(price);
+                    cost = howMuchAvailable.multiplyOutside(price);
                     if (buyer.canPay(cost))
                     {
                         buyer.pay(Game.market, cost);

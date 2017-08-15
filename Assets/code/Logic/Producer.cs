@@ -83,7 +83,7 @@ public abstract class Producer : Consumer
             Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
             if (DSB.get() > 1f) DSB.set(1f);
             Storage realSold = new Storage(sentToMarket);
-            realSold.multiple(DSB);
+            realSold.multiply(DSB);
             Value cost = new Value(Game.market.getCost(realSold));
 
             // assuming gainGoodsThisTurn & realSold have same product
