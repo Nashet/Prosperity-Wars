@@ -557,10 +557,9 @@ public class Country : Staff
         {
             divisionVotersResult.Add(type, 0);
             divisionPopulationResult.Add(type, 0);
-            foreach (Province pro in this.ownedProvinces)
-            {
-                var popList = pro.getAllPopUnits(type);
-                foreach (PopUnit pop in popList)
+            foreach (Province province in this.ownedProvinces)
+            {                
+                foreach (PopUnit pop in province.getAllPopUnits(type))
                     if (pop.getSayingYes(reform))
                     {
                         divisionPopulationResult[type] += pop.getPopulation();// * pop.getVotingPower();

@@ -295,14 +295,14 @@ public class Province : Name
             oldCountry.getBank().returnAllMoney(agent);
             agent.setBank(taker.getBank());
         }
-        
+
         allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
         oldCountry.demobilize(x => x.getPopUnit().province == this);
         if (oldCountry.isOneProvince())
             oldCountry.killCountry(taker);
         else
             if (isCapital())
-            oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));       
+            oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));
 
         // add loyalty penalty for conquered province // temp
         foreach (var pop in allPopUnits)
@@ -312,7 +312,7 @@ public class Province : Name
             else
                 pop.loyalty.subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
             pop.loyalty.clamp100();
-            Movement.leave(pop);            
+            Movement.leave(pop);
         }
 
         if (oldCountry != null)
@@ -487,7 +487,7 @@ public class Province : Name
         return false;
     }
 
-    public List<PopUnit> getAllPopUnits(PopType ipopType)
+    public List<PopUnit> getAllPopUnitsList(PopType ipopType)
     {
         List<PopUnit> result = new List<PopUnit>();
         foreach (PopUnit pop in allPopUnits)
@@ -495,7 +495,12 @@ public class Province : Name
                 result.Add(pop);
         return result;
     }
-
+    public IEnumerable<PopUnit> getAllPopUnits(PopType ipopType)
+    {
+        foreach (PopUnit pop in allPopUnits)
+            if (pop.popType == ipopType)
+                yield return pop;
+    }
 
     public static Province find(Color color)
     {
@@ -514,9 +519,8 @@ public class Province : Name
 
     public int getPopulationAmountByType(PopType ipopType)
     {
-        List<PopUnit> list = getAllPopUnits(ipopType);
         int result = 0;
-        foreach (PopUnit pop in list)
+        foreach (PopUnit pop in getAllPopUnits(ipopType))
             if (pop.popType == ipopType)
                 result += pop.getPopulation();
         return result;
@@ -524,18 +528,16 @@ public class Province : Name
     //not called with capitalism
     internal void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
     {
-        List<PopUnit> allAristocratsInProvince = getAllPopUnits(PopType.Aristocrats);
         int aristoctratAmount = 0;
-        foreach (PopUnit pop in allAristocratsInProvince)
-            aristoctratAmount += pop.getPopulation();
-        foreach (Aristocrats aristocrat in allAristocratsInProvince)
+        foreach (Aristocrats aristocrats in getAllPopUnits(PopType.Aristocrats))
+            aristoctratAmount += aristocrats.getPopulation();
+        foreach (Aristocrats aristocrat in getAllPopUnits(PopType.Aristocrats))
         {
             Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
             fromWho.send(aristocrat.storageNow, howMuch);
             aristocrat.gainGoodsThisTurn.add(howMuch);
             aristocrat.dealWithMarket();
-            //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);
-            //Game.market.tmpMarketStorage.add(aristocrat.gainGoodsThisTurn);
+            //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);            
         }
     }
 
@@ -566,25 +568,18 @@ public class Province : Name
     {
         Value result = new Value(0);
         int allPopulation = 0;
-        List<PopUnit> localPops = getAllPopUnits(type);
-        if (localPops.Count > 0)
+
+        foreach (PopUnit pop in getAllPopUnits(type))
+        // get middle needs fulfilling according to pop weight            
         {
-            foreach (PopUnit pop in localPops)
-            // get middle needs fulfilling according to pop weight            
-            {
-                allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
-            }
-            if (allPopulation > 0)
-                return result.divideOutside(allPopulation);
-            else
-                return new Value(1f);
+            allPopulation += pop.getPopulation();
+            result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
         }
+        if (allPopulation > 0)
+            return result.divideOutside(allPopulation);
         else
-        {
             return new Value(1f);
-        }
-    }   
+    }
     /// <summary>
     /// Returns result divided on groups of factories (List) each with own level of salary
     /// </summary>    
@@ -616,9 +611,9 @@ public class Province : Name
     }
     public void BalanceEmployableWorkForce()
     {
-        List<PopUnit> workforceList = this.getAllPopUnits(PopType.Workers);
+        List<PopUnit> workforceList = this.getAllPopUnitsList(PopType.Workers);
         int unemplyedWorkForce = workforceList.Sum(x => x.getPopulation());
-        
+
         if (unemplyedWorkForce > 0)
         {
             // workforceList = workforceList.OrderByDescending(o => o.population).ToList();            
@@ -632,21 +627,21 @@ public class Province : Name
                     factoriesInGroupWantsTotal += factory.howMuchWorkForceWants();
                     //factory.clearWorkforce();
                 }
-               
+
                 int hiredInThatGroup = 0;
                 foreach (var factory in factoryGroup)
                     if (factory.getSalary() > 0f)//factory.isWorking() &&
                     {
                         int factoryWants = factory.howMuchWorkForceWants();
-                        
+
                         int toHire;
                         if (factoriesInGroupWantsTotal == 0 || unemplyedWorkForce == 0 || factoryWants == 0)
                             toHire = 0;
                         else
                             toHire = unemplyedWorkForce * factoryWants / factoriesInGroupWantsTotal;
                         if (toHire > factoryWants)
-                            toHire = factoryWants;                        
-                        hiredInThatGroup += factory.hireWorkforce(toHire, workforceList);                       
+                            toHire = factoryWants;
+                        hiredInThatGroup += factory.hireWorkforce(toHire, workforceList);
 
                         //if (popsLeft <= 0) break;
                         // don't do breaks to clear old workforce records
