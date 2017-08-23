@@ -5,6 +5,7 @@ using UnityEngine;
 
 abstract public class SimpleProduction : Producer
 {
+    private Agent owner;
     private readonly FactoryType type;
     private readonly PrimitiveStorageSet inputProductsReserve = new PrimitiveStorageSet();
 
@@ -14,7 +15,14 @@ abstract public class SimpleProduction : Producer
         gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
         storageNow = new Storage(this.getType().basicProduction.getProduct());
         sentToMarket = new Storage(this.getType().basicProduction.getProduct());
-
+    }
+    internal Agent getOwner()
+    {
+        return owner;
+    }
+    public void setOwner(Agent agent)
+    {
+        owner = agent;
     }
     public PrimitiveStorageSet getInputProductsReserve()
     {
@@ -51,26 +59,13 @@ abstract public class SimpleProduction : Producer
     /// </summary>
     protected void produce(Value multiplier)
     {
-        //Storage producedAmount = new Storage(type.basicProduction.getProduct(), type.basicProduction.get() * getEfficiency(true).get() * getLevel()); // * getLevel());
-        //gainGoodsThisTurn = getType().basicProduction.multipleOutside(artisans.getPopulation() * PopUnit.modEfficiency.getModifier(this) * Options.ArtisansProductionModifier / 1000f);
+        //todo add checks for inputs
         gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
-
         storageNow.add(gainGoodsThisTurn);
-        //gainGoodsThisTurn.set(producedAmount);
 
-        //consumeInputResources
+        //consume Input Resources
         foreach (Storage next in getRealNeeds())
-            getInputProductsReserve().subtract(next, false);
-
-
-        if (Economy.isMarket.checkIftrue(getCountry()))
-        {
-            // Buyers should come and buy something...
-            // its in other files.
-        }
-        else // send all production to owner
-            ; // todo write !capitalism
-              //storageNow.sendAll(owner.storageSet);       
+            getInputProductsReserve().subtract(next, false);        
     }
     abstract internal Procent getInputFactor();
     protected Procent getInputFactor(Procent multiplier)
@@ -222,59 +217,5 @@ abstract public class SimpleProduction : Producer
         }
         return true;
     }
-}
-public class ArtisanProduction : SimpleProduction
-{
-    private readonly Artisans owner;
-    public ArtisanProduction(FactoryType type, Province province, Artisans artisan) : base(type, province)
-    {
-        this.owner = artisan;
-    }
-    override public List<Storage> getRealNeeds()
-    {
-        return getRealNeeds(new Value(owner.getPopulation() / 1000f));
-    }
-    /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
-    //override public float getLocalEffectiveDemand(Product product)
-    //{
-    //    return getLocalEffectiveDemand(product, new Procent(owner.getPopulation() / 1000f));
-    //}
-    public override List<Storage> getHowMuchInputProductsReservesWants()
-    {
-        return getHowMuchInputProductsReservesWants(new Value(owner.getPopulation() / 1000f * Options.FactoryInputReservInDays));
-    }
-    internal override Procent getInputFactor()
-    {
-        return getInputFactor(new Procent(owner.getPopulation() / 1000f));
-    }
-    /// <summary>
-    /// Fills storageNow and gainGoodsThisTurn
-    /// </summary>
-    public override void produce()
-    {
-       
-            produce(new Value(owner.getPopulation() * PopUnit.modEfficiency.getModifier(owner) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
-            owner.gainGoodsThisTurn.set(this.gainGoodsThisTurn);
-            if (owner.storageNow.isSameProduct(this.storageNow))
-                owner.storageNow.add(this.storageNow);
-            else
-                owner.storageNow.set(this.storageNow);
-       
-        //owner.sentToMarket.set(sentToMarket);
-    }
-    /// <summary>
-    /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
-    /// </summary>
-    override public void buyNeeds()
-    {
-        List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-
-        //todo !CAPITALISM part
-        //if (isSubsidized())
-        //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
-        //else
-        Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
-    }
-
     
 }

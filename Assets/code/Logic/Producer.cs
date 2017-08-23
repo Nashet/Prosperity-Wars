@@ -2,16 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//public class PopLinkage
-//{
-//    public PopUnit pop;
-//    public int amount;
-//    internal PopLinkage(PopUnit p, int a)
-//    {
-//        pop = p;
-//        amount = a;
-//    }
-//}
 
 /// <summary>
 /// Represent anyone who can consume (but can't produce by itself)
@@ -22,7 +12,7 @@ public abstract class Consumer : Agent
     public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
     public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
     public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
-    public abstract void buyNeeds();
+    public abstract void consumeNeeds();
     public abstract List<Storage> getRealNeeds();
 
     protected Consumer(Bank bank, Province province) : base(0f, bank, province)
@@ -102,8 +92,7 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
-
-
+    
 }
 
 

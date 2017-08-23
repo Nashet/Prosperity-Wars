@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// represent ability to take loans/deposits
 /// </summary>
-public class Agent
+abstract public class Agent
 {
     /// <summary>
     /// Must be filled together with wallet

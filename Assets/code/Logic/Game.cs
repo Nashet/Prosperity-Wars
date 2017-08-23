@@ -661,13 +661,14 @@ public class Game : ThreadedJob
                     fact.paySalary(); // workers get gold or food here                   
                 }
                 foreach (PopUnit pop in province.allPopUnits)
-                //That placed here to avoid issues with Aristocrats and clerics
+                //That placed here to avoid issues with Aristocrats and Clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
                     if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
-                    if (country.isInvented(Invention.ProfessionalArmy))
+                    if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        // don't need salary with PE
                     {
                         var soldier = pop as Soldiers;
                         if (soldier != null)
@@ -683,7 +684,7 @@ public class Game : ThreadedJob
             {
                 foreach (Factory factory in province.allFactories)
                 {
-                    factory.buyNeeds();
+                    factory.consumeNeeds();
                 }
 
                 foreach (PopUnit pop in province.allPopUnits)
@@ -694,7 +695,7 @@ public class Game : ThreadedJob
                 }
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    pop.buyNeeds();
+                    pop.consumeNeeds();
                 }
             }
         // big AFTER all circle

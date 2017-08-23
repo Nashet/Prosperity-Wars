@@ -473,62 +473,15 @@ abstract public class PopUnit : Producer
         else return new Procent(0);
     }
 
-
-    ////abstract public override void produce();
-    ////{
-    ////    float tribeMenOverPopulationFactor = 1f; //goes to zero with 20
-
-    ////    switch (type.type)
-    ////    {
-    ////        case PopType.PopTypes.TribeMen:
-    ////            Value producedAmount;
-    ////            if (population <= province.maxTribeMenCapacity)
-    ////                producedAmount = new Value(population * type.basicProduction.value.get() / 1000f);
-    ////            else
-    ////            {
-    ////                int overPopulation = province.getMenPopulation() - province.maxTribeMenCapacity;
-    ////                float over = (float)(overPopulation / (float)province.maxTribeMenCapacity);
-    ////                producedAmount = new Value(population * type.basicProduction.value.get() / 1000f); //TODO fix shit
-
-    ////                Value negation = new Value(producedAmount.get() * over / tribeMenOverPopulationFactor);
-    ////                if (negation.get() > producedAmount.get()) producedAmount.set(0);
-    ////                else
-    ////                    producedAmount.subtract(negation);
-
-    ////            }
-    ////            storage.value.add(producedAmount);
-    ////            produced.set(producedAmount);
-
-    ////            break;
-    ////        case PopType.PopTypes.Aristocrats:
-
-    ////            break;
-    ////        case PopType.PopTypes.Farmers:
-    ////            producedAmount = new Value(population * type.basicProduction.value.get() / 1000);
-    ////            storage.value.add(producedAmount);
-    ////            produced.set(producedAmount);
-    ////            break;
-    ////        case PopType.PopTypes.Artisans:
-
-    ////            break;
-    ////        case PopType.PopTypes.Soldiers:
-
-    ////            break;
-    ////        default:
-    ////            Debug.Log("Unnown PopType in Game.cs");
-    ////            break;
-
-    ////    }
-    ////}
     internal bool hasToPayGovernmentTaxes()
     {
         if (this.popType == PopType.Aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((getCountry())))
             return false;
-        else return true;
+        else
+            return true;
     }
     public override void payTaxes() // should be abstract 
     {
-
         if (Economy.isMarket.checkIftrue(getCountry()) && popType != PopType.TribeMen)
         {
             Value taxSize;
@@ -733,7 +686,7 @@ abstract public class PopUnit : Producer
         }
     }
     /// <summary> </summary>
-    public override void buyNeeds()
+    public override void consumeNeeds()
     {
         //life needs First
         List<Storage> needs = getRealLifeNeeds();
@@ -743,7 +696,7 @@ abstract public class PopUnit : Producer
         }
         else
         {//non - market consumption
-            payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive
+            payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
             foreach (Storage need in needs)
                 if (storageNow.isBiggerOrEqual(need))
                 {
@@ -758,9 +711,7 @@ abstract public class PopUnit : Producer
                     consumedTotal.set(storageNow);
                     storageNow.set(0);
                     needsFullfilled.set(canConsume / need.get() / 3f);
-                }
-            if (popType == PopType.Aristocrats) // to allow trade without capitalism
-                buyNeeds(needs, true);
+                }            
         }
     }
     virtual internal bool canBuyProducts()
@@ -955,19 +906,24 @@ abstract public class PopUnit : Producer
     }
     internal void takeUnemploymentSubsidies()
     {
-        var reform = getCountry().unemploymentSubsidies.getValue();
-        if (getUnemployedProcent().get() > 0 && reform != UnemploymentSubsidies.None)
+        // no subsidies with PE
+        // may replace by trigger
+        if (getCountry().economy.getValue() != Economy.PlannedEconomy)
         {
-            Value subsidy = getUnemployedProcent();
-            subsidy.multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
-            //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
-            if (getCountry().canPay(subsidy))
+            var reform = getCountry().unemploymentSubsidies.getValue();
+            if (getUnemployedProcent().isNotZero() && reform != UnemploymentSubsidies.None)
             {
-                getCountry().pay(this, subsidy);
-                getCountry().unemploymentSubsidiesExpenseAdd(subsidy);
+                Value subsidy = getUnemployedProcent();
+                subsidy.multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
+                //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
+                if (getCountry().canPay(subsidy))
+                {
+                    getCountry().pay(this, subsidy);
+                    getCountry().unemploymentSubsidiesExpenseAdd(subsidy);
+                }
+                else
+                    this.didntGetPromisedUnemloymentSubsidy = true;
             }
-            else
-                this.didntGetPromisedUnemloymentSubsidy = true;
         }
     }
     public void calcGrowth()

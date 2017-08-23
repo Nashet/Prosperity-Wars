@@ -141,7 +141,7 @@ public class Movement : Staff
         return result;
     }
 
-    public override void buyNeeds()
+    public override void consumeNeeds()
     {
         throw new NotImplementedException();
     }

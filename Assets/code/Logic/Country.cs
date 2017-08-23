@@ -129,14 +129,15 @@ public class Country : Staff
         //if (!Game.devMode)
         {
 
-            economy.status = Economy.StateCapitalism;
+            //economy.status = Economy.StateCapitalism;
+            economy.setValue( Economy.NaturalEconomy);
             serfdom.status = Serfdom.Abolished;
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
             markInvented(Invention.Farming);
            // markInvented(Invention.Manufactories);
             markInvented(Invention.Banking);
-            // inventions.markInvented(Invention.metal);
+            //markInvented(Invention.metal);
             //markInvented(Invention.individualRights);
             //markInvented(Invention.ProfessionalArmy);
             //markInvented(Invention.Welfare);
@@ -626,7 +627,7 @@ public class Country : Staff
             item.consume();
         }
 
-        buyNeeds(); // Should go After all Armies consumption
+        consumeNeeds(); // Should go After all Armies consumption
                     //Procent opinion;
         foreach (var item in Country.getExisting())
             if (item != this)
@@ -716,7 +717,7 @@ public class Country : Staff
         }
         else return false;
     }
-    public override void buyNeeds()
+    public override void consumeNeeds()
     {
         var needs = getRealNeeds();
         //buy 1 day needs

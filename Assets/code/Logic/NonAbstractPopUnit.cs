@@ -141,8 +141,14 @@ public class Farmers : PopUnit
             sentToMarket.set(gainGoodsThisTurn);
             Game.market.sentToMarket.add(gainGoodsThisTurn);
         }
-        else
+        else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+        {
             storageNow.add(gainGoodsThisTurn);
+        }
+        else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+        {
+            getCountry().storageSet.add(gainGoodsThisTurn);
+        }
     }
     override internal bool canSellProducts()
     {
@@ -544,18 +550,31 @@ public class Artisans : PopUnit
             if (artisansProduction.isAllInputProductsCollected())
             {
                 artisansProduction.produce();
-                sentToMarket.set(gainGoodsThisTurn);
-                storageNow.setZero();
-                Game.market.sentToMarket.add(gainGoodsThisTurn);
+                if (Economy.isMarket.checkIftrue(getCountry()))
+                {
+                    sentToMarket.set(gainGoodsThisTurn);
+                    storageNow.setZero();
+                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                }
+                else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+                {
+                    // send to market?
+                    sentToMarket.set(gainGoodsThisTurn);
+                    storageNow.setZero();
+                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                }
+                else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    storageNow.sendAll(getCountry().storageSet);
+                }
             }
             //else
             //   changeProductionType();
-
         }
     }
-    public override void buyNeeds()
+    public override void consumeNeeds()
     {
-        base.buyNeeds();
+        base.consumeNeeds();
         if (artisansProduction != null)
         {
             payWithoutRecord(artisansProduction, cash);
@@ -574,7 +593,7 @@ public class Artisans : PopUnit
                     }
                 }
 
-            artisansProduction.buyNeeds();
+            artisansProduction.consumeNeeds();
             artisansProduction.payWithoutRecord(this, artisansProduction.cash);
             this.consumedInMarket.add(artisansProduction.consumedInMarket);
             this.consumedTotal.add(artisansProduction.consumedTotal);

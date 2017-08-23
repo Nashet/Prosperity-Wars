@@ -247,7 +247,9 @@ public class PopType
     {
         return this == PopType.Farmers || this == PopType.TribeMen || this == PopType.Artisans;
     }
-
+    /// <summary>
+    /// Makes sure that pops consume product in cheap-first order
+    /// </summary>
     internal static void sortNeeds()
     {
         foreach (var item in allPopTypes)

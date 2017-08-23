@@ -102,6 +102,7 @@ public abstract class AbstractReform : Name
 
     abstract internal AbstractReformValue getValue();
     //abstract internal AbstractReformValue getValue(int value);
+    //abstract internal void setValue(int value);
 
 }
 public class Government : AbstractReform
@@ -340,12 +341,12 @@ public class Economy : AbstractReform
             Invention.BankingInvented,
             Serfdom.IsAbolishedInAnyWay
         });
-    internal ReformValue status;
+    private ReformValue status;
     internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<Condition> {
             Invention.CollectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
-    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(Condition.IsNotImplemented));
+    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(Condition.AlwaysYes)); //new ConditionsList(Condition.IsNotImplemented));
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
     internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
     internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsList(capitalism));
@@ -360,6 +361,10 @@ public class Economy : AbstractReform
     {
         return status;
     }
+    internal override void setValue(AbstractReformValue selectedReform)
+    {
+        status = (ReformValue)selectedReform;
+    }
     //internal override AbstractReformValue getValue(int value)
     //{
     //    return PossibleStatuses[value];
@@ -373,10 +378,7 @@ public class Economy : AbstractReform
         foreach (ReformValue f in PossibleStatuses)
             yield return f;
     }
-    internal override void setValue(AbstractReformValue selectedReform)
-    {
-        status = (ReformValue)selectedReform;
-    }
+   
     internal override bool isAvailable(Country country)
     {
         return true;
@@ -839,6 +841,10 @@ public class UnemploymentSubsidies : AbstractReform
     //    return PossibleStatuses.Find(x => x.ID == value);
     //    //return PossibleStatuses[value];
     //}
+    internal override void setValue(AbstractReformValue selectedReform)
+    {
+        status = (ReformValue)selectedReform;
+    }
     internal override bool canChange()
     {
         return true;
@@ -848,10 +854,7 @@ public class UnemploymentSubsidies : AbstractReform
         foreach (ReformValue f in PossibleStatuses)
             yield return f;
     }
-    internal override void setValue(AbstractReformValue selectedReform)
-    {
-        status = (ReformValue)selectedReform;
-    }
+    
     internal override bool isAvailable(Country country)
     {
         if (country.isInvented(Invention.Welfare))

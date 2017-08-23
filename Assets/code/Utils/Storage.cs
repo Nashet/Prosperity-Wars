@@ -65,11 +65,11 @@ public class CountryStorageSet : PrimitiveStorageSet
             return false;
     }
 
-    public void take(Storage fromHhom, Storage howMuch)
-    {
-        base.take(fromHhom, howMuch);
-        throw new DontUseThatMethod();
-    }
+    //public void take(Storage fromHhom, Storage howMuch)
+    //{
+    //    base.take(fromHhom, howMuch);
+    //    throw new DontUseThatMethod();
+    //}
     /// <summary>
     /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
     /// </summary>    
@@ -192,14 +192,6 @@ public class PrimitiveStorageSet
     {
         return container;
     }
-    //// Implementing the enumerable pattern
-    //public IEnumerable SampleIterator(int start, int end)
-    //{
-    //    for (int i = start; i <= end; i++)
-    //    {
-    //        yield return i;
-    //    }
-    //}
 
     /// <summary>
     /// Do checks outside
@@ -207,19 +199,21 @@ public class PrimitiveStorageSet
     public bool send(Producer whom, Storage what)
     {
         Storage storage = findStorage(what.getProduct());
-        return storage.send(whom.storageNow, what);
+        if (storage == null)
+            return false;
+        else
+            return storage.send(whom.storageNow, what);
     }
-
-    public void take(Storage fromWhom, Storage howMuch)
-    {
-        Storage stor = findStorage(fromWhom.getProduct());
-        if (stor == null)
-        {
-            stor = new Storage(fromWhom.getProduct());
-            container.Add(stor);
-        }
-        fromWhom.send(stor, howMuch);
-    }
+    //public void take(Storage fromWhom, Storage howMuch)
+    //{
+    //    Storage storage = findStorage(fromWhom.getProduct());
+    //    if (storage == null)
+    //    {
+    //        storage = new Storage(fromWhom.getProduct());
+    //        container.Add(storage); //add empty
+    //    }
+    //    fromWhom.send(storage, howMuch);
+    //}
     public bool has(Storage what)
     {
         Storage foundStorage = findStorage(what.getProduct());
@@ -246,6 +240,14 @@ public class PrimitiveStorageSet
     {
         foreach (Storage stor in container)
             if (stor.getProduct() == whom)
+                return stor;
+        return null;
+    }
+    /// <summary>Returns NULL if search is failed</summary>
+    internal Storage findStorage(Storage whom)
+    {
+        foreach (Storage stor in container)
+            if (stor.getProduct() == whom.getProduct())
                 return stor;
         return null;
     }
@@ -450,9 +452,9 @@ public class Storage : Value
         return get() + " " + getProduct().getName();
 
     }
-    public void sendAll(PrimitiveStorageSet storage)
-    {
-        storage.take(this, this);
+    public void sendAll(PrimitiveStorageSet whom)
+    {        
+        this.send(whom, this);
     }
     public void sendAll(Storage another)
     {
@@ -461,13 +463,21 @@ public class Storage : Value
         else
             base.sendAll(another);
     }
-    public void send(PrimitiveStorageSet whom, Storage HowMuch)
+    /// <summary>
+    /// checks inside (duplicates?), returns true if succeeded
+    /// </summary>    
+    public void send(PrimitiveStorageSet whom, Storage howMuch)
     {
-        whom.take(this, HowMuch);
+        if (has(howMuch))
+        {            
+            Storage targetStorage = new Storage(howMuch);
+            whom.add(targetStorage);
+            this.subtract(howMuch);
+        }        
     }
     /// <summary>
-    /// Checks inside
-    /// </summary>   
+    /// checks inside (duplicates?), returns true if succeeded
+    /// </summary>    
     public void send(Storage another, float amount)
     {
         if (this.getProduct() != another.getProduct())
@@ -477,7 +487,7 @@ public class Storage : Value
     }
 
     /// <summary>
-    /// checks inside, returns true if succeeded
+    /// checks inside (duplicates?), returns true if succeeded
     /// </summary>    
     public bool send(Storage toWhom, Storage amount, bool showMessageAboutOperationFails = true)
     {
@@ -505,15 +515,25 @@ public class Storage : Value
             }
         }
     }
-    public bool has(Storage Whom, Value HowMuch)
+    public bool has(Product product, Value HowMuch)
     {
-        if (this.getProduct() != Whom.getProduct())
+        if (this.getProduct() != product)
         {
             Debug.Log("Attempted to pay wrong product!");
             return false;
         }
         else
             return isBiggerOrEqual(HowMuch);
+    }
+    public bool has(Storage storage)
+    {
+        if (this.getProduct() != storage.getProduct())
+        {
+            Debug.Log("Attempted to pay wrong product!");
+            return false;
+        }
+        else
+            return isBiggerOrEqual(storage);
     }
     internal Storage multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
     {

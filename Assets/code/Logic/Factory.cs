@@ -17,7 +17,7 @@ public class Factory : SimpleProduction
     private bool dontHireOnSubsidies, subsidized;
     private byte priority = 0;
     private readonly Value salary = new Value(0);
-    private Agent factoryOwner;
+
     internal readonly PrimitiveStorageSet constructionNeeds;
 
 
@@ -38,17 +38,17 @@ public class Factory : SimpleProduction
         modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).getCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
            new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
 
-        modifierBelongsToCountry = new Modifier(x => (x as Factory).factoryOwner is Country, "Belongs to government", -0.20f, false),
+        modifierBelongsToCountry = new Modifier(x => (x as Factory).getOwner() is Country, "Belongs to government", -0.20f, false),
         modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.10f, false);
 
     internal static readonly Condition
-        conNotBelongsToCountry = new Condition(x => !((x as Factory).factoryOwner is Country), "Doesn't belongs to government", false),
+        conNotBelongsToCountry = new Condition(x => !((x as Factory).getOwner() is Country), "Doesn't belongs to government", false),
         conNotUpgrading = new Condition(x => !(x as Factory).isUpgrading(), "Not upgrading", false),
         conNotBuilding = new Condition(x => !(x as Factory).isBuilding(), "Not building", false),
         conOpen = new Condition(x => (x as Factory).isWorking(), "Open", false),
         conClosed = new Condition(x => !(x as Factory).isWorking(), "Closed", false),
         conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
-        conNotLForNotCountry = new Condition(x => (x as Factory).getCountry().economy.status != Economy.LaissezFaire || !(x is Country), "Economy policy is not Laissez Faire", true),
+        conNotLForNotCountry = new Condition(x => (x as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(x is Country), "Economy policy is not Laissez Faire", true),
         conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)
         {
             Game.threadDangerSB.Clear();
@@ -129,7 +129,7 @@ public class Factory : SimpleProduction
         //assuming this is level 0 building        
         constructionNeeds = getType().getBuildNeeds();
         province.allFactories.Add(this);
-        this.factoryOwner = factoryOwner;
+        setOwner(factoryOwner);
         salary.set(province.getLocalMinSalary());
     }
     internal PrimitiveStorageSet getUpgradeNeeds()
@@ -177,14 +177,7 @@ public class Factory : SimpleProduction
     {
         return getType().name + " L" + getLevel();
     }
-    internal Agent getOwner()
-    {
-        return factoryOwner;
-    }
-    public void setOwner(Agent agent)
-    {
-        factoryOwner = agent;
-    }
+
     //abstract internal string getName();
     public override void simulate()
     {
@@ -292,7 +285,6 @@ public class Factory : SimpleProduction
 
     internal void paySalary()
     {
-        //if (getLevel() > 0)
         if (isWorking())
         {
             // per 1000 men            
@@ -315,23 +307,23 @@ public class Factory : SimpleProduction
                     }
                     else
                         salary.set(getCountry().getMinSalary());
-                    //todo else dont pay if there is nothing to pay
+                    //todo else don't pay if there is nothing to pay
                 }
             }
-            else
+            // don't pay nothing if where is planned economy
+            else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
             {
                 // non market!!
                 Storage foodSalary = new Storage(Product.Food, 1f);
                 foreach (var link in hiredWorkForce)
                 {
                     Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / (float)workForcePerLevel);
-                    if (factoryOwner is Country)
+                    Country countryPayer = getOwner() as Country;
+                    if (countryPayer != null)
                     {
-                        Country payer = factoryOwner as Country;
-
-                        if (payer.storageSet.has(howMuchPay))
+                        if (countryPayer.storageSet.has(howMuchPay))
                         {
-                            payer.storageSet.send(link.Key, howMuchPay);
+                            countryPayer.storageSet.send(link.Key, howMuchPay);
                             link.Key.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
@@ -340,11 +332,11 @@ public class Factory : SimpleProduction
                     }
                     else // assuming - PopUnit
                     {
-                        PopUnit payer = factoryOwner as PopUnit;
+                        PopUnit popPayer = getOwner() as PopUnit;
 
-                        if (payer.storageNow.has(link.Key.storageNow, howMuchPay))
+                        if (popPayer.storageNow.has(howMuchPay))
                         {
-                            payer.storageNow.send(link.Key.storageNow, howMuchPay);
+                            popPayer.storageNow.send(link.Key.storageNow, howMuchPay);
                             link.Key.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
@@ -573,7 +565,7 @@ public class Factory : SimpleProduction
             {
                 Value sentToOwner = new Value(divident);
                 pay(getOwner(), sentToOwner);
-                var owner = factoryOwner as Country;
+                var owner = getOwner() as Country;
                 if (owner != null)
                     owner.ownedFactoriesIncomeAdd(sentToOwner);
             }
@@ -694,22 +686,39 @@ public class Factory : SimpleProduction
         {
             int workers = getWorkForce();
             if (workers > 0)
+                base.produce(new Value(getType().basicProduction.get() * getEfficiency(true).get() * getLevel()));
+            if (getType() == FactoryType.GoldMine)
             {
-                //Storage producedAmount = new Storage(getType().basicProduction.getProduct(), ); // * getLevel());
-                produce(new Value(getType().basicProduction.get() * getEfficiency(true).get() * getLevel()));
-                if (getType() == FactoryType.GoldMine)
-                {
-                    this.ConvertFromGoldAndAdd(storageNow);
-                    //send 50% to government
-                    Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
-                    pay(getCountry(), sentToGovernment);
-                    getCountry().goldMinesIncomeAdd(sentToGovernment);
-                }
-                else
+                this.ConvertFromGoldAndAdd(storageNow);
+                //send 50% to government
+                Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
+                pay(getCountry(), sentToGovernment);
+                getCountry().goldMinesIncomeAdd(sentToGovernment);
+            }
+            else
+            {
+                if (Economy.isMarket.checkIftrue(getCountry()))
                 {
                     sentToMarket.set(gainGoodsThisTurn);
                     storageNow.setZero();
                     Game.market.sentToMarket.add(gainGoodsThisTurn);
+                }
+                else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+                {
+                    Country countryOwner = getOwner() as Country;
+                    if (countryOwner != null)
+                        storageNow.sendAll(countryOwner.storageSet);
+                    else // assuming owner is aristocrat/capitalist
+                    {
+                        // send to market?
+                        sentToMarket.set(gainGoodsThisTurn);
+                        storageNow.setZero();
+                        Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    }
+                }
+                else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    storageNow.sendAll(getCountry().storageSet);
                 }
             }
         }
@@ -726,18 +735,22 @@ public class Factory : SimpleProduction
     /// <summary>
     /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
     /// </summary>
-    override public void buyNeeds()
-    {
-        //if (getLevel() > 0)
+    override public void consumeNeeds()
+    {        
         if (isWorking())
         {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-
-            //todo !CAPITALISM part
-            if (isSubsidized())
-                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            {
+               // getCountry().storageSet.send
+            }
             else
-                Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
+            {
+                if (isSubsidized())
+                    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
+                else
+                    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
+            }            
         }
         // Include construction needs into getHowMuchInputProductsReservesWants()? No, cause I need graduated buying
         if (isUpgrading() || isBuilding())
@@ -748,7 +761,7 @@ public class Factory : SimpleProduction
             if (isMarket)
             {
                 if (isBuilding())
-                    isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());                
+                    isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());
                 else if (isUpgrading())
                     isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
