@@ -8,137 +8,136 @@ using System;
 //    {
 //       // setBank(country.bank);
 //    }
-
-
 //}
 
-public class CountryStorageSet : PrimitiveStorageSet
-{
-    PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+// don't really need it. Consumption stored in Consumer.consumedTotal
+//public class CountryStorageSet : PrimitiveStorageSet
+//{
+//    /// <summary>
+//    /// Used only in non-market economies. Count as much products country consumed or spent
+//    /// Why do I need this???
+//    /// </summary>
+//    private readonly PrimitiveStorageSet usedLastTurn = new PrimitiveStorageSet();
 
-    internal Value getConsumption(Product whom)
-    {
-        foreach (Storage stor in consumedLastTurn)
-            if (stor.getProduct() == whom)
-                return stor;
-        return new Value(0f);
-    }
-    internal void setStatisticToZero()
-    {
-        consumedLastTurn.setZero();
-    }
+//    internal Value getConsumption(Product whom)
+//    {
+//        foreach (Storage stor in usedLastTurn)
+//            if (stor.getProduct() == whom)
+//                return stor;
+//        return new Value(0f);
+//    }
+//    internal void setStatisticToZero()
+//    {
+//        usedLastTurn.setZero();
+//    }
 
-    /// / next - inherited
+//    /// / next - inherited
 
 
-    public void set(Storage inn)
-    {
-        base.set(inn);
-        throw new DontUseThatMethod();
-    }
-    ///// <summary>
-    ///// If duplicated than adds
-    ///// </summary>
-    //internal void add(Storage need)
-    //{
-    //    base.add(need);
-    //    consumedLastTurn.add(need)
-    //}
+//    public void set(Storage inn)
+//    {
+//        base.set(inn);
+//        throw new DontUseThatMethod();
+//    }
+//    ///// <summary>
+//    ///// If duplicated than adds
+//    ///// </summary>
+//    //internal void add(Storage need)
+//    //{
+//    //    base.add(need);
+//    //    consumedLastTurn.add(need)
+//    //}
 
-    ///// <summary>
-    ///// If duplicated than adds
-    ///// </summary>
-    //internal void add(PrimitiveStorageSet need)
-    //{ }
+//    ///// <summary>
+//    ///// If duplicated than adds
+//    ///// </summary>
+//    //internal void add(PrimitiveStorageSet need)
+//    //{ }
 
-    /// <summary>
-    /// Do checks outside
-    /// </summary>   
-    public bool send(Producer whom, Storage what)
-    {
-        if (base.send(whom, what))
-        {
-            consumedLastTurn.add(what);
-            return true;
-        }
-        else
-            return false;
-    }
-    /// <summary>
-    /// Do checks outside
-    /// </summary>   
-    public bool send(Producer whom, List<Storage> what)
-    {
-        bool result = true;
-        foreach (var item in what)
-        {
-            if (!send(whom, item))
-                result = false;
-        }
-        return result;
-    }
-    //public void take(Storage fromHhom, Storage howMuch)
-    //{
-    //    base.take(fromHhom, howMuch);
-    //    throw new DontUseThatMethod();
-    //}
-    /// <summary>
-    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
-    /// </summary>    
-    internal Value getStorage(Product whom)
-    {
-        return base.getStorage(whom);
-    }
+//    /// <summary>
+//    /// Do checks outside
+//    /// </summary>   
+//    public bool send(Producer whom, Storage what)
+//    {
+//        if (base.send(whom, what))
+//        {
+//            usedLastTurn.add(what); //??!!?
+//            return true;
+//        }
+//        else
+//            return false;
+//    }
+//    /// <summary>
+//    /// Do checks outside
+//    /// </summary>   
+//    public bool send(Producer whom, List<Storage> what)
+//    {
+//        bool result = true;
+//        foreach (var item in what)
+//        {
+//            if (!send(whom, item))
+//                result = false;
+//        }
+//        return result;
+//    }
 
-    internal void SetZero()
-    {
-        base.setZero();
-        throw new DontUseThatMethod();
-    }
-    //internal PrimitiveStorageSet Divide(float v)
-    //{
-    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
-    //    foreach (Storage stor in container)
-    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
-    //    return result;
-    //}
+//    /// <summary>
+//    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
+//    /// </summary>    
+//    internal Value getStorage(Product whom)
+//    {
+//        return base.getStorage(whom);
+//    }
 
-    internal bool subtract(Storage stor, bool showMessageAboutNegativeValue)
-    {
-        if (base.subtract(stor, showMessageAboutNegativeValue))
-        {
-            consumedLastTurn.add(stor);
-            return true;
-        }
-        else
-            return false;
-    }
+//    internal void SetZero()
+//    {
+//        base.setZero();
+//        throw new DontUseThatMethod();
+//    }
+//    //internal PrimitiveStorageSet Divide(float v)
+//    //{
+//    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
+//    //    foreach (Storage stor in container)
+//    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
+//    //    return result;
+//    //}
 
-    //internal Storage subtractOutside(Storage stor)
-    //{
-    //    Storage find = this.findStorage(stor.getProduct());
-    //    if (find == null)
-    //        return new Storage(stor);
-    //    else
-    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
-    //}
-    internal void subtract(PrimitiveStorageSet set)
-    {
-        base.subtract(set, true);
-        throw new DontUseThatMethod();
-    }
-    internal void copyDataFrom(PrimitiveStorageSet consumed)
-    {
-        base.copyDataFrom(consumed);
-        throw new DontUseThatMethod();
-    }
-    internal void sendAll(PrimitiveStorageSet toWhom)
-    {
-        consumedLastTurn.add(this);
-        base.sendAll(toWhom);
-    }
+//    internal bool subtract(Storage stor, bool showMessageAboutNegativeValue)
+//    {
+//        if (base.subtract(stor, showMessageAboutNegativeValue))
+//        {
+//            usedLastTurn.add(stor);
+//            return true;
+//        }
+//        else
+//            return false;
+//    }
 
-}
+//    //internal Storage subtractOutside(Storage stor)
+//    //{
+//    //    Storage find = this.findStorage(stor.getProduct());
+//    //    if (find == null)
+//    //        return new Storage(stor);
+//    //    else
+//    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+//    //}
+//    internal void subtract(PrimitiveStorageSet set)
+//    {
+//        base.subtract(set, true);
+//        throw new DontUseThatMethod();
+//    }
+//    internal void copyDataFrom(PrimitiveStorageSet consumed)
+//    {
+//        base.copyDataFrom(consumed);
+//        throw new DontUseThatMethod();
+//    }
+//    internal void sendAll(PrimitiveStorageSet toWhom)
+//    {
+//        usedLastTurn.add(this);
+//        base.sendAll(toWhom);
+//    }
+
+//}
 public class PrimitiveStorageSet
 {
     //private static Storage tStorage;
@@ -237,7 +236,19 @@ public class PrimitiveStorageSet
         }
         return res;
     }
-
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, List<Storage> what)
+    {
+        bool result = true;
+        foreach (var item in what)
+        {
+            if (!send(whom, item))
+                result = false;
+        }
+        return result;
+    }
     public bool has(Storage what)
     {
         Storage foundStorage = findStorage(what.getProduct());
@@ -268,18 +279,18 @@ public class PrimitiveStorageSet
         return Procent.makeProcent(shortage, need);
     }
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findStorage(Product whom)
+    internal Storage findStorage(Product product)
     {
         foreach (Storage stor in container)
-            if (stor.getProduct() == whom)
+            if (stor.getProduct() == product)
                 return stor;
         return null;
     }
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findStorage(Storage whom)
+    internal Storage findStorage(Storage storageToFind)
     {
         foreach (Storage stor in container)
-            if (stor.getProduct() == whom.getProduct())
+            if (stor.isSameProduct(storageToFind))
                 return stor;
         return null;
     }
@@ -471,7 +482,7 @@ public class Storage : Value
     }
     public void add(Storage storage, bool showMessageAboutNegativeValue = true)
     {
-        if (storage.getProduct() == this.getProduct())
+        if (this.isSameProduct(storage))
             base.add(storage, showMessageAboutNegativeValue);
         else
         {
@@ -495,13 +506,16 @@ public class Storage : Value
     }
     public void sendAll(Storage another)
     {
-        if (this.getProduct() != another.getProduct())
+        if (!isSameProduct(another))
             Debug.Log("Attempt to give wrong product");
         else
-            base.sendAll(another);
+        {
+            another.add(this);
+            this.setZero();
+        }
     }
     /// <summary>
-    /// checks inside (duplicates?), returns true if succeeded
+    /// checks inside (duplicates?)
     /// </summary>    
     public void send(PrimitiveStorageSet whom, Storage howMuch)
     {
@@ -513,48 +527,46 @@ public class Storage : Value
         }
     }
     /// <summary>
-    /// checks inside (duplicates?), returns true if succeeded
+    /// checks inside (duplicates?),
     /// </summary>    
-    public void send(Storage another, float amount)
-    {
-        if (this.getProduct() != another.getProduct())
-            Debug.Log("Attempt to give wrong product");
-        else
-            base.send(another, amount);
-    }
+    //public void send(Storage another, float amount)
+    //{
+    //    if (this.getProduct() != another.getProduct())
+    //        Debug.Log("Attempt to give wrong product");
+    //    else
+    //        base.send(another, amount);
+    //}
 
     /// <summary>
     /// checks inside (duplicates?), returns true if succeeded
     /// </summary>    
-    public bool send(Storage toWhom, Storage amount, bool showMessageAboutOperationFails = true)
+    public bool send(Storage reciever, Storage amountToSend, bool showMessageAboutOperationFails = true)
     {
-        if (this.getProduct() != toWhom.getProduct())
+        if (!isSameProduct(reciever))
         {
             Debug.Log("Attempt to give wrong product");
             return false;
         }
         else
-        {
-            //base.send(toWhom, amount, showMessageAboutOperationFails);
-            //return true;
-            if (this.get() >= amount.get())
+        {            
+            if (this.isBiggerOrEqual(amountToSend))
             {
-                subtract(amount);
-                toWhom.add(amount);
+                subtract(amountToSend);
+                reciever.add(amountToSend);
                 return true;
             }
             else
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("No enough value to send");
-                sendAll(toWhom);
+                sendAll(reciever);
                 return false;
             }
         }
     }
     public bool has(Product product, Value HowMuch)
     {
-        if (this.getProduct() != product)
+        if (!isSameProduct(product))
         {
             Debug.Log("Attempted to pay wrong product!");
             return false;
@@ -564,7 +576,7 @@ public class Storage : Value
     }
     public bool has(Storage storage)
     {
-        if (this.getProduct() != storage.getProduct())
+        if (!isSameProduct(storage))
         {
             Debug.Log("Attempted to pay wrong product!");
             return false;
@@ -586,21 +598,18 @@ public class Storage : Value
     /// <summary>
     /// returns new value
     /// </summary>    
-    public Storage multiplyOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    public Storage multiplyOutside(Value invalue)
     {
-        if (invalue.get() < 0)
-        {
-            if (showMessageAboutNegativeValue)
-                Debug.Log("Value multiply failed");
-            return new Storage(this.getProduct(), 0f);
-        }
-        else
-            return new Storage(this.getProduct(), get() * invalue.get());
+        return new Storage(this.getProduct(), get() * invalue.get());
     }
 
     internal bool isSameProduct(Storage anotherStorage)
     {
         return this.getProduct() == anotherStorage.getProduct();
+    }
+    internal bool isSameProduct(Product anotherProduct)
+    {
+        return this.getProduct() == anotherProduct;
     }
     //[System.Obsolete("Method is deprecated, need product specified")]
     //override public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)

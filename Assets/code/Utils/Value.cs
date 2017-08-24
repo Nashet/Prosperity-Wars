@@ -286,7 +286,7 @@ public class Value
     public void sendAll(Value another)
     {
         another.add(this);
-        this.set(0);
+        this.setZero();
     }
     // toDO test that file properly
     public float get()

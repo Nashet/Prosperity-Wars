@@ -27,7 +27,7 @@ public class Country : Staff
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
-    public readonly CountryStorageSet storageSet = new CountryStorageSet();
+    public readonly PrimitiveStorageSet storageSet = new PrimitiveStorageSet();
 
     private TextMesh meshCapitalText;
     private Material borderMaterial;
@@ -732,25 +732,11 @@ public class Country : Staff
             Storage toBuy = new Storage(need.getProduct(),
                 need.get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getStorage(need.getProduct()).get(), false);
             buyNeeds(toBuy);
-        }
-        //foreach (var pro in Product.allProducts)
-        //{
-        //    // if I want to buy           
-        //    Storage toBuy = new Storage(pro, needs.getStorage(pro).get() - storageSet.getStorage(pro).get());
-        //    buyNeeds(toBuy);
-        //}
-        //buy x day needs
-        //foreach (var pro in Product.allProducts)
-        //{
-        //    Storage toBuy = new Storage(pro, needs.getStorage(pro).get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getStorage(pro).get());
-        //    buyNeeds(toBuy);
-        //}
+        }        
     }
 
     void buyNeeds(Storage toBuy)
-    {
-        // if I want to buy           
-        //Storage toBuy = new Storage(pro, needs.getStorage(pro).get()* days - storageSet.getStorage(pro).get());
+    {        
         if (toBuy.isNotZero())
         {
             Storage realyBougth = Game.market.buy(this, toBuy, null);
@@ -760,8 +746,6 @@ public class Country : Staff
             storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
         }
     }
-
-
 
     public Value getGDP()
     {

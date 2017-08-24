@@ -32,8 +32,8 @@
   <Class Name="Consumer">
     <Position X="9.5" Y="1.75" Width="1.5" />
     <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAIAEAAAAEAAAEAQAAAA=</HashCode>
@@ -47,7 +47,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAQAAQAAAAAAAAAABCAAAAAAYAAEACAAAgAAAAAAAA=</HashCode>
+      <HashCode>AEAQAAQAAAAAAAAAABAAAAAAAYAAEACAAAgAAAAAAAA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -90,7 +90,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>cODUgECEEQgOI2hvAVgFPsBDi4BQESpwmSQE1g0YlyQ=</HashCode>
+      <HashCode>cODUgECEEQgOI2xPAVgFPsBDi4BQESpwmSQE1g0YlyQ=</HashCode>
       <FileName>Assets\code\Logic\PopUnit.cs</FileName>
     </TypeIdentifier>
   </Class>

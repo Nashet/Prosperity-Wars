@@ -575,8 +575,7 @@ public class Game : ThreadedJob
         // if (country != Country.NullCountry)
         {
             //country.wallet.moneyIncomethisTurn.set(0);
-            country.storageSet.setStatisticToZero();
-            country.setStatisticToZero();
+            //country.storageSet.setStatisticToZero(); // was CountryStorageSet, not used actually            
             country.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
