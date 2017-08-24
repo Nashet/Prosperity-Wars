@@ -771,7 +771,7 @@ public class Province : Name
         txtMesh.color = Color.red; // Set the text's color to red
         group.SetLODs(lods);
 #if UNITY_WEBGL
-        group.size = 30; // for webgl
+        group.size = 20; //was 30 for webgl
 #else
         group.size = 20; // for others
 #endif
