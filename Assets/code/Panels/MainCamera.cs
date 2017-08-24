@@ -74,14 +74,14 @@ public class MainCamera : MonoBehaviour
             Application.runInBackground = true;
             MainCamera.Game = new Game();
 #if UNITY_WEBGL
-                        MainCamera.Game.initialize(); // non multi-threading
+            MainCamera.Game.initialize(); // non multi-threading
 #else
             MainCamera.Game.Start(); //initialize is here 
 #endif
         }
         if (MainCamera.Game != null)
 #if UNITY_WEBGL
-                        if (!gameIsLoaded)  // non multi-threading
+            if (!gameIsLoaded)  // non multi-threading
 #else
             if (MainCamera.Game.IsDone && !gameIsLoaded)
 #endif
@@ -165,7 +165,7 @@ public class MainCamera : MonoBehaviour
 
     internal static void refreshAllActive()
     {
-        if (topPanel.isActiveAndEnabled) topPanel.refresh();        
+        if (topPanel.isActiveAndEnabled) topPanel.refresh();
         if (populationPanel.isActiveAndEnabled) populationPanel.refreshContent();
         if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
         if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();

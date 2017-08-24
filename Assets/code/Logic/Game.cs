@@ -33,7 +33,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = true;
+    private static bool surrended = false;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
         impassableBorder;
     private readonly Rect mapBorders;
@@ -54,7 +54,6 @@ public class Game : ThreadedJob
     }
     public void initialize()
     {
-
         market.initialize();
         makeFactoryTypes();
 
@@ -75,17 +74,24 @@ public class Game : ThreadedJob
         setStartResources();
         makeHelloMessage();
         updateStatus("Finishing generation..");
-        
-
     }
     public static void setUnityAPI()
     {
         // Assigns a material named "Assets/Resources/..." to the object.
-        defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-        defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-        selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
-        impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        //defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
+        defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+        defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
+        selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
+        impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        r3dTextPrefab = GameObject.Find("3dProvinceNameText");
 
         mapObject = GameObject.Find("MapObject");
         Province.generateUnityData(grid);
@@ -445,7 +451,7 @@ public class Game : ThreadedJob
     {
         //Texture2D mapImage = new Texture2D(100, 100);
 #if UNITY_WEBGL
-        int mapSize = 20000;//30000;
+        int mapSize = 30000;//20000;
 #else
         int mapSize = 60000;
 #endif
@@ -593,7 +599,7 @@ public class Game : ThreadedJob
             "\n\nCurrently there is: "
             + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
             + "\n\tbasic trade & production \n\tbasic warfare \n\tbasic inventions"
-            + " \n\tbasic reforms (population can vote for reforms)"
+            + "\n\tbasic reforms (population can vote for reforms)"
             + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
             + "\n\tpolitical \\ culture \\ core map mode"
             + "\n\tmovements and rebellions"

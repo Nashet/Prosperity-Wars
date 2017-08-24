@@ -50,9 +50,8 @@ public class Invention : Name
     }
     public bool isAvailable(Country country)
     {
-        if (//this == Collectivism
-            //||
-            (this == Gunpowder && !country.isInvented(Metal))
+        if (this == Collectivism
+            || (this == Gunpowder && !country.isInvented(Metal))
             || (this == SteamPower && (!country.isInvented(Metal) || !country.isInvented(Manufactories)))
             || (this == Firearms && !country.isInvented(Gunpowder))
             || (this == CombustionEngine && !country.isInvented(SteamPower))

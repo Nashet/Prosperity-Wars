@@ -843,10 +843,8 @@ abstract public class PopUnit : Producer
     // Not called in capitalism
     public void payTaxToAllAristocrats()
     {
-        {
-            Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
-            province.shareWithAllAristocrats(storageNow, taxSize);
-        }
+        Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
+        province.shareWithAllAristocrats(storageNow, taxSize);
     }
     abstract public bool shouldPayAristocratTax();
 

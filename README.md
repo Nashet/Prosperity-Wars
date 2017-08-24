@@ -21,7 +21,7 @@ So, main principles of that simulation are:
  - provinces and countries
  - Movements and Rebellions
  - factories and national banks
- - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen)
+ - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen, Artisans)
  - basic production\trade\consumption
  - basic warfare
  - basic inventions
