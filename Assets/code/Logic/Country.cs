@@ -128,9 +128,8 @@ public class Country : Staff
         this.capital = capital;
         //if (!Game.devMode)
         {
-
-            //economy.status = Economy.StateCapitalism;
-            economy.setValue( Economy.NaturalEconomy);
+            economy.setValue(Economy.StateCapitalism);
+            //economy.setValue( Economy.NaturalEconomy);
             serfdom.status = Serfdom.Abolished;
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;

@@ -690,12 +690,13 @@ public class Game : ThreadedJob
                 foreach (PopUnit pop in province.allPopUnits)
                 {
                     if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.ShouldPayAristocratTax())
-                            pop.PayTaxToAllAristocrats();
+                        if (pop.shouldPayAristocratTax())
+                            pop.payTaxToAllAristocrats();
                 }
                 foreach (PopUnit pop in province.allPopUnits)
                 {
                     pop.consumeNeeds();
+                    // stopped here with planned economy
                 }
             }
         // big AFTER all circle

@@ -45,7 +45,7 @@ public class Tribemen : PopUnit
     {
         return false;
     }
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return true;
     }
@@ -157,7 +157,7 @@ public class Farmers : PopUnit
         else
             return false;
     }
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return true;
     }
@@ -267,7 +267,7 @@ public class Aristocrats : PopUnit
     {
         return true;
     }
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return false;
     }
@@ -363,7 +363,7 @@ public class Soldiers : PopUnit
             return false;
     }
 
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return false;
     }
@@ -433,7 +433,7 @@ public class Capitalists : PopUnit
     {
         return true;
     }
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return false;
     }
@@ -608,7 +608,7 @@ public class Artisans : PopUnit
     {
         return true;
     }
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return true;
     }
@@ -699,7 +699,7 @@ public class Workers : PopUnit
     public override void produce()
     { }
 
-    public override bool ShouldPayAristocratTax()
+    public override bool shouldPayAristocratTax()
     {
         return true;
     }

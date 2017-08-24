@@ -39,8 +39,11 @@ public class PopUnitPanel : DragPanel
             if (isArtisan != null)
             {
                 sb.Append(", input products:  ").Append(isArtisan.getInputProducts());
-                if (isArtisan.getType() != null)
-                    sb.Append("\nProducing: ").Append(isArtisan.getType().basicProduction.getProduct());
+                sb.Append("\nProducing: ");
+                if (isArtisan.getType() == null)
+                    sb.Append("nothing");
+                else
+                    sb.Append(isArtisan.getType().basicProduction.getProduct());
             }
             sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
             sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it

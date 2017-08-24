@@ -64,7 +64,19 @@ public class CountryStorageSet : PrimitiveStorageSet
         else
             return false;
     }
-
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, List<Storage> what)
+    {
+        bool result = true;
+        foreach (var item in what)
+        {
+            if (!send(whom, item))
+                result = false;
+        }
+        return result;
+    }
     //public void take(Storage fromHhom, Storage howMuch)
     //{
     //    base.take(fromHhom, howMuch);
@@ -181,6 +193,14 @@ public class PrimitiveStorageSet
         foreach (Storage n in need)
             this.add(n);
     }
+    /// <summary>
+    /// If duplicated than adds
+    /// </summary>
+    internal void add(List<Storage> need)
+    {
+        foreach (Storage n in need)
+            this.add(n);
+    }
     public IEnumerator<Storage> GetEnumerator()
     {
         for (int i = 0; i < container.Count; i++)
@@ -204,16 +224,20 @@ public class PrimitiveStorageSet
         else
             return storage.send(whom.storageNow, what);
     }
-    //public void take(Storage fromWhom, Storage howMuch)
-    //{
-    //    Storage storage = findStorage(fromWhom.getProduct());
-    //    if (storage == null)
-    //    {
-    //        storage = new Storage(fromWhom.getProduct());
-    //        container.Add(storage); //add empty
-    //    }
-    //    fromWhom.send(storage, howMuch);
-    //}
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, PrimitiveStorageSet what)
+    {
+        bool res = true;
+        foreach (var item in what)
+        {
+            if (!send(whom, item))//!has(item) || 
+                res = false;
+        }
+        return res;
+    }
+
     public bool has(Storage what)
     {
         Storage foundStorage = findStorage(what.getProduct());
@@ -226,6 +250,14 @@ public class PrimitiveStorageSet
     internal bool has(PrimitiveStorageSet check)
     {
         foreach (Storage stor in check)
+            if (!has(stor))
+                return false;
+        return true;
+    }
+    /// <summary>Returns False if any item from are not available in that storage</summary>    
+    internal bool has(List<Storage> list)
+    {
+        foreach (Storage stor in list)
             if (!has(stor))
                 return false;
         return true;
@@ -317,7 +349,12 @@ public class PrimitiveStorageSet
         else
             return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
     }
-    internal void subtract(PrimitiveStorageSet set, bool showMessageAboutNegativeValue)
+    internal void subtract(PrimitiveStorageSet set, bool showMessageAboutNegativeValue = true)
+    {
+        foreach (Storage stor in set)
+            this.subtract(stor, showMessageAboutNegativeValue);
+    }
+    internal void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
     {
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);
@@ -453,7 +490,7 @@ public class Storage : Value
 
     }
     public void sendAll(PrimitiveStorageSet whom)
-    {        
+    {
         this.send(whom, this);
     }
     public void sendAll(Storage another)
@@ -469,11 +506,11 @@ public class Storage : Value
     public void send(PrimitiveStorageSet whom, Storage howMuch)
     {
         if (has(howMuch))
-        {            
+        {
             Storage targetStorage = new Storage(howMuch);
             whom.add(targetStorage);
             this.subtract(howMuch);
-        }        
+        }
     }
     /// <summary>
     /// checks inside (duplicates?), returns true if succeeded

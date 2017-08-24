@@ -530,7 +530,7 @@ abstract public class PopUnit : Producer
             else
             {
                 //if (this.popType.isRichStrata())
-                howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForPoor.ReformValue).tax);
+                howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
             }
             if (storageNow.isBiggerOrEqual(howMuchSend))
                 storageNow.send(getCountry().storageSet, howMuchSend);
@@ -644,10 +644,10 @@ abstract public class PopUnit : Producer
             if (getEveryDayNeedsFullfilling().get() >= 0.95f)
             {
                 var luxuryNeeds = getRealLuxuryNeeds();
-                
+
                 Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                 bool someLuxuryProductUnavailable = false;
-                foreach (Storage nextNeed in luxuryNeeds)               
+                foreach (Storage nextNeed in luxuryNeeds)
                     if (Game.market.buy(this, nextNeed, null).isZero())
                         someLuxuryProductUnavailable = true;
                 Value luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
@@ -695,23 +695,50 @@ abstract public class PopUnit : Producer
             buyNeeds(needs, false);
         }
         else
-        {//non - market consumption
-            payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
-            foreach (Storage need in needs)
-                if (storageNow.isBiggerOrEqual(need))
+        {
+            //non - market consumption
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            {
+                if (getCountry().storageSet.has(needs))
                 {
-                    storageNow.subtract(need);
-                    consumedTotal.set(need);
+                    getCountry().storageSet.subtract(needs);
+                    consumedTotal.add(needs);
                     needsFullfilled.set(1f / 3f);
-                    consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
                 }
-                else
+                var everyDayNeeds = getRealEveryDayNeeds();
+                if (getCountry().storageSet.has(everyDayNeeds))
                 {
-                    float canConsume = storageNow.get();
-                    consumedTotal.set(storageNow);
-                    storageNow.set(0);
-                    needsFullfilled.set(canConsume / need.get() / 3f);
-                }            
+                    getCountry().storageSet.subtract(everyDayNeeds);
+                    consumedTotal.add(everyDayNeeds);
+                    needsFullfilled.set(2f / 3f);
+                }
+                var luxuryNeeds = getRealEveryDayNeeds();
+                if (getCountry().storageSet.has(luxuryNeeds))
+                {
+                    getCountry().storageSet.subtract(luxuryNeeds);
+                    consumedTotal.add(luxuryNeeds);
+                    needsFullfilled.set(1f);
+                }
+            }
+            else
+            {
+                payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
+                foreach (Storage need in needs)
+                    if (storageNow.isBiggerOrEqual(need))
+                    {
+                        storageNow.subtract(need);
+                        consumedTotal.set(need);
+                        needsFullfilled.set(1f / 3f);
+                        consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
+                    }
+                    else
+                    {
+                        float canConsume = storageNow.get();
+                        consumedTotal.set(storageNow);
+                        storageNow.set(0);
+                        needsFullfilled.set(canConsume / need.get() / 3f);
+                    }
+            }
         }
     }
     virtual internal bool canBuyProducts()
@@ -814,14 +841,14 @@ abstract public class PopUnit : Producer
     }
 
     // Not called in capitalism
-    public void PayTaxToAllAristocrats()
+    public void payTaxToAllAristocrats()
     {
         {
             Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
             province.shareWithAllAristocrats(storageNow, taxSize);
         }
     }
-    abstract public bool ShouldPayAristocratTax();
+    abstract public bool shouldPayAristocratTax();
 
     public void calcPromotions()
     {

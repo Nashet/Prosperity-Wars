@@ -736,13 +736,14 @@ public class Factory : SimpleProduction
     /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
     /// </summary>
     override public void consumeNeeds()
-    {        
+    {
         if (isWorking())
         {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-               // getCountry().storageSet.send
+                if (getCountry().storageSet.has(shoppingList))
+                    getCountry().storageSet.send(this, shoppingList);
             }
             else
             {
@@ -750,7 +751,7 @@ public class Factory : SimpleProduction
                     Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
                 else
                     Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
-            }            
+            }
         }
         // Include construction needs into getHowMuchInputProductsReservesWants()? No, cause I need graduated buying
         if (isUpgrading() || isBuilding())
@@ -758,7 +759,22 @@ public class Factory : SimpleProduction
             daysInConstruction++;
             bool isBuyingComplete = false;
             bool isMarket = Economy.isMarket.checkIftrue(getCountry());// province.getOwner().isInvented(InventionType.capitalism);
-            if (isMarket)
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            {
+                if (isBuilding())
+                {
+                    var buildingNeeds = getType().getBuildNeeds();
+                    if (getCountry().storageSet.has(buildingNeeds))
+                        isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
+                }
+                else if (isUpgrading())
+                {                    
+                    var upgradingNeeds = getUpgradeNeeds();
+                    if (getCountry().storageSet.has(upgradingNeeds))
+                        isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
+                }
+            }
+            else
             {
                 if (isBuilding())
                     isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());
@@ -774,6 +790,8 @@ public class Factory : SimpleProduction
             if (isBuyingComplete || (!isMarket && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
             {
                 onConstructionComplete();
+
+                //todo avoid extra subtraction and redo whole method
                 if (isBuilding())
                     getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
                 else // assuming isUpgrading()
@@ -784,7 +802,6 @@ public class Factory : SimpleProduction
                     markToDestroy();
                 else // upgrading
                     stopUpgrading();
-
         }
     }
     override internal float getExpences()

@@ -3,13 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-//public abstract class NameDescriptor
-//{ }
-//abstract public class AbstractCondition : Name
-//{
-//    protected AbstractCondition(string name) : base(name)
-//    { }
-//}
+
 public static class ReformExtensions
 {
     public static bool isEnacted(this List<AbstractReform> list, AbstractReformValue reformValue)
@@ -346,7 +340,7 @@ public class Economy : AbstractReform
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsList(new List<Condition> {
             Invention.CollectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
-    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(Condition.AlwaysYes)); //new ConditionsList(Condition.IsNotImplemented));
+    internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes)); 
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsList(capitalism));
     internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsList(capitalism));
     internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsList(capitalism));

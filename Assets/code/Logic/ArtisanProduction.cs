@@ -8,14 +8,14 @@ public class ArtisanProduction : SimpleProduction
     //private readonly Artisans owner;
     public ArtisanProduction(FactoryType type, Province province, Artisans artisan) : base(type, province)
     {
-        setOwner(artisan);
+        base.setOwner(artisan);
     }
     internal Artisans getOwner()
     {
         //todo would it add lags ??
         return base.getOwner() as Artisans;
     }
-    [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
+    [Obsolete("Shouldn't be changed", false)]
     public void setOwner(Agent agent)
     {
         throw new DontUseThatMethod();
