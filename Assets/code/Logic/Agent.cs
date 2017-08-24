@@ -189,7 +189,7 @@ abstract public class Agent
                 bank.giveLackingMoney(this, howMuch);
                 bank.giveLackingMoney(this, howMuch.multiplyOutside(5));
             }
-            whom.cash.add(howMuch);
+            whom.cash.add(howMuch); // rise warning if have enough money to pay (with deposits) but did't get enough from bank
             this.cash.subtract(howMuch);
             return true;
         }

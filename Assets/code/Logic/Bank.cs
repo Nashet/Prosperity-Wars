@@ -119,11 +119,7 @@ public class Bank : Agent
     /// Checks reserve limits and deposits
     /// </summary>    
     internal bool canGiveMoney(Agent agent, Value loan)
-    {
-        //if there is enough money and enough reserves
-        //if (cash.get() - loan.get() >= getMinimalReservs().get())
-        //    return true;
-        //return false;
+    {       
         return howMuchCanGive(agent).isBiggerOrEqual(loan);
     }
 
