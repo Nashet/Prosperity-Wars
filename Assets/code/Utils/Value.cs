@@ -16,9 +16,9 @@ public class Value
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Can't create negative Value");
-            set(0);           
+            set(0);
         }
-        
+
     }
     public Value(Value number)
     {
@@ -32,6 +32,14 @@ public class Value
     public bool isBiggerThan(Value invalue)
     {
         return this.value > invalue.value;
+    }
+    /// <summary>
+    /// Returns true if bigger than argument + barrier
+    /// </summary>
+
+    public bool isBiggerThan(Value invalue, Value barrier)
+    {
+        return this.value > invalue.value + barrier.value;
     }
     public bool isBiggerOrEqual(Value invalue)
     {
@@ -48,7 +56,7 @@ public class Value
     //TODO overflow checks?
     virtual public void add(Value invalue, bool showMessageAboutNegativeValue = true)
     {
-        if (value + invalue.value  < 0f)
+        if (value + invalue.value < 0f)
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Value Add-Value failed");
@@ -112,7 +120,7 @@ public class Value
         else
             value -= (uint)Mathf.RoundToInt(invalue * precision);
     }
-    
+
 
     /// <summary>Keeps result inside</summary>    
     public void multiply(Value invalue, bool showMessageAboutNegativeValue = true)
@@ -152,7 +160,7 @@ public class Value
         else
             return new Value(get() * invalue);
     }
-   virtual public Value multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
+    virtual public Value multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
     {
         if (invalue < 0f)
         {
@@ -301,7 +309,7 @@ public class Value
 
     virtual public void set(float invalue, bool showMessageAboutOperationFails = true)
     {
-        if (invalue >=0)
+        if (invalue >= 0)
             value = (uint)Mathf.RoundToInt(invalue * precision);
         else
         {
@@ -309,7 +317,7 @@ public class Value
                 Debug.Log("Can't set negative value");
             value = 0;
         }
-        
+
     }
     public void set(Value invalue)
     {

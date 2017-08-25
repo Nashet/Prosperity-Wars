@@ -70,19 +70,22 @@ public static class Options
 
     public static readonly Procent PopGrowthSpeed = new Procent(0.002f);
     public static readonly Procent PopStarvationSpeed = new Procent(0.01f);
-    ///<summary> demotion  - when popUnit can't fulfill needs</summary>
-    public static readonly Procent PopDemotionSpeed = new Procent(0.01f);
+    ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
+    public static readonly Procent PopEscapingSpeed = new Procent(0.01f);
+    //public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
+    //public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
     ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
     public static readonly Procent PopPromotionSpeed = new Procent(0.01f);
     public static readonly Procent PopAssimilationSpeed = new Procent(0.002f);
     public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.001f);
 
-    public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
-    public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
+    ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
+    public static readonly Procent PopNeedsEscapingLimit = new Procent(0.33f);
+    /// <summary> New life should this better to start escaping</summary>
+    public static readonly Procent PopNeedsEscapingBarrier = new Procent(0.1f);
 
-    public static readonly Procent PopNeedsDemotionLimit = new Procent(0.33f);
-    public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
-    internal static readonly Procent PopNeedsImmigrationLimit = new Procent(0.33f);
+    //public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
+    //public static readonly Procent PopNeedsImmigrationLimit = new Procent(0.33f);
     /// <summary> Pops richer than that would promote</summary>
     internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.4f); //0.5f);
 

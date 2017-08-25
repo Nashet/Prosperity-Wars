@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// represent ability to take loans/deposits
 /// </summary>
-abstract public class Agent
+abstract public class Agent: IHasCountry
 {
     /// <summary>
     /// Must be filled together with wallet
@@ -28,7 +28,7 @@ abstract public class Agent
         this.bank = bank;
         this.province = province;
     }
-    virtual internal Country getCountry()
+    virtual public Country getCountry()
     {
         return province.getCountry();
     }

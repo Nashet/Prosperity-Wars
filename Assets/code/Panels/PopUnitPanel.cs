@@ -47,12 +47,12 @@ public class PopUnitPanel : DragPanel
             }
             sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
             sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
-
-            makeLine(sb, pop.getRichestDemotionTarget(), pop.getDemotionSize(), "Demotion: ", pop.wantsToDemote());
             makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
 
-            makeLine(sb, pop.getRichestMigrationTarget(), pop.getMigrationSize(), "Migration: ", pop.wantsToMigrate());
-            makeLineC(sb, pop.getRichestImmigrationTarget(), pop.getImmigrationSize(), "Immigration: ", pop.wantsToImmigrate());
+            if (pop.getLastEscapeSize()!= 0)
+                makeLineNew(sb, pop.getLastEscapeTarget(), pop.getLastEscapeSize());
+            else
+                sb.Append("\nNo demotions\\migrations\\immigrations");
 
             sb.Append("\nAssimilation: ");
             if (pop.culture != pop.getCountry().getCulture() && pop.getAssimilationSize() > 0)
@@ -76,8 +76,8 @@ public class PopUnitPanel : DragPanel
             sb.Append("\nConsumed: ").Append(pop.consumedTotal);
 
             if (Game.devMode)
-            sb.Append("\nConsumedLT: ").Append(pop.consumedLastTurn).Append(" cost: ").Append(Game.market.getCost(pop.consumedLastTurn)
-                ).Append("\nConsumedIM: ").Append(pop.consumedInMarket).Append(" cost: ").Append(Game.market.getCost(pop.consumedInMarket));
+                sb.Append("\nConsumedLT: ").Append(pop.consumedLastTurn).Append(" cost: ").Append(Game.market.getCost(pop.consumedLastTurn)
+                    ).Append("\nConsumedIM: ").Append(pop.consumedInMarket).Append(" cost: ").Append(Game.market.getCost(pop.consumedInMarket));
 
             generaltext.text = sb.ToString();
 
@@ -107,34 +107,68 @@ public class PopUnitPanel : DragPanel
             issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));
         }
     }
-    static private void makeLine(StringBuilder sb, PopType target, int size, string header, bool boolCheck)
+    private void makeLine(StringBuilder sb, IEscapeTarget target, int size, string header, bool boolCheck)
     {
-        //sb.Clear();
         sb.Append("\n").Append(header);
 
         if (boolCheck && target != null && size > 0)
+        {
+            var targetIsProvince = target as Province;
+            if (targetIsProvince == null)
+                sb.Append(target).Append(" ").Append(size);
+            else
+            {
+                if (pop.getCountry() == targetIsProvince.getCountry())
+                    sb.Append(targetIsProvince).Append(" ").Append(size);
+                else// immigration
+                    sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+
+            }
+        }
+        else
+            sb.Append("none");
+    }
+    private void makeLineNew(StringBuilder sb, IEscapeTarget target, int size)
+    {       
+        // extra type conversion could be reduced by adding demotion type flag in PopUnit.LastDemotion
+        var targetIsProvince = target as Province;
+        if (targetIsProvince == null) // Assuming target is PopType
+        {
+            sb.Append("\n").Append("Demotion: ");
             sb.Append(target).Append(" ").Append(size);
-        else
-            sb.Append("none");
+        }
+        else // Assuming target is Province
+        {
+            if (pop.getCountry() == targetIsProvince.getCountry())
+            {
+                sb.Append("\n").Append("Migration: ");
+                sb.Append(targetIsProvince).Append(" ").Append(size);
+            }
+            else// immigration
+            {
+                sb.Append("\n").Append("Immigration: ");
+                sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+            }
+        }     
     }
-    static private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
-    {
-        //sb.Clear();
-        sb.Append("\n").Append(header);
-        if (boolCheck && target != null && size > 0)
-            sb.Append(target).Append(" ").Append(size);
-        else
-            sb.Append("none");
-    }
-    static private void makeLineC(StringBuilder sb, Province target, int size, string header, bool boolCheck)
-    {
-        //sb.Clear();
-        sb.Append("\n").Append(header);
-        if (boolCheck && target != null && size > 0)
-            sb.Append(target.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
-        else
-            sb.Append("none");
-    }
+    //static private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
+    //{
+    //    //sb.Clear();
+    //    sb.Append("\n").Append(header);
+    //    if (boolCheck && target != null && size > 0)
+    //        sb.Append(target).Append(" ").Append(size);
+    //    else
+    //        sb.Append("none");
+    //}
+    //static private void makeLineWithCountry(StringBuilder sb, Province target, int size, string header, bool boolCheck)
+    //{
+    //    //sb.Clear();
+    //    sb.Append("\n").Append(header);
+    //    if (boolCheck && target != null && size > 0)
+    //        sb.Append(target.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+    //    else
+    //        sb.Append("none");
+    //}
     public void show(PopUnit ipopUnit)
     {
         gameObject.SetActive(true);

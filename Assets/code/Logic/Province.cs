@@ -5,8 +5,19 @@ using System;
 using System.Linq;
 using System.Text;
 
+public interface IHasStatistics
+{
+    void setStatisticToZero();
+}
+public interface IHasCountry
+{
+    Country getCountry();
+}
+public interface IEscapeTarget
+{
 
-public class Province : Name
+}
+public class Province : Name, IEscapeTarget, IHasCountry
 {
     public enum TerrainTypes
     {
@@ -217,7 +228,7 @@ public class Province : Name
     /// returns 
     /// </summary>
 
-    internal Country getCountry()
+    public Country getCountry()
     {
         //if (owner == null)
         //    return Country.NullCountry;

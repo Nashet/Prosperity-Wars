@@ -914,7 +914,7 @@ public class Country : Staff
     {
         ownedFactoriesIncome.add(toAdd);
     }
-    override internal Country getCountry()
+    override public Country getCountry()
     {
         return this;
     }

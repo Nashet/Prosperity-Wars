@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 
-public class PopType
+public class PopType: IEscapeTarget
 {
     private readonly static List<PopType> allPopTypes = new List<PopType>();
     public static readonly PopType TribeMen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;

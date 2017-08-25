@@ -7,10 +7,22 @@ using System.Text;
 
 using System.Linq.Expressions;
 
+public class KeyVal<Key, Val>
+{
+    public Key key { get; set; }
+    public Val value { get; set; }
 
+    public KeyVal() { }
+
+    public KeyVal(Key key, Val val)
+    {
+        this.key = key;
+        this.value = val;
+    }
+}
 abstract public class PopUnit : Producer
 {
-    ///<summary>buffer popList of demoted. To avoid iteration breaks</summary>
+    ///<summary>buffer popList. To avoid iteration breaks</summary>
     public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
 
     public readonly Procent loyalty;
@@ -39,7 +51,9 @@ abstract public class PopUnit : Producer
 
     private readonly DateTime born;
     private Movement movement;
+    private readonly KeyVal<IEscapeTarget, int> lastEscaped = new KeyVal<IEscapeTarget, int>();
     //if add new fields make sure it's implemented in second constructor and in merge()   
+
 
     static PopUnit()
     {
@@ -278,6 +292,7 @@ abstract public class PopUnit : Producer
         incomeTaxPayed.set(0); // need it because pop could stop paying taxes due to reforms for example
         needsFullfilled.set(0f);
         didntGetPromisedUnemloymentSubsidy = false;
+        lastEscaped.value = 0;
         // pop.storageNow.set(0f);
     }
     public int getMobilized()
@@ -872,8 +887,7 @@ abstract public class PopUnit : Producer
             return true;
         else return false;
     }
-
-    //abstract public PopType getRichestDemotionTarget();
+    
     public PopType getRichestPromotionTarget()
     {
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
@@ -895,19 +909,6 @@ abstract public class PopUnit : Producer
             PopUnit.makeVirtualPop(targetType, this, amount, this.province, this.culture);
         }
     }
-    //private bool CanDemote()
-    //{
-    //    if (popType == PopType.aristocrats)
-    //        return true;
-    //    else
-    //        if (popType == PopType.tribeMen && countryOwner.farming.Invented())
-    //        return true;
-    //    return false;
-    //}
-    //public void Growth(int size)
-    //{
-
-    //}
 
 
     private void setPopulation(int newPopulation)
@@ -973,22 +974,48 @@ abstract public class PopUnit : Producer
         return result;
         //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
     }
-    public void calcDemotions()
+    /// <summary>
+    /// Changes pops life in richest way - by demotion, migration or immigration
+    /// </summary>
+    /// <returns></returns>
+    public void findBetterLife()
     {
-        int demotionSize = getDemotionSize();
-        if (wantsToDemote() && demotionSize > 0 && this.getPopulation() >= demotionSize)
-            demote(getRichestDemotionTarget(), demotionSize);
-    }
-    private void demote(PopType targetType, int amount)
-    {
-        if (targetType != null)
+        int escapeSize = getEscapeSize();
+        if (escapeSize > 0 && this.getPopulation() >= escapeSize)
         {
-            PopUnit.makeVirtualPop(targetType, this, amount, this.province, this.culture);
+            var list = new List<KeyValuePair<IEscapeTarget, Value>>();
+            list.AddIfNotNull(getRichestDemotionTarget());
+            list.AddIfNotNull(getRichestMigrationTarget());
+            list.AddIfNotNull(getRichestImmigrationTarget());
+            var bestChoice = list.MaxBy(x => x.Value.get());
+                        
+            if (!bestChoice.Equals(default(KeyValuePair<IEscapeTarget, Value>)))
+            {
+                var targetIsPopType = bestChoice.Key as PopType;
+                if (targetIsPopType == null)
+                {
+                    // assuming its province
+                    var targetIsProvince = bestChoice.Key as Province;
+                    // its both migration and immigration
+                    PopUnit.makeVirtualPop(popType, this, escapeSize, targetIsProvince, this.culture);
+                    lastEscaped.key = targetIsProvince;
+                }
+                else
+                { 
+                    // assuming its PopType
+                    PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.province, this.culture);
+                    lastEscaped.key = targetIsPopType;
+                }
+                lastEscaped.value = escapeSize;
+            }
         }
     }
-    public int getDemotionSize()
+    /// <summary>
+    /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
+    /// </summary>    
+    public int getEscapeSize()
     {
-        int result = (int)(this.getPopulation() * Options.PopDemotionSpeed.get());
+        int result = (int)(this.getPopulation() * Options.PopEscapingSpeed.get());
         if (result > 0)
             return result;
         else
@@ -1000,13 +1027,6 @@ abstract public class PopUnit : Producer
         }
     }
 
-    public bool wantsToDemote()
-    {
-        //float demotionLimit = 0.50f;
-        if (this.needsFullfilled.isSmallerThan(Options.PopNeedsDemotionLimit))
-            return true;
-        else return false;
-    }
     public List<PopType> getPossibeDemotionsList()
     {
         List<PopType> result = new List<PopType>();
@@ -1015,42 +1035,31 @@ abstract public class PopUnit : Producer
                 result.Add(nextType);
         return result;
     }
+    abstract public bool canThisDemoteInto(PopType popType);
 
     //abstract public PopType getRichestDemotionTarget();
-    public PopType getRichestDemotionTarget()
+    /// <summary>
+    /// return popType to demote
+    /// </summary>   
+    public KeyValuePair<IEscapeTarget, Value> getRichestDemotionTarget()
     {
-        Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
+        Dictionary<IEscapeTarget, Value> list = new Dictionary<IEscapeTarget, Value>();
 
         foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisDemoteInto(nextType))
                 list.Add(nextType, province.getAverageNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
-        if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
-            return result.Key;
+        if (result.Value != null && result.Value.isBiggerThan(this.needsFullfilled, Options.PopNeedsEscapingBarrier))
+            return result;
         else
-            return null;
-    }
-
-    abstract public bool canThisDemoteInto(PopType popType);
-
-    //**********************************************
-    internal void calcImmigrations()
-    {
-        int immigrationSize = getImmigrationSize();
-        if (wantsToImmigrate() && immigrationSize > 0 && this.getPopulation() >= immigrationSize)
-        //immigrate(getRichestImmigrationTarget(), immigrationSize);
-        {
-            var where = getRichestImmigrationTarget();
-            if (where != null)
-                PopUnit.makeVirtualPop(popType, this, immigrationSize, where, this.culture);
-        }
+            return default(KeyValuePair<IEscapeTarget, Value>);
     }
     /// <summary>
-    /// return null if there is no better place to live
+    /// return province to immigrate or null if there is no better place to live
     /// </summary>    
-    public Province getRichestImmigrationTarget()
+    public KeyValuePair<IEscapeTarget, Value> getRichestImmigrationTarget()
     {
-        Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
+        Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
         //where to g0?
         // where life is rich and I where I have some rights
         foreach (var country in Country.getExisting())
@@ -1059,80 +1068,28 @@ abstract public class PopUnit : Producer
                     foreach (var pro in country.ownedProvinces)
                     {
                         var needsInTargetProvince = pro.getAverageNeedsFulfilling(this.popType);
-                        if (needsInTargetProvince.get() >= this.needsFullfilled.get())
+                        if (needsInTargetProvince.isBiggerThan(this.needsFullfilled, Options.PopNeedsEscapingBarrier))
                             provinces.Add(pro, needsInTargetProvince);
                     }
-        return provinces.MaxBy(x => x.Value.get()).Key;
-    }
-
-
-
-    public bool wantsToImmigrate()
-    {
-        if (this.needsFullfilled.get() < Options.PopNeedsImmigrationLimit.get()
-            || (getCountry().minorityPolicy.getValue() != MinorityPolicy.Equality && !isStateCulture()))
-            return true;
-        else return false;
-    }
-    public int getImmigrationSize()
-    {
-        int result = (int)(this.getPopulation() * Options.PopImmigrationSpeed.get());
-        if (result > 0)
-            return result;
-        else
-        if (province.hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
-            return this.getPopulation();// wipe-out
-        else
-            return 0;
-    }
-    //**********************************************
-    internal void calcMigrations()
-    {
-        int migrationSize = getMigrationSize();
-        if (wantsToMigrate() && migrationSize > 0 && this.getPopulation() >= migrationSize)
-            migrate(getRichestMigrationTarget(), migrationSize);
+        return provinces.MaxBy(x => x.Value.get());
     }
     /// <summary>
-    /// return null if there is no better place to live
-    /// </summary>    
-    public Province getRichestMigrationTarget()
+    /// return province to migrate or null if there is no better place to live
+    /// </summary>  
+    public KeyValuePair<IEscapeTarget, Value> getRichestMigrationTarget()
     {
-        Dictionary<Province, Value> provinces = new Dictionary<Province, Value>();
+        Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
         //foreach (var pro in getCountry().ownedProvinces)            
         foreach (var pro in province.getNeigbors(x => x.getCountry() == getCountry()))
         //if (pro != this.province)
         {
             var needsInProvince = pro.getAverageNeedsFulfilling(this.popType);
-            if (needsInProvince.get() > needsFullfilled.get())
+            if (needsInProvince.isBiggerThan(needsFullfilled, Options.PopNeedsEscapingBarrier))
                 provinces.Add(pro, needsInProvince);
         }
-        return provinces.MaxBy(x => x.Value.get()).Key;
+        return provinces.MaxBy(x => x.Value.get());
     }
-    private void migrate(Province where, int migrationSize)
-    {
-        if (where != null)
-        {
-            PopUnit.makeVirtualPop(popType, this, migrationSize, where, this.culture);
-        }
-    }
-    public bool wantsToMigrate()
-    {
 
-        if (this.needsFullfilled.get() < Options.PopNeedsMigrationLimit.get())
-            return true;
-        else return false;
-    }
-    public int getMigrationSize()
-    {
-        int result = (int)(this.getPopulation() * Options.PopMigrationSpeed.get());
-        if (result > 0)
-            return result;
-        else
-        if (province.hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
-            return this.getPopulation();// wipe-out
-        else
-            return 0;
-    }
     //**********************************************
     internal void calcAssimilations()
     {
@@ -1183,7 +1140,20 @@ abstract public class PopUnit : Producer
                 getBank().takeMoney(this, extraMoney);
         }
     }
-
+    /// <summary>
+    /// Returns last escape type - demotion, migration or immigration
+    /// </summary>
+    public IEscapeTarget getLastEscapeTarget()
+    {
+        return lastEscaped.key;
+    }
+    /// <summary>
+    /// Returns last escape size (how much people)
+    /// </summary>
+    public int getLastEscapeSize()
+    {
+        return lastEscaped.value;
+    }
     override public string ToString()
     {
         var sb = new StringBuilder();

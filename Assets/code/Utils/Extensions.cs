@@ -153,6 +153,11 @@ public static class CollectionExtensions
         else
             dictionary.Add(what, size);
     }
+    public static void AddIfNotNull<T>(this List<T> list, T what)
+    {
+        if (!what.Equals(default(T)))
+            list.Add(what);
+    }
     public static void move<T>(this List<T> source, T item, List<T> destination)
     {
         if (source.Remove(item)) // don't remove this
@@ -213,7 +218,7 @@ public static class CollectionExtensions
 
     /// <summary>
     /// Returns the maximal element of the given sequence, based on
-    /// the given projection and the specified comparer for projected values. 
+    /// the given projection and the specified comparer for projected values.     /// 
     /// </summary>
     /// <remarks>
     /// If more than one element has the maximal projected value, the first
@@ -441,7 +446,7 @@ public static class CollectionExtensions
     }
     public static Storage getStorage(this List<Storage> list, Product product)
     {
-        foreach (Storage stor in list)            
+        foreach (Storage stor in list)
             if (stor.getProduct() == product)
                 return stor;
         return new Storage(product, 0f);

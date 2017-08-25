@@ -33,7 +33,7 @@ public class Game : ThreadedJob
     public static DateTime date = new DateTime(50, 1, 1);
     internal static bool devMode = false;
     private static int mapMode;
-    private static bool surrended = false;
+    private static bool surrended = true;
     internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
         impassableBorder;
     private readonly Rect mapBorders;
@@ -451,7 +451,7 @@ public class Game : ThreadedJob
     {
         //Texture2D mapImage = new Texture2D(100, 100);
 #if UNITY_WEBGL
-        int mapSize = 30000;//20000;
+        int mapSize = 20000;//30000;
 #else
         int mapSize = 60000;
 #endif
@@ -673,7 +673,7 @@ public class Game : ThreadedJob
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
                     if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
-                        // don't need salary with PE
+                    // don't need salary with PE
                     {
                         var soldier = pop as Soldiers;
                         if (soldier != null)
@@ -717,7 +717,7 @@ public class Game : ThreadedJob
                 }
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
-                {                    
+                {
                     //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(getCountry())))
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
@@ -740,16 +740,21 @@ public class Game : ThreadedJob
                     //if (Game.Random.Next(10) == 1)
                     {
                         pop.calcGrowth();
+
                         pop.calcPromotions();
-                        pop.calcDemotions();
-                        pop.calcMigrations();
-                        pop.calcImmigrations();
+
+                        //pop.calcDemotions();
+                        //pop.calcMigrations();
+                        //pop.calcImmigrations();
+                        if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
+                            pop.findBetterLife();
+
                         pop.calcAssimilations();
                     }
-                    
-                    if (Game.Random.Next(15) == 1)                   
+
+                    if (Game.Random.Next(15) == 1)
                         pop.invest();
-                       
+
                 }
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                
@@ -769,7 +774,7 @@ public class Game : ThreadedJob
             if (country.isAI())
                 country.AIThink();
         }
-    }    
+    }
 
     protected override void ThreadFunction()
     {
