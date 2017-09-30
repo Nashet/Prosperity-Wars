@@ -23,7 +23,7 @@ public class PopType: IEscapeTarget
     /// SHOULD not be zero!
     /// </summary>
     private readonly float strenght;
-    static PopType()
+    static PopType() // can't be private
     {
         var tribemenLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var tribemenEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 2) });
@@ -71,6 +71,7 @@ public class PopType: IEscapeTarget
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Metal, 1f) });
             var artisansLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Fish, 1f),
             new Storage(Product.Wine, 1f),
             new Storage(Product.Cars, 1f),
             new Storage(Product.Fuel, 1f),
@@ -107,7 +108,7 @@ public class PopType: IEscapeTarget
             new Storage(Product.Furniture, 1f)
              });
         var workersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Fruit, 1),
+            new Storage(Product.Fish, 1),
             new Storage(Product.Cars, 0.5f),
             new Storage(Product.Fuel, 0.5f)
             });

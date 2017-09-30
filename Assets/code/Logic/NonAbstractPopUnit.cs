@@ -3,7 +3,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tribemen : PopUnit
+abstract public class GrainGetter : PopUnit
+{
+    protected GrainGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
+    {
+        storage = new Storage(Product.Grain);
+        gainGoodsThisTurn = new Storage(Product.Grain);
+        sentToMarket = new Storage(Product.Grain);
+    }
+    protected GrainGetter(int amount, PopType popType, Culture culture, Province where) : base(amount, popType, culture, where)
+    {
+        storage = new Storage(Product.Grain);
+        gainGoodsThisTurn = new Storage(Product.Grain);
+        sentToMarket = new Storage(Product.Grain);
+    }
+}
+abstract public class CattleGetter : PopUnit
+{
+    protected CattleGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
+    {
+        storage = new Storage(Product.Cattle);
+        gainGoodsThisTurn = new Storage(Product.Cattle);
+        sentToMarket = new Storage(Product.Cattle);
+    }
+    protected CattleGetter(int amount, PopType popType, Culture culture, Province where) : base(amount, popType, culture, where)
+    {
+        storage = new Storage(Product.Cattle);
+        gainGoodsThisTurn = new Storage(Product.Cattle);
+        sentToMarket = new Storage(Product.Cattle);
+    }
+}
+public class Tribemen : GrainGetter// CattleGetter
 {
     public Tribemen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.TribeMen, where, culture)
     {
@@ -35,10 +65,10 @@ public class Tribemen : PopUnit
         Storage producedAmount;
         float overpopulation = province.getOverpopulation();
         if (overpopulation <= 1) // all is OK
-            producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
+            producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
-            producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
-        storageNow.add(producedAmount);
+            producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
+        storage.add(producedAmount);
         gainGoodsThisTurn.set(producedAmount);
     }
     internal override bool canBuyProducts()
@@ -104,7 +134,7 @@ public class Tribemen : PopUnit
             return 0;
     }
 }
-public class Farmers : PopUnit
+public class Farmers : GrainGetter
 {
     public Farmers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Farmers, where, culture)
     { }
@@ -132,7 +162,7 @@ public class Farmers : PopUnit
     }
     public override void produce()
     {
-        Storage producedAmount = new Storage(Product.Food, getPopulation() * popType.getBasicProduction().get() / 1000f);
+        Storage producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f);
         producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
         gainGoodsThisTurn.set(producedAmount);
 
@@ -141,13 +171,16 @@ public class Farmers : PopUnit
             sentToMarket.set(gainGoodsThisTurn);
             Game.market.sentToMarket.add(gainGoodsThisTurn);
         }
-        else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+        else
         {
-            storageNow.add(gainGoodsThisTurn);
-        }
-        else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-        {
-            getCountry().storageSet.add(gainGoodsThisTurn);
+            if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+            {
+                storage.add(gainGoodsThisTurn);
+            }
+            else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            {
+                getCountry().storageSet.add(gainGoodsThisTurn);
+            }
         }
     }
     override internal bool canSellProducts()
@@ -226,7 +259,7 @@ public class Farmers : PopUnit
             return 0;
     }
 }
-public class Aristocrats : PopUnit
+public class Aristocrats : GrainGetter
 {
     public Aristocrats(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Aristocrats, where, culture)
     { }
@@ -247,10 +280,10 @@ public class Aristocrats : PopUnit
     }
     internal void dealWithMarket()
     {
-        if (storageNow.get() > Options.aristocratsFoodReserv)
+        if (storage.get() > Options.aristocratsFoodReserv)
         {
-            Storage howMuchSend = new Storage(storageNow.getProduct(), storageNow.get() - Options.aristocratsFoodReserv);
-            storageNow.send(sentToMarket, howMuchSend);
+            Storage howMuchSend = new Storage(storage.getProduct(), storage.get() - Options.aristocratsFoodReserv);
+            storage.send(sentToMarket, howMuchSend);
             //sentToMarket.set(howMuchSend);
             Game.market.sentToMarket.add(howMuchSend);
         }
@@ -297,17 +330,17 @@ public class Aristocrats : PopUnit
         if (province.getResource() != null && !province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
         {
             FactoryType ftype = FactoryType.whoCanProduce(province.getResource());
-            Factory factory = province.getExistingResourceFactory();
-            if (factory == null) //build new factory
+            Factory resourceFactoryInHere = province.getExistingResourceFactory();
+            if (resourceFactoryInHere == null) //build new factory
             {
                 //Has money / resources?
                 PrimitiveStorageSet resourceToBuild = ftype.getBuildNeeds();
-                Storage needFood = resourceToBuild.findStorage(Product.Food);
+                Storage needFood = resourceToBuild.findStorage(Product.Grain);
                 // try to build for food
-                if (storageNow.isBiggerOrEqual(needFood))
+                if (storage.isBiggerOrEqual(needFood))
                 {
                     var newFactory = new Factory(province, this, ftype);
-                    storageNow.send(newFactory.getInputProductsReserve(), needFood);
+                    storage.send(newFactory.getInputProductsReserve(), needFood);
                     newFactory.constructionNeeds.setZero();
                 }
                 else
@@ -324,19 +357,17 @@ public class Aristocrats : PopUnit
             {
                 //upgrade existing resource factory
                 // upgrade is only for money? Yes, because its complicated - lots of various products               
-                if (factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
-                    && factory.getMargin().get() >= Options.minMarginToUpgrade
-                    && Factory.conditionsUpgrade.isAllTrue(factory, this))
-                    factory.upgrade(this);
+                if (resourceFactoryInHere.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
+                    && resourceFactoryInHere.getMargin().get() >= Options.minMarginToUpgrade
+                    && Factory.conditionsUpgrade.isAllTrue(resourceFactoryInHere, this))
+                    resourceFactoryInHere.upgrade(this);
             }
         }
         base.invest();
     }
 }
-public class Soldiers : PopUnit
+public class Soldiers : GrainGetter
 {
-
-
     public Soldiers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Soldiers, where, culture)
     { }
     public Soldiers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Soldiers, iculture, where)
@@ -405,7 +436,7 @@ public class Soldiers : PopUnit
         }
     }
 }
-public class Capitalists : PopUnit
+public class Capitalists : GrainGetter
 {
     public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture)
     { }
@@ -505,7 +536,7 @@ public class Capitalists : PopUnit
         base.invest();
     }
 }
-public class Artisans : PopUnit
+public class Artisans : GrainGetter
 {
     private ArtisanProduction artisansProduction;
     public Artisans(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Artisans, where, culture)
@@ -553,19 +584,19 @@ public class Artisans : PopUnit
                 if (Economy.isMarket.checkIftrue(getCountry()))
                 {
                     sentToMarket.set(gainGoodsThisTurn);
-                    storageNow.setZero();
+                    storage.setZero();
                     Game.market.sentToMarket.add(gainGoodsThisTurn);
                 }
                 else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                 {
                     // send to market?
                     sentToMarket.set(gainGoodsThisTurn);
-                    storageNow.setZero();
+                    storage.setZero();
                     Game.market.sentToMarket.add(gainGoodsThisTurn);
                 }
                 else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    storageNow.sendAll(getCountry().storageSet);
+                    storage.sendAll(getCountry().storageSet);
                 }
             }
             //else
@@ -672,7 +703,7 @@ public class Artisans : PopUnit
             changeProductionType();
     }
 }
-public class Workers : PopUnit
+public class Workers : GrainGetter
 {
     public Workers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Workers, where, culture)
     { }

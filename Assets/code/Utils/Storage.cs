@@ -221,7 +221,7 @@ public class PrimitiveStorageSet
         if (storage == null)
             return false;
         else
-            return storage.send(whom.storageNow, what);
+            return storage.send(whom.storage, what);
     }
     /// <summary>
     /// Do checks outside

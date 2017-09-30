@@ -13,7 +13,7 @@ abstract public class SimpleProduction : Producer
     {
         this.type = type;
         gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
-        storageNow = new Storage(this.getType().basicProduction.getProduct());
+        storage = new Storage(this.getType().basicProduction.getProduct());
         sentToMarket = new Storage(this.getType().basicProduction.getProduct());
     }
     internal Agent getOwner()
@@ -47,7 +47,7 @@ abstract public class SimpleProduction : Producer
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
-        storageNow.set(0f);
+        storage.set(0f);
     }
     virtual internal float getProfit()
     {
@@ -61,15 +61,18 @@ abstract public class SimpleProduction : Producer
     {
         //todo add checks for inputs
         gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
-        storageNow.add(gainGoodsThisTurn);
+        storage.add(gainGoodsThisTurn);
 
         //consume Input Resources
-        foreach (Storage next in getRealNeeds())
-            getInputProductsReserve().subtract(next, false);        
+        if (!getType().isResourceGathering())
+            foreach (Storage next in getRealNeeds())
+                getInputProductsReserve().subtract(next, false);
     }
     abstract internal Procent getInputFactor();
     protected Procent getInputFactor(Procent multiplier)
     {
+        if (getType().isResourceGathering())
+            return Procent.HundredProcent;
         float inputFactor = 1;
         List<Storage> realInput = new List<Storage>();
         //Storage available;
@@ -135,7 +138,8 @@ abstract public class SimpleProduction : Producer
     protected List<Storage> getHowMuchInputProductsReservesWants(Value multiplier)
     {
         //Value multiplier = new Value(getWorkForceFulFilling() * getLevel() * Options.FactoryInputReservInDays);
-
+        if (getType().isResourceGathering())
+            return null;
         List<Storage> result = new List<Storage>();
 
         foreach (Storage next in getType().resourceInput)
@@ -175,7 +179,8 @@ abstract public class SimpleProduction : Producer
     protected List<Storage> getRealNeeds(Value multiplier)
     {
         //Value multiplier = new Value(getEfficiency(false).get() * getLevel());
-
+        if (getType().isResourceGathering())
+            return null;
         List<Storage> result = new List<Storage>();
 
         foreach (Storage next in getType().resourceInput)
@@ -217,5 +222,5 @@ abstract public class SimpleProduction : Producer
         }
         return true;
     }
-    
+
 }

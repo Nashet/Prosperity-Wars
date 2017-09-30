@@ -375,10 +375,19 @@ public class Market : Agent//: PrimitiveStorageSet
     /// new version of buy-old,
     /// real deal
     /// </summary>   
-    internal Storage buy(Consumer buyer, Storage buying)
+    internal Storage buy(Consumer buyer, Storage whatWantedToBuy)
     {
-        if (buying.isNotZero())
+        if (whatWantedToBuy.isNotZero())
         {
+            Storage buying;
+            if (whatWantedToBuy.getProduct().isAbstract())
+            {
+                buying = getCheapestSubstitute(whatWantedToBuy);
+                if (buying == null)//no substitution available on market
+                    return new Storage(whatWantedToBuy.getProduct());
+            }
+            else
+                buying = whatWantedToBuy;
             Storage howMuchCanConsume;
             Storage price = findPrice(buying.getProduct());
             Value cost;
@@ -445,13 +454,26 @@ public class Market : Agent//: PrimitiveStorageSet
             return howMuchCanConsume;
         }
         else
-            return buying; // assuming buying is empty here
+            return whatWantedToBuy; // assuming buying is empty here
+    }
+
+    public Storage getCheapestSubstitute(Storage abstractProduct)
+    {
+        // assuming substitutes are sorted in cheap-expensive order
+        foreach (var item in abstractProduct.getProduct().getSubstitutes())
+        {
+            Storage substitute = new Storage(item, abstractProduct);
+            // check for availability
+            if (Game.market.sentToMarket.has(substitute))
+                return substitute;
+        }
+        return null;
     }
 
     /// <summary>
     /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
     /// </summary>    
-   public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
+    public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
     {
         if (forWhom.canAfford(need) || subsidizer == null)
             return buy(forWhom, need);
@@ -476,7 +498,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Buying needs in circle, by Procent in time
     /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
-   internal bool buy(Producer buyer, PrimitiveStorageSet stillHaveToBuy, Procent buyInTime, PrimitiveStorageSet ofWhat)
+    internal bool buy(Producer buyer, PrimitiveStorageSet stillHaveToBuy, Procent buyInTime, PrimitiveStorageSet ofWhat)
     {
         bool buyingIsFinished = true;
         foreach (Storage what in ofWhat)
@@ -486,7 +508,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 return true;
             // check if buying still have enough to subtract consumeOnThisEteration
             if (!stillHaveToBuy.has(consumeOnThisEteration))
-                consumeOnThisEteration = stillHaveToBuy.getStorage(what.getProduct());            
+                consumeOnThisEteration = stillHaveToBuy.getStorage(what.getProduct());
             var reallyBought = buy(buyer, consumeOnThisEteration, null);
 
             stillHaveToBuy.subtract(reallyBought);

@@ -314,7 +314,7 @@ public class Factory : SimpleProduction
             else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
             {
                 // non market!!
-                Storage foodSalary = new Storage(Product.Food, 1f);
+                Storage foodSalary = new Storage(Product.Grain, 1f);
                 foreach (var link in hiredWorkForce)
                 {
                     Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / (float)workForcePerLevel);
@@ -334,9 +334,9 @@ public class Factory : SimpleProduction
                     {
                         PopUnit popPayer = getOwner() as PopUnit;
 
-                        if (popPayer.storageNow.has(howMuchPay))
+                        if (popPayer.storage.has(howMuchPay))
                         {
-                            popPayer.storageNow.send(link.Key.storageNow, howMuchPay);
+                            popPayer.storage.send(link.Key.storage, howMuchPay);
                             link.Key.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
@@ -689,7 +689,7 @@ public class Factory : SimpleProduction
                 base.produce(new Value(getType().basicProduction.get() * getEfficiency(true).get() * getLevel()));
             if (getType() == FactoryType.GoldMine)
             {
-                this.ConvertFromGoldAndAdd(storageNow);
+                this.ConvertFromGoldAndAdd(storage);
                 //send 50% to government
                 Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
                 pay(getCountry(), sentToGovernment);
@@ -700,25 +700,25 @@ public class Factory : SimpleProduction
                 if (Economy.isMarket.checkIftrue(getCountry()))
                 {
                     sentToMarket.set(gainGoodsThisTurn);
-                    storageNow.setZero();
+                    storage.setZero();
                     Game.market.sentToMarket.add(gainGoodsThisTurn);
                 }
                 else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                 {
                     Country countryOwner = getOwner() as Country;
                     if (countryOwner != null)
-                        storageNow.sendAll(countryOwner.storageSet);
+                        storage.sendAll(countryOwner.storageSet);
                     else // assuming owner is aristocrat/capitalist
                     {
                         // send to market?
                         sentToMarket.set(gainGoodsThisTurn);
-                        storageNow.setZero();
+                        storage.setZero();
                         Game.market.sentToMarket.add(gainGoodsThisTurn);
                     }
                 }
                 else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    storageNow.sendAll(getCountry().storageSet);
+                    storage.sendAll(getCountry().storageSet);
                 }
             }
         }
@@ -737,8 +737,8 @@ public class Factory : SimpleProduction
     /// </summary>
     override public void consumeNeeds()
     {
-        if (isWorking())
-        {
+        if (isWorking() && !getType().isResourceGathering())
+        {       
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {

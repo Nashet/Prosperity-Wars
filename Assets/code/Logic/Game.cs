@@ -69,7 +69,7 @@ public class Game : ThreadedJob
         Country.makeCountries(this);
 
         updateStatus("Making population..");
-        CreateRandomPopulation();
+        сreateRandomPopulation();
 
         setStartResources();
         makeHelloMessage();
@@ -291,88 +291,91 @@ public class Game : ThreadedJob
 
     static void makeFactoryTypes()
     {
-        new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);
-        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null, true);
-        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null, true);
-        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), null, false);
-        new FactoryType("Quarry", new Storage(Product.Stone, 2f), null, true);
-        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null, false);
+        new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
+        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), true);
+        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), true);
+        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), false);
+        new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
+        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
+
+        new FactoryType("Oil rig", new Storage(Product.Oil, 2f),  true);
+        new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
+
+        new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
+        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
+        new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), false);
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput, false);
+        new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 1f));
-        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, false);
+        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 0.5f));
         resourceInput.set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput, false);
+        new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wool, 1f));
-        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, false);
+        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Wood, 0.5f));
         resourceInput.set(new Storage(Product.Stone, 2f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput, false);
+        new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Fruit, 1f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
+        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput, false);
+        new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Stone, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput, false);
+        new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput, false);
+        new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput, false);
-
-
-        new FactoryType("Oil rig", new Storage(Product.Oil, 2f), null, true);
-        new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), null, false);
-
+        new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
+        
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Oil, 1f));
-        new FactoryType("Oil refinery", new Storage(Product.Fuel, 2f), resourceInput, false);
+        new FactoryType("Oil refinery", new Storage(Product.Fuel, 2f), resourceInput);
 
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput, false);
+        new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Machinery, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Rubber, 1f));
-        new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput, false);
+        new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Machinery, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Artillery, 1f));
-        new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput, false);
+        new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Machinery, 1f));
-        new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput, false);
+        new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
     }
 
 
@@ -392,7 +395,7 @@ public class Game : ThreadedJob
         allMoney.add(Game.market.cash);
         return allMoney;
     }
-    static void CreateRandomPopulation()
+    static void сreateRandomPopulation()
     {
 
         foreach (Province province in Province.allProvinces)
@@ -422,7 +425,7 @@ public class Game : ThreadedJob
 
 
                 pop.cash.set(9000);
-                pop.storageNow.add(new Storage(Product.Food, 60f));
+                pop.storage.add(new Storage(Product.Grain, 60f));
                 if (!Game.devMode)
                 {
                     //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
@@ -592,6 +595,8 @@ public class Game : ThreadedJob
                 }
             }
         }
+        PopType.sortNeeds();
+        Product.sortSubstitutes();
     }
     static void makeHelloMessage()
     {
@@ -683,7 +688,7 @@ public class Game : ThreadedJob
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
-        PopType.sortNeeds();
+       
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {

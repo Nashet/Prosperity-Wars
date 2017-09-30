@@ -25,21 +25,20 @@ public class FactoryType
     //internal ConditionsList conditionsBuild;
     internal Condition enoughMoneyOrResourcesToBuild;
     internal ConditionsList conditionsBuild;
-    bool shaft;
-    internal FactoryType(string iname, Storage ibasicProduction, PrimitiveStorageSet iresourceInput, bool shaft)
+    private readonly bool shaft;
+    /// <summary>
+    /// Basic constructor for resource getting FactoryType
+    /// </summary>    
+    internal FactoryType(string name, Storage basicProduction, bool shaft)
     {
-
-        name = iname;
-        if (iname == "Gold pit") GoldMine = this;
-        if (iname == "Furniture factory") Furniture = this;
-        if (iname == "Metal pit") MetalDigging = this;
-        if (iname == "Metal smelter") MetalSmelter = this;
+        this.name = name;
+        if (name == "Gold pit") GoldMine = this;
+        if (name == "Furniture factory") Furniture = this;
+        if (name == "Metal pit") MetalDigging = this;
+        if (name == "Metal smelter") MetalSmelter = this;
         allTypes.Add(this);
-        basicProduction = ibasicProduction;
-        if (iresourceInput == null)
-            resourceInput = new PrimitiveStorageSet();
-        else
-            resourceInput = iresourceInput;
+        this.basicProduction = basicProduction;
+
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
         upgradeResourceLowTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
         upgradeResourceMediumTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
@@ -62,6 +61,16 @@ public class FactoryType
         Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
         this.shaft = shaft;
     }
+    /// <summary>
+    /// Constructor for resource processing FactoryType
+    /// </summary>    
+    internal FactoryType(string name, Storage basicProduction, PrimitiveStorageSet resourceInput) : this(name, basicProduction, false)
+    {
+        //if (resourceInput == null)
+        //    this.resourceInput = new PrimitiveStorageSet();
+        //else
+            this.resourceInput = resourceInput;
+    }
     public static IEnumerable<FactoryType> getInventedTypes(Country country)
     {
         foreach (var next in allTypes)
@@ -80,7 +89,7 @@ public class FactoryType
             if (!next.isResourceGathering())
                 yield return next;
     }
-    
+
     internal Value getBuildCost()
     {
         Value result = Game.market.getCost(getBuildNeeds());
@@ -90,8 +99,9 @@ public class FactoryType
     internal PrimitiveStorageSet getBuildNeeds()
     {
         //return new Storage(Product.Food, 40f);
+        // thats weird place
         PrimitiveStorageSet result = new PrimitiveStorageSet();
-        result.set(new Storage(Product.Food, 40f));
+        result.set(new Storage(Product.Grain, 40f));
         //TODO!has connection in pop.invest!!
         //if (whoCanProduce(Product.Gold) == this)
         //        result.Set(new Storage(Product.Wood, 40f));
@@ -111,10 +121,12 @@ public class FactoryType
     override public string ToString() { return name; }
     internal bool isResourceGathering()
     {
-        if (resourceInput.Count() == 0)
+        if (resourceInput == null)
             return true;
         else
             return false;
+
+        //resourceInput.Count() == 0
     }
     internal bool isShaft()
     {

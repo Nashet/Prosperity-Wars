@@ -44,10 +44,10 @@ public class ArtisanProduction : SimpleProduction
     {
         produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
         getOwner().gainGoodsThisTurn.set(this.gainGoodsThisTurn);
-        if (getOwner().storageNow.isSameProduct(this.storageNow))
-            getOwner().storageNow.add(this.storageNow);
+        if (getOwner().storage.isSameProduct(this.storage))
+            getOwner().storage.add(this.storage);
         else
-            getOwner().storageNow.set(this.storageNow);
+            getOwner().storage.set(this.storage);
     }
     /// <summary>
     /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 

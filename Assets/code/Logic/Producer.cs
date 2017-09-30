@@ -36,17 +36,14 @@ public abstract class Consumer : Agent
 public abstract class Producer : Consumer
 {
     /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
-    public Storage storageNow;
+    public Storage storage;
 
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
 
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
-
-    //protected Country owner; //Could be any Country or POP
-
-
+    
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
     public abstract void simulate(); ///!!!
@@ -77,11 +74,11 @@ public abstract class Producer : Consumer
             Value cost = new Value(Game.market.getCost(realSold));
 
             // assuming gainGoodsThisTurn & realSold have same product
-            if (storageNow.isSameProduct(gainGoodsThisTurn))
-                storageNow.add(gainGoodsThisTurn);
+            if (storage.isSameProduct(gainGoodsThisTurn))
+                storage.add(gainGoodsThisTurn);
             else
-                storageNow = new Storage(gainGoodsThisTurn);
-            storageNow.subtract(realSold.get());
+                storage = new Storage(gainGoodsThisTurn);
+            storage.subtract(realSold.get());
 
             if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {

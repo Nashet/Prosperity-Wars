@@ -124,7 +124,7 @@ public class FactoryPanel : DragPanel//for dragging
             foreach (Storage next in shownFactory.getType().resourceInput)
                 InputRequired += next.get() * shownFactory.getWorkForceFulFilling().get() + " " + next.getProduct().ToString() + ";";
             generaltext.text = shownFactory.getType().name + " level: " + shownFactory.getLevel() + "\n" + "Workforce: " + shownFactory.getWorkForce()
-                + "\nUnsold: " + shownFactory.storageNow.ToString()
+                + "\nUnsold: " + shownFactory.storage.ToString()
                 + "\nGain goods: " + shownFactory.gainGoodsThisTurn.ToString()
                 + "\nBasic production: " + shownFactory.getType().basicProduction
                 + "\nEfficiency: " + Factory.modifierEfficiency.getModifier(shownFactory)

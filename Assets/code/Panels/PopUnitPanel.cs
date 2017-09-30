@@ -34,7 +34,7 @@ public class PopUnitPanel : DragPanel
             sb.Append("\nPopulation: ").Append(pop.getPopulation());
 
             //if (Game.devMode)
-            sb.Append("\nStorage: ").Append(pop.storageNow.ToString());
+            sb.Append("\nStorage: ").Append(pop.storage.ToString());
             Artisans isArtisan = pop as Artisans;
             if (isArtisan != null)
             {

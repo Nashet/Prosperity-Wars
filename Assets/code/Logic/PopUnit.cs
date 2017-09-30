@@ -115,17 +115,14 @@ abstract public class PopUnit : Producer
              new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
     }
-    protected PopUnit(int iamount, PopType ipopType, Culture iculture, Province where) : base(where)
+    protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(where)
     {
         where.allPopUnits.Add(this);
         born = Game.date;
-        population = iamount;
-        popType = ipopType;
-        culture = iculture;
-
-        storageNow = new Storage(Product.Food);
-        gainGoodsThisTurn = new Storage(Product.Food);
-        sentToMarket = new Storage(Product.Food);
+        population = amount;
+        this.popType = popType;
+        this.culture = culture;
+                
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
@@ -178,16 +175,18 @@ abstract public class PopUnit : Producer
         }
         source.payWithoutRecord(this, source.cash.multiplyOutside(newPopShare));
 
+        // todo better choice
         //Producer's fields:
         if (source.popType == PopType.Artisans && newPopType != PopType.Artisans)
+        //if (source.storage.getProduct() != this.storage.getProduct())
         {
-            storageNow = new Storage(Product.Food);
-            gainGoodsThisTurn = new Storage(Product.Food);
-            sentToMarket = new Storage(Product.Food);
+            storage = new Storage(Product.Grain);
+            gainGoodsThisTurn = new Storage(Product.Grain);
+            sentToMarket = new Storage(Product.Grain);
         }
         else
         {
-            storageNow = newPopShare.sendProcentToNew(source.storageNow);
+            storage = newPopShare.sendProcentToNew(source.storage);
             gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
             sentToMarket = new Storage(source.sentToMarket.getProduct());
         }
@@ -229,8 +228,8 @@ abstract public class PopUnit : Producer
         // Bank - stays same
 
         //Producer's fields:
-        if (storageNow.isSameProduct(source.storageNow))
-            storageNow.add(source.storageNow);
+        if (storage.isSameProduct(source.storage))
+            storage.add(source.storage);
         // looks I don't need - it erases every tick anyway
         //if (gainGoodsThisTurn.isSameProduct(source.gainGoodsThisTurn))
         //    gainGoodsThisTurn.add(source.gainGoodsThisTurn);        
@@ -547,10 +546,10 @@ abstract public class PopUnit : Producer
                 //if (this.popType.isRichStrata())
                 howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
             }
-            if (storageNow.isBiggerOrEqual(howMuchSend))
-                storageNow.send(getCountry().storageSet, howMuchSend);
+            if (storage.isBiggerOrEqual(howMuchSend))
+                storage.send(getCountry().storageSet, howMuchSend);
             else
-                storageNow.sendAll(getCountry().storageSet);
+                storage.sendAll(getCountry().storageSet);
         }
     }
 
@@ -597,23 +596,23 @@ abstract public class PopUnit : Producer
         howDeep--;
         //List<Storage> needs = getEveryDayNeeds();
         foreach (Storage need in needs)
-            if (storageNow.isSameProduct(need))
-                if (storageNow.isBiggerOrEqual(need))
+            if (storage.isSameProduct(need))
+                if (storage.isBiggerOrEqual(need))
                 {
-                    storageNow.subtract(need);
+                    storage.subtract(need);
                     consumedTotal.add(need);
                     needsFullfilled.set(2f / 3f);
                     if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
                 }
                 else
                 {
-                    float canConsume = storageNow.get();
-                    consumedTotal.add(storageNow);
-                    storageNow.set(0);
+                    float canConsume = storage.get();
+                    consumedTotal.add(storage);
+                    storage.set(0);
                     needsFullfilled.add(canConsume / need.get() / 3f);
                 }
     }
-    /// <summary> </summary>
+    /// <summary> !!! Overloaded for several pop types </summary>
     void buyNeeds(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
         //buy life needs
@@ -621,9 +620,9 @@ abstract public class PopUnit : Producer
         if (!skipLifeneeds)
             foreach (Storage need in lifeNeeds)
             {
-                if (storageNow.isBiggerOrEqual(need))// don't need to buy on market
+                if (storage.isBiggerOrEqual(need))// don't need to buy on market
                 {
-                    storageNow.subtract(need);
+                    storage.subtract(need);
                     consumedTotal.set(need);
                     needsFullfilled.set(1f / 3f);
                     //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
@@ -739,18 +738,18 @@ abstract public class PopUnit : Producer
             {
                 payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
                 foreach (Storage need in needs)
-                    if (storageNow.isBiggerOrEqual(need))
+                    if (storage.isBiggerOrEqual(need))
                     {
-                        storageNow.subtract(need);
+                        storage.subtract(need);
                         consumedTotal.set(need);
                         needsFullfilled.set(1f / 3f);
                         consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
                     }
                     else
                     {
-                        float canConsume = storageNow.get();
-                        consumedTotal.set(storageNow);
-                        storageNow.set(0);
+                        float canConsume = storage.get();
+                        consumedTotal.set(storage);
+                        storage.set(0);
                         needsFullfilled.set(canConsume / need.get() / 3f);
                     }
             }
@@ -859,7 +858,7 @@ abstract public class PopUnit : Producer
     public void payTaxToAllAristocrats()
     {
         Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
-        province.shareWithAllAristocrats(storageNow, taxSize);
+        province.shareWithAllAristocrats(storage, taxSize);
     }
     abstract public bool shouldPayAristocratTax();
 
