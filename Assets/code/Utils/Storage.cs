@@ -163,15 +163,25 @@ public class PrimitiveStorageSet
     }
     /// <summary>
     /// If duplicated than overwrites
-    /// </summary>
-    /// <param name="inn"></param>
-    public void set(Storage inn)
+    /// </summary>    
+    public void set(Storage setValue)
     {
-        Storage find = this.findStorage(inn.getProduct());
+        Storage find = this.findStorage(setValue.getProduct());
         if (find == null)
-            container.Add(new Storage(inn));
+            container.Add(new Storage(setValue));
         else
-            find.set(inn);
+            find.set(setValue);
+    }
+    /// <summary>
+    /// If duplicated than overwrites
+    /// </summary>    
+    public void set(Product product, Value value)
+    {
+        Storage find = this.findStorage(product);
+        if (find == null)
+            container.Add(new Storage(product, value));
+        else
+            find.set(value);
     }
     /// <summary>
     /// If duplicated than adds
@@ -548,7 +558,7 @@ public class Storage : Value
             return false;
         }
         else
-        {            
+        {
             if (this.isBiggerOrEqual(amountToSend))
             {
                 subtract(amountToSend);
@@ -568,7 +578,7 @@ public class Storage : Value
     {
         if (!isSameProduct(product))
         {
-            Debug.Log("Attempted to pay wrong product!");
+            // Debug.Log("Attempted to pay wrong product!");
             return false;
         }
         else
@@ -578,7 +588,17 @@ public class Storage : Value
     {
         if (!isSameProduct(storage))
         {
-            Debug.Log("Attempted to pay wrong product!");
+            // Debug.Log("Attempted to pay wrong product!");
+            return false;
+        }
+        else
+            return isBiggerOrEqual(storage);
+    }
+    public bool hasSubstitute(Storage storage)
+    {
+        if (!isSubstituteProduct(storage))
+        {
+            // Debug.Log("Attempted to pay wrong product!");
             return false;
         }
         else
@@ -606,6 +626,10 @@ public class Storage : Value
     internal bool isSameProduct(Storage anotherStorage)
     {
         return this.getProduct() == anotherStorage.getProduct();
+    }
+    internal bool isSubstituteProduct(Storage anotherStorage)
+    {
+        return this.getProduct().isSubstituteFor(anotherStorage.getProduct());
     }
     internal bool isSameProduct(Product anotherProduct)
     {

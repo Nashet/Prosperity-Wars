@@ -739,9 +739,8 @@ public class Country : Staff
     {        
         if (toBuy.isNotZero())
         {
-            Storage realyBougth = Game.market.buy(this, toBuy, null);
             //if (toBuy.get() < 10f) toBuy.set(10);
-            //toBuy.multiple();
+            Storage realyBougth = Game.market.buy(this, toBuy, null);                        
             storageSet.add(realyBougth);
             storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
         }

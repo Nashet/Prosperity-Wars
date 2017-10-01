@@ -9,16 +9,23 @@ using System;
 public class Market : Agent//: PrimitiveStorageSet
 {
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
+
+    // todo make Better class for it?
     DateTime dateOfDSB = new DateTime(int.MaxValue);
     PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
-    DateTime dateOfgetSupply = new DateTime(int.MaxValue);
-    DateTime dateOfgetProductionTotal = new DateTime(int.MaxValue);
+
+    DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
+    PrimitiveStorageSet supplyOnMarket = new PrimitiveStorageSet();
+
+    DateTime dateOfgetTotalProduction = new DateTime(int.MaxValue);
+    PrimitiveStorageSet totalProduction = new PrimitiveStorageSet();
+
     DateTime dateOfgetTotalConsumption = new DateTime(int.MaxValue);
-    DateTime dateOfgetBouth = new DateTime(int.MaxValue);
-    PrimitiveStorageSet getSupplyBuffer = new PrimitiveStorageSet();
-    PrimitiveStorageSet getProductionTotalBuffer = new PrimitiveStorageSet();
-    PrimitiveStorageSet getTotalConsumptionBuffer = new PrimitiveStorageSet();
-    PrimitiveStorageSet getBouthBuffer = new PrimitiveStorageSet();
+    PrimitiveStorageSet totalConsumption = new PrimitiveStorageSet();
+
+    DateTime dateOfgetBought = new DateTime(int.MaxValue);
+    PrimitiveStorageSet bought = new PrimitiveStorageSet();
+
     internal PricePool priceHistory;
     internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
     public Market() : base(0f, null, null)
@@ -107,7 +114,7 @@ public class Market : Agent//: PrimitiveStorageSet
             }
             return result;
         }
-        if (dateOfgetBouth != Game.date)
+        if (dateOfgetBought != Game.date)
         {
             //recalculate supply buffer
             foreach (Storage sup in marketPrice)
@@ -129,15 +136,15 @@ public class Market : Agent//: PrimitiveStorageSet
                     if (countryStor != null)
                         result += countryStor.get();
                 }
-                getBouthBuffer.set(new Storage(sup.getProduct(), result));
+                bought.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetBouth = Game.date;
+            dateOfgetBought = Game.date;
         }
-        Storage tmp = getBouthBuffer.findStorage(pro);
+        Storage tmp = bought.findStorage(pro);
         if (tmp == null)
             return 0;
         else
-            return getBouthBuffer.findStorage(pro).get();
+            return bought.findStorage(pro).get();
         //float result = 0f;
         //foreach (Country country in Country.allCountries)
         //    foreach (Province province in country.ownedProvinces)
@@ -206,15 +213,15 @@ public class Market : Agent//: PrimitiveStorageSet
                     if (countryStor != null)
                         result += countryStor.get();
                 }
-                getTotalConsumptionBuffer.set(new Storage(sup.getProduct(), result));
+                totalConsumption.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetTotalConsumption = Game.date;
         }
-        Storage tmp = getTotalConsumptionBuffer.findStorage(pro);
+        Storage tmp = totalConsumption.findStorage(pro);
         if (tmp == null)
             return 0;
         else
-            return getTotalConsumptionBuffer.findStorage(pro).get();
+            return totalConsumption.findStorage(pro).get();
         return result;
         ////////////
         //float result = 0f;
@@ -284,7 +291,7 @@ public class Market : Agent//: PrimitiveStorageSet
                             result += producer.sentToMarket.get();
             return result;
         }
-        if (dateOfgetSupply != Game.date)
+        if (dateOfgetSupplyOnMarket != Game.date)
         {
             //recalculate supply buffer
             foreach (Storage sup in marketPrice)
@@ -296,15 +303,15 @@ public class Market : Agent//: PrimitiveStorageSet
                             if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
                                 result += producer.sentToMarket.get();
 
-                getSupplyBuffer.set(new Storage(sup.getProduct(), result));
+                supplyOnMarket.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetSupply = Game.date;
+            dateOfgetSupplyOnMarket = Game.date;
         }
-        Storage tmp = getSupplyBuffer.findStorage(pro);
+        Storage tmp = supplyOnMarket.findStorage(pro);
         if (tmp == null)
             return 0;
         else
-            return getSupplyBuffer.findStorage(pro).get();
+            return supplyOnMarket.findStorage(pro).get();
         //return result;
     }
     /// <summary>
@@ -327,7 +334,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 }
             return result;
         }
-        if (dateOfgetProductionTotal != Game.date)
+        if (dateOfgetTotalProduction != Game.date)
         {
             //recalculate Production buffer
             foreach (Storage sup in marketPrice)
@@ -342,15 +349,15 @@ public class Market : Agent//: PrimitiveStorageSet
                                 result += producer.gainGoodsThisTurn.get();
                         }
                     }
-                getProductionTotalBuffer.set(new Storage(sup.getProduct(), result));
+                totalProduction.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetProductionTotal = Game.date;
+            dateOfgetTotalProduction = Game.date;
         }
-        Storage tmp = getProductionTotalBuffer.findStorage(pro);
+        Storage tmp = totalProduction.findStorage(pro);
         if (tmp == null)
             return 0;
         else
-            return getProductionTotalBuffer.findStorage(pro).get();
+            return totalProduction.findStorage(pro).get();
         return result;
     }
     internal void ForceDSBRecalculation()

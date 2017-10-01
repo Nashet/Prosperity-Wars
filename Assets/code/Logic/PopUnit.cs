@@ -122,7 +122,7 @@ abstract public class PopUnit : Producer
         population = amount;
         this.popType = popType;
         this.culture = culture;
-                
+
         education = new Procent(0.00f);
         loyalty = new Procent(0.50f);
         needsFullfilled = new Procent(0.50f);
@@ -596,7 +596,8 @@ abstract public class PopUnit : Producer
         howDeep--;
         //List<Storage> needs = getEveryDayNeeds();
         foreach (Storage need in needs)
-            if (storage.isSameProduct(need))
+            if (storage.isSameProduct(need) || storage.isSubstituteProduct(need))
+                // WTF!!??
                 if (storage.isBiggerOrEqual(need))
                 {
                     storage.subtract(need);
@@ -612,30 +613,29 @@ abstract public class PopUnit : Producer
                     needsFullfilled.add(canConsume / need.get() / 3f);
                 }
     }
-    /// <summary> !!! Overloaded for several pop types </summary>
+
     void buyNeeds(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
         //buy life needs
         Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
-        if (!skipLifeneeds)
-            foreach (Storage need in lifeNeeds)
+        //if (!skipLifeneeds)
+        foreach (Storage need in lifeNeeds)
+        {
+            if (storage.has(need) || storage.hasSubstitute(need))// don't need to buy on market
             {
-                if (storage.isBiggerOrEqual(need))// don't need to buy on market
-                {
-                    storage.subtract(need);
-                    consumedTotal.set(need);
-                    needsFullfilled.set(1f / 3f);
-                    //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
-                }
-                else
-                //needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
-                {
-                    needsFullfilled.set(Game.market.buy(this, need, null), need);
-                    needsFullfilled.divide(Options.PopStrataWeight);
-                }
+                storage.subtract(need); // danger moment - may subtracts different type of product
+                consumedTotal.set(storage.getProduct(), need);
+                needsFullfilled.set(1f / 3f);
+                //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
             }
+            else
+            //needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
+            {
+                needsFullfilled.set(Game.market.buy(this, need, null), need);
+                needsFullfilled.divide(Options.PopStrataWeight);
+            }
+        }
 
-        //if (NeedsFullfilled.get() > 0.33f) NeedsFullfilled.set(0.33f);
         // buy everyday needs
         if (getLifeNeedsFullfilling().get() >= 0.95f)
         {
@@ -699,7 +699,7 @@ abstract public class PopUnit : Producer
             // reserve.payWithoutRecord(this, reserve.cash);
         }
     }
-    /// <summary> </summary>
+    /// <summary> !!! Overloaded for several pop types </summary>
     public override void consumeNeeds()
     {
         //life needs First
@@ -886,7 +886,7 @@ abstract public class PopUnit : Producer
             return true;
         else return false;
     }
-    
+
     public PopType getRichestPromotionTarget()
     {
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
@@ -987,7 +987,7 @@ abstract public class PopUnit : Producer
             list.AddIfNotNull(getRichestMigrationTarget());
             list.AddIfNotNull(getRichestImmigrationTarget());
             var bestChoice = list.MaxBy(x => x.Value.get());
-                        
+
             if (!bestChoice.Equals(default(KeyValuePair<IEscapeTarget, Value>)))
             {
                 var targetIsPopType = bestChoice.Key as PopType;
@@ -1000,7 +1000,7 @@ abstract public class PopUnit : Producer
                     lastEscaped.key = targetIsProvince;
                 }
                 else
-                { 
+                {
                     // assuming its PopType
                     PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.province, this.culture);
                     lastEscaped.key = targetIsPopType;

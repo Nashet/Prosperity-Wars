@@ -304,7 +304,6 @@ public class Aristocrats : GrainGetter
     {
         return false;
     }
-
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy

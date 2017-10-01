@@ -15,34 +15,7 @@ public class Product : Name
     private readonly Value defaultPrice;
     private readonly bool _isAbstract;
     private readonly List<Product> substitutes;
-    public bool isAbstract()
-    {
-        return _isAbstract;
-    }
-    public static IEnumerable<Product> getAllAbstract()
-    {
-        foreach (var item in allProducts)
-            if (item.isAbstract())
-                yield return item;
-    }
-    //public ReadOnlyCollection<Product> getSubstitutes()
-    //{
-    //    //if (!isAbstract())
-    //    //    return null;
-    //    //else
-    //        return substitutes;
-    //}
-    public IEnumerable<Product> getSubstitutes()
-    {
-        //if (!isAbstract())
-        //    return null;
-        //else
-        //return substitutes;
-        foreach (var item in substitutes)
-        {
-            yield return item;
-        }
-    }
+    
     static Product()
     {
         Gold = new Product("Gold", true, 4f);
@@ -96,6 +69,12 @@ public class Product : Name
         //_isAbstract = false;
         //TODO checks for duplicates&
     }
+    public static IEnumerable<Product> getAllAbstract()
+    {
+        foreach (var item in allProducts)
+            if (item.isAbstract())
+                yield return item;
+    }
     public static void sortSubstitutes()
     {
         foreach (var item in getAllAbstract())
@@ -106,11 +85,29 @@ public class Product : Name
     static public int CostOrder(Product x, Product y)
     {
         //eats less memory
-        float sumX =  Game.market.findPrice(x).get();
+        float sumX = Game.market.findPrice(x).get();
         float sumY = Game.market.findPrice(y).get();
         return sumX.CompareTo(sumY);
-
         //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
+    }
+    public IEnumerable<Product> getSubstitutes()
+    {
+        //if (!isAbstract())
+        //    return null;
+        //else
+        //return substitutes;
+        foreach (var item in substitutes)
+        {
+            yield return item;
+        }
+    }
+    public bool isAbstract()
+    {
+        return _isAbstract;
+    }
+    public bool isSubstituteFor(Product x)
+    {
+        return x.substitutes.Contains(this);
     }
     /// <summary>
     /// Constructor for abstract products
