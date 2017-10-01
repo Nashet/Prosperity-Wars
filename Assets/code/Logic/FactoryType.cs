@@ -69,7 +69,7 @@ public class FactoryType
         //if (resourceInput == null)
         //    this.resourceInput = new PrimitiveStorageSet();
         //else
-            this.resourceInput = resourceInput;
+        this.resourceInput = resourceInput;
     }
     public static IEnumerable<FactoryType> getInventedTypes(Country country)
     {
@@ -163,13 +163,18 @@ public class FactoryType
     //todo improve getPossibleProfit
     internal Value getPossibleProfit(Province province)
     {
-        foreach (Storage inputProduct in resourceInput)
-            //if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
-            if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
-                return new Value(0);
         Value income = Game.market.getCost(basicProduction);
-        Value outCome = Game.market.getCost(resourceInput);
-        return income.subtractOutside(outCome, false);
+        if (resourceInput == null)
+            return income;
+        else
+        {
+            foreach (Storage inputProduct in resourceInput)
+                //if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
+                if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+                    return new Value(0);
+            Value outCome = Game.market.getCost(resourceInput);
+            return income.subtractOutside(outCome, false);
+        }
     }
     internal Procent getPossibleMargin(Province province)
     {

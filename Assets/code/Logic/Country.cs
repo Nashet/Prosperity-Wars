@@ -751,9 +751,9 @@ public class Country : Staff
         Value result = new Value(0);
         foreach (var prov in ownedProvinces)
         {
-            foreach (var prod in prov.allFactories)
-                if (prod.gainGoodsThisTurn.get() > 0f)
-                    result.add(Game.market.getCost(prod.gainGoodsThisTurn).get() - Game.market.getCost(prod.consumedTotal).get());
+            foreach (var producer in prov.allFactories)
+                if (producer.gainGoodsThisTurn.get() > 0f)
+                    result.add(Game.market.getCost(producer.gainGoodsThisTurn).get() - Game.market.getCost(producer.getConsumedTotal()).get());
 
             foreach (var pop in prov.allPopUnits)
                 if (pop.popType.isProducer())

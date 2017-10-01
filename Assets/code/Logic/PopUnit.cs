@@ -194,9 +194,10 @@ abstract public class PopUnit : Producer
         //province = where;//source.province;
 
         //Consumer's fields:
-        consumedTotal = new PrimitiveStorageSet();
-        consumedLastTurn = new PrimitiveStorageSet();
-        consumedInMarket = new PrimitiveStorageSet();
+        // Do I really need it?
+        //consumedTotal = new PrimitiveStorageSet();
+        //consumedLastTurn = new PrimitiveStorageSet();
+        //consumedInMarket = new PrimitiveStorageSet();
 
         //kill in the end
         source.subtractPopulation(sizeOfNewPop);
@@ -240,9 +241,10 @@ abstract public class PopUnit : Producer
         //province - read header
 
         //consumer's fields
-        consumedTotal.add(source.consumedTotal);
-        consumedLastTurn.add(source.consumedLastTurn);
-        consumedLastTurn.add(source.consumedLastTurn);
+        //isn't that important
+        //consumedTotal.add(source.consumedTotal);
+        //consumedLastTurn.add(source.consumedLastTurn);
+        //consumedInMarket.add(source.consumedInMarket);
 
         //province = source.province; don't change that
 
@@ -596,22 +598,22 @@ abstract public class PopUnit : Producer
         howDeep--;
         //List<Storage> needs = getEveryDayNeeds();
         foreach (Storage need in needs)
-            if (storage.isSameProduct(need) || storage.isSubstituteProduct(need))
-                // WTF!!??
-                if (storage.isBiggerOrEqual(need))
-                {
-                    storage.subtract(need);
-                    consumedTotal.add(need);
-                    needsFullfilled.set(2f / 3f);
-                    if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
-                }
-                else
-                {
-                    float canConsume = storage.get();
-                    consumedTotal.add(storage);
-                    storage.set(0);
-                    needsFullfilled.add(canConsume / need.get() / 3f);
-                }
+            if (storage.has(need) || storage.hasSubstitute(need))
+            {
+                //storage.subtract(need);
+                //consumedTotal.add(need);
+                consumeFromItself(need);
+                needsFullfilled.set(2f / 3f);
+                if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
+            }
+            else
+            {
+                float canConsume = storage.get();
+                //consumedTotal.add(storage);
+                //storage.set(0);
+                consumeFromItself(storage);
+                needsFullfilled.add(canConsume / need.get() / 3f);
+            }
     }
 
     void buyNeeds(List<Storage> lifeNeeds, bool skipLifeneeds)
@@ -620,13 +622,18 @@ abstract public class PopUnit : Producer
         Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
         //if (!skipLifeneeds)
         foreach (Storage need in lifeNeeds)
-        {
+        {            
             if (storage.has(need) || storage.hasSubstitute(need))// don't need to buy on market
             {
-                storage.subtract(need); // danger moment - may subtracts different type of product
-                consumedTotal.set(storage.getProduct(), need);
+                Storage realConsumption;
+                if (storage.has(need))
+                    realConsumption = need;
+                else 
+                    realConsumption = new Storage(storage.getProduct(), need);
+                //storage.subtract(need); // danger moment - may subtracts different type of product
+                //consumedTotal.set(storage.getProduct(), need);
+                consumeFromItself(realConsumption);
                 needsFullfilled.set(1f / 3f);
-                //consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 0.66f, 2);
             }
             else
             //needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
@@ -711,26 +718,30 @@ abstract public class PopUnit : Producer
         else
         {
             //non - market consumption
+            // todo - !! - check for substitutes
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
                 if (getCountry().storageSet.has(needs))
                 {
-                    getCountry().storageSet.subtract(needs);
-                    consumedTotal.add(needs);
+                    //getCountry().storageSet.subtract(needs);
+                    //consumedTotal.add(needs);
+                    consumeFromCountryStorage(needs, getCountry());
                     needsFullfilled.set(1f / 3f);
                 }
                 var everyDayNeeds = getRealEveryDayNeeds();
                 if (getCountry().storageSet.has(everyDayNeeds))
                 {
-                    getCountry().storageSet.subtract(everyDayNeeds);
-                    consumedTotal.add(everyDayNeeds);
+                    //getCountry().storageSet.subtract(everyDayNeeds);
+                    //consumedTotal.add(everyDayNeeds);
+                    consumeFromCountryStorage(everyDayNeeds, getCountry());
                     needsFullfilled.set(2f / 3f);
                 }
                 var luxuryNeeds = getRealEveryDayNeeds();
                 if (getCountry().storageSet.has(luxuryNeeds))
                 {
-                    getCountry().storageSet.subtract(luxuryNeeds);
-                    consumedTotal.add(luxuryNeeds);
+                    //getCountry().storageSet.subtract(luxuryNeeds);
+                    //consumedTotal.add(luxuryNeeds);
+                    consumeFromCountryStorage(luxuryNeeds, getCountry());
                     needsFullfilled.set(1f);
                 }
             }
@@ -740,16 +751,18 @@ abstract public class PopUnit : Producer
                 foreach (Storage need in needs)
                     if (storage.isBiggerOrEqual(need))
                     {
-                        storage.subtract(need);
-                        consumedTotal.set(need);
+                        consumeFromItself(need);
+                        //storage.subtract(need);
+                        //consumedTotal.set(need);
                         needsFullfilled.set(1f / 3f);
                         consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
                     }
                     else
                     {
                         float canConsume = storage.get();
-                        consumedTotal.set(storage);
-                        storage.set(0);
+                        //consumedTotal.set(storage);
+                        //storage.set(0);
+                        consumeFromItself(storage);
                         needsFullfilled.set(canConsume / need.get() / 3f);
                     }
             }

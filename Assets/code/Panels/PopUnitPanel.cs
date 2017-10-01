@@ -73,11 +73,11 @@ public class PopUnitPanel : DragPanel
             sb.Append("\nMobilized: ").Append(pop.getMobilized());
             if (pop.getMovement() != null)
                 sb.Append("\nMember of ").Append(pop.getMovement());
-            sb.Append("\nConsumed: ").Append(pop.consumedTotal);
+            sb.Append("\nConsumed: ").Append(pop.getConsumedTotal());
 
             if (Game.devMode)
-                sb.Append("\nConsumedLT: ").Append(pop.consumedLastTurn).Append(" cost: ").Append(Game.market.getCost(pop.consumedLastTurn)
-                    ).Append("\nConsumedIM: ").Append(pop.consumedInMarket).Append(" cost: ").Append(Game.market.getCost(pop.consumedInMarket));
+                sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedLastTurn())
+                    ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedInMarket()));
 
             generaltext.text = sb.ToString();
 
@@ -101,7 +101,7 @@ public class PopUnitPanel : DragPanel
             money.text = sb.ToString();
             money.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
             + "\nIncome tax: " + pop.incomeTaxPayed
-            + "\nConsumed cost: " + Game.market.getCost(pop.consumedTotal));
+            + "\nConsumed cost: " + Game.market.getCost(pop.getConsumedTotal()));
 
             efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
             issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));

@@ -9,15 +9,62 @@ using UnityEngine;
 /// </summary>
 public abstract class Consumer : Agent
 {
-    public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
+    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
+    public Storage storage;
+    private readonly PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void consumeNeeds();
     public abstract List<Storage> getRealNeeds();
 
     protected Consumer(Bank bank, Province province) : base(0f, bank, province)
     {
 
+    }
+    /// <summary>
+    /// Use for only reads!
+    /// </summary>    
+    public PrimitiveStorageSet getConsumedTotal()
+    {
+        return consumedTotal;
+    }
+    /// <summary>
+    /// Use for only reads!
+    /// </summary>    
+    public PrimitiveStorageSet getConsumedLastTurn()
+    {
+        return consumedLastTurn;
+    }
+    /// <summary>
+    /// Use for only reads!
+    /// </summary>    
+    public PrimitiveStorageSet getConsumedInMarket()
+    {
+        return consumedInMarket;
+    }
+    public void consumeFromMarket(Storage what)
+    {
+        //pay(Game.market, what.multiplyOutside(price));
+        //if (fromMarket)
+        ///{
+        Game.market.sentToMarket.subtract(what);
+        consumedInMarket.add(what);
+        //}
+        consumedTotal.add(what);
+
+        // from Market
+        //if (this is SimpleProduction)
+        //    (this as SimpleProduction).getInputProductsReserve().add(what);
+    }
+    public void consumeFromItself(Storage what)
+    {
+        storage.subtract(what);
+        consumedTotal.add(what);
+    }
+    public void consumeFromCountryStorage(List<Storage> what, Country country)
+    {
+        country.storageSet.subtract(what);
+        consumedTotal.add(what);
     }
     public virtual void setStatisticToZero()
     {
@@ -35,15 +82,14 @@ public abstract class Consumer : Agent
 /// </summary>
 public abstract class Producer : Consumer
 {
-    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
-    public Storage storage;
+
 
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
 
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
-    
+
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
     public abstract void simulate(); ///!!!
@@ -89,7 +135,7 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
-    
+
 }
 
 

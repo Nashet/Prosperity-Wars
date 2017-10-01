@@ -625,9 +625,13 @@ public class Artisans : GrainGetter
 
             artisansProduction.consumeNeeds();
             artisansProduction.payWithoutRecord(this, artisansProduction.cash);
-            this.consumedInMarket.add(artisansProduction.consumedInMarket);
-            this.consumedTotal.add(artisansProduction.consumedTotal);
-            this.consumedLastTurn.add(artisansProduction.consumedLastTurn);
+
+            // consuming made in artisansProduction.consumeNeeds()
+            // here is data transfering
+            // todo rework data transfering from artisans?
+            this.getConsumedInMarket().add(artisansProduction.getConsumedInMarket());
+            this.getConsumedTotal().add(artisansProduction.getConsumedTotal());
+            this.getConsumedLastTurn().add(artisansProduction.getConsumedLastTurn());
         }
     }
     internal override bool canBuyProducts()

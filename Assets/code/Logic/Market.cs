@@ -103,12 +103,12 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            Storage re = producer.consumedInMarket.findStorage(pro);
+                            Storage re = producer.getConsumedInMarket().findStorage(pro);
                             if (re != null)
                                 result += re.get();
                         }
                     }
-                Storage countryStor = country.consumedInMarket.findStorage(pro);
+                Storage countryStor = country.getConsumedInMarket().findStorage(pro);
                 if (countryStor != null)
                     result += countryStor.get();
             }
@@ -127,12 +127,12 @@ public class Market : Agent//: PrimitiveStorageSet
                         {
                             //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
-                                Storage re = producer.consumedInMarket.findStorage(sup.getProduct());
+                                Storage re = producer.getConsumedInMarket().findStorage(sup.getProduct());
                                 if (re != null)
                                     result += re.get();
                             }
                         }
-                    Storage countryStor = country.consumedInMarket.findStorage(sup.getProduct());
+                    Storage countryStor = country.getConsumedInMarket().findStorage(sup.getProduct());
                     if (countryStor != null)
                         result += countryStor.get();
                 }
@@ -180,12 +180,12 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            var re = producer.consumedTotal.findStorage(pro);
+                            var re = producer.getConsumedTotal().findStorage(pro);
                             if (re != null)
                                 result += re.get();
                         }
                     }
-                Storage countryStor = country.consumedTotal.findStorage(pro);
+                Storage countryStor = country.getConsumedTotal().findStorage(pro);
                 if (countryStor != null)
                     result += countryStor.get();
             }
@@ -204,12 +204,12 @@ public class Market : Agent//: PrimitiveStorageSet
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
-                                var re = producer.consumedTotal.findStorage(sup.getProduct());
+                                var re = producer.getConsumedTotal().findStorage(sup.getProduct());
                                 if (re != null)
                                     result += re.get();
                             }
                         }
-                    Storage countryStor = country.consumedTotal.findStorage(sup.getProduct());
+                    Storage countryStor = country.getConsumedTotal().findStorage(sup.getProduct());
                     if (countryStor != null)
                         result += countryStor.get();
                 }
@@ -404,9 +404,10 @@ public class Market : Agent//: PrimitiveStorageSet
                 if (buyer.canPay(cost))
                 {
                     buyer.pay(Game.market, cost);
-                    Game.market.sentToMarket.subtract(buying);
-                    buyer.consumedTotal.add(buying);
-                    buyer.consumedInMarket.add(buying);
+                    //Game.market.sentToMarket.subtract(buying);
+                    //buyer.consumedTotal.add(buying);
+                    //buyer.consumedInMarket.add(buying);
+                    buyer.consumeFromMarket(buying);
 
                     if (buyer is SimpleProduction)
                         (buyer as SimpleProduction).getInputProductsReserve().add(buying);
@@ -418,9 +419,10 @@ public class Market : Agent//: PrimitiveStorageSet
                     val = Mathf.Floor(val * Value.precision) / Value.precision;
                     howMuchCanConsume = new Storage(price.getProduct(), val);
                     buyer.pay(Game.market, howMuchCanConsume.multiplyOutside(price));
-                    Game.market.sentToMarket.subtract(howMuchCanConsume);
-                    buyer.consumedTotal.add(howMuchCanConsume);
-                    buyer.consumedInMarket.add(howMuchCanConsume);
+                    //Game.market.sentToMarket.subtract(howMuchCanConsume);
+                    //buyer.consumedTotal.add(howMuchCanConsume);
+                    //buyer.consumedInMarket.add(howMuchCanConsume);
+                    buyer.consumeFromMarket(howMuchCanConsume);
                     if (buyer is SimpleProduction)
                         (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
                 }
@@ -435,9 +437,10 @@ public class Market : Agent//: PrimitiveStorageSet
                     if (buyer.canPay(cost))
                     {
                         buyer.pay(Game.market, cost);
-                        Game.market.sentToMarket.subtract(howMuchAvailable);
-                        buyer.consumedTotal.add(howMuchAvailable);
-                        buyer.consumedInMarket.add(howMuchAvailable);
+                        buyer.consumeFromMarket(howMuchAvailable);
+                        //Game.market.sentToMarket.subtract(howMuchAvailable);
+                        //buyer.consumedTotal.add(howMuchAvailable);
+                        //buyer.consumedInMarket.add(howMuchAvailable);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().add(howMuchAvailable);
                         howMuchCanConsume = howMuchAvailable;
@@ -448,9 +451,10 @@ public class Market : Agent//: PrimitiveStorageSet
                         if (howMuchCanConsume.get() > howMuchAvailable.get())
                             howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
                         buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more
-                        Game.market.sentToMarket.subtract(howMuchCanConsume);
-                        buyer.consumedTotal.add(howMuchCanConsume);
-                        buyer.consumedInMarket.add(howMuchCanConsume);
+                        //Game.market.sentToMarket.subtract(howMuchCanConsume);
+                        //buyer.consumedTotal.add(howMuchCanConsume);
+                        //buyer.consumedInMarket.add(howMuchCanConsume);
+                        buyer.consumeFromMarket(howMuchAvailable);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
                     }

@@ -26,7 +26,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAIgBUCAgSMAJCAACEBQBQASAAAEQAAgEQIIAACACA=</HashCode>
+      <HashCode>ABIAgBUCAgSIAJCAQCELQAAASAAAEQAEgEQAQAACACA=</HashCode>
       <FileName>Assets\code\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -37,7 +37,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAIAEAAAAEAAAEAQAAAA=</HashCode>
+      <HashCode>AAAAAAAIAAAAAIAAAAAAAAAAAIAFAAAAEAACEAQAAAA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -48,7 +48,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAQAAQAAAAAAAAAABAAAAAAAYAAEACAAAgAAAAAAAA=</HashCode>
+      <HashCode>AEAAAAQAAAAAAAAAABAAAAAAAYAAEACAAAgAAAAAAAA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -91,7 +91,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>cODUgECEEQgGI2xPAVgBPsADi4BQESpwmSQE1g0YlyQ=</HashCode>
+      <HashCode>cOHUgECEEQgGI2RGAFgBPsACi4BUkSpwuSQEVg0YFyQ=</HashCode>
       <FileName>Assets\code\Logic\PopUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
