@@ -10,6 +10,7 @@ using UnityEngine;
 public abstract class Consumer : Agent
 {
     /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
+    // may move it back to Producer
     public Storage storage;
     private readonly PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
     private readonly PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
@@ -82,8 +83,6 @@ public abstract class Consumer : Agent
 /// </summary>
 public abstract class Producer : Consumer
 {
-
-
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
 

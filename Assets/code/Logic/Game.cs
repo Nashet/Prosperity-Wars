@@ -55,7 +55,8 @@ public class Game : ThreadedJob
     public void initialize()
     {
         market.initialize();
-        makeFactoryTypes();
+
+        //FactoryType.getResourceTypes(); // FORCING FactoryType to initializate?
 
         updateStatus("Reading provinces..");
         Province.preReadProvinces(Game.map, this);
@@ -288,97 +289,7 @@ public class Game : ThreadedJob
     {
         haveToStepSimulation = true;
     }
-
-    static void makeFactoryTypes()
-    {
-        new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
-        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), true);
-        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), true);
-        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), false);
-        new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
-        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
-
-        new FactoryType("Oil rig", new Storage(Product.Oil, 2f),  true);
-        new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
-
-        new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
-        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
-        new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), false);
-
-        PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wood, 1f));
-        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wood, 0.5f));
-        resourceInput.set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wool, 1f));
-        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wood, 0.5f));
-        resourceInput.set(new Storage(Product.Stone, 2f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Fruit, 1f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Stone, 1f));
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Lumber, 1f));
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Lumber, 1f));
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
-        
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Oil, 1f));
-        new FactoryType("Oil refinery", new Storage(Product.Fuel, 2f), resourceInput);
-
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Machinery, 1f));
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        resourceInput.set(new Storage(Product.Rubber, 1f));
-        new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Machinery, 1f));
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        resourceInput.set(new Storage(Product.Artillery, 1f));
-        new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Lumber, 1f));
-        resourceInput.set(new Storage(Product.Metal, 1f));
-        resourceInput.set(new Storage(Product.Machinery, 1f));
-        new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
-    }
-
-
+    
     internal static Value getAllMoneyInWorld()
     {
         Value allMoney = new Value(0f);

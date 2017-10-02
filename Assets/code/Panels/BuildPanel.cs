@@ -27,9 +27,6 @@ public class BuildPanel : DragPanel
             panelRectTransform.SetAsLastSibling();
 
     }
-   
-
-
     public void onBuildClick()
     {
         //if (Game.player.economy.allowsFactoryBuildingByGovernment())

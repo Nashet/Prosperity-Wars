@@ -292,24 +292,33 @@ public class PrimitiveStorageSet
     internal Storage findStorage(Product product)
     {
         foreach (Storage stor in container)
-            if (stor.getProduct() == product)
+            if (stor.isSameProduct(product))
                 return stor;
         return null;
     }
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findStorage(Storage storageToFind)
+    //internal Storage findStorage(Storage storageToFind)
+    //{
+    //    foreach (Storage stor in container)
+    //        if (stor.isSameProduct(storageToFind))
+    //            return stor;
+    //    return null;
+    //}
+    /// <summary>Returns NULL if search is failed</summary>
+    internal Storage findSubstitute(Storage need)
     {
-        foreach (Storage stor in container)
-            if (stor.isSameProduct(storageToFind))
-                return stor;
+        foreach (Storage storage in container)
+            if (storage.hasSubstitute(need))
+                return storage;
         return null;
     }
     /// <summary>Returns NEW empty storage if search is failed</summary>
     internal Storage getStorage(Product whom)
     {
-        foreach (Storage stor in container)
-            if (stor.getProduct() == whom)
-                return stor;
+        foreach (Storage storage in container)
+            if (storage.isSameProduct(whom) || storage.isSubstituteProduct(whom))
+                return storage;
+        //else
         return new Storage(whom, 0f);
     }
     override public string ToString()
@@ -410,6 +419,15 @@ public class PrimitiveStorageSet
             result += item.get();
         return result;
 
+    }
+    internal bool hasSubstitute(Storage need)
+    {
+        foreach (var item in container)
+        {
+            if (item.hasSubstitute(need))
+                return true;
+        }
+        return false;
     }
 
 
@@ -596,7 +614,7 @@ public class Storage : Value
     }
     public bool hasSubstitute(Storage storage)
     {
-        if (!isSubstituteProduct(storage))
+        if (!isSubstituteProduct(storage.getProduct()))
         {
             // Debug.Log("Attempted to pay wrong product!");
             return false;
@@ -627,9 +645,9 @@ public class Storage : Value
     {
         return this.getProduct() == anotherStorage.getProduct();
     }
-    internal bool isSubstituteProduct(Storage anotherStorage)
+    internal bool isSubstituteProduct(Product  product)
     {
-        return this.getProduct().isSubstituteFor(anotherStorage.getProduct());
+        return this.getProduct().isSubstituteFor(product);
     }
     internal bool isSameProduct(Product anotherProduct)
     {

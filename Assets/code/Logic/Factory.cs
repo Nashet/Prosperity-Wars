@@ -115,7 +115,9 @@ public class Factory : SimpleProduction
             new Modifier(Economy.isLF, x => (x as Factory).getCountry(), 0.50f, false),
             new Modifier(Economy.isPlanned, x => (x as Factory).getCountry(), -0.10f, false),
 
-            modifierInventedMiningAndIsShaft, modifierHasResourceInProvince, modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
+            modifierInventedMiningAndIsShaft,
+            modifierHasResourceInProvince,
+            modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
              new Modifier(x => Government.isPolis.checkIftrue((x as Factory).getCountry())
              && (x as Factory).province.isCapital(), "Capital of Polis", 0.50f, false),

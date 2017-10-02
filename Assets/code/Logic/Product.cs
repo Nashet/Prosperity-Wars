@@ -107,7 +107,10 @@ public class Product : Name
     }
     public bool isSubstituteFor(Product x)
     {
-        return x.substitutes.Contains(this);
+        if (x.isAbstract() && x.substitutes.Contains(this))
+            return true;
+        else
+            return false;
     }
     /// <summary>
     /// Constructor for abstract products
