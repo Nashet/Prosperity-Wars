@@ -195,9 +195,9 @@ abstract public class PopUnit : Producer
 
         //Consumer's fields:
         // Do I really need it?
-        //consumedTotal = new PrimitiveStorageSet();
-        //consumedLastTurn = new PrimitiveStorageSet();
-        //consumedInMarket = new PrimitiveStorageSet();
+        getConsumedTotal().setZero();// = new PrimitiveStorageSet();
+        getConsumedLastTurn().setZero();// = new PrimitiveStorageSet();
+        getConsumedInMarket().setZero();// = new PrimitiveStorageSet();
 
         //kill in the end
         source.subtractPopulation(sizeOfNewPop);
@@ -241,10 +241,10 @@ abstract public class PopUnit : Producer
         //province - read header
 
         //consumer's fields
-        //isn't that important
-        //consumedTotal.add(source.consumedTotal);
-        //consumedLastTurn.add(source.consumedLastTurn);
-        //consumedInMarket.add(source.consumedInMarket);
+        //isn't that important. That is fucking important
+        getConsumedTotal().add(source.getConsumedTotal());
+        getConsumedLastTurn().add(source.getConsumedLastTurn());
+        getConsumedInMarket().add(source.getConsumedInMarket());
 
         //province = source.province; don't change that
 
@@ -706,7 +706,7 @@ abstract public class PopUnit : Producer
             // reserve.payWithoutRecord(this, reserve.cash);
         }
     }
-    /// <summary> !!! Overloaded for several pop types </summary>
+    /// <summary> !!! Overloaded for artisans </summary>
     public override void consumeNeeds()
     {
         //life needs First
@@ -749,9 +749,16 @@ abstract public class PopUnit : Producer
             {
                 payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
                 foreach (Storage need in needs)
-                    if (storage.isBiggerOrEqual(need))
+
+                    if (storage.has(need) || storage.hasSubstitute(need))// don't need to buy on market
                     {
-                        consumeFromItself(need);
+                        Storage realConsumption;
+                        if (storage.has(need))
+                            realConsumption = need;
+                        else
+                            realConsumption = new Storage(storage.getProduct(), need);
+                 
+                        consumeFromItself(realConsumption);
                         //storage.subtract(need);
                         //consumedTotal.set(need);
                         needsFullfilled.set(1f / 3f);
@@ -759,6 +766,7 @@ abstract public class PopUnit : Producer
                     }
                     else
                     {
+                        //its about lifeneeds only
                         float canConsume = storage.get();
                         //consumedTotal.set(storage);
                         //storage.set(0);

@@ -450,13 +450,16 @@ public class Market : Agent//: PrimitiveStorageSet
                         howMuchCanConsume = new Storage(price.getProduct(), buyer.cash.get() / price.get());
                         if (howMuchCanConsume.get() > howMuchAvailable.get())
                             howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
-                        buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more
-                        //Game.market.sentToMarket.subtract(howMuchCanConsume);
-                        //buyer.consumedTotal.add(howMuchCanConsume);
-                        //buyer.consumedInMarket.add(howMuchCanConsume);
-                        buyer.consumeFromMarket(howMuchAvailable);
-                        if (buyer is SimpleProduction)
-                            (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
+                        if (howMuchCanConsume.isNotZero())
+                        {
+                            buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more
+                                                                      //Game.market.sentToMarket.subtract(howMuchCanConsume);
+                                                                      //buyer.consumedTotal.add(howMuchCanConsume);
+                                                                      //buyer.consumedInMarket.add(howMuchCanConsume);
+                            buyer.consumeFromMarket(howMuchCanConsume);
+                            if (buyer is SimpleProduction)
+                                (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
+                        }
                     }
                 }
                 else

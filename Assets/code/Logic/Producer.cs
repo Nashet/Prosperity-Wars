@@ -48,10 +48,10 @@ public abstract class Consumer : Agent
         //pay(Game.market, what.multiplyOutside(price));
         //if (fromMarket)
         ///{
-        Game.market.sentToMarket.subtract(what);
-        consumedInMarket.add(what);
-        //}
         consumedTotal.add(what);
+        consumedInMarket.add(what);
+        Game.market.sentToMarket.subtract(what);        
+        //}        
 
         // from Market
         //if (this is SimpleProduction)
@@ -59,13 +59,13 @@ public abstract class Consumer : Agent
     }
     public void consumeFromItself(Storage what)
     {
-        storage.subtract(what);
         consumedTotal.add(what);
+        storage.subtract(what);        
     }
     public void consumeFromCountryStorage(List<Storage> what, Country country)
     {
-        country.storageSet.subtract(what);
         consumedTotal.add(what);
+        country.storageSet.subtract(what);        
     }
     public virtual void setStatisticToZero()
     {

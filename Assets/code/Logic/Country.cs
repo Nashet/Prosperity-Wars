@@ -133,13 +133,15 @@ public class Country : Staff
             serfdom.status = Serfdom.Abolished;
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
-            markInvented(Invention.Farming);
-            markInvented(Invention.Manufactories);
+            markInvented(Invention.Farming);           
+ 
             markInvented(Invention.Banking);
             //markInvented(Invention.metal);
             //markInvented(Invention.individualRights);
             //markInvented(Invention.ProfessionalArmy);
             //markInvented(Invention.Welfare);
+
+            markInvented(Invention.Manufactories);
         }
     }
 
@@ -181,6 +183,8 @@ public class Country : Staff
         howMuchCountries += Game.Random.Next(6);
         if (howMuchCountries < 8)
             howMuchCountries = 8;
+
+        
         for (int i = 0; i < howMuchCountries; i++)
         {
             game.updateStatus("Making countries.." + i);

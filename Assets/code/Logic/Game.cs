@@ -101,10 +101,10 @@ public class Game : ThreadedJob
         grid = null;
         map = null;
         // Annex all countries to P)layer
-        //foreach (var item in Country.allCountries)
-        //{
-        //    item.annexTo(Game.Player);
-        //}
+        foreach (var item in Country.allCountries)
+        {
+            item.annexTo(Game.Player);
+        }
     }
     public Rect getMapBorders()
     {
