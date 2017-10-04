@@ -243,13 +243,26 @@ public class Market : Agent//: PrimitiveStorageSet
         //return result;
     }
 
-    internal bool isAvailable(Product item)
+    internal bool isAvailable(Product product)
     {
-        var DSB = getDemandSupplyBalance(item);
-        if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
-            return true;
+        if (product.isAbstract())
+        {
+            foreach (var substitute in product.getSubstitutes())
+            {
+                var DSB = getDemandSupplyBalance(substitute);
+                if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
+                    return true;
+            }
+            return false; 
+        }
         else
-            return false;
+        {
+            var DSB = getDemandSupplyBalance(product);
+            if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
+                return true;
+            else
+                return false;
+        }
     }
 
     //internal float getGlobalEffectiveDemandOlder(Product pro)

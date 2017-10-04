@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 
 public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
     internal static readonly List<Product> allProducts = new List<Product>();
-    internal static readonly Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
+    internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery,
-    Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery, Fish, Grain, Cattle;
+    Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery;
+    internal static readonly Product Food, Sugar;
     private static int resourceCounter;
 
     private readonly bool _isResource;
     private readonly Value defaultPrice;
     private readonly bool _isAbstract;
     private readonly List<Product> substitutes;
-    
+
     static Product()
     {
         Gold = new Product("Gold", true, 4f);
@@ -26,7 +28,8 @@ public class Product : Name
         Fruit = new Product("Fruit", true, 1f);
         Wine = new Product("Wine", false, 3f);
 
-        Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit});
+        Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
+        Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
 
         Wood = new Product("Wood", true, 2.7f);
         Lumber = new Product("Lumber", false, 8f);
@@ -63,7 +66,7 @@ public class Product : Name
         this.defaultPrice = new Value(defaultPrice);
         _isResource = isResource;
         if (_isResource)
-            resourceCounter++;        
+            resourceCounter++;
         allProducts.Add(this);
         Game.market.SetDefaultPrice(this, defaultPrice);
         //_isAbstract = false;
@@ -185,5 +188,25 @@ public class Product : Name
             }
         }
     }
-
+    public override string ToString()
+    {
+        if (isAbstract())
+        {
+            var sb = new StringBuilder(base.ToString());
+            sb.Append(" (");
+            bool firstLine = true;
+            foreach (var item in getSubstitutes())
+                if (item.isInventedByAnyOne())
+                {
+                    if (!firstLine)
+                        sb.Append(" or ");
+                    sb.Append(item);
+                    firstLine = false;
+                }
+            sb.Append(")");
+            return sb.ToString();
+        }
+        else
+            return base.ToString();
+    }
 }

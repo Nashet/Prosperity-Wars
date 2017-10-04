@@ -66,7 +66,7 @@ public class FactoryType
         new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Fruit, 1f));
+        resourceInput.set(new Storage(Product.Sugar, 1f));
         new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
@@ -225,11 +225,9 @@ public class FactoryType
         KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
         foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
         {
-            {
-                float possibleProfit = factoryType.getPossibleProfit(province).get();
-                if (possibleProfit > result.Value)
-                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
-            }
+            float possibleProfit = factoryType.getPossibleProfit(province).get();
+            if (possibleProfit > result.Value)
+                result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
         return result.Key;
     }
@@ -260,8 +258,7 @@ public class FactoryType
         Value income = Game.market.getCost(basicProduction);
         if (hasInput())
         {
-            foreach (Storage inputProduct in resourceInput)
-                //if (Game.market.getDemandSupplyBalance(st.getProduct()) > 20f || Game.market.getDemandSupplyBalance(st.getProduct()) == 0f)
+            foreach (Storage inputProduct in resourceInput)                
                 if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                     return new Value(0);
             Value outCome = Game.market.getCost(resourceInput);

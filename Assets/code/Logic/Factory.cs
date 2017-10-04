@@ -688,7 +688,7 @@ public class Factory : SimpleProduction
         {
             int workers = getWorkForce();
             if (workers > 0)
-                base.produce(new Value(getType().basicProduction.get() * getEfficiency(true).get() * getLevel()));
+                base.produce(new Value(getEfficiency(true).get() * getLevel()));
             if (getType() == FactoryType.GoldMine)
             {
                 this.ConvertFromGoldAndAdd(storage);

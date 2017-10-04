@@ -73,7 +73,7 @@ public class Corps
                     if (owner.storageSet.has(need))
                         realConsumption = need;
                     else
-                        realConsumption = new Storage(owner.storageSet.findSubstitute(need).getProduct(), need);
+                        realConsumption = new Storage(owner.storageSet.findSubstitute(need.getProduct()).getProduct(), need);
 
                     owner.storageSet.subtract(realConsumption);
                     consumption.add(realConsumption);

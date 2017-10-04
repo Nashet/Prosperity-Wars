@@ -305,13 +305,30 @@ public class PrimitiveStorageSet
     //    return null;
     //}
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findSubstitute(Storage need)
+    //internal Storage findSubstitute(Storage need)
+    //{
+    //    foreach (Storage storage in container)
+    //        if (storage.hasSubstitute(need))
+    //            return storage;
+    //    return null;
+    //}
+    /// <summary>Returns NULL if search is failed</summary>
+    internal Storage findSubstitute(Product need)
+    {
+        foreach (Storage storage in container)
+            if (storage.isSubstituteProduct(need))
+                return storage;
+        return null;
+    }
+    /// <summary>Returns NULL if search is failed</summary>
+    internal Storage findExistingSubstitute(Storage need)
     {
         foreach (Storage storage in container)
             if (storage.hasSubstitute(need))
                 return storage;
         return null;
     }
+
     /// <summary>Returns NEW empty storage if search is failed</summary>
     internal Storage getStorage(Product whom)
     {
@@ -525,7 +542,7 @@ public class Storage : Value
 
     override public string ToString()
     {
-        return get() + " " + getProduct().getName();
+        return get() + " " + getProduct();
 
     }
     public void sendAll(PrimitiveStorageSet whom)
@@ -648,6 +665,10 @@ public class Storage : Value
     internal bool isSubstituteProduct(Product  product)
     {
         return this.getProduct().isSubstituteFor(product);
+    }
+    internal bool isAbstractProduct()
+    {
+        return getProduct().isAbstract();
     }
     internal bool isSameProduct(Product anotherProduct)
     {

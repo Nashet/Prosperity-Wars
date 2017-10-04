@@ -67,11 +67,11 @@ public class PopType: IEscapeTarget
         {
             var artisansLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
             var artisansEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
+            new Storage(Product.Fish, 1f),
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Metal, 1f) });
-            var artisansLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Fish, 1f),
+            var artisansLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {            
             new Storage(Product.Wine, 1f),
             new Storage(Product.Cars, 1f),
             new Storage(Product.Fuel, 1f),
@@ -84,11 +84,12 @@ public class PopType: IEscapeTarget
         var farmersLifeNeeds = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var farmersEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
            //everyDayNeeds.Set(new Storage(Product.Fruit, 1),
-            new Storage(Product.Stone, 1),
-            new Storage(Product.Wood, 1),
+            new Storage(Product.Stone, 1f),
+            new Storage(Product.Wood, 1f),
             //everyDayNeeds.set(new Storage(Product.Wool, 1),
-            new Storage(Product.Lumber, 1),
+            new Storage(Product.Lumber, 1f),
             new Storage(Product.Cars, 0.5f),
+            new Storage(Product.Fish, 1f),
             new Storage(Product.Fuel, 0.5f)});
         var farmersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
             new Storage(Product.Clothes, 1),
@@ -105,10 +106,10 @@ public class PopType: IEscapeTarget
         var workersEveryDayNeeds = new PrimitiveStorageSet(new List<Storage> {
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Wine, 2f),
-            new Storage(Product.Furniture, 1f)
+            new Storage(Product.Furniture, 1f),
+            new Storage(Product.Cattle, 1)
              });
-        var workersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {
-            new Storage(Product.Fish, 1),
+        var workersLuxuryNeeds = new PrimitiveStorageSet(new List<Storage> {            
             new Storage(Product.Cars, 0.5f),
             new Storage(Product.Fuel, 0.5f)
             });

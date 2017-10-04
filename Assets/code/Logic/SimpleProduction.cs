@@ -66,7 +66,14 @@ abstract public class SimpleProduction : Producer
         //consume Input Resources
         if (!getType().isResourceGathering())
             foreach (Storage next in getRealNeeds())
-                getInputProductsReserve().subtract(next, false);
+                if (next.isAbstractProduct())
+                {
+                    var substitute = getInputProductsReserve().findExistingSubstitute(next);
+                    if (substitute != null)
+                        getInputProductsReserve().subtract(substitute, false);
+                }
+                else
+                    getInputProductsReserve().subtract(next, false);
     }
     abstract internal Procent getInputFactor();
     protected Procent getInputFactor(Procent multiplier)
@@ -91,16 +98,41 @@ abstract public class SimpleProduction : Producer
         //    if (available.get() < input.get())
         //        input.set(available);
         //}
+
+        // check if we have enough resources
         foreach (Storage input in realInput)
         {
-            if (!getInputProductsReserve().has(input))
+            if (!(getInputProductsReserve().has(input) || getInputProductsReserve().hasSubstitute(input)))
             {
                 Storage found = getInputProductsReserve().findStorage(input.getProduct());
                 if (found == null)
                     input.set(0f);
-                else
+                else // what we really have
                     input.set(found);
 
+            }
+
+            if (input.isAbstractProduct())
+            {
+                if (!getInputProductsReserve().hasSubstitute(input))
+                {
+                    Storage found = getInputProductsReserve().findSubstitute(input.getProduct());
+                    if (found == null)
+                        input.set(0f);
+                    else // what we really have
+                        input.set(found);
+                }
+            }
+            else
+            {
+                if (!getInputProductsReserve().has(input))
+                {
+                    Storage found = getInputProductsReserve().findStorage(input.getProduct());
+                    if (found == null)
+                        input.set(0f);
+                    else // what we really have
+                        input.set(found);
+                }
             }
         }
         //old last turn consumption checking thing

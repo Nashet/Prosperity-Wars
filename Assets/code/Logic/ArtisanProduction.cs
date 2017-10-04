@@ -42,7 +42,7 @@ public class ArtisanProduction : SimpleProduction
     /// </summary>
     public override void produce()
     {
-        produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
+        base.produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
         getOwner().gainGoodsThisTurn.set(this.gainGoodsThisTurn);
         if (getOwner().storage.isSameProduct(this.storage))
             getOwner().storage.add(this.storage);
