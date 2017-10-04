@@ -62,30 +62,26 @@ public class Corps
     public void consume(Country owner)
     {
         var needs = getRealNeeds(owner);
-        //float allNeedsAmount = needs.sum();
-        //if (allNeedsAmount == 0f)
-        //{
-        //    consumption.set(1f);
-        //}
-        //else
         {
             float shortage = 0f;
-            foreach (var stor in needs)
+            foreach (var need in needs)
             {
-                if (owner.storageSet.has(stor))
+                // todo remove double circle
+                if (owner.storageSet.has(need) || owner.storageSet.hasSubstitute(need))
                 {
-                    owner.storageSet.subtract(stor);
-                    consumption.add(stor);
+                    Storage realConsumption;
+                    if (owner.storageSet.has(need))
+                        realConsumption = need;
+                    else
+                        realConsumption = new Storage(owner.storageSet.findSubstitute(need.getProduct()).getProduct(), need);
+
+                    owner.storageSet.subtract(realConsumption);
+                    consumption.add(realConsumption);
                 }
                 else
-                    shortage += stor.get();
+                    shortage += need.get();
             }
-            //if (shortage == 0f)
-            //    consumption.set(1f);
-            //else
-            //    consumption.set((allNeedsAmount - shortage) / allNeedsAmount);
         }
-        //float moralChange = consumption.get() - moral.get();
         float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
         moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
         if (morale.get() + moraleChange < 0)

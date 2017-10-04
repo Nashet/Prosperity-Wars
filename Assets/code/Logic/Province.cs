@@ -35,10 +35,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     private Product resource;
     private Vector3 position;
     private Color color;
-    //private Mesh landMesh;
-    //private MeshStructure meshStructure;
-
-    //private MeshFilter meshFilter;
+    
     private GameObject rootGameObject;
     private MeshRenderer meshRenderer;
 
@@ -47,7 +44,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     public List<Factory> allFactories = new List<Factory>();
 
     private readonly int fertileSoil;
-    readonly List<Country> cores = new List<Country>();
+    private readonly List<Country> cores = new List<Country>();
     private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
     private TerrainTypes terrain;
     private readonly Dictionary<Mod, DateTime> modifiers = new Dictionary<Mod, DateTime>();
@@ -56,14 +53,9 @@ public class Province : Name, IEscapeTarget, IHasCountry
     public Province(string name, int iID, Color icolorID, Product resource) : base(name)
     {
         setResource(resource);
-
         colorID = icolorID;
-
-
         ID = iID;
-
         fertileSoil = 10000;
-
     }
     public static void preReadProvinces(MyTexture image, Game game)
     {
@@ -545,7 +537,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         foreach (Aristocrats aristocrat in getAllPopUnits(PopType.Aristocrats))
         {
             Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
-            fromWho.send(aristocrat.storageNow, howMuch);
+            fromWho.send(aristocrat.storage, howMuch);
             aristocrat.gainGoodsThisTurn.add(howMuch);
             aristocrat.dealWithMarket();
             //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);            

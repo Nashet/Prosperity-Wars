@@ -1,34 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-
-
+using System.Collections.ObjectModel;
+using System.Text;
 
 public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
     internal static readonly List<Product> allProducts = new List<Product>();
-    internal static readonly Product Food, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
+    internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
     Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery,
     Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery;
+    internal static readonly Product Food, Sugar;
     private static int resourceCounter;
 
-    private readonly bool resource;
+    private readonly bool _isResource;
     private readonly Value defaultPrice;
+    private readonly bool _isAbstract;
+    private readonly List<Product> substitutes;
 
     static Product()
     {
         Gold = new Product("Gold", true, 4f);
-        Food = new Product("Food", false, 0.04f);
+        Fish = new Product("Fish", true, 0.04f);
+        Grain = new Product("Grain", false, 0.04f);
+        Cattle = new Product("Cattle", true, 0.04f);
+
+        Fruit = new Product("Fruit", true, 1f);
+        Wine = new Product("Wine", false, 3f);
+
+        Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
+        Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
 
         Wood = new Product("Wood", true, 2.7f);
         Lumber = new Product("Lumber", false, 8f);
-        Furniture = new Product("Furniture", false, 7f);       
-        
+        Furniture = new Product("Furniture", false, 7f);
+
         Wool = new Product("Wool", true, 1f);
-        Clothes = new Product("Clothes", false, 6f);        
-        
-        Fruit = new Product("Fruit", true, 1f);
-        Wine = new Product("Wine", false, 3f);
+        Clothes = new Product("Clothes", false, 6f);
 
         Stone = new Product("Stone", true, 1f);
         Cement = new Product("Cement", false, 2f);
@@ -48,22 +56,76 @@ public class Product : Name
         Cars = new Product("Cars", false, 15f);
         Tanks = new Product("Tanks", false, 20f);
         Airplanes = new Product("Airplanes", false, 20f);
-        
+
     }
-    private Product(string name, bool inlanded, float defaultPrice) : base(name)
+    /// <summary>
+    /// General constructor
+    /// </summary>    
+    private Product(string name, bool isResource, float defaultPrice) : base(name)
     {
         this.defaultPrice = new Value(defaultPrice);
-        resource = inlanded;
-        if (resource) resourceCounter++;
-        //this.name = name;
+        _isResource = isResource;
+        if (_isResource)
+            resourceCounter++;
         allProducts.Add(this);
         Game.market.SetDefaultPrice(this, defaultPrice);
-
+        //_isAbstract = false;
         //TODO checks for duplicates&
+    }
+    public static IEnumerable<Product> getAllAbstract()
+    {
+        foreach (var item in allProducts)
+            if (item.isAbstract())
+                yield return item;
+    }
+    public static void sortSubstitutes()
+    {
+        foreach (var item in getAllAbstract())
+        {
+            item.substitutes.Sort(CostOrder);
+        }
+    }
+    static public int CostOrder(Product x, Product y)
+    {
+        //eats less memory
+        float sumX = Game.market.findPrice(x).get();
+        float sumY = Game.market.findPrice(y).get();
+        return sumX.CompareTo(sumY);
+        //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
+    }
+    public IEnumerable<Product> getSubstitutes()
+    {
+        //if (!isAbstract())
+        //    return null;
+        //else
+        //return substitutes;
+        foreach (var item in substitutes)
+        {
+            yield return item;
+        }
+    }
+    public bool isAbstract()
+    {
+        return _isAbstract;
+    }
+    public bool isSubstituteFor(Product x)
+    {
+        if (x.isAbstract() && x.substitutes.Contains(this))
+            return true;
+        else
+            return false;
+    }
+    /// <summary>
+    /// Constructor for abstract products
+    /// </summary>    
+    private Product(string name, bool inlanded, float defaultPrice, List<Product> substitutes) : this(name, inlanded, defaultPrice)
+    {
+        _isAbstract = true;
+        this.substitutes = substitutes;
     }
     internal bool isResource()
     {
-        return resource;
+        return _isResource;
     }
     internal static Product getRandomResource(bool ignoreGold)
     {
@@ -126,5 +188,25 @@ public class Product : Name
             }
         }
     }
-
+    public override string ToString()
+    {
+        if (isAbstract())
+        {
+            var sb = new StringBuilder(base.ToString());
+            sb.Append(" (");
+            bool firstLine = true;
+            foreach (var item in getSubstitutes())
+                if (item.isInventedByAnyOne())
+                {
+                    if (!firstLine)
+                        sb.Append(" or ");
+                    sb.Append(item);
+                    firstLine = false;
+                }
+            sb.Append(")");
+            return sb.ToString();
+        }
+        else
+            return base.ToString();
+    }
 }

@@ -100,11 +100,7 @@ public class FactoryPanel : DragPanel//for dragging
             setGUIElementsAccesability();
 
             Factory.modifierEfficiency.getModifier(shownFactory, out generaltext.GetComponentInChildren<ToolTipHandler>().tooltip);
-
-           
-            string InputRequired = "";
-            
-
+                       
             string construction = "";
             if (shownFactory.getDaysInConstruction() > 0)
                 construction = "\nDays in construction: " + shownFactory.getDaysInConstruction();
@@ -121,10 +117,14 @@ public class FactoryPanel : DragPanel//for dragging
             if (shownFactory.constructionNeeds.Count() > 0)
                 upgradeNeeds = "\nUpgrade needs: " + shownFactory.constructionNeeds;
 
-            foreach (Storage next in shownFactory.getType().resourceInput)
-                InputRequired += next.get() * shownFactory.getWorkForceFulFilling().get() + " " + next.getProduct().ToString() + ";";
+            string InputRequired = "";
+            if (shownFactory.getType().hasInput())
+            {                
+                foreach (Storage next in shownFactory.getType().resourceInput)
+                    InputRequired += next.get() * shownFactory.getWorkForceFulFilling().get() + " " + next.getProduct().ToString() + ";";
+            }
             generaltext.text = shownFactory.getType().name + " level: " + shownFactory.getLevel() + "\n" + "Workforce: " + shownFactory.getWorkForce()
-                + "\nUnsold: " + shownFactory.storageNow.ToString()
+                + "\nUnsold: " + shownFactory.storage.ToString()
                 + "\nGain goods: " + shownFactory.gainGoodsThisTurn.ToString()
                 + "\nBasic production: " + shownFactory.getType().basicProduction
                 + "\nEfficiency: " + Factory.modifierEfficiency.getModifier(shownFactory)
@@ -133,8 +133,8 @@ public class FactoryPanel : DragPanel//for dragging
                 + "\nMoney income: " + shownFactory.moneyIncomethisTurn
                 + "\nProfit: " + shownFactory.getProfit()
                 + "\nInput required: " + InputRequired
-                + "\nConsumed: " + shownFactory.consumedTotal.ToString() + " Cost: " + Game.market.getCost(shownFactory.consumedTotal)
-                + "\nConsumed LT: " + shownFactory.consumedLastTurn
+                + "\nConsumed: " + shownFactory.getConsumedTotal().ToString() + " Cost: " + Game.market.getCost(shownFactory.getConsumedTotal())
+                + "\nConsumed LT: " + shownFactory.getConsumedLastTurn()
                 + "\nInput reserves: " + shownFactory.getInputProductsReserve()
                 + "\nInput factor: " + shownFactory.getInputFactor()
                 + "\nSalary (per 1000 men):" + shownFactory.getSalary() + " Salary(total):" + shownFactory.getSalaryCost()

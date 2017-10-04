@@ -9,15 +9,63 @@ using UnityEngine;
 /// </summary>
 public abstract class Consumer : Agent
 {
-    public PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
-    public PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
+    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
+    // may move it back to Producer
+    public Storage storage;
+    private readonly PrimitiveStorageSet consumedTotal = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet consumedLastTurn = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet consumedInMarket = new PrimitiveStorageSet();
     public abstract void consumeNeeds();
     public abstract List<Storage> getRealNeeds();
 
     protected Consumer(Bank bank, Province province) : base(0f, bank, province)
     {
 
+    }
+    /// <summary>
+    /// Use for only reads!
+    /// </summary>    
+    public PrimitiveStorageSet getConsumedTotal()
+    {
+        return consumedTotal;
+    }
+    /// <summary>
+    /// Use for only reads!
+    /// </summary>    
+    public PrimitiveStorageSet getConsumedLastTurn()
+    {
+        return consumedLastTurn;
+    }
+    /// <summary>
+    /// Use for only reads!
+    /// </summary>    
+    public PrimitiveStorageSet getConsumedInMarket()
+    {
+        return consumedInMarket;
+    }
+    public void consumeFromMarket(Storage what)
+    {
+        //pay(Game.market, what.multiplyOutside(price));
+        //if (fromMarket)
+        ///{
+        consumedTotal.add(what);
+        consumedInMarket.add(what);
+        Game.market.sentToMarket.subtract(what);        
+        //}        
+
+        // from Market
+        //if (this is SimpleProduction)
+        //    (this as SimpleProduction).getInputProductsReserve().add(what);
+    }
+    public void consumeFromItself(Storage what)
+    {
+        consumedTotal.add(what);
+        storage.subtract(what);        
+    }
+    public void consumeFromCountryStorage(List<Storage> what, Country country)
+    {
+        consumedTotal.add(what);
+        country.storageSet.subtract(what);        
     }
     public virtual void setStatisticToZero()
     {
@@ -35,17 +83,11 @@ public abstract class Consumer : Agent
 /// </summary>
 public abstract class Producer : Consumer
 {
-    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
-    public Storage storageNow;
-
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
 
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
-
-    //protected Country owner; //Could be any Country or POP
-
 
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
@@ -77,11 +119,11 @@ public abstract class Producer : Consumer
             Value cost = new Value(Game.market.getCost(realSold));
 
             // assuming gainGoodsThisTurn & realSold have same product
-            if (storageNow.isSameProduct(gainGoodsThisTurn))
-                storageNow.add(gainGoodsThisTurn);
+            if (storage.isSameProduct(gainGoodsThisTurn))
+                storage.add(gainGoodsThisTurn);
             else
-                storageNow = new Storage(gainGoodsThisTurn);
-            storageNow.subtract(realSold.get());
+                storage = new Storage(gainGoodsThisTurn);
+            storage.subtract(realSold.get());
 
             if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
             {
@@ -92,7 +134,7 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
-    
+
 }
 
 

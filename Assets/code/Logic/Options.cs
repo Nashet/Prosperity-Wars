@@ -82,7 +82,7 @@ public static class Options
     ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
     public static readonly Procent PopNeedsEscapingLimit = new Procent(0.33f);
     /// <summary> New life should this better to start escaping</summary>
-    public static readonly Procent PopNeedsEscapingBarrier = new Procent(0.1f);
+    public static readonly Procent PopNeedsEscapingBarrier = new Procent(0.01f); // was 0.1
 
     //public static readonly Procent PopNeedsMigrationLimit = new Procent(0.33f);
     //public static readonly Procent PopNeedsImmigrationLimit = new Procent(0.33f);

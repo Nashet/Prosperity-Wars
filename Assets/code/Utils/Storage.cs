@@ -163,15 +163,25 @@ public class PrimitiveStorageSet
     }
     /// <summary>
     /// If duplicated than overwrites
-    /// </summary>
-    /// <param name="inn"></param>
-    public void set(Storage inn)
+    /// </summary>    
+    public void set(Storage setValue)
     {
-        Storage find = this.findStorage(inn.getProduct());
+        Storage find = this.findStorage(setValue.getProduct());
         if (find == null)
-            container.Add(new Storage(inn));
+            container.Add(new Storage(setValue));
         else
-            find.set(inn);
+            find.set(setValue);
+    }
+    /// <summary>
+    /// If duplicated than overwrites
+    /// </summary>    
+    public void set(Product product, Value value)
+    {
+        Storage find = this.findStorage(product);
+        if (find == null)
+            container.Add(new Storage(product, value));
+        else
+            find.set(value);
     }
     /// <summary>
     /// If duplicated than adds
@@ -221,7 +231,7 @@ public class PrimitiveStorageSet
         if (storage == null)
             return false;
         else
-            return storage.send(whom.storageNow, what);
+            return storage.send(whom.storage, what);
     }
     /// <summary>
     /// Do checks outside
@@ -282,24 +292,50 @@ public class PrimitiveStorageSet
     internal Storage findStorage(Product product)
     {
         foreach (Storage stor in container)
-            if (stor.getProduct() == product)
+            if (stor.isSameProduct(product))
                 return stor;
         return null;
     }
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findStorage(Storage storageToFind)
+    //internal Storage findStorage(Storage storageToFind)
+    //{
+    //    foreach (Storage stor in container)
+    //        if (stor.isSameProduct(storageToFind))
+    //            return stor;
+    //    return null;
+    //}
+    /// <summary>Returns NULL if search is failed</summary>
+    //internal Storage findSubstitute(Storage need)
+    //{
+    //    foreach (Storage storage in container)
+    //        if (storage.hasSubstitute(need))
+    //            return storage;
+    //    return null;
+    //}
+    /// <summary>Returns NULL if search is failed</summary>
+    internal Storage findSubstitute(Product need)
     {
-        foreach (Storage stor in container)
-            if (stor.isSameProduct(storageToFind))
-                return stor;
+        foreach (Storage storage in container)
+            if (storage.isSubstituteProduct(need))
+                return storage;
         return null;
     }
+    /// <summary>Returns NULL if search is failed</summary>
+    internal Storage findExistingSubstitute(Storage need)
+    {
+        foreach (Storage storage in container)
+            if (storage.hasSubstitute(need))
+                return storage;
+        return null;
+    }
+
     /// <summary>Returns NEW empty storage if search is failed</summary>
     internal Storage getStorage(Product whom)
     {
-        foreach (Storage stor in container)
-            if (stor.getProduct() == whom)
-                return stor;
+        foreach (Storage storage in container)
+            if (storage.isSameProduct(whom) || storage.isSubstituteProduct(whom))
+                return storage;
+        //else
         return new Storage(whom, 0f);
     }
     override public string ToString()
@@ -401,6 +437,15 @@ public class PrimitiveStorageSet
         return result;
 
     }
+    internal bool hasSubstitute(Storage need)
+    {
+        foreach (var item in container)
+        {
+            if (item.hasSubstitute(need))
+                return true;
+        }
+        return false;
+    }
 
 
 
@@ -497,7 +542,7 @@ public class Storage : Value
 
     override public string ToString()
     {
-        return get() + " " + getProduct().getName();
+        return get() + " " + getProduct();
 
     }
     public void sendAll(PrimitiveStorageSet whom)
@@ -548,7 +593,7 @@ public class Storage : Value
             return false;
         }
         else
-        {            
+        {
             if (this.isBiggerOrEqual(amountToSend))
             {
                 subtract(amountToSend);
@@ -568,7 +613,7 @@ public class Storage : Value
     {
         if (!isSameProduct(product))
         {
-            Debug.Log("Attempted to pay wrong product!");
+            // Debug.Log("Attempted to pay wrong product!");
             return false;
         }
         else
@@ -578,7 +623,17 @@ public class Storage : Value
     {
         if (!isSameProduct(storage))
         {
-            Debug.Log("Attempted to pay wrong product!");
+            // Debug.Log("Attempted to pay wrong product!");
+            return false;
+        }
+        else
+            return isBiggerOrEqual(storage);
+    }
+    public bool hasSubstitute(Storage storage)
+    {
+        if (!isSubstituteProduct(storage.getProduct()))
+        {
+            // Debug.Log("Attempted to pay wrong product!");
             return false;
         }
         else
@@ -606,6 +661,14 @@ public class Storage : Value
     internal bool isSameProduct(Storage anotherStorage)
     {
         return this.getProduct() == anotherStorage.getProduct();
+    }
+    internal bool isSubstituteProduct(Product  product)
+    {
+        return this.getProduct().isSubstituteFor(product);
+    }
+    internal bool isAbstractProduct()
+    {
+        return getProduct().isAbstract();
     }
     internal bool isSameProduct(Product anotherProduct)
     {

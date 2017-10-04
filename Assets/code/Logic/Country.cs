@@ -133,13 +133,15 @@ public class Country : Staff
             serfdom.status = Serfdom.Abolished;
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
-            markInvented(Invention.Farming);
-           // markInvented(Invention.Manufactories);
+            markInvented(Invention.Farming);           
+ 
             markInvented(Invention.Banking);
             //markInvented(Invention.metal);
             //markInvented(Invention.individualRights);
             //markInvented(Invention.ProfessionalArmy);
             //markInvented(Invention.Welfare);
+
+            markInvented(Invention.Manufactories);
         }
     }
 
@@ -181,6 +183,8 @@ public class Country : Staff
         howMuchCountries += Game.Random.Next(6);
         if (howMuchCountries < 8)
             howMuchCountries = 8;
+
+        
         for (int i = 0; i < howMuchCountries; i++)
         {
             game.updateStatus("Making countries.." + i);
@@ -739,9 +743,8 @@ public class Country : Staff
     {        
         if (toBuy.isNotZero())
         {
-            Storage realyBougth = Game.market.buy(this, toBuy, null);
             //if (toBuy.get() < 10f) toBuy.set(10);
-            //toBuy.multiple();
+            Storage realyBougth = Game.market.buy(this, toBuy, null);                        
             storageSet.add(realyBougth);
             storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
         }
@@ -752,9 +755,9 @@ public class Country : Staff
         Value result = new Value(0);
         foreach (var prov in ownedProvinces)
         {
-            foreach (var prod in prov.allFactories)
-                if (prod.gainGoodsThisTurn.get() > 0f)
-                    result.add(Game.market.getCost(prod.gainGoodsThisTurn).get() - Game.market.getCost(prod.consumedTotal).get());
+            foreach (var producer in prov.allFactories)
+                if (producer.gainGoodsThisTurn.get() > 0f)
+                    result.add(Game.market.getCost(producer.gainGoodsThisTurn).get() - Game.market.getCost(producer.getConsumedTotal()).get());
 
             foreach (var pop in prov.allPopUnits)
                 if (pop.popType.isProducer())

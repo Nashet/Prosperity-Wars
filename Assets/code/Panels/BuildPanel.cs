@@ -27,9 +27,6 @@ public class BuildPanel : DragPanel
             panelRectTransform.SetAsLastSibling();
 
     }
-   
-
-
     public void onBuildClick()
     {
         //if (Game.player.economy.allowsFactoryBuildingByGovernment())
@@ -53,11 +50,10 @@ public class BuildPanel : DragPanel
             }
             else // non market
             {
-                Storage needFood = resourceToBuild.findStorage(Product.Food);
+                Storage needFood = resourceToBuild.findStorage(Product.Grain);
                 if (Game.Player.storageSet.has(needFood))
                 {
                     Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
-
                     //wallet.pay(fact.wallet, new Value(100f));
                     Game.Player.storageSet.subtract(needFood);
                     buildSomething = true;
