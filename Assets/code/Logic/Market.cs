@@ -253,7 +253,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
                     return true;
             }
-            return false; 
+            return false;
         }
         else
         {
@@ -402,7 +402,7 @@ public class Market : Agent//: PrimitiveStorageSet
             Storage buying;
             if (whatWantedToBuy.getProduct().isAbstract())
             {
-                buying = getCheapestSubstitute(whatWantedToBuy);
+                buying = getCheapestExistingSubstitute(whatWantedToBuy);
                 if (buying == null)//no substitution available on market
                     return new Storage(whatWantedToBuy.getProduct());
             }
@@ -483,8 +483,10 @@ public class Market : Agent//: PrimitiveStorageSet
         else
             return whatWantedToBuy; // assuming buying is empty here
     }
-
-    public Storage getCheapestSubstitute(Storage abstractProduct)
+    /// <summary>
+    /// Returns NULL if failed
+    /// </summary>    
+    public Storage getCheapestExistingSubstitute(Storage abstractProduct)
     {
         // assuming substitutes are sorted in cheap-expensive order
         foreach (var item in abstractProduct.getProduct().getSubstitutes())
@@ -496,7 +498,18 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return null;
     }
-
+    /// <summary>
+    /// Returns NULL if failed
+    /// </summary>    
+    public Storage getCheapestSubstitute(Storage abstractProduct)
+    {
+        // assuming substitutes are sorted in cheap-expensive order
+        foreach (var item in abstractProduct.getProduct().getSubstitutes())
+        {
+            return new Storage(item, abstractProduct);
+        }
+        return null;
+    }
     /// <summary>
     /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
     /// </summary>    

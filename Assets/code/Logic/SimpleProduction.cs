@@ -116,7 +116,8 @@ abstract public class SimpleProduction : Producer
             {
                 if (!getInputProductsReserve().hasSubstitute(input))
                 {
-                    Storage found = getInputProductsReserve().findSubstitute(input.getProduct());
+                    // should it be findExistingSubstitute() ??
+                    Storage found = getInputProductsReserve().findExistingSubstitute(input);
                     if (found == null)
                         input.set(0f);
                     else // what we really have
