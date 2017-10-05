@@ -11,10 +11,10 @@ public class Market : Agent//: PrimitiveStorageSet
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
 
     // todo make Better class for it?
-    private  DateTime dateOfDSB = new DateTime(int.MaxValue);
+    private DateTime dateOfDSB = new DateTime(int.MaxValue);
     private readonly PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
 
-    private  DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
+    private DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
     private readonly PrimitiveStorageSet supplyOnMarket = new PrimitiveStorageSet();
 
     DateTime dateOfgetTotalProduction = new DateTime(int.MaxValue);
@@ -91,7 +91,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Basing on current prices and needs
     /// Not counting ConsumedInMarket
     /// </summary>    
-    internal float getBouth(Product pro, bool takeThisTurnData)
+    internal float getBouth(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
@@ -103,12 +103,12 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            Storage re = producer.getConsumedInMarket().findStorage(pro);
+                            Storage re = producer.getConsumedInMarket().findStorage(product);
                             if (re != null)
                                 result += re.get();
                         }
                     }
-                Storage countryStor = country.getConsumedInMarket().findStorage(pro);
+                Storage countryStor = country.getConsumedInMarket().findStorage(product);
                 if (countryStor != null)
                     result += countryStor.get();
             }
@@ -140,11 +140,11 @@ public class Market : Agent//: PrimitiveStorageSet
             }
             dateOfgetBought = Game.date;
         }
-        Storage tmp = bought.findStorage(pro);
+        Storage tmp = bought.findStorage(product);
         if (tmp == null)
             return 0;
         else
-            return bought.findStorage(pro).get();
+            return bought.findStorage(product).get();
         //float result = 0f;
         //foreach (Country country in Country.allCountries)
         //    foreach (Province province in country.ownedProvinces)
@@ -168,7 +168,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Basing on current prices and needs
     /// Not counting ConumedInMarket
     /// </summary>    
-    internal float getTotalConsumption(Product pro, bool takeThisTurnData)
+    internal float getTotalConsumption(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
@@ -180,12 +180,12 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            var re = producer.getConsumedTotal().findStorage(pro);
+                            var re = producer.getConsumedTotal().findStorage(product);
                             if (re != null)
                                 result += re.get();
                         }
                     }
-                Storage countryStor = country.getConsumedTotal().findStorage(pro);
+                Storage countryStor = country.getConsumedTotal().findStorage(product);
                 if (countryStor != null)
                     result += countryStor.get();
             }
@@ -217,11 +217,11 @@ public class Market : Agent//: PrimitiveStorageSet
             }
             dateOfgetTotalConsumption = Game.date;
         }
-        Storage tmp = totalConsumption.findStorage(pro);
+        Storage tmp = totalConsumption.findStorage(product);
         if (tmp == null)
             return 0;
         else
-            return totalConsumption.findStorage(pro).get();
+            return totalConsumption.findStorage(product).get();
         return result;
         ////////////
         //float result = 0f;
@@ -292,7 +292,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Only goods sent to market
     /// Based  on last turn data
     /// </summary>    
-    internal float getSupply(Product pro, bool takeThisTurnData)
+    internal float getSupply(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
@@ -300,7 +300,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.getProducers())
-                        if (producer.sentToMarket.getProduct() == pro) //sup.getProduct()
+                        if (producer.sentToMarket.isSameProduct(product)) //sup.getProduct()
                             result += producer.sentToMarket.get();
             return result;
         }
@@ -313,18 +313,18 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.getProducers())
-                            if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
+                            if (producer.sentToMarket.isSameProduct(sup.getProduct())) //sup.getProduct()
                                 result += producer.sentToMarket.get();
 
                 supplyOnMarket.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetSupplyOnMarket = Game.date;
         }
-        Storage tmp = supplyOnMarket.findStorage(pro);
+        Storage tmp = supplyOnMarket.findStorage(product);
         if (tmp == null)
             return 0;
         else
-            return supplyOnMarket.findStorage(pro).get();
+            return supplyOnMarket.findStorage(product).get();
         //return result;
     }
     /// <summary>
@@ -341,7 +341,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 {
                     foreach (Producer producer in province.getProducers())
                     {
-                        if (producer.gainGoodsThisTurn.getProduct() == product) //sup.getProduct()
+                        if (producer.gainGoodsThisTurn.isSameProduct(product)) //sup.getProduct()
                             result += producer.gainGoodsThisTurn.get();
                     }
                 }
@@ -358,7 +358,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         foreach (Producer producer in province.getProducers())
                         {
-                            if (producer.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
+                            if (producer.gainGoodsThisTurn.isSameProduct(sup.getProduct())) //sup.getProduct()
                                 result += producer.gainGoodsThisTurn.get();
                         }
                     }
@@ -375,12 +375,9 @@ public class Market : Agent//: PrimitiveStorageSet
     }
     internal void ForceDSBRecalculation()
     {
-
         //dateOfDSB--;//!!! Warning! This need to be uncommented to work properly
         getDemandSupplyBalance(null);
     }
-
-
     /// <summary>
     /// per 1 unit
     /// </summary>
@@ -530,9 +527,8 @@ public class Market : Agent//: PrimitiveStorageSet
     internal void buy(Consumer buyer, PrimitiveStorageSet buying, Country subsidizer)
     {
         foreach (Storage item in buying)
-        if (item.isNotZero())
-            buy(buyer, item, subsidizer);
-        
+            if (item.isNotZero())
+                buy(buyer, item, subsidizer);
     }
     /// <summary>
     /// Buying needs in circle, by Procent in time
@@ -598,8 +594,6 @@ public class Market : Agent//: PrimitiveStorageSet
     /// </summary>
     internal Storage HowMuchAvailable(Storage need)
     {
-
-
         //float BuyingAmountAvailable = 0;
         Storage result = sentToMarket.findStorage(need.getProduct());
         if (result == null)
@@ -627,7 +621,6 @@ public class Market : Agent//: PrimitiveStorageSet
         {
             stor.set(HowMuchAvailable(stor));
         }
-
         return need;
     }
     /// <summary>
@@ -661,7 +654,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 //if (balance > 1f) balance = 1f;
                 //&& supply == 0
                 if (demand == 0) balance = Options.MarketZeroDSB; // otherwise - furniture bag
-                                               // else
+                                                                  // else
                 if (supply == 0)
                     balance = Options.MarketInfiniteDSB;
 
@@ -731,7 +724,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float highChangingSpeed = 0.04f;//%
         float antiBalance;
         foreach (Storage price in this.marketPrice)
-            if (price.getProduct() != Product.Gold)
+            if (!price.isSameProduct( Product.Gold))
             {
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  
