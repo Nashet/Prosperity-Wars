@@ -331,7 +331,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// All produced supplies
     /// Based  on last turn data
     /// </summary>    
-    internal float getProductionTotal(Product pro, bool takeThisTurnData)
+    internal float getProductionTotal(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
@@ -341,7 +341,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 {
                     foreach (Producer producer in province.getProducers())
                     {
-                        if (producer.gainGoodsThisTurn.getProduct() == pro) //sup.getProduct()
+                        if (producer.gainGoodsThisTurn.getProduct() == product) //sup.getProduct()
                             result += producer.gainGoodsThisTurn.get();
                     }
                 }
@@ -366,11 +366,11 @@ public class Market : Agent//: PrimitiveStorageSet
             }
             dateOfgetTotalProduction = Game.date;
         }
-        Storage tmp = totalProduction.findStorage(pro);
+        Storage tmp = totalProduction.findStorage(product);
         if (tmp == null)
             return 0;
         else
-            return totalProduction.findStorage(pro).get();
+            return totalProduction.findStorage(product).get();
         return result;
     }
     internal void ForceDSBRecalculation()
@@ -529,10 +529,10 @@ public class Market : Agent//: PrimitiveStorageSet
     /// </summary>
     internal void buy(Consumer buyer, PrimitiveStorageSet buying, Country subsidizer)
     {
-        foreach (Storage input in buying)
-        {
-            buy(buyer, input, subsidizer);
-        }
+        foreach (Storage item in buying)
+        if (item.isNotZero())
+            buy(buyer, item, subsidizer);
+        
     }
     /// <summary>
     /// Buying needs in circle, by Procent in time
@@ -633,18 +633,17 @@ public class Market : Agent//: PrimitiveStorageSet
     /// <summary>
     /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
     /// based on last turn data    
-    internal float getDemandSupplyBalance(Product pro)
+    internal float getDemandSupplyBalance(Product product)
     {
         float balance;
         //if (dateOfDSB != Game.date)
         if (dateOfDSB != Game.date)
         // recalculate DSBbuffer
         {
-
             foreach (Storage stor in marketPrice)
             {
-                getProductionTotal(pro, false); // for pre-turn initialization
-                getTotalConsumption(pro, false);// for pre-turn initialization
+                getProductionTotal(product, false); // for pre-turn initialization
+                getTotalConsumption(product, false);// for pre-turn initialization
                 float supply = getSupply(stor.getProduct(), false);
                 float demand = getBouth(stor.getProduct(), false);
                 //if (demand == 0) getTotalConsumption(stor.getProduct());
@@ -661,7 +660,7 @@ public class Market : Agent//: PrimitiveStorageSet
 
                 //if (balance > 1f) balance = 1f;
                 //&& supply == 0
-                if (demand == 0) balance = 0f; // otherwise - furniture bag
+                if (demand == 0) balance = Options.MarketZeroDSB; // otherwise - furniture bag
                                                // else
                 if (supply == 0)
                     balance = Options.MarketInfiniteDSB;
@@ -670,7 +669,7 @@ public class Market : Agent//: PrimitiveStorageSet
             }
             dateOfDSB = Game.date;
         }
-        Storage tmp = DSBbuffer.findStorage(pro);
+        Storage tmp = DSBbuffer.findStorage(product);
 
         if (tmp == null)
             return float.NaN;

@@ -141,7 +141,7 @@ public class Country : Staff
             //markInvented(Invention.ProfessionalArmy);
             //markInvented(Invention.Welfare);
 
-            markInvented(Invention.Manufactories);
+            //markInvented(Invention.Manufactories);
         }
     }
 

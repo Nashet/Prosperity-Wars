@@ -40,7 +40,7 @@ public class FactoryType
         new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), false);
         new FactoryType("Oil rig", new Storage(Product.Oil, 2f), true);
         new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
-                
+
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
@@ -258,7 +258,9 @@ public class FactoryType
         if (hasInput())
         {
             foreach (Storage inputProduct in resourceInput)
-                if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+                if (!Game.market.isAvailable(inputProduct.getProduct())                 
+                //if (!Game.market.sentToMarket.has(inputProduct)
+                    || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                     return new Value(0);
             Value outCome = Game.market.getCost(resourceInput);
             return income.subtractOutside(outCome, false);

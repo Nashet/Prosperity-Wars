@@ -70,7 +70,7 @@ abstract public class SimpleProduction : Producer
                 {
                     var substitute = getInputProductsReserve().findExistingSubstitute(next);
                     if (substitute != null)
-                        getInputProductsReserve().subtract(substitute, false);
+                        getInputProductsReserve().subtract(new Storage(substitute.getProduct(), next), false);
                 }
                 else
                     getInputProductsReserve().subtract(next, false);

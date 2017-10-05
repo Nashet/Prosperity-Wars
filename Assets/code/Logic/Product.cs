@@ -29,7 +29,7 @@ public class Product : Name
         Cattle = new Product("Cattle", true, 0.04f);
 
         Fruit = new Product("Fruit", true, 1f);
-        Liquor = new Product("Wine", false, 3f);        
+        Liquor = new Product("Liquor", false, 3f);        
 
         Wood = new Product("Wood", true, 2.7f);
         Lumber = new Product("Lumber", false, 8f);
@@ -61,7 +61,7 @@ public class Product : Name
         Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
         Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
         Fibres = new Product("Fibres", false, 0.04f, new List<Product> { Cattle, Cotton });
-        Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal});
+        Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal, Oil});
     }
     /// <summary>
     /// General constructor
