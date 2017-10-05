@@ -11,20 +11,20 @@ public class Market : Agent//: PrimitiveStorageSet
     internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
 
     // todo make Better class for it?
-    DateTime dateOfDSB = new DateTime(int.MaxValue);
-    PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
+    private  DateTime dateOfDSB = new DateTime(int.MaxValue);
+    private readonly PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
 
-    DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
-    PrimitiveStorageSet supplyOnMarket = new PrimitiveStorageSet();
+    private  DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
+    private readonly PrimitiveStorageSet supplyOnMarket = new PrimitiveStorageSet();
 
     DateTime dateOfgetTotalProduction = new DateTime(int.MaxValue);
-    PrimitiveStorageSet totalProduction = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet totalProduction = new PrimitiveStorageSet();
 
     DateTime dateOfgetTotalConsumption = new DateTime(int.MaxValue);
-    PrimitiveStorageSet totalConsumption = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet totalConsumption = new PrimitiveStorageSet();
 
     DateTime dateOfgetBought = new DateTime(int.MaxValue);
-    PrimitiveStorageSet bought = new PrimitiveStorageSet();
+    private readonly PrimitiveStorageSet bought = new PrimitiveStorageSet();
 
     internal PricePool priceHistory;
     internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();

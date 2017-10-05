@@ -660,7 +660,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     internal void setResource(Product inres)
     {
         resource = inres;
-        if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetallOre)
+        if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetallOre || resource == Product.Coal)
             terrain = TerrainTypes.Mountains;
         else
             terrain = TerrainTypes.Plains;

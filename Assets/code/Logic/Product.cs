@@ -6,17 +6,20 @@ using System.Text;
 public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
-    internal static readonly List<Product> allProducts = new List<Product>();
-    internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
-    Wool, Clothes, Stone, Cement, Fruit, Wine, ColdArms, Ammunition, Firearms, Artillery,
-    Oil, Fuel, Cars, Tanks, Airplanes, Rubber, Machinery;
-    internal static readonly Product Food, Sugar;
+    private static readonly List<Product> allProducts = new List<Product>();    
     private static int resourceCounter;
 
     private readonly bool _isResource;
     private readonly Value defaultPrice;
     private readonly bool _isAbstract;
     private readonly List<Product> substitutes;
+
+    internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
+    Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
+    Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
+        Coal = new Product("Coal", true, 1f);
+    // abstract products
+    internal static readonly Product Food, Sugar, Fibres, Fuel;
 
     static Product()
     {
@@ -26,16 +29,13 @@ public class Product : Name
         Cattle = new Product("Cattle", true, 0.04f);
 
         Fruit = new Product("Fruit", true, 1f);
-        Wine = new Product("Wine", false, 3f);
-
-        Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
-        Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
+        Liquor = new Product("Wine", false, 3f);        
 
         Wood = new Product("Wood", true, 2.7f);
         Lumber = new Product("Lumber", false, 8f);
         Furniture = new Product("Furniture", false, 7f);
 
-        Wool = new Product("Wool", true, 1f);
+        Cotton = new Product("Cotton", true, 1f);
         Clothes = new Product("Clothes", false, 6f);
 
         Stone = new Product("Stone", true, 1f);
@@ -50,13 +50,18 @@ public class Product : Name
         Artillery = new Product("Artillery", false, 13f);
 
         Oil = new Product("Oil", true, 10f);
-        Fuel = new Product("Fuel", false, 15f);
+        MotorFuel = new Product("Motor Fuel", false, 15f);
         Machinery = new Product("Machinery", false, 8f);
         Rubber = new Product("Rubber", true, 10f);
         Cars = new Product("Cars", false, 15f);
         Tanks = new Product("Tanks", false, 20f);
         Airplanes = new Product("Airplanes", false, 20f);
 
+        // abstract products
+        Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
+        Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
+        Fibres = new Product("Fibres", false, 0.04f, new List<Product> { Cattle, Cotton });
+        Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal});
     }
     /// <summary>
     /// General constructor
@@ -76,6 +81,12 @@ public class Product : Name
     {
         foreach (var item in allProducts)
             if (item.isAbstract())
+                yield return item;
+    }
+    public static IEnumerable<Product> getAllNonAbstract()
+    {
+        foreach (var item in allProducts)
+            if (!item.isAbstract())
                 yield return item;
     }
     public static void sortSubstitutes()
@@ -118,7 +129,7 @@ public class Product : Name
     /// <summary>
     /// Constructor for abstract products
     /// </summary>    
-    private Product(string name, bool inlanded, float defaultPrice, List<Product> substitutes) : this(name, inlanded, defaultPrice)
+    private Product(string name, bool isResource, float defaultPrice, List<Product> substitutes) : this(name, isResource, defaultPrice)
     {
         _isAbstract = true;
         this.substitutes = substitutes;
@@ -150,7 +161,7 @@ public class Product : Name
             || (!country.isInvented(Invention.SteamPower) && (this == Machinery || this == Cement))
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
-            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == Fuel || this == Rubber || this == Cars))
+            || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == MotorFuel || this == Rubber || this == Cars))
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
             //|| (!isResource() && !country.isInvented(Invention.Manufactories))

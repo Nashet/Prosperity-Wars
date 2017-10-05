@@ -32,16 +32,15 @@ public class FactoryType
         new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
         new FactoryType("Gold pit", new Storage(Product.Gold, 2f), true);
         new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), true);
-        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), false);
+        new FactoryType("Coal pit", new Storage(Product.Coal, 3f), true);
+        new FactoryType("Cotton farm", new Storage(Product.Cotton, 2f), false);
         new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
         new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
-
+        new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
+        new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), false);
         new FactoryType("Oil rig", new Storage(Product.Oil, 2f), true);
         new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
-
-        new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
-        //new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
-        new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), false);
+                
 
         PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
@@ -52,22 +51,22 @@ public class FactoryType
         new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wood, 0.5f));
+        resourceInput.set(new Storage(Product.Fuel, 0.5f));
         resourceInput.set(new Storage(Product.MetallOre, 2f));
         new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wool, 1f));
+        resourceInput.set(new Storage(Product.Fibres, 1f));
         new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
-        resourceInput.set(new Storage(Product.Wood, 0.5f));
+        resourceInput.set(new Storage(Product.Fuel, 0.5f));
         resourceInput.set(new Storage(Product.Stone, 2f));
         new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Sugar, 1f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput);
+        new FactoryType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
@@ -90,7 +89,7 @@ public class FactoryType
 
         resourceInput = new PrimitiveStorageSet();
         resourceInput.set(new Storage(Product.Oil, 1f));
-        new FactoryType("Oil refinery", new Storage(Product.Fuel, 2f), resourceInput);
+        new FactoryType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
 
 
         resourceInput = new PrimitiveStorageSet();
@@ -200,10 +199,10 @@ public class FactoryType
     /// Returns first correct value
     /// Assuming there is only one  FactoryType for each Product
     /// </summary>   
-    internal static FactoryType whoCanProduce(Product pro)
+    internal static FactoryType whoCanProduce(Product product)
     {
         foreach (FactoryType ft in allTypes)
-            if (ft.basicProduction.getProduct() == pro)
+            if (ft.basicProduction.isSameProduct(product))
                 return ft;
         return null;
     }
@@ -258,7 +257,7 @@ public class FactoryType
         Value income = Game.market.getCost(basicProduction);
         if (hasInput())
         {
-            foreach (Storage inputProduct in resourceInput)                
+            foreach (Storage inputProduct in resourceInput)
                 if (!Game.market.isAvailable(inputProduct.getProduct()) || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                     return new Value(0);
             Value outCome = Game.market.getCost(resourceInput);

@@ -54,7 +54,7 @@ public class Army
         if (Product.Cars.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
-         Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel), false).get()
+         Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
          );
         else return 0f;
     }
@@ -63,7 +63,7 @@ public class Army
         if (Product.Tanks.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
-         Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel), false).get(),
+         Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
          Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
          );
         else return 0f;
@@ -73,7 +73,7 @@ public class Army
         if (Product.Airplanes.isInvented(getOwner().getPlaceDejure()))
             return Mathf.Min(
          Procent.makeProcent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
-         Procent.makeProcent(getConsumption(Product.Fuel), getNeeds(Product.Fuel), false).get(),
+         Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
          Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
          );
         else return 0f;

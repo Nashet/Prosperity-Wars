@@ -341,7 +341,7 @@ public class PricePool
     static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
     internal PricePool()
     {
-        foreach (var pro in Product.allProducts)
+        foreach (var pro in Product.getAllNonAbstract())
             for (int i = 0; i < lenght; i++)
                 this.addData(pro, new Value(0f));
     }
