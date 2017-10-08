@@ -44,7 +44,7 @@ public class ArtisanProduction : SimpleProduction
     {
         base.produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
         getOwner().gainGoodsThisTurn.set(this.gainGoodsThisTurn);
-        if (getOwner().storage.isSameProduct(this.storage))
+        if (getOwner().storage.isExactlySameProduct(this.storage))
             getOwner().storage.add(this.storage);
         else
             getOwner().storage.set(this.storage);

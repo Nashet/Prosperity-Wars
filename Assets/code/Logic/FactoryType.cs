@@ -202,7 +202,7 @@ public class FactoryType
     internal static FactoryType whoCanProduce(Product product)
     {
         foreach (FactoryType ft in allTypes)
-            if (ft.basicProduction.isSameProduct(product))
+            if (ft.basicProduction.isSameProductType(product))
                 return ft;
         return null;
     }

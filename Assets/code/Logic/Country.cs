@@ -133,8 +133,8 @@ public class Country : Staff
             serfdom.status = Serfdom.Abolished;
             //government.setValue(Government.Tribal, false);
             government.status = Government.Aristocracy;
-            markInvented(Invention.Farming);           
- 
+            markInvented(Invention.Farming);
+
             markInvented(Invention.Banking);
             //markInvented(Invention.metal);
             //markInvented(Invention.individualRights);
@@ -184,7 +184,7 @@ public class Country : Staff
         if (howMuchCountries < 8)
             howMuchCountries = 8;
 
-        
+
         for (int i = 0; i < howMuchCountries; i++)
         {
             game.updateStatus("Making countries.." + i);
@@ -562,7 +562,7 @@ public class Country : Staff
             divisionVotersResult.Add(type, 0);
             divisionPopulationResult.Add(type, 0);
             foreach (Province province in this.ownedProvinces)
-            {                
+            {
                 foreach (PopUnit pop in province.getAllPopUnits(type))
                     if (pop.getSayingYes(reform))
                     {
@@ -631,7 +631,7 @@ public class Country : Staff
         }
 
         consumeNeeds(); // Should go After all Armies consumption
-                    //Procent opinion;
+                        //Procent opinion;
         foreach (var item in Country.getExisting())
             if (item != this)
             {
@@ -726,28 +726,28 @@ public class Country : Staff
         //buy 1 day needs
         foreach (var need in needs)
         {
-            // if I want to buy           
-            Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
-            buyNeeds(toBuy);
+            // if I want to buy             
+            //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
+            Storage toBuy = need.subtractOutside(storageSet.getBiggestStorage(need.getProduct()));
+            if (toBuy.isNotZero())
+                buyNeeds(toBuy);
         }
         //buy x day needs
         foreach (var need in needs)
-        {
+        {               
             Storage toBuy = new Storage(need.getProduct(),
-                need.get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getStorage(need.getProduct()).get(), false);
-            buyNeeds(toBuy);
-        }        
+                need.get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getBiggestStorage(need.getProduct()).get(), false);
+            if (toBuy.isNotZero())
+                buyNeeds(toBuy);
+        }
     }
 
     void buyNeeds(Storage toBuy)
-    {        
-        if (toBuy.isNotZero())
-        {
-            //if (toBuy.get() < 10f) toBuy.set(10);
-            Storage realyBougth = Game.market.buy(this, toBuy, null);                        
-            storageSet.add(realyBougth);
-            storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
-        }
+    {
+        //if (toBuy.get() < 10f) toBuy.set(10);
+        Storage realyBougth = Game.market.buy(this, toBuy, null);
+        storageSet.add(realyBougth);
+        storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
     }
 
     public Value getGDP()

@@ -136,9 +136,7 @@ public class Corps
             if (found.isZero())
                 return found;
             else
-            {
                 return new Storage(product, found.multiplyOutside(this.getSize() / 1000f));
-            }
         }
         else
             return new Storage(product);

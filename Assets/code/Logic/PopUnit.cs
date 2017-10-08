@@ -229,7 +229,7 @@ abstract public class PopUnit : Producer
         // Bank - stays same
 
         //Producer's fields:
-        if (storage.isSameProduct(source.storage))
+        if (storage.isExactlySameProduct(source.storage))
             storage.add(source.storage);
         // looks I don't need - it erases every tick anyway
         //if (gainGoodsThisTurn.isSameProduct(source.gainGoodsThisTurn))

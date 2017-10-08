@@ -209,7 +209,7 @@ public class Storage : Value
     }
     public void add(Storage storage, bool showMessageAboutNegativeValue = true)
     {
-        if (this.isSameProduct(storage))
+        if (this.isExactlySameProduct(storage))
             base.add(storage, showMessageAboutNegativeValue);
         else
         {
@@ -233,7 +233,7 @@ public class Storage : Value
     }
     public void sendAll(Storage another)
     {
-        if (!isSameProduct(another))
+        if (!isExactlySameProduct(another))
             Debug.Log("Attempt to give wrong product");
         else
         {
@@ -269,7 +269,7 @@ public class Storage : Value
     /// </summary>    
     public bool send(Storage reciever, Storage amountToSend, bool showMessageAboutOperationFails = true)
     {
-        if (!isSameProduct(reciever))
+        if (!isExactlySameProduct(reciever))
         {
             Debug.Log("Attempt to give wrong product");
             return false;
@@ -291,36 +291,8 @@ public class Storage : Value
             }
         }
     }
-    public bool has(Product product, Value HowMuch)
-    {
-        if (!isSameProduct(product))
-        {
-            // Debug.Log("Attempted to pay wrong product!");
-            return false;
-        }
-        else
-            return isBiggerOrEqual(HowMuch);
-    }
-    public bool has(Storage storage)
-    {
-        if (!isSameProduct(storage))
-        {
-            // Debug.Log("Attempted to pay wrong product!");
-            return false;
-        }
-        else
-            return isBiggerOrEqual(storage);
-    }
-    public bool hasSubstitute(Storage storage)
-    {
-        if (!isSubstituteProduct(storage.getProduct()))
-        {
-            // Debug.Log("Attempted to pay wrong product!");
-            return false;
-        }
-        else
-            return isBiggerOrEqual(storage);
-    }
+
+
     internal Storage multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
     {
         if (invalue < 0f)
@@ -339,23 +311,58 @@ public class Storage : Value
     {
         return new Storage(this.getProduct(), get() * invalue.get());
     }
+    // edit it
+    public bool has(Storage storage)
+    {
+        if (!isSameProductType(storage))
+        {
+            // Debug.Log("Attempted to pay wrong product!");
+            return false;
+        }
+        else
+            return isBiggerOrEqual(storage);
+    }
+    //public bool hasSubstitute(Storage storage)
+    //{
+    //    if (!isSubstituteProduct(storage.getProduct()))
+    //    {
+    //        // Debug.Log("Attempted to pay wrong product!");
+    //        return false;
+    //    }
+    //    else
+    //        return isBiggerOrEqual(storage);
+    //}
 
-    internal bool isSameProduct(Storage anotherStorage)
+    /// <summary> Returns true if products exactly same or this is substitute for anotherStorage</summary>    
+    internal bool isSameProductType(Storage anotherStorage)
+    {
+        return this.getProduct().isSameProduct(anotherStorage.getProduct());
+    }
+    /// <summary> Returns true if products exactly same or this is substitute for anotherProduct</summary>
+    public bool isSameProductType(Product anotherProduct)
+    {
+        return this.getProduct().isSameProduct(anotherProduct);
+    }
+    /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>    
+    internal bool isExactlySameProduct(Storage anotherStorage)
     {
         return this.getProduct() == anotherStorage.getProduct();
     }
-    internal bool isSubstituteProduct(Product  product)
+    /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>    
+    public bool isExactlySameProduct(Product anotherProduct)
     {
-        return this.getProduct().isSubstituteFor(product);
+        return this.getProduct() == anotherProduct;
     }
+    
+    //internal bool isSubstituteProduct(Product product)
+    //{
+    //    return this.getProduct().isSubstituteFor(product);
+    //}
     internal bool isAbstractProduct()
     {
         return getProduct().isAbstract();
     }
-    internal bool isSameProduct(Product anotherProduct)
-    {
-        return this.getProduct() == anotherProduct;
-    }
+
     //[System.Obsolete("Method is deprecated, need product specified")]
     //override public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
     //{
@@ -366,4 +373,20 @@ public class Storage : Value
     //{     
     //    throw new DontUseThatMethod();        
     //}
+    public Storage subtractOutside(Storage storage, bool showMessageAboutNegativeValue = true)
+    {
+        if (!this.isExactlySameProduct(storage.getProduct()))
+        {
+            Debug.Log("Storage subtrackOutside failed - wrong product");
+            return new Storage(getProduct(), 0f);
+        }
+        if (storage.isBiggerThan(this))
+        {
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Storage subtrackOutside failed");
+            return new Storage(getProduct(), 0f);
+        }
+        else
+            return new Storage(getProduct(), this.get() - storage.get());
+    }
 }

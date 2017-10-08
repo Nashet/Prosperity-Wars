@@ -126,15 +126,12 @@ public class PrimitiveStorageSet
     }
     public bool has(Storage what)
     {
-        Storage foundStorage;
-        if (what.isAbstractProduct())
-            foundStorage = findSubstitute(what.getProduct());
+        Storage foundStorage = findStorage(what.getProduct());
+        if (foundStorage == null)
+            return false;                                              
         else
-            foundStorage = findStorage(what.getProduct());
-        if (foundStorage != null)
             return (foundStorage.isBiggerOrEqual(what)) ? true : false;
-        else
-            return false;
+
     }
 
     /// <summary>Returns False when some check not presented in here</summary>    
@@ -158,14 +155,15 @@ public class PrimitiveStorageSet
         PrimitiveStorageSet shortage = this.subtractOuside(need);
         return Procent.makeProcent(shortage, need);
     }
+    
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findStorage(Product product)
-    {
-        foreach (Storage stor in container)
-            if (stor.isSameProduct(product))
-                return stor;
-        return null;
-    }
+    //internal Storage findStorage(Product product)
+    //{
+    //    foreach (Storage stor in container)
+    //        if (stor.isSameProductType(product))
+    //            return stor;
+    //    return null;
+    //}
     /// <summary>Returns NULL if search is failed</summary>
     //internal Storage findStorage(Storage storageToFind)
     //{
@@ -183,30 +181,51 @@ public class PrimitiveStorageSet
     //    return null;
     //}
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findSubstitute(Product need)
-    {
-        foreach (Storage storage in container)
-            if (storage.isSubstituteProduct(need))
-                return storage;
-        return null;
-    }
+    //internal Storage findSubstitute(Product need)
+    //{
+    //    foreach (Storage storage in container)
+    //        if (storage.isSubstituteProduct(need))
+    //            return storage;
+    //    return null;
+    //}
     /// <summary>Returns NULL if search is failed</summary>
-    internal Storage findExistingSubstitute(Storage need)
-    {
-        foreach (Storage storage in container)
-            if (storage.hasSubstitute(need))
-                return storage;
-        return null;
-    }
+    //internal Storage findExistingSubstitute(Storage need)
+    //{
+    //    foreach (Storage storage in container)
+    //        if (storage.hasSubstitute(need))
+    //            return storage;
+    //    return null;
+    //} 
 
     /// <summary>Returns NEW empty storage if search is failed</summary>
-    internal Storage getStorage(Product whom)
+    internal Storage getStorage(Product what)
     {
         foreach (Storage storage in container)
-            if (storage.isSameProduct(whom) || storage.isSubstituteProduct(whom))
+            if (storage.isSameProductType(what))
                 return storage;
-        //else
-        return new Storage(whom, 0f);
+        //if not found
+        return new Storage(what, 0f);
+    }
+    /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
+    internal Storage getExistingStorage(Storage what)
+    {
+        foreach (Storage storage in container)
+            if (storage.has(what))
+                return storage;
+        //if not found
+        return new Storage(what.getProduct(), 0f);
+    }
+    /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
+    internal Storage getBiggestStorage(Product what)
+    {
+        List<Storage> res = new List<Storage>();
+        foreach (Storage storage in container)
+            if (storage.isSameProductType(what))
+                res.Add(storage);
+        var found = res.MaxBy(x => x.get());
+        if (found == null)
+            return new Storage(what, 0f);
+        return found;
     }
     override public string ToString()
     {
@@ -307,15 +326,15 @@ public class PrimitiveStorageSet
         return result;
 
     }
-    internal bool hasSubstitute(Storage need)
-    {
-        foreach (var item in container)
-        {
-            if (item.hasSubstitute(need))
-                return true;
-        }
-        return false;
-    }
+    //internal bool hasSubstitute(Storage need)
+    //{
+    //    foreach (var item in container)
+    //    {
+    //        if (item.hasSubstitute(need))
+    //            return true;
+    //    }
+    //    return false;
+    //}
 
 
 

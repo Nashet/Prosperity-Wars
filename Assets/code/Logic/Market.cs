@@ -32,7 +32,7 @@ public class Market : Agent//: PrimitiveStorageSet
     { }
     internal Storage findPrice(Product whom)
     {
-        return marketPrice.findStorage(whom);
+        return marketPrice.getStorage(whom);
     }
     internal void initialize()
     {
@@ -300,7 +300,7 @@ public class Market : Agent//: PrimitiveStorageSet
             foreach (Country country in Country.getExisting())
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.getProducers())
-                        if (producer.sentToMarket.isSameProduct(product)) //sup.getProduct()
+                        if (producer.sentToMarket.isExactlySameProduct(product)) //sup.getProduct()
                             result += producer.sentToMarket.get();
             return result;
         }
@@ -313,7 +313,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 foreach (Country country in Country.getExisting())
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.getProducers())
-                            if (producer.sentToMarket.isSameProduct(sup.getProduct())) //sup.getProduct()
+                            if (producer.sentToMarket.isExactlySameProduct(sup.getProduct())) //sup.getProduct()
                                 result += producer.sentToMarket.get();
 
                 supplyOnMarket.set(new Storage(sup.getProduct(), result));
@@ -341,7 +341,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 {
                     foreach (Producer producer in province.getProducers())
                     {
-                        if (producer.gainGoodsThisTurn.isSameProduct(product)) //sup.getProduct()
+                        if (producer.gainGoodsThisTurn.isExactlySameProduct(product)) //sup.getProduct()
                             result += producer.gainGoodsThisTurn.get();
                     }
                 }
@@ -358,7 +358,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         foreach (Producer producer in province.getProducers())
                         {
-                            if (producer.gainGoodsThisTurn.isSameProduct(sup.getProduct())) //sup.getProduct()
+                            if (producer.gainGoodsThisTurn.isExactlySameProduct(sup.getProduct())) //sup.getProduct()
                                 result += producer.gainGoodsThisTurn.get();
                         }
                     }
@@ -542,14 +542,15 @@ public class Market : Agent//: PrimitiveStorageSet
             Storage consumeOnThisEteration = new Storage(what.getProduct(), what.get() * buyInTime.get());
             if (consumeOnThisEteration.isZero())
                 return true;
-            // check if buying still have enough to subtract consumeOnThisEteration
-            if (!stillHaveToBuy.has(consumeOnThisEteration))
-                consumeOnThisEteration = stillHaveToBuy.getStorage(what.getProduct());
+
+            // check if buying still have enough to subtract consumeOnThisEteration            
+            if (!stillHaveToBuy.has(consumeOnThisEteration))                
+                consumeOnThisEteration = stillHaveToBuy.getExistingStorage(what);
             var reallyBought = buy(buyer, consumeOnThisEteration, null);
 
             stillHaveToBuy.subtract(reallyBought);
 
-            if (stillHaveToBuy.getStorage(what.getProduct()).isNotZero())
+            if (stillHaveToBuy.getBiggestStorage(what.getProduct()).isNotZero())
                 buyingIsFinished = false;
         }
         return buyingIsFinished;
@@ -724,7 +725,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float highChangingSpeed = 0.04f;//%
         float antiBalance;
         foreach (Storage price in this.marketPrice)
-            if (!price.isSameProduct( Product.Gold))
+            if (!price.isExactlySameProduct( Product.Gold))
             {
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  

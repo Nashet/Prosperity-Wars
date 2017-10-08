@@ -6,7 +6,7 @@ using System.Text;
 public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
-    private static readonly List<Product> allProducts = new List<Product>();    
+    private static readonly List<Product> allProducts = new List<Product>();
     private static int resourceCounter;
 
     private readonly bool _isResource;
@@ -29,7 +29,7 @@ public class Product : Name
         Cattle = new Product("Cattle", true, 0.04f);
 
         Fruit = new Product("Fruit", true, 1f);
-        Liquor = new Product("Liquor", false, 3f);        
+        Liquor = new Product("Liquor", false, 3f);
 
         Wood = new Product("Wood", true, 2.7f);
         Lumber = new Product("Lumber", false, 8f);
@@ -61,7 +61,7 @@ public class Product : Name
         Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
         Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
         Fibres = new Product("Fibres", false, 0.04f, new List<Product> { Cattle, Cotton });
-        Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal, Oil});
+        Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal, Oil });
     }
     /// <summary>
     /// General constructor
@@ -104,6 +104,34 @@ public class Product : Name
         return sumX.CompareTo(sumY);
         //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
     }
+    //public static bool operator ==(Product a, Product b)
+    //{
+    //    // If both are null, or both are same instance, return true.
+    //    if (System.Object.ReferenceEquals(a, b))
+    //    {
+    //        return true;
+    //    }
+
+    //    // If one is null, but not both, return false.
+    //    if (((object)a == null) || ((object)b == null))
+    //    {
+    //        return false;
+    //    }
+
+    //    // Return true if its substitute product:
+    //    if (a.isAbstract() && a.substitutes.Contains(b)
+    //     || b.isAbstract() && b.substitutes.Contains(a))
+    //        return true;
+    //    else
+    //        return false;
+    //}
+
+    //public static bool operator !=(Product a, Product b)
+    //{
+    //    return !(a == b);
+    //}
+
+
     public IEnumerable<Product> getSubstitutes()
     {
         //if (!isAbstract())
@@ -119,13 +147,23 @@ public class Product : Name
     {
         return _isAbstract;
     }
-    public bool isSubstituteFor(Product x)
+    /// <summary> Returns true if products exactly same or this is substitute for anotherProduct</summary>
+    public bool isSameProduct(Product anotherProduct)
     {
-        if (x.isAbstract() && x.substitutes.Contains(this))
+        if (this == anotherProduct)
+            return true;
+        if (anotherProduct.isAbstract() && anotherProduct.substitutes.Contains(this))
             return true;
         else
             return false;
     }
+    //public bool isSubstituteFor(Product x)
+    //{
+    //    if (x.isAbstract() && x.substitutes.Contains(this))
+    //        return true;
+    //    else
+    //        return false;
+    //}
     /// <summary>
     /// Constructor for abstract products
     /// </summary>    
