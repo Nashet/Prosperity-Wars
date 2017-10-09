@@ -9,7 +9,7 @@ public class Corps
     PopUnit origin;
     int size;
     readonly Procent morale = new Procent(0f);
-    readonly PrimitiveStorageSet consumption = new PrimitiveStorageSet();
+    readonly StorageSet consumption = new StorageSet();
     internal void initialize(PopUnit origin, int size)
     {
         this.origin = origin;
@@ -95,7 +95,7 @@ public class Corps
         //if (getPopUnit().loyalty.isSmallerThan(Options.PopMinLoyaltyToMobilizeForGovernment))
         //    getCountry().demobilize(x => x.getPopUnit() == this);
     }
-    public PrimitiveStorageSet getConsumption()
+    public StorageSet getConsumption()
     {
         return consumption;
     }
@@ -107,7 +107,7 @@ public class Corps
     {
         return consumption.getStorage(prod);
     }
-    public PrimitiveStorageSet getRealNeeds(Country country)
+    public StorageSet getRealNeeds(Country country)
     {
         Value multiplier = new Value(this.getSize() / 1000f);
 
@@ -125,7 +125,7 @@ public class Corps
         //    float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
         //    return sumX.CompareTo(sumY);
         //});
-        return new PrimitiveStorageSet(result);
+        return new StorageSet(result);
     }
     public Storage getRealNeeds(Country country, Product product)
     {

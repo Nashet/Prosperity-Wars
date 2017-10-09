@@ -300,7 +300,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         }
 
         allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
-        oldCountry.demobilize(x => x.getPopUnit().province == this);
+        oldCountry.demobilize(x => x.getPopUnit().getProvince() == this);
         if (oldCountry.isOneProvince())
             oldCountry.killCountry(taker);
         else
@@ -788,7 +788,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
                 return f;
         return null;
     }
-    internal bool isProducingOnFactories(PrimitiveStorageSet resourceInput)
+    internal bool isProducingOnFactories(StorageSet resourceInput)
     {
         foreach (Storage stor in resourceInput)
             foreach (Factory factory in allFactories)

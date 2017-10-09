@@ -227,7 +227,7 @@ public class Storage : Value
         return get() + " " + getProduct();
 
     }
-    public void sendAll(PrimitiveStorageSet whom)
+    public void sendAll(StorageSet whom)
     {
         this.send(whom, this);
     }
@@ -244,7 +244,7 @@ public class Storage : Value
     /// <summary>
     /// checks inside (duplicates?)
     /// </summary>    
-    public void send(PrimitiveStorageSet whom, Storage howMuch)
+    public void send(StorageSet whom, Storage howMuch)
     {
         if (has(howMuch))
         {

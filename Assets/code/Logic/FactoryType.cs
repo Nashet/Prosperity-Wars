@@ -14,12 +14,12 @@ public class FactoryType
 
     /// <summary>resource input list 
     /// per 1000 workers & per 1 unit outcome</summary>
-    internal PrimitiveStorageSet resourceInput;
+    internal StorageSet resourceInput;
 
     /// <summary>Per 1 level upgrade</summary>
-    public readonly PrimitiveStorageSet upgradeResourceLowTier;
-    public readonly PrimitiveStorageSet upgradeResourceMediumTier;
-    public readonly PrimitiveStorageSet upgradeResourceHighTier;
+    public readonly StorageSet upgradeResourceLowTier;
+    public readonly StorageSet upgradeResourceMediumTier;
+    public readonly StorageSet upgradeResourceHighTier;
 
 
     //internal ConditionsList conditionsBuild;
@@ -42,73 +42,73 @@ public class FactoryType
         new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
 
 
-        PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
+        StorageSet resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Wood, 1f));
         new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Fuel, 0.5f));
         resourceInput.set(new Storage(Product.MetallOre, 2f));
         new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Fibres, 1f));
         new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Fuel, 0.5f));
         resourceInput.set(new Storage(Product.Stone, 2f));
         new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Sugar, 1f));
         new FactoryType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Stone, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Oil, 1f));
         new FactoryType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
 
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
         new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Machinery, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Rubber, 1f));
         new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Machinery, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Artillery, 1f));
         new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
 
-        resourceInput = new PrimitiveStorageSet();
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Machinery, 1f));
@@ -128,9 +128,9 @@ public class FactoryType
         this.basicProduction = basicProduction;
 
         //upgradeResource.Set(new Storage(Product.Wood, 10f));
-        upgradeResourceLowTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
-        upgradeResourceMediumTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
-        upgradeResourceHighTier = new PrimitiveStorageSet(new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
+        upgradeResourceLowTier = new StorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
+        upgradeResourceMediumTier = new StorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
+        upgradeResourceHighTier = new StorageSet(new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
 
         enoughMoneyOrResourcesToBuild = new Condition(
             delegate (object forWhom)
@@ -152,7 +152,7 @@ public class FactoryType
     /// <summary>
     /// Constructor for resource processing FactoryType
     /// </summary>    
-    internal FactoryType(string name, Storage basicProduction, PrimitiveStorageSet resourceInput) : this(name, basicProduction, false)
+    internal FactoryType(string name, Storage basicProduction, StorageSet resourceInput) : this(name, basicProduction, false)
     {
         //if (resourceInput == null)
         //    this.resourceInput = new PrimitiveStorageSet();
@@ -184,11 +184,11 @@ public class FactoryType
         result.add(Options.factoryMoneyReservPerLevel);
         return result;
     }
-    internal PrimitiveStorageSet getBuildNeeds()
+    internal StorageSet getBuildNeeds()
     {
         //return new Storage(Product.Food, 40f);
         // thats weird place
-        PrimitiveStorageSet result = new PrimitiveStorageSet();
+        StorageSet result = new StorageSet();
         result.set(new Storage(Product.Grain, 40f));
         //TODO!has connection in pop.invest!!
         //if (whoCanProduce(Product.Gold) == this)

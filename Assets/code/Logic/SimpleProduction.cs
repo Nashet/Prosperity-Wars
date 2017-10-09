@@ -7,7 +7,7 @@ abstract public class SimpleProduction : Producer
 {
     private Agent owner;
     private readonly FactoryType type;
-    private readonly PrimitiveStorageSet inputProductsReserve = new PrimitiveStorageSet();
+    private readonly StorageSet inputProductsReserve = new StorageSet();
 
     protected SimpleProduction(FactoryType type, Province province) : base(province)
     {
@@ -24,7 +24,7 @@ abstract public class SimpleProduction : Producer
     {
         owner = agent;
     }
-    public PrimitiveStorageSet getInputProductsReserve()
+    public StorageSet getInputProductsReserve()
     {
         return inputProductsReserve;
     }

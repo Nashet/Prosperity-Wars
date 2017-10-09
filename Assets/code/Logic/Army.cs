@@ -254,9 +254,9 @@ public class Army
             res.add(item.Value.getConsumption(prod));
         return res;
     }
-    private PrimitiveStorageSet getConsumption()
+    private StorageSet getConsumption()
     {
-        var consumption = new PrimitiveStorageSet();
+        var consumption = new StorageSet();
         foreach (var item in personal)
             consumption.add(item.Value.getConsumption());
 
@@ -271,9 +271,9 @@ public class Army
         //return res;
         return consumption;
     }
-    public PrimitiveStorageSet getNeeds()
+    public StorageSet getNeeds()
     {
-        PrimitiveStorageSet res = new PrimitiveStorageSet();
+        StorageSet res = new StorageSet();
         foreach (var item in personal)
             res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
         return res;

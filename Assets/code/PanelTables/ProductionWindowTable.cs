@@ -47,7 +47,7 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.getType().name + " L" + next.getLevel(), next);
 
             // Adding province 
-            AddButton(next.province.ToString(), next.province);
+            AddButton(next.getProvince().ToString(), next.getProvince());
 
             ////Adding production
             AddButton(next.gainGoodsThisTurn.ToString(), next);

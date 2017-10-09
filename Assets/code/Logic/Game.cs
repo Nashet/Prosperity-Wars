@@ -101,10 +101,10 @@ public class Game : ThreadedJob
         grid = null;
         map = null;
         // Annex all countries to P)layer
-        foreach (var item in Country.allCountries)
-        {
-            item.annexTo(Game.Player);
-        }
+        //foreach (var item in Country.allCountries)
+        //{
+        //    item.annexTo(Game.Player);
+        //}
     }
     public Rect getMapBorders()
     {
@@ -676,9 +676,9 @@ public class Game : ThreadedJob
                 //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
-                    PopUnit targetToMerge = pop.province.getSimilarPopUnit(pop);
+                    PopUnit targetToMerge = pop.getProvince().getSimilarPopUnit(pop);
                     if (targetToMerge == null)
-                        pop.province.allPopUnits.Add(pop);
+                        pop.getProvince().allPopUnits.Add(pop);
                     else
                         targetToMerge.mergeIn(pop);
                 }

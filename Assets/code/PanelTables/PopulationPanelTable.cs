@@ -67,7 +67,7 @@ public class PopulationPanelTable : MyTableNew
                     ////Adding culture
                     AddButton(record.culture.ToString(), record);
                     ////Adding province
-                    AddButton(record.province.ToString(), record.province, "Click to select this province");
+                    AddButton(record.getProvince().ToString(), record.getProvince(), "Click to select this province");
                     ////Adding education
                     AddButton(record.education.ToString(), record);
 

@@ -88,14 +88,14 @@ abstract public class PopUnit : Producer
             modifierMinorityPolicy,
             new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
             new Modifier (x => !(x as PopUnit).isStateCulture() &&
-            (x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false),
+            (x as PopUnit).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false),
             modCountryIsToBig
 });
 
         // can increase performance by making separate modifiers for different popTypes
         modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).province.getOverpopulationAdjusted(x as PopUnit),"Overpopulation", -1f, false),
+            new Modifier(x=>(x as PopUnit).getProvince().getOverpopulationAdjusted(x as PopUnit),"Overpopulation", -1f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
 
@@ -108,8 +108,8 @@ abstract public class PopUnit : Producer
 
             // copied in Factory
              new Modifier(x => Government.isPolis.checkIftrue((x as PopUnit).getCountry())
-             && (x as PopUnit).province.isCapital(), "Capital of Polis", 1f, false),
-             new Modifier(x=>(x as PopUnit).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             && (x as PopUnit).getProvince().isCapital(), "Capital of Polis", 1f, false),
+             new Modifier(x=>(x as PopUnit).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).getCountry().government.getValue() == Government.Tribal
              && (x as PopUnit).popType!=PopType.TribeMen, "Government is Tribal", -0.5f, false),
              new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
@@ -306,7 +306,7 @@ abstract public class PopUnit : Producer
         List<Factory> result = new List<Factory>();
         if (popType == PopType.Aristocrats || popType == PopType.Capitalists)
         {
-            foreach (var item in province.allFactories)
+            foreach (var item in getProvince().allFactories)
                 if (item.getOwner() == this)
                     result.Add(item);
             return result;
@@ -471,7 +471,7 @@ abstract public class PopUnit : Producer
         //return new Procent(0);
         {
             int employed = 0;
-            foreach (Factory factory in province.allFactories)
+            foreach (Factory factory in getProvince().allFactories)
                 employed += factory.howManyEmployed(this);
             if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
                 return new Procent(0);
@@ -480,7 +480,7 @@ abstract public class PopUnit : Producer
         else
             if (popType == PopType.Farmers || popType == PopType.TribeMen)
         {
-            float overPopulation = province.getOverpopulation();
+            float overPopulation = getProvince().getOverpopulation();
             if (overPopulation <= 1f)
                 return new Procent(0);
             else
@@ -682,7 +682,7 @@ abstract public class PopUnit : Producer
                 {
                     Value spentOnUnlimitedConsumption = new Value(cash);
                     Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-                    Value spendingLimit = moneyIncomeLastTurn.subtractOutside(spentMoneyOnAllNeeds, false);// reduce limit by already spent money
+                    Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by already spent money
 
                     if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
                         spentOnUnlimitedConsumption.set(spendingLimit); // don't spent more than gained                    
@@ -838,7 +838,7 @@ abstract public class PopUnit : Producer
     }
     private Separatism getPotentialSeparatismTarget()
     {
-        foreach (var item in province.getCores())
+        foreach (var item in getProvince().getCores())
         {
             if (!item.isAlive() && item != getCountry() && item.getCulture() == this.culture)//todo doesn't supports different countries for same culture
             {
@@ -881,7 +881,7 @@ abstract public class PopUnit : Producer
     public void payTaxToAllAristocrats()
     {
         Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
-        province.shareWithAllAristocrats(storage, taxSize);
+        getProvince().shareWithAllAristocrats(storage, taxSize);
     }
     abstract public bool shouldPayAristocratTax();
 
@@ -897,7 +897,7 @@ abstract public class PopUnit : Producer
         if (result > 0)
             return result;
         else
-        if (province.hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
+        if (getProvince().hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
             return this.getPopulation();// wipe-out
         else
             return 0;
@@ -915,7 +915,7 @@ abstract public class PopUnit : Producer
         Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
         foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisPromoteInto(nextType))
-                list.Add(nextType, province.getAverageNeedsFulfilling(nextType));
+                list.Add(nextType, getProvince().getAverageNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
         if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
             return result.Key;
@@ -928,7 +928,7 @@ abstract public class PopUnit : Producer
     {
         if (targetType != null)
         {
-            PopUnit.makeVirtualPop(targetType, this, amount, this.province, this.culture);
+            PopUnit.makeVirtualPop(targetType, this, amount, this.getProvince(), this.culture);
         }
     }
 
@@ -1025,7 +1025,7 @@ abstract public class PopUnit : Producer
                 else
                 {
                     // assuming its PopType
-                    PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.province, this.culture);
+                    PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.getProvince(), this.culture);
                     lastEscaped.key = targetIsPopType;
                 }
                 lastEscaped.value = escapeSize;
@@ -1042,7 +1042,7 @@ abstract public class PopUnit : Producer
             return result;
         else
         {
-            if (province.hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
+            if (getProvince().hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
                 return this.getPopulation();// wipe-out
             else
                 return 0;
@@ -1069,7 +1069,7 @@ abstract public class PopUnit : Producer
 
         foreach (PopType nextType in PopType.getAllPopTypes())
             if (canThisDemoteInto(nextType))
-                list.Add(nextType, province.getAverageNeedsFulfilling(nextType));
+                list.Add(nextType, getProvince().getAverageNeedsFulfilling(nextType));
         var result = list.MaxBy(x => x.Value.get());
         if (result.Value != null && result.Value.isBiggerThan(this.needsFullfilled, Options.PopNeedsEscapingBarrier))
             return result;
@@ -1102,7 +1102,7 @@ abstract public class PopUnit : Producer
     {
         Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
         //foreach (var pro in getCountry().ownedProvinces)            
-        foreach (var pro in province.getNeigbors(x => x.getCountry() == getCountry()))
+        foreach (var pro in getProvince().getNeigbors(x => x.getCountry() == getCountry()))
         //if (pro != this.province)
         {
             var needsInProvince = pro.getAverageNeedsFulfilling(this.popType);
@@ -1127,12 +1127,12 @@ abstract public class PopUnit : Producer
     {
         //if (toWhom != null)
         //{
-        PopUnit.makeVirtualPop(popType, this, assimilationSize, this.province, toWhom);
+        PopUnit.makeVirtualPop(popType, this, assimilationSize, this.getProvince(), toWhom);
         //}
     }
     public int getAssimilationSize()
     {
-        if (province.isCoreFor(this))
+        if (getProvince().isCoreFor(this))
             return 0;
         else
         {
@@ -1179,7 +1179,7 @@ abstract public class PopUnit : Producer
     override public string ToString()
     {
         var sb = new StringBuilder();
-        sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(province);
+        sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(getProvince());
         //return popType + " from " + province;
         return sb.ToString();
     }

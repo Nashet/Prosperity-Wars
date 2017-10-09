@@ -61,7 +61,7 @@ public class ArtisanProduction : SimpleProduction
         //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
         //else
         //shoppingList - getInputProductsReserve(); that is included in getHowMuchInputProductsReservesWants()
-        Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
+        Game.market.buy(this, new StorageSet(shoppingList), null);
     }
 
 

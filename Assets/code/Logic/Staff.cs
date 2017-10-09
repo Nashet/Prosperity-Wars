@@ -169,7 +169,7 @@ public abstract class Staff : Consumer
     //override public PrimitiveStorageSet getRealNeeds()
     override public List<Storage> getRealNeeds()
     {
-        PrimitiveStorageSet res = new PrimitiveStorageSet();
+        StorageSet res = new StorageSet();
         //var res = new List<Storage>();
         foreach (var item in allArmies)
             res.add(item.getNeeds());

@@ -18,7 +18,7 @@ public class Factory : SimpleProduction
     private byte priority = 0;
     private readonly Value salary = new Value(0);
 
-    internal readonly PrimitiveStorageSet constructionNeeds;
+    internal readonly StorageSet constructionNeeds;
 
 
     private readonly Dictionary<PopUnit, int> hiredWorkForce = new Dictionary<PopUnit, int>();
@@ -30,7 +30,7 @@ public class Factory : SimpleProduction
     private int hiredLastTurn;
 
     internal static readonly Modifier
-        modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() && (x as Factory).province.isProducingOnFactories((x as Factory).getType().resourceInput),
+        modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() && (x as Factory).getProvince().isProducingOnFactories((x as Factory).getType().resourceInput),
               "Has input resource in this province", 0.20f, false),
 
         modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 1f, false),
@@ -120,8 +120,8 @@ public class Factory : SimpleProduction
             modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
              new Modifier(x => Government.isPolis.checkIftrue((x as Factory).getCountry())
-             && (x as Factory).province.isCapital(), "Capital of Polis", 0.50f, false),
-             new Modifier(x=>(x as Factory).province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             && (x as Factory).getProvince().isCapital(), "Capital of Polis", 0.50f, false),
+             new Modifier(x=>(x as Factory).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -1.0f, false),
              new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -0.30f, false) // remove this?
         });
@@ -134,7 +134,7 @@ public class Factory : SimpleProduction
         setOwner(factoryOwner);
         salary.set(province.getLocalMinSalary());
     }
-    internal PrimitiveStorageSet getUpgradeNeeds()
+    internal StorageSet getUpgradeNeeds()
     {
         if (getLevel() < Options.FactoryMediumTierLevels)
             return getType().upgradeResourceLowTier;
@@ -267,7 +267,7 @@ public class Factory : SimpleProduction
 
     internal bool isThereMoreWorkersToHire()
     {
-        int totalAmountWorkers = province.getPopulationAmountByType(PopType.Workers);
+        int totalAmountWorkers = getProvince().getPopulationAmountByType(PopType.Workers);
         int result = totalAmountWorkers - getWorkForce();
         return (result > 0);
     }
@@ -402,7 +402,7 @@ public class Factory : SimpleProduction
             //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
             //    salary.set(province.getLocalMinSalary());
             // freshly built factories should rise salary to concurrency with old ones
-            if (getWorkForce() < 100 && province.getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
+            if (getWorkForce() < 100 && getProvince().getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
                 salary.add(0.09f);
 
             float minSalary = getCountry().getMinSalary();
@@ -540,7 +540,7 @@ public class Factory : SimpleProduction
     internal void destroyImmediately()
     {
         markToDestroy();
-        province.allFactories.Remove(this);
+        getProvince().allFactories.Remove(this);
         //province.allFactories.Remove(this);        
         // + interface 2 places
         MainCamera.factoryPanel.removeFactory(this);
@@ -591,7 +591,7 @@ public class Factory : SimpleProduction
                 else
                 if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
                 {//take loan for reopen
-                    if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(province).get() > 10f)
+                    if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(getProvince()).get() > 10f)
                     {
                         float leftOver = cash.get() - wantsMinMoneyReserv();
                         if (leftOver < 0)
@@ -624,7 +624,7 @@ public class Factory : SimpleProduction
     {
         working = true;
         if (daysUnprofitable > 20)
-            salary.set(province.getLocalMinSalary());
+            salary.set(getProvince().getLocalMinSalary());
         daysUnprofitable = 0;
         daysClosed = 0;
         if (byWhom != this)
@@ -750,9 +750,9 @@ public class Factory : SimpleProduction
             else
             {
                 if (isSubsidized())
-                    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
+                    Game.market.buy(this, new StorageSet(shoppingList), getCountry());
                 else
-                    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), null);
+                    Game.market.buy(this, new StorageSet(shoppingList), null);
             }
         }
         // Include construction needs into getHowMuchInputProductsReservesWants()? No, cause I need graduated buying

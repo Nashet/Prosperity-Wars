@@ -7,26 +7,35 @@ using UnityEngine;
 /// </summary>
 abstract public class Agent : IHasCountry
 {
-    /// <summary>
-    /// Must be filled together with wallet
-    /// </summary>
+    /// <summary> Must be filled together with wallet </summary>
     public Value moneyIncomethisTurn = new Value(0);
-    public Value moneyIncomeLastTurn = new Value(0);
+    private readonly Value moneyIncomeLastTurn = new Value(0);
     public Value cash = new Value(0);
-    /// <summary>
-    /// could be null
-    /// </summary>
+    /// <summary> could be null</summary>
     private Bank bank;
-
     public Value loans = new Value(0);
     public Value deposits = new Value(0);
-    public readonly Province province;
+    private readonly Province province;
 
-    public Agent(float inAmount, Bank bank, Province province)
+    protected Agent(float inAmount, Bank bank, Province province)
     {
         cash.set(inAmount);
         this.bank = bank;
         this.province = province;
+    }
+    public virtual void setStatisticToZero()
+    {
+        moneyIncomeLastTurn.set(moneyIncomethisTurn);
+        moneyIncomethisTurn.set(0f);          
+    }
+    /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
+    protected Value getSpendingLimit(Value value)
+    {
+          return moneyIncomeLastTurn.subtractOutside(value, false);
+    }
+    public Province getProvince()
+    {
+        return province;
     }
     virtual public Country getCountry()
     {
@@ -84,15 +93,19 @@ abstract public class Agent : IHasCountry
     //***************
     internal bool canAfford(Storage need)
     {
+        Storage realNeed;
         if (need.isAbstractProduct())
-            need = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
-        if (need.get() == howMuchCanAfford(need).get())            
+            realNeed = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+        else
+            realNeed = need;
+
+        if (realNeed.get() == howMuchCanAfford(realNeed).get())
             return true;
         else
             return false;
     }
 
-    internal bool canAfford(PrimitiveStorageSet need)
+    internal bool canAfford(StorageSet need)
     {
         foreach (Storage stor in need)
         {

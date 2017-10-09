@@ -63,7 +63,7 @@ public class Tribemen : GrainGetter// CattleGetter
     public override void produce()
     {
         Storage producedAmount;
-        float overpopulation = province.getOverpopulation();
+        float overpopulation = getProvince().getOverpopulation();
         if (overpopulation <= 1) // all is OK
             producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
@@ -326,20 +326,20 @@ public class Aristocrats : GrainGetter
     internal override void invest()
     {
         // Aristocrats invests only in resource factories (and banks)
-        if (province.getResource() != null && !province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
+        if (getProvince().getResource() != null && !getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
         {
-            FactoryType ftype = FactoryType.whoCanProduce(province.getResource());
-            Factory resourceFactoryInHere = province.getExistingResourceFactory();
+            FactoryType ftype = FactoryType.whoCanProduce(getProvince().getResource());
+            Factory resourceFactoryInHere = getProvince().getExistingResourceFactory();
             if (resourceFactoryInHere == null) //build new factory
             {
                 //Has money / resources?
-                PrimitiveStorageSet resourceToBuild = ftype.getBuildNeeds();
+                StorageSet resourceToBuild = ftype.getBuildNeeds();
                 // todo remove connection to grain
                 Storage needFood = resourceToBuild.getStorage(Product.Grain);
                 // try to build for food
                 if (storage.isBiggerOrEqual(needFood))
                 {
-                    var newFactory = new Factory(province, this, ftype);
+                    var newFactory = new Factory(getProvince(), this, ftype);
                     storage.send(newFactory.getInputProductsReserve(), needFood);
                     newFactory.constructionNeeds.setZero();
                 }
@@ -348,7 +348,7 @@ public class Aristocrats : GrainGetter
                     Value cost = Game.market.getCost(resourceToBuild);
                     if (canPay(cost))  //try to build for money  
                     {
-                        var newFactory = new Factory(province, this, ftype);  // build new one              
+                        var newFactory = new Factory(getProvince(), this, ftype);  // build new one              
                         pay(newFactory, cost);
                     }// take loans? Aristocrats wouldn't take loans for upgrades
                 }
@@ -493,23 +493,23 @@ public class Capitalists : GrainGetter
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
-            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
+            if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
-                FactoryType proposition = FactoryType.getMostTeoreticalProfitable(province);
-                if (proposition != null && province.canBuildNewFactory(proposition) &&
-                    (province.getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || province.getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
+                FactoryType proposition = FactoryType.getMostTeoreticalProfitable(getProvince());
+                if (proposition != null && getProvince().canBuildNewFactory(proposition) &&
+                    (getProvince().getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || getProvince().getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
                     Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
                     buildCost.add(Options.factoryMoneyReservPerLevel);
                     if (canPay(buildCost))
                     {
-                        Factory found = new Factory(province, this, proposition);
+                        Factory found = new Factory(getProvince(), this, proposition);
                         payWithoutRecord(found, buildCost);
                     }
                     else
                         if (getBank().giveLackingMoney(this, buildCost))
                     {
-                        Factory found = new Factory(province, this, proposition);
+                        Factory found = new Factory(getProvince(), this, proposition);
                         payWithoutRecord(found, buildCost);
                     }
                 }
@@ -517,7 +517,7 @@ public class Capitalists : GrainGetter
             else
             {
                 //upgrade section
-                Factory factory = FactoryType.getMostPracticlyProfitable(province);
+                Factory factory = FactoryType.getMostPracticlyProfitable(getProvince());
                 if (factory != null
                     && factory.canUpgrade() // don't change it to Modifier  - it would prevent loan takes
                     && factory.getMargin().get() >= Options.minMarginToUpgrade
@@ -612,7 +612,7 @@ public class Artisans : GrainGetter
 
             // take loan if don't have enough money to buy inputs            
             if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
-                if (artisansProduction.getType().getPossibleProfit(province).isNotZero())
+                if (artisansProduction.getType().getPossibleProfit(getProvince()).isNotZero())
                 {
                     var needs = artisansProduction.getRealNeeds();
                     if (!artisansProduction.canAfford(needs))
@@ -672,14 +672,14 @@ public class Artisans : GrainGetter
         KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
         foreach (FactoryType factoryType in FactoryType.getNonResourceTypes(getCountry()))
         {
-            float possibleProfit = factoryType.getPossibleProfit(province).get();
+            float possibleProfit = factoryType.getPossibleProfit(getProvince()).get();
             if (possibleProfit > result.Value)
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
         if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
-            artisansProduction = new ArtisanProduction(result.Key, province, this);
+            artisansProduction = new ArtisanProduction(result.Key, getProvince(), this);
     }
-    public PrimitiveStorageSet getInputProducts()
+    public StorageSet getInputProducts()
     {
         if (artisansProduction == null)
             return null;

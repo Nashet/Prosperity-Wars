@@ -8,26 +8,26 @@ using System;
 /// </summary>
 public class Market : Agent//: PrimitiveStorageSet
 {
-    internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
+    internal StorageSet marketPrice = new StorageSet();
 
     // todo make Better class for it?
     private DateTime dateOfDSB = new DateTime(int.MaxValue);
-    private readonly PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
+    private readonly StorageSet DSBbuffer = new StorageSet();
 
     private DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
-    private readonly PrimitiveStorageSet supplyOnMarket = new PrimitiveStorageSet();
+    private readonly StorageSet supplyOnMarket = new StorageSet();
 
     DateTime dateOfgetTotalProduction = new DateTime(int.MaxValue);
-    private readonly PrimitiveStorageSet totalProduction = new PrimitiveStorageSet();
+    private readonly StorageSet totalProduction = new StorageSet();
 
     DateTime dateOfgetTotalConsumption = new DateTime(int.MaxValue);
-    private readonly PrimitiveStorageSet totalConsumption = new PrimitiveStorageSet();
+    private readonly StorageSet totalConsumption = new StorageSet();
 
     DateTime dateOfgetBought = new DateTime(int.MaxValue);
-    private readonly PrimitiveStorageSet bought = new PrimitiveStorageSet();
+    private readonly StorageSet bought = new StorageSet();
 
     internal PricePool priceHistory;
-    internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
+    internal StorageSet sentToMarket = new StorageSet();
     public Market() : base(0f, null, null)
     { }
     internal Storage findPrice(Product whom)
@@ -46,7 +46,7 @@ public class Market : Agent//: PrimitiveStorageSet
     //{
 
     //}
-    internal Value getCost(PrimitiveStorageSet need)
+    internal Value getCost(StorageSet need)
     {
         Value cost = new Value(0f);
         // float price;
@@ -502,7 +502,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// <summary>
     /// Buying PrimitiveStorageSet, subsidizations allowed
     /// </summary>
-    internal void buy(Consumer buyer, PrimitiveStorageSet buying, Country subsidizer)
+    internal void buy(Consumer buyer, StorageSet buying, Country subsidizer)
     {
         foreach (Storage item in buying)
             if (item.isNotZero())
@@ -512,7 +512,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Buying needs in circle, by Procent in time
     /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
-    internal bool buy(Producer buyer, PrimitiveStorageSet stillHaveToBuy, Procent buyInTime, PrimitiveStorageSet ofWhat)
+    internal bool buy(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, StorageSet ofWhat)
     {
         bool buyingIsFinished = true;
         foreach (Storage what in ofWhat)

@@ -3,21 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PrimitiveStorageSet
+public class StorageSet
 {
     //private static Storage tStorage;
     private List<Storage> container = new List<Storage>();
-    public PrimitiveStorageSet()
+    public StorageSet()
     {
         container = new List<Storage>();
     }
-    public PrimitiveStorageSet(List<Storage> incontainer)
+    public StorageSet(List<Storage> incontainer)
     {
         container = incontainer;
     }
-    public PrimitiveStorageSet getCopy()
+    public StorageSet getCopy()
     {
-        PrimitiveStorageSet res = new PrimitiveStorageSet();
+        StorageSet res = new StorageSet();
         foreach (Storage stor in this)
             res.container.Add(new Storage(stor.getProduct(), stor.get()));
         return res;
@@ -62,7 +62,7 @@ public class PrimitiveStorageSet
     /// <summary>
     /// If duplicated than adds
     /// </summary>
-    internal void add(PrimitiveStorageSet need)
+    internal void add(StorageSet need)
     {
         foreach (Storage n in need)
             this.add(n);
@@ -101,7 +101,7 @@ public class PrimitiveStorageSet
     /// <summary>
     /// Do checks outside
     /// </summary>   
-    public bool send(Producer whom, PrimitiveStorageSet what)
+    public bool send(Producer whom, StorageSet what)
     {
         bool res = true;
         foreach (var item in what)
@@ -130,7 +130,7 @@ public class PrimitiveStorageSet
         return (foundStorage.isBiggerOrEqual(what)) ? true : false;
     }
     /// <summary>Returns False when some check not presented in here</summary>    
-    internal bool has(PrimitiveStorageSet check)
+    internal bool has(StorageSet check)
     {
         foreach (Storage stor in check)
             if (!has(stor))
@@ -220,7 +220,8 @@ public class PrimitiveStorageSet
     }
     /// <summary> Finds substitute for abstrat need and returns storage with product coverted to non-abstract product
     /// Returns copy of need if need was not abstract (make check)
-    /// If didn't find substitute Returns copy of empty storage of need product</summary>    
+    /// If didn't find substitute Returns copy of empty storage of need product</summary>  
+    //todo Make same method for chapest substitute?
     internal Storage convertToBiggestStorageProduct(Storage need)
     {
         return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
@@ -264,9 +265,9 @@ public class PrimitiveStorageSet
     /// <summary>
     /// returns new copy
     /// </summary>    
-    internal PrimitiveStorageSet Divide(float v)
+    internal StorageSet Divide(float v)
     {
-        PrimitiveStorageSet result = new PrimitiveStorageSet();
+        StorageSet result = new StorageSet();
         foreach (Storage stor in container)
             result.set(new Storage(stor.getProduct(), stor.get() / v));
         return result;
@@ -312,7 +313,7 @@ public class PrimitiveStorageSet
         else
             return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
     }
-    internal void subtract(PrimitiveStorageSet set, bool showMessageAboutNegativeValue = true)
+    internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
     {
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);
@@ -322,15 +323,15 @@ public class PrimitiveStorageSet
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);
     }
-    internal PrimitiveStorageSet subtractOuside(PrimitiveStorageSet substracting)
+    internal StorageSet subtractOuside(StorageSet substracting)
     {
-        PrimitiveStorageSet result = new PrimitiveStorageSet();
+        StorageSet result = new StorageSet();
         foreach (Storage stor in substracting)
             result.add(this.subtractOutside(stor));
         return result;
     }
 
-    internal void copyDataFrom(PrimitiveStorageSet consumed)
+    internal void copyDataFrom(StorageSet consumed)
     {
         foreach (Storage stor in consumed)
             //if (stor.get() > 0f)
@@ -339,7 +340,7 @@ public class PrimitiveStorageSet
     }
 
 
-    internal void sendAll(PrimitiveStorageSet toWhom)
+    internal void sendAll(StorageSet toWhom)
     {
         toWhom.add(this);
         this.setZero();

@@ -27,7 +27,7 @@ public class Country : Staff
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
-    public readonly PrimitiveStorageSet storageSet = new PrimitiveStorageSet();
+    public readonly StorageSet storageSet = new StorageSet();
 
     private TextMesh meshCapitalText;
     private Material borderMaterial;
@@ -836,9 +836,7 @@ public class Country : Staff
         goldMinesIncome.set(0f);
         unemploymentSubsidiesExpense.set(0f);
         ownedFactoriesIncome.set(0f);
-        factorySubsidiesExpense.set(0f);
-        moneyIncomeLastTurn.set(moneyIncomethisTurn);
-        moneyIncomethisTurn.set(0f);
+        factorySubsidiesExpense.set(0f);        
         storageBuyingExpense.set(0f);
         soldiersWageExpense.setZero();
     }
