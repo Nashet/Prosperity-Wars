@@ -598,7 +598,7 @@ abstract public class PopUnit : Producer
         howDeep--;
         //List<Storage> needs = getEveryDayNeeds();
         foreach (Storage need in needs)
-            if (storage.has(need) || storage.hasSubstitute(need))
+            if (storage.has(need))
             {
                 //storage.subtract(need);
                 //consumedTotal.add(need);
@@ -622,14 +622,15 @@ abstract public class PopUnit : Producer
         Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
         //if (!skipLifeneeds)
         foreach (Storage need in lifeNeeds)
-        {            
-            if (storage.has(need) || storage.hasSubstitute(need))// don't need to buy on market
+        {
+            if (storage.has(need))// don't need to buy on market
             {
+                //FixedJoint it 4 times
                 Storage realConsumption;
-                if (storage.has(need))
-                    realConsumption = need;
-                else 
+                if (need.isAbstractProduct())
                     realConsumption = new Storage(storage.getProduct(), need);
+                else
+                    realConsumption = need;
                 //storage.subtract(need); // danger moment - may subtracts different type of product
                 //consumedTotal.set(storage.getProduct(), need);
                 consumeFromItself(realConsumption);
@@ -750,14 +751,15 @@ abstract public class PopUnit : Producer
                 payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
                 foreach (Storage need in needs)
 
-                    if (storage.has(need) || storage.hasSubstitute(need))// don't need to buy on market
+                    if (storage.has(need))// don't need to buy on market
                     {
                         Storage realConsumption;
-                        if (storage.has(need))
-                            realConsumption = need;
-                        else
+                        if (need.isAbstractProduct())
                             realConsumption = new Storage(storage.getProduct(), need);
-                 
+                        else
+                            realConsumption = need;
+                        
+
                         consumeFromItself(realConsumption);
                         //storage.subtract(need);
                         //consumedTotal.set(need);

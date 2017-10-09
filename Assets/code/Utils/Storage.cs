@@ -311,7 +311,7 @@ public class Storage : Value
     {
         return new Storage(this.getProduct(), get() * invalue.get());
     }
-    // edit it
+    /// <summary> Returns true if has that good or it's substitute</summary>    
     public bool has(Storage storage)
     {
         if (!isSameProductType(storage))
@@ -375,7 +375,8 @@ public class Storage : Value
     //}
     public Storage subtractOutside(Storage storage, bool showMessageAboutNegativeValue = true)
     {
-        if (!this.isExactlySameProduct(storage.getProduct()))
+        //if (!this.isSameProductType(storage.getProduct()))
+        if (!storage.isSameProductType(this.getProduct()))
         {
             Debug.Log("Storage subtrackOutside failed - wrong product");
             return new Storage(getProduct(), 0f);

@@ -66,15 +66,14 @@ public class Corps
             float shortage = 0f;
             foreach (var need in needs)
             {
-                // todo remove double circle
-                if (owner.storageSet.has(need) || owner.storageSet.hasSubstitute(need))
+                // refactor substraction for more abstract??
+                if (owner.storageSet.has(need))
                 {
                     Storage realConsumption;
-                    if (owner.storageSet.has(need))
-                        realConsumption = need;
+                    if (need.isAbstractProduct())
+                        realConsumption = owner.storageSet.convertToBiggestStorageProduct(need);
                     else
-                        realConsumption = new Storage(owner.storageSet.findExistingSubstitute(need).getProduct(), need);
-
+                        realConsumption = need;
                     owner.storageSet.subtract(realConsumption);
                     consumption.add(realConsumption);
                 }

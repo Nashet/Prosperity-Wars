@@ -85,8 +85,8 @@ abstract public class Agent : IHasCountry
     internal bool canAfford(Storage need)
     {
         if (need.isAbstractProduct())
-            need = Game.market.getCheapestSubstitute(need);
-        if (need.get() == howMuchCanAfford(need).get())
+            need = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+        if (need.get() == howMuchCanAfford(need).get())            
             return true;
         else
             return false;

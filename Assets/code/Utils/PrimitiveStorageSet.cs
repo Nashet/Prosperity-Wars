@@ -31,7 +31,7 @@ public class PrimitiveStorageSet
     /// </summary>    
     public void set(Storage setValue)
     {
-        Storage find = this.findStorage(setValue.getProduct());
+        Storage find = this.hasStorage(setValue.getProduct());
         if (find == null)
             container.Add(new Storage(setValue));
         else
@@ -42,7 +42,7 @@ public class PrimitiveStorageSet
     /// </summary>    
     public void set(Product product, Value value)
     {
-        Storage find = this.findStorage(product);
+        Storage find = hasStorage(product);
         if (find == null)
             container.Add(new Storage(product, value));
         else
@@ -53,7 +53,7 @@ public class PrimitiveStorageSet
     /// </summary>
     internal void add(Storage need)
     {
-        Storage find = this.findStorage(need.getProduct());
+        Storage find = hasStorage(need.getProduct());
         if (find == null)
             container.Add(new Storage(need));
         else
@@ -92,8 +92,8 @@ public class PrimitiveStorageSet
     /// </summary>   
     public bool send(Producer whom, Storage what)
     {
-        Storage storage = findStorage(what.getProduct());
-        if (storage == null)
+        Storage storage = getBiggestStorage(what.getProduct());
+        if (storage.isZero())
             return false;
         else
             return storage.send(whom.storage, what);
@@ -126,14 +126,9 @@ public class PrimitiveStorageSet
     }
     public bool has(Storage what)
     {
-        Storage foundStorage = findStorage(what.getProduct());
-        if (foundStorage == null)
-            return false;                                              
-        else
-            return (foundStorage.isBiggerOrEqual(what)) ? true : false;
-
+        Storage foundStorage = getBiggestStorage(what.getProduct());
+        return (foundStorage.isBiggerOrEqual(what)) ? true : false;
     }
-
     /// <summary>Returns False when some check not presented in here</summary>    
     internal bool has(PrimitiveStorageSet check)
     {
@@ -150,12 +145,20 @@ public class PrimitiveStorageSet
                 return false;
         return true;
     }
-    internal Procent HowMuchHaveOf(PrimitiveStorageSet need)
+    /// <summary>Returns non null if container allready has storage for that product</summary>    
+    private Storage hasStorage(Product product)
     {
-        PrimitiveStorageSet shortage = this.subtractOuside(need);
-        return Procent.makeProcent(shortage, need);
+        foreach (Storage stor in container)
+            if (stor.isExactlySameProduct(product))
+                return stor;
+        return null;
     }
-    
+    //internal Procent HowMuchHaveOf(PrimitiveStorageSet need)
+    //{
+    //    PrimitiveStorageSet shortage = this.subtractOuside(need);
+    //    return Procent.makeProcent(shortage, need);
+    //}
+
     /// <summary>Returns NULL if search is failed</summary>
     //internal Storage findStorage(Product product)
     //{
@@ -215,17 +218,34 @@ public class PrimitiveStorageSet
         //if not found
         return new Storage(what.getProduct(), 0f);
     }
+    /// <summary> Finds substitute for abstrat need and returns storage with product coverted to non-abstract product
+    /// Returns copy of need if need was not abstract (make check)
+    /// If didn't find substitute Returns copy of empty storage of need product</summary>    
+    internal Storage convertToBiggestStorageProduct(Storage need)
+    {
+        return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
+    }
     /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
     internal Storage getBiggestStorage(Product what)
     {
-        List<Storage> res = new List<Storage>();
-        foreach (Storage storage in container)
-            if (storage.isSameProductType(what))
-                res.Add(storage);
-        var found = res.MaxBy(x => x.get());
-        if (found == null)
+        if (what.isAbstract())
+        {
+            List<Storage> res = new List<Storage>();
+            foreach (Storage storage in container)
+                if (storage.isSameProductType(what))
+                    res.Add(storage);
+            var found = res.MaxBy(x => x.get());
+            if (found == null)
+                return new Storage(what, 0f);
+            return found;
+        }
+        else
+        {
+            foreach (Storage storage in container)
+                if (storage.isExactlySameProduct(what))
+                    return storage;
             return new Storage(what, 0f);
-        return found;
+        }
     }
     override public string ToString()
     {
@@ -269,21 +289,28 @@ public class PrimitiveStorageSet
     //        }
     //    }
     //}
-    internal bool subtract(Storage stor, bool showMessageAboutNegativeValue = true)
+    internal bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
     {
-        Storage find = this.findStorage(stor.getProduct());
-        if (find == null)
+        Storage found = hasStorage(storage.getProduct());
+        if (found == null)
+        {
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Someone tried to subtract from StorageSet more than it has -" + storage);
             return false;//container.Add(value);
+        }
         else
-            return find.subtract(stor, showMessageAboutNegativeValue);
+            return found.subtract(storage, showMessageAboutNegativeValue);
     }
     internal Storage subtractOutside(Storage stor)
     {
-        Storage find = this.findStorage(stor.getProduct());
-        if (find == null)
-            return new Storage(stor);
+        Storage found = hasStorage(stor.getProduct());
+        if (found == null)
+        {
+            Debug.Log("Someone tried to subtract from StorageSet more than it has");
+            return new Storage(stor.getProduct(), 0f);
+        }
         else
-            return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+            return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
     }
     internal void subtract(PrimitiveStorageSet set, bool showMessageAboutNegativeValue = true)
     {

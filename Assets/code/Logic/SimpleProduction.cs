@@ -68,9 +68,9 @@ abstract public class SimpleProduction : Producer
             foreach (Storage next in getRealNeeds())
                 if (next.isAbstractProduct())
                 {
-                    var substitute = getInputProductsReserve().findExistingSubstitute(next);
-                    if (substitute != null)
-                        getInputProductsReserve().subtract(new Storage(substitute.getProduct(), next), false);
+                    var substitute = getInputProductsReserve().convertToBiggestStorageProduct(next);
+                    if (substitute.isNotZero())
+                        getInputProductsReserve().subtract(substitute);
                 }
                 else
                     getInputProductsReserve().subtract(next, false);
@@ -81,13 +81,13 @@ abstract public class SimpleProduction : Producer
         if (getType().isResourceGathering())
             return Procent.HundredProcent;
         float inputFactor = 1;
-        List<Storage> realInput = new List<Storage>();
+        List<Storage> reallyNeedResources = new List<Storage>();
         //Storage available;
 
         // how much we really want
         foreach (Storage input in getType().resourceInput)
         {
-            realInput.Add(input.multiplyOutside(multiplier));
+            reallyNeedResources.Add(input.multiplyOutside(multiplier));
         }
 
         // checking if there is enough in market
@@ -100,40 +100,14 @@ abstract public class SimpleProduction : Producer
         //}
 
         // check if we have enough resources
-        foreach (Storage input in realInput)
+        foreach (Storage resource in reallyNeedResources)
         {
-            if (!(getInputProductsReserve().has(input) || getInputProductsReserve().hasSubstitute(input)))
+            Storage haveResource = getInputProductsReserve().getBiggestStorage(resource.getProduct());
+            //if (!getInputProductsReserve().has(resource))
+            if (haveResource.isSmallerThan(resource))
             {
-                Storage found = getInputProductsReserve().findStorage(input.getProduct());
-                if (found == null)
-                    input.set(0f);
-                else // what we really have
-                    input.set(found);
-
-            }
-
-            if (input.isAbstractProduct())
-            {
-                if (!getInputProductsReserve().hasSubstitute(input))
-                {
-                    // should it be findExistingSubstitute() ??
-                    Storage found = getInputProductsReserve().findExistingSubstitute(input);
-                    if (found == null)
-                        input.set(0f);
-                    else // what we really have
-                        input.set(found);
-                }
-            }
-            else
-            {
-                if (!getInputProductsReserve().has(input))
-                {
-                    Storage found = getInputProductsReserve().findStorage(input.getProduct());
-                    if (found == null)
-                        input.set(0f);
-                    else // what we really have
-                        input.set(found);
-                }
+                // what we really have
+                resource.set(haveResource);
             }
         }
         //old last turn consumption checking thing
@@ -158,9 +132,9 @@ abstract public class SimpleProduction : Producer
         //    input.set(howMuchCan.get());
         //}
         // searching lowest factor
-        foreach (Storage rInput in realInput)//todo optimize - convert into for i
+        foreach (Storage need in reallyNeedResources)//todo optimize - convert into for i
         {
-            float newFactor = rInput.get() / (getType().resourceInput.findStorage(rInput.getProduct()).get() * multiplier.get());
+            float newFactor = need.get() / (getType().resourceInput.getStorage(need.getProduct()).get() * multiplier.get());
             if (newFactor < inputFactor)
                 inputFactor = newFactor;
         }
@@ -177,19 +151,14 @@ abstract public class SimpleProduction : Producer
 
         foreach (Storage next in getType().resourceInput)
         {
-            Storage howMuchWantBuy = new Storage(next);
-            howMuchWantBuy.multiply(multiplier);
-            Storage reserv = getInputProductsReserve().findStorage(next.getProduct());
-            if (reserv == null)
-                result.Add(howMuchWantBuy);
-            else
+            Storage howMuchWantToBuy = new Storage(next);
+            howMuchWantToBuy.multiply(multiplier);
+            Storage howMuchHave = getInputProductsReserve().getBiggestStorage(next.getProduct());
+            if (howMuchWantToBuy.isBiggerThan(howMuchHave))
             {
-                if (howMuchWantBuy.isBiggerOrEqual(reserv))
-                {
-                    howMuchWantBuy.subtract(reserv);
-                    result.Add(howMuchWantBuy);
-                }//else  - there is enough reserves, don't buy that
-            }
+                howMuchWantToBuy.subtract(howMuchHave);
+                result.Add(howMuchWantToBuy);
+            }//else  - there is enough reserves, you shouldn't buy than   
         }
         return result;
     }
@@ -229,8 +198,8 @@ abstract public class SimpleProduction : Producer
     protected float getLocalEffectiveDemand(Product product, Procent multiplier)
     {
         // need to know how much i Consumed inside my needs
-        Storage need = getType().resourceInput.findStorage(product);
-        if (need == null)
+        Storage need = getType().resourceInput.getStorage(product);
+        if (need.isZero())
             return 0f;
         else
         {

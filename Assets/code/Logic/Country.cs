@@ -725,16 +725,23 @@ public class Country : Staff
         var needs = getRealNeeds();
         //buy 1 day needs
         foreach (var need in needs)
-        {
-            // if I want to buy             
-            //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
-            Storage toBuy = need.subtractOutside(storageSet.getBiggestStorage(need.getProduct()));
-            if (toBuy.isNotZero())
-                buyNeeds(toBuy);
-        }
+            if (!storageSet.has(need)) // may reduce extra circles
+            {
+                // if I want to buy             
+                //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
+                Storage realNeed;
+                if (need.isAbstractProduct())
+                    realNeed = storageSet.convertToBiggestStorageProduct(need);
+                else
+                    realNeed = need;
+                //Storage toBuy = need.subtractOutside(realNeed);            
+
+                if (realNeed.isNotZero())
+                    buyNeeds(realNeed);  // todo - return result? - no
+            }
         //buy x day needs
         foreach (var need in needs)
-        {               
+        {
             Storage toBuy = new Storage(need.getProduct(),
                 need.get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getBiggestStorage(need.getProduct()).get(), false);
             if (toBuy.isNotZero())

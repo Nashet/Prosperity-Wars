@@ -51,37 +51,39 @@ public class Procent : Value
             return new Procent(numerator / (float)denominator, showMessageAboutOperationFails);
     }
     //TODO check it
-    public static Procent makeProcent(PrimitiveStorageSet numerator, PrimitiveStorageSet denominator)
-    {
-        float allGoodsAmount = numerator.sum();
-        if (allGoodsAmount == 0f)
-            return new Procent(1f);
-        Dictionary<Product, float> dic = new Dictionary<Product, float>();
-        //numerator / denominator
-        float relation;
-        foreach (var item in numerator)
-        {
-            Storage denom = denominator.findStorage(item.getProduct());
-            if (denom == null) // no such goods
-                relation = 0f;
-            else
-                if (denom.get() == 0f) // division by zero
-                relation = 0f;
-            else
-            {
-                relation = item.get() / denom.get();
-                if (relation > 1f) relation = 1f;
-            }
-            dic.Add(item.getProduct(), relation);
-        }
-        float result = 0f;
+    //public static Procent makeProcent(PrimitiveStorageSet numerator, PrimitiveStorageSet denominator)
+    //{
+    //    float allGoodsAmount = numerator.sum();
+    //    if (allGoodsAmount == 0f)
+    //        return new Procent(1f);
+    //    Dictionary<Product, float> dic = new Dictionary<Product, float>();
+    //    //numerator / denominator
+    //    float relation;
+    //    foreach (var item in numerator)
+    //    {
+    //        Storage denominatorStorage = denominator.findStorage(item.getProduct());
+    //        if (denominatorStorage == null) // no such product
+    //            relation = 0f;
+    //        else
+    //        {
+    //            if (denominatorStorage.get() == 0f) // division by zero
+    //                relation = 0f;
+    //            else
+    //            {
+    //                relation = item.get() / denominatorStorage.get();
+    //                if (relation > 1f) relation = 1f;
+    //            }
+    //        }
+    //        dic.Add(item.getProduct(), relation);
+    //    }
+    //    float result = 0f;
 
-        foreach (var item in dic)
-        {
-            result += item.Value * numerator.findStorage(item.Key).get() / allGoodsAmount;
-        }
-        return new Procent(result);
-    }
+    //    foreach (var item in dic)
+    //    {
+    //        result += item.Value * numerator.findStorage(item.Key).get() / allGoodsAmount;
+    //    }
+    //    return new Procent(result);
+    //}
 
     internal float get50Centre()
     {

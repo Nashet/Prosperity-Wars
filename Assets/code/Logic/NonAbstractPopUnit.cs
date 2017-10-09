@@ -334,7 +334,8 @@ public class Aristocrats : GrainGetter
             {
                 //Has money / resources?
                 PrimitiveStorageSet resourceToBuild = ftype.getBuildNeeds();
-                Storage needFood = resourceToBuild.findStorage(Product.Grain);
+                // todo remove connection to grain
+                Storage needFood = resourceToBuild.getStorage(Product.Grain);
                 // try to build for food
                 if (storage.isBiggerOrEqual(needFood))
                 {

@@ -49,8 +49,7 @@ public class TradeWindowTable : MyTable
         AddButton("Price");
         ////Adding price Change
         //AddButton(null.loyalty.ToString(), null);
-        foreach (Storage next in Game.market.marketPrice)
-
+        foreach (Storage next in Game.market.marketPrice) 
         {
             Product product = next.getProduct();
             if (product != Product.Gold && product.isInventedByAnyOne())
