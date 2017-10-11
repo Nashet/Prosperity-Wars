@@ -98,17 +98,6 @@ public class Value
             return true;
         }
     }
-    public Value subtractOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-    {
-        if (invalue.value > value)
-        {
-            if (showMessageAboutNegativeValue)
-                Debug.Log("Value subtrackOutside failed");
-            return new Value(0);
-        }
-        else
-            return new Value((this.value - invalue.value) / (float)precision);
-    }
     public void subtract(float invalue, bool showMessageAboutNegativeValue = true)
     {
         if (invalue > value)
@@ -120,7 +109,17 @@ public class Value
         else
             value -= (uint)Mathf.RoundToInt(invalue * precision);
     }
-
+    public Value subtractOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+    {
+        if (invalue.value > value)
+        {
+            if (showMessageAboutNegativeValue)
+                Debug.Log("Value subtrackOutside failed");
+            return new Value(0);
+        }
+        else
+            return new Value((this.value - invalue.value) / (float)precision);
+    }    
 
     /// <summary>Keeps result inside</summary>    
     public void multiply(Value invalue, bool showMessageAboutNegativeValue = true)

@@ -56,6 +56,7 @@ public abstract class Consumer : Agent
         //if (this is SimpleProduction)
         //    (this as SimpleProduction).getInputProductsReserve().add(what);
     }
+    /// <summary> Do checks outside</summary>
     public void consumeFromItself(Storage what)
     {
         consumedTotal.add(what);

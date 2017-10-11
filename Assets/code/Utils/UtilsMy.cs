@@ -341,32 +341,32 @@ public class PricePool
     static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
     internal PricePool()
     {
-        foreach (var pro in Product.getAllNonAbstract())
+        foreach (var product in Product.getAllNonAbstract())
             for (int i = 0; i < lenght; i++)
-                this.addData(pro, new Value(0f));
+                this.addData(product, new Value(0f));
     }
-    internal void addData(Product pro, Value indata)
+    internal void addData(Product product, Value indata)
     {
         DataStorage2 cell;
-        if (!pool.TryGetValue(pro, out cell))
+        if (!pool.TryGetValue(product, out cell))
         {
-            cell = new DataStorage2(pro);
-            pool.Add(pro, cell);
+            cell = new DataStorage2(product);
+            pool.Add(product, cell);
         }
         cell.addData(indata);
     }
-    public System.Collections.IEnumerator GetEnumerator()
-    {
-        for (int i = 0; i < pool.Count; i++)
-        {
-            yield return pool.GetEnumerator();
-        }
-    }
-    internal DataStorage2 getPool(Product pro)
+    //public System.Collections.IEnumerator GetEnumerator()
+    //{
+    //    for (int i = 0; i < pool.Count; i++)
+    //    {
+    //        yield return pool.GetEnumerator();
+    //    }
+    //}
+    internal DataStorage2 getPool(Product product)
     {
         //return pool[pro];
         DataStorage2 result;
-        if (pool.TryGetValue(pro, out result)) // Returns true.
+        if (pool.TryGetValue(product, out result)) // Returns true.
         {
             return result;
         }

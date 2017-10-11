@@ -170,8 +170,8 @@ public class Storage : Value
     static public int CostOrder(Storage x, Storage y)
     {
         //eats less memory
-        float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
-        float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
+        float sumX = x.get() * Game.market.getPrice(x.getProduct()).get();
+        float sumY = y.get() * Game.market.getPrice(y.getProduct()).get();
         return sumX.CompareTo(sumY);
 
         //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());

@@ -59,6 +59,13 @@ abstract public class MyTable : MonoBehaviour
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, null);
     }
+    protected void AddButton(string text, Product product)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, product);
+    }
     protected void RemoveButtons()
     {
         int count = gameObject.transform.childCount;

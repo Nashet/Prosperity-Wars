@@ -51,7 +51,7 @@ public class BuildPanel : DragPanel
             else // non market
             {
                 //todo remove grain connection
-                Storage needFood = resourceToBuild.getStorage(Product.Grain);
+                Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
                 if (Game.Player.storageSet.has(needFood))
                 {
                     Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);

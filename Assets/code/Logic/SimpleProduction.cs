@@ -134,7 +134,7 @@ abstract public class SimpleProduction : Producer
         // searching lowest factor
         foreach (Storage need in reallyNeedResources)//todo optimize - convert into for i
         {
-            float newFactor = need.get() / (getType().resourceInput.getStorage(need.getProduct()).get() * multiplier.get());
+            float newFactor = need.get() / (getType().resourceInput.getFirstStorage(need.getProduct()).get() * multiplier.get());
             if (newFactor < inputFactor)
                 inputFactor = newFactor;
         }
@@ -198,7 +198,7 @@ abstract public class SimpleProduction : Producer
     protected float getLocalEffectiveDemand(Product product, Procent multiplier)
     {
         // need to know how much i Consumed inside my needs
-        Storage need = getType().resourceInput.getStorage(product);
+        Storage need = getType().resourceInput.getFirstStorage(product);
         if (need.isZero())
             return 0f;
         else

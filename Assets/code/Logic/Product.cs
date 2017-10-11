@@ -62,6 +62,11 @@ public class Product : Name
         Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
         Fibres = new Product("Fibres", false, 0.04f, new List<Product> { Cattle, Cotton });
         Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal, Oil });
+
+        foreach (var item in getAllNonAbstract())
+        {               
+              Game.market.SetDefaultPrice(item, item.defaultPrice.get());
+        }
     }
     /// <summary>
     /// General constructor
@@ -72,10 +77,17 @@ public class Product : Name
         _isResource = isResource;
         if (_isResource)
             resourceCounter++;
-        allProducts.Add(this);
-        Game.market.SetDefaultPrice(this, defaultPrice);
+        allProducts.Add(this);        
         //_isAbstract = false;
         //TODO checks for duplicates&
+    }
+    /// <summary>
+    /// Constructor for abstract products
+    /// </summary>    
+    private Product(string name, bool isResource, float defaultPrice, List<Product> substitutes) : this(name, isResource, defaultPrice)
+    {
+        _isAbstract = true;
+        this.substitutes = substitutes;
     }
     public static IEnumerable<Product> getAllAbstract()
     {
@@ -89,6 +101,11 @@ public class Product : Name
             if (!item.isAbstract())
                 yield return item;
     }
+    public static IEnumerable<Product> getAll()
+    {
+        foreach (var item in allProducts)            
+                yield return item;
+    }
     public static void sortSubstitutes()
     {
         foreach (var item in getAllAbstract())
@@ -99,8 +116,8 @@ public class Product : Name
     static public int CostOrder(Product x, Product y)
     {
         //eats less memory
-        float sumX = Game.market.findPrice(x).get();
-        float sumY = Game.market.findPrice(y).get();
+        float sumX = Game.market.getPrice(x).get();
+        float sumY = Game.market.getPrice(y).get();
         return sumX.CompareTo(sumY);
         //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
     }
@@ -164,14 +181,7 @@ public class Product : Name
     //    else
     //        return false;
     //}
-    /// <summary>
-    /// Constructor for abstract products
-    /// </summary>    
-    private Product(string name, bool isResource, float defaultPrice, List<Product> substitutes) : this(name, isResource, defaultPrice)
-    {
-        _isAbstract = true;
-        this.substitutes = substitutes;
-    }
+
     internal bool isResource()
     {
         return _isResource;

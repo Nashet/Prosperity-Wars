@@ -101,11 +101,11 @@ public class Corps
     }
     internal Procent getConsumptionProcent(Product product, Country country)
     {
-        return Procent.makeProcent(consumption.getStorage(product), getRealNeeds(country, product), false);
+        return Procent.makeProcent(consumption.getFirstStorage(product), getRealNeeds(country, product), false);
     }
     internal Value getConsumption(Product prod)
     {
-        return consumption.getStorage(prod);
+        return consumption.getFirstStorage(prod);
     }
     public StorageSet getRealNeeds(Country country)
     {
@@ -131,7 +131,7 @@ public class Corps
     {
         if (product.isInvented(country))
         {
-            Storage found = origin.popType.getMilitaryNeedsPer1000().getStorage(product);
+            Storage found = origin.popType.getMilitaryNeedsPer1000().getFirstStorage(product);
             if (found.isZero())
                 return found;
             else

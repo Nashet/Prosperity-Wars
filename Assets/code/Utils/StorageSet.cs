@@ -200,8 +200,9 @@ public class StorageSet
     //    return null;
     //} 
 
-    /// <summary>Returns NEW empty storage if search is failed</summary>
-    internal Storage getStorage(Product what)
+    /// <summary>Return first found storage of what products or it's substitute
+    /// Returns NEW empty storage if search is failed</summary>
+    internal Storage getFirstStorage(Product what)
     {
         foreach (Storage storage in container)
             if (storage.isSameProductType(what))
@@ -209,7 +210,8 @@ public class StorageSet
         //if not found
         return new Storage(what, 0f);
     }
-    /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
+    /// <summary>Gets storage if there is enough product of that type. 
+    /// Returns NEW empty storage if search is failed</summary>    
     internal Storage getExistingStorage(Storage what)
     {
         foreach (Storage storage in container)
@@ -229,13 +231,27 @@ public class StorageSet
     /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
     internal Storage getBiggestStorage(Product what)
     {
+        return getStorage(what, CollectionExtensions.MaxBy, x => x.get());
+    }
+    /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
+    internal Storage getCheapestStorage(Product what)
+    {
+        return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());
+    }
+    /// <summary>
+    ///  Universal search for storages
+    /// </summary>       
+    private Storage getStorage(Product what,
+       Func<IEnumerable<Storage>, Func<Storage, float>, Storage> selectorMethod,
+       Func<Storage, float> selector)
+    {
         if (what.isAbstract())
         {
             List<Storage> res = new List<Storage>();
             foreach (Storage storage in container)
-                if (storage.isSameProductType(what))
+                if (storage.isSameProductType(what))// && !storage.isAbstractProduct())
                     res.Add(storage);
-            var found = res.MaxBy(x => x.get());
+            var found = selectorMethod(res, selector);
             if (found == null)
                 return new Storage(what, 0f);
             return found;
@@ -248,6 +264,7 @@ public class StorageSet
             return new Storage(what, 0f);
         }
     }
+
     override public string ToString()
     {
         return container.getString(", ");

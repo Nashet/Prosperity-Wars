@@ -155,7 +155,7 @@ abstract public class Agent : IHasCountry
             return new Storage(need);
         else
             return new Storage(need.getProduct(), getMoneyAvailable().divideOutside(
-                Game.market.findPrice(need.getProduct())
+                Game.market.getPrice(need.getProduct())
                 ));
     }
 

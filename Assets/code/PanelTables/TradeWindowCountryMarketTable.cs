@@ -6,7 +6,7 @@ using System;
 
 
 
-public class TradeWindowCountryMarketTable   : MyTable
+public class TradeWindowCountryMarketTable : MyTable
 {
 
     override protected void refresh()
@@ -18,16 +18,7 @@ public class TradeWindowCountryMarketTable   : MyTable
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
-    protected void AddButton(string text, Storage stor)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        if (stor == null)
-            sampleButton.Setup(text, this, null);
-        else
-            sampleButton.Setup(text, this, stor.getProduct());
-    }
+    
     override protected void AddButtons()
     {
         int counter = 0;
@@ -36,14 +27,14 @@ public class TradeWindowCountryMarketTable   : MyTable
         AddButton("Product");
         ////Adding production
         AddButton("Govern.storage");
-        
+
         AddButton("Govern.Need");
-        
-        
+
+
         AddButton("Production");
-        
+
         AddButton("Consumption?");
-       
+
         AddButton("Bought");
 
         ////Adding price
@@ -53,29 +44,28 @@ public class TradeWindowCountryMarketTable   : MyTable
         if (Game.Player != null)
         {
             var needs = Game.Player.getRealNeeds();
-            foreach (Storage next in Game.market.marketPrice)
+            foreach (var product in Product.getAll())
             {
-                Product product = next.getProduct();
+                // Product product = next.getProduct();
                 if (product != Product.Gold && product.isInventedByAnyOne())
                 {
                     // Adding product name 
-                    AddButton(product.getName(), next);
+                    AddButton(product.getName(), product);
 
                     ////Adding storage amount
-                    AddButton(Game.Player.storageSet.getStorage(next.getProduct()).ToString(), next);
+                    AddButton(Game.Player.storageSet.getFirstStorage(product).ToString(), product);
 
                     ////Adding needs
-                    AddButton(needs.getStorage(next.getProduct()).ToString(), next);
+                    AddButton(needs.getStorage(product).ToString(), product);
 
                     ////Adding Produce
-                    AddButton("wip", next);
+                    AddButton("wip", product);
 
                     ////Adding Consumption
-                    AddButton("wip", next);
+                    AddButton("wip", product);
 
                     ////Adding bought
-                    AddButton("wip", next);
-
+                    AddButton("wip", product);    
 
                     counter++;
                     //contentPanel.r

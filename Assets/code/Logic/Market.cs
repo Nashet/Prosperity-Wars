@@ -8,7 +8,7 @@ using System;
 /// </summary>
 public class Market : Agent//: PrimitiveStorageSet
 {
-    internal StorageSet marketPrice = new StorageSet();
+    private readonly StorageSet marketPrice = new StorageSet();
 
     // todo make Better class for it?
     private DateTime dateOfDSB = new DateTime(int.MaxValue);
@@ -30,9 +30,9 @@ public class Market : Agent//: PrimitiveStorageSet
     internal StorageSet sentToMarket = new StorageSet();
     public Market() : base(0f, null, null)
     { }
-    internal Storage findPrice(Product whom)
+    internal Value getPrice(Product whom)
     {
-        return marketPrice.getStorage(whom);
+        return marketPrice.getCheapestStorage(whom);
     }
     internal void initialize()
     {
@@ -65,26 +65,20 @@ public class Market : Agent//: PrimitiveStorageSet
     //    return new Value(cost);
     //}
 
+
     internal Value getCost(List<Storage> need)
-    {//todo convert return in Value??
+    {
         Value cost = new Value(0f);
-        // float price;
         foreach (Storage stor in need)
-        {
-            //price = Game.market.findPrice(stor.getProduct()).get();
-            //cost += getCost(stor);
             cost.add(getCost(stor));
-        }
-        //return new Value(cost);
         return cost;
     }
     internal Value getCost(Storage need)
-    {
-        //float price;
-        //price = Game.market.findPrice(need.getProduct()).get();
-        //cost = need.get() * price;
-
-        return need.multiplyOutside(Game.market.findPrice(need.getProduct())) as Value;
+    {             
+        // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
+        //if (need.isAbstractProduct())
+        //    Debug.Log("Can't determinate price of abstract product " + need.getProduct());
+        return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
     }
     /// <summary>
     /// Meaning demander actually can pay for item in current prices
@@ -103,11 +97,11 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            Storage re = producer.getConsumedInMarket().getStorage(product);
+                            Storage re = producer.getConsumedInMarket().getFirstStorage(product);
                             result += re.get();
                         }
                     }
-                Storage countryStor = country.getConsumedInMarket().getStorage(product);
+                Storage countryStor = country.getConsumedInMarket().getFirstStorage(product);
                 result += countryStor.get();
             }
             return result;
@@ -125,11 +119,11 @@ public class Market : Agent//: PrimitiveStorageSet
                         {
                             //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
-                                Storage re = producer.getConsumedInMarket().getStorage(sup.getProduct());
+                                Storage re = producer.getConsumedInMarket().getFirstStorage(sup.getProduct());
                                 result += re.get();
                             }
                         }
-                    Storage countryStor = country.getConsumedInMarket().getStorage(sup.getProduct());
+                    Storage countryStor = country.getConsumedInMarket().getFirstStorage(sup.getProduct());
                     result += countryStor.get();
                 }
                 bought.set(new Storage(sup.getProduct(), result));
@@ -137,7 +131,7 @@ public class Market : Agent//: PrimitiveStorageSet
             dateOfgetBought = Game.date;
         }
 
-        return bought.getStorage(product).get();
+        return bought.getFirstStorage(product).get();
         //float result = 0f;
         //foreach (Country country in Country.allCountries)
         //    foreach (Province province in country.ownedProvinces)
@@ -173,11 +167,11 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            var re = producer.getConsumedTotal().getStorage(product);
+                            var re = producer.getConsumedTotal().getFirstStorage(product);
                             result += re.get();
                         }
                     }
-                Storage countryStor = country.getConsumedTotal().getStorage(product);
+                Storage countryStor = country.getConsumedTotal().getFirstStorage(product);
                 result += countryStor.get();
             }
             return result;
@@ -195,11 +189,11 @@ public class Market : Agent//: PrimitiveStorageSet
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
-                                var re = producer.getConsumedTotal().getStorage(sup.getProduct());
+                                var re = producer.getConsumedTotal().getFirstStorage(sup.getProduct());
                                 result += re.get();
                             }
                         }
-                    Storage countryStor = country.getConsumedTotal().getStorage(sup.getProduct());
+                    Storage countryStor = country.getConsumedTotal().getFirstStorage(sup.getProduct());
                     result += countryStor.get();
                 }
                 totalConsumption.set(new Storage(sup.getProduct(), result));
@@ -207,7 +201,7 @@ public class Market : Agent//: PrimitiveStorageSet
             dateOfgetTotalConsumption = Game.date;
         }
 
-        return totalConsumption.getStorage(product).get();
+        return totalConsumption.getFirstStorage(product).get();
 
         ////////////
         //float result = 0f;
@@ -307,7 +301,7 @@ public class Market : Agent//: PrimitiveStorageSet
             dateOfgetSupplyOnMarket = Game.date;
         }
 
-        return supplyOnMarket.getStorage(product).get();
+        return supplyOnMarket.getFirstStorage(product).get();
     }
     /// <summary>
     /// All produced supplies
@@ -349,7 +343,7 @@ public class Market : Agent//: PrimitiveStorageSet
             dateOfgetTotalProduction = Game.date;
         }
 
-        return totalProduction.getStorage(product).get();
+        return totalProduction.getFirstStorage(product).get();
     }
     internal void ForceDSBRecalculation()
     {
@@ -384,19 +378,17 @@ public class Market : Agent//: PrimitiveStorageSet
             else
                 buying = whatWantedToBuy;
             Storage howMuchCanConsume;
-            Storage price = findPrice(buying.getProduct());
+            Value price = getPrice(buying.getProduct());
             Value cost;
             if (Game.market.sentToMarket.has(buying))
             {
                 cost = buying.multiplyOutside(price);
+                //if (cost.isNotZero())
+                //{
                 if (buyer.canPay(cost))
                 {
                     buyer.pay(Game.market, cost);
-                    //Game.market.sentToMarket.subtract(buying);
-                    //buyer.consumedTotal.add(buying);
-                    //buyer.consumedInMarket.add(buying);
                     buyer.consumeFromMarket(buying);
-
                     if (buyer is SimpleProduction)
                         (buyer as SimpleProduction).getInputProductsReserve().add(buying);
                     howMuchCanConsume = buying;
@@ -405,15 +397,15 @@ public class Market : Agent//: PrimitiveStorageSet
                 {
                     float val = buyer.cash.get() / price.get();
                     val = Mathf.Floor(val * Value.precision) / Value.precision;
-                    howMuchCanConsume = new Storage(price.getProduct(), val);
+                    howMuchCanConsume = new Storage(buying.getProduct(), val);
                     buyer.pay(Game.market, howMuchCanConsume.multiplyOutside(price));
-                    //Game.market.sentToMarket.subtract(howMuchCanConsume);
-                    //buyer.consumedTotal.add(howMuchCanConsume);
-                    //buyer.consumedInMarket.add(howMuchCanConsume);
                     buyer.consumeFromMarket(howMuchCanConsume);
                     if (buyer is SimpleProduction)
                         (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
                 }
+                //}
+                //else
+                //    return new Storage(buying.getProduct(), 0f);
             }
             else
             {
@@ -435,7 +427,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     }
                     else
                     {
-                        howMuchCanConsume = new Storage(price.getProduct(), buyer.cash.get() / price.get());
+                        howMuchCanConsume = new Storage(howMuchAvailable.getProduct(), buyer.cash.get() / price.get());
                         if (howMuchCanConsume.get() > howMuchAvailable.get())
                             howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
                         if (howMuchCanConsume.isNotZero())
@@ -574,7 +566,7 @@ public class Market : Agent//: PrimitiveStorageSet
     internal Storage HowMuchAvailable(Storage need)
     {
         //float BuyingAmountAvailable = 0;
-        return sentToMarket.getBiggestStorage(need.getProduct());         
+        return sentToMarket.getBiggestStorage(need.getProduct());
 
         //BuyingAmountAvailable = need.get() / DSB;
 
@@ -637,13 +629,13 @@ public class Market : Agent//: PrimitiveStorageSet
             }
             dateOfDSB = Game.date;
         }
-        Storage tmp = DSBbuffer.getStorage(product);
+        Storage tmp = DSBbuffer.getFirstStorage(product);
 
         //if (tmp == null)
         //if (tmp.isZero())
         //    return float.NaN;
         //else
-            return tmp.get();
+        return tmp.get();
     }
     /// <summary>
     /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
