@@ -2,10 +2,14 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+public class tr : Dropdown
+{
+    //override d
+}
 public class PoliticsPanel : DragPanel
 {
     public Text descriptionText, movementsText;
-    public ScrollRect movementsScrollView;
+    //public ScrollRect movementsScrollView;
     public Button voteButton;
     public Button forceDecisionButton;
     public Dropdown dropDown;
@@ -13,7 +17,7 @@ public class PoliticsPanel : DragPanel
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
 
-    List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
+    private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
 
 
     // Use this for initialization
@@ -77,7 +81,11 @@ public class PoliticsPanel : DragPanel
         refresh(false);
     }
     void rebuildDropDown()
-    {
+    {                                     
+        //dropDown.Hide();        
+        var toDestroy = dropDown.transform.Find("Dropdown List");
+        if (toDestroy != null)
+            Destroy(toDestroy.gameObject);
         dropDown.interactable = true;
         dropDown.ClearOptions();
         byte count = 0;
@@ -93,12 +101,14 @@ public class PoliticsPanel : DragPanel
                     //selectedReformValue = next;
                     // selecting non empty option
                     dropDown.value = count;
-                    dropDown.RefreshShownValue();
                 }
                 count++;
             }
         }
+
         onChoiceValueChanged(); // need it to set correct caption in DropDown
+        dropDown.RefreshShownValue();
+        //dropDown.Show();
     }
     public void refresh(bool callRebuildDropDown)
     {
@@ -108,7 +118,7 @@ public class PoliticsPanel : DragPanel
         if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
             movementsText.text += "\n\n\n\n";
 
-       
+
         movementsHorizontalScrollBar.value = 0;
         if (selectedReform != null)
         {
@@ -174,7 +184,7 @@ public class PoliticsPanel : DragPanel
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }
             }
-           
+
         } //didn't selected reform
         else
         {
@@ -185,5 +195,5 @@ public class PoliticsPanel : DragPanel
             voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
         }
         show(false);
-    }    
+    }
 }

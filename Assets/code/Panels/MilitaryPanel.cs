@@ -42,7 +42,7 @@ public class MilitaryPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.Player.getDefenceForces().getName());
+        sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
         allArmySizeText.text = sb.ToString();
 
         if (virtualArmyToSend == null)
@@ -97,9 +97,8 @@ public class MilitaryPanel : DragPanel
         ddProvinceSelect.interactable = true;
         ddProvinceSelect.ClearOptions();
         byte count = 0;
-        availableProvinces.Clear();
-        var list = Game.Player.getNeighborProvinces();
-        foreach (Province next in list)
+        availableProvinces.Clear();           
+        foreach (Province next in Game.Player.getNeighborProvinces())
         {
             //if (next.isAvailable(Game.player))
             {
@@ -108,12 +107,11 @@ public class MilitaryPanel : DragPanel
 
                 //selectedReformValue = next;
                 // selecting non empty option
-                ddProvinceSelect.value = count;
-                ddProvinceSelect.RefreshShownValue();
-
+                //ddProvinceSelect.value = count; 
                 count++;
             }
         }
+        ddProvinceSelect.RefreshShownValue();
         //onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
     }
     public void onddProvinceSelectValueChanged()
