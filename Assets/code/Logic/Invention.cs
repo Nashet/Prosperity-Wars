@@ -12,7 +12,7 @@ public class Invention : Name
     string inventedPhrase;
     public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
         Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
-        Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(200f)),
+        Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(100f)),
         Mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
         //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
         Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
@@ -25,7 +25,10 @@ public class Invention : Name
         CombustionEngine = new Invention("Combustion engine", "Allows Oil, Fuel, Cars, Rubber, Increases efficiency of all enterprises by 25%", new Value(400f)),
         Tanks = new Invention("Tanks", "Allows Tanks", new Value(800f)),
         Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f)),
-        ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f))
+        ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f)),
+
+        Domestication = new Invention("Domestication", "Allows barnyard producing cattle", new Value(100f)),
+        Coal = new Invention("Coal", "Allows coal", new Value(100f))
         ;
     readonly public static Condition ProfessionalArmyInvented = new Condition(x => (x as Country).isInvented(Invention.ProfessionalArmy), "Professional Army is invented", true);
     readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).isInvented(Invention.SteamPower), "Steam Power is invented", true);
@@ -52,6 +55,7 @@ public class Invention : Name
     {
         if (this == Collectivism
             || (this == Gunpowder && !country.isInvented(Metal))
+            || (this == Coal && !country.isInvented(Metal))
             || (this == SteamPower && (!country.isInvented(Metal) || !country.isInvented(Manufactories)))
             || (this == Firearms && !country.isInvented(Gunpowder))
             || (this == CombustionEngine && !country.isInvented(SteamPower))

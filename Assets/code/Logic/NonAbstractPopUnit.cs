@@ -33,7 +33,7 @@ abstract public class CattleGetter : PopUnit
         sentToMarket = new Storage(Product.Cattle);
     }
 }
-public class Tribemen : GrainGetter// CattleGetter
+public class Tribemen : CattleGetter                
 {
     public Tribemen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.TribeMen, where, culture)
     {
@@ -64,10 +64,10 @@ public class Tribemen : GrainGetter// CattleGetter
     {
         Storage producedAmount;
         float overpopulation = getProvince().getOverpopulation();
-        if (overpopulation <= 1) // all is OK
-            producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f);
+        if (overpopulation <= 1f) // all is OK
+            producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
-            producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
+            producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
         storage.add(producedAmount);
         gainGoodsThisTurn.set(producedAmount);
     }
@@ -162,7 +162,7 @@ public class Farmers : GrainGetter
     }
     public override void produce()
     {
-        Storage producedAmount = new Storage(Product.Grain, getPopulation() * popType.getBasicProduction().get() / 1000f);
+        Storage producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
         producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
         gainGoodsThisTurn.set(producedAmount);
 
@@ -177,9 +177,12 @@ public class Farmers : GrainGetter
             {
                 storage.add(gainGoodsThisTurn);
             }
-            else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            else
             {
-                getCountry().storageSet.add(gainGoodsThisTurn);
+                if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    getCountry().storageSet.add(gainGoodsThisTurn);
+                }
             }
         }
     }

@@ -410,17 +410,14 @@ public class Market : Agent//: PrimitiveStorageSet
             else
             {
                 // assuming available < buying
-                Storage howMuchAvailable = Game.market.HowMuchAvailable(buying);
+                Storage howMuchAvailable = new Storage(Game.market.HowMuchAvailable(buying));
                 if (howMuchAvailable.get() > 0f)
                 {
                     cost = howMuchAvailable.multiplyOutside(price);
                     if (buyer.canPay(cost))
                     {
                         buyer.pay(Game.market, cost);
-                        buyer.consumeFromMarket(howMuchAvailable);
-                        //Game.market.sentToMarket.subtract(howMuchAvailable);
-                        //buyer.consumedTotal.add(howMuchAvailable);
-                        //buyer.consumedInMarket.add(howMuchAvailable);
+                        buyer.consumeFromMarket(howMuchAvailable);                        
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().add(howMuchAvailable);
                         howMuchCanConsume = howMuchAvailable;
@@ -432,10 +429,7 @@ public class Market : Agent//: PrimitiveStorageSet
                             howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
                         if (howMuchCanConsume.isNotZero())
                         {
-                            buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more
-                                                                      //Game.market.sentToMarket.subtract(howMuchCanConsume);
-                                                                      //buyer.consumedTotal.add(howMuchCanConsume);
-                                                                      //buyer.consumedInMarket.add(howMuchCanConsume);
+                            buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
                             buyer.consumeFromMarket(howMuchCanConsume);
                             if (buyer is SimpleProduction)
                                 (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);

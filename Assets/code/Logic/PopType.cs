@@ -28,7 +28,7 @@ public class PopType: IEscapeTarget
         var tribemenLifeNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var tribemenEveryDayNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 2) });
         var tribemenLuxuryNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 3) });
-        TribeMen = new PopType("Tribesmen", new Storage(Product.Grain, 1.0f), 2f,
+        TribeMen = new PopType("Tribesmen", new Storage(Product.Cattle, 1.0f), 2f,
             new StorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.MotorFuel, 0.6f) }),
             tribemenLifeNeeds, tribemenEveryDayNeeds, tribemenLuxuryNeeds);
         //***************************************next type***************************

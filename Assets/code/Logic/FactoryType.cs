@@ -5,7 +5,7 @@ using System;
 public class FactoryType
 {
     static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
-    internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter;
+    internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
 
     internal readonly string name;
 
@@ -19,8 +19,7 @@ public class FactoryType
     /// <summary>Per 1 level upgrade</summary>
     public readonly StorageSet upgradeResourceLowTier;
     public readonly StorageSet upgradeResourceMediumTier;
-    public readonly StorageSet upgradeResourceHighTier;
-
+    public readonly StorageSet upgradeResourceHighTier;    
 
     //internal ConditionsList conditionsBuild;
     internal Condition enoughMoneyOrResourcesToBuild;
@@ -37,12 +36,15 @@ public class FactoryType
         new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
         new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
         new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
-        new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), false);
+        
         new FactoryType("Oil rig", new Storage(Product.Oil, 2f), true);
         new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
 
-
         StorageSet resourceInput = new StorageSet();
+        resourceInput.set(new Storage(Product.Grain, 1f));
+        new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput);
+
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Lumber, 1f));
         new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
 
@@ -124,6 +126,7 @@ public class FactoryType
         if (name == "Furniture factory") Furniture = this;
         if (name == "Metal pit") MetalDigging = this;
         if (name == "Metal smelter") MetalSmelter = this;
+        if (name == "Barnyard") Barnyard = this;
         allTypes.Add(this);
         this.basicProduction = basicProduction;
 
@@ -215,6 +218,10 @@ public class FactoryType
             return true;
         //resourceInput.Count() == 0
     }
+    internal bool isManufacture()
+    {
+        return  !isResourceGathering() && this != Barnyard;
+    }
     internal bool isShaft()
     {
         return shaft;
@@ -273,4 +280,5 @@ public class FactoryType
         return Procent.makeProcent(getPossibleProfit(province), getBuildCost());
     }
 
+    
 }

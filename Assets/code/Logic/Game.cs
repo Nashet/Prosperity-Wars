@@ -346,13 +346,10 @@ public class Game : ThreadedJob
                     pop.cash.set(900);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
-                    pop.cash.set(20);
-
+                    pop.cash.set(20);               
                 }
                 //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
-
-            }
-
+            }   
         }
     }
 

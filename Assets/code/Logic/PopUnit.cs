@@ -115,6 +115,9 @@ abstract public class PopUnit : Producer
              new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
     }
+    /// <summary>
+    ///  Constructor for population created on game startup
+    /// </summary>    
     protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(where)
     {
         where.allPopUnits.Add(this);
@@ -175,21 +178,30 @@ abstract public class PopUnit : Producer
         }
         source.payWithoutRecord(this, source.cash.multiplyOutside(newPopShare));
 
-        // todo better choice
+        
         //Producer's fields:
-        if (source.popType == PopType.Artisans && newPopType != PopType.Artisans)
-        //if (source.storage.getProduct() != this.storage.getProduct())
-        {
-            storage = new Storage(Product.Grain);
-            gainGoodsThisTurn = new Storage(Product.Grain);
-            sentToMarket = new Storage(Product.Grain);
-        }
-        else
-        {
-            storage = newPopShare.sendProcentToNew(source.storage);
-            gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
-            sentToMarket = new Storage(source.sentToMarket.getProduct());
-        }
+        //if convert from artisan to non-artisan
+        //if (source.popType == PopType.Artisans && newPopType != PopType.Artisans)        
+        //{
+            if (newPopType == PopType.TribeMen)
+            {
+                storage = new Storage(Product.Cattle);
+                gainGoodsThisTurn = new Storage(Product.Cattle);
+                sentToMarket = new Storage(Product.Cattle);
+            }
+            else
+            {
+                storage = new Storage(Product.Grain);
+                gainGoodsThisTurn = new Storage(Product.Grain);
+                sentToMarket = new Storage(Product.Grain);
+            }
+        //}
+        //else
+        //{
+        //    storage = newPopShare.sendProcentToNew(source.storage);
+        //    gainGoodsThisTurn = new Storage(source.gainGoodsThisTurn.getProduct());
+        //    sentToMarket = new Storage(source.sentToMarket.getProduct());
+        //}
 
         //province = where;//source.province;
 

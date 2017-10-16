@@ -209,6 +209,8 @@ public class Product : Name
             || (!country.isInvented(Invention.SteamPower) && (this == Machinery || this == Cement))
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
+            || (this == Coal && !country.isInvented(Invention.Coal))
+            || (this == Cattle && !country.isInvented(Invention.Domestication))
             || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == MotorFuel || this == Rubber || this == Cars))
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)

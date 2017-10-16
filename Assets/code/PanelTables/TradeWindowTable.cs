@@ -42,7 +42,7 @@ public class TradeWindowTable : MyTable
         //AddButton(null.loyalty.ToString(), null);
         foreach (Product product in Product.getAllNonAbstract())
         {               
-            if (product != Product.Gold && product.isInventedByAnyOne())// && !product.isAbstract())
+            if (product != Product.Gold && product.isInventedByAnyOne() || product==Product.Cattle )// && !product.isAbstract())
             {
                 // Adding product name 
                 AddButton(product.getName(), product);

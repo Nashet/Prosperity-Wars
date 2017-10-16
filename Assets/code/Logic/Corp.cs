@@ -62,25 +62,28 @@ public class Corps
     public void consume(Country owner)
     {
         var needs = getRealNeeds(owner);
+
+        float shortage = 0f;
+        Storage realConsumption = Storage.EmptyProduct;
+        foreach (var need in needs)
         {
-            float shortage = 0f;
-            foreach (var need in needs)
-            {
-                // refactor substraction for more abstract??
-                if (owner.storageSet.has(need))
-                {
-                    Storage realConsumption;
-                    if (need.isAbstractProduct())
-                        realConsumption = owner.storageSet.convertToBiggestStorageProduct(need);
-                    else
-                        realConsumption = need;
-                    owner.storageSet.subtract(realConsumption);
-                    consumption.add(realConsumption);
-                }
+            // refactor substraction for more abstract??
+            if (owner.storageSet.has(need))
+            {       
+                if (need.isAbstractProduct())
+                    // convertToBiggestStorageProduct here are duplicated in this.getConsumptionProcent() (getBiggestStorage())
+                    realConsumption = owner.storageSet.convertToBiggestStorageProduct(need);
                 else
-                    shortage += need.get();
+                    realConsumption = need;
+                owner.storageSet.subtract(realConsumption);
+                consumption.add(realConsumption);
+            }
+            else
+            {
+                shortage += need.get();
             }
         }
+        
         float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
         moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
         if (morale.get() + moraleChange < 0)
@@ -101,7 +104,8 @@ public class Corps
     }
     internal Procent getConsumptionProcent(Product product, Country country)
     {
-        return Procent.makeProcent(consumption.getFirstStorage(product), getRealNeeds(country, product), false);
+        // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
+        return Procent.makeProcent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
     }
     internal Value getConsumption(Product prod)
     {

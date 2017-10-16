@@ -141,7 +141,9 @@ using System;
 
 public class Storage : Value
 {
-    private Product product;
+    static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
+        
+    private Product product;    
     // protected  Value value;
     //public Value value;
     //public Storage(JSONObject jsonObject)
@@ -220,8 +222,7 @@ public class Storage : Value
     public Product getProduct()
     {
         return product;
-    }
-
+    }     
     override public string ToString()
     {
         return get() + " " + getProduct();
