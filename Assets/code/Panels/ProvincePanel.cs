@@ -8,7 +8,7 @@ public class ProvincePanel : MonoBehaviour
 {
     public Text generaltext;
     public Button btnOwner, btnBuild, btAttackThat, btMobilize;
-    
+
     // Use this for initialization    
     void Start()
     {
@@ -127,7 +127,11 @@ public class ProvincePanel : MonoBehaviour
         sb.Append("\nAverage loyalty: ").Append(province.getAverageLoyalty());
         sb.Append("\nMajor culture: ").Append(province.getMajorCulture());
         sb.Append("\nTax income: ").Append(province.getIncomeTax());
-        sb.Append("\nResource: ").Append(province.getResource());
+        sb.Append("\nResource: ");
+        if (province.getResource() == null)
+            sb.Append("none ");
+        else
+            sb.Append(province.getResource());
         sb.Append("\nTerrain: ").Append(province.getTerrain());
         sb.Append("\nRural overpopulation: ").Append(province.getOverpopulation());
         sb.Append("\nCores: ").Append(province.getCoresDescription());
@@ -155,8 +159,8 @@ public class ProvincePanel : MonoBehaviour
             btMobilize.interactable = false;
         }
 
-        if (Game.devMode) sb.Append("\nColor: ").Append( province.getColorID());        
-        btAttackThat.interactable = Country.canAttack.isAllTrue(Game.Player, province, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);        
+        if (Game.devMode) sb.Append("\nColor: ").Append(province.getColorID());
+        btAttackThat.interactable = Country.canAttack.isAllTrue(Game.Player, province, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
         generaltext.text = sb.ToString();
     }
     public void onddMapModesChange(int newMapMode)

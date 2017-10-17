@@ -10,6 +10,7 @@ public class Army
     //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
     static Modifier modifierMorale = new Modifier(x => (x as Army).getAverageMorale().get(), "Morale", 1f, true);
 
+    static Modifier modifierHorses = new Modifier(x => (x as Army).getHorsesSupply(), "Horses", 0.5f, false);
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
     static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
     static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);
@@ -23,8 +24,13 @@ public class Army
     private readonly Dictionary<PopUnit, Corps> personal;
     Province destination;
     private readonly Staff owner;
-    
 
+    private float getHorsesSupply()
+    {
+        if (Product.Cattle.isInvented(getOwner().getPlaceDejure()))
+            return Procent.makeProcent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
+        else return 0f;
+    }
     private float getColdArmsSupply()
     {
         if (Product.ColdArms.isInvented(getOwner().getPlaceDejure()))
@@ -82,7 +88,7 @@ public class Army
     static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
         {
         //modifierDefenseInMountains
-            Modifier.modifierDefault1, modifierInDefense,  modifierMorale, modifierColdArms,
+            Modifier.modifierDefault1, modifierInDefense,  modifierMorale, modifierHorses, modifierColdArms,
         modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck
         });
     // private Army consolidatedArmy;

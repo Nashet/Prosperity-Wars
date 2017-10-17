@@ -332,38 +332,41 @@ public class Aristocrats : GrainGetter
         if (getProvince().getResource() != null && !getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
         {
             FactoryType ftype = FactoryType.whoCanProduce(getProvince().getResource());
-            Factory resourceFactoryInHere = getProvince().getExistingResourceFactory();
-            if (resourceFactoryInHere == null) //build new factory
+            if (ftype != null)
             {
-                //Has money / resources?
-                StorageSet resourceToBuild = ftype.getBuildNeeds();
-                // todo remove connection to grain
-                Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
-                // try to build for food
-                if (storage.isBiggerOrEqual(needFood))
+                Factory resourceFactoryInHere = getProvince().getExistingResourceFactory();
+                if (resourceFactoryInHere == null) //build new factory
                 {
-                    var newFactory = new Factory(getProvince(), this, ftype);
-                    storage.send(newFactory.getInputProductsReserve(), needFood);
-                    newFactory.constructionNeeds.setZero();
+                    //Has money / resources?
+                    StorageSet resourceToBuild = ftype.getBuildNeeds();
+                    // todo remove connection to grain
+                    Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
+                    // try to build for food
+                    if (storage.isBiggerOrEqual(needFood))
+                    {
+                        var newFactory = new Factory(getProvince(), this, ftype);
+                        storage.send(newFactory.getInputProductsReserve(), needFood);
+                        newFactory.constructionNeeds.setZero();
+                    }
+                    else
+                    {
+                        Value cost = Game.market.getCost(resourceToBuild);
+                        if (canPay(cost))  //try to build for money  
+                        {
+                            var newFactory = new Factory(getProvince(), this, ftype);  // build new one              
+                            pay(newFactory, cost);
+                        }// take loans? Aristocrats wouldn't take loans for upgrades
+                    }
                 }
                 else
                 {
-                    Value cost = Game.market.getCost(resourceToBuild);
-                    if (canPay(cost))  //try to build for money  
-                    {
-                        var newFactory = new Factory(getProvince(), this, ftype);  // build new one              
-                        pay(newFactory, cost);
-                    }// take loans? Aristocrats wouldn't take loans for upgrades
+                    //upgrade existing resource factory
+                    // upgrade is only for money? Yes, because its complicated - lots of various products               
+                    if (resourceFactoryInHere.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
+                        && resourceFactoryInHere.getMargin().get() >= Options.minMarginToUpgrade
+                        && Factory.conditionsUpgrade.isAllTrue(resourceFactoryInHere, this))
+                        resourceFactoryInHere.upgrade(this);
                 }
-            }
-            else
-            {
-                //upgrade existing resource factory
-                // upgrade is only for money? Yes, because its complicated - lots of various products               
-                if (resourceFactoryInHere.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory)
-                    && resourceFactoryInHere.getMargin().get() >= Options.minMarginToUpgrade
-                    && Factory.conditionsUpgrade.isAllTrue(resourceFactoryInHere, this))
-                    resourceFactoryInHere.upgrade(this);
             }
         }
         base.invest();

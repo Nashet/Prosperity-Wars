@@ -28,6 +28,8 @@ public class Invention : Name
         ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f)),
 
         Domestication = new Invention("Domestication", "Allows barnyard producing cattle", new Value(100f)),
+        Electronics = new Invention("Electronics", "Allows Electronics", new Value(1000f)),
+        Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
         Coal = new Invention("Coal", "Allows coal", new Value(100f))
         ;
     readonly public static Condition ProfessionalArmyInvented = new Condition(x => (x as Country).isInvented(Invention.ProfessionalArmy), "Professional Army is invented", true);
@@ -61,6 +63,7 @@ public class Invention : Name
             || (this == CombustionEngine && !country.isInvented(SteamPower))
             || (this == Tanks && !country.isInvented(CombustionEngine))
             || (this == Airplanes && !country.isInvented(CombustionEngine))
+            || (this == Electronics && !country.isInvented(Airplanes))
             )
             return false;
         else

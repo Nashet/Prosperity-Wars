@@ -36,7 +36,8 @@ public class FactoryType
         new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
         new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
         new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
-        
+        new FactoryType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
+
         new FactoryType("Oil rig", new Storage(Product.Oil, 2f), true);
         new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
 
@@ -115,6 +116,12 @@ public class FactoryType
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Machinery, 1f));
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
+
+        resourceInput = new StorageSet();        
+        resourceInput.set(new Storage(Product.Metal, 1f));
+        resourceInput.set(new Storage(Product.Oil, 1f));
+        resourceInput.set(new Storage(Product.Rubber, 1f));
+        new FactoryType("Electonics factory", new Storage(Product.Electonics, 6f), resourceInput);
     }
     /// <summary>
     /// Basic constructor for resource getting FactoryType

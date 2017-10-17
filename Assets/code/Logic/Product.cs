@@ -17,7 +17,9 @@ public class Product : Name
     internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
     Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
     Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
-        Coal = new Product("Coal", true, 1f);
+        Coal = new Product("Coal", true, 1f),
+        Tobacco = new Product("Tobacco", true, 1f),
+        Electonics = new Product("Electonics", false, 1f);
     // abstract products
     internal static readonly Product Food, Sugar, Fibres, Fuel;
 
@@ -25,8 +27,8 @@ public class Product : Name
     {
         Gold = new Product("Gold", true, 4f);
         Fish = new Product("Fish", true, 0.04f);
-        Grain = new Product("Grain", false, 0.04f);
-        Cattle = new Product("Cattle", true, 0.04f);
+        Grain = new Product("Grain", true, 0.04f);
+        Cattle = new Product("Cattle", false, 0.04f);
 
         Fruit = new Product("Fruit", true, 1f);
         Liquor = new Product("Liquor", false, 3f);
@@ -64,8 +66,8 @@ public class Product : Name
         Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal, Oil });
 
         foreach (var item in getAllNonAbstract())
-        {               
-              Game.market.SetDefaultPrice(item, item.defaultPrice.get());
+        {
+            Game.market.SetDefaultPrice(item, item.defaultPrice.get());
         }
     }
     /// <summary>
@@ -77,7 +79,7 @@ public class Product : Name
         _isResource = isResource;
         if (_isResource)
             resourceCounter++;
-        allProducts.Add(this);        
+        allProducts.Add(this);
         //_isAbstract = false;
         //TODO checks for duplicates&
     }
@@ -103,8 +105,8 @@ public class Product : Name
     }
     public static IEnumerable<Product> getAll()
     {
-        foreach (var item in allProducts)            
-                yield return item;
+        foreach (var item in allProducts)
+            yield return item;
     }
     public static void sortSubstitutes()
     {
@@ -214,6 +216,8 @@ public class Product : Name
             || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == MotorFuel || this == Rubber || this == Cars))
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
+            || (this == Tobacco && !country.isInvented(Invention.Tobacco))
+            || (this == Electonics && !country.isInvented(Invention.Electronics))
             //|| (!isResource() && !country.isInvented(Invention.Manufactories))
             )
             return false;
