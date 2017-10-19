@@ -220,7 +220,7 @@ public class StorageSet
         //if not found
         return new Storage(what.getProduct(), 0f);
     }
-    /// <summary> Finds substitute for abstrat need and returns storage with product coverted to non-abstract product
+    /// <summary> Finds substitute for abstrat need and returns new storage with product converted to non-abstract product
     /// Returns copy of need if need was not abstract (make check)
     /// If didn't find substitute Returns copy of empty storage of need product</summary>  
     //todo Make same method for chapest substitute?
@@ -228,12 +228,12 @@ public class StorageSet
     {
         return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
     }
-    /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
+    /// <summary>Gets biggest storage of that product type. Returns NEW empty storage if search is failed</summary>    
     internal Storage getBiggestStorage(Product what)
     {
         return getStorage(what, CollectionExtensions.MaxBy, x => x.get());
     }
-    /// <summary>Gets storage if there is enough product of that type. Returns NEW empty storage if search is failed</summary>    
+    /// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>    
     internal Storage getCheapestStorage(Product what)
     {
         return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());

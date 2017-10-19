@@ -507,9 +507,9 @@ public class Market : Agent//: PrimitiveStorageSet
             if (consumeOnThisEteration.isZero())
                 return true;
 
-            // check if buying still have enough to subtract consumeOnThisEteration            
+            // check if consumeOnThisEteration is not bigger than stillHaveToBuy
             if (!stillHaveToBuy.has(consumeOnThisEteration))
-                consumeOnThisEteration = stillHaveToBuy.getExistingStorage(what);
+                consumeOnThisEteration = stillHaveToBuy.getBiggestStorage(what.getProduct());
             var reallyBought = buy(buyer, consumeOnThisEteration, null);
 
             stillHaveToBuy.subtract(reallyBought);
