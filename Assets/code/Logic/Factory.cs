@@ -675,6 +675,7 @@ public class Factory : SimpleProduction
         return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
     }
 
+    its zero from beginning
     internal override Procent getInputFactor()
     {
         return getInputFactor(getWorkForceFulFilling());

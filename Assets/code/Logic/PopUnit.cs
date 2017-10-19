@@ -1168,8 +1168,7 @@ abstract public class PopUnit : Producer
     virtual internal void invest()
     {
         if (getCountry().isInvented(Invention.Banking))
-        {
-            //тут обосрался
+        {               
             Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
             if (extraMoney.isNotZero())
                 getBank().takeMoney(this, extraMoney);

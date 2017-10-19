@@ -33,7 +33,7 @@ abstract public class CattleGetter : PopUnit
         sentToMarket = new Storage(Product.Cattle);
     }
 }
-public class Tribemen : CattleGetter                
+public class Tribemen : CattleGetter
 {
     public Tribemen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.TribeMen, where, culture)
     {
@@ -519,25 +519,24 @@ public class Capitalists : GrainGetter
                         payWithoutRecord(found, buildCost);
                     }
                 }
-            }
-            else
-            {
-                //upgrade section
-                Factory factory = FactoryType.getMostPracticlyProfitable(getProvince());
-                if (factory != null
-                    && factory.canUpgrade() // don't change it to Modifier  - it would prevent loan takes
-                    && factory.getMargin().get() >= Options.minMarginToUpgrade
-                    && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
+                else
                 {
-                    Value upgradeCost = factory.getUpgradeCost();
-                    if (canPay(upgradeCost))
-                        factory.upgrade(this);
-                    else if (getBank().giveLackingMoney(this, upgradeCost))
+                    //upgrade section
+                    Factory factory = FactoryType.getMostPracticlyProfitable(getProvince());
+                    if (factory != null
+                        && factory.canUpgrade() // don't change it to Modifier  - it would prevent loan takes
+                        && factory.getMargin().get() >= Options.minMarginToUpgrade
+                        && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
                     {
-                        factory.upgrade(this);
+                        Value upgradeCost = factory.getUpgradeCost();
+                        if (canPay(upgradeCost))
+                            factory.upgrade(this);
+                        else if (getBank().giveLackingMoney(this, upgradeCost))
+                            factory.upgrade(this);
                     }
                 }
             }
+            
         }
         base.invest();
     }

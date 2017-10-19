@@ -78,6 +78,8 @@ abstract public class SimpleProduction : Producer
     abstract internal Procent getInputFactor();
     protected Procent getInputFactor(Procent multiplier)
     {
+        if (multiplier.isZero())
+            return Procent.ZeroProcent;
         if (getType().isResourceGathering())
             return Procent.HundredProcent;
         float inputFactor = 1;
@@ -134,11 +136,16 @@ abstract public class SimpleProduction : Producer
         // searching lowest factor
         foreach (Storage need in reallyNeedResources)//todo optimize - convert into for i
         {
-            float newFactor = need.get() / (getType().resourceInput.getFirstStorage(need.getProduct()).get() * multiplier.get());
-            if (newFactor < inputFactor)
-                inputFactor = newFactor;
+            float denominator = getType().resourceInput.getFirstStorage(need.getProduct()).get() * multiplier.get();
+            if (denominator != 0f)
+            {
+                float newFactor = need.get() / denominator;
+                if (newFactor < inputFactor)
+                    inputFactor = newFactor;
+            }
+            else // no resources
+                inputFactor = 0f;
         }
-
         return new Procent(inputFactor);
     }
     abstract public List<Storage> getHowMuchInputProductsReservesWants();
