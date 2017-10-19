@@ -26,7 +26,7 @@ public class Factory : SimpleProduction
     private int daysInConstruction;
     private int daysUnprofitable;
     private int daysClosed;
-    private bool justHiredPeople;
+    private bool justHiredPeople = true;
     private int hiredLastTurn;
 
     internal static readonly Modifier
@@ -407,7 +407,7 @@ public class Factory : SimpleProduction
 
             float minSalary = getCountry().getMinSalary();
             // reduce salary on non-profit
-            if (getProfit() < 0f && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !justHiredPeople && !isSubsidized())
+            if (getProfit() < 0f && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !isJustHiredPeople() && !isSubsidized())
                 if (salary.get() - 0.3f >= minSalary)
                     salary.subtract(0.3f);
                 else
@@ -433,7 +433,8 @@ public class Factory : SimpleProduction
             return 0;
         int wants = getMaxWorkforceCapacity();// * getInputFactor());
 
-        int difference = wants - getWorkForce();
+        int workForce = getWorkForce();
+        int difference = wants - workForce;
 
         int maxHiringSpeed = getMaxHiringSpeed();
         // clamp difference in Options.maxFactoryFireHireSpeed []
@@ -441,23 +442,24 @@ public class Factory : SimpleProduction
             difference = maxHiringSpeed;
         else
             if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
+        if (difference > 0)
+        {
+            float inputFactor = getInputFactor().get();
+            //fire people if no enough input.            
+            if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                difference = -1 * maxHiringSpeed;
 
-        //fire people if no enough input. getHowMuchHiredLastTurn() - to avoid last turn input error. Looks its correct for
-        //current version where we have input reserves
-        //if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !(getHowMuchHiredLastTurn() > 0) && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
-        if (difference > 0 && !justHiredPeople && getInputFactor().get() < 0.95f && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
-            difference = -1 * maxHiringSpeed;
+            //fire people if unprofitable. 
+            if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                difference = -1 * maxHiringSpeed;
 
-        //fire people if unprofitable. 
-        if (difference > 0 && (getProfit() < 0f) && !justHiredPeople && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !isSubsidized())// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
-            difference = -1 * maxHiringSpeed;
-
-        // just don't hire more..
-        if (difference > 0 && (getProfit() < 0f || getInputFactor().get() < 0.95f) && !isSubsidized())
-            difference = 0;
-
-        //todo optimize getWorkforce()
-        int result = getWorkForce() + difference;
+            // just don't hire more..
+            //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+            if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                difference = 0;
+        }
+        //todo optimize getWorkforce() calls
+        int result = workForce + difference;
         if (result < 0)
             return 0;
         return result;
@@ -495,6 +497,8 @@ public class Factory : SimpleProduction
         Procent efficencyFactor;
         Procent workforceProcent = getWorkForceFulFilling();
         Procent inputFactor = getInputFactor();
+        if (inputFactor.isZero() & isJustHiredPeople())
+            inputFactor = Procent.HundredProcent;
 
         if (inputFactor.isSmallerThan(workforceProcent))
             efficencyFactor = inputFactor;
@@ -675,7 +679,6 @@ public class Factory : SimpleProduction
         return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
     }
 
-    its zero from beginning
     internal override Procent getInputFactor()
     {
         return getInputFactor(getWorkForceFulFilling());
@@ -741,7 +744,7 @@ public class Factory : SimpleProduction
     override public void consumeNeeds()
     {
         if (isWorking() && !getType().isResourceGathering())
-        {       
+        {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
@@ -771,7 +774,7 @@ public class Factory : SimpleProduction
                         isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
                 }
                 else if (isUpgrading())
-                {                    
+                {
                     var upgradingNeeds = getUpgradeNeeds();
                     if (getCountry().storageSet.has(upgradingNeeds))
                         isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
