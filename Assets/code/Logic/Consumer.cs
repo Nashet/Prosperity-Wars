@@ -66,7 +66,7 @@ public abstract class Consumer : Agent
     {
         consumedTotal.add(what);
         country.storageSet.subtract(what);
-    }
+    }                            
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();

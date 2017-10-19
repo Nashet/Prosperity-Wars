@@ -302,11 +302,11 @@ abstract public class PopUnit : Producer
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
-        incomeTaxPayed.set(0); // need it because pop could stop paying taxes due to reforms for example
-        needsFullfilled.set(0f);
+        incomeTaxPayed.setZero(); // need it because pop could stop paying taxes due to reforms for example
+        needsFullfilled.setZero();
         didntGetPromisedUnemloymentSubsidy = false;
         lastEscaped.value = 0;
-        // pop.storageNow.set(0f);
+        //storage.setZero();  // may mess with aristocrats
     }
     public int getMobilized()
     {

@@ -7,40 +7,40 @@ using System.Linq;
 
 public class Game : ThreadedJob
 {
-    private static readonly bool readMapFormFile = false;
-    static MyTexture map;
-    public static GameObject mapObject;
-    internal static GameObject r3dTextPrefab;
+    static private readonly bool readMapFormFile = false;
+    static private MyTexture map;
+    static public GameObject mapObject;
+    static internal GameObject r3dTextPrefab;
 
-    public static Country Player;
+    static public Country Player;
 
     static bool haveToRunSimulation;
     static bool haveToStepSimulation;
-    internal static int howMuchPausedWindowsOpen = 0;
+    static internal int howMuchPausedWindowsOpen = 0;
 
-    public static System.Random Random = new System.Random();
+    static public System.Random Random = new System.Random();
 
-    public static Province selectedProvince;
-    public static List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
-    public static List<Factory> factoriesToShowInProductionPanel;
+    static public Province selectedProvince;
+    static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
+    static public List<Factory> factoriesToShowInProductionPanel;
 
-    internal static List<BattleResult> allBattles = new List<BattleResult>();
-    internal readonly static Stack<Message> MessageQueue = new Stack<Message>();
-    public readonly static Market market = new Market();
+    static internal List<BattleResult> allBattles = new List<BattleResult>();
+    static internal readonly Stack<Message> MessageQueue = new Stack<Message>();
+    static public readonly Market market = new Market();
 
-    internal static StringBuilder threadDangerSB = new StringBuilder();
+    static internal StringBuilder threadDangerSB = new StringBuilder();
 
-    public static DateTime date = new DateTime(50, 1, 1);
-    internal static bool devMode = false;
-    private static int mapMode;
-    private static bool surrended = true;
-    internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
-        impassableBorder;
+    static public DateTime date = new DateTime(50, 1, 1);
+    static internal bool devMode = false;
+    static private int mapMode;
+    static private bool surrended = true;
+    static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
+        impassableBorder;     
+
+    static private List<Province> seaProvinces;
+    static private VoxelGrid grid;
+
     private readonly Rect mapBorders;
-
-    internal static List<Province> seaProvinces;
-    static VoxelGrid grid;
-
     public Game()
     {
         if (readMapFormFile)
@@ -289,7 +289,7 @@ public class Game : ThreadedJob
     {
         haveToStepSimulation = true;
     }
-    
+
     internal static Value getAllMoneyInWorld()
     {
         Value allMoney = new Value(0f);
@@ -346,10 +346,10 @@ public class Game : ThreadedJob
                     pop.cash.set(900);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
-                    pop.cash.set(20);               
+                    pop.cash.set(20);
                 }
                 //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
-            }   
+            }
         }
     }
 
@@ -363,10 +363,11 @@ public class Game : ThreadedJob
         //Texture2D mapImage = new Texture2D(100, 100);
 #if UNITY_WEBGL
         int mapSize = 20000;//30000;
+        int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
 #else
         int mapSize = 60000;
-#endif
-        int width = 150 + Random.Next(150);
+        int width = 240 + Random.Next(80);
+#endif          
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
 
@@ -596,7 +597,7 @@ public class Game : ThreadedJob
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle
-       
+
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {
