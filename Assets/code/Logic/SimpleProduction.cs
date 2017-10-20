@@ -59,7 +59,6 @@ abstract public class SimpleProduction : Producer
     /// </summary>
     protected void produce(Value multiplier)
     {
-        //todo add checks for inputs
         gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
         storage.add(gainGoodsThisTurn);
 
@@ -70,7 +69,7 @@ abstract public class SimpleProduction : Producer
                 {
                     var substitute = getInputProductsReserve().convertToBiggestStorageProduct(next);
                     if (substitute.isNotZero())
-                        getInputProductsReserve().subtract(substitute);
+                        getInputProductsReserve().subtract(substitute, false); // could be zero reserves if isJustHiredPeople() 
                 }
                 else
                     getInputProductsReserve().subtract(next, false);

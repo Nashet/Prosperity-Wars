@@ -121,7 +121,7 @@ public class FactoryType
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Oil, 1f));
         resourceInput.set(new Storage(Product.Rubber, 1f));
-        new FactoryType("Electonics factory", new Storage(Product.Electonics, 6f), resourceInput);
+        new FactoryType("Electonics factory", new Storage(Product.Electronics, 6f), resourceInput);
     }
     /// <summary>
     /// Basic constructor for resource getting FactoryType

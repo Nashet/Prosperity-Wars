@@ -75,8 +75,11 @@ public class Corps
                     realConsumption = owner.storageSet.convertToBiggestStorageProduct(need);
                 else
                     realConsumption = need;
-                owner.storageSet.subtract(realConsumption);
-                consumption.add(realConsumption);
+                if (realConsumption.isNotZero())
+                {
+                    owner.storageSet.subtract(realConsumption);
+                    consumption.add(realConsumption);
+                }
             }
             else
             {

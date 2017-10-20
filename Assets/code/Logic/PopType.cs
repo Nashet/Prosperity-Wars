@@ -39,7 +39,7 @@ public class PopType : IEscapeTarget
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Liquor, 2f),
-            new Storage(Product.Electonics, 1f)
+            new Storage(Product.Electronics, 1f)
             ,});
         var aristocratsLuxuryNeeds = new StorageSet(new List<Storage> {
             new Storage(Product.Fruit, 1),
@@ -76,7 +76,7 @@ public class PopType : IEscapeTarget
             new Storage(Product.Liquor, 1f),
             //new Storage(Product.Cars, 1f),
             //new Storage(Product.MotorFuel, 1f),
-            new Storage(Product.Electonics, 1f),
+            new Storage(Product.Electronics, 1f),
             new Storage(Product.Tobacco, 1f)
             });
             Artisans = new PopType("Artisans", null, 1f,
@@ -114,7 +114,7 @@ public class PopType : IEscapeTarget
             new Storage(Product.Cars, 0.5f),
             new Storage(Product.Tobacco, 1f),
             new Storage(Product.MotorFuel, 0.5f),
-            new Storage(Product.Electonics, 1f)
+            new Storage(Product.Electronics, 1f)
             });
         Workers = new PopType("Workers", null, 1f,
             militaryNeeds, workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);

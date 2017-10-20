@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-
+       
 public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
@@ -19,7 +19,7 @@ public class Product : Name
     Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
         Coal = new Product("Coal", true, 1f),
         Tobacco = new Product("Tobacco", true, 1f),
-        Electonics = new Product("Electonics", false, 1f);
+        Electronics = new Product("Electronics", false, 1f);
     // abstract products
     internal static readonly Product Food, Sugar, Fibres, Fuel;
 
@@ -217,7 +217,7 @@ public class Product : Name
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
             || (this == Tobacco && !country.isInvented(Invention.Tobacco))
-            || (this == Electonics && !country.isInvented(Invention.Electronics))
+            || (this == Electronics && !country.isInvented(Invention.Electronics))
             //|| (!isResource() && !country.isInvented(Invention.Manufactories))
             )
             return false;

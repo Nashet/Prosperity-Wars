@@ -313,7 +313,7 @@ public class StorageSet
         if (found == null)
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Someone tried to subtract from StorageSet more than it has -" + storage);
+                Debug.Log("Someone tried to subtract from StorageSet more than it has - " + storage);
             return false;//container.Add(value);
         }
         else
