@@ -58,7 +58,7 @@ abstract public class SimpleProduction : Producer
     /// Fills storageNow and gainGoodsThisTurn
     /// </summary>
     protected void produce(Value multiplier)
-    {
+    {           
         gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
         storage.add(gainGoodsThisTurn);
 

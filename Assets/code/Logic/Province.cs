@@ -35,7 +35,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     private Product resource;
     private Vector3 position;
     private Color color;
-    
+
     private GameObject rootGameObject;
     private MeshRenderer meshRenderer;
 
@@ -790,9 +790,10 @@ public class Province : Name, IEscapeTarget, IHasCountry
     }
     internal bool isProducingOnFactories(StorageSet resourceInput)
     {
-        foreach (Storage stor in resourceInput)
-            foreach (Factory factory in allFactories)
-                if (factory.isWorking() && factory.getType().basicProduction.getProduct() == stor.getProduct())
+        foreach (Storage inputNeed in resourceInput)
+            foreach (Factory provinceFactory in allFactories)
+                //if (provinceFactory.isWorking() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
+                if (provinceFactory.gainGoodsThisTurn.isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
                     return true;
         return false;
     }
