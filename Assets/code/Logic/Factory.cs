@@ -48,7 +48,7 @@ public class Factory : SimpleProduction
         conOpen = new Condition(x => (x as Factory).isWorking(), "Open", false),
         conClosed = new Condition(x => !(x as Factory).isWorking(), "Closed", false),
         conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
-        conNotLForNotCountry = new Condition(x => (x as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(x is Country), "Economy policy is not Laissez Faire", true),
+        
         conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)
         {
             Game.threadDangerSB.Clear();
@@ -66,7 +66,8 @@ public class Factory : SimpleProduction
             //}
             , true),
         conPlacedInOurCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
-        (factory) => "Enterprise placed in our country", true)
+        (factory) => "Enterprise placed in our country", true),
+        conNotLForNotCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country),(factory) => "Economy policy is not Laissez Faire", true)
         ;
 
     internal static readonly ConditionsListForDoubleObjects
