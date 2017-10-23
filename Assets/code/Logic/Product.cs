@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-       
+using UnityEngine;
+
 public class Product : Name
 {
     //private static HashSet<Product> allProducts = new HashSet<Product>();
@@ -13,57 +14,58 @@ public class Product : Name
     private readonly Value defaultPrice;
     private readonly bool _isAbstract;
     private readonly List<Product> substitutes;
+    private readonly Color color;
 
     internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
     Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
     Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
-        Coal = new Product("Coal", true, 1f),
-        Tobacco = new Product("Tobacco", true, 1f),
-        Electronics = new Product("Electronics", false, 1f);
+        Coal = new Product("Coal", 1f, Color.black),
+        Tobacco = new Product("Tobacco", 1f, Color.green),
+        Electronics = new Product("Electronics", 1f);
     // abstract products
     internal static readonly Product Food, Sugar, Fibres, Fuel;
 
     static Product()
     {
-        Gold = new Product("Gold", true, 4f);
-        Fish = new Product("Fish", true, 0.04f);
-        Grain = new Product("Grain", true, 0.04f);
-        Cattle = new Product("Cattle", false, 0.04f);
+        Gold = new Product("Gold", 4f, Color.yellow);
+        Fish = new Product("Fish", 0.04f, Color.cyan);
+        Grain = new Product("Grain", 0.04f, new Color(0.57f, 0.75f, 0.2f));//greenish
+        Cattle = new Product("Cattle", 0.04f);
 
-        Fruit = new Product("Fruit", true, 1f);
-        Liquor = new Product("Liquor", false, 3f);
+        Fruit = new Product("Fruit", 1f, new Color(1f, 0.33f, 0.33f));//pinkish
+        Liquor = new Product("Liquor", 3f);
 
-        Wood = new Product("Wood", true, 2.7f);
-        Lumber = new Product("Lumber", false, 8f);
-        Furniture = new Product("Furniture", false, 7f);
+        Wood = new Product("Wood", 2.7f, new Color(0.5f, 0.25f, 0f)); // brown
+        Lumber = new Product("Lumber", 8f);
+        Furniture = new Product("Furniture", 7f);
 
-        Cotton = new Product("Cotton", true, 1f);
-        Clothes = new Product("Clothes", false, 6f);
+        Cotton = new Product("Cotton", 1f, Color.white);
+        Clothes = new Product("Clothes",  6f);
 
-        Stone = new Product("Stone", true, 1f);
-        Cement = new Product("Cement", false, 2f);
+        Stone = new Product("Stone",  1f, new Color(0.82f, 0.62f, 0.82f));//light grey
+        Cement = new Product("Cement",  2f);
 
-        MetallOre = new Product("Metal ore", true, 3f);
-        Metal = new Product("Metal", false, 6f);
+        MetallOre = new Product("Metal ore", 3f, Color.blue);
+        Metal = new Product("Metal",  6f);
 
-        ColdArms = new Product("Cold arms", false, 13f);
-        Ammunition = new Product("Ammunition", false, 13f);
-        Firearms = new Product("Firearms", false, 13f);
-        Artillery = new Product("Artillery", false, 13f);
+        ColdArms = new Product("Cold arms",  13f);
+        Ammunition = new Product("Ammunition", 13f);
+        Firearms = new Product("Firearms",  13f);
+        Artillery = new Product("Artillery", 13f);
 
-        Oil = new Product("Oil", true, 10f);
-        MotorFuel = new Product("Motor Fuel", false, 15f);
-        Machinery = new Product("Machinery", false, 8f);
-        Rubber = new Product("Rubber", true, 10f);
-        Cars = new Product("Cars", false, 15f);
-        Tanks = new Product("Tanks", false, 20f);
-        Airplanes = new Product("Airplanes", false, 20f);
+        Oil = new Product("Oil",  10f, new Color(0.25f, 0.25f, 0.25f));
+        MotorFuel = new Product("Motor Fuel", 15f);
+        Machinery = new Product("Machinery", 8f);
+        Rubber = new Product("Rubber",  10f, new Color (0.67f, 0.67f, 0.47f)); //light grey
+        Cars = new Product("Cars",  15f);
+        Tanks = new Product("Tanks", 20f);
+        Airplanes = new Product("Airplanes", 20f);
 
         // abstract products
-        Food = new Product("Food", false, 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
-        Sugar = new Product("Sugar", false, 0.04f, new List<Product> { Grain, Fruit });
-        Fibres = new Product("Fibres", false, 0.04f, new List<Product> { Cattle, Cotton });
-        Fuel = new Product("Fuel", false, 0.04f, new List<Product> { Wood, Coal, Oil });
+        Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
+        Sugar = new Product("Sugar",  0.04f, new List<Product> { Grain, Fruit });
+        Fibres = new Product("Fibres", 0.04f, new List<Product> { Cattle, Cotton });
+        Fuel = new Product("Fuel",  0.04f, new List<Product> { Wood, Coal, Oil });
 
         foreach (var item in getAllNonAbstract())
         {
@@ -73,20 +75,26 @@ public class Product : Name
     /// <summary>
     /// General constructor
     /// </summary>    
-    private Product(string name, bool isResource, float defaultPrice) : base(name)
+    private Product(string name, float defaultPrice) : base(name)
     {
         this.defaultPrice = new Value(defaultPrice);
-        _isResource = isResource;
-        if (_isResource)
-            resourceCounter++;
         allProducts.Add(this);
         //_isAbstract = false;
         //TODO checks for duplicates&
     }
     /// <summary>
+    /// Constructor for resorce product
+    /// </summary>                     
+    private Product(string name, float defaultPrice, Color color) : this(name, defaultPrice)
+    {
+        this.color = color;
+        _isResource = true;
+        resourceCounter++;
+    }
+    /// <summary>
     /// Constructor for abstract products
     /// </summary>    
-    private Product(string name, bool isResource, float defaultPrice, List<Product> substitutes) : this(name, isResource, defaultPrice)
+    private Product(string name, float defaultPrice, List<Product> substitutes) : this(name, defaultPrice)
     {
         _isAbstract = true;
         this.substitutes = substitutes;
@@ -273,5 +281,10 @@ public class Product : Name
         }
         else
             return base.ToString();
+    }
+
+    internal Color getColor()
+    {
+        return color;
     }
 }

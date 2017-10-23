@@ -215,61 +215,12 @@ public class Game : ThreadedJob
     {
         return mapMode;
     }
-    public static Color getProvinceColorAccordingToMapMode(Province province)
-    {
-        switch (mapMode)
-        {
-            case 0: //political mode                
-                return province.getColor();
-            case 1: //culture mode
-                return Country.allCountries.Find(x => x.getCulture() == province.getMajorCulture()).getColor();
-            case 2: //cores mode
-                if (Game.selectedProvince == null)
-                {
-                    if (province.isCoreFor(province.getCountry()))
-                        return province.getCountry().getColor();
-                    else
-                    {
-                        var c = province.getRandomCore();
-                        if (c == null)
-                            return Color.yellow;
-                        else
-                            return c.getColor();
-                    }
-                }
-                else
-                {
-                    if (province.isCoreFor(Game.selectedProvince.getCountry()))
-                        return Game.selectedProvince.getCountry().getColor();
-                    else
-                    {
-                        if (province.isCoreFor(province.getCountry()))
-                            return province.getCountry().getColor();
-                        else
-                        {
-                            var so = province.getRandomCore(x => x.isAlive());
-                            if (so != null)
-                                return so.getColor();
-                            else
-                            {
-                                var c = province.getRandomCore();
-                                if (c == null)
-                                    return Color.yellow;
-                                else
-                                    return c.getColor();
-                            }
-                        }
-                    }
-                }
-            default:
-                return default(Color);
-        }
-    }
+    
     public static void redrawMapAccordingToMapMode(int newMapMode)
     {
         mapMode = newMapMode;
         foreach (var item in Province.allProvinces)
-            item.updateColor(getProvinceColorAccordingToMapMode(item));
+            item.updateColor(item.getColorAccordingToMapMode());
     }
 
     internal static void continueSimulation()

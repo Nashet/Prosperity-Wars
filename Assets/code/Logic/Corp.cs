@@ -125,13 +125,7 @@ public class Corps
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiply(multiplier);
                 result.Add(nStor);
-            }
-        //result.Sort(delegate (Storage x, Storage y)
-        //{
-        //    float sumX = x.get() * Game.market.findPrice(x.getProduct()).get();
-        //    float sumY = y.get() * Game.market.findPrice(y.getProduct()).get();
-        //    return sumX.CompareTo(sumY);
-        //});
+            }       
         return new StorageSet(result);
     }
     public Storage getRealNeeds(Country country, Product product)

@@ -328,7 +328,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         taker.ownedProvinces.Add(this);
 
         color = taker.getColor().getAlmostSameColor();
-        meshRenderer.material.color = Game.getProvinceColorAccordingToMapMode(this);
+        meshRenderer.material.color = this.getColorAccordingToMapMode();
 
         setBorderMaterials(false);
         if (addModifier)
@@ -957,6 +957,63 @@ public class Province : Name, IEscapeTarget, IHasCountry
     public bool hasModifier(Mod modifier)
     {
         return modifiers.ContainsKey(modifier);
+    }
+    public Color getColorAccordingToMapMode()
+    {
+        switch (Game.getMapMode())
+        {
+            case 0: //political mode                
+                return getColor();
+            case 3: //resource mode                
+                {
+                    if (getResource() == null)
+                        return Color.gray;
+                    else
+                        return getResource().getColor();
+                }                                       
+            case 1: //culture mode
+                return Country.allCountries.Find(x => x.getCulture() == getMajorCulture()).getColor();
+            case 2: //cores mode
+                if (Game.selectedProvince == null)
+                {
+                    if (isCoreFor(getCountry()))
+                        return getCountry().getColor();
+                    else
+                    {
+                        var c = getRandomCore();
+                        if (c == null)
+                            return Color.yellow;
+                        else
+                            return c.getColor();
+                    }
+                }
+                else
+                {
+                    if (isCoreFor(Game.selectedProvince.getCountry()))
+                        return Game.selectedProvince.getCountry().getColor();
+                    else
+                    {
+                        if (isCoreFor(getCountry()))
+                            return getCountry().getColor();
+                        else
+                        {
+                            var so = getRandomCore(x => x.isAlive());
+                            if (so != null)
+                                return so.getColor();
+                            else
+                            {
+                                var c = getRandomCore();
+                                if (c == null)
+                                    return Color.yellow;
+                                else
+                                    return c.getColor();
+                            }
+                        }
+                    }
+                }
+            default:
+                return default(Color);
+        }
     }
 }
 public class Mod : Name
