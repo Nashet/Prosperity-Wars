@@ -32,9 +32,8 @@ public class PopUnitPanel : DragPanel
 
             sb.Append(pop);
             sb.Append("\nPopulation: ").Append(pop.getPopulation());
-
             //if (Game.devMode)
-            sb.Append("\nStorage: ").Append(pop.storage.ToString());
+                sb.Append("\nStorage: ").Append(pop.storage.ToString());
             Artisans isArtisan = pop as Artisans;
             if (isArtisan != null)
             {
@@ -49,7 +48,7 @@ public class PopUnitPanel : DragPanel
             sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
             makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
 
-            if (pop.getLastEscapeSize()!= 0)
+            if (pop.getLastEscapeSize() != 0)
                 makeLineNew(sb, pop.getLastEscapeTarget(), pop.getLastEscapeSize());
             else
                 sb.Append("\nNo demotions\\migrations\\immigrations");
@@ -129,7 +128,7 @@ public class PopUnitPanel : DragPanel
             sb.Append("none");
     }
     private void makeLineNew(StringBuilder sb, IEscapeTarget target, int size)
-    {       
+    {
         // extra type conversion could be reduced by adding demotion type flag in PopUnit.LastDemotion
         var targetIsProvince = target as Province;
         if (targetIsProvince == null) // Assuming target is PopType
@@ -149,7 +148,7 @@ public class PopUnitPanel : DragPanel
                 sb.Append("\n").Append("Immigration: ");
                 sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
             }
-        }     
+        }
     }
     //static private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
     //{
