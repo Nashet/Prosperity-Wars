@@ -316,8 +316,8 @@ public class Game : ThreadedJob
         int mapSize = 20000;//30000;
         int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
 #else
-        int mapSize = 60000;
-        int width = 240 + Random.Next(80);
+        int mapSize = 40000;
+        int width = 200 + Random.Next(80);
 #endif          
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
         //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));

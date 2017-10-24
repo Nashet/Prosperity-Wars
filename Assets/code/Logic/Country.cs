@@ -804,13 +804,14 @@ public class Country : Staff
         return result;
     }
 
-    internal Value getGDPPer1000()
+    internal float getGDPPer1000()
     {
-        Value res = getGDP();
-        res.multiply(1000);
-        res.divide(getMenPopulation());
+        return getGDP().get() * 1000f  / getFamilyPopulation();
+        // overflows
+        //res.multiply(1000);
+        //res.divide(getFamilyPopulation());
 
-        return res;
+        //return res;
     }
     //****************************
     internal Value getAllExpenses()
@@ -836,7 +837,7 @@ public class Country : Staff
         goldMinesIncome.set(0f);
         unemploymentSubsidiesExpense.set(0f);
         ownedFactoriesIncome.set(0f);
-        factorySubsidiesExpense.set(0f);        
+        factorySubsidiesExpense.set(0f);
         storageBuyingExpense.set(0f);
         soldiersWageExpense.setZero();
     }

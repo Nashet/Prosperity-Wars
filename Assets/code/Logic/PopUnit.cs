@@ -178,23 +178,23 @@ abstract public class PopUnit : Producer
         }
         source.payWithoutRecord(this, source.cash.multiplyOutside(newPopShare));
 
-        
+
         //Producer's fields:
         //if convert from artisan to non-artisan
         //if (source.popType == PopType.Artisans && newPopType != PopType.Artisans)        
         //{
-            if (newPopType == PopType.TribeMen)
-            {
-                storage = new Storage(Product.Cattle);
-                gainGoodsThisTurn = new Storage(Product.Cattle);
-                sentToMarket = new Storage(Product.Cattle);
-            }
-            else
-            {
-                storage = new Storage(Product.Grain);
-                gainGoodsThisTurn = new Storage(Product.Grain);
-                sentToMarket = new Storage(Product.Grain);
-            }
+        if (newPopType == PopType.TribeMen)
+        {
+            storage = new Storage(Product.Cattle);
+            gainGoodsThisTurn = new Storage(Product.Cattle);
+            sentToMarket = new Storage(Product.Cattle);
+        }
+        else
+        {
+            storage = new Storage(Product.Grain);
+            gainGoodsThisTurn = new Storage(Product.Grain);
+            sentToMarket = new Storage(Product.Grain);
+        }
         //}
         //else
         //{
@@ -306,7 +306,9 @@ abstract public class PopUnit : Producer
         needsFullfilled.setZero();
         didntGetPromisedUnemloymentSubsidy = false;
         lastEscaped.value = 0;
-        //storage.setZero();  // may mess with aristocrats
+       // if (popType != PopType.Aristocrats)
+        //    storage.setZero();  // may mess with aristocrats
+        // makes too mush tribes -> failes economy
     }
     public int getMobilized()
     {
@@ -770,7 +772,7 @@ abstract public class PopUnit : Producer
                             realConsumption = new Storage(storage.getProduct(), need);
                         else
                             realConsumption = need;
-                        
+
 
                         consumeFromItself(realConsumption);
                         //storage.subtract(need);
@@ -1168,7 +1170,7 @@ abstract public class PopUnit : Producer
     virtual internal void invest()
     {
         if (getCountry().isInvented(Invention.Banking))
-        {               
+        {
             Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
             if (extraMoney.isNotZero())
                 getBank().takeMoney(this, extraMoney);
