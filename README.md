@@ -31,7 +31,7 @@ So, main principles of that simulation are:
  - political\culture\core map mode
  - basic diplomacy (only relations for now)
  - substitute products - https://github.com/Nashet/EconomicSimulation/wiki/Products
- - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) 
+ - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.svg?columns=all)](https://waffle.io/Nashet/EconomicSimulation) 
 
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           
 
