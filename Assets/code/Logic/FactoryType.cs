@@ -30,7 +30,7 @@ public class FactoryType
     {
         new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
         new FactoryType("Gold pit", new Storage(Product.Gold, 2f), true);
-        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), true);
+        new FactoryType("Metal pit", new Storage(Product.MetalOre, 2f), true);
         new FactoryType("Coal pit", new Storage(Product.Coal, 3f), true);
         new FactoryType("Cotton farm", new Storage(Product.Cotton, 2f), false);
         new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
@@ -55,7 +55,7 @@ public class FactoryType
 
         resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Fuel, 0.5f));
-        resourceInput.set(new Storage(Product.MetallOre, 2f));
+        resourceInput.set(new Storage(Product.MetalOre, 2f));
         new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
         resourceInput = new StorageSet();

@@ -16,7 +16,7 @@ public class Product : Name
     private readonly List<Product> substitutes;
     private readonly Color color;
 
-    internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetallOre,
+    internal static readonly Product Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetalOre,
     Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
     Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
         Coal = new Product("Coal", 1f, Color.black),
@@ -45,7 +45,7 @@ public class Product : Name
         Stone = new Product("Stone",  1f, new Color(0.82f, 0.62f, 0.82f));//light grey
         Cement = new Product("Cement",  2f);
 
-        MetallOre = new Product("Metal ore", 3f, Color.blue);
+        MetalOre = new Product("Metal ore", 3f, Color.blue);
         Metal = new Product("Metal",  6f);
 
         ColdArms = new Product("Cold arms",  13f);
@@ -215,7 +215,7 @@ public class Product : Name
     {
         if (
             (
-            (this == Metal || this == MetallOre || this == ColdArms) && !country.isInvented(Invention.Metal))
+            (this == Metal || this == MetalOre || this == ColdArms) && !country.isInvented(Invention.Metal))
             || (!country.isInvented(Invention.SteamPower) && (this == Machinery || this == Cement))
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))

@@ -207,7 +207,7 @@ public class Game : ThreadedJob
         Country.allCountries[3].getCapital().setResource(Product.Gold);
         Country.allCountries[4].getCapital().setResource(Product.Cotton);
         Country.allCountries[5].getCapital().setResource(Product.Stone);
-        Country.allCountries[6].getCapital().setResource(Product.MetallOre);
+        Country.allCountries[6].getCapital().setResource(Product.MetalOre);
         Country.allCountries[7].getCapital().setResource(Product.Wood);
     }
 
