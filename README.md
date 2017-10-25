@@ -2,7 +2,7 @@
 
 ## Demo
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
-And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
+And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster and has bigger map
 
 ## Description
 Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
@@ -10,14 +10,14 @@ Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://gi
 Making that tool made me disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation,  I decided to try to make my own.
 So, main principles of that simulation are:
 * free market agent based economy simulation (currently with one currency - gold)
-* no ridiculous x5 price limits (except 0.001 and 999), allowing realistic inflation
+* no price limits (except 0.001 and 999), allowing realistic inflation
 * population consume goods not in fixed order but - at first cheap goods, then expensive
 * factories can compete for workforce by changeable salary
 * factories have specific owner like government or population unit
 * capitalists can take loans form national bank for business expansion 
 * governments can put extra money in bank
 
-## What it has now (v0.13.0)
+## What it has now (v0.15.0)
  - provinces and countries
  - Movements and Rebellions
  - factories and national banks
@@ -30,6 +30,7 @@ So, main principles of that simulation are:
  - migration\immigration\assimilation
  - political\culture\core map mode
  - basic diplomacy (only relations for now)
+ - substitute products - https://github.com/Nashet/EconomicSimulation/wiki/Products
  - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.png?label=bug&title=bugs)](https://waffle.io/Nashet/EconomicSimulation) 
 
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           

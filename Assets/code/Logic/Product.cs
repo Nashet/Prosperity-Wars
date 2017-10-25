@@ -23,7 +23,7 @@ public class Product : Name
         Tobacco = new Product("Tobacco", 1f, Color.green),
         Electronics = new Product("Electronics", 1f);
     // abstract products
-    internal static readonly Product Food, Sugar, Fibres, Fuel;
+    internal static readonly Product Food, Sugar, Fibers, Fuel;
 
     static Product()
     {
@@ -64,7 +64,7 @@ public class Product : Name
         // abstract products
         Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit });
         Sugar = new Product("Sugar",  0.04f, new List<Product> { Grain, Fruit });
-        Fibres = new Product("Fibres", 0.04f, new List<Product> { Cattle, Cotton });
+        Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton });
         Fuel = new Product("Fuel",  0.04f, new List<Product> { Wood, Coal, Oil });
 
         foreach (var item in getAllNonAbstract())

@@ -59,7 +59,7 @@ public class FactoryType
         new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
         resourceInput = new StorageSet();
-        resourceInput.set(new Storage(Product.Fibres, 1f));
+        resourceInput.set(new Storage(Product.Fibers, 1f));
         new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
         resourceInput = new StorageSet();
