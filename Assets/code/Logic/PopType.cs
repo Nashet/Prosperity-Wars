@@ -7,7 +7,7 @@ using System.Text;
 public class PopType : IEscapeTarget
 {
     private readonly static List<PopType> allPopTypes = new List<PopType>();
-    public static readonly PopType TribeMen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
+    public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
 
 
     ///<summary> per 1000 men </summary>    
@@ -29,7 +29,7 @@ public class PopType : IEscapeTarget
         var tribemenLifeNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 1) });
         var tribemenEveryDayNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 2) });
         var tribemenLuxuryNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 3) });
-        TribeMen = new PopType("Tribesmen", new Storage(Product.Cattle, 1.0f), 2f,
+        Tribesmen = new PopType("Tribesmen", new Storage(Product.Cattle, 1.0f), 2f,
             militaryNeeds, tribemenLifeNeeds, tribemenEveryDayNeeds, tribemenLuxuryNeeds);
         //***************************************next type***************************
         var aristocratsLifeNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 1) });
@@ -226,7 +226,7 @@ public class PopType : IEscapeTarget
 
     internal bool isPoorStrata()
     {
-        return this == PopType.Farmers || this == PopType.Workers || this == PopType.TribeMen || this == PopType.Soldiers;
+        return this == PopType.Farmers || this == PopType.Workers || this == PopType.Tribesmen || this == PopType.Soldiers;
     }
 
     internal bool isRichStrata()
@@ -240,14 +240,14 @@ public class PopType : IEscapeTarget
     }
     public bool canBeUnemployed()
     {
-        return this == PopType.Farmers || this == PopType.Workers || this == PopType.TribeMen;
+        return this == PopType.Farmers || this == PopType.Workers || this == PopType.Tribesmen;
     }
     /// <summary>
     /// Returns true if can produce something by himself
     /// </summary>    
     internal bool isProducer()
     {
-        return this == PopType.Farmers || this == PopType.TribeMen || this == PopType.Artisans;
+        return this == PopType.Farmers || this == PopType.Tribesmen || this == PopType.Artisans;
     }
     /// <summary>
     /// Makes sure that pops consume product in cheap-first order

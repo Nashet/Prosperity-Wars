@@ -33,12 +33,12 @@ abstract public class CattleGetter : PopUnit
         sentToMarket = new Storage(Product.Cattle);
     }
 }
-public class Tribemen : CattleGetter
+public class Tribesmen : CattleGetter
 {
-    public Tribemen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.TribeMen, where, culture)
+    public Tribesmen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Tribesmen, where, culture)
     {
     }
-    public Tribemen(int iamount, Culture iculture, Province where) : base(iamount, PopType.TribeMen, iculture, where)
+    public Tribesmen(int iamount, Culture iculture, Province where) : base(iamount, PopType.Tribesmen, iculture, where)
     {
     }
     public override bool canThisDemoteInto(PopType targetType)
@@ -144,7 +144,7 @@ public class Farmers : GrainGetter
     public override bool canThisDemoteInto(PopType targetType)
     {
         if (targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
-         || targetType == PopType.TribeMen
+         || targetType == PopType.Tribesmen
          || targetType == PopType.Workers
             )
             return true;
@@ -272,7 +272,7 @@ public class Aristocrats : GrainGetter
     {
         if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
             || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
-            || targetType == PopType.TribeMen)
+            || targetType == PopType.Tribesmen)
             return true;
         else
             return false;
@@ -382,7 +382,7 @@ public class Soldiers : GrainGetter
     {
         if (//targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
             //||
-            targetType == PopType.TribeMen
+            targetType == PopType.Tribesmen
             || targetType == PopType.Workers
             )
             return true;
@@ -721,7 +721,7 @@ public class Workers : GrainGetter
 
     public override bool canThisDemoteInto(PopType targetType)
     {
-        if (targetType == PopType.TribeMen
+        if (targetType == PopType.Tribesmen
             || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy))
             return true;
         else

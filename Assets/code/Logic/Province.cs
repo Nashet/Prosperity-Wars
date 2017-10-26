@@ -802,7 +802,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     /// </summary>    
     internal float getOverpopulationAdjusted(PopUnit pop)
     {
-        if (pop.popType == PopType.TribeMen || pop.popType == PopType.Farmers)
+        if (pop.popType == PopType.Tribesmen || pop.popType == PopType.Farmers)
         {
             float res = getOverpopulation();
             res -= 1f;
@@ -817,7 +817,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     {
         float usedLand = 0f;
         foreach (PopUnit pop in allPopUnits)
-            if (pop.popType == PopType.TribeMen)
+            if (pop.popType == PopType.Tribesmen)
                 usedLand += pop.getPopulation() * Options.PopMinLandForTribemen;
             else if (pop.popType == PopType.Farmers)
                 usedLand += pop.getPopulation() * Options.PopMinLandForFarmers;

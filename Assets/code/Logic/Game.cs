@@ -264,15 +264,15 @@ public class Game : ThreadedJob
         {
             if (province.getCountry() == Country.NullCountry)
             {
-                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);
+                Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);
             }
             else
             {
                 PopUnit pop;
                 if (Game.devMode)
-                    pop = new Tribemen(2000, province.getCountry().getCulture(), province);
+                    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
                 else
-                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
+                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
 
 
                 if (province.getCountry() == Game.Player)

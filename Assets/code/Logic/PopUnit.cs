@@ -111,7 +111,7 @@ abstract public class PopUnit : Producer
              && (x as PopUnit).getProvince().isCapital(), "Capital of Polis", 1f, false),
              new Modifier(x=>(x as PopUnit).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).getCountry().government.getValue() == Government.Tribal
-             && (x as PopUnit).popType!=PopType.TribeMen, "Government is Tribal", -0.5f, false),
+             && (x as PopUnit).popType!=PopType.Tribesmen, "Government is Tribal", -0.5f, false),
              new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
     }
@@ -183,7 +183,7 @@ abstract public class PopUnit : Producer
         //if convert from artisan to non-artisan
         //if (source.popType == PopType.Artisans && newPopType != PopType.Artisans)        
         //{
-        if (newPopType == PopType.TribeMen)
+        if (newPopType == PopType.Tribesmen)
         {
             storage = new Storage(Product.Cattle);
             gainGoodsThisTurn = new Storage(Product.Cattle);
@@ -408,7 +408,7 @@ abstract public class PopUnit : Producer
     /// </summary>    
     public static PopUnit makeVirtualPop(PopType targetType, PopUnit source, int sizeOfNewPop, Province where, Culture culture)
     {
-        if (targetType == PopType.TribeMen) return new Tribemen(source, sizeOfNewPop, where, culture);
+        if (targetType == PopType.Tribesmen) return new Tribesmen(source, sizeOfNewPop, where, culture);
         else
             if (targetType == PopType.Farmers) return new Farmers(source, sizeOfNewPop, where, culture);
         else
@@ -492,7 +492,7 @@ abstract public class PopUnit : Producer
             return new Procent((getPopulation() - employed) / (float)getPopulation());
         }
         else
-            if (popType == PopType.Farmers || popType == PopType.TribeMen)
+            if (popType == PopType.Farmers || popType == PopType.Tribesmen)
         {
             float overPopulation = getProvince().getOverpopulation();
             if (overPopulation <= 1f)
@@ -512,7 +512,7 @@ abstract public class PopUnit : Producer
     }
     public override void payTaxes() // should be abstract 
     {
-        if (Economy.isMarket.checkIftrue(getCountry()) && popType != PopType.TribeMen)
+        if (Economy.isMarket.checkIftrue(getCountry()) && popType != PopType.Tribesmen)
         {
             Value taxSize;
             if (this.popType.isPoorStrata())
