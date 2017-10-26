@@ -852,7 +852,7 @@ abstract public class PopUnit : Producer
     }
     private Separatism getPotentialSeparatismTarget()
     {
-        foreach (var item in getProvince().getCores())
+        foreach (var item in getProvince().getAllCores())
         {
             if (!item.isAlive() && item != getCountry() && item.getCulture() == this.culture)//todo doesn't supports different countries for same culture
             {

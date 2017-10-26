@@ -5,24 +5,18 @@ using System;
 using System.Linq;
 using System.Text;
 
-public interface IHasStatistics
-{
-    void setStatisticToZero();
-}
-public interface IHasCountry
-{
-    Country getCountry();
-}
-public interface IEscapeTarget
-{
 
-}
 public class Province : Name, IEscapeTarget, IHasCountry
 {
     public enum TerrainTypes
     {
         Plains, Mountains
     };
+    public static readonly ConditionsListForDoubleObjects canGetIndependence = new ConditionsListForDoubleObjects(new List<Condition>
+    {
+        new ConditionForDoubleObjects((province, country)=>(province as Province).hasCore(x=>x!=country), x=>"Has another core", true),
+        new ConditionForDoubleObjects((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),        
+    });
     public readonly static List<Province> allProvinces = new List<Province>();
 
     private readonly int ID;
@@ -247,8 +241,6 @@ public class Province : Name, IEscapeTarget, IHasCountry
 
         if (taker != Country.NullCountry)
             cores.Add(taker);
-
-
     }
     public void simulate()
     {
@@ -261,7 +253,13 @@ public class Province : Name, IEscapeTarget, IHasCountry
         //    if (item.Value.isDatePassed())
         //}
         modifiers.RemoveAll((modifier, date) => date != default(DateTime) && date.isDatePassed());
-
+    }
+    /// <summary>
+    /// returns true if ANY of cores matches  predicate
+    /// </summary>    
+    public bool hasCore(Func<Country, bool> predicate)
+    {
+        return cores.Any(predicate);
     }
     public bool isCoreFor(Country country)
     {
@@ -286,10 +284,26 @@ public class Province : Name, IEscapeTarget, IHasCountry
             return sb.ToString();
         }
     }
+    public IEnumerable<Country> getAllCores()
+    {
+        foreach (var core in cores)
+            yield return core;
+    }
+    internal Country getRandomCore()
+    {
+        return cores.PickRandom();
+    }
+    internal Country getRandomCore(Predicate<Country> predicate)
+    {
+        return cores.FindAll(predicate).PickRandom();
+    }
+    /// <summary>
+    /// Secedes province to Taker. Also kills old province owner if it was last province
+    /// </summary>    
     public void secedeTo(Country taker, bool addModifier)
     {
         Country oldCountry = getCountry();
-        //refuse loans to old country bank
+        //refuse pay back loans to old country bank
         foreach (var agent in getAllAgents())
         {
             if (agent.loans.isNotZero())
@@ -335,8 +349,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
             if (modifiers.ContainsKey(Mod.recentlyConquered))
                 modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
             else
-                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
-        // modifiers.Add(Mod.blockade, default(DateTime));
+                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));         
     }
     public int howFarFromCapital()
     {
@@ -350,19 +363,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     {
         return getCountry().getCapital() == this;
     }
-    public IEnumerable<Country> getCores()
-    {
-        foreach (var core in cores)
-            yield return core;
-    }
-    internal Country getRandomCore()
-    {
-        return cores.PickRandom();
-    }
-    internal Country getRandomCore(Predicate<Country> predicate)
-    {
-        return cores.FindAll(predicate).PickRandom();
-    }
+
     internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
     {
         return allProvinces.PickRandom(predicate);
@@ -970,7 +971,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
                         return Color.gray;
                     else
                         return getResource().getColor();
-                }                                       
+                }
             case 1: //culture mode
                 return Country.allCountries.Find(x => x.getCulture() == getMajorCulture()).getColor();
             case 2: //cores mode
@@ -1030,4 +1031,16 @@ public class Mod : Name
     //    expireDate = Game.date;
     //    expireDate.AddYears(years);
     //}
+}
+public interface IHasStatistics
+{
+    void setStatisticToZero();
+}
+public interface IHasCountry
+{
+    Country getCountry();
+}
+public interface IEscapeTarget
+{
+
 }

@@ -7,7 +7,7 @@ using System.Text;
 public class ProvincePanel : MonoBehaviour
 {
     public Text generaltext;
-    public Button btnOwner, btnBuild, btAttackThat, btMobilize;
+    public Button btnOwner, btnBuild, btAttackThat, btMobilize, btGrandIndependence;
 
     // Use this for initialization    
     void Start()
@@ -15,7 +15,7 @@ public class ProvincePanel : MonoBehaviour
         MainCamera.provincePanel = this;
         hide();
     }
-    public void hide()
+    public void hide()    // it's cause it did not inherit my panel class
     {
         gameObject.SetActive(false);
     }
@@ -34,6 +34,10 @@ public class ProvincePanel : MonoBehaviour
             MainCamera.buildPanel.hide();
         else
             MainCamera.buildPanel.show(true);
+    }
+    public void onGrantIndependenceClick()
+    {
+        Game.selectedProvince.getRandomCore(x => x != Game.Player).onGrantedProvince(Game.selectedProvince);         
     }
     public void onCountryDiplomacyClick()
     {
@@ -159,8 +163,10 @@ public class ProvincePanel : MonoBehaviour
             btMobilize.interactable = false;
         }
 
-        if (Game.devMode) sb.Append("\nColor: ").Append(province.getColorID());
-        btAttackThat.interactable = Country.canAttack.isAllTrue(Game.Player, province, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
+        if (Game.devMode)
+            sb.Append("\nColor: ").Append(province.getColorID());
+        btAttackThat.interactable = Country.canAttack.isAllTrue(province, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
+        btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(province, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().tooltip);
         generaltext.text = sb.ToString();
     }
     public void onddMapModesChange(int newMapMode)

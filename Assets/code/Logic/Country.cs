@@ -57,11 +57,12 @@ public class Country : Staff
     public readonly ModifiersList modMyOpinionOfXCountry;
     public static readonly ConditionsListForDoubleObjects canAttack = new ConditionsListForDoubleObjects(new List<Condition>
     {
-        new ConditionForDoubleObjects((country, province)=>(province as Province).isNeighbor(country as Country), x=>"Is neighbor province", true),
-        //new ConditionForDoubleObjects((country, province)=>(province as Province).getCountry().government.getValue, x=>"Is neighbor province", false),
-        new ConditionForDoubleObjects((country, province)=>!Government.isDemocracy.checkIftrue(country)
+        new ConditionForDoubleObjects((province, country)=>(province as Province).isNeighbor(country as Country), x=>"Is neighbor province", true),
+        //new ConditionForDoubleObjects((province, province)=>(province as Province).getCountry().government.getValue, x=>"Is neighbor province", false),
+        new ConditionForDoubleObjects((province, country)=>!Government.isDemocracy.checkIftrue(country)
         || !Government.isDemocracy.checkIftrue((province as Province).getCountry()), x=>"Democracies can't attack each other", true),
     });
+
 
     internal void annexTo(Country country)
     {
@@ -144,7 +145,18 @@ public class Country : Staff
             //markInvented(Invention.Manufactories);
         }
     }
-
+    internal void onGrantedProvince(Province province)
+    {
+        var oldCountry = province.getCountry();
+        changeRelation(oldCountry, 1.00f);
+        oldCountry.changeRelation(this, 1.00f);
+        if (!this.isAlive())
+        {
+            alive = true;
+            moveCapitalTo(province);
+        }
+        province.secedeTo(this, false);         
+    }
     internal void onSeparatismWon(Country oldCountry)
     {
         foreach (var item in oldCountry.ownedProvinces.ToList())
@@ -247,7 +259,7 @@ public class Country : Staff
         var res = new List<Country>();
         foreach (var province in ownedProvinces)
         {
-            foreach (var core in province.getCores())
+            foreach (var core in province.getAllCores())
             {
                 if (!res.Contains(core))
                     res.Add(core);
@@ -343,7 +355,12 @@ public class Country : Staff
             opinionOf.Add(country, opinion);
             return opinion;
         }
-
+    }
+    public void changeRelation(Country country, float change)
+    {
+        var relation = getRelationTo(country);
+        relation.add(change, false);
+        relation.clamp100();
     }
     public Culture getCulture()
     {
@@ -631,19 +648,16 @@ public class Country : Staff
         }
 
         consumeNeeds(); // Should go After all Armies consumption
-                        //Procent opinion;
+
+        //Procent opinion;
         foreach (var item in Country.getExisting())
             if (item != this)
             {
-                var procent = getRelationTo(item);
-                procent.add(modMyOpinionOfXCountry.getModifier(item), false);
-                procent.clamp100();
+                changeRelation(item, modMyOpinionOfXCountry.getModifier(item));                
             }
         movements.RemoveAll(x => x.isEmpty());
         foreach (var item in movements.ToArray())
-            item.simulate();
-
-
+            item.simulate();   
     }
     /// <summary>
     /// For AI only
@@ -661,7 +675,7 @@ public class Country : Staff
                     && (this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
                         || possibleTarget.getCountry().isAI() && this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.1f)
-                    && Country.canAttack.isAllTrue(this, possibleTarget)
+                    && Country.canAttack.isAllTrue(possibleTarget, this)
                     )
                 {
                     mobilize(ownedProvinces);
@@ -806,7 +820,7 @@ public class Country : Staff
 
     internal float getGDPPer1000()
     {
-        return getGDP().get() * 1000f  / getFamilyPopulation();
+        return getGDP().get() * 1000f / getFamilyPopulation();
         // overflows
         //res.multiply(1000);
         //res.divide(getFamilyPopulation());
