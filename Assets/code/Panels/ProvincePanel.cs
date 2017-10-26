@@ -130,7 +130,7 @@ public class ProvincePanel : MonoBehaviour
         sb.Append("\nPopulation (with families): ").Append(province.getFamilyPopulation());
         sb.Append("\nAverage loyalty: ").Append(province.getAverageLoyalty());
         sb.Append("\nMajor culture: ").Append(province.getMajorCulture());
-        sb.Append("\nTax income: ").Append(province.getIncomeTax());
+        sb.Append("\nGDP: ").Append(province.getGDP());
         sb.Append("\nResource: ");
         if (province.getResource() == null)
             sb.Append("none ");

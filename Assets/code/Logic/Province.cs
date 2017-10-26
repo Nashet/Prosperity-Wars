@@ -15,7 +15,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     public static readonly ConditionsListForDoubleObjects canGetIndependence = new ConditionsListForDoubleObjects(new List<Condition>
     {
         new ConditionForDoubleObjects((province, country)=>(province as Province).hasCore(x=>x!=country), x=>"Has another core", true),
-        new ConditionForDoubleObjects((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),        
+        new ConditionForDoubleObjects((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),
     });
     public readonly static List<Province> allProvinces = new List<Province>();
 
@@ -349,7 +349,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
             if (modifiers.ContainsKey(Mod.recentlyConquered))
                 modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
             else
-                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));         
+                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
     }
     public int howFarFromCapital()
     {
@@ -1015,6 +1015,14 @@ public class Province : Name, IEscapeTarget, IHasCountry
             default:
                 return default(Color);
         }
+    }
+    public Value getGDP()
+    {
+        Value result = new Value(0);
+        foreach (var producer in getAllAgents())
+            if (producer.gainGoodsThisTurn.get() > 0f)
+                result.add(Game.market.getCost(producer.gainGoodsThisTurn).get() - Game.market.getCost(producer.getConsumedTotal()).get());
+        return result;
     }
 }
 public class Mod : Name

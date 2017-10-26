@@ -154,6 +154,7 @@ public class Country : Staff
         {
             alive = true;
             moveCapitalTo(province);
+            setPrefix();
         }
         province.secedeTo(this, false);         
     }
@@ -774,16 +775,9 @@ public class Country : Staff
     public Value getGDP()
     {
         Value result = new Value(0);
-        foreach (var prov in ownedProvinces)
+        foreach (var province in ownedProvinces)
         {
-            foreach (var producer in prov.allFactories)
-                if (producer.gainGoodsThisTurn.get() > 0f)
-                    result.add(Game.market.getCost(producer.gainGoodsThisTurn).get() - Game.market.getCost(producer.getConsumedTotal()).get());
-
-            foreach (var pop in prov.allPopUnits)
-                if (pop.popType.isProducer())
-                    if (pop.gainGoodsThisTurn.get() > 0f)
-                        result.add(Game.market.getCost(pop.gainGoodsThisTurn));
+            result.add(province.getGDP());
         }
         return result;
     }
