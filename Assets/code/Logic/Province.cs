@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Text;
 
-
 public class Province : Name, IEscapeTarget, IHasCountry
 {
     public enum TerrainTypes
@@ -1021,7 +1020,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         Value result = new Value(0);
         foreach (var producer in getAllAgents())
             if (producer.gainGoodsThisTurn.get() > 0f)
-                result.add(Game.market.getCost(producer.gainGoodsThisTurn).get() - Game.market.getCost(producer.getConsumedTotal()).get());
+                result.add(Game.market.getCost(producer.gainGoodsThisTurn).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
         return result;
     }
 }
