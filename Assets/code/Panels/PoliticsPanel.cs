@@ -2,10 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-public class tr : Dropdown
-{
-    //override d
-}
+
 public class PoliticsPanel : DragPanel
 {
     public Text descriptionText, movementsText;
@@ -18,7 +15,6 @@ public class PoliticsPanel : DragPanel
     public AbstractReformValue selectedReformValue;
 
     private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
-
 
     // Use this for initialization
     void Start()
@@ -81,7 +77,7 @@ public class PoliticsPanel : DragPanel
         refresh(false);
     }
     void rebuildDropDown()
-    {                                     
+    {
         //dropDown.Hide();        
         var toDestroy = dropDown.transform.Find("Dropdown List");
         if (toDestroy != null)
@@ -171,7 +167,7 @@ public class PoliticsPanel : DragPanel
             {
                 if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                 { // has enough voters
-                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     forceDecisionButton.interactable = false;
                     voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
@@ -179,7 +175,7 @@ public class PoliticsPanel : DragPanel
                 else // not enough voters
                 {
                     voteButton.interactable = false;
-                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue( Game.Player, selectedReformValue, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }

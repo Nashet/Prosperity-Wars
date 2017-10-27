@@ -24,7 +24,7 @@ public class Country : Staff
     private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
     private readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
-
+    
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
     public readonly StorageSet storageSet = new StorageSet();
@@ -934,5 +934,17 @@ public class Country : Staff
     override public Country getCountry()
     {
         return this;
+    }
+    /// <summary>
+    /// Gets reform wich can take given value
+    /// </summary>   
+    internal AbstractReform getReform(AbstractReformValue abstractReformValue)
+    {
+        foreach (var item in reforms)
+        {
+            if (item.canHaveValue(abstractReformValue))
+                return item;
+        }
+        return null;
     }
 }

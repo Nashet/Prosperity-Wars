@@ -306,7 +306,7 @@ abstract public class PopUnit : Producer
         needsFullfilled.setZero();
         didntGetPromisedUnemloymentSubsidy = false;
         lastEscaped.value = 0;
-       // if (popType != PopType.Aristocrats)
+        // if (popType != PopType.Aristocrats)
         //    storage.setZero();  // may mess with aristocrats
         // makes too mush tribes -> failes economy
     }
@@ -813,7 +813,7 @@ abstract public class PopUnit : Producer
         var result = new Dictionary<AbstractReformValue, float>();
         foreach (var reform in this.getCountry().reforms)
             foreach (AbstractReformValue reformValue in reform)
-                if (reformValue.allowed.isAllTrue(getCountry()))
+                if (reformValue.allowed.isAllTrue(getCountry(), reformValue))
                 {
                     var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
                     //if (howGood.isExist())
@@ -834,7 +834,7 @@ abstract public class PopUnit : Producer
         var list = new Dictionary<KeyValuePair<AbstractReform, AbstractReformValue>, float>();
         foreach (var reform in this.getCountry().reforms)
             foreach (AbstractReformValue reformValue in reform)
-                if (reformValue.allowed.isAllTrue(getCountry()))
+                if (reformValue.allowed.isAllTrue(getCountry(), reformValue))
                 {
                     var howGood = reformValue.modVoting.getModifier(this);//.howIsItGoodForPop(this);
                     //if (howGood.isExist())

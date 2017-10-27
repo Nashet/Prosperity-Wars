@@ -79,7 +79,7 @@ public class Movement : Staff
     }
     public bool isValidGoal()
     {
-        return targetReformValue.allowed.isAllTrue(getPlaceDejure());
+        return targetReformValue.allowed.isAllTrue(getPlaceDejure(), targetReformValue);
     }
     public AbstractReformValue getGoal()
     {

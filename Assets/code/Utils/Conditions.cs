@@ -31,10 +31,10 @@ public class ConditionsList
     /// <summary>
     /// basic constructor
     /// </summary>    
-    public ConditionsList(Condition inlist)
+    public ConditionsList(Condition condition)
     {
         list = new List<Condition>();
-        list.Add(inlist);
+        list.Add(condition);
     }
     /// <summary>
     /// copy constructor
@@ -226,6 +226,24 @@ public class ConditionsListForDoubleObjects : ConditionsList
     public ConditionsListForDoubleObjects(List<Condition> inlist) : base(inlist)
     {
 
+    }
+    /// <summary>
+    /// basic constructor
+    /// </summary>    
+    public ConditionsListForDoubleObjects(Condition condition) :base (condition)
+    {
+        
+    }
+    public ConditionsListForDoubleObjects() : base()
+    {
+
+    }
+    /// <summary>
+    /// copy constructor
+    /// </summary>    
+    public ConditionsListForDoubleObjects(ConditionsList conditionsList):base(conditionsList)
+    {
+       
     }
     public ConditionsListForDoubleObjects addForSecondObject(List<Condition> toAdd)
     {

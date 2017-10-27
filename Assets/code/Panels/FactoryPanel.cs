@@ -12,7 +12,7 @@ public class FactoryPanel : DragPanel//for dragging
     public Text generaltext, efficiencyText;
 
     private Factory shownFactory;
-    reopenButtonStatus reopenButtonflag;
+    private reopenButtonStatus reopenButtonflag;
     // Use this for initialization
     void Start()
     {
@@ -146,8 +146,7 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onPriorityChanged()
     {
-        shownFactory.setPriority((byte)Mathf.RoundToInt(priority.value));
-
+        shownFactory.setPriority((byte)Mathf.RoundToInt(priority.value)); 
     }
     public void onReopenClick()
     {
