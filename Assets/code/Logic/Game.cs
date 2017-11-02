@@ -524,11 +524,11 @@ public class Game : ThreadedJob
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 //Now factories time!               
-                foreach (Factory fact in province.allFactories)
+                foreach (Factory factory in province.allFactories)
                 {
-                    fact.produce();
-                    fact.payTaxes(); // empty for now
-                    fact.paySalary(); // workers get gold or food here                   
+                    factory.produce();
+                    factory.payTaxes(); // empty for now
+                    factory.paySalary(); // workers get gold or food here                   
                 }
                 foreach (PopUnit pop in province.allPopUnits)
                 //That placed here to avoid issues with Aristocrats and Clerics
@@ -582,17 +582,10 @@ public class Game : ThreadedJob
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(getCountry())))
+                    
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
-                    // this is no good cause it changes production type only if someone is unprofitable
-                    // alternative is in Artisans.produce
-                    //if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1)
-                    //{
-                    //    var artisan = pop as Artisans;
-                    //    if (artisan != null)
-                    //        artisan.checkProfit();
-                    //}
+                    
                     //because income come only after consuming, and only after FULL consumption
                     if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
@@ -604,22 +597,15 @@ public class Game : ThreadedJob
                     //if (Game.Random.Next(10) == 1)
                     {
                         pop.calcGrowth();
-
-                        pop.calcPromotions();
-
-                        //pop.calcDemotions();
-                        //pop.calcMigrations();
-                        //pop.calcImmigrations();
+                        pop.calcPromotions();                        
                         if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
                             pop.findBetterLife();
-
                         pop.calcAssimilations();
-                    }
-
+                    }                            
                     if (Game.Random.Next(15) == 1)
-                        pop.invest();
-
+                        pop.invest();            
                 }
+                country.Invest(province);
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)

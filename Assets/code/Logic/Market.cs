@@ -614,7 +614,8 @@ public class Market : Agent//: PrimitiveStorageSet
 
                 //if (balance > 1f) balance = 1f;
                 //&& supply == 0
-                if (demand == 0) balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                if (demand == 0)
+                    balance = Options.MarketZeroDSB; // otherwise - furniture bag
                                                                   // else
                 if (supply == 0)
                     balance = Options.MarketInfiniteDSB;
@@ -696,21 +697,21 @@ public class Market : Agent//: PrimitiveStorageSet
                 //if (balance < 1f) antiBalance = 1 / balance;
                 //else antiBalance = balance;
                 priceChangeSpeed = 0;
-                if (balance == 1f)
+                if (balance >= 0.95f)
                     priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
                 {
                     //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
                     // else
                     //(0.0001f <= balance &&
-                    if (balance <= 0.75f)
+                    if (balance <= 0.8f)
                         priceChangeSpeed = -0.001f + price.get() * -0.02f;
-                    else // balance > 1
-                    {
-                        priceChangeSpeed = 0.001f + price.get() * 0.01f;
-                        //if (balance > 1f) // including infinity!
-                        //   priceChangeSpeed = price.getProduct().getDefaultPrice().get() - price.get();                        
-                    }
+                    //else // balance > 1
+                    //{
+                    //    priceChangeSpeed = 0.001f + price.get() * 0.01f;
+                    //    //if (balance > 1f) // including infinity!
+                    //    //   priceChangeSpeed = price.getProduct().getDefaultPrice().get() - price.get();                        
+                    //}
                 }
                 // antiBalance = price.get();
                 //if (antiBalance > 10) antiBalance = 10;
@@ -743,7 +744,8 @@ public class Market : Agent//: PrimitiveStorageSet
     private void ChangePrice(Storage price, float HowMuch)
     {
         float newValue = HowMuch + price.get();
-        if (newValue <= 0) newValue = Options.minPrice;
+        if (newValue <= 0)
+            newValue = Options.minPrice;
         if (newValue >= Options.maxPrice)
         {
             newValue = Options.maxPrice;

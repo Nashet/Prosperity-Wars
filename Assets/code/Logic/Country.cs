@@ -661,6 +661,77 @@ public class Country : Staff
             item.simulate();
     }
     /// <summary>
+    ///  Retirns null if needs are satisfied
+    /// </summary>         
+    private Product getMostDeficitProduct(IEnumerable<Product> selector)
+    {
+        Storage minFound = null;
+        foreach (var item in selector)
+            if (item.isInvented(this))
+            {
+                var found = storageSet.getFirstStorage(item);
+                if (minFound == null || found.isSmallerThan(minFound))
+                    minFound = found;
+            }
+        if (minFound == null)
+            return null;
+        else
+            return minFound.getProduct();
+    }
+    /// <summary>
+    /// Returns true if succeeded
+    /// </summary>    
+    private bool buildIfCanPE(FactoryType propositionFactory)
+    {
+        // could it give uninvented factory?
+        if (propositionFactory != null)
+        {
+            var cost = propositionFactory.getBuildNeeds();
+            if (storageSet.has(cost))
+            {
+                var newFactory = new Factory(getProvince(), this, propositionFactory);
+                //storage.send(newFactory.getInputProductsReserve(), needFood);
+                storageSet.subtract(cost);
+                return true;
+                //newFactory.constructionNeeds.setZero();
+            }
+        }
+        return false;
+    }
+    internal void Invest(Province province)
+    {
+        if (economy.getValue() == Economy.PlannedEconomy && getCountry().isInvented(Invention.Manufactories))
+            if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+                && province.getUnemployedWorkers() > 0)
+            {
+               
+                //if there is no enough some industrial product - build it
+                var industrialBuild = getMostDeficitProduct(Product.getAllIndustrialProducts(this));
+                if (industrialBuild == null)
+                {
+                    var militaryBuild = getMostDeficitProduct(Product.getAllMilitaryProducts(this));
+                    if (militaryBuild == null)
+                    {
+                        var consumerProductBuild = getMostDeficitProduct(Product.getAllConsumerProducts(this));
+                        if (consumerProductBuild != null)
+                        {
+                            buildIfCanPE(FactoryType.whoCanProduce(consumerProductBuild));
+                        }
+                        //else - all needs are satisfied
+                    }
+                    else
+                        buildIfCanPE(FactoryType.whoCanProduce(militaryBuild));
+                }
+                else
+                    buildIfCanPE(FactoryType.whoCanProduce(industrialBuild));                
+
+
+                //if there is no enough some military product - build it
+                //if there is no enough some consumer product - build it
+            }
+    }
+
+    /// <summary>
     /// For AI only
     /// </summary>
     public void AIThink()

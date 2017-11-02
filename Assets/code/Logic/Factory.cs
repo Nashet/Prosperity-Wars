@@ -15,7 +15,7 @@ public class Factory : SimpleProduction
     private bool toRemove = false;
 
     private bool dontHireOnSubsidies, subsidized;
-    private byte priority = 0;
+    private int priority = 0;
     private readonly Value salary = new Value(0);
 
     internal readonly StorageSet constructionNeeds;
@@ -288,7 +288,7 @@ public class Factory : SimpleProduction
 
     internal void paySalary()
     {
-        if (isWorking())
+        if (isWorking() && getCountry().economy.getValue() != Economy.PlannedEconomy)
         {
             // per 1000 men            
             if (Economy.isMarket.checkIftrue(getCountry()))
@@ -387,8 +387,7 @@ public class Factory : SimpleProduction
     internal void changeSalary()
     {
         //if (getLevel() > 0)
-        if (isWorking() && Economy.isMarket.checkIftrue(getCountry()))
-
+        if (isWorking() && Economy.isMarket.checkIftrue(getCountry())) 
         {
             // rise salary to attract  workforce, including workforce from other factories
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
@@ -443,7 +442,8 @@ public class Factory : SimpleProduction
             difference = maxHiringSpeed;
         else
             if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
-        if (difference > 0)
+
+        if (difference > 0 && getCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
         {
             float inputFactor = getInputFactor().get();
             //fire people if no enough input.            
@@ -563,7 +563,7 @@ public class Factory : SimpleProduction
     internal void payDividend()
     {
         //if (getLevel() > 0)
-        if (isWorking())
+        if (isWorking() && getCountry().economy.getValue() != Economy.PlannedEconomy)
         {
             float saveForYourSelf = wantsMinMoneyReserv();
             float divident = cash.get() - saveForYourSelf;
@@ -587,7 +587,9 @@ public class Factory : SimpleProduction
                 daysUnprofitable = 0;
         }
         else
-        {//closed
+        {
+            //why reopening is here?
+            //closed
             if (!isBuilding())
             {
                 daysClosed++;
@@ -677,10 +679,10 @@ public class Factory : SimpleProduction
 
     public override List<Storage> getHowMuchInputProductsReservesWants()
     {
-        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-            return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel())); // only 1 day reserves with PE
-        else
-            return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
+        //if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+        //    return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel())); // only 1 day reserves with PE
+        //else
+        return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
     }
 
     internal override Procent getInputFactor()
@@ -765,27 +767,24 @@ public class Factory : SimpleProduction
                     Game.market.buy(this, new StorageSet(shoppingList), null);
             }
         }
-        //getInputFactor ?
-        // Include construction needs into getHowMuchInputProductsReservesWants()? No, cause I need graduated buying
         if (isUpgrading() || isBuilding())
         {
             daysInConstruction++;
             bool isBuyingComplete = false;
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+
             {
-                if (!isBuyingComplete)        //do some with time delay
-                    if (isBuilding())
-                    {
-                        var buildingNeeds = getType().getBuildNeeds();
-                        if (getCountry().storageSet.has(buildingNeeds))
-                            isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
-                    }
-                    else if (isUpgrading())
-                    {
-                        var upgradingNeeds = getUpgradeNeeds();
-                        if (getCountry().storageSet.has(upgradingNeeds))
-                            isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
-                    }
+                if (isBuilding())
+                {
+                    var buildingNeeds = getType().getBuildNeeds();
+                    if (getCountry().storageSet.has(buildingNeeds))
+                        isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
+                }
+                else if (isUpgrading())
+                {
+                    var upgradingNeeds = getUpgradeNeeds();
+                    if (getCountry().storageSet.has(upgradingNeeds))
+                        isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
+                }
             }
             else
             {
@@ -800,22 +799,23 @@ public class Factory : SimpleProduction
                 if (minimalFond < 0 && getOwner().canPay(new Value(minimalFond * -1f)))
                     getOwner().payWithoutRecord(this, new Value(minimalFond * -1f));
             }
-            if (isBuyingComplete ||
-               (!Economy.isMarket.checkIftrue(getCountry()) && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
+            if (isBuyingComplete
             {
                 onConstructionComplete();
-
                 //todo avoid extra subtraction and redo whole method
                 if (isBuilding())
                     getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
                 else // assuming isUpgrading()
                     getInputProductsReserve().subtract(getUpgradeNeeds(), false);
             }
-            else if (daysInConstruction == Options.maxDaysBuildingBeforeRemoving)
-                if (isBuilding())
-                    markToDestroy();
-                else // upgrading
-                    stopUpgrading();
+            else
+            {
+                if (daysInConstruction == Options.maxDaysBuildingBeforeRemoving)
+                    if (isBuilding())
+                        markToDestroy();
+                    else // upgrading
+                        stopUpgrading();
+            }
         }
     }
     override internal float getExpences()

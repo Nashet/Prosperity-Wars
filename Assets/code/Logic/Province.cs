@@ -584,11 +584,11 @@ public class Province : Name, IEscapeTarget, IHasCountry
             return new Value(1f);
     }
     /// <summary>
-    /// Returns result divided on groups of factories (List) each with own level of salary
+    /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
     /// </summary>    
-    public IEnumerable<List<Factory>> getFactoriesSalaryDescendingOrder()
+    private IEnumerable<List<Factory>> getFactoriesDescendingOrder(Func<Factory, float> orderMethod)
     {
-        var sortedfactories = allFactories.OrderByDescending(o => o.getSalary());
+        var sortedfactories = allFactories.OrderByDescending(o => orderMethod(o));
         var iterator = sortedfactories.GetEnumerator();
         // Pre read first element
         if (iterator.MoveNext())
@@ -599,7 +599,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
 
             while (iterator.MoveNext())
             {
-                if (iterator.Current.getSalary() == previousFactory.getSalary())
+                if (orderMethod(iterator.Current) == orderMethod(previousFactory))
                     result.Add(iterator.Current);
                 else
                 {
@@ -620,7 +620,13 @@ public class Province : Name, IEscapeTarget, IHasCountry
         if (unemplyedWorkForce > 0)
         {
             // workforceList = workforceList.OrderByDescending(o => o.population).ToList();            
-            foreach (List<Factory> factoryGroup in getFactoriesSalaryDescendingOrder())
+            Func<Factory, float> order;
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                order = (x => x.getPriority());
+            else
+                order = (x => x.getSalary());
+
+            foreach (List<Factory> factoryGroup in getFactoriesDescendingOrder(order))
             {
                 // if there is no enough workforce to fill all factories in group then
                 // workforce should be distributed proportionally
@@ -746,7 +752,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     {
         int counter = 0;
         foreach (Factory factory in allFactories)
-            if (factory.isUpgrading())
+            if (factory.isUpgrading() || factory.isBuilding())
             {
                 counter++;
                 if (counter == limit)
