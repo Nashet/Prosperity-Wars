@@ -6,7 +6,7 @@ using System.Text;
 
 public class DiplomacyPanel : DragPanel
 {
-    public Text  captionText, generalText;
+    public Text captionText, generalText;
     public Button giveControlToAi, giveControlToPlayer;
     Country selectedCountry;
     StringBuilder sb = new StringBuilder();
@@ -29,14 +29,17 @@ public class DiplomacyPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation());
-        sb.Append(", size: ").Append(selectedCountry.getSize());
+        sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation()).Append(", rank: ").Append(selectedCountry.getPopulationRank());
+        sb.Append(". Provinces: ").Append(selectedCountry.getSize()).Append(", rank: ").Append(selectedCountry.getSizeRank());
         //sb.Append(", str: ").Append(selectedCountry.getStregth(null));
-        sb.Append("\nState culture: ").Append(selectedCountry.getCulture());        
-        sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append("; GDP per thousand men: ").Append(selectedCountry.getGDPPer1000());
+
+        sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append(", rank: ").Append(selectedCountry.getGDPRank()).Append(", world share: ").Append(selectedCountry.getWorldGDPShare());
+        sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append(", rank: ").Append(selectedCountry.getGDPPer1000Rank());
         sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append(", ").Append(selectedCountry.economy.getValue()).Append(", ").Append(selectedCountry.minorityPolicy.getValue());
+        sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
+        sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
         sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());
-        if (selectedCountry== Game.Player)
+        if (selectedCountry == Game.Player)
             sb.Append("\n\nOpinion of myself: I'm cool!");
         else
         {

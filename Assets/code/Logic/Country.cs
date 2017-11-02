@@ -24,7 +24,7 @@ public class Country : Staff
     private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
     private readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
-    
+
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
     public readonly StorageSet storageSet = new StorageSet();
@@ -156,7 +156,7 @@ public class Country : Staff
             moveCapitalTo(province);
             setPrefix();
         }
-        province.secedeTo(this, false);         
+        province.secedeTo(this, false);
     }
     internal void onSeparatismWon(Country oldCountry)
     {
@@ -654,11 +654,11 @@ public class Country : Staff
         foreach (var item in Country.getExisting())
             if (item != this)
             {
-                changeRelation(item, modMyOpinionOfXCountry.getModifier(item));                
+                changeRelation(item, modMyOpinionOfXCountry.getModifier(item));
             }
         movements.RemoveAll(x => x.isEmpty());
         foreach (var item in movements.ToArray())
-            item.simulate();   
+            item.simulate();
     }
     /// <summary>
     /// For AI only
@@ -772,15 +772,7 @@ public class Country : Staff
         storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
     }
 
-    public Value getGDP()
-    {
-        Value result = new Value(0);
-        foreach (var province in ownedProvinces)
-        {
-            result.add(province.getGDP());
-        }
-        return result;
-    }
+
     public Procent getUnemployment()
     {
         Procent result = new Procent(0f);
@@ -811,7 +803,15 @@ public class Country : Staff
             result += pro.getPopulationAmountByType(ipopType);
         return result;
     }
-
+    public Value getGDP()
+    {
+        Value result = new Value(0);
+        foreach (var province in ownedProvinces)
+        {
+            result.add(province.getGDP());
+        }
+        return result;
+    }
     internal float getGDPPer1000()
     {
         return getGDP().get() * 1000f / getFamilyPopulation();
@@ -820,6 +820,107 @@ public class Country : Staff
         //res.divide(getFamilyPopulation());
 
         //return res;
+    }
+    static private int ValueOrder(KeyValuePair<Country, Value> x, KeyValuePair<Country, Value> y)
+    {
+        float sumX = x.Value.get();
+        float sumY = y.Value.get();
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    static private int ProcentOrder(KeyValuePair<Culture, Procent> x, KeyValuePair<Culture, Procent> y)
+    {
+        float sumX = x.Value.get();
+        float sumY = y.Value.get();
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    static private int FloatOrder(KeyValuePair<Country, float> x, KeyValuePair<Country, float> y)
+    {
+        float sumX = x.Value;
+        float sumY = y.Value;
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    static private int IntOrder(KeyValuePair<Country, int> x, KeyValuePair<Country, int> y)
+    {
+        float sumX = x.Value;
+        float sumY = y.Value;
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>              
+    public int getGDPRank()
+    {
+        var list = new List<KeyValuePair<Country, Value>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, Value>(item, item.getGDP()));
+        }
+        list.Sort(ValueOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero;
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>
+    public int getGDPPer1000Rank()
+    {
+        var list = new List<KeyValuePair<Country, float>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, float>(item, item.getGDPPer1000()));
+        }
+        list.Sort(FloatOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero
+    }
+    public Procent getWorldGDPShare()
+    {
+        Value worldGDP = new Value(0f);
+        foreach (var item in Country.getExisting())
+        {
+            worldGDP.add(item.getGDP());
+        }
+        return Procent.makeProcent(this.getGDP(), worldGDP);
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>
+    public int getPopulationRank()
+    {
+        var list = new List<KeyValuePair<Country, int>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, int>(item, item.getFamilyPopulation()));
+        }
+        list.Sort(IntOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>
+    public int getSizeRank()
+    {
+        var list = new List<KeyValuePair<Country, int>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, int>(item, item.getSize()));
+        }
+        list.Sort(IntOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero
+    }
+    public List<KeyValuePair<Culture, Procent>> getCultures()
+    {
+        var cultures = new Dictionary<Culture, int>();
+        var totalPopulation = this.getMenPopulation();
+        foreach (var item in getAllPopUnits())
+        {
+            cultures.AddMy(item.culture, item.getPopulation());
+        }
+        var result = new List<KeyValuePair<Culture, Procent>>();
+        foreach (var item in cultures)
+        {
+            result.Add(new KeyValuePair<Culture, Procent>(item.Key, Procent.makeProcent(item.Value, totalPopulation)));
+        }
+        result.Sort(ProcentOrder);
+        return result;
     }
     //****************************
     internal Value getAllExpenses()

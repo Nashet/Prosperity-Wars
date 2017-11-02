@@ -165,7 +165,6 @@ public static class CollectionExtensions
 
     }
 
-
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {
         return source.MinBy(selector, null);
@@ -348,9 +347,29 @@ public static class CollectionExtensions
     public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
     {
         return source.FindAll(predicate).PickRandom();
-        //return source.ElementAt(Game.random.Next(source.Count));
-
+        //return source.ElementAt(Game.random.Next(source.Count));    
     }
+
+
+    public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
+        Func<TKey, TValue, bool> predicate)
+    {
+        var keys = dic.Keys.Where(k => predicate(k, dic[k])).ToList();
+        foreach (var key in keys)
+        {
+            dic.Remove(key);
+        }
+    }
+    public static Storage getStorage(this List<Storage> list, Product product)
+    {
+        foreach (Storage stor in list)
+            if (stor.getProduct() == product)
+                return stor;
+        return new Storage(product, 0f);
+    }
+}
+public static class GetStringExtensions
+{
     public static string getString(this List<Storage> list, string lineBreaker)
     {
         if (list.Count > 0)
@@ -373,6 +392,46 @@ public static class CollectionExtensions
                 return sb.ToString();
             else
                 return "none";
+        }
+        else
+            return "none";
+    }
+
+    public static string getString(this List<KeyValuePair<Culture, Procent>> list, string lineBreaker, int howMuchStringsToShow)
+    {
+        if (list.Count > 0)
+        {
+            var sb = new StringBuilder();
+
+
+            if (list.Count <= howMuchStringsToShow)
+            {
+                bool isFirstRow = true;
+                foreach (var item in list)
+                {
+                    if (!isFirstRow)
+                        sb.Append(lineBreaker);
+                    isFirstRow = false;
+                    sb.Append(item.Key).Append(": ").Append(item.Value);
+                }
+            }
+            else  // there is at least howMuchStringsToShow + 1 elements
+            {
+                bool isFirstRow = true;
+                for (int i = 0; i < howMuchStringsToShow; i++)
+                {
+                    if (!isFirstRow)
+                        sb.Append(lineBreaker);
+                    isFirstRow = false;
+                    sb.Append(list[i].Key).Append(": ").Append(list[i].Value);
+                }
+                var othersSum = new Procent(0f);
+                for (int i = howMuchStringsToShow; i < list.Count; i++)
+                    othersSum.add(list[i].Value);
+                sb.Append(lineBreaker);
+                sb.Append("Others: ").Append(othersSum);
+            }
+            return sb.ToString();
         }
         else
             return "none";
@@ -428,28 +487,8 @@ public static class CollectionExtensions
                 sb.Append(item.Key).Append(" (permanent)");
             else
                 sb.Append(item.Key).Append(" expires in ").Append(item.Value.getYearsUntill()).Append(" years");
-
-
-
         }
         return sb.ToString();
-    }
-
-    public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
-        Func<TKey, TValue, bool> predicate)
-    {
-        var keys = dic.Keys.Where(k => predicate(k, dic[k])).ToList();
-        foreach (var key in keys)
-        {
-            dic.Remove(key);
-        }
-    }
-    public static Storage getStorage(this List<Storage> list, Product product)
-    {
-        foreach (Storage stor in list)
-            if (stor.getProduct() == product)
-                return stor;
-        return new Storage(product, 0f);
     }
 }
 public static class ColorExtensions

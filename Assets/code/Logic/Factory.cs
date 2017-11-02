@@ -48,7 +48,7 @@ public class Factory : SimpleProduction
         conOpen = new Condition(x => (x as Factory).isWorking(), "Open", false),
         conClosed = new Condition(x => !(x as Factory).isWorking(), "Closed", false),
         conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
-        
+
         conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)
         {
             Game.threadDangerSB.Clear();
@@ -67,7 +67,7 @@ public class Factory : SimpleProduction
             , true),
         conPlacedInOurCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
         (factory) => "Enterprise placed in our country", true),
-        conNotLForNotCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country),(factory) => "Economy policy is not Laissez Faire", true)
+        conNotLForNotCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
         ;
 
     internal static readonly ConditionsListForDoubleObjects
@@ -677,7 +677,10 @@ public class Factory : SimpleProduction
 
     public override List<Storage> getHowMuchInputProductsReservesWants()
     {
-        return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel())); // only 1 day reserves with PE
+        else
+            return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
     }
 
     internal override Procent getInputFactor()
@@ -694,6 +697,7 @@ public class Factory : SimpleProduction
             int workers = getWorkForce();
             if (workers > 0)
                 base.produce(new Value(getEfficiency(true).get() * getLevel()));
+
             if (getType() == FactoryType.GoldMine)
             {
                 this.ConvertFromGoldAndAdd(storage);
@@ -744,6 +748,7 @@ public class Factory : SimpleProduction
     /// </summary>
     override public void consumeNeeds()
     {
+        // consume resource needs
         if (isWorking() && !getType().isResourceGathering())
         {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
@@ -760,26 +765,27 @@ public class Factory : SimpleProduction
                     Game.market.buy(this, new StorageSet(shoppingList), null);
             }
         }
+        //getInputFactor ?
         // Include construction needs into getHowMuchInputProductsReservesWants()? No, cause I need graduated buying
         if (isUpgrading() || isBuilding())
         {
             daysInConstruction++;
             bool isBuyingComplete = false;
-            bool isMarket = Economy.isMarket.checkIftrue(getCountry());// province.getOwner().isInvented(InventionType.capitalism);
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                if (isBuilding())
-                {
-                    var buildingNeeds = getType().getBuildNeeds();
-                    if (getCountry().storageSet.has(buildingNeeds))
-                        isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
-                }
-                else if (isUpgrading())
-                {
-                    var upgradingNeeds = getUpgradeNeeds();
-                    if (getCountry().storageSet.has(upgradingNeeds))
-                        isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
-                }
+                if (!isBuyingComplete)        //do some with time delay
+                    if (isBuilding())
+                    {
+                        var buildingNeeds = getType().getBuildNeeds();
+                        if (getCountry().storageSet.has(buildingNeeds))
+                            isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
+                    }
+                    else if (isUpgrading())
+                    {
+                        var upgradingNeeds = getUpgradeNeeds();
+                        if (getCountry().storageSet.has(upgradingNeeds))
+                            isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
+                    }
             }
             else
             {
@@ -794,7 +800,8 @@ public class Factory : SimpleProduction
                 if (minimalFond < 0 && getOwner().canPay(new Value(minimalFond * -1f)))
                     getOwner().payWithoutRecord(this, new Value(minimalFond * -1f));
             }
-            if (isBuyingComplete || (!isMarket && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
+            if (isBuyingComplete ||
+               (!Economy.isMarket.checkIftrue(getCountry()) && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
             {
                 onConstructionComplete();
 

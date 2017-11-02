@@ -7,19 +7,7 @@ using System.Text;
 
 using System.Linq.Expressions;
 
-public class KeyVal<Key, Val>
-{
-    public Key key { get; set; }
-    public Val value { get; set; }
 
-    public KeyVal() { }
-
-    public KeyVal(Key key, Val val)
-    {
-        this.key = key;
-        this.value = val;
-    }
-}
 abstract public class PopUnit : Producer
 {
     ///<summary>buffer popList. To avoid iteration breaks</summary>
@@ -29,10 +17,8 @@ abstract public class PopUnit : Producer
     private int population;
     private int mobilized;
 
-    public readonly PopType popType;
-
+    public readonly PopType popType; 
     public readonly Culture culture;
-
     public readonly Procent education;
     public readonly Procent needsFullfilled;
 
@@ -52,8 +38,8 @@ abstract public class PopUnit : Producer
     private readonly DateTime born;
     private Movement movement;
     private readonly KeyVal<IEscapeTarget, int> lastEscaped = new KeyVal<IEscapeTarget, int>();
-    //if add new fields make sure it's implemented in second constructor and in merge()   
-
+    //if add new fields make sure it's implemented in second constructor and in merge()  
+  
 
     static PopUnit()
     {
@@ -721,77 +707,73 @@ abstract public class PopUnit : Producer
             // reserve.payWithoutRecord(this, reserve.cash);
         }
     }
+    private void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
+    {
+        payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
+        foreach (Storage need in lifeNeeds)
+
+            if (storage.has(need))// don't need to buy on market
+            {
+                Storage realConsumption;
+                if (need.isAbstractProduct())
+                    realConsumption = new Storage(storage.getProduct(), need);
+                else
+                    realConsumption = need;
+
+                consumeFromItself(realConsumption);
+                needsFullfilled.set(1f / 3f);
+                consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
+            }
+            else
+            {
+                //its about lifeneeds only
+                float canConsume = storage.get();
+                consumeFromItself(storage);
+                needsFullfilled.set(canConsume / need.get() / 3f);
+            }
+    }
+    private void consumeWithPlannedEconomy(List<Storage> lifeNeeds)
+    {
+        if (getCountry().storageSet.has(lifeNeeds))
+        {
+            consumeFromCountryStorage(lifeNeeds, getCountry());
+            needsFullfilled.set(1f / 3f);
+        }
+        var everyDayNeeds = getRealEveryDayNeeds();
+        if (getCountry().storageSet.has(everyDayNeeds))
+        {
+            consumeFromCountryStorage(everyDayNeeds, getCountry());
+            needsFullfilled.set(2f / 3f);
+        }
+        var luxuryNeeds = getRealLuxuryNeeds();
+        if (getCountry().storageSet.has(luxuryNeeds))
+        {
+            consumeFromCountryStorage(luxuryNeeds, getCountry());
+            needsFullfilled.set(1f);
+        }
+    }
     /// <summary> !!! Overloaded for artisans </summary>
     public override void consumeNeeds()
     {
         //life needs First
-        List<Storage> needs = getRealLifeNeeds();
+        List<Storage> lifeNeeds = getRealLifeNeeds();
         if (canBuyProducts())
         {
-            buyNeeds(needs, false);
+            buyNeeds(lifeNeeds, false);
         }
         else
         {
             //non - market consumption
             // todo - !! - check for substitutes
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-            {
-                if (getCountry().storageSet.has(needs))
-                {
-                    //getCountry().storageSet.subtract(needs);
-                    //consumedTotal.add(needs);
-                    consumeFromCountryStorage(needs, getCountry());
-                    needsFullfilled.set(1f / 3f);
-                }
-                var everyDayNeeds = getRealEveryDayNeeds();
-                if (getCountry().storageSet.has(everyDayNeeds))
-                {
-                    //getCountry().storageSet.subtract(everyDayNeeds);
-                    //consumedTotal.add(everyDayNeeds);
-                    consumeFromCountryStorage(everyDayNeeds, getCountry());
-                    needsFullfilled.set(2f / 3f);
-                }
-                var luxuryNeeds = getRealEveryDayNeeds();
-                if (getCountry().storageSet.has(luxuryNeeds))
-                {
-                    //getCountry().storageSet.subtract(luxuryNeeds);
-                    //consumedTotal.add(luxuryNeeds);
-                    consumeFromCountryStorage(luxuryNeeds, getCountry());
-                    needsFullfilled.set(1f);
-                }
-            }
-            else
-            {
-                payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
-                foreach (Storage need in needs)
-
-                    if (storage.has(need))// don't need to buy on market
-                    {
-                        Storage realConsumption;
-                        if (need.isAbstractProduct())
-                            realConsumption = new Storage(storage.getProduct(), need);
-                        else
-                            realConsumption = need;
-
-
-                        consumeFromItself(realConsumption);
-                        //storage.subtract(need);
-                        //consumedTotal.set(need);
-                        needsFullfilled.set(1f / 3f);
-                        consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
-                    }
-                    else
-                    {
-                        //its about lifeneeds only
-                        float canConsume = storage.get();
-                        //consumedTotal.set(storage);
-                        //storage.set(0);
-                        consumeFromItself(storage);
-                        needsFullfilled.set(canConsume / need.get() / 3f);
-                    }
-            }
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)            
+                consumeWithPlannedEconomy(lifeNeeds);
+            else                         
+                consumeWithNaturalEconomy(lifeNeeds);
         }
     }
+    /// <summary>
+    /// Overrided for some pop types
+    /// </summary>      
     virtual internal bool canBuyProducts()
     {
         if (Economy.isMarket.checkIftrue(getCountry()))
@@ -1196,5 +1178,18 @@ abstract public class PopUnit : Producer
         sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(getProvince());
         //return popType + " from " + province;
         return sb.ToString();
+    }
+}
+public class KeyVal<Key, Val>
+{
+    public Key key { get; set; }
+    public Val value { get; set; }
+
+    public KeyVal() { }
+
+    public KeyVal(Key key, Val val)
+    {
+        this.key = key;
+        this.value = val;
     }
 }

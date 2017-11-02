@@ -534,7 +534,7 @@ public class Game : ThreadedJob
                 //That placed here to avoid issues with Aristocrats and Clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
+                    //if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
                         pop.produce();
                     pop.takeUnemploymentSubsidies();
                     if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
@@ -547,8 +547,7 @@ public class Game : ThreadedJob
                 }
             }
         //Game.market.ForceDSBRecalculation();
-        // big CONCUME circle
-
+        // big CONCUME circle   
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
             {

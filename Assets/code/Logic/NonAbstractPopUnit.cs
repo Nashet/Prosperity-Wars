@@ -297,7 +297,10 @@ public class Aristocrats : GrainGetter
     }
     internal override bool canBuyProducts()
     {
-        return true;
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return false;
+        else
+            return true;         
     }
     override internal bool canSellProducts()
     {
@@ -468,7 +471,10 @@ public class Capitalists : GrainGetter
     }
     internal override bool canBuyProducts()
     {
-        return true;
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return false;
+        else
+            return true;
     }
     public override bool shouldPayAristocratTax()
     {
@@ -536,7 +542,7 @@ public class Capitalists : GrainGetter
                     }
                 }
             }
-            
+
         }
         base.invest();
     }
@@ -576,36 +582,40 @@ public class Artisans : GrainGetter
     }
     public override void produce()
     {
-        if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
-           )// && (artisansProduction==null 
-            //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
-            changeProductionType();
-
-        if (artisansProduction != null)
+        // artisan shouldn't work with PE
+        if (getCountry().economy.getValue() != Economy.PlannedEconomy)
         {
-            if (artisansProduction.isAllInputProductsCollected())
+            if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
+               )// && (artisansProduction==null 
+                //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
+                changeProductionType();
+
+            if (artisansProduction != null)
             {
-                artisansProduction.produce();
-                if (Economy.isMarket.checkIftrue(getCountry()))
+                if (artisansProduction.isAllInputProductsCollected())
                 {
-                    sentToMarket.set(gainGoodsThisTurn);
-                    storage.setZero();
-                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    artisansProduction.produce();
+                    if (Economy.isMarket.checkIftrue(getCountry()))
+                    {
+                        sentToMarket.set(gainGoodsThisTurn);
+                        storage.setZero();
+                        Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    }
+                    else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+                    {
+                        // send to market?
+                        sentToMarket.set(gainGoodsThisTurn);
+                        storage.setZero();
+                        Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    }
+                    else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                    {
+                        storage.sendAll(getCountry().storageSet);
+                    }
                 }
-                else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
-                {
-                    // send to market?
-                    sentToMarket.set(gainGoodsThisTurn);
-                    storage.setZero();
-                    Game.market.sentToMarket.add(gainGoodsThisTurn);
-                }
-                else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-                {
-                    storage.sendAll(getCountry().storageSet);
-                }
+                //else
+                //   changeProductionType();
             }
-            //else
-            //   changeProductionType();
         }
     }
     public override void consumeNeeds()
@@ -642,7 +652,10 @@ public class Artisans : GrainGetter
     }
     internal override bool canBuyProducts()
     {
-        return true;
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return false;
+        else
+            return true;
     }
     override internal bool canSellProducts()
     {
