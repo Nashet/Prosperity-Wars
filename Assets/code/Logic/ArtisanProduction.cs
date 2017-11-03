@@ -20,7 +20,7 @@ public class ArtisanProduction : SimpleProduction
     {
         throw new DontUseThatMethod();
     }
-    override public List<Storage> getRealNeeds()
+    override public List<Storage> getRealAllNeeds()
     {
         return getRealNeeds(new Value(getOwner().getPopulation() / 1000f));
     }
@@ -66,6 +66,4 @@ public class ArtisanProduction : SimpleProduction
         //shoppingList - getInputProductsReserve(); that is included in getHowMuchInputProductsReservesWants()
         Game.market.buy(this, new StorageSet(shoppingList), null);
     }
-
-
 }

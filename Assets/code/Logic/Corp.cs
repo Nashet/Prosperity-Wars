@@ -49,16 +49,8 @@ public class Corps
         morale.set(0);
         consumption.setZero();
         //here - delete all links on that object        
-    }
-
-
-
-    //internal void demobilizeFrom(Army army)
-    //{
-    //    //army.remove(this);
-    //    origin.demobilize();
-    //    Pool.ReleaseObject(this);
-    //}
+    }  
+    
     public void consume(Country owner)
     {
         var needs = getRealNeeds(owner);

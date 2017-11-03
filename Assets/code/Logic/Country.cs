@@ -142,7 +142,8 @@ public class Country : Staff
             //markInvented(Invention.ProfessionalArmy);
             //markInvented(Invention.Welfare);
 
-            //markInvented(Invention.Manufactories);
+            markInvented(Invention.Manufactories);
+            markInvented(Invention.Collectivism);
         }
     }
     internal void onGrantedProvince(Province province)
@@ -636,12 +637,13 @@ public class Country : Staff
         spBase.multiply(modSciencePoints.getModifier(this));
         sciencePoints.add(spBase);
 
-        if (this.autoPutInBankLimit > 0f)
-        {
-            float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
-            if (extraMoney > 0f)
-                getBank().takeMoney(this, new Value(extraMoney));
-        }
+        if (economy.getValue() != Economy.PlannedEconomy)
+            if (this.autoPutInBankLimit > 0f)
+            {
+                float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
+                if (extraMoney > 0f)
+                    getBank().takeMoney(this, new Value(extraMoney));
+            }
         //buyNeeds();
         foreach (var item in getAllArmies())
         {
@@ -681,7 +683,7 @@ public class Country : Staff
     /// <summary>
     /// Returns true if succeeded
     /// </summary>    
-    private bool buildIfCanPE(FactoryType propositionFactory)
+    private bool buildIfCanPE(FactoryType propositionFactory, Province province)
     {
         // could it give uninvented factory?
         if (propositionFactory != null)
@@ -689,7 +691,7 @@ public class Country : Staff
             var cost = propositionFactory.getBuildNeeds();
             if (storageSet.has(cost))
             {
-                var newFactory = new Factory(getProvince(), this, propositionFactory);
+                var newFactory = new Factory(province, this, propositionFactory);
                 //storage.send(newFactory.getInputProductsReserve(), needFood);
                 storageSet.subtract(cost);
                 return true;
@@ -701,10 +703,10 @@ public class Country : Staff
     internal void Invest(Province province)
     {
         if (economy.getValue() == Economy.PlannedEconomy && getCountry().isInvented(Invention.Manufactories))
-            if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
                 && province.getUnemployedWorkers() > 0)
             {
-               
+
                 //if there is no enough some industrial product - build it
                 var industrialBuild = getMostDeficitProduct(Product.getAllIndustrialProducts(this));
                 if (industrialBuild == null)
@@ -715,15 +717,15 @@ public class Country : Staff
                         var consumerProductBuild = getMostDeficitProduct(Product.getAllConsumerProducts(this));
                         if (consumerProductBuild != null)
                         {
-                            buildIfCanPE(FactoryType.whoCanProduce(consumerProductBuild));
+                            buildIfCanPE(FactoryType.whoCanProduce(consumerProductBuild), province);
                         }
                         //else - all needs are satisfied
                     }
                     else
-                        buildIfCanPE(FactoryType.whoCanProduce(militaryBuild));
+                        buildIfCanPE(FactoryType.whoCanProduce(militaryBuild), province);
                 }
                 else
-                    buildIfCanPE(FactoryType.whoCanProduce(industrialBuild));                
+                    buildIfCanPE(FactoryType.whoCanProduce(industrialBuild), province);
 
 
                 //if there is no enough some military product - build it
@@ -736,6 +738,7 @@ public class Country : Staff
     /// </summary>
     public void AIThink()
     {
+        // attacking neigbors
         if (!isOnlyCountry())
             if (Game.Random.Next(10) == 1)
             {
@@ -756,32 +759,34 @@ public class Country : Staff
             }
         if (Game.Random.Next(90) == 1)
             aiInvent();
-        if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
-        {
-            float newWage;
-            var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get();
-            if (failedToPaySoldiers)
+        // changing salary for soldiers
+        if (economy.getValue() != Economy.PlannedEconomy)
+            if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
             {
-                newWage = getSoldierWage() - getSoldierWage() * 0.2f;
-            }
-            else
-            {
-                var balance = getBalance();
-
-                if (balance > 200f)
-                    newWage = getSoldierWage() + soldierAllNeedsCost * 0.002f + 1f;
-                else if (balance > 50f)
-                    newWage = getSoldierWage() + soldierAllNeedsCost * 0.0005f + 0.1f;
-                else if (balance < -800f)
-                    newWage = 0.0f;
-                else if (balance < 0f)
-                    newWage = getSoldierWage() - getSoldierWage() * 0.5f;
+                float newWage;
+                var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get();
+                if (failedToPaySoldiers)
+                {
+                    newWage = getSoldierWage() - getSoldierWage() * 0.2f;
+                }
                 else
-                    newWage = getSoldierWage(); // don't change wage
+                {
+                    var balance = getBalance();
+
+                    if (balance > 200f)
+                        newWage = getSoldierWage() + soldierAllNeedsCost * 0.002f + 1f;
+                    else if (balance > 50f)
+                        newWage = getSoldierWage() + soldierAllNeedsCost * 0.0005f + 0.1f;
+                    else if (balance < -800f)
+                        newWage = 0.0f;
+                    else if (balance < 0f)
+                        newWage = getSoldierWage() - getSoldierWage() * 0.5f;
+                    else
+                        newWage = getSoldierWage(); // don't change wage
+                }
+                newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
+                setSoldierWage(newWage);
             }
-            newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
-            setSoldierWage(newWage);
-        }
     }
     public IEnumerable<PopUnit> getAllPopUnits()
     {
@@ -808,7 +813,7 @@ public class Country : Staff
     }
     public override void consumeNeeds()
     {
-        var needs = getRealNeeds();
+        var needs = getRealAllNeeds();
         //buy 1 day needs
         foreach (var need in needs)
             if (!storageSet.has(need)) // may reduce extra circles
@@ -880,7 +885,7 @@ public class Country : Staff
         {
             foreach (var item in province.getAllPopUnits(type))
             {
-                yield return item;                
+                yield return item;
             }
         }
     }

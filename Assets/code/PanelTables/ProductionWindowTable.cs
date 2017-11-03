@@ -78,10 +78,15 @@ public class ProductionWindowTable : MyTableNew
             }
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Economy.isMarket.checkIftrue(Game.Player))
-                AddButton(next.getSalary().ToString() + " coins", next);
+            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                AddButton("centralized", next);
             else
-                AddButton(next.getSalary().ToString() + " food", next);
+            {
+                if (Game.Player.economy.getValue() == Economy.NaturalEconomy)
+                    AddButton(next.getSalary().ToString() + " food", next);
+                else
+                    AddButton(next.getSalary().ToString() + " coins", next);
+            }
             //counter++;
             //contentPanel.r
         }

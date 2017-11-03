@@ -479,7 +479,7 @@ public class Factory : SimpleProduction
         return Procent.makeProcent(getWorkForce(), workForcePerLevel * level, false);
         //return getWorkForce() / (float)(workForcePerLevel * level);
     }
-    override public List<Storage> getRealNeeds()
+    override public List<Storage> getRealAllNeeds()
     {
         return getRealNeeds(new Value(getEfficiency(false).get() * getLevel()));
     }

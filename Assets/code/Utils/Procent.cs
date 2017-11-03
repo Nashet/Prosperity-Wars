@@ -17,6 +17,29 @@ public class Procent : Value
     {
 
     }
+    public static Procent makeProcent(List<Storage> numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
+    {
+        //result sh b amount fo numerator / amount of denominator
+        Value numeratorSum = new Value(0f);
+        foreach (var item in numerator)
+        {
+            numeratorSum.add(item);
+        }
+        Value denominatorSum = new Value(0f);
+        foreach (var item in denominator)
+        {
+            denominatorSum.add(item);
+        }
+
+        if (denominatorSum.isZero())
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");
+            return new Procent(0f);
+        }
+        else
+            return new Procent(numeratorSum.get() / denominatorSum.get());
+    }
     public static Procent makeProcent(Value numerator, Value denominator, bool showMessageAboutOperationFails = true)
     {
         if (denominator.isZero())

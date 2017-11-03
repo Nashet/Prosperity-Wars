@@ -17,7 +17,7 @@ abstract public class PopUnit : Producer
     private int population;
     private int mobilized;
 
-    public readonly PopType popType; 
+    public readonly PopType popType;
     public readonly Culture culture;
     public readonly Procent education;
     public readonly Procent needsFullfilled;
@@ -39,7 +39,7 @@ abstract public class PopUnit : Producer
     private Movement movement;
     private readonly KeyVal<IEscapeTarget, int> lastEscaped = new KeyVal<IEscapeTarget, int>();
     //if add new fields make sure it's implemented in second constructor and in merge()  
-  
+
 
     static PopUnit()
     {
@@ -265,7 +265,7 @@ abstract public class PopUnit : Producer
         //province.allPopUnits.Remove(this); // gives exception        
         //Game.popsToShowInPopulationPanel.Remove(this);
         if (MainCamera.popUnitPanel.whomShowing() == this)
-            MainCamera.popUnitPanel.hide();
+            MainCamera.popUnitPanel.hide();        
         //remove from population panel.. Would do it automatically        
         //secede property... to government
         getOwnedFactories().ForEach(x => x.setOwner(getCountry()));
@@ -422,8 +422,7 @@ abstract public class PopUnit : Producer
     {
         int randomPopulation = minGeneratedPopulation + Game.Random.Next(maxGeneratedPopulation - minGeneratedPopulation);
         return randomPopulation;
-    }
-
+    } 
 
     internal bool isAlive()
     {
@@ -460,7 +459,7 @@ abstract public class PopUnit : Producer
     {
         return getNeedsInCommon(this.popType.getLuxuryNeedsPer1000());
     }
-    override public List<Storage> getRealNeeds()
+    override public List<Storage> getRealAllNeeds()
     {
         return getNeedsInCommon(this.popType.getAllNeedsPer1000());
     }
@@ -732,26 +731,17 @@ abstract public class PopUnit : Producer
                 needsFullfilled.set(canConsume / need.get() / 3f);
             }
     }
-    private void consumeWithPlannedEconomy(List<Storage> lifeNeeds)
+    private void consumeWithPlannedEconomy(List<Storage> needs)
     {
-        if (getCountry().storageSet.has(lifeNeeds))
+        foreach (var item in needs)
         {
-            consumeFromCountryStorage(lifeNeeds, getCountry());
-            needsFullfilled.set(1f / 3f);
+            if (getCountry().storageSet.has(item))
+                if (item.isAbstractProduct())
+                    consumeFromCountryStorage(getCountry().storageSet.convertToBiggestStorageProduct(item), getCountry());
+                else
+                    consumeFromCountryStorage(item, getCountry());
         }
-        var everyDayNeeds = getRealEveryDayNeeds();
-        if (getCountry().storageSet.has(everyDayNeeds))
-        {
-            consumeFromCountryStorage(everyDayNeeds, getCountry());
-            needsFullfilled.set(2f / 3f);
-        }
-        var luxuryNeeds = getRealLuxuryNeeds();
-        if (getCountry().storageSet.has(luxuryNeeds))
-        {
-            consumeFromCountryStorage(luxuryNeeds, getCountry());
-            needsFullfilled.set(1f);
-        }
-    }
+    }    
     /// <summary> !!! Overloaded for artisans and tribesmen </summary>
     public override void consumeNeeds()
     {
@@ -761,13 +751,18 @@ abstract public class PopUnit : Producer
         {
             buyNeeds(lifeNeeds, false);
         }
-        else
+        else  
         {
             //non - market consumption
             // todo - !! - check for substitutes
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)            
-                consumeWithPlannedEconomy(lifeNeeds);
-            else                         
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            {
+                consumeWithPlannedEconomy(getRealLifeNeeds());
+                consumeWithPlannedEconomy(getRealEveryDayNeeds());
+                consumeWithPlannedEconomy(getRealLuxuryNeeds());
+                needsFullfilled.set(Procent.makeProcent(getConsumedTotal().getContainer(), getRealAllNeeds()));
+            }
+            else
                 consumeWithNaturalEconomy(lifeNeeds);
         }
     }
@@ -1148,12 +1143,11 @@ abstract public class PopUnit : Producer
             }
         }
     }
-
     virtual internal void invest()
     {
         if (getCountry().isInvented(Invention.Banking))
         {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
             if (extraMoney.isNotZero())
                 getBank().takeMoney(this, extraMoney);
         }

@@ -551,7 +551,9 @@ public class Artisans : GrainGetter
     public override void produce()
     {
         // artisan shouldn't work with PE
-        if (getCountry().economy.getValue() != Economy.PlannedEconomy)
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            artisansProduction = null;
+        else
         {
             if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
                )// && (artisansProduction==null 
@@ -597,7 +599,7 @@ public class Artisans : GrainGetter
             if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
                 if (artisansProduction.getType().getPossibleProfit(getProvince()).isNotZero())
                 {
-                    var needs = artisansProduction.getRealNeeds();
+                    var needs = artisansProduction.getRealAllNeeds();
                     if (!artisansProduction.canAfford(needs))
                     {
                         var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed

@@ -167,7 +167,7 @@ public abstract class Staff : Consumer
     // }
 
     //override public PrimitiveStorageSet getRealNeeds()
-    override public List<Storage> getRealNeeds()
+    override public List<Storage> getRealAllNeeds()
     {
         StorageSet res = new StorageSet();
         //var res = new List<Storage>();

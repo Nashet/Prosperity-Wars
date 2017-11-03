@@ -64,7 +64,7 @@ abstract public class SimpleProduction : Producer
 
         //consume Input Resources
         if (!getType().isResourceGathering())
-            foreach (Storage next in getRealNeeds())
+            foreach (Storage next in getRealAllNeeds())
                 if (next.isAbstractProduct())
                 {
                     var substitute = getInputProductsReserve().convertToBiggestStorageProduct(next);
@@ -222,7 +222,7 @@ abstract public class SimpleProduction : Producer
     }
     public bool isAllInputProductsCollected()
     {
-        var realNeeds = getRealNeeds();
+        var realNeeds = getRealAllNeeds();
         foreach (var item in realNeeds)
         {
             if (!inputProductsReserve.has(item))

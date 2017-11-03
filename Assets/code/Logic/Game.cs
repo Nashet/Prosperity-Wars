@@ -622,10 +622,11 @@ public class Game : ThreadedJob
                             pop.findBetterLife();
                         pop.calcAssimilations();
                     }
-                    if (Game.Random.Next(15) == 1)
+                    if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)
                         pop.invest();
                 }
-                country.Invest(province);
+                if (country.isAI())
+                    country.Invest(province);
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)

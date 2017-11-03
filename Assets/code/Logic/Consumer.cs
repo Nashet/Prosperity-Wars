@@ -15,7 +15,7 @@ public abstract class Consumer : Agent
     private readonly StorageSet consumedLastTurn = new StorageSet();
     private readonly StorageSet consumedInMarket = new StorageSet();
     public abstract void consumeNeeds();
-    public abstract List<Storage> getRealNeeds();
+    public abstract List<Storage> getRealAllNeeds();
 
     protected Consumer(Bank bank, Province province) : base(0f, bank, province)
     {
@@ -66,7 +66,12 @@ public abstract class Consumer : Agent
     {
         consumedTotal.add(what);
         country.storageSet.subtract(what);
-    }                            
+    }
+    public void consumeFromCountryStorage(Storage what, Country country)
+    {
+        consumedTotal.add(what);
+        country.storageSet.subtract(what);
+    }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();

@@ -43,7 +43,7 @@ public class TradeWindowCountryMarketTable : MyTable
         //AddButton(null.loyalty.ToString(), null);
         if (Game.Player != null)
         {
-            var needs = Game.Player.getRealNeeds();
+            var needs = Game.Player.getRealAllNeeds();
             foreach (var product in Product.getAll())
             {
                 // Product product = next.getProduct();
