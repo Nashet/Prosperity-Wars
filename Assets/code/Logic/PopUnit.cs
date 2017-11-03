@@ -62,8 +62,8 @@ abstract public class PopUnit : Producer
         modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
         modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
         new Modifier(x => !(x as PopUnit).isStateCulture()
-        && ((x as PopUnit).getCountry().minorityPolicy.status == MinorityPolicy.Residency
-        || (x as PopUnit).getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
+        && ((x as PopUnit).getCountry().minorityPolicy.getValue() == MinorityPolicy.Residency
+        || (x as PopUnit).getCountry().minorityPolicy.getValue() == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
 
 
         //MinorityPolicy.IsResidency

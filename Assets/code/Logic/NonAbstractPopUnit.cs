@@ -83,7 +83,7 @@ public class Tribesmen : CattleGetter
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Tribal || reform == Government.Democracy)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -216,7 +216,7 @@ public class Farmers : GrainGetter
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -282,7 +282,7 @@ public class Aristocrats : GrainGetter
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.Aristocracy || reform == Government.Tribal)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -379,7 +379,7 @@ public class Soldiers : GrainGetter
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Junta)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -452,7 +452,7 @@ public class Capitalists : GrainGetter
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.BourgeoisDictatorship)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -640,7 +640,7 @@ public class Artisans : GrainGetter
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.BourgeoisDictatorship)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -730,7 +730,7 @@ public class Workers : GrainGetter
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;

@@ -582,7 +582,7 @@ public class Game : ThreadedJob
                     }
                     foreach (PopUnit pop in province.allPopUnits)
                     {
-                        if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
+                        if (country.serfdom.getValue() == Serfdom.Allowed || country.serfdom.getValue() == Serfdom.Brutal)
                             if (pop.shouldPayAristocratTax())
                                 pop.payTaxToAllAristocrats();
                     }

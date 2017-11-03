@@ -131,9 +131,9 @@ public class Country : Staff
         {
             economy.setValue(Economy.StateCapitalism);
             //economy.setValue( Economy.NaturalEconomy);
-            serfdom.status = Serfdom.Abolished;
+            serfdom.setValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
-            government.status = Government.Aristocracy;
+            government.setValue(Government.Aristocracy);
             markInvented(Invention.Farming);
 
             markInvented(Invention.Banking);

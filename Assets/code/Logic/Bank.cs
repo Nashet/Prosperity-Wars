@@ -106,7 +106,7 @@ public class Bank : Agent
 
     internal Value getGivenLoans()
     {
-        return new Value(givenLoans.get());
+        return givenLoans;
     }
     /// <summary>
     /// how much money have in cash

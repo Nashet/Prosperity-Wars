@@ -83,9 +83,7 @@ public class FinancePanel : DragPanel
         gameObject.SetActive(true);
         panelRectTransform.SetAsLastSibling();
         refresh();
-    }
-
-
+    }   
 
     public void findNoonesEterprises()
     {
