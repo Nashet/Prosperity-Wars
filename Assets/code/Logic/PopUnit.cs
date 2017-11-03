@@ -707,7 +707,7 @@ abstract public class PopUnit : Producer
             // reserve.payWithoutRecord(this, reserve.cash);
         }
     }
-    private void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
+    protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
     {
         payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
         foreach (Storage need in lifeNeeds)
@@ -752,7 +752,7 @@ abstract public class PopUnit : Producer
             needsFullfilled.set(1f);
         }
     }
-    /// <summary> !!! Overloaded for artisans </summary>
+    /// <summary> !!! Overloaded for artisans and tribesmen </summary>
     public override void consumeNeeds()
     {
         //life needs First

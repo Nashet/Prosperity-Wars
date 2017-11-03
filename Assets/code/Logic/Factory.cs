@@ -772,6 +772,7 @@ public class Factory : SimpleProduction
             daysInConstruction++;
             bool isBuyingComplete = false;
 
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy && daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
             {
                 if (isBuilding())
                 {
@@ -800,6 +801,8 @@ public class Factory : SimpleProduction
                     getOwner().payWithoutRecord(this, new Value(minimalFond * -1f));
             }
             if (isBuyingComplete
+               || (getCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
+               
             {
                 onConstructionComplete();
                 //todo avoid extra subtraction and redo whole method

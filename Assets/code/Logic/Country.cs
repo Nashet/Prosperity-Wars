@@ -874,6 +874,26 @@ public class Country : Staff
             result += pro.getPopulationAmountByType(ipopType);
         return result;
     }
+    public IEnumerable<PopUnit> getAllPopUnits(PopType type)
+    {
+        foreach (var province in ownedProvinces)
+        {
+            foreach (var item in province.getAllPopUnits(type))
+            {
+                yield return item;                
+            }
+        }
+    }
+    public IEnumerable<Factory> getAllFactories()
+    {
+        foreach (var province in ownedProvinces)
+        {
+            foreach (var item in province.getAllFactories())
+            {
+                yield return item;
+            }
+        }
+    }
     public Value getGDP()
     {
         Value result = new Value(0);

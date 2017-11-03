@@ -31,7 +31,7 @@ public class Product : Name
         Electronics = new Product("Electronics", 1f, type.consumerProduct);
     // abstract products
     internal static readonly Product Food, Sugar, Fibers, Fuel;
-
+        
     static Product()
     {
         Gold = new Product("Gold", 4f, Color.yellow, type.industrial);

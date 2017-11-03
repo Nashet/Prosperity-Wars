@@ -406,8 +406,11 @@ public class Province : Name, IEscapeTarget, IHasCountry
         foreach (PopUnit pop in allPopUnits)
             yield return pop;
     }
-
-
+    public IEnumerable<Factory> getAllFactories()
+    {
+        foreach (Factory factory in allFactories)
+            yield return factory;        
+    }                            
     public static Vector3 setProvinceCenter(MeshStructure meshStructure)
     {
         Vector3 accu = new Vector3(0, 0, 0);

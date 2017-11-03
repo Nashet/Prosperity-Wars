@@ -78,44 +78,7 @@ public class Tribesmen : CattleGetter
     public override bool shouldPayAristocratTax()
     {
         return true;
-    }
-    //internal override bool getSayingYes(AbstractReformValue reform)
-    //{
-    //    if (reform == Government.Tribal)
-    //    {
-    //        var baseOpinion = new Procent(1f);
-    //        baseOpinion.add(this.loyalty);
-    //        //return baseOpinion.getProcent(this.population);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Aristocracy)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Democracy)
-    //    {
-    //        var baseOpinion = new Procent(0.8f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Despotism)
-    //    {
-    //        var baseOpinion = new Procent(0.1f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.ProletarianDictatorship)
-    //    {
-    //        var baseOpinion = new Procent(0.2f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else
-    //        return false;
-
-    //}
+    }          
 
     internal override bool canVote(Government.ReformValue reform)
     {
@@ -132,6 +95,11 @@ public class Tribesmen : CattleGetter
             return 1;
         else
             return 0;
+    }
+    public override void consumeNeeds()
+    {
+        //life needs First
+        consumeWithNaturalEconomy(getRealLifeNeeds());
     }
 }
 public class Farmers : GrainGetter

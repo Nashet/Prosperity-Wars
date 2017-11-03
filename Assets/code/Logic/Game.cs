@@ -35,7 +35,7 @@ public class Game : ThreadedJob
     static private int mapMode;
     static private bool surrended = true;
     static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
-        impassableBorder;     
+        impassableBorder;
 
     static private List<Province> seaProvinces;
     static private VoxelGrid grid;
@@ -215,7 +215,7 @@ public class Game : ThreadedJob
     {
         return mapMode;
     }
-    
+
     public static void redrawMapAccordingToMapMode(int newMapMode)
     {
         mapMode = newMapMode;
@@ -535,7 +535,7 @@ public class Game : ThreadedJob
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
                     //if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
-                        pop.produce();
+                    pop.produce();
                     pop.takeUnemploymentSubsidies();
                     if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                     // don't need salary with PE
@@ -549,25 +549,49 @@ public class Game : ThreadedJob
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle   
         foreach (Country country in Country.getExisting())
-            foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+            if (country.economy.getValue() == Economy.PlannedEconomy)
             {
-                foreach (Factory factory in province.allFactories)
+                foreach (Factory factory in country.getAllFactories())
                 {
                     factory.consumeNeeds();
                 }
-
-                foreach (PopUnit pop in province.allPopUnits)
+                if (country.isInvented(Invention.ProfessionalArmy))
+                    foreach (var item in country.getAllPopUnits(PopType.Soldiers))
+                    {
+                        item.consumeNeeds();
+                    }
+                foreach (var item in country.getAllPopUnits(PopType.Workers))
                 {
-                    if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.shouldPayAristocratTax())
-                            pop.payTaxToAllAristocrats();
+                    item.consumeNeeds();
                 }
-                foreach (PopUnit pop in province.allPopUnits)
+                foreach (var item in country.getAllPopUnits(PopType.Farmers))
                 {
-                    pop.consumeNeeds();
-                    // stopped here with planned economy
+                    item.consumeNeeds();
+                }
+                foreach (var item in country.getAllPopUnits(PopType.Tribesmen))
+                {
+                    item.consumeNeeds();
                 }
             }
+            else
+                foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+                {
+                    foreach (Factory factory in province.allFactories)
+                    {
+                        factory.consumeNeeds();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
+                            if (pop.shouldPayAristocratTax())
+                                pop.payTaxToAllAristocrats();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        pop.consumeNeeds();
+                        // stopped here with planned economy
+                    }
+                }
         // big AFTER all circle
         foreach (Country country in Country.getExisting())
         {
@@ -582,28 +606,24 @@ public class Game : ThreadedJob
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
-                    
                     //because income come only after consuming, and only after FULL consumption
                     if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();
-
                     pop.calcLoyalty();
-
                     //if (Game.Random.Next(10) == 1)
                     {
                         pop.calcGrowth();
-                        pop.calcPromotions();                        
+                        pop.calcPromotions();
                         if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
                             pop.findBetterLife();
                         pop.calcAssimilations();
-                    }                            
+                    }
                     if (Game.Random.Next(15) == 1)
-                        pop.invest();            
+                        pop.invest();
                 }
                 country.Invest(province);
                 //if (Game.random.Next(3) == 0)
