@@ -218,7 +218,7 @@ abstract public class SimpleProduction : Producer
     }
     virtual internal float getExpences()
     {
-        return Game.market.getCost(getConsumedTotal()).get();
+        return Game.market.getCost(getConsumed()).get();
     }
     public bool isAllInputProductsCollected()
     {

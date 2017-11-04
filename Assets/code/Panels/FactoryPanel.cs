@@ -89,7 +89,7 @@ public class FactoryPanel : DragPanel//for dragging
                 foreach (Storage next in shownFactory.getType().resourceInput)
                     sb.Append(next.get() * shownFactory.getWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
             }  
-            sb.Append("\nConsumed: ").Append(shownFactory.getConsumedTotal().ToString()).Append(" Cost: ").Append(Game.market.getCost(shownFactory.getConsumedTotal()));
+            sb.Append("\nConsumed: ").Append(shownFactory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(shownFactory.getConsumed()));
             if (Game.devMode)
                 sb.Append("\nConsumed LT: ").Append(shownFactory.getConsumedLastTurn());
             sb.Append("\nInput reserves: ").Append(shownFactory.getInputProductsReserve());

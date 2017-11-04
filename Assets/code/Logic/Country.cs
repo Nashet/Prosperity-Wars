@@ -386,7 +386,6 @@ public class Country : Staff
     {
         if (meshCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(meshCapitalText.gameObject);
-        setStatisticToZero();
 
         //take all money from bank
         if (byWhom.isInvented(Invention.Banking))
@@ -402,6 +401,8 @@ public class Country : Staff
         if (!this.isAI())
             new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
         alive = false;
+
+        setStatisticToZero();
     }
 
     internal bool isOneProvince()
@@ -632,7 +633,7 @@ public class Country : Staff
             return //new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
             new Value(Options.defaultSciencePointMultiplier);
     }
-    
+
     /// <summary>
     ///  Retirns null if needs are satisfied
     /// </summary>         
@@ -663,9 +664,7 @@ public class Country : Staff
             if (countryStorageSet.has(cost))
             {
                 var newFactory = new Factory(province, this, propositionFactory);
-                
-                //consumeFromCountryStorage(cost.getContainer(), this);
-                countryStorageSet.subtract(cost);
+                consumeFromCountryStorage(cost.getContainer(), this);
                 return true;
                 //newFactory.constructionNeeds.setZero();
             }
@@ -831,34 +830,71 @@ public class Country : Staff
     /// Represents buying and/or cinsuming needs.
     /// </summary>
     public override void consumeNeeds()
-    {
+    {           
         // redo into to be based on consumption, not neeeds
 
-        var needs = getRealAllNeeds();
-        //buy 1 day needs
-        foreach (var need in needs)
-            if (!countryStorageSet.has(need)) // may reduce extra circles
-            {
-                // if I want to buy             
-                //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
-                Storage realNeed;
-                if (need.isAbstractProduct())
-                    realNeed = countryStorageSet.convertToBiggestStorageProduct(need);
-                else
-                    realNeed = need;
-                //Storage toBuy = need.subtractOutside(realNeed);            
-
-                if (realNeed.isNotZero())
-                    buyNeeds(realNeed);  // todo - return result? - no
-            }
-        //buy x day needs
-        foreach (var need in needs)
+        //1 day buying
+        foreach (var currentStorage in countryStorageSet)
         {
-            Storage toBuy = new Storage(need.getProduct(),
-                need.get() * Options.CountryForHowMuchDaysMakeReservs - countryStorageSet.getBiggestStorage(need.getProduct()).get(), false);
-            if (toBuy.isNotZero())
-                buyNeeds(toBuy);
+            var desiredMinimum = countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct());
+            if (desiredMinimum.isZero())                 
+                desiredMinimum.add(20f);
+            var toBuy = desiredMinimum.subtractOutside(currentStorage, false);
+            if (toBuy.isBiggerThan(Value.Zero))
+               buyNeeds(toBuy) ;//go buying
         }
+
+        //x day buying/selling
+        foreach (var currentStorage in countryStorageSet)
+        {
+            var desiredMinimum = countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct());
+            if (desiredMinimum.isZero())
+                desiredMinimum.add(20f);            
+            else
+                desiredMinimum.multiply(10f);
+            var toBuy = desiredMinimum.subtractOutside(currentStorage, false);
+            if (toBuy.isBiggerThan(Value.Zero))
+                buyNeeds(toBuy);//go buying
+            else
+            {
+                var desiredMaximum = countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct());
+                if (desiredMaximum.isZero())
+                    desiredMaximum.add(50f);
+                else
+                    desiredMaximum.multiply(20f);
+                var toSell = currentStorage.subtractOutside(desiredMaximum, false);
+                if (toSell.isBiggerThan(Value.Zero))
+                {
+                    sell(toSell);//go sell
+                } 
+            }
+        }
+
+        //var needs = getRealAllNeeds();
+        ////buy 1 day needs
+        //foreach (var need in needs)
+        //    if (!countryStorageSet.has(need)) // may reduce extra circles
+        //    {
+        //        // if I want to buy             
+        //        //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
+        //        Storage realNeed;
+        //        if (need.isAbstractProduct())
+        //            realNeed = countryStorageSet.convertToBiggestStorageProduct(need);
+        //        else
+        //            realNeed = need;
+        //        //Storage toBuy = need.subtractOutside(realNeed);            
+
+        //        if (realNeed.isNotZero())
+        //            buyNeeds(realNeed);  // todo - return result? - no
+        //    }
+        ////buy x day needs
+        //foreach (var need in needs)
+        //{
+        //    Storage toBuy = new Storage(need.getProduct(),
+        //        need.get() * Options.CountryForHowMuchDaysMakeReservs - countryStorageSet.getBiggestStorage(need.getProduct()).get(), false);
+        //    if (toBuy.isNotZero())
+        //        buyNeeds(toBuy);
+        //}
     }
 
     void buyNeeds(Storage toBuy)
@@ -867,7 +903,7 @@ public class Country : Staff
         Storage realyBougth = Game.market.buy(this, toBuy, null);
         countryStorageSet.add(realyBougth);
         storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
-    } 
+    }
     public Procent getUnemployment()
     {
         Procent result = new Procent(0f);
@@ -1163,5 +1199,7 @@ public class Country : Staff
                 return item;
         }
         return null;
-    }    
+    }
+
+   
 }

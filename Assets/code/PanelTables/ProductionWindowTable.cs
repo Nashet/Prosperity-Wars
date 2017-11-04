@@ -59,7 +59,10 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.getWorkForce().ToString(), next);
 
             ////Adding profit
-            AddButton(next.getProfit().ToString(), next);
+            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                AddButton("none", next);
+            else
+                AddButton(next.getProfit().ToString(), next);
 
             ////Adding margin
             if (next.isUpgrading())
@@ -72,6 +75,9 @@ public class ProductionWindowTable : MyTableNew
                 {
                     if (!next.isWorking())
                         AddButton("Closed", next);
+                    else
+                        if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                        AddButton("none", next);
                     else
                         AddButton(next.getMargin().ToString(), next);
                 }

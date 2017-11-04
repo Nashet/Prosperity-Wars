@@ -4,11 +4,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-
-
 public class TradeWindowCountryMarketTable : MyTable
-{
-
+{     
     override protected void refresh()
     {
         ////if (Game.date != 0)
@@ -17,8 +14,7 @@ public class TradeWindowCountryMarketTable : MyTable
             AddButtons();
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
-    }
-    
+    }      
     override protected void AddButtons()
     {
         int counter = 0;
@@ -28,12 +24,11 @@ public class TradeWindowCountryMarketTable : MyTable
         ////Adding production
         AddButton("Govern.storage");
 
-        AddButton("Govern.Need");
-
+        AddButton("Govern.Need"); 
 
         AddButton("Production");
 
-        AddButton("Consumption?");
+        AddButton("Consumption");
 
         AddButton("Bought");
 
@@ -62,7 +57,7 @@ public class TradeWindowCountryMarketTable : MyTable
                     AddButton("wip", product);
 
                     ////Adding Consumption
-                    AddButton("wip", product);
+                    AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), product);
 
                     ////Adding bought
                     AddButton("wip", product);    

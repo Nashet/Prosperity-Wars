@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
- 
+
 /// <summary>
 /// Represents anyone who can produce, store and sell product (1 product)
 /// also linked to Province
@@ -23,11 +23,16 @@ public abstract class Producer : Consumer
     protected Producer(Province province) : base(province.getCountry().getBank(), province)
     {
     }
+    protected Producer() : base(null, null)
+    {
+    }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
-        gainGoodsThisTurn.setZero();
-        sentToMarket.setZero();
+        if (gainGoodsThisTurn != null)
+            gainGoodsThisTurn.setZero();
+        if (sentToMarket != null)
+            sentToMarket.setZero();
     }
     public Value getProducing()
     {
@@ -59,7 +64,16 @@ public abstract class Producer : Consumer
                 Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
         }
     }
-
+    /// <summary>
+    /// Do checks outside
+    /// </summary>
+    /// <param name="what"></param>
+    public void sell(Storage what)
+    {
+        sentToMarket.set(what);
+        storage.subtract(what);
+        Game.market.sentToMarket.add(what);
+    }
 }
 
 

@@ -79,7 +79,7 @@ public class PopulationPanelTable : MyTableNew
                     PopUnit ert = record;
                     AddButton(record.needsFullfilled.ToString(), record,
                         //() => ert.consumedTotal.ToStringWithLines()                        
-                        () => ert.getConsumedTotal().getContainer().getString("\n")
+                        () => ert.getConsumed().getContainer().getString("\n")
                         );
 
                     ////Adding loyalty

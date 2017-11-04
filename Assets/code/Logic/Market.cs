@@ -167,11 +167,11 @@ public class Market : Agent//: PrimitiveStorageSet
                     {
                         //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                         {
-                            var re = producer.getConsumedTotal().getFirstStorage(product);
+                            var re = producer.getConsumed().getFirstStorage(product);
                             result += re.get();
                         }
                     }
-                Storage countryStor = country.getConsumedTotal().getFirstStorage(product);
+                Storage countryStor = country.getConsumed().getFirstStorage(product);
                 result += countryStor.get();
             }
             return result;
@@ -189,11 +189,11 @@ public class Market : Agent//: PrimitiveStorageSet
                         {
                             //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
                             {
-                                var re = producer.getConsumedTotal().getFirstStorage(sup.getProduct());
+                                var re = producer.getConsumed().getFirstStorage(sup.getProduct());
                                 result += re.get();
                             }
                         }
-                    Storage countryStor = country.getConsumedTotal().getFirstStorage(sup.getProduct());
+                    Storage countryStor = country.getConsumed().getFirstStorage(sup.getProduct());
                     result += countryStor.get();
                 }
                 totalConsumption.set(new Storage(sup.getProduct(), result));

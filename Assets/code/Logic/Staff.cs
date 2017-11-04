@@ -6,11 +6,11 @@ using UnityEngine;
 /// <summary>
 /// Represents any military commander structure
 /// </summary>
-public abstract class Staff : Consumer
+public abstract class Staff : Producer
 {
     List<Army> allArmies = new List<Army>();
     protected Country place; //todo change class
-    protected Staff(Country place) : base(null, null)
+    protected Staff(Country place) : base()
     {
         this.place = place;
     }
@@ -22,7 +22,7 @@ public abstract class Staff : Consumer
     {
         return howMuchCanMobilize(againstWho) + getAllArmiesSize();
     }
-    public void simulate()
+    override public void simulate()
     {
         foreach (var item in getAllCorps())
         {
@@ -226,7 +226,15 @@ public abstract class Staff : Consumer
 
     }
 
+    public override void produce()
+    {
+        throw new NotImplementedException();
+    }
 
+    public override void payTaxes()
+    {
+        throw new NotImplementedException();
+    }
 
     //internal Army getVirtualArmy(Procent procent)
     //{

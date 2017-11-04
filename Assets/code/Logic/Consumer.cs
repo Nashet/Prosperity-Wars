@@ -27,7 +27,7 @@ public abstract class Consumer : Agent
     /// <summary>
     /// Use for only reads!
     /// </summary>    
-    public StorageSet getConsumedTotal()
+    public StorageSet getConsumed()
     {
         return consumed;
     }
@@ -65,22 +65,17 @@ public abstract class Consumer : Agent
         consumed.add(what);
         storage.subtract(what);
     }
-    //public void consumeFromCountryStorage(List<Storage> what, Country country)
-    //{
-    //    consumed.add(what);
-    //    country.storageSet.subtract(what);
-    //    // to track country expenses
-    //    if (this != country)
-    //        country.consumed.add(what);
-    //}
-    //public void consumeFromCountryStorage(Storage what, Country country)
-    //{
-    //    consumed.add(what);
-    //    country.storageSet.subtract(what);
-    //    // to track country expenses
-    //    if (this != country)
-    //        country.consumed.add(what);
-    //}
+    public void consumeFromCountryStorage(List<Storage> what, Country country)
+    {
+        consumed.add(what);
+        country.countryStorageSet.subtract(what);
+        
+    }
+    public void consumeFromCountryStorage(Storage what, Country country)
+    {
+        consumed.add(what);
+        country.countryStorageSet.subtract(what);        
+    }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();

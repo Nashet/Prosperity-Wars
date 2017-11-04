@@ -78,7 +78,7 @@ public class Tribesmen : CattleGetter
     public override bool shouldPayAristocratTax()
     {
         return true;
-    }          
+    }
 
     internal override bool canVote(Government.ReformValue reform)
     {
@@ -133,24 +133,19 @@ public class Farmers : GrainGetter
         Storage producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
         producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
         gainGoodsThisTurn.set(producedAmount);
+        storage.add(gainGoodsThisTurn);
 
         if (Economy.isMarket.checkIftrue(getCountry()))
         {
-            sentToMarket.set(gainGoodsThisTurn);
-            Game.market.sentToMarket.add(gainGoodsThisTurn);
+            //sentToMarket.set(gainGoodsThisTurn);
+            //Game.market.sentToMarket.add(gainGoodsThisTurn);
+            sell(gainGoodsThisTurn);
         }
         else
         {
-            if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                storage.add(gainGoodsThisTurn);
-            }
-            else
-            {
-                if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-                {
-                    getCountry().countryStorageSet.add(gainGoodsThisTurn);
-                }
+                getCountry().countryStorageSet.add(gainGoodsThisTurn);
             }
         }
     }
@@ -268,7 +263,7 @@ public class Aristocrats : GrainGetter
         if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             return false;
         else
-            return true;         
+            return true;
     }
     override internal bool canSellProducts()
     {
@@ -567,9 +562,10 @@ public class Artisans : GrainGetter
                     artisansProduction.produce();
                     if (Economy.isMarket.checkIftrue(getCountry()))
                     {
-                        sentToMarket.set(gainGoodsThisTurn);
-                        storage.setZero();
-                        Game.market.sentToMarket.add(gainGoodsThisTurn);
+                        sell(gainGoodsThisTurn);
+                        //sentToMarket.set(gainGoodsThisTurn);
+                        //storage.setZero();
+                        //Game.market.sentToMarket.add(gainGoodsThisTurn);
                     }
                     else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                     {
@@ -616,7 +612,7 @@ public class Artisans : GrainGetter
             // here is data transfering
             // todo rework data transfering from artisans?
             this.getConsumedInMarket().add(artisansProduction.getConsumedInMarket());
-            this.getConsumedTotal().add(artisansProduction.getConsumedTotal());
+            this.getConsumed().add(artisansProduction.getConsumed());
             this.getConsumedLastTurn().add(artisansProduction.getConsumedLastTurn());
         }
     }

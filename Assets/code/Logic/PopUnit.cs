@@ -193,7 +193,7 @@ abstract public class PopUnit : Producer
 
         //Consumer's fields:
         // Do I really need it?
-        getConsumedTotal().setZero();// = new PrimitiveStorageSet();
+        getConsumed().setZero();// = new PrimitiveStorageSet();
         getConsumedLastTurn().setZero();// = new PrimitiveStorageSet();
         getConsumedInMarket().setZero();// = new PrimitiveStorageSet();
 
@@ -240,7 +240,7 @@ abstract public class PopUnit : Producer
 
         //consumer's fields
         //isn't that important. That is fucking important
-        getConsumedTotal().add(source.getConsumedTotal());
+        getConsumed().add(source.getConsumed());
         getConsumedLastTurn().add(source.getConsumedLastTurn());
         getConsumedInMarket().add(source.getConsumedInMarket());
 
@@ -615,7 +615,7 @@ abstract public class PopUnit : Producer
             }
     }
 
-    void buyNeeds(List<Storage> lifeNeeds, bool skipLifeneeds)
+    void consumeNeedsWithMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
         //buy life needs
         Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
@@ -737,11 +737,11 @@ abstract public class PopUnit : Producer
         {
             if (getCountry().countryStorageSet.has(item))
                 if (item.isAbstractProduct())
-                    //consumeFromCountryStorage(getCountry().storageSet.convertToBiggestStorageProduct(item), getCountry());
-                    getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            
+                    consumeFromCountryStorage(getCountry().countryStorageSet.convertToBiggestStorageProduct(item), getCountry());
+                    //getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            
                 else
-                    //consumeFromCountryStorage(item, getCountry());
-                    getCountry().countryStorageSet.subtract(item);
+                    consumeFromCountryStorage(item, getCountry());
+                    //getCountry().countryStorageSet.subtract(item);
         }
     }    
     /// <summary> !!! Overloaded for artisans and tribesmen </summary>
@@ -751,7 +751,7 @@ abstract public class PopUnit : Producer
         List<Storage> lifeNeeds = getRealLifeNeeds();
         if (canBuyProducts())
         {
-            buyNeeds(lifeNeeds, false);
+            consumeNeedsWithMarket(lifeNeeds, false);
         }
         else  
         {
@@ -762,7 +762,7 @@ abstract public class PopUnit : Producer
                 consumeWithPlannedEconomy(getRealLifeNeeds());
                 consumeWithPlannedEconomy(getRealEveryDayNeeds());
                 consumeWithPlannedEconomy(getRealLuxuryNeeds());
-                needsFullfilled.set(Procent.makeProcent(getConsumedTotal().getContainer(), getRealAllNeeds()));
+                needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealAllNeeds()));
             }
             else
                 consumeWithNaturalEconomy(lifeNeeds);

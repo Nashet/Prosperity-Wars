@@ -31,46 +31,46 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Producer">
-    <Position X="5" Y="3.25" Width="1.5" />
+    <Position X="7.25" Y="3.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAAAAQAAAAAAAAAABAAAAAAAYAAEACAAAgAAAAAAAA=</HashCode>
+      <HashCode>AEAAAAQAAABAAAAAABAAAAAAAYAAEACAAAgAAAAAAAA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Staff">
-    <Position X="10.75" Y="3.25" Width="1.5" />
+    <Position X="10.75" Y="5.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ABAAACBGAAAAAAAAAyIAAAAgwYCAQAAIAACAQDAAAAQ=</HashCode>
+      <HashCode>AFAAACRGAAAAAAAAAyIAAAAgwYCAQAAIAACAQDAAAAQ=</HashCode>
       <FileName>Assets\code\Logic\Staff.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Country">
-    <Position X="9.5" Y="5.25" Width="1.5" />
+    <Position X="9.5" Y="7.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>mMACwI8o6Lj2hgrOLBrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
+      <HashCode>mMACwI8o6Lj2hgrOLBrVTXrAH6EtDloQoEJOjDWimPY=</HashCode>
       <FileName>Assets\code\Logic\Country.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Movement">
-    <Position X="11.75" Y="5.25" Width="1.5" />
+    <Position X="11.75" Y="7.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACggAIAEAAQIBAAAEQWAAAQBCACEAAQCQUA=</HashCode>
+      <HashCode>AEAAAAQAACggAIAEAAQIBAAAEQWAAAQBCACEAAQCQUA=</HashCode>
       <FileName>Assets\code\Logic\Movement.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -80,7 +80,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>cOHUgECEEQgGI2RGBFgBPsACi4BUkSpwqSQEVi0YFyQ=</HashCode>
+      <HashCode>cOHUgECEEQgGY2RGBFABPsACi4BUkSpwqSQEVi0YFyQ=</HashCode>
       <FileName>Assets\code\Logic\PopUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -119,7 +119,7 @@
   <Class Name="Consumer" Collapsed="true">
     <Position X="7.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAABBQIkAAAAIAAAAAAAAACAIAAAAAAAAACECQAAAA=</HashCode>
+      <HashCode>AAAAABQIkAAAIIAAAAAAAAACAIAAAAAAAAACECQAAAA=</HashCode>
       <FileName>Assets\code\Logic\Consumer.cs</FileName>
     </TypeIdentifier>
   </Class>

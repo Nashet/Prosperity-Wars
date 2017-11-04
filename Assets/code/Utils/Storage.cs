@@ -13,7 +13,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     /// <summary>
     /// Used only in non-market economies. Count as much products country consumed or spent    
     /// </summary>
-    private readonly StorageSet takenAway = new StorageSet();
+    public readonly StorageSet takenAway = new StorageSet();
 
     //internal Value getConsumption(Product whom)
     //{
@@ -204,7 +204,8 @@ public class Storage : Value
     [System.Obsolete("Method is deprecated, need product specified")]
     override public void add(float invalue, bool showMessageAboutNegativeValue = true)
     {
-        throw new DontUseThatMethod();
+        base.add(invalue, showMessageAboutNegativeValue);
+        //throw new DontUseThatMethod(); temporally
     }
     public void add(Storage storage, bool showMessageAboutNegativeValue = true)
     {

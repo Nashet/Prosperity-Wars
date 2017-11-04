@@ -712,9 +712,10 @@ public class Factory : SimpleProduction
             {
                 if (Economy.isMarket.checkIftrue(getCountry()))
                 {
-                    sentToMarket.set(gainGoodsThisTurn);
-                    storage.setZero();
-                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    //sentToMarket.set(gainGoodsThisTurn);
+                    //storage.setZero();
+                    //Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    sell(gainGoodsThisTurn);
                 }
                 else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                 {
