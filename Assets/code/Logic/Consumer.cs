@@ -11,10 +11,13 @@ public abstract class Consumer : Agent
     /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
     // may move it back to Producer
     public Storage storage;
-    private readonly StorageSet consumedTotal = new StorageSet();
+    private readonly StorageSet consumed = new StorageSet();
     private readonly StorageSet consumedLastTurn = new StorageSet();
     private readonly StorageSet consumedInMarket = new StorageSet();
-    public abstract void consumeNeeds();
+    /// <summary>
+    /// Represents buying and/or cinsuming needs
+    /// </summary>
+    public abstract void consumeNeeds();    
     public abstract List<Storage> getRealAllNeeds();
 
     protected Consumer(Bank bank, Province province) : base(0f, bank, province)
@@ -26,7 +29,7 @@ public abstract class Consumer : Agent
     /// </summary>    
     public StorageSet getConsumedTotal()
     {
-        return consumedTotal;
+        return consumed;
     }
     /// <summary>
     /// Use for only reads!
@@ -47,7 +50,7 @@ public abstract class Consumer : Agent
         //pay(Game.market, what.multiplyOutside(price));
         //if (fromMarket)
         ///{
-        consumedTotal.add(what);
+        consumed.add(what);
         consumedInMarket.add(what);
         Game.market.sentToMarket.subtract(what);
         //}        
@@ -59,24 +62,30 @@ public abstract class Consumer : Agent
     /// <summary> Do checks outside</summary>
     public void consumeFromItself(Storage what)
     {
-        consumedTotal.add(what);
+        consumed.add(what);
         storage.subtract(what);
     }
-    public void consumeFromCountryStorage(List<Storage> what, Country country)
-    {
-        consumedTotal.add(what);
-        country.storageSet.subtract(what);
-    }
-    public void consumeFromCountryStorage(Storage what, Country country)
-    {
-        consumedTotal.add(what);
-        country.storageSet.subtract(what);
-    }
+    //public void consumeFromCountryStorage(List<Storage> what, Country country)
+    //{
+    //    consumed.add(what);
+    //    country.storageSet.subtract(what);
+    //    // to track country expenses
+    //    if (this != country)
+    //        country.consumed.add(what);
+    //}
+    //public void consumeFromCountryStorage(Storage what, Country country)
+    //{
+    //    consumed.add(what);
+    //    country.storageSet.subtract(what);
+    //    // to track country expenses
+    //    if (this != country)
+    //        country.consumed.add(what);
+    //}
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
-        consumedLastTurn.copyDataFrom(consumedTotal); // temp   
-        consumedTotal.setZero();
+        consumedLastTurn.copyDataFrom(consumed); // temp   
+        consumed.setZero();
         consumedInMarket.setZero();
     }
 

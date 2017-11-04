@@ -149,7 +149,7 @@ public class Farmers : GrainGetter
             {
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    getCountry().storageSet.add(gainGoodsThisTurn);
+                    getCountry().countryStorageSet.add(gainGoodsThisTurn);
                 }
             }
         }
@@ -580,7 +580,7 @@ public class Artisans : GrainGetter
                     }
                     else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        storage.sendAll(getCountry().storageSet);
+                        storage.sendAll(getCountry().countryStorageSet);
                     }
                 }
                 //else

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Agent" Collapsed="true">
-    <Position X="2.75" Y="0.5" Width="1.5" />
+    <Position X="7.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>FAgABQESABAEIAMsCIAEAAAAgIAAEAAQAAAAAAQABAI=</HashCode>
       <FileName>Assets\code\Logic\Agent.cs</FileName>
@@ -20,18 +20,18 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Market">
-    <Position X="2.75" Y="1.75" Width="1.5" />
+    <Position X="14" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ABIAgBUCAgSIAJCBQCELQAAASAAAEQAEgEQAQAACACA=</HashCode>
+      <HashCode>ABIAgBUCAgSIAJCBQCELQBAASAAAEQAEgEQAQAAAACA=</HashCode>
       <FileName>Assets\code\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Producer">
-    <Position X="2.75" Y="3.75" Width="1.5" />
+    <Position X="5" Y="3.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
@@ -42,29 +42,29 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Staff">
-    <Position X="7" Y="3.75" Width="1.5" />
+    <Position X="10.75" Y="3.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ABAAACBGAAAAAAAAAyIAAAAgwYCAQAAIEACAQBAAAAQ=</HashCode>
+      <HashCode>ABAAACBGAAAAAAAAAyIAAAAgwYCAQAAIAACAQDAAAAQ=</HashCode>
       <FileName>Assets\code\Logic\Staff.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Country">
-    <Position X="6" Y="6" Width="1.5" />
+    <Position X="9.5" Y="5.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>kIACAI8gqJi2hgrOLBrVDXjAH6ENDloQoAJOjDWimLY=</HashCode>
+      <HashCode>mMACwI8o6Lj2hgrOLBrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
       <FileName>Assets\code\Logic\Country.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Movement">
-    <Position X="8" Y="6" Width="1.5" />
+    <Position X="11.75" Y="5.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -75,27 +75,27 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PopUnit" Collapsed="true">
-    <Position X="4" Y="6" Width="1.5" />
+    <Position X="7.25" Y="5.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>cOHUgECEEQgGI2RGAFgBPsACi4BUkSpwuSQEVg0YFyQ=</HashCode>
+      <HashCode>cOHUgECEEQgGI2RGBFgBPsACi4BUkSpwqSQEVi0YFyQ=</HashCode>
       <FileName>Assets\code\Logic\PopUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ArtisanProduction">
-    <Position X="2.75" Y="8" Width="1.5" />
+    <Position X="5" Y="7.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAgAgIQAAAAAAAACAAAAAAAAAAAAAAAAEAAAAAQAAAA=</HashCode>
+      <HashCode>AAgAgIQAAAAAAAACAAAAAAAAAAAAAAAAAAAAACQAAAA=</HashCode>
       <FileName>Assets\code\Logic\ArtisanProduction.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Factory">
-    <Position X="0.5" Y="8" Width="1.5" />
+    <Position X="2.75" Y="7.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
@@ -106,7 +106,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="SimpleProduction">
-    <Position X="1.75" Y="6" Width="1.5" />
+    <Position X="4" Y="5.25" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -114,6 +114,13 @@
     <TypeIdentifier>
       <HashCode>AEgIgYQAAAABgAAGAAAAAEgAAYABAAAAEAAAACAAAAA=</HashCode>
       <FileName>Assets\code\Logic\SimpleProduction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Consumer" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABBQIkAAAAIAAAAAAAAACAIAAAAAAAAACECQAAAA=</HashCode>
+      <FileName>Assets\code\Logic\Consumer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

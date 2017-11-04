@@ -146,7 +146,7 @@ public class StorageSet
         return true;
     }
     /// <summary>Returns non null if container allready has storage for that product</summary>    
-    private Storage hasStorage(Product product)
+    protected Storage hasStorage(Product product)
     {
         foreach (Storage stor in container)
             if (stor.isExactlySameProduct(product))
@@ -307,7 +307,7 @@ public class StorageSet
     //        }
     //    }
     //}
-    internal bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
+    virtual public bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
     {
         Storage found = hasStorage(storage.getProduct());
         if (found == null)
@@ -330,7 +330,7 @@ public class StorageSet
         else
             return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
     }
-    internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
+    public void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
     {
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);

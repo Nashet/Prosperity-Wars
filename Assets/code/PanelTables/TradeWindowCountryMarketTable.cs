@@ -53,7 +53,7 @@ public class TradeWindowCountryMarketTable : MyTable
                     AddButton(product.getName(), product);
 
                     ////Adding storage amount
-                    AddButton(Game.Player.storageSet.getFirstStorage(product).ToString(), product);
+                    AddButton(Game.Player.countryStorageSet.getFirstStorage(product).ToString(), product);
 
                     ////Adding needs
                     AddButton(needs.getStorage(product).ToString(), product);

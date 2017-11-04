@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+interface IHasStatistics
+{
+    void setStatisticToZero();
+}
 /// <summary>
 /// represent ability to take loans/deposits
 /// </summary>
-abstract public class Agent : IHasCountry
+abstract public class Agent : IHasCountry , IHasStatistics
 {
     /// <summary> Must be filled together with wallet </summary>
     public Value moneyIncomethisTurn = new Value(0);

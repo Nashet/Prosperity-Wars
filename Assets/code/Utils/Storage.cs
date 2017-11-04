@@ -2,148 +2,145 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-//public class CountryWallet : Wallet
-//{
-//    public CountryWallet(float inAmount, Bank bank) : base(inAmount, bank)
-//    {
-//       // setBank(country.bank);
-//    }
-//}
-
-// don't really need it. Consumption stored in Consumer.consumedTotal
-//public class CountryStorageSet : PrimitiveStorageSet
-//{
-//    /// <summary>
-//    /// Used only in non-market economies. Count as much products country consumed or spent
-//    /// Why do I need this???
-//    /// </summary>
-//    private readonly PrimitiveStorageSet usedLastTurn = new PrimitiveStorageSet();
-
-//    internal Value getConsumption(Product whom)
-//    {
-//        foreach (Storage stor in usedLastTurn)
-//            if (stor.getProduct() == whom)
-//                return stor;
-//        return new Value(0f);
-//    }
-//    internal void setStatisticToZero()
-//    {
-//        usedLastTurn.setZero();
-//    }
-
-//    /// / next - inherited
 
 
-//    public void set(Storage inn)
-//    {
-//        base.set(inn);
-//        throw new DontUseThatMethod();
-//    }
-//    ///// <summary>
-//    ///// If duplicated than adds
-//    ///// </summary>
-//    //internal void add(Storage need)
-//    //{
-//    //    base.add(need);
-//    //    consumedLastTurn.add(need)
-//    //}
+/// <summary>
+/// Alows to keep info about how much product was taken from StorageSet
+/// !!! if someone would change returning object (Storage) then country takenAway logic would be broken!!
+/// </summary>
+public class CountryStorageSet : StorageSet, IHasStatistics
+{
+    /// <summary>
+    /// Used only in non-market economies. Count as much products country consumed or spent    
+    /// </summary>
+    private readonly StorageSet takenAway = new StorageSet();
 
-//    ///// <summary>
-//    ///// If duplicated than adds
-//    ///// </summary>
-//    //internal void add(PrimitiveStorageSet need)
-//    //{ }
+    //internal Value getConsumption(Product whom)
+    //{
+    //    foreach (Storage stor in takenAwayLastTurn)
+    //        if (stor.getProduct() == whom)
+    //            return stor;
+    //    return new Value(0f);
+    //}
+    public void setStatisticToZero()
+    {
+        takenAway.setZero();
+    }
 
-//    /// <summary>
-//    /// Do checks outside
-//    /// </summary>   
-//    public bool send(Producer whom, Storage what)
-//    {
-//        if (base.send(whom, what))
-//        {
-//            usedLastTurn.add(what); //??!!?
-//            return true;
-//        }
-//        else
-//            return false;
-//    }
-//    /// <summary>
-//    /// Do checks outside
-//    /// </summary>   
-//    public bool send(Producer whom, List<Storage> what)
-//    {
-//        bool result = true;
-//        foreach (var item in what)
-//        {
-//            if (!send(whom, item))
-//                result = false;
-//        }
-//        return result;
-//    }
+    /// / next - inherited
 
-//    /// <summary>
-//    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
-//    /// </summary>    
-//    internal Value getStorage(Product whom)
-//    {
-//        return base.getStorage(whom);
-//    }
 
-//    internal void SetZero()
-//    {
-//        base.setZero();
-//        throw new DontUseThatMethod();
-//    }
-//    //internal PrimitiveStorageSet Divide(float v)
-//    //{
-//    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
-//    //    foreach (Storage stor in container)
-//    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
-//    //    return result;
-//    //}
+    public void set(Storage inn)
+    {
+        base.set(inn);
+        throw new DontUseThatMethod();
+    }
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(Storage need)
+    //{
+    //    base.add(need);
+    //    consumedLastTurn.add(need)
+    //}
 
-//    internal bool subtract(Storage stor, bool showMessageAboutNegativeValue)
-//    {
-//        if (base.subtract(stor, showMessageAboutNegativeValue))
-//        {
-//            usedLastTurn.add(stor);
-//            return true;
-//        }
-//        else
-//            return false;
-//    }
+    ///// <summary>
+    ///// If duplicated than adds
+    ///// </summary>
+    //internal void add(PrimitiveStorageSet need)
+    //{ }
 
-//    //internal Storage subtractOutside(Storage stor)
-//    //{
-//    //    Storage find = this.findStorage(stor.getProduct());
-//    //    if (find == null)
-//    //        return new Storage(stor);
-//    //    else
-//    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
-//    //}
-//    internal void subtract(PrimitiveStorageSet set)
-//    {
-//        base.subtract(set, true);
-//        throw new DontUseThatMethod();
-//    }
-//    internal void copyDataFrom(PrimitiveStorageSet consumed)
-//    {
-//        base.copyDataFrom(consumed);
-//        throw new DontUseThatMethod();
-//    }
-//    internal void sendAll(PrimitiveStorageSet toWhom)
-//    {
-//        usedLastTurn.add(this);
-//        base.sendAll(toWhom);
-//    }
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, Storage what)
+    {
+        if (base.send(whom, what))
+        {
+            takenAway.add(what); 
+            return true;
+        }
+        else
+            return false;
+    }
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(Producer whom, List<Storage> what)
+    {
+        bool result = true;
+        foreach (var item in what)
+        {
+            if (!send(whom, item))
+                result = false;
+        }
+        return result;
+        
+    }
+    override public bool subtract(Storage stor, bool showMessageAboutNegativeValue=true)
+    {
+        if (base.subtract(stor, showMessageAboutNegativeValue))
+        {
+            takenAway.add(stor);
+            return true;
+        }
+        else
+            return false;
+    }
+    /// <summary>
+    /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
+    /// </summary>    
+    //internal Value getStorage(Product whom)
+    //{
+    //    return base.getStorage(whom);
+    //}
 
-//}
+    internal void SetZero()
+    {
+        base.setZero();
+        throw new DontUseThatMethod();
+    }
+    //internal PrimitiveStorageSet Divide(float v)
+    //{
+    //    PrimitiveStorageSet result = new PrimitiveStorageSet();
+    //    foreach (Storage stor in container)
+    //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
+    //    return result;
+    //}
+
+    
+
+    //internal Storage subtractOutside(Storage stor)
+    //{
+    //    Storage find = this.findStorage(stor.getProduct());
+    //    if (find == null)
+    //        return new Storage(stor);
+    //    else
+    //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+    //}
+    //internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
+    //{
+    //    base.subtract(set, showMessageAboutNegativeValue);
+    //    throw new DontUseThatMethod();
+    //}
+    internal void copyDataFrom(StorageSet consumed)
+    {
+        base.copyDataFrom(consumed);
+        throw new DontUseThatMethod();
+    }
+    internal void sendAll(StorageSet toWhom)
+    {
+        takenAway.add(this);
+        base.sendAll(toWhom);
+    }
+
+}
 
 public class Storage : Value
 {
     static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
-        
-    private Product product;    
+
+    private Product product;
     // protected  Value value;
     //public Value value;
     //public Storage(JSONObject jsonObject)
@@ -222,7 +219,7 @@ public class Storage : Value
     public Product getProduct()
     {
         return product;
-    }     
+    }
     override public string ToString()
     {
         return get() + " " + getProduct();
@@ -354,7 +351,7 @@ public class Storage : Value
     {
         return this.getProduct() == anotherProduct;
     }
-    
+
     //internal bool isSubstituteProduct(Product product)
     //{
     //    return this.getProduct().isSubstituteFor(product);

@@ -161,16 +161,10 @@ public abstract class Staff : Consumer
     {
         allArmies.ForEach(x => x.rebelTo(popSelector, movement));
     }
-    //override public void buyNeeds()
-    // {
-    //     allArmies.ForEach(x => x.consume());
-    // }
-
-    //override public PrimitiveStorageSet getRealNeeds()
+   
     override public List<Storage> getRealAllNeeds()
     {
-        StorageSet res = new StorageSet();
-        //var res = new List<Storage>();
+        StorageSet res = new StorageSet();        
         foreach (var item in allArmies)
             res.add(item.getNeeds());
         return res.getContainer();
@@ -179,7 +173,6 @@ public abstract class Staff : Consumer
     virtual internal void sendArmy(Province possibleTarget, Procent procent)
     {
         consolidateArmies().balance(procent).sendTo(possibleTarget);
-
     }
 
     override public void setStatisticToZero()

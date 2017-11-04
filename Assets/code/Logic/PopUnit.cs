@@ -548,9 +548,9 @@ abstract public class PopUnit : Producer
                 howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
             }
             if (storage.isBiggerOrEqual(howMuchSend))
-                storage.send(getCountry().storageSet, howMuchSend);
+                storage.send(getCountry().countryStorageSet, howMuchSend);
             else
-                storage.sendAll(getCountry().storageSet);
+                storage.sendAll(getCountry().countryStorageSet);
         }
     }
 
@@ -735,11 +735,13 @@ abstract public class PopUnit : Producer
     {
         foreach (var item in needs)
         {
-            if (getCountry().storageSet.has(item))
+            if (getCountry().countryStorageSet.has(item))
                 if (item.isAbstractProduct())
-                    consumeFromCountryStorage(getCountry().storageSet.convertToBiggestStorageProduct(item), getCountry());
+                    //consumeFromCountryStorage(getCountry().storageSet.convertToBiggestStorageProduct(item), getCountry());
+                    getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            
                 else
-                    consumeFromCountryStorage(item, getCountry());
+                    //consumeFromCountryStorage(item, getCountry());
+                    getCountry().countryStorageSet.subtract(item);
         }
     }    
     /// <summary> !!! Overloaded for artisans and tribesmen </summary>

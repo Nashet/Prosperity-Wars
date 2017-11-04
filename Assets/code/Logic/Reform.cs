@@ -197,7 +197,7 @@ public class Government : AbstractReform
         new ConditionsListForDoubleObjects(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta", 20, 0.3f);
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
-        new ConditionsListForDoubleObjects(Invention.CollectivismInvented), "ssr", 20, 0.5f);
+        new ConditionsListForDoubleObjects(Invention.CollectivismInvented), "SSR", 20, 0.5f);
 
     internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
     internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.getName(), true);
@@ -256,10 +256,12 @@ public class Government : AbstractReform
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
             country.minorityPolicy.setValue(MinorityPolicy.Equality);
             country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[0]);
-            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[9]);
+            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
             //nationalization
             country.getBank().sendAllAvailableMoney(country);
             country.getBank().getGivenLoans().setZero();
+            country.loans.setZero();
+            country.deposits.setZero();
             foreach (var item in country.getAllFactories())
             {
                 item.setOwner(country);

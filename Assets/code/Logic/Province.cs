@@ -1048,10 +1048,7 @@ public class Mod : Name
     //    expireDate.AddYears(years);
     //}
 }
-public interface IHasStatistics
-{
-    void setStatisticToZero();
-}
+
 public interface IHasCountry
 {
     Country getCountry();

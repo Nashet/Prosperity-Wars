@@ -324,9 +324,9 @@ public class Factory : SimpleProduction
                     Country countryPayer = getOwner() as Country;
                     if (countryPayer != null)
                     {
-                        if (countryPayer.storageSet.has(howMuchPay))
+                        if (countryPayer.countryStorageSet.has(howMuchPay))
                         {
-                            countryPayer.storageSet.send(link.Key, howMuchPay);
+                            countryPayer.countryStorageSet.send(link.Key, howMuchPay);
                             link.Key.gainGoodsThisTurn.add(howMuchPay);
                             salary.set(foodSalary);
                         }
@@ -720,7 +720,7 @@ public class Factory : SimpleProduction
                 {
                     Country countryOwner = getOwner() as Country;
                     if (countryOwner != null)
-                        storage.sendAll(countryOwner.storageSet);
+                        storage.sendAll(countryOwner.countryStorageSet);
                     else // assuming owner is aristocrat/capitalist
                     {
                         // send to market?
@@ -731,7 +731,7 @@ public class Factory : SimpleProduction
                 }
                 else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    storage.sendAll(getCountry().storageSet);
+                    storage.sendAll(getCountry().countryStorageSet);
                 }
             }
         }
@@ -756,8 +756,8 @@ public class Factory : SimpleProduction
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                if (getCountry().storageSet.has(shoppingList))
-                    getCountry().storageSet.send(this, shoppingList);
+                if (getCountry().countryStorageSet.has(shoppingList))
+                    getCountry().countryStorageSet.send(this, shoppingList);
             }
             else
             {
@@ -777,14 +777,14 @@ public class Factory : SimpleProduction
                 if (isBuilding())
                 {
                     var buildingNeeds = getType().getBuildNeeds();
-                    if (getCountry().storageSet.has(buildingNeeds))
-                        isBuyingComplete = getCountry().storageSet.send(this, buildingNeeds);
+                    if (getCountry().countryStorageSet.has(buildingNeeds))
+                        isBuyingComplete = getCountry().countryStorageSet.send(this, buildingNeeds);
                 }
                 else if (isUpgrading())
                 {
                     var upgradingNeeds = getUpgradeNeeds();
-                    if (getCountry().storageSet.has(upgradingNeeds))
-                        isBuyingComplete = getCountry().storageSet.send(this, upgradingNeeds);
+                    if (getCountry().countryStorageSet.has(upgradingNeeds))
+                        isBuyingComplete = getCountry().countryStorageSet.send(this, upgradingNeeds);
                 }
             }
             else

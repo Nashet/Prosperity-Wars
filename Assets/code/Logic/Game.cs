@@ -626,7 +626,7 @@ public class Game : ThreadedJob
                         pop.invest();
                 }
                 if (country.isAI())
-                    country.Invest(province);
+                    country.invest(province);
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)

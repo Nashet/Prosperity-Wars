@@ -52,11 +52,11 @@ public class BuildPanel : DragPanel
             {
                 //todo remove grain connection
                 Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
-                if (Game.Player.storageSet.has(needFood))
+                if (Game.Player.countryStorageSet.has(needFood))
                 {
                     Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
                     //wallet.pay(fact.wallet, new Value(100f));
-                    Game.Player.storageSet.subtract(needFood);
+                    Game.Player.countryStorageSet.subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.Show(fact);
                 }
