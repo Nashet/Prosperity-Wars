@@ -30,6 +30,7 @@ public class FinancePanel : DragPanel
         sb.Append("\n Rich tax (").Append(Game.Player.taxationForRich.getValue()).Append("): ").Append(Game.Player.getRichTaxIncome());
         sb.Append("\n Gold mines: ").Append(Game.Player.getGoldMinesIncome());
         sb.Append("\n Owned enterprises: ").Append(Game.Player.getOwnedFactoriesIncome());
+        sb.Append("\n Rest: ").Append(Game.Player.getRestIncome());
         sb.Append("\nTotal: ").Append(Game.Player.moneyIncomethisTurn);
 
         sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());

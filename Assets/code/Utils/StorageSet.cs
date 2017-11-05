@@ -101,15 +101,20 @@ public class StorageSet
     /// <summary>
     /// Do checks outside
     /// </summary>   
-    public bool send(Producer whom, StorageSet what)
+    public bool send(StorageSet whom, StorageSet what)
     {
         bool res = true;
         foreach (var item in what)
         {
-            if (!send(whom, item))//!has(item) || 
-                res = false;
+            whom.add(item);
+            this.subtract(item);            
         }
         return res;
+    }
+    internal void sendAll(StorageSet toWhom)
+    {
+        toWhom.add(this);
+        this.setZero();
     }
     /// <summary>
     /// Do checks outside
@@ -355,13 +360,7 @@ public class StorageSet
             this.set(stor);
         // SetZero();
     }
-
-
-    internal void sendAll(StorageSet toWhom)
-    {
-        toWhom.add(this);
-        this.setZero();
-    }
+        
 
     internal float sum()
     {

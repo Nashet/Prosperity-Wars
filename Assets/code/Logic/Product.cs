@@ -133,6 +133,18 @@ public class Product : Name
             if (!item.isAbstract())
                 yield return item;
     }
+    /// <summary>
+    /// Products go in industrial-military-consumer order
+    /// </summary>    
+    public static IEnumerable<Product> getAllNonAbstractInPEOrder(Country country)
+    {
+        foreach (var item in getAllIndustrialProducts(country))
+            yield return item;
+        foreach (var item in getAllMilitaryProducts(country))
+            yield return item;
+        foreach (var item in getAllConsumerProducts(country))
+            yield return item;
+    }
     public static IEnumerable<Product> getAll()
     {
         foreach (var item in allProducts)

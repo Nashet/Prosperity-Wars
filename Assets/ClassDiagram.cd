@@ -20,7 +20,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Market">
-    <Position X="2.75" Y="1.75" Width="1.5" />
+    <Position X="4" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -100,8 +100,15 @@
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
+    <NestedTypes>
+      <Enum Name="Factory.Priority" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\code\Logic\Factory.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>lTEYAcbwEFRroJIGjKsJATATrSGaIsBEFJJAEqZADAQ=</HashCode>
+      <HashCode>lTGYAcbwEFRroJIGjKsJATATrSGaIsBEFJJAEqZADAQ=</HashCode>
       <FileName>Assets\code\Logic\Factory.cs</FileName>
     </TypeIdentifier>
   </Class>

@@ -441,10 +441,7 @@ public class Game : ThreadedJob
     {
         Game.market.sentToMarket.setZero();
         foreach (Country country in Country.getExisting())
-        // if (country != Country.NullCountry)
         {
-            //country.wallet.moneyIncomethisTurn.set(0);
-            //country.storageSet.setStatisticToZero(); // was CountryStorageSet, not used actually            
             country.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
@@ -589,20 +586,26 @@ public class Game : ThreadedJob
                     foreach (PopUnit pop in province.allPopUnits)
                     {
                         pop.consumeNeeds();
-                        // stopped here with planned economy
                     }
                 }
         // big AFTER all circle
         foreach (Country country in Country.getExisting())
         {
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {
+            {                                 
                 foreach (Factory factory in province.allFactories)
                 {
-                    factory.getMoneyForSoldProduct();
-                    factory.changeSalary();
-                    factory.payDividend();
+                    if (country.economy.getValue() != Economy.PlannedEconomy)
+                    {
+                        factory.getMoneyForSoldProduct();
+                        factory.changeSalary();
+                        factory.payDividend();
+                        factory.simulateClosing(); // that too
+                    }
+                    //todo that should be done by owners, like capitalists or bureaucrats 
+                    factory.simulateOpening();
                 }
+
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {

@@ -642,7 +642,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
 
                 int hiredInThatGroup = 0;
                 foreach (var factory in factoryGroup)
-                    if (factory.getSalary() > 0f)//factory.isWorking() &&
+                    if (factory.getSalary() > 0f || getCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
                         int factoryWants = factory.howMuchWorkForceWants();
 

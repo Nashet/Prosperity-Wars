@@ -146,7 +146,7 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onPriorityChanged()
     {
-        shownFactory.setPriority((byte)Mathf.RoundToInt(priority.value)); 
+        shownFactory.setPriority((int)Mathf.RoundToInt(priority.value)); 
     }
     public void onReopenClick()
     {

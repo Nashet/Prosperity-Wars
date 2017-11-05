@@ -27,6 +27,9 @@ public class Country : MultiSeller
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
+
+    
+
     //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
 
     private TextMesh meshCapitalText;
@@ -830,11 +833,11 @@ public class Country : MultiSeller
     /// </summary>
     public override void consumeNeeds()
     {
-        // redo into to be based on consumption, not neeeds
-
+        
+        // planned economy buying
         //1 day buying
-        foreach (var product in Product.getAllNonAbstract())
-            if (product.isInvented(this))
+        foreach (var product in Product.getAllNonAbstractInPEOrder(this))
+            //if (product.isInvented(this)) // allredy checked
             //foreach (var currentStorage in countryStorageSet)
             {
                 var desiredMinimum = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
@@ -847,6 +850,7 @@ public class Country : MultiSeller
 
         //x day buying/selling
         foreach (var currentStorage in countryStorageSet)
+        //foreach (var currentStorage in Product.getAllNonAbstractInPEOrder(this))
         {
             var takenFromStorage = new Storage(countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct()));
 
@@ -1080,20 +1084,6 @@ public class Country : MultiSeller
         return result;
     }
     //****************************
-    internal Value getAllExpenses()
-    {
-        Value result = new Value(0f);
-        result.add(unemploymentSubsidiesExpense);
-        result.add(factorySubsidiesExpense);
-        result.add(storageBuyingExpense);
-        result.add(soldiersWageExpense);
-        return result;
-    }
-    internal float getBalance()
-    {
-        return moneyIncomethisTurn.get() - getAllExpenses().get();
-    }
-
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
@@ -1107,6 +1097,30 @@ public class Country : MultiSeller
         factorySubsidiesExpense.set(0f);
         storageBuyingExpense.set(0f);
         soldiersWageExpense.setZero();
+    }
+    
+    internal float getBalance()
+    {
+        return moneyIncomethisTurn.get() - getAllExpenses().get();
+    }
+
+    internal Value getAllExpenses()
+    {
+        Value result = new Value(0f);
+        result.add(unemploymentSubsidiesExpense);
+        result.add(factorySubsidiesExpense);
+        result.add(storageBuyingExpense);
+        result.add(soldiersWageExpense);
+        return result;
+    }
+    internal Value getAllIncome()
+    {           
+        Value result = new Value(0f);
+        result.add(poorTaxIncome);
+        result.add(richTaxIncome);
+        result.add(goldMinesIncome);
+        result.add(ownedFactoriesIncome);
+        return result;
     }
 
     internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
@@ -1136,6 +1150,14 @@ public class Country : MultiSeller
     {
         return factorySubsidiesExpense.get();
     }
+    internal float getUnemploymentSubsidiesExpense()
+    {
+        return unemploymentSubsidiesExpense.get();
+    }
+    internal float getStorageBuyingExpense()
+    {
+        return storageBuyingExpense.get();
+    }
     internal float getPoorTaxIncome()
     {
         return poorTaxIncome.get();
@@ -1149,22 +1171,16 @@ public class Country : MultiSeller
     internal float getGoldMinesIncome()
     {
         return goldMinesIncome.get();
-    }
-
-
+    }   
     internal float getOwnedFactoriesIncome()
     {
         return ownedFactoriesIncome.get();
     }
 
-    internal float getUnemploymentSubsidiesExpense()
+    internal float getRestIncome()
     {
-        return unemploymentSubsidiesExpense.get();
-    }
-    internal float getStorageBuyingExpense()
-    {
-        return storageBuyingExpense.get();
-    }
+        return moneyIncomethisTurn.get() - getAllIncome().get();             
+    }                                                                
 
     internal void poorTaxIncomeAdd(Value toAdd)
     {

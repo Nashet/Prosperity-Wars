@@ -5,6 +5,7 @@ using System;
 using System.Text;
 public class Factory : SimpleProduction
 {
+    public enum Priority { none, low, medium, high }
     private static readonly int workForcePerLevel = 1000;
     private static int xMoneyReservForResources = 10;
 
@@ -18,6 +19,9 @@ public class Factory : SimpleProduction
     private int priority = 0;
     private readonly Value salary = new Value(0);
 
+    /// <summary>
+    /// How much need to finish building/upgrading
+    /// </summary>
     internal readonly StorageSet constructionNeeds;
 
 
@@ -93,7 +97,7 @@ public class Factory : SimpleProduction
         .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented }),
 
         conditionsChangePriority = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
-        .addForSecondObject(new List<Condition> { Economy.isNotLF, Condition.IsNotImplemented });
+        .addForSecondObject(new List<Condition> { Economy.isPlanned });//.isNotLF
     internal static readonly ConditionsList
 
         //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
@@ -134,6 +138,8 @@ public class Factory : SimpleProduction
         province.allFactories.Add(this);
         setOwner(factoryOwner);
         salary.set(province.getLocalMinSalary());
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            setPriorityAutoWithPlannedEconomy();
     }
     internal StorageSet getUpgradeNeeds()
     {
@@ -251,10 +257,42 @@ public class Factory : SimpleProduction
     {
         subsidized = isOn;
     }
-
-    internal void setPriority(byte value)
+    internal void setPriorityAutoWithPlannedEconomy()
     {
-        priority = value;
+        if (getType().basicProduction.getProduct().isIndustrial())
+            setPriority(Factory.Priority.medium);
+        else
+        {
+            if (getType().basicProduction.getProduct().isMilitary())
+                setPriority(Factory.Priority.low);
+            else //isConsumer()
+                setPriority(Factory.Priority.none);
+        }
+    }
+    internal void setPriority(int priority)
+    {
+        this.priority = priority;
+    }
+    internal void setPriority(Priority priority)
+    {
+        switch (priority)
+        {
+            case Priority.none:
+                this.priority = 0;
+                break;
+            case Priority.low:
+                this.priority = 1;
+                break;
+            case Priority.medium:
+                this.priority = 2;
+                break;
+            case Priority.high:
+                this.priority = 3;
+                break;
+            default:
+                break;
+        }
+
     }
 
     internal int howManyEmployed(PopUnit pop)
@@ -384,10 +422,14 @@ public class Factory : SimpleProduction
         int cantakeMax = level * workForcePerLevel;
         return cantakeMax;
     }
+    public void setZeroSalary()
+    {
+        salary.setZero();
+    }
     internal void changeSalary()
     {
         //if (getLevel() > 0)
-        if (isWorking() && Economy.isMarket.checkIftrue(getCountry())) 
+        if (isWorking() && Economy.isMarket.checkIftrue(getCountry()))
         {
             // rise salary to attract  workforce, including workforce from other factories
             if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
@@ -443,14 +485,14 @@ public class Factory : SimpleProduction
         else
             if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
 
-        if (difference > 0) 
+        if (difference > 0)
         {
             float inputFactor = getInputFactor().get();
             //fire people if no enough input.            
             if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                 difference = -1 * maxHiringSpeed;
 
-            if ( getCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
+            if (getCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
             {
                 //fire people if unprofitable. 
                 if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
@@ -563,38 +605,20 @@ public class Factory : SimpleProduction
     {
         return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservPerLevel * level;
     }
-    internal void payDividend()
+    public void simulateClosing()
     {
-        //if (getLevel() > 0)
-        if (isWorking() )
+        if (getProfit() <= 0)
         {
-            if (getCountry().economy.getValue() != Economy.PlannedEconomy)
-            {
-                float saveForYourSelf = wantsMinMoneyReserv();
-                float divident = cash.get() - saveForYourSelf;
-
-                if (divident > 0)
-                {
-                    Value sentToOwner = new Value(divident);
-                    pay(getOwner(), sentToOwner);
-                    var owner = getOwner() as Country;
-                    if (owner != null)
-                        owner.ownedFactoriesIncomeAdd(sentToOwner);
-                }
-
-                if (getProfit() <= 0) // to avoid internal zero profit factories
-                {
-                    daysUnprofitable++;
-                    if (daysUnprofitable == Options.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
-                        this.close();
-                }
-                else
-                    daysUnprofitable = 0;
-            }
+            daysUnprofitable++;
+            if (daysUnprofitable == Options.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
+                this.close();
         }
         else
-        {
-            //why reopening is here?
+            daysUnprofitable = 0;
+    }
+    public void simulateOpening()
+    {
+        if (!isWorking())
             //closed
             if (!isBuilding())
             {
@@ -603,22 +627,48 @@ public class Factory : SimpleProduction
                     markToDestroy();
                 else
                 if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
-                {//take loan for reopen
-                    if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(getProvince()).get() > 10f)
+                {
+                    if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        float leftOver = cash.get() - wantsMinMoneyReserv();
-                        if (leftOver < 0)
+                        open(this);
+                    }
+                    else
+                    {
+                        //take loan for reopen
+                        if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(getProvince()).get() > 10f)
                         {
-                            Value loanSize = new Value(leftOver * -1f);
-                            if (getBank().canGiveMoney(this, loanSize))
-                                getBank().giveMoney(this, loanSize);
+                            float leftOver = cash.get() - wantsMinMoneyReserv();
+                            if (leftOver < 0)
+                            {
+                                Value loanSize = new Value(leftOver * -1f);
+                                if (getBank().canGiveMoney(this, loanSize))
+                                    getBank().giveMoney(this, loanSize);
+                            }
+                            leftOver = cash.get() - wantsMinMoneyReserv();
+                            if (leftOver >= 0f)
+                                open(this);
                         }
-                        leftOver = cash.get() - wantsMinMoneyReserv();
-                        if (leftOver >= 0f)
-                            open(this);
                     }
                 }
             }
+    }
+    internal void payDividend()
+    {
+        if (isWorking())
+        {
+            float saveForYourSelf = wantsMinMoneyReserv();
+            float divident = cash.get() - saveForYourSelf;
+
+            if (divident > 0)
+            {
+                Value sentToOwner = new Value(divident);
+                pay(getOwner(), sentToOwner);
+                var owner = getOwner() as Country;
+                if (owner != null)
+                    owner.ownedFactoriesIncomeAdd(sentToOwner);
+            }
+
+
         }
     }
     //public bool isClosed()
@@ -779,20 +829,20 @@ public class Factory : SimpleProduction
             daysInConstruction++;
             bool isBuyingComplete = false;
 
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy && daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                if (isBuilding())
-                {
-                    var buildingNeeds = getType().getBuildNeeds();
-                    if (getCountry().countryStorageSet.has(buildingNeeds))
-                        isBuyingComplete = getCountry().countryStorageSet.send(this, buildingNeeds);
-                }
-                else if (isUpgrading())
-                {
-                    var upgradingNeeds = getUpgradeNeeds();
-                    if (getCountry().countryStorageSet.has(upgradingNeeds))
-                        isBuyingComplete = getCountry().countryStorageSet.send(this, upgradingNeeds);
-                }
+                if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
+                    //if (isBuilding())
+                    //{
+                    //    var buildingNeeds = getType().getBuildNeeds();
+                    //    if (getCountry().countryStorageSet.has(buildingNeeds))
+                    //        isBuyingComplete = getCountry().countryStorageSet.send(this, buildingNeeds);
+                    //}
+                    //else if (isUpgrading())
+                    //{                               
+                    if (getCountry().countryStorageSet.has(constructionNeeds))
+                        isBuyingComplete = getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
+                //}
             }
             else
             {
@@ -809,7 +859,7 @@ public class Factory : SimpleProduction
             }
             if (isBuyingComplete
                || (getCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
-               
+
             {
                 onConstructionComplete();
                 //todo avoid extra subtraction and redo whole method

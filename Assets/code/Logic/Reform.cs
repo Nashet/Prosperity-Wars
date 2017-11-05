@@ -122,7 +122,7 @@ public class Government : AbstractReform
         readonly private int MaxiSizeLimitForDisloyaltyModifier;
         readonly private string prefix;
         readonly private float scienceModifier;
-        
+
         public ReformValue(string inname, string indescription, int idin, ConditionsListForDoubleObjects condition, string prefix, int MaxiSizeLimitForDisloyaltyModifier, float scienceModifier)
     : base(inname, indescription, idin, condition)
         {
@@ -140,7 +140,7 @@ public class Government : AbstractReform
                 return false;
             else
                 return true;
-        }    
+        }
         protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
@@ -254,21 +254,24 @@ public class Government : AbstractReform
             country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
             country.minimalWage.setValue(MinimalWage.None);
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-            country.minorityPolicy.setValue(MinorityPolicy.Equality);
-            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[0]);
+            country.minorityPolicy.setValue(MinorityPolicy.Residency);
+            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
             country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
             //nationalization
             country.getBank().sendAllAvailableMoney(country);
             country.getBank().getGivenLoans().setZero();
             country.loans.setZero();
             country.deposits.setZero();
-            foreach (var item in country.getAllFactories())
+            foreach (var factory in country.getAllFactories())
             {
-                item.setOwner(country);
-                item.sendAllAvailableMoney(country);
-                item.loans.setZero();
-                item.deposits.setZero();
-                item.setSubsidized(false);
+                factory.setOwner(country);
+                factory.sendAllAvailableMoney(country);
+                factory.loans.setZero();
+                factory.deposits.setZero();
+                factory.setSubsidized(false);
+                factory.setZeroSalary();
+                factory.setPriorityAutoWithPlannedEconomy();
+                factory.setStatisticToZero();
             }
             foreach (var item in country.getAllPopUnits())
             {
@@ -276,6 +279,8 @@ public class Government : AbstractReform
                 item.loans.setZero();
                 item.deposits.setZero();
             }
+            if (country == Game.Player)
+                MainCamera.refreshAllActive();
         }
     }
     //internal void setValue(AbstractReformValue selectedReform, bool setPrefix)
