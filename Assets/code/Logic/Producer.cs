@@ -2,6 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public abstract class MultiSeller : Staff, IHasStatistics
+{
+    public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
+    private readonly StorageSet sentToMarket = new StorageSet();
+    public MultiSeller(Country place) : base(place)
+    {
+    }
+    override public void setStatisticToZero()
+    {
+        base.setStatisticToZero();
+        sentToMarket.setZero();
+    }
+    public float getSentToMarket(Product product)
+    {
+       return sentToMarket.getFirstStorage(product).get();
+    }
+    /// <summary>
+    /// Do checks outside
+    /// </summary>    
+    public void sell(Storage what)
+    {
+        sentToMarket.set(what);
+        countryStorageSet.subtract(what);
+        Game.market.sentToMarket.add(what);
+    }
+}
+
 /// <summary>
 /// Represents anyone who can produce, store and sell product (1 product)
 /// also linked to Province
@@ -11,21 +38,24 @@ public abstract class Producer : Consumer
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
 
+    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>    
+    public Storage storage;
+
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
     public Storage sentToMarket;
 
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
-    public abstract void simulate(); ///!!!
+    
     public abstract void produce();
     public abstract void payTaxes();
 
     protected Producer(Province province) : base(province.getCountry().getBank(), province)
     {
     }
-    protected Producer() : base(null, null)
-    {
-    }
+    //protected Producer() : base(null, null)
+    //{
+    //}
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
@@ -66,13 +96,18 @@ public abstract class Producer : Consumer
     }
     /// <summary>
     /// Do checks outside
-    /// </summary>
-    /// <param name="what"></param>
+    /// </summary>    
     public void sell(Storage what)
     {
         sentToMarket.set(what);
         storage.subtract(what);
         Game.market.sentToMarket.add(what);
+    }
+    /// <summary> Do checks outside</summary>
+    public void consumeFromItself(Storage what)
+    {
+        getConsumed().add(what);
+        storage.subtract(what);
     }
 }
 

@@ -35,7 +35,7 @@ public class ProductionWindowTable : MyTableNew
         AddButton("Profit");
 
         ////Adding profit
-        AddButton("% Profit");
+        AddButton("Profitability");
 
         ////Adding salary
         AddButton("Salary");
@@ -76,12 +76,15 @@ public class ProductionWindowTable : MyTableNew
                     if (!next.isWorking())
                         AddButton("Closed", next);
                     else
+                    {
                         if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
-                        AddButton("none", next);
-                    else
-                        AddButton(next.getMargin().ToString(), next);
+                            AddButton("none", next);
+                        else
+                            AddButton(next.getMargin().ToString(), next);
+                    }
                 }
             }
+
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)

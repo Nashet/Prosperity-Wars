@@ -229,17 +229,7 @@ public class Movement : Staff
 
         sendArmy(place.getCapital(), Procent.HundredProcent);
         _isInRevolt = true;
-    }
-
-    public override void produce()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void payTaxes()
-    {
-        throw new NotImplementedException();
-    }
+    }    
 }
 
 // todo make generic

@@ -8,9 +8,7 @@ using UnityEngine;
 /// </summary>
 public abstract class Consumer : Agent
 {
-    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
-    // may move it back to Producer
-    public Storage storage;
+    
     private readonly StorageSet consumed = new StorageSet();
     private readonly StorageSet consumedLastTurn = new StorageSet();
     private readonly StorageSet consumedInMarket = new StorageSet();
@@ -45,26 +43,14 @@ public abstract class Consumer : Agent
     {
         return consumedInMarket;
     }
+    // Do I use where need to? Yes, I do. It goes to Market.Buy()
     public void consumeFromMarket(Storage what)
-    {
-        //pay(Game.market, what.multiplyOutside(price));
-        //if (fromMarket)
-        ///{
+    {            
         consumed.add(what);
         consumedInMarket.add(what);
-        Game.market.sentToMarket.subtract(what);
-        //}        
-
-        // from Market
-        //if (this is SimpleProduction)
-        //    (this as SimpleProduction).getInputProductsReserve().add(what);
+        Game.market.sentToMarket.subtract(what);       
     }
-    /// <summary> Do checks outside</summary>
-    public void consumeFromItself(Storage what)
-    {
-        consumed.add(what);
-        storage.subtract(what);
-    }
+   
     public void consumeFromCountryStorage(List<Storage> what, Country country)
     {
         consumed.add(what);

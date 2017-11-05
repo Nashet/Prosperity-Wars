@@ -87,7 +87,7 @@ public class Factory : SimpleProduction
         .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotInterventionism }),
 
         conditionsSubsidize = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
-        .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural }),
+        .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Economy.isNotPlanned }),
 
         conditionsDontHireOnSubsidies = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
         .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented }),
@@ -443,21 +443,24 @@ public class Factory : SimpleProduction
         else
             if (difference < -1 * maxHiringSpeed) difference = -1 * maxHiringSpeed;
 
-        if (difference > 0 && getCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
+        if (difference > 0) 
         {
             float inputFactor = getInputFactor().get();
             //fire people if no enough input.            
             if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                 difference = -1 * maxHiringSpeed;
 
-            //fire people if unprofitable. 
-            if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
-                difference = -1 * maxHiringSpeed;
+            if ( getCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
+            {
+                //fire people if unprofitable. 
+                if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                    difference = -1 * maxHiringSpeed;
 
-            // just don't hire more..
-            //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-            if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-                difference = 0;
+                // just don't hire more..
+                //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                    difference = 0;
+            }
         }
         //todo optimize getWorkforce() calls
         int result = workForce + difference;
@@ -563,28 +566,31 @@ public class Factory : SimpleProduction
     internal void payDividend()
     {
         //if (getLevel() > 0)
-        if (isWorking() && getCountry().economy.getValue() != Economy.PlannedEconomy)
+        if (isWorking() )
         {
-            float saveForYourSelf = wantsMinMoneyReserv();
-            float divident = cash.get() - saveForYourSelf;
-
-            if (divident > 0)
+            if (getCountry().economy.getValue() != Economy.PlannedEconomy)
             {
-                Value sentToOwner = new Value(divident);
-                pay(getOwner(), sentToOwner);
-                var owner = getOwner() as Country;
-                if (owner != null)
-                    owner.ownedFactoriesIncomeAdd(sentToOwner);
-            }
+                float saveForYourSelf = wantsMinMoneyReserv();
+                float divident = cash.get() - saveForYourSelf;
 
-            if (getProfit() <= 0) // to avoid internal zero profit factories
-            {
-                daysUnprofitable++;
-                if (daysUnprofitable == Options.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
-                    this.close();
+                if (divident > 0)
+                {
+                    Value sentToOwner = new Value(divident);
+                    pay(getOwner(), sentToOwner);
+                    var owner = getOwner() as Country;
+                    if (owner != null)
+                        owner.ownedFactoriesIncomeAdd(sentToOwner);
+                }
+
+                if (getProfit() <= 0) // to avoid internal zero profit factories
+                {
+                    daysUnprofitable++;
+                    if (daysUnprofitable == Options.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
+                        this.close();
+                }
+                else
+                    daysUnprofitable = 0;
             }
-            else
-                daysUnprofitable = 0;
         }
         else
         {

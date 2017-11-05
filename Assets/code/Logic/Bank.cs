@@ -181,4 +181,9 @@ public class Bank : Agent
         cash.sendAll(byWhom.cash);
         givenLoans.setZero();
     }
+
+    public override void simulate()
+    {
+        throw new NotImplementedException();
+    }
 }

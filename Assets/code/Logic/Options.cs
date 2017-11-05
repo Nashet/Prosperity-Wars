@@ -5,22 +5,30 @@ using UnityEngine;
 
 public static class Options
 {
-    internal static readonly float cellMultiplier = 1f;
-    internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw   
-
+    // ARMY
     internal static readonly float ArmyDefenceBonus = 0.5f;
     internal static readonly float ArmyMobilizationFactor = 0.2f;
     internal static readonly float ArmyMaxMoralChangePerTic = 0.05f;
 
+    // COUNTRY
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly float CountryBadBoyWorldLimit = 0.1f;
     internal static readonly int CountryTimeToForgetBattle = 40;
     internal static readonly float defaultSciencePointMultiplier = 1.1f;//0.00001f; 
     internal static readonly float GovernmentTakesShareOfGoldOutput = 0.5f;
-
-    internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
-    internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int ProvinceChanceToGetCore = 70;
+    internal static readonly Value CountryMinStorage = new Value(5f);
+    internal static readonly Value CountryMaxStorage = new Value(50f);
+    internal static readonly Value CountrySaveProductsDaysMinimum = new Value(20f);
+    internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
+
+
+
+    // MAP
+    internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
+    internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly    
+    internal static readonly float cellMultiplier = 1f;
+    internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw   
 
     // MARKET
     internal static readonly float minPrice = 0.001f;

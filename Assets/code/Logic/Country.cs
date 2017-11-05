@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-public class Country : Staff
+public class Country : MultiSeller
 {
     public readonly static List<Country> allCountries = new List<Country>();
     internal static readonly Country NullCountry;
@@ -27,8 +27,7 @@ public class Country : Staff
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
-    public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
-    //private readonly StorageSet takenAway = new StorageSet();
+    //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
 
     private TextMesh meshCapitalText;
     private Material borderMaterial;
@@ -830,43 +829,47 @@ public class Country : Staff
     /// Represents buying and/or cinsuming needs.
     /// </summary>
     public override void consumeNeeds()
-    {           
+    {
         // redo into to be based on consumption, not neeeds
 
         //1 day buying
-        foreach (var currentStorage in countryStorageSet)
-        {
-            var desiredMinimum = countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct());
-            if (desiredMinimum.isZero())                 
-                desiredMinimum.add(20f);
-            var toBuy = desiredMinimum.subtractOutside(currentStorage, false);
-            if (toBuy.isBiggerThan(Value.Zero))
-               buyNeeds(toBuy) ;//go buying
-        }
+        foreach (var product in Product.getAllNonAbstract())
+            if (product.isInvented(this))
+            //foreach (var currentStorage in countryStorageSet)
+            {
+                var desiredMinimum = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
+                if (desiredMinimum.isZero())
+                    desiredMinimum.add(5f);
+                var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
+                if (toBuy.isBiggerThan(Value.Zero))
+                    buyNeeds(toBuy);//go buying
+            }
 
         //x day buying/selling
         foreach (var currentStorage in countryStorageSet)
         {
-            var desiredMinimum = countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct());
-            if (desiredMinimum.isZero())
-                desiredMinimum.add(20f);            
+            var takenFromStorage = new Storage(countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct()));
+
+            Storage desiredMinimum;
+            if (takenFromStorage.isZero())
+                desiredMinimum = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);// todo change
             else
-                desiredMinimum.multiply(10f);
+                desiredMinimum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMinimum);
             var toBuy = desiredMinimum.subtractOutside(currentStorage, false);
-            if (toBuy.isBiggerThan(Value.Zero))
+            if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
                 buyNeeds(toBuy);//go buying
-            else
+            else    // no need to buy anything
             {
-                var desiredMaximum = countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct());
-                if (desiredMaximum.isZero())
-                    desiredMaximum.add(50f);
+                Storage desiredMaximum;
+                if (takenFromStorage.isZero())
+                    desiredMaximum = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
                 else
-                    desiredMaximum.multiply(20f);
+                    desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
                 var toSell = currentStorage.subtractOutside(desiredMaximum, false);
-                if (toSell.isBiggerThan(Value.Zero))
+                if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                 {
                     sell(toSell);//go sell
-                } 
+                }
             }
         }
 
@@ -901,8 +904,11 @@ public class Country : Staff
     {
         //if (toBuy.get() < 10f) toBuy.set(10);
         Storage realyBougth = Game.market.buy(this, toBuy, null);
-        countryStorageSet.add(realyBougth);
-        storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
+        if (realyBougth.isNotZero())
+        {
+            countryStorageSet.add(realyBougth);
+            storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
+        }
     }
     public Procent getUnemployment()
     {
@@ -1201,5 +1207,5 @@ public class Country : Staff
         return null;
     }
 
-   
+
 }

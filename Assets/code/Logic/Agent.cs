@@ -21,6 +21,8 @@ abstract public class Agent : IHasCountry , IHasStatistics
     public Value deposits = new Value(0);
     private readonly Province province;
 
+    public abstract void simulate();
+
     protected Agent(float inAmount, Bank bank, Province province)
     {
         cash.set(inAmount);

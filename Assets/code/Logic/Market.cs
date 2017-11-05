@@ -74,18 +74,14 @@ public class Market : Agent//: PrimitiveStorageSet
         return cost;
     }
     internal Value getCost(Storage need)
-    {             
+    {
         // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
         //if (need.isAbstractProduct())
         //    Debug.Log("Can't determinate price of abstract product " + need.getProduct());
         return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
     }
-    /// <summary>
-    /// Meaning demander actually can pay for item in current prices
-    /// Basing on current prices and needs
-    /// Not counting ConsumedInMarket
-    /// </summary>    
-    internal float getBouth(Product product, bool takeThisTurnData)
+
+    internal float getBouthOnMarket(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
@@ -150,11 +146,7 @@ public class Market : Agent//: PrimitiveStorageSet
         //    }
         //return result;
     }
-    /// <summary>
-    /// Meaning demander actually can pay for item in current prices
-    /// Basing on current prices and needs
-    /// Not counting ConumedInMarket
-    /// </summary>    
+
     internal float getTotalConsumption(Product product, bool takeThisTurnData)
     {
         float result = 0f;
@@ -272,16 +264,19 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Only goods sent to market
     /// Based  on last turn data
     /// </summary>    
-    internal float getSupply(Product product, bool takeThisTurnData)
+    internal float getMarketSupply(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
         {
             foreach (Country country in Country.getExisting())
+            {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.getProducers())
                         if (producer.sentToMarket.isExactlySameProduct(product)) //sup.getProduct()
                             result += producer.sentToMarket.get();
+                result += country.getSentToMarket(product);
+            }
             return result;
         }
         if (dateOfgetSupplyOnMarket != Game.date)
@@ -291,16 +286,17 @@ public class Market : Agent//: PrimitiveStorageSet
             {
                 result = 0;
                 foreach (Country country in Country.getExisting())
+                {
                     foreach (Province province in country.ownedProvinces)
                         foreach (Producer producer in province.getProducers())
                             if (producer.sentToMarket.isExactlySameProduct(sup.getProduct())) //sup.getProduct()
                                 result += producer.sentToMarket.get();
-
+                    result += country.getSentToMarket(product);
+                }
                 supplyOnMarket.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetSupplyOnMarket = Game.date;
-        }
-
+        }  
         return supplyOnMarket.getFirstStorage(product).get();
     }
     /// <summary>
@@ -417,7 +413,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     if (buyer.canPay(cost))
                     {
                         buyer.pay(Game.market, cost);
-                        buyer.consumeFromMarket(howMuchAvailable);                        
+                        buyer.consumeFromMarket(howMuchAvailable);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().add(howMuchAvailable);
                         howMuchCanConsume = howMuchAvailable;
@@ -540,7 +536,7 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         //return findStorage(need.getProduct());
         // here DSB is based not on last turn data, but on this turn.
-        return new Storage(need, getSupply(need, false));
+        return new Storage(need, getMarketSupply(need, false));
     }
     /// <summary>
     /// Based on DSB, assuming you have enough money
@@ -598,8 +594,8 @@ public class Market : Agent//: PrimitiveStorageSet
             {
                 getProductionTotal(product, false); // for pre-turn initialization
                 getTotalConsumption(product, false);// for pre-turn initialization
-                float supply = getSupply(stor.getProduct(), false);
-                float demand = getBouth(stor.getProduct(), false);
+                float supply = getMarketSupply(stor.getProduct(), false);
+                float demand = getBouthOnMarket(stor.getProduct(), false);
                 //if (demand == 0) getTotalConsumption(stor.getProduct());
                 //else
                 ////if (demand == 0) balance = 1f;
@@ -616,7 +612,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 //&& supply == 0
                 if (demand == 0)
                     balance = Options.MarketZeroDSB; // otherwise - furniture bag
-                                                                  // else
+                                                     // else
                 if (supply == 0)
                     balance = Options.MarketInfiniteDSB;
 
@@ -755,4 +751,8 @@ public class Market : Agent//: PrimitiveStorageSet
         priceHistory.addData(price.getProduct(), price);
     }
 
+    public override void simulate()
+    {
+        throw new NotImplementedException();
+    }
 }

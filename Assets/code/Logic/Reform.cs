@@ -268,6 +268,7 @@ public class Government : AbstractReform
                 item.sendAllAvailableMoney(country);
                 item.loans.setZero();
                 item.deposits.setZero();
+                item.setSubsidized(false);
             }
             foreach (var item in country.getAllPopUnits())
             {
