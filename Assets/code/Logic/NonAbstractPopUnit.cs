@@ -71,7 +71,7 @@ public class Tribesmen : CattleGetter
         storage.add(producedAmount);
         gainGoodsThisTurn.set(producedAmount);
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
         return false;
     }
@@ -258,7 +258,7 @@ public class Aristocrats : GrainGetter
     {
         //Aristocrats don't produce anything
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
         if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             return false;
@@ -432,7 +432,7 @@ public class Capitalists : GrainGetter
     {
         // Caps don't produce products directly
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
         if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             return false;
@@ -616,7 +616,7 @@ public class Artisans : GrainGetter
             this.getConsumedLastTurn().add(artisansProduction.getConsumedLastTurn());
         }
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
         if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             return false;
@@ -725,8 +725,9 @@ public class Workers : GrainGetter
 
     internal override bool canVote(Government.ReformValue reform)
     {
-        if ((reform == Government.Democracy)
-            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+        if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
+            )
             return true;
         else
             return false;

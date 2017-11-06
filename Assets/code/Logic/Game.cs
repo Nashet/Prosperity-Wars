@@ -73,7 +73,7 @@ public class Game : ThreadedJob
         сreateRandomPopulation();
 
         setStartResources();
-        makeHelloMessage();
+       // makeHelloMessage();   !!!
         updateStatus("Finishing generation..");
     }
     public static void setUnityAPI()
@@ -519,8 +519,7 @@ public class Game : ThreadedJob
         // big PRODUCE circle
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {
-                //Now factories time!               
+            {                   
                 foreach (Factory factory in province.allFactories)
                 {
                     factory.produce();
@@ -548,6 +547,7 @@ public class Game : ThreadedJob
         foreach (Country country in Country.getExisting())
             if (country.economy.getValue() == Economy.PlannedEconomy)
             {
+                //consume in PE order
                 foreach (Factory factory in country.getAllFactories())
                 {
                     factory.consumeNeeds();
@@ -570,7 +570,7 @@ public class Game : ThreadedJob
                     item.consumeNeeds();
                 }
             }
-            else
+            else  //consume in regular order
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
                 {
                     foreach (Factory factory in province.allFactories)
@@ -612,7 +612,7 @@ public class Game : ThreadedJob
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
                     //because income come only after consuming, and only after FULL consumption
-                    if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
+                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();

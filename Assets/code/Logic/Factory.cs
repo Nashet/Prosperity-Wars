@@ -814,7 +814,7 @@ public class Factory : SimpleProduction
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
                 if (getCountry().countryStorageSet.has(shoppingList))
-                    getCountry().countryStorageSet.send(this, shoppingList);
+                    getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);                
             }
             else
             {

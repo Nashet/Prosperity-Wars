@@ -28,7 +28,7 @@ public class Country : MultiSeller
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
 
-    
+
 
     //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
 
@@ -149,6 +149,14 @@ public class Country : MultiSeller
             markInvented(Invention.Collectivism);
         }
     }
+    private void ressurect(Province province)
+    {
+        alive = true;
+        moveCapitalTo(province);
+        government.setValue(government.getValue());
+        setPrefix();
+    }
+
     internal void onGrantedProvince(Province province)
     {
         var oldCountry = province.getCountry();
@@ -156,9 +164,7 @@ public class Country : MultiSeller
         oldCountry.changeRelation(this, 1.00f);
         if (!this.isAlive())
         {
-            alive = true;
-            moveCapitalTo(province);
-            setPrefix();
+            ressurect(province);
         }
         province.secedeTo(this, false);
     }
@@ -169,13 +175,11 @@ public class Country : MultiSeller
             {
                 item.secedeTo(this, false);
             }
-        moveCapitalTo(getRandomOwnedProvince());
+        ressurect(getRandomOwnedProvince());
         foreach (var item in oldCountry.getInvented()) // copying inventions
         {
             this.markInvented(item.Key);
         }
-        setPrefix();
-        alive = true;
     }
     public static void setUnityAPI()
     {
@@ -639,15 +643,20 @@ public class Country : MultiSeller
     /// <summary>
     ///  Retirns null if needs are satisfied
     /// </summary>         
-    private Product getMostDeficitProduct(IEnumerable<Product> selector)
+    private Product getMostDeficitProductAllowedHere(IEnumerable<Product> selector, Province province)
     {
         Storage minFound = null;
         foreach (var item in selector)
             if (item.isInvented(this))
             {
-                var found = countryStorageSet.getFirstStorage(item);
-                if (minFound == null || found.isSmallerThan(minFound))
-                    minFound = found;
+                var proposition = FactoryType.whoCanProduce(item);
+                if (proposition != null)
+                    if (province.canBuildNewFactory(proposition))
+                    {
+                        var found = countryStorageSet.getFirstStorage(item);
+                        if (minFound == null || found.isSmallerThan(minFound))
+                            minFound = found;
+                    }
             }
         if (minFound == null)
             return null;
@@ -679,19 +688,19 @@ public class Country : MultiSeller
             if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
                 && province.getUnemployedWorkers() > 0)
             {
-                var industrialProduct = getMostDeficitProduct(Product.getAllIndustrialProducts(this));
+                var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllIndustrialProducts(this), province);
                 if (industrialProduct == null)
                 {
-                    var militaryProduct = getMostDeficitProduct(Product.getAllMilitaryProducts(this));
+                    var militaryProduct = getMostDeficitProductAllowedHere(Product.getAllMilitaryProducts(this), province);
                     if (militaryProduct == null)
                     {
-                        var consumerProduct = getMostDeficitProduct(Product.getAllConsumerProducts(this));
+                        var consumerProduct = getMostDeficitProductAllowedHere(Product.getAllConsumerProducts(this), province);
                         if (consumerProduct != null)
                         {
                             //if there is no enough some consumer product - build it
-                            var enterprise = FactoryType.whoCanProduce(consumerProduct);
-                            if (province.canBuildNewFactory(enterprise))
-                                buildIfCanPE(enterprise, province);
+                            var proposition = FactoryType.whoCanProduce(consumerProduct);
+                            //if (province.canBuildNewFactory(proposition))
+                            buildIfCanPE(proposition, province);
                         }
                         //else - all needs are satisfied
                     }
@@ -833,33 +842,31 @@ public class Country : MultiSeller
     /// </summary>
     public override void consumeNeeds()
     {
-        
         // planned economy buying
         //1 day buying
         foreach (var product in Product.getAllNonAbstractInPEOrder(this))
-            //if (product.isInvented(this)) // allredy checked
-            //foreach (var currentStorage in countryStorageSet)
-            {
-                var desiredMinimum = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
-                if (desiredMinimum.isZero())
-                    desiredMinimum.add(5f);
-                var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
-                if (toBuy.isBiggerThan(Value.Zero))
-                    buyNeeds(toBuy);//go buying
-            }
-
-        //x day buying/selling
-        foreach (var currentStorage in countryStorageSet)
-        //foreach (var currentStorage in Product.getAllNonAbstractInPEOrder(this))
+        //if (product.isInvented(this)) // allredy checked
+        //foreach (var currentStorage in countryStorageSet)
         {
-            var takenFromStorage = new Storage(countryStorageSet.takenAway.getFirstStorage(currentStorage.getProduct()));
-
+            var desiredMinimum = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
+            if (desiredMinimum.isZero())
+                desiredMinimum.add(5f);
+            var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
+            if (toBuy.isBiggerThan(Value.Zero))
+                buyNeeds(toBuy);//go buying
+        }
+        //x day buying/selling
+        //foreach (var currentStorage in countryStorageSet)
+        foreach (var product in Product.getAllNonAbstractInPEOrder(this))
+        {
+            var takenFromStorage = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
             Storage desiredMinimum;
             if (takenFromStorage.isZero())
                 desiredMinimum = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);// todo change
             else
                 desiredMinimum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMinimum);
-            var toBuy = desiredMinimum.subtractOutside(currentStorage, false);
+
+            var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
             if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
                 buyNeeds(toBuy);//go buying
             else    // no need to buy anything
@@ -869,7 +876,7 @@ public class Country : MultiSeller
                     desiredMaximum = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
                 else
                     desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
-                var toSell = currentStorage.subtractOutside(desiredMaximum, false);
+                var toSell = countryStorageSet.getFirstStorage(product).subtractOutside(desiredMaximum, false);
                 if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                 {
                     sell(toSell);//go sell
@@ -920,7 +927,7 @@ public class Country : MultiSeller
         int calculatedBase = 0;
         foreach (var item in ownedProvinces)
         {
-            int population = item.getMenPopulation();
+            int population = item.getMenPopulationEmployable();
             result.addPoportionally(calculatedBase, population, item.getUnemployment());
             calculatedBase += population;
         }
@@ -1098,7 +1105,7 @@ public class Country : MultiSeller
         storageBuyingExpense.set(0f);
         soldiersWageExpense.setZero();
     }
-    
+
     internal float getBalance()
     {
         return moneyIncomethisTurn.get() - getAllExpenses().get();
@@ -1114,7 +1121,7 @@ public class Country : MultiSeller
         return result;
     }
     internal Value getAllIncome()
-    {           
+    {
         Value result = new Value(0f);
         result.add(poorTaxIncome);
         result.add(richTaxIncome);
@@ -1171,7 +1178,7 @@ public class Country : MultiSeller
     internal float getGoldMinesIncome()
     {
         return goldMinesIncome.get();
-    }   
+    }
     internal float getOwnedFactoriesIncome()
     {
         return ownedFactoriesIncome.get();
@@ -1179,8 +1186,8 @@ public class Country : MultiSeller
 
     internal float getRestIncome()
     {
-        return moneyIncomethisTurn.get() - getAllIncome().get();             
-    }                                                                
+        return moneyIncomethisTurn.get() - getAllIncome().get();
+    }
 
     internal void poorTaxIncomeAdd(Value toAdd)
     {

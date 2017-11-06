@@ -59,7 +59,7 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.getWorkForce().ToString(), next);
 
             ////Adding profit
-            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+            if (next.getCountry().economy.getValue() == Economy.PlannedEconomy)
                 AddButton("none", next);
             else
                 AddButton(next.getProfit().ToString(), next);
@@ -77,7 +77,7 @@ public class ProductionWindowTable : MyTableNew
                         AddButton("Closed", next);
                     else
                     {
-                        if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                        if (next.getCountry().economy.getValue() == Economy.PlannedEconomy)
                             AddButton("none", next);
                         else
                             AddButton(next.getMargin().ToString(), next);
@@ -87,11 +87,11 @@ public class ProductionWindowTable : MyTableNew
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+            if (next.getCountry().economy.getValue() == Economy.PlannedEconomy)
                 AddButton("centralized", next);
             else
             {
-                if (Game.Player.economy.getValue() == Economy.NaturalEconomy)
+                if (next.getCountry().economy.getValue() == Economy.NaturalEconomy)
                     AddButton(next.getSalary().ToString() + " food", next);
                 else
                     AddButton(next.getSalary().ToString() + " coins", next);

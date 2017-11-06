@@ -265,7 +265,7 @@ abstract public class PopUnit : Producer
         //province.allPopUnits.Remove(this); // gives exception        
         //Game.popsToShowInPopulationPanel.Remove(this);
         if (MainCamera.popUnitPanel.whomShowing() == this)
-            MainCamera.popUnitPanel.hide();        
+            MainCamera.popUnitPanel.hide();
         //remove from population panel.. Would do it automatically        
         //secede property... to government
         getOwnedFactories().ForEach(x => x.setOwner(getCountry()));
@@ -422,7 +422,7 @@ abstract public class PopUnit : Producer
     {
         int randomPopulation = minGeneratedPopulation + Game.Random.Next(maxGeneratedPopulation - minGeneratedPopulation);
         return randomPopulation;
-    } 
+    }
 
     internal bool isAlive()
     {
@@ -537,7 +537,7 @@ abstract public class PopUnit : Producer
 
         }
         else// non market
-        if (this.popType != PopType.Aristocrats)
+            //if (this.popType != PopType.Aristocrats)
         {
             Storage howMuchSend;
             if (this.popType.isPoorStrata())
@@ -708,9 +708,9 @@ abstract public class PopUnit : Producer
     }
     protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
     {
-        payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
+        if (hasToPayGovernmentTaxes())
+            payTaxes(); // that is here because pop shoul pay taxes from all income
         foreach (Storage need in lifeNeeds)
-
             if (storage.has(need))// don't need to buy on market
             {
                 Storage realConsumption;
@@ -738,22 +738,22 @@ abstract public class PopUnit : Producer
             if (getCountry().countryStorageSet.has(item))
                 if (item.isAbstractProduct())
                     consumeFromCountryStorage(getCountry().countryStorageSet.convertToBiggestStorageProduct(item), getCountry());
-                    //getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            
+                //getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            
                 else
                     consumeFromCountryStorage(item, getCountry());
-                    //getCountry().countryStorageSet.subtract(item);
+            //getCountry().countryStorageSet.subtract(item);
         }
-    }    
+    }
     /// <summary> !!! Overloaded for artisans and tribesmen </summary>
     public override void consumeNeeds()
     {
         //life needs First
         List<Storage> lifeNeeds = getRealLifeNeeds();
-        if (canBuyProducts())
+        if (canTrade())
         {
             consumeNeedsWithMarket(lifeNeeds, false);
         }
-        else  
+        else
         {
             //non - market consumption
             // todo - !! - check for substitutes
@@ -771,7 +771,7 @@ abstract public class PopUnit : Producer
     /// <summary>
     /// Overrided for some pop types
     /// </summary>      
-    virtual internal bool canBuyProducts()
+    virtual internal bool canTrade()
     {
         if (Economy.isMarket.checkIftrue(getCountry()))
             return true;

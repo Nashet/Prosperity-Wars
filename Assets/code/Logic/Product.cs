@@ -35,18 +35,18 @@ public class Product : Name
     static Product()
     {
         Gold = new Product("Gold", 4f, Color.yellow, type.industrial);
-        Fish = new Product("Fish", 0.04f, Color.cyan, type.industrial);
-        Grain = new Product("Grain", 0.04f, new Color(0.57f, 0.75f, 0.2f), type.consumerProduct);//greenish
-        Cattle = new Product("Cattle", 0.04f, type.consumerProduct);
+        Fish = new Product("Fish", 0.04f, Color.cyan, type.consumerProduct);
+        Grain = new Product("Grain", 0.04f, new Color(0.57f, 0.75f, 0.2f), type.industrial);//greenish
+        Cattle = new Product("Cattle", 0.04f, type.military);
 
-        Fruit = new Product("Fruit", 1f, new Color(1f, 0.33f, 0.33f), type.industrial);//pinkish
+        Fruit = new Product("Fruit", 1f, new Color(1f, 0.33f, 0.33f), type.consumerProduct);//pinkish
         Liquor = new Product("Liquor", 3f, type.consumerProduct);
 
         Wood = new Product("Wood", 2.7f, new Color(0.5f, 0.25f, 0f), type.industrial); // brown
         Lumber = new Product("Lumber", 8f, type.industrial);
         Furniture = new Product("Furniture", 7f, type.consumerProduct);
 
-        Cotton = new Product("Cotton", 1f, Color.white, type.industrial);
+        Cotton = new Product("Cotton", 1f, Color.white, type.consumerProduct);
         Clothes = new Product("Clothes", 6f, type.consumerProduct);
 
         Stone = new Product("Stone", 1f, new Color(0.82f, 0.62f, 0.82f), type.industrial);//light grey

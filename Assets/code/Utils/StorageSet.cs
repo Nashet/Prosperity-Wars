@@ -102,12 +102,19 @@ public class StorageSet
     /// Do checks outside
     /// </summary>   
     public bool send(StorageSet whom, StorageSet what)
+    {           
+        return send(whom, what.getContainer());
+    }
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(StorageSet whom, List<Storage> what)
     {
         bool res = true;
         foreach (var item in what)
         {
             whom.add(item);
-            this.subtract(item);            
+            this.subtract(item);
         }
         return res;
     }

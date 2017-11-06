@@ -331,6 +331,8 @@ public class Province : Name, IEscapeTarget, IHasCountry
             Movement.leave(pop);
         }
 
+        taker.government.onReformEnacted(this);
+
         if (oldCountry != null)
             if (oldCountry.ownedProvinces != null)
                 oldCountry.ownedProvinces.Remove(this);
@@ -387,7 +389,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
             // if (!factory.getType().isResourceGathering()) // every fabric is buyer (upgrading)
             yield return factory;
         foreach (PopUnit pop in allPopUnits)
-            if (pop.canBuyProducts())
+            if (pop.canTrade())
                 yield return pop;
     }
     public IEnumerable<Producer> getConsumers()
@@ -409,8 +411,8 @@ public class Province : Name, IEscapeTarget, IHasCountry
     public IEnumerable<Factory> getAllFactories()
     {
         foreach (Factory factory in allFactories)
-            yield return factory;        
-    }                            
+            yield return factory;
+    }
     public static Vector3 setProvinceCenter(MeshStructure meshStructure)
     {
         Vector3 accu = new Vector3(0, 0, 0);
@@ -440,6 +442,14 @@ public class Province : Name, IEscapeTarget, IHasCountry
         int result = 0;
         foreach (PopUnit pop in allPopUnits)
             result += pop.getPopulation();
+        return result;
+    }
+    public int getMenPopulationEmployable()
+    {
+        int result = 0;
+        foreach (PopUnit pop in allPopUnits)
+            if (pop.popType.canBeUnemployed())
+                result += pop.getPopulation();
         return result;
     }
 
@@ -507,7 +517,11 @@ public class Province : Name, IEscapeTarget, IHasCountry
             if (pop.popType == ipopType)
                 yield return pop;
     }
-
+    public IEnumerable<PopUnit> getAllPopUnits()
+    {
+        foreach (PopUnit pop in allPopUnits)
+            yield return pop;
+    }
     public static Province find(Color color)
     {
         foreach (Province anyProvince in allProvinces)
@@ -699,13 +713,17 @@ public class Province : Name, IEscapeTarget, IHasCountry
         return result;
     }
 
-    internal bool canBuildNewFactory(FactoryType ft)
-    {
-        if (HaveFactory(ft))
+    /// <summary>
+    /// check type for null outside
+    /// </summary>
+    
+    internal bool canBuildNewFactory(FactoryType type)
+    {           
+        if (HaveFactory(type))
             return false;
-        if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource
-            || !ft.basicProduction.getProduct().isInvented(getCountry())
-            || ft.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
+        if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
+            || !type.basicProduction.getProduct().isInvented(getCountry())
+            || type.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
             )
             return false;
         return true;

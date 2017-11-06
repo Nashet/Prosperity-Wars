@@ -64,18 +64,32 @@ public class CountryStorageSet : StorageSet, IHasStatistics
             return false;
     }
     /// <summary>
+    /// Do checks outside Check for taken away
+    /// </summary>   
+    //public bool send(Producer whom, List<Storage> what)
+    //{
+    //    bool result = true;
+    //    foreach (var item in what)
+    //    {
+    //        if (!send(whom, item))
+    //            result = false;
+    //    }
+    //    return result;           
+    //}
+    /// <summary>
     /// Do checks outside
     /// </summary>   
-    public bool send(Producer whom, List<Storage> what)
+    public bool send(StorageSet whom, StorageSet what)
     {
-        bool result = true;
-        foreach (var item in what)
-        {
-            if (!send(whom, item))
-                result = false;
-        }
-        return result;
-        
+        return send(whom, what.getContainer());
+    }
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(StorageSet whom, List<Storage> what)
+    {
+        takenAway.add(what);
+        return base.send(whom, what);
     }
     override public bool subtract(Storage stor, bool showMessageAboutNegativeValue=true)
     {
