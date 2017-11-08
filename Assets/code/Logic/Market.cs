@@ -65,7 +65,9 @@ public class Market : Agent//: PrimitiveStorageSet
     //    return new Value(cost);
     //}
 
-
+    /// <summary>
+    /// returns new Value
+    /// </summary>
     internal Value getCost(List<Storage> need)
     {
         Value cost = new Value(0f);
@@ -73,6 +75,9 @@ public class Market : Agent//: PrimitiveStorageSet
             cost.add(getCost(stor));
         return cost;
     }
+    /// <summary>
+    /// returns new Value
+    /// </summary>
     internal Value getCost(Storage need)
     {
         // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
@@ -296,7 +301,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 supplyOnMarket.set(new Storage(sup.getProduct(), result));
             }
             dateOfgetSupplyOnMarket = Game.date;
-        }  
+        }
         return supplyOnMarket.getFirstStorage(product).get();
     }
     /// <summary>

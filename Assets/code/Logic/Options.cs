@@ -21,8 +21,7 @@ public static class Options
     internal static readonly Value CountryMaxStorage = new Value(50f);
     internal static readonly Value CountrySaveProductsDaysMinimum = new Value(20f);
     internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
-
-
+    internal static readonly Value CountryPopConsumptionLimitPE = new Value(20f);
 
     // MAP
     internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes

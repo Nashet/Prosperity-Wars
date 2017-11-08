@@ -686,17 +686,21 @@ public class Factory : SimpleProduction
     internal void open(Agent byWhom)
     {
         working = true;
-        if (daysUnprofitable > 20)
-            salary.set(getProvince().getLocalMinSalary());
         daysUnprofitable = 0;
         daysClosed = 0;
-        if (byWhom != this)
-            byWhom.payWithoutRecord(this, getReopenCost());
+        if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
+        {
+            if (daysUnprofitable > 20)
+                salary.set(getProvince().getLocalMinSalary());
+
+            if (byWhom != this)
+                byWhom.payWithoutRecord(this, getReopenCost());
+        }
     }
 
     internal bool isWorking()
     {
-        return working && !building;
+        return working && !building; // todo WTF?
     }
 
     internal float getSalaryCost()
@@ -712,7 +716,8 @@ public class Factory : SimpleProduction
     {
         upgrading = true;
         constructionNeeds.add(getUpgradeNeeds().getCopy());
-        byWhom.payWithoutRecord(this, getUpgradeCost());
+        if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
+            byWhom.payWithoutRecord(this, getUpgradeCost());
     }
 
     internal int getDaysInConstruction()
@@ -814,7 +819,7 @@ public class Factory : SimpleProduction
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
                 if (getCountry().countryStorageSet.has(shoppingList))
-                    getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);                
+                    getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
             }
             else
             {

@@ -34,3 +34,5 @@ dev.log
 /[Rr]eserv/
 
 Assets/ClassDiagram.cd
+.vs/Supercharger/EconomicSimulation/workbench.dat
+*.dat

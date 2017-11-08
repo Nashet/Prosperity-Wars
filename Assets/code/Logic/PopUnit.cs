@@ -735,7 +735,7 @@ abstract public class PopUnit : Producer
     {
         foreach (var item in needs)
         {
-            if (getCountry().countryStorageSet.has(item))
+            if (getCountry().countryStorageSet.hasMoreThan(item, Options.CountryPopConsumptionLimitPE))
                 if (item.isAbstractProduct())
                     consumeFromCountryStorage(getCountry().countryStorageSet.convertToBiggestStorageProduct(item), getCountry());
                 //getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            

@@ -28,7 +28,7 @@ public class TradeWindowCountryMarketTable : MyTable
 
         AddButton("Production");
 
-        AddButton("Consumption");
+        AddButton("Expenses");
 
         AddButton("Bought");
 
@@ -56,7 +56,7 @@ public class TradeWindowCountryMarketTable : MyTable
                     ////Adding Produce
                     AddButton("wip", product);
 
-                    ////Adding Consumption
+                    ////Adding taken away
                     AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), product);
 
                     ////Adding bought

@@ -16,16 +16,45 @@ public abstract class MultiSeller : Staff, IHasStatistics
     }
     public float getSentToMarket(Product product)
     {
-       return sentToMarket.getFirstStorage(product).get();
+        return sentToMarket.getFirstStorage(product).get();
     }
     /// <summary>
     /// Do checks outside
     /// </summary>    
     public void sell(Storage what)
     {
-        sentToMarket.set(what);
+        sentToMarket.add(what);
         countryStorageSet.subtract(what);
         Game.market.sentToMarket.add(what);
+    }
+    public void getMoneyForSoldProduct()
+    {
+        foreach (var sent in sentToMarket)
+            if (sent.isNotZero())
+            {
+                Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.getProduct()));
+                if (DSB.get() > 1f)
+                    DSB.set(1f);
+                Storage realSold = new Storage(sent);
+                realSold.multiply(DSB);
+                Value cost = Game.market.getCost(realSold);
+
+                //returning back unsold product
+                if (sent.isBiggerThan(realSold))
+                {
+                    var unSold = sent.subtractOutside(realSold);
+                    countryStorageSet.add(unSold);
+                }
+
+
+                if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                {
+                    Game.market.pay(this, cost);
+                    //Game.market.sentToMarket.subtract(realSold);
+                }
+                else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
+                    Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
+            }
     }
 }
 
@@ -46,7 +75,7 @@ public abstract class Producer : Consumer
 
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
-    
+
     public abstract void produce();
     public abstract void payTaxes();
 
@@ -76,8 +105,9 @@ public abstract class Producer : Consumer
             if (DSB.get() > 1f) DSB.set(1f);
             Storage realSold = new Storage(sentToMarket);
             realSold.multiply(DSB);
-            Value cost = new Value(Game.market.getCost(realSold));
+            Value cost = Game.market.getCost(realSold);
 
+            // adding unsold product
             // assuming gainGoodsThisTurn & realSold have same product
             if (storage.isExactlySameProduct(gainGoodsThisTurn))
                 storage.add(gainGoodsThisTurn);

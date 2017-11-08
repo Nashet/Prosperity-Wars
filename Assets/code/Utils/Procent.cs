@@ -67,7 +67,7 @@ public class Procent : Value
         if (denominator == 0)
         {
             if (showMessageAboutOperationFails)
-                Debug.Log("Division by zero in Procent.makeProcent(int)");
+                Debug.Log("Division by zero in Percent.makeProcent(int)");
             return new Procent(0f);
         }
         else

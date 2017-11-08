@@ -51,20 +51,20 @@ public class StorageSet
     /// <summary>
     /// If duplicated than adds
     /// </summary>
-    internal void add(Storage need)
+    internal void add(Storage what)
     {
-        Storage find = hasStorage(need.getProduct());
+        Storage find = hasStorage(what.getProduct());
         if (find == null)
-            container.Add(new Storage(need));
+            container.Add(new Storage(what));
         else
-            find.add(need);
+            find.add(what);
     }
     /// <summary>
     /// If duplicated than adds
     /// </summary>
-    internal void add(StorageSet need)
+    internal void add(StorageSet what)
     {
-        foreach (Storage n in need)
+        foreach (Storage n in what)
             this.add(n);
     }
     /// <summary>
@@ -156,6 +156,11 @@ public class StorageSet
             if (!has(stor))
                 return false;
         return true;
+    }
+    internal bool hasMoreThan(Storage item, Value limit)
+    {
+        Storage disiredAmount = new Storage(item.getProduct(), item.get() + limit.get());
+        return has(disiredAmount);
     }
     /// <summary>Returns non null if container allready has storage for that product</summary>    
     protected Storage hasStorage(Product product)

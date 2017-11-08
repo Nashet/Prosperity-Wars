@@ -73,7 +73,7 @@ public class Game : ThreadedJob
         сreateRandomPopulation();
 
         setStartResources();
-       // makeHelloMessage();   !!!
+        // makeHelloMessage();   !!!
         updateStatus("Finishing generation..");
     }
     public static void setUnityAPI()
@@ -519,7 +519,7 @@ public class Game : ThreadedJob
         // big PRODUCE circle
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {                   
+            {
                 foreach (Factory factory in province.allFactories)
                 {
                     factory.produce();
@@ -545,6 +545,8 @@ public class Game : ThreadedJob
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle   
         foreach (Country country in Country.getExisting())
+        {
+            country.consumeNeeds();
             if (country.economy.getValue() == Economy.PlannedEconomy)
             {
                 //consume in PE order
@@ -588,11 +590,13 @@ public class Game : ThreadedJob
                         pop.consumeNeeds();
                     }
                 }
+        }
         // big AFTER all circle
         foreach (Country country in Country.getExisting())
         {
+            country.getMoneyForSoldProduct();
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-            {                                 
+            {
                 foreach (Factory factory in province.allFactories)
                 {
                     if (country.economy.getValue() != Economy.PlannedEconomy)

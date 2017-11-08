@@ -20,7 +20,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Market">
-    <Position X="4" Y="1.75" Width="1.5" />
+    <Position X="2.75" Y="1.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -52,17 +52,6 @@
       <FileName>Assets\code\Logic\Staff.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Country" Collapsed="true">
-    <Position X="11.75" Y="6.75" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>mMACwI8o6Lj2hgrOLBrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
-      <FileName>Assets\code\Logic\Country.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Movement">
     <Position X="14" Y="5.25" Width="1.5" />
     <Compartments>
@@ -80,7 +69,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>cOHUgECEEQgGY2RGBFABPsACi4BUkSpwqSQEVi0YFyQ=</HashCode>
+      <HashCode>cOHUgECEEQgGY2RGBFAhPsACi4BUkSpwqSQEVi0YFyQ=</HashCode>
       <FileName>Assets\code\Logic\PopUnit.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -108,7 +97,7 @@
       </Enum>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>lTGYAcbwEFRroJIGjKsJATATrSGaIsBEFJJAEqZADAQ=</HashCode>
+      <HashCode>lTGYAcbwEFRroJIGzKspATATrSGaIsBEFJJAEqZQDAQ=</HashCode>
       <FileName>Assets\code\Logic\Factory.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -126,7 +115,7 @@
   <Class Name="MultiSeller" Collapsed="true">
     <Position X="11.75" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAABAAAAAABAAAAAAAIAAEAAAAAAAAAAAAEA=</HashCode>
+      <HashCode>AAAAAAAAAABAAAAAABAAAAAAAIAAEAAAAAgAAAAAAEA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -136,6 +125,17 @@
     <TypeIdentifier>
       <HashCode>AAAAABQIgAAAIIAAAAAAAAACAIAAAAAAAAAAECQAAAA=</HashCode>
       <FileName>Assets\code\Logic\Consumer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Country" Collapsed="true">
+    <Position X="11.75" Y="6.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>mMACwI8o6Lj2hgrOrJrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
+      <FileName>Assets\code\Logic\Country.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

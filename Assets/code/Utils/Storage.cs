@@ -5,13 +5,15 @@ using System;
 
 
 /// <summary>
-/// Alows to keep info about how much product was taken from StorageSet
+/// Allows to keep info about how much product was taken from StorageSet
 /// !!! if someone would change returning object (Storage) then country takenAway logic would be broken!!
 /// </summary>
 public class CountryStorageSet : StorageSet, IHasStatistics
 {
     /// <summary>
-    /// Used only in non-market economies. Count as much products country consumed or spent    
+    /// Counts how much products was taken from country storage 
+    /// for consumption or some spending
+    /// Used to determinate how much to buy deficit or sell extra products
     /// </summary>
     public readonly StorageSet takenAway = new StorageSet();
 
@@ -52,12 +54,13 @@ public class CountryStorageSet : StorageSet, IHasStatistics
 
     /// <summary>
     /// Do checks outside
+    /// Supports takenAway
     /// </summary>   
     public bool send(Producer whom, Storage what)
     {
         if (base.send(whom, what))
         {
-            takenAway.add(what); 
+            takenAway.add(what);
             return true;
         }
         else
@@ -78,6 +81,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     //}
     /// <summary>
     /// Do checks outside
+    /// Supports takenAway
     /// </summary>   
     public bool send(StorageSet whom, StorageSet what)
     {
@@ -85,13 +89,19 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     }
     /// <summary>
     /// Do checks outside
+    /// Supports takenAway
     /// </summary>   
     public bool send(StorageSet whom, List<Storage> what)
     {
         takenAway.add(what);
         return base.send(whom, what);
     }
-    override public bool subtract(Storage stor, bool showMessageAboutNegativeValue=true)
+    /// <summary>
+    /// 
+    /// /// Supports takenAway
+    /// </summary>
+
+    override public bool subtract(Storage stor, bool showMessageAboutNegativeValue = true)
     {
         if (base.subtract(stor, showMessageAboutNegativeValue))
         {
@@ -122,7 +132,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     //    return result;
     //}
 
-    
+
 
     //internal Storage subtractOutside(Storage stor)
     //{
@@ -148,6 +158,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
         base.sendAll(toWhom);
     }
 
+    
 }
 
 public class Storage : Value

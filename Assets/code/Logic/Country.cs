@@ -108,7 +108,8 @@ public class Country : MultiSeller
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
             new Modifier (delegate(object x) {isThereBadboyCountry();  return isThereBadboyCountry()!= null && isThereBadboyCountry()!= x as Country  && isThereBadboyCountry()!= this; },
                 delegate  { return "There is bigger threat to the world - " + isThereBadboyCountry(); },  0.05f, false),
-            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
+            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
+            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue() && government.getValue()==Government.ProletarianDictatorship, "Comintern aka Third International", 0.2f, false),
             });
         setBank(new Bank());
         //staff = new GeneralStaff(this);
@@ -149,11 +150,11 @@ public class Country : MultiSeller
             markInvented(Invention.Collectivism);
         }
     }
-    private void ressurect(Province province)
+    private void ressurect(Province province, Government.ReformValue newGovernment)
     {
         alive = true;
         moveCapitalTo(province);
-        government.setValue(government.getValue());
+        government.setValue(newGovernment);
         setPrefix();
     }
 
@@ -164,7 +165,7 @@ public class Country : MultiSeller
         oldCountry.changeRelation(this, 1.00f);
         if (!this.isAlive())
         {
-            ressurect(province);
+            ressurect(province, oldCountry.government.getTypedValue());
         }
         province.secedeTo(this, false);
     }
@@ -175,7 +176,7 @@ public class Country : MultiSeller
             {
                 item.secedeTo(this, false);
             }
-        ressurect(getRandomOwnedProvince());
+        ressurect(getRandomOwnedProvince(), this.government.getTypedValue());
         foreach (var item in oldCountry.getInvented()) // copying inventions
         {
             this.markInvented(item.Key);
@@ -639,30 +640,6 @@ public class Country : MultiSeller
             return //new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
             new Value(Options.defaultSciencePointMultiplier);
     }
-
-    /// <summary>
-    ///  Retirns null if needs are satisfied
-    /// </summary>         
-    private Product getMostDeficitProductAllowedHere(IEnumerable<Product> selector, Province province)
-    {
-        Storage minFound = null;
-        foreach (var item in selector)
-            if (item.isInvented(this))
-            {
-                var proposition = FactoryType.whoCanProduce(item);
-                if (proposition != null)
-                    if (province.canBuildNewFactory(proposition))
-                    {
-                        var found = countryStorageSet.getFirstStorage(item);
-                        if (minFound == null || found.isSmallerThan(minFound))
-                            minFound = found;
-                    }
-            }
-        if (minFound == null)
-            return null;
-        else
-            return minFound.getProduct();
-    }
     /// <summary>
     /// Returns true if succeeded
     /// </summary>    
@@ -682,10 +659,36 @@ public class Country : MultiSeller
         }
         return false;
     }
+    /// <summary>
+    ///  Retirns null if needs are satisfied
+    /// </summary>         
+    private Product getMostDeficitProductAllowedHere(IEnumerable<Product> selector, Province province)
+    {
+        Storage minFound = null;
+        foreach (var item in selector)
+            if (item.isInvented(this))
+            {
+
+                var proposition = FactoryType.whoCanProduce(item);
+                if (proposition != null)
+                    if (province.canBuildNewFactory(proposition) || province.canUpgradeFactory(proposition))
+                    {
+                        var found = countryStorageSet.getFirstStorage(item);
+                        if (minFound == null || found.isSmallerThan(minFound))
+                            minFound = found;
+                    }
+            }
+        if (minFound == null)
+            return null;
+        else
+            return minFound.getProduct();
+    }
+
+    // todo should be redone as country-wise method
     internal void invest(Province province)
     {
         if (economy.getValue() == Economy.PlannedEconomy && getCountry().isInvented(Invention.Manufactories))
-            if (!province.isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+            if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                 && province.getUnemployedWorkers() > 0)
             {
                 var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllIndustrialProducts(this), province);
@@ -699,25 +702,43 @@ public class Country : MultiSeller
                         {
                             //if there is no enough some consumer product - build it
                             var proposition = FactoryType.whoCanProduce(consumerProduct);
-                            //if (province.canBuildNewFactory(proposition))
-                            buildIfCanPE(proposition, province);
+                            if (province.canBuildNewFactory(proposition))
+                                buildIfCanPE(proposition, province);
+                            else
+                            {
+                                var factory = province.findFactory(proposition);
+                                if (countryStorageSet.has(factory.getUpgradeNeeds()))
+                                    factory.upgrade(this);
+                            }
                         }
                         //else - all needs are satisfied
                     }
                     else
                     {
                         //if there is no enough some military product - build it
-                        var enterprise = FactoryType.whoCanProduce(militaryProduct);
-                        if (province.canBuildNewFactory(enterprise))
-                            buildIfCanPE(enterprise, province);
+                        var proposition = FactoryType.whoCanProduce(militaryProduct);
+                        if (province.canBuildNewFactory(proposition))
+                            buildIfCanPE(proposition, province);
+                        else
+                        {
+                            var factory = province.findFactory(proposition);
+                            if (countryStorageSet.has(factory.getUpgradeNeeds()))
+                                factory.upgrade(this);
+                        }
                     }
                 }
                 else
                 {
                     //if there is no enough some industrial product - build it
-                    var enterprise = FactoryType.whoCanProduce(industrialProduct);
-                    if (province.canBuildNewFactory(enterprise))
-                        buildIfCanPE(enterprise, province);
+                    var proposition = FactoryType.whoCanProduce(industrialProduct);
+                    if (province.canBuildNewFactory(proposition))
+                        buildIfCanPE(proposition, province);
+                    else
+                    {
+                        var factory = province.findFactory(proposition);
+                        if (countryStorageSet.has(factory.getUpgradeNeeds()))
+                            factory.upgrade(this);
+                    }
                 }
             }
     }
@@ -796,13 +817,6 @@ public class Country : MultiSeller
                     getBank().takeMoney(this, new Value(extraMoney));
             }
 
-        foreach (var item in getAllArmies())
-        {
-            item.consume();
-        }
-
-        consumeNeeds(); // Should go After all Armies consumption
-
         //International opinion;
         foreach (var item in Country.getExisting())
             if (item != this)
@@ -842,6 +856,12 @@ public class Country : MultiSeller
     /// </summary>
     public override void consumeNeeds()
     {
+        foreach (var item in getAllArmies())
+        {
+            item.consume();
+        }
+        // Should go After all Armies consumption
+
         // planned economy buying
         //1 day buying
         foreach (var product in Product.getAllNonAbstractInPEOrder(this))

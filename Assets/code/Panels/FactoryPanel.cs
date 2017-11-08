@@ -150,11 +150,9 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onReopenClick()
     {
-        if (reopenButtonflag == reopenButtonStatus.close)
-            //if (shownFactory.whyCantCloseFactory() == null)
+        if (reopenButtonflag == reopenButtonStatus.close)            
             shownFactory.close();
-        else
-            //if (shownFactory.whyCantReopenFactory() == null)
+        else                                             
             shownFactory.open(Game.Player);
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();

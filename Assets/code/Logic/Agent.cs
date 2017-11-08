@@ -210,7 +210,7 @@ abstract public class Agent : IHasCountry , IHasStatistics
                 bank.giveLackingMoney(this, howMuch);
                 bank.giveLackingMoney(this, howMuch.multiplyOutside(5));
             }
-            whom.cash.add(howMuch); // rise warning if have enough money to pay (with deposits) but did't get enough from bank
+            whom.cash.add(howMuch); // rise warning if have enough money to pay (with deposits) but didn't get enough from bank
             this.cash.subtract(howMuch);
             return true;
         }

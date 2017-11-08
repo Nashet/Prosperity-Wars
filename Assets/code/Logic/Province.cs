@@ -716,9 +716,9 @@ public class Province : Name, IEscapeTarget, IHasCountry
     /// <summary>
     /// check type for null outside
     /// </summary>
-    
+
     internal bool canBuildNewFactory(FactoryType type)
-    {           
+    {
         if (HaveFactory(type))
             return false;
         if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
@@ -728,18 +728,28 @@ public class Province : Name, IEscapeTarget, IHasCountry
             return false;
         return true;
     }
-    internal bool canUpgradeFactory(FactoryType ft)
+    internal bool canUpgradeFactory(FactoryType type)
     {
-        if (!HaveFactory(ft))
+        if (!HaveFactory(type))
             return false;
+        var factory = findFactory(type);
+
         // if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource)
         //     return false;
-        return true;
+        //if (factory.isUpgrading() || factory.isBuilding()|| !factory.isWorking())
+        //    return false;        
+        //else
+        //    return true;
+        if (factory.canUpgrade())
+            return true;
+        else
+            return false;
+
     }
-    internal bool HaveFactory(FactoryType ft)
+    internal bool HaveFactory(FactoryType type)
     {
         foreach (Factory f in allFactories)
-            if (f.getType() == ft)
+            if (f.getType() == type)
                 return true;
         return false;
     }
