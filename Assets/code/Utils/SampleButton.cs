@@ -57,6 +57,11 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
             MainCamera.goodsPanel.Show((Product)link, true);
             MainCamera.goodsPanel.refresh();
         }
+        else if (link is Storage)
+        {
+            MainCamera.tradeWindow.selectProduct((link as Storage).getProduct());
+            
+        }
         else if (link is Invention)
         {
             MainCamera.inventionsPanel.selectedInvention = (Invention)link;

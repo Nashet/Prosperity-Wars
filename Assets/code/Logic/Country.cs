@@ -26,14 +26,9 @@ public class Country : MultiSeller
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
-    public readonly List<Movement> movements = new List<Movement>();
-
-
+    public readonly List<Movement> movements = new List<Movement>();    
 
     //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
-
-    private TextMesh meshCapitalText;
-    private Material borderMaterial;
 
     private readonly string name;
     private readonly Culture culture;
@@ -55,6 +50,10 @@ public class Country : MultiSeller
     private readonly Value soldiersWageExpense = new Value(0f);
     private readonly Value factorySubsidiesExpense = new Value(0f);
     private readonly Value storageBuyingExpense = new Value(0f);
+
+
+    private TextMesh meshCapitalText;
+    private Material borderMaterial;
 
     private readonly Modifier modXHasMyCores;
     public readonly ModifiersList modMyOpinionOfXCountry;

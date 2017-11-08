@@ -42,30 +42,34 @@ public class TradeWindowCountryMarketTable : MyTable
         {
             var needs = Game.Player.getRealAllNeeds();
             foreach (var product in Product.getAll())
+            //foreach (var item in Game.market.pr)
             {
+
+            
                 // Product product = next.getProduct();
                 if (product != Product.Gold && product.isInventedByAnyOne())
                 {
+                    var storage = Game.Player.countryStorageSet.getFirstStorage(product);
                     // Adding product name 
-                    AddButton(product.getName(), product);
+                    AddButton(product.getName(), storage);
 
                     ////Adding storage amount
-                    AddButton(Game.Player.countryStorageSet.getFirstStorage(product).ToString(), product);
+                    AddButton(storage.ToString(), storage);
 
                     ////Adding needs
-                    AddButton(needs.getStorage(product).ToString(), product);
+                    AddButton(needs.getStorage(product).ToString(), storage);
 
                     ////Adding Produce
-                    AddButton("wip", product);
+                    AddButton("wip", storage);
 
                     ////Adding taken away
-                    AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), product);
+                    AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), storage);
 
                     ////Adding bought
-                    AddButton("wip", product);
+                    AddButton("wip", storage);
 
                     ////Adding Sold
-                    AddButton("wip", product);
+                    AddButton("wip", storage);
 
                     counter++;
                     //contentPanel.r

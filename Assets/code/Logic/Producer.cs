@@ -6,8 +6,46 @@ public abstract class MultiSeller : Staff, IHasStatistics
 {
     public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
     private readonly StorageSet sentToMarket = new StorageSet();
+
+    private readonly Dictionary<Product, Value> sellIfMoreLimits = new Dictionary<Product, Value>();
+    private readonly Dictionary<Product, Value> buyIfLessLimits = new Dictionary<Product, Value>();
+
     public MultiSeller(Country place) : base(place)
     {
+        foreach (var item in Product.getAllNonAbstract())
+        {
+            buyIfLessLimits.Add(item, new Value(0f));
+            sellIfMoreLimits.Add(item, new Value(1000f));            
+        }
+    }
+    bool wantsToBuy?
+    /// <summary>
+    /// returns exception if failed
+    /// </summary>    
+    public Value getSellIfMoreLimits(Product product)
+    {
+        return sellIfMoreLimits[product];
+    }
+    /// <summary>
+    /// returns exception if failed
+    /// </summary>    
+    public Value getBuyIfLessLimits(Product product)
+    {
+        return buyIfLessLimits[product];
+    }
+    /// <summary>
+    /// returns exception if failed
+    /// </summary>    
+    public void setSellIfMoreLimits(Product product, float value)
+    {
+         sellIfMoreLimits[product].set(value);
+    }
+    /// <summary>
+    /// returns exception if failed
+    /// </summary>    
+    public void setBuyIfLessLimits(Product product, float value)
+    {
+        buyIfLessLimits[product].set(value);
     }
     override public void setStatisticToZero()
     {
