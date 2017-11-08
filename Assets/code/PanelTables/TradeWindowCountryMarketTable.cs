@@ -26,11 +26,13 @@ public class TradeWindowCountryMarketTable : MyTable
 
         AddButton("Govern.Need"); 
 
-        AddButton("Production");
+        AddButton("Production t.");
 
-        AddButton("Expenses");
+        AddButton("Used by gov.");
 
-        AddButton("Bought");
+        AddButton("Bought by gov.");
+
+        AddButton("Sold by gov.");
 
         ////Adding price
         //AddButton("Price");
@@ -60,7 +62,10 @@ public class TradeWindowCountryMarketTable : MyTable
                     AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), product);
 
                     ////Adding bought
-                    AddButton("wip", product);    
+                    AddButton("wip", product);
+
+                    ////Adding Sold
+                    AddButton("wip", product);
 
                     counter++;
                     //contentPanel.r

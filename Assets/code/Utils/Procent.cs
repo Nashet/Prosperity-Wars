@@ -8,7 +8,8 @@ public class Procent : Value
 {
     internal static readonly Procent HundredProcent = new Procent(1f);
     internal static readonly Procent ZeroProcent = new Procent(0f);
-
+    internal static readonly Procent Max999 = new Procent(999.99f);
+    internal static readonly Procent Max = new Procent(int.MaxValue / 1000f);
 
     public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
     {
@@ -33,9 +34,11 @@ public class Procent : Value
 
         if (denominatorSum.isZero())
         {
-            if (showMessageAboutOperationFails)
+            if (showMessageAboutOperationFails)            
                 Debug.Log("Division by zero in Procent.makeProcent(Value)");
-            return new Procent(0f);
+                
+            
+            return Procent.Max999;
         }
         else
             return new Procent(numeratorSum.get() / denominatorSum.get());
@@ -46,7 +49,7 @@ public class Procent : Value
         {
             if (showMessageAboutOperationFails)
                 Debug.Log("Division by zero in Procent.makeProcent(Value)");
-            return new Procent(0f);
+            return Procent.Max999;
         }
         else
             return new Procent(numerator.get() / denominator.get());
@@ -57,7 +60,7 @@ public class Procent : Value
         {
             if (showMessageAboutOperationFails)
                 Debug.Log("Division by zero in Procent.makeProcent(float)");
-            return new Procent(0f);
+            return Procent.Max999;
         }
         else
             return new Procent(numerator / denominator, showMessageAboutOperationFails);
@@ -68,7 +71,7 @@ public class Procent : Value
         {
             if (showMessageAboutOperationFails)
                 Debug.Log("Division by zero in Percent.makeProcent(int)");
-            return new Procent(0f);
+            return Procent.Max999;
         }
         else
             return new Procent(numerator / (float)denominator, showMessageAboutOperationFails);

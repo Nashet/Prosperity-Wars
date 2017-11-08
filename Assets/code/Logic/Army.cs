@@ -12,12 +12,12 @@ public class Army
 
     static Modifier modifierHorses = new Modifier(x => (x as Army).getHorsesSupply(), "Horses", 0.5f, false);
     static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
-    static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Equipped Firearms", 2f, false);
-    static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Equipped Artillery", 1f, false);
+    static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Charged Firearms", 2f, false);
+    static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Charged Artillery", 1f, false);
 
-    static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Equipped Cars", 2f, false);
-    static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Equipped Tanks", 1f, false);
-    static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Equipped Airplanes", 1f, false);
+    static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Fueled Cars", 2f, false);
+    static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Fueled & charged Tanks", 1f, false);
+    static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
     static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
 
 
