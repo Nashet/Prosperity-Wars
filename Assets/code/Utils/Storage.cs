@@ -402,13 +402,13 @@ public class Storage : Value
         //if (!this.isSameProductType(storage.getProduct()))
         if (!storage.isSameProductType(this.getProduct()))
         {
-            Debug.Log("Storage subtrackOutside failed - wrong product");
+            Debug.Log("Storage subtract Outside failed - wrong product");
             return new Storage(getProduct(), 0f);
         }
         if (storage.isBiggerThan(this))
         {
             if (showMessageAboutNegativeValue)
-                Debug.Log("Storage subtrackOutside failed");
+                Debug.Log("Storage subtract Outside failed");
             return new Storage(getProduct(), 0f);
         }
         else

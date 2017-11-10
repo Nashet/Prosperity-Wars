@@ -391,8 +391,8 @@ public class Economy : AbstractReform
             Invention.CollectivismInvented, Government.isProletarianDictatorship }));
     internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsListForDoubleObjects(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes)); 
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsListForDoubleObjects(capitalism));
-    internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsListForDoubleObjects(capitalism));
-    internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsListForDoubleObjects(capitalism));
+    internal static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, new ConditionsListForDoubleObjects(capitalism));
+    internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, new ConditionsListForDoubleObjects(capitalism));
 
 
     /// ////////////

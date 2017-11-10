@@ -172,7 +172,7 @@ public class FactoryType
     public static IEnumerable<FactoryType> getInventedTypes(Country country)
     {
         foreach (var next in allTypes)
-            if (next.basicProduction.getProduct().isInvented(country))
+            if (next.basicProduction.getProduct().isInventedBy(country))
                 yield return next;
     }
     public static IEnumerable<FactoryType> getResourceTypes(Country country)

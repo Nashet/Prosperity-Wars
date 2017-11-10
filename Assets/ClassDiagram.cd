@@ -115,15 +115,15 @@
   <Class Name="MultiSeller" Collapsed="true">
     <Position X="11.75" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAABAAAAAABAAAAAAAIAAEAAAAAgAAAAAAEA=</HashCode>
-      <FileName>Assets\code\Logic\Producer.cs</FileName>
+      <HashCode>AAAABAAAAABAAAQAIBAAAAAAAIAAEAAEAAgAAAgAgEA=</HashCode>
+      <FileName>Assets\code\Logic\MultiSeller.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Consumer" Collapsed="true">
     <Position X="9.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAABQIgAAAIIAAAAAAAAACAIAAAAAAAAAAECQAAAA=</HashCode>
+      <HashCode>AAAAABQIgAAAIIAAAAAAAAACAIAAAAAAAAAABCQAAAA=</HashCode>
       <FileName>Assets\code\Logic\Consumer.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -134,7 +134,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>mMACwI8o6Lj2hgrOrJrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
+      <HashCode>mMACwI8o6Lj2hgrOrJrVTXrAH6EtDloQoFJOjDWimLY=</HashCode>
       <FileName>Assets\code\Logic\Country.cs</FileName>
     </TypeIdentifier>
   </Class>

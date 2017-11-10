@@ -615,7 +615,7 @@ abstract public class PopUnit : Producer
             }
     }
 
-    void consumeNeedsWithMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
+    private void consumeNeedsWithMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
         //buy life needs
         Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
@@ -681,7 +681,7 @@ abstract public class PopUnit : Producer
                 {
                     Value spentOnUnlimitedConsumption = new Value(cash);
                     Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-                    Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by already spent money
+                    Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by income - already spent money
 
                     if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
                         spentOnUnlimitedConsumption.set(spendingLimit); // don't spent more than gained                    

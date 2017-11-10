@@ -722,7 +722,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         if (HaveFactory(type))
             return false;
         if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
-            || !type.basicProduction.getProduct().isInvented(getCountry())
+            || !type.basicProduction.getProduct().isInventedBy(getCountry())
             || type.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
             )
             return false;

@@ -66,7 +66,7 @@ public class TradeWindowCountryMarketTable : MyTable
                     AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), storage);
 
                     ////Adding bought
-                    AddButton("wip", storage);
+                    AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).ToString(), storage);
 
                     ////Adding Sold
                     AddButton("wip", storage);

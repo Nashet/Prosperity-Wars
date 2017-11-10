@@ -26,7 +26,7 @@ public class Country : MultiSeller
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
-    public readonly List<Movement> movements = new List<Movement>();    
+    public readonly List<Movement> movements = new List<Movement>();
 
     //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
 
@@ -665,7 +665,7 @@ public class Country : MultiSeller
     {
         Storage minFound = null;
         foreach (var item in selector)
-            if (item.isInvented(this))
+            if (item.isInventedBy(this))
             {
 
                 var proposition = FactoryType.whoCanProduce(item);
@@ -850,21 +850,12 @@ public class Country : MultiSeller
         }
         else return false;
     }
-    /// <summary>
-    /// Represents buying and/or cinsuming needs.
-    /// </summary>
-    public override void consumeNeeds()
+    private void tradeWithPE()
     {
-        foreach (var item in getAllArmies())
-        {
-            item.consume();
-        }
-        // Should go After all Armies consumption
-
         // planned economy buying
         //1 day buying
         foreach (var product in Product.getAllNonAbstractInPEOrder(this))
-        //if (product.isInvented(this)) // allredy checked
+        //if (product.isInvented(this)) // already checked
         //foreach (var currentStorage in countryStorageSet)
         {
             var desiredMinimum = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
@@ -902,6 +893,60 @@ public class Country : MultiSeller
                 }
             }
         }
+    }
+    /// <summary>
+    /// Represents buying and/or consuming needs.
+    /// </summary>
+    public override void consumeNeeds()
+    {
+        foreach (var item in getAllArmies())
+        {
+            item.consume();
+        }
+        // Should go After all Armies consumption
+
+        if (Game.Player==this)
+        {
+            if (economy.getValue() == Economy.PlannedEconomy)
+            {
+                //    tradeWithPE();
+                // but add player's limits
+            }
+            else//non PE - just use player's limits
+            {
+                // firstly, buy last tick expenses -NO, buy as set in trade sliders
+                // then by rest but avoid huge market interference 
+                foreach (var item in Product.getAllNonAbstract())
+                    if (item.isInventedBy(this))
+                    {
+                        //var howMuchToBuy = countryStorageSet.takenAway.getFirstStorage(item);                        
+                        var howMuchHave = countryStorageSet.getFirstStorage(item);
+                        var maxLimit = getSellIfMoreLimits(item);
+                        var minLimit = getBuyIfLessLimits(item);
+                        if (howMuchHave.isBiggerThan(maxLimit))
+                        {
+                            var howMuchToSell = howMuchHave.subtractOutside(maxLimit);
+                            sell(howMuchToSell);
+                        }
+                        else
+                            if (howMuchHave.isSmallerThan(minLimit))
+                        {
+                            var howMuchToBuy = minLimit.subtractOutside(howMuchHave);
+                            buyNeeds(howMuchToBuy);
+                        }
+
+                        if (getMoneyAvailable().isZero()) // no more money to buy
+                            break;
+                    }
+            }
+        }
+        else //is player
+        {
+            if (economy.getValue() == Economy.PlannedEconomy)
+                tradeWithPE();
+            //+non PE - trade as PE but in normal order
+            
+        }
 
         //var needs = getRealAllNeeds();
         ////buy 1 day needs
@@ -932,7 +977,6 @@ public class Country : MultiSeller
 
     void buyNeeds(Storage toBuy)
     {
-        //if (toBuy.get() < 10f) toBuy.set(10);
         Storage realyBougth = Game.market.buy(this, toBuy, null);
         if (realyBougth.isNotZero())
         {

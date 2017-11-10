@@ -153,19 +153,19 @@ public class Product : Name
     public static IEnumerable<Product> getAllMilitaryProducts(Country country)
     {
         foreach (var item in getAllNonAbstract())
-            if (item.isMilitary() && item.isInvented(country))
+            if (item.isMilitary() && item.isInventedBy(country))
                 yield return item;
     }
     public static IEnumerable<Product> getAllIndustrialProducts(Country country)
     {
         foreach (var item in getAllNonAbstract())
-            if (item.isIndustrial() && item.isInvented(country))
+            if (item.isIndustrial() && item.isInventedBy(country))
                 yield return item;
     }
     public static IEnumerable<Product> getAllConsumerProducts(Country country)
     {
         foreach (var item in getAllNonAbstract())
-            if (item.isConsumerProduct() && item.isInvented(country))
+            if (item.isConsumerProduct() && item.isInventedBy(country))
                 yield return item;
     }
     internal static Product getRandomResource(bool ignoreGold)
@@ -244,11 +244,11 @@ public class Product : Name
     public bool isInventedByAnyOne()
     {
         foreach (var country in Country.allCountries)
-            if (this.isInvented(country))
+            if (this.isInventedBy(country))
                 return true;
         return false;
     }
-    public bool isInvented(Country country)
+    public bool isInventedBy(Country country)
     {
         if (
             (

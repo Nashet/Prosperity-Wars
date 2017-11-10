@@ -361,9 +361,9 @@ public class Market : Agent//: PrimitiveStorageSet
     }
 
     /// <summary>
-    /// returns how much was sold de-facto
+    /// returns how much was sold de facto
     /// new version of buy-old,
-    /// real deal
+    /// real deal. If not enough money to buy (including deposits) then buys some part of desired
     /// </summary>   
     internal Storage buy(Consumer buyer, Storage whatWantedToBuy)
     {

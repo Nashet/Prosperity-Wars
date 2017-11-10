@@ -114,7 +114,7 @@ public class Corps // Consumer
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
-            if (next.getProduct().isInvented(country))
+            if (next.getProduct().isInventedBy(country))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiply(multiplier);
@@ -124,7 +124,7 @@ public class Corps // Consumer
     }
     public Storage getRealNeeds(Country country, Product product)
     {
-        if (product.isInvented(country))
+        if (product.isInventedBy(country))
         {
             Storage found = origin.popType.getMilitaryNeedsPer1000().getFirstStorage(product);
             if (found.isZero())

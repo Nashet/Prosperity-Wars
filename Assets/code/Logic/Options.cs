@@ -115,7 +115,7 @@ public static class Options
     internal static readonly Procent MovementStrenthToStartRebellion = new Procent(1f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
-    internal static readonly Value PopUnlimitedConsumptionLimit = new Value(50f);
+    internal static readonly Value PopUnlimitedConsumptionLimit = new Value(100f);
 
 
     internal static readonly float aristocratsFoodReserv = 50;
