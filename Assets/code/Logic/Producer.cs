@@ -21,8 +21,14 @@ public abstract class Producer : Consumer
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
 
-    public abstract void produce();
+
     public abstract void payTaxes();
+
+    /// <summary>
+    /// Just adds statistics
+    /// </summary>
+    abstract public void produce();
+   
 
     protected Producer(Province province) : base(province.getCountry().getBank(), province)
     {
@@ -30,6 +36,10 @@ public abstract class Producer : Consumer
     //protected Producer() : base(null, null)
     //{
     //}
+    public void calcStatistics()
+    {
+        getCountry().producedTotalAdd(gainGoodsThisTurn);
+    }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();

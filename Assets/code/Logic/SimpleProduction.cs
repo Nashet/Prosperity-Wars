@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Contains common mechanics for Factory and ArtisanProduction
+/// </summary>
 abstract public class SimpleProduction : Producer
 {
     private Agent owner;
@@ -55,13 +58,16 @@ abstract public class SimpleProduction : Producer
     }
 
     /// <summary>
-    /// Fills storageNow and gainGoodsThisTurn
+    /// Fills storageNow and gainGoodsThisTurn. Don't not to confuse with Producer.produce()
     /// </summary>
     protected void produce(Value multiplier)
     {           
         gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
-        storage.add(gainGoodsThisTurn);
-
+        if (gainGoodsThisTurn.isNotZero())
+        {
+            storage.add(gainGoodsThisTurn);
+            calcStatistics();
+        }
         //consume Input Resources
         if (!getType().isResourceGathering())
             foreach (Storage next in getRealAllNeeds())

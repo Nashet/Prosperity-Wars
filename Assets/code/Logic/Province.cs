@@ -432,7 +432,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
             //    cultures[pop.culture] += pop.getPopulation();
             //else
             //    cultures.Add(pop.culture, pop.getPopulation());
-            cultures.AddMy(pop.culture, pop.getPopulation());
+            cultures.addMy(pop.culture, pop.getPopulation());
         ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.getPopulation()));
         return cultures.MaxBy(y => y.Value).Key as Culture;
     }

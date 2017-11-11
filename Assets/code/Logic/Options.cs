@@ -19,7 +19,7 @@ public static class Options
     internal static readonly int ProvinceChanceToGetCore = 70;
     internal static readonly Value CountryMinStorage = new Value(5f);
     internal static readonly Value CountryMaxStorage = new Value(50f);
-    internal static readonly Value CountrySaveProductsDaysMinimum = new Value(20f);
+    internal static readonly Value CountryBuyProductsForXDays = new Value(20f);
     internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
     internal static readonly Value CountryPopConsumptionLimitPE = new Value(20f);
 

@@ -12,10 +12,10 @@ public class CountryStorageSet : StorageSet, IHasStatistics
 {
     /// <summary>
     /// Counts how much products was taken from country storage 
-    /// for consumption or some spending
+    /// for consumption or some spending. Shouldn't include sells
     /// Used to determinate how much to buy deficit or sell extra products
     /// </summary>
-    public readonly StorageSet takenAway = new StorageSet();
+    public readonly StorageSet used = new StorageSet();
 
     //internal Value getConsumption(Product whom)
     //{
@@ -26,7 +26,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     //}
     public void setStatisticToZero()
     {
-        takenAway.setZero();
+        used.setZero();
     }
 
     /// / next - inherited
@@ -60,7 +60,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     {
         if (base.send(whom, what))
         {
-            takenAway.add(what);
+            used.add(what);
             return true;
         }
         else
@@ -93,7 +93,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     /// </summary>   
     public bool send(StorageSet whom, List<Storage> what)
     {
-        takenAway.add(what);
+        used.add(what);
         return base.send(whom, what);
     }
     /// <summary>
@@ -105,11 +105,15 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     {
         if (base.subtract(stor, showMessageAboutNegativeValue))
         {
-            takenAway.add(stor);
+            used.add(stor);
             return true;
         }
         else
             return false;
+    }
+    public bool subtractNoStatistic(Storage stor, bool showMessageAboutNegativeValue = true)
+    {
+        return base.subtract(stor, showMessageAboutNegativeValue);
     }
     /// <summary>
     /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
@@ -154,7 +158,7 @@ public class CountryStorageSet : StorageSet, IHasStatistics
     }
     internal void sendAll(StorageSet toWhom)
     {
-        takenAway.add(this);
+        used.add(this);
         base.sendAll(toWhom);
     }
 

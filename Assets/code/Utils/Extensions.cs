@@ -146,12 +146,26 @@ public static class CollectionExtensions
     //    else
     //        dictionary.Add(what, size);
     //}
-    public static void AddMy<T>(this Dictionary<T, int> dictionary, T what, int size)
+    public static void addMy<T>(this Dictionary<T, int> dictionary, T what, int size)
     {
         if (dictionary.ContainsKey(what))
             dictionary[what] += size;
         else
             dictionary.Add(what, size);
+    }
+    public static void addMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
+    {
+        if (dictionary.ContainsKey(what))
+            dictionary[what].add(value);
+        else
+            dictionary.Add(what, value);
+    }
+    public static void setMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
+    {
+        if (dictionary.ContainsKey(what))
+            dictionary[what].set(value);
+        else
+            dictionary.Add(what, value);
     }
     public static void AddIfNotNull<T>(this List<T> list, T what)
     {

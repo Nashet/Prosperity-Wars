@@ -25,6 +25,8 @@ public class Country : MultiSeller
     private readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
+    
+
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
 
@@ -850,7 +852,61 @@ public class Country : MultiSeller
         }
         else return false;
     }
-    private void tradeWithPE()
+    
+    private void tradeNonPE(bool usePlayerTradeSettings)//, int buyProductsForXDays)
+    {
+        // firstly, buy last tick expenses -NO, buy as set in trade sliders
+        // then by rest but avoid huge market interference 
+        //1 day trade
+        //TODO add x day buying or split buying somehow
+
+        foreach (var product in Product.getAllNonAbstract())
+            if (product.isInventedBy(this))
+            {   
+                Storage maxLimit;
+                Storage minLimit;
+
+                if (usePlayerTradeSettings)
+                {
+                    maxLimit = getSellIfMoreLimits(product);
+                    minLimit = getBuyIfLessLimits(product);
+                    //if (buyProductsForXDays > 1)                    
+                    //    minLimit.multiply(buyProductsForXDays);                    
+                }
+                else
+                {
+                    var takenFromStorage = new Storage(countryStorageSet.used.getFirstStorage(product));
+
+                    if (takenFromStorage.isZero())
+                    {
+                        minLimit = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);
+                        maxLimit = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
+                    }
+                    else
+                    {
+                        minLimit = new Storage(takenFromStorage);
+                        maxLimit = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                    }                        
+                }
+                var howMuchHave = countryStorageSet.getFirstStorage(product);
+                if (howMuchHave.isBiggerThan(maxLimit))
+                {
+                    var howMuchToSell = howMuchHave.subtractOutside(maxLimit);
+                    sell(howMuchToSell);
+                }
+                else
+                {
+                    if (howMuchHave.isSmallerThan(minLimit))
+                    {
+                        var howMuchToBuy = minLimit.subtractOutside(howMuchHave);
+                        buyNeeds(howMuchToBuy);
+                    }
+                }
+                if (getMoneyAvailable().isZero()) // no more money to buy
+                    break;
+            }
+    }
+    private void tradeWithPE(bool usePlayerTradeSettings)
     {
         // planned economy buying
         //1 day buying
@@ -858,34 +914,47 @@ public class Country : MultiSeller
         //if (product.isInvented(this)) // already checked
         //foreach (var currentStorage in countryStorageSet)
         {
-            var desiredMinimum = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
+            Storage desiredMinimum;
+            if (usePlayerTradeSettings)
+                desiredMinimum = getBuyIfLessLimits(product);
+            else
+                desiredMinimum = new Storage(countryStorageSet.used.getFirstStorage(product));
             if (desiredMinimum.isZero())
-                desiredMinimum.add(5f);
+                desiredMinimum.add(Options.CountryMinStorage);
             var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
             if (toBuy.isBiggerThan(Value.Zero))
                 buyNeeds(toBuy);//go buying
         }
-        //x day buying/selling
+        // x day buying +sells
         //foreach (var currentStorage in countryStorageSet)
         foreach (var product in Product.getAllNonAbstractInPEOrder(this))
         {
-            var takenFromStorage = new Storage(countryStorageSet.takenAway.getFirstStorage(product));
+            var takenFromStorage = new Storage(countryStorageSet.used.getFirstStorage(product));
             Storage desiredMinimum;
-            if (takenFromStorage.isZero())
-                desiredMinimum = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);// todo change
+            if (usePlayerTradeSettings)
+                desiredMinimum = getBuyIfLessLimits(product);
             else
-                desiredMinimum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMinimum);
-
+            {
+                if (takenFromStorage.isZero())
+                    desiredMinimum = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);// todo change
+                else
+                    desiredMinimum = takenFromStorage.multiplyOutside(Options.CountryBuyProductsForXDays);
+            }
             var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
             if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
                 buyNeeds(toBuy);//go buying
             else    // no need to buy anything
             {
                 Storage desiredMaximum;
-                if (takenFromStorage.isZero())
-                    desiredMaximum = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
+                if (usePlayerTradeSettings)
+                    desiredMaximum = getSellIfMoreLimits(product);
                 else
-                    desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                {
+                    if (takenFromStorage.isZero())
+                        desiredMaximum = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
+                    else
+                        desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                }
                 var toSell = countryStorageSet.getFirstStorage(product).subtractOutside(desiredMaximum, false);
                 if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                 {
@@ -905,48 +974,13 @@ public class Country : MultiSeller
         }
         // Should go After all Armies consumption
 
-        if (Game.Player==this)
+        if (economy.getValue() == Economy.PlannedEconomy)
+            tradeWithPE(!isAI());
+        else
         {
-            if (economy.getValue() == Economy.PlannedEconomy)
-            {
-                //    tradeWithPE();
-                // but add player's limits
-            }
-            else//non PE - just use player's limits
-            {
-                // firstly, buy last tick expenses -NO, buy as set in trade sliders
-                // then by rest but avoid huge market interference 
-                foreach (var item in Product.getAllNonAbstract())
-                    if (item.isInventedBy(this))
-                    {
-                        //var howMuchToBuy = countryStorageSet.takenAway.getFirstStorage(item);                        
-                        var howMuchHave = countryStorageSet.getFirstStorage(item);
-                        var maxLimit = getSellIfMoreLimits(item);
-                        var minLimit = getBuyIfLessLimits(item);
-                        if (howMuchHave.isBiggerThan(maxLimit))
-                        {
-                            var howMuchToSell = howMuchHave.subtractOutside(maxLimit);
-                            sell(howMuchToSell);
-                        }
-                        else
-                            if (howMuchHave.isSmallerThan(minLimit))
-                        {
-                            var howMuchToBuy = minLimit.subtractOutside(howMuchHave);
-                            buyNeeds(howMuchToBuy);
-                        }
+            tradeNonPE(!isAI());   //non PE - trade as PE but in normal order
+        }
 
-                        if (getMoneyAvailable().isZero()) // no more money to buy
-                            break;
-                    }
-            }
-        }
-        else //is player
-        {
-            if (economy.getValue() == Economy.PlannedEconomy)
-                tradeWithPE();
-            //+non PE - trade as PE but in normal order
-            
-        }
 
         //var needs = getRealAllNeeds();
         ////buy 1 day needs
@@ -1143,7 +1177,7 @@ public class Country : MultiSeller
         var totalPopulation = this.getMenPopulation();
         foreach (var item in getAllPopUnits())
         {
-            cultures.AddMy(item.culture, item.getPopulation());
+            cultures.addMy(item.culture, item.getPopulation());
         }
         var result = new List<KeyValuePair<Culture, Procent>>();
         foreach (var item in cultures)

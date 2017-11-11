@@ -201,6 +201,10 @@ public class Product : Name
         }
     }
 
+    public bool isTradable()
+    {
+        return this != Product.Gold;
+    }
     public bool isAbstract()
     {
         return _isAbstract;

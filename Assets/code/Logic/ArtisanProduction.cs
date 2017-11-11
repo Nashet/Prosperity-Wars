@@ -50,7 +50,7 @@ public class ArtisanProduction : SimpleProduction
                 getOwner().storage.add(this.storage);
             else
                 getOwner().storage.set(this.storage);
-        }
+        }           
     }
     /// <summary>
     /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 

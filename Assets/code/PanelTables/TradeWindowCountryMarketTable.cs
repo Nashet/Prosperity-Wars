@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 
 public class TradeWindowCountryMarketTable : MyTable
-{     
+{
     override protected void refresh()
     {
         ////if (Game.date != 0)
@@ -14,7 +14,7 @@ public class TradeWindowCountryMarketTable : MyTable
             AddButtons();
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
-    }      
+    }
     override protected void AddButtons()
     {
         int counter = 0;
@@ -22,11 +22,11 @@ public class TradeWindowCountryMarketTable : MyTable
         // Adding product name 
         AddButton("Product");
         ////Adding production
-        AddButton("Govern.storage");
+        AddButton("Gov. storage");
 
-        AddButton("Govern.Need"); 
+        AddButton("Gov. needs");
 
-        AddButton("Production t.");
+        AddButton("Production tot.");
 
         AddButton("Used by gov.");
 
@@ -43,11 +43,9 @@ public class TradeWindowCountryMarketTable : MyTable
             var needs = Game.Player.getRealAllNeeds();
             foreach (var product in Product.getAll())
             //foreach (var item in Game.market.pr)
-            {
-
-            
+            {   
                 // Product product = next.getProduct();
-                if (product != Product.Gold && product.isInventedByAnyOne())
+                if (product == Product.Cattle || product != Product.Gold && product.isInventedByAnyOne())
                 {
                     var storage = Game.Player.countryStorageSet.getFirstStorage(product);
                     // Adding product name 
@@ -59,17 +57,23 @@ public class TradeWindowCountryMarketTable : MyTable
                     ////Adding needs
                     AddButton(needs.getStorage(product).ToString(), storage);
 
-                    ////Adding Produce
-                    AddButton("wip", storage);
+                    ////Adding Produced
+                    if (product.isAbstract())//|| !product.isTradable()
+                        AddButton("-", storage);
+                    else
+                        AddButton(Game.Player.getProducedTotal(product).ToString(), storage);
 
                     ////Adding taken away
-                    AddButton(Game.Player.countryStorageSet.takenAway.getFirstStorage(product).ToString(), storage);
+                    AddButton(Game.Player.countryStorageSet.used.getFirstStorage(product).ToString(), storage);
 
                     ////Adding bought
                     AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).ToString(), storage);
 
                     ////Adding Sold
-                    AddButton("wip", storage);
+                    if (product.isAbstract())//|| !product.isTradable()
+                        AddButton("-", storage);
+                    else
+                        AddButton(Game.Player.getSentToMarket(product).ToString(), storage);
 
                     counter++;
                     //contentPanel.r

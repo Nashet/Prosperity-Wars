@@ -68,8 +68,14 @@ public class Tribesmen : CattleGetter
             producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
             producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
-        storage.add(producedAmount);
-        gainGoodsThisTurn.set(producedAmount);
+        
+        
+        if (producedAmount.isNotZero())
+        {
+            storage.add(producedAmount);
+            calcStatistics();
+            gainGoodsThisTurn.set(producedAmount);
+        }
     }
     internal override bool canTrade()
     {
@@ -131,10 +137,13 @@ public class Farmers : GrainGetter
     public override void produce()
     {
         Storage producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
-        producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
-        gainGoodsThisTurn.set(producedAmount);
-        storage.add(gainGoodsThisTurn);
-
+        producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
+        if (producedAmount.isNotZero())
+        {
+            gainGoodsThisTurn.set(producedAmount);
+            storage.add(gainGoodsThisTurn);
+            calcStatistics();
+        }
         if (Economy.isMarket.checkIftrue(getCountry()))
         {
             //sentToMarket.set(gainGoodsThisTurn);
@@ -148,6 +157,7 @@ public class Farmers : GrainGetter
                 getCountry().countryStorageSet.add(gainGoodsThisTurn);
             }
         }
+        
     }
     override internal bool canSellProducts()
     {
@@ -552,7 +562,7 @@ public class Artisans : GrainGetter
         {
             if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
                )// && (artisansProduction==null 
-                //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
+                //|| (artisansProduction !=null && needsFulfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
                 changeProductionType();
 
             if (artisansProduction != null)
