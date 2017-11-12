@@ -28,7 +28,7 @@ So, main principles of that simulation are:
  - basic reforms (population can vote for reforms)
  - population demotion\promotion to other classes
  - migration\immigration\assimilation
- - political\culture\core map mode
+ - political\culture\core\resorce map mode
  - basic diplomacy (only relations for now)
  - substitute products - https://github.com/Nashet/EconomicSimulation/wiki/Products
  - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.svg?columns=all)](https://waffle.io/Nashet/EconomicSimulation) 
