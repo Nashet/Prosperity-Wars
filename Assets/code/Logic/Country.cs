@@ -921,7 +921,7 @@ public class Country : MultiSeller
             else
                 desiredMinimum = new Storage(countryStorageSet.used.getFirstStorage(product));
             if (desiredMinimum.isZero())
-                desiredMinimum.add(Options.CountryMinStorage);
+                desiredMinimum.add(Options.CountryMinStorage);           
             var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
             if (toBuy.isBiggerThan(Value.Zero))
                 buyNeeds(toBuy);//go buying

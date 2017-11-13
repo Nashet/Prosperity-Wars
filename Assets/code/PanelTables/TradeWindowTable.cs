@@ -61,8 +61,8 @@ public class TradeWindowTable : MyTable
                 AddButton(Game.market.getBouthOnMarket(product, false).ToString(), product);
 
                 ////Adding effective Demand/Supply
-                //AddButton(Game.market.getDemandSupplyBalance(product).ToString(), product);
-                AddButton("хуй", product);
+                AddButton(Game.market.getDemandSupplyBalance(product).ToString(), product);
+                //AddButton("-", product);
                 ////Adding price
                 AddButton(Game.market.getPrice(product).get().ToString(), product);
                 ////Adding price Change

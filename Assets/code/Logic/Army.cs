@@ -55,7 +55,7 @@ public class MyDate
 
     internal void set(MyDate newDate)
     {                          
-        Debug.Log("date set to "+ newDate.year);
+       // Debug.Log("date set to "+ newDate.year);
         this.year = newDate.year;
     }
     public static bool operator ==(MyDate d1, MyDate d2)

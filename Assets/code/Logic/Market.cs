@@ -296,7 +296,7 @@ public class Market : Agent//: PrimitiveStorageSet
                         foreach (Producer producer in province.getProducers())
                             if (producer.sentToMarket.isExactlySameProduct(sup.getProduct())) //sup.getProduct()
                                 result += producer.sentToMarket.get();
-                    result += country.getSentToMarket(product);
+                    result += country.getSentToMarket(sup.getProduct());
                 }
                 supplyOnMarket.set(new Storage(sup.getProduct(), result));
             }
@@ -590,13 +590,13 @@ public class Market : Agent//: PrimitiveStorageSet
     /// based on last turn data    
     internal float getDemandSupplyBalance(Product product)
     {
-        Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
+        //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
         float balance;
         //if (dateOfDSB != Game.date)
         if (dateOfDSB != Game.date)
         // recalculate DSBbuffer
         {
-            Debug.Log("Recalculation of DSB started");
+            //Debug.Log("Recalculation of DSB started");
             foreach (Storage stor in marketPrice)
             {
                 getProductionTotal(product, false); // for pre-turn initialization
@@ -691,8 +691,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float antiBalance;
         foreach (Storage price in this.marketPrice)
             if (!price.isExactlySameProduct(Product.Gold))
-            {
-                //Debug.Log("PREPARE TO HUJNYA!!");
+            {                   
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  
                 /// Result fewer 1 mean supply is higher, price should go down              

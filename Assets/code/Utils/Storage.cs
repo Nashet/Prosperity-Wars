@@ -225,11 +225,11 @@ public class Storage : Value
     //    // need product specified
     //    throw new DontUseThatMethod();
     //}
-    [System.Obsolete("Method is deprecated, need product specified")]
-    override public void add(Value invalue, bool showMessageAboutNegativeValue = true)
-    {
-        throw new DontUseThatMethod();
-    }
+    //[System.Obsolete("Method is deprecated, need product specified")]
+    //override public void add(Value invalue, bool showMessageAboutNegativeValue = true)
+    //{
+    //    throw new DontUseThatMethod();
+    //}
     [System.Obsolete("Method is deprecated, need product specified")]
     override public void add(float invalue, bool showMessageAboutNegativeValue = true)
     {

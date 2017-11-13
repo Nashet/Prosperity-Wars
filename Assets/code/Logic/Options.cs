@@ -122,6 +122,8 @@ public static class Options
     internal static readonly float ArtisansProductionModifier = 0.5f;
     internal static readonly int ArtisansChangeProductionRate = 60;
     internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
+    internal static readonly float PopOneThird = 0.333f;
+    internal static readonly float PopTwoThird = 0.666f;
     /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
     internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
     internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;

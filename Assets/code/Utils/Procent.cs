@@ -20,7 +20,7 @@ public class Procent : Value
     }
     public static Procent makeProcent(List<Storage> numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
     {
-        //result sh b amount fo numerator / amount of denominator
+        //result should be  amount of numerator / amount of denominator
         Value numeratorSum = new Value(0f);
         foreach (var item in numerator)
         {

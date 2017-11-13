@@ -509,7 +509,9 @@ public class Game : ThreadedJob
         Game.market.simulatePriceChangeBasingOnLastTurnData();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-        prepareForNewTick(); // including workforce balancing
+        // includes workforce balancing
+        // and sets statistics to zero. Should go after price calculation
+        prepareForNewTick(); 
 
         // big PRODUCE circle
         foreach (Country country in Country.getExisting())
