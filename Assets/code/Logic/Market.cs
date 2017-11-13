@@ -11,19 +11,19 @@ public class Market : Agent//: PrimitiveStorageSet
     private readonly StorageSet marketPrice = new StorageSet();
 
     // todo make Better class for it?
-    private DateTime dateOfDSB = new DateTime(int.MaxValue);
+    private MyDate dateOfDSB = new MyDate(int.MaxValue);
     private readonly StorageSet DSBbuffer = new StorageSet();
 
-    private DateTime dateOfgetSupplyOnMarket = new DateTime(int.MaxValue);
+    private MyDate dateOfgetSupplyOnMarket = new MyDate(int.MaxValue);
     private readonly StorageSet supplyOnMarket = new StorageSet();
 
-    DateTime dateOfgetTotalProduction = new DateTime(int.MaxValue);
+    private MyDate dateOfgetTotalProduction = new MyDate(int.MaxValue);
     private readonly StorageSet totalProduction = new StorageSet();
 
-    DateTime dateOfgetTotalConsumption = new DateTime(int.MaxValue);
+    private MyDate dateOfgetTotalConsumption = new MyDate(int.MaxValue);
     private readonly StorageSet totalConsumption = new StorageSet();
 
-    DateTime dateOfgetBought = new DateTime(int.MaxValue);
+    private MyDate dateOfgetBought = new MyDate(int.MaxValue);
     private readonly StorageSet bought = new StorageSet();
 
     internal PricePool priceHistory;
@@ -129,7 +129,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 }
                 bought.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetBought = Game.date;
+            dateOfgetBought.set(Game.date);
         }
 
         return bought.getFirstStorage(product).get();
@@ -195,7 +195,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 }
                 totalConsumption.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetTotalConsumption = Game.date;
+            dateOfgetTotalConsumption.set(Game.date);
         }
 
         return totalConsumption.getFirstStorage(product).get();
@@ -300,7 +300,7 @@ public class Market : Agent//: PrimitiveStorageSet
                 }
                 supplyOnMarket.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetSupplyOnMarket = Game.date;
+            dateOfgetSupplyOnMarket.set(Game.date);
         }
         return supplyOnMarket.getFirstStorage(product).get();
     }
@@ -341,7 +341,7 @@ public class Market : Agent//: PrimitiveStorageSet
                     }
                 totalProduction.set(new Storage(sup.getProduct(), result));
             }
-            dateOfgetTotalProduction = Game.date;
+            dateOfgetTotalProduction.set(Game.date);
         }
 
         return totalProduction.getFirstStorage(product).get();
@@ -524,25 +524,25 @@ public class Market : Agent//: PrimitiveStorageSet
     /// <summary>
     /// Date actual for how much produced on turn start, not how much left
     /// </summary>   
-    internal bool HasProducedThatMuch(Storage need)
-    {
-        //Storage availible = findStorage(need.getProduct());
-        //if (availible.get() >= need.get()) return true;
-        //else return false;
-        Storage availible = HowMuchProduced(need.getProduct());
-        if (availible.get() >= need.get()) return true;
-        else return false;
-    }
+    //internal bool HasProducedThatMuch(Storage need)
+    //{
+    //    //Storage availible = findStorage(need.getProduct());
+    //    //if (availible.get() >= need.get()) return true;
+    //    //else return false;
+    //    Storage availible = HowMuchProduced(need.getProduct());
+    //    if (availible.get() >= need.get()) return true;
+    //    else return false;
+    //}
     /// <summary>
     /// Must be safe - returns new Storage
     /// Date actual for how much produced on turn start, not how much left
     /// </summary>
-    internal Storage HowMuchProduced(Product need)
-    {
-        //return findStorage(need.getProduct());
-        // here DSB is based not on last turn data, but on this turn.
-        return new Storage(need, getMarketSupply(need, false));
-    }
+    //internal Storage HowMuchProduced(Product need)
+    //{
+    //    //return findStorage(need.getProduct());
+    //    // here DSB is based not on last turn data, but on this turn.
+    //    return new Storage(need, getMarketSupply(need, false));
+    //}
     /// <summary>
     /// Based on DSB, assuming you have enough money
     /// </summary>    
@@ -590,11 +590,13 @@ public class Market : Agent//: PrimitiveStorageSet
     /// based on last turn data    
     internal float getDemandSupplyBalance(Product product)
     {
+        Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
         float balance;
         //if (dateOfDSB != Game.date)
         if (dateOfDSB != Game.date)
         // recalculate DSBbuffer
         {
+            Debug.Log("Recalculation of DSB started");
             foreach (Storage stor in marketPrice)
             {
                 getProductionTotal(product, false); // for pre-turn initialization
@@ -623,7 +625,7 @@ public class Market : Agent//: PrimitiveStorageSet
 
                 DSBbuffer.set(new Storage(stor.getProduct(), balance));
             }
-            dateOfDSB = Game.date;
+            dateOfDSB.set(Game.date);
         }
         Storage tmp = DSBbuffer.getFirstStorage(product);
 
@@ -680,7 +682,7 @@ public class Market : Agent//: PrimitiveStorageSet
     /// Changes price for every product in market
     /// That's first call for DSB in tick
     /// </summary>
-    public void simulatePriceChangeBasingOnLastTurnDate()
+    public void simulatePriceChangeBasingOnLastTurnData()
     {
         float balance;
         float priceChangeSpeed = 0;
@@ -690,11 +692,11 @@ public class Market : Agent//: PrimitiveStorageSet
         foreach (Storage price in this.marketPrice)
             if (!price.isExactlySameProduct(Product.Gold))
             {
+                //Debug.Log("PREPARE TO HUJNYA!!");
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  
-                /// Result fewer 1 mean supply is higher, price should go down               
-                //if (getSupply(price.getProduct()) == 0)
-                //    balance = 1;
+                /// Result fewer 1 mean supply is higher, price should go down              
+               
                 //if (balance < 1f) antiBalance = 1 / balance;
                 //else antiBalance = balance;
                 priceChangeSpeed = 0;

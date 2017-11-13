@@ -486,7 +486,7 @@ public static class GetStringExtensions
         }
         return sb.ToString();
     }
-    public static string getString(Dictionary<Mod, DateTime> dictionary)
+    public static string getString(Dictionary<Mod, MyDate> dictionary)
     {
         var sb = new StringBuilder();
         bool isFirstRow = true;
@@ -497,7 +497,7 @@ public static class GetStringExtensions
                 sb.Append("\n");
             }
             isFirstRow = false;
-            if (item.Value == default(DateTime))
+            if (item.Value == null)
                 sb.Append(item.Key).Append(" (permanent)");
             else
                 sb.Append(item.Key).Append(" expires in ").Append(item.Value.getYearsUntill()).Append(" years");
@@ -808,25 +808,21 @@ public static class MeshExtensions
 
 }
 public static class DateExtensions
-{
-    //public static int getYearsSince(this DateTime source, DateTime date2)
+{       
+    //public static int getYearsSince(this DateTime date2)
     //{
-    //    return source.Year - date2.Year;
+    //    return Game.date.Year - date2.Year;
     //}
-    public static int getYearsSince(this DateTime date2)
-    {
-        return Game.date.Year - date2.Year;
-    }
-    public static int getYearsUntill(this DateTime date2)
-    {
-        return date2.Year - Game.date.Year;
-    }
-    public static bool isYearsPassed(this DateTime date, int years)
-    {
-        return date.Year % years == 0;
-    }
-    public static bool isDatePassed(this DateTime date)
-    {
-        return date.CompareTo(Game.date) < 1;
-    }
+    //public static int getYearsUntill(this DateTime date2)
+    //{
+    //    return date2.Year - Game.date.Year;
+    //}
+    //public static bool isDivisible(this DateTime date, int years)
+    //{
+    //    return date.Year % years == 0;
+    //}
+    //public static bool isDatePassed(this DateTime date)
+    //{
+    //    return date.CompareTo(Game.date) < 1;
+    //}
 }

@@ -4,6 +4,91 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 using System;
+public class MyDate
+{
+    internal static readonly MyDate Never = new MyDate(int.MinValue);
+    private int year;
+    public MyDate(int year)
+    {
+        this.year = year;
+    }
+    public MyDate(MyDate date)
+    {
+        this.year = date.year;
+    }
+
+    internal void AddTick(int v)
+    {
+        year += v;
+    }
+
+    internal MyDate getNewDate(int v)
+    {
+        return new MyDate(year + v);
+    }
+    /// <summary>
+    /// How much time passed after stored here date
+    /// </summary>    
+    public int getYearsSince()
+    {
+
+        return Game.date.year - this.year;
+    }
+    /// <summary>
+    /// How much time before that date come
+    /// </summary>    
+    public int getYearsUntill()
+    {
+        return this.year - Game.date.year;
+    }
+    /// <summary>
+    /// Returns true if exactly passed years has passed, no more no less
+    /// </summary>    
+    public bool isDivisible(int passed)
+    {
+        return this.year % passed == 0;
+    }
+    public bool isDatePassed()
+    {
+        return this.year > Game.date.year;
+    }
+
+    internal void set(MyDate newDate)
+    {                          
+        Debug.Log("date set to "+ newDate.year);
+        this.year = newDate.year;
+    }
+    public static bool operator ==(MyDate d1, MyDate d2)
+    {
+
+        if (object.ReferenceEquals(d1, null) && object.ReferenceEquals(d2, null)) // both null
+            return true;
+        else
+        {
+            if (object.ReferenceEquals(d1 , null) || object.ReferenceEquals(d2 , null))   //one null
+                return false;
+        }
+        //no null
+        return d1.year == d2.year;
+    }
+    public static bool operator !=(MyDate d1, MyDate d2)
+    {
+        if (object.ReferenceEquals(d1, null) && object.ReferenceEquals(d2, null)) // both null
+            return false;
+        else
+        {
+            if (object.ReferenceEquals(d1, null) || object.ReferenceEquals(d2, null))   //one null
+                return true;
+        }
+        //no null
+        return d1.year != d2.year;
+    }
+    public override string ToString()
+    {
+        return year.ToString();
+    }
+}
+
 public class Army
 {
     static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
@@ -109,7 +194,7 @@ public class Army
             destination.personal.Add(item.getPopUnit(), item);
     }
 
-    
+
 
     //public Army(Army army)
     //{
@@ -146,7 +231,7 @@ public class Army
             }
     }
     public void consume()
-    {        
+    {
         personal.ForEach((x, corps) => corps.consume(getOwner().getPlaceDejure()));
     }
     public Procent getAverageMorale()

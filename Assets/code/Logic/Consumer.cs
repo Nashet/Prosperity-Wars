@@ -15,8 +15,7 @@ public abstract class Consumer : Agent
     private readonly StorageSet consumedInMarket = new StorageSet();
     
     /// <summary>
-    /// Represents buying and/or consuming needs
-    /// 
+    /// Represents buying and/or consuming needs     
     /// </summary>
     public abstract void consumeNeeds();
     public abstract List<Storage> getRealAllNeeds();

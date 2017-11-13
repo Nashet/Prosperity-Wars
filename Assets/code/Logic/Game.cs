@@ -30,7 +30,7 @@ public class Game : ThreadedJob
 
     static internal StringBuilder threadDangerSB = new StringBuilder();
 
-    static public DateTime date = new DateTime(50, 1, 1);
+    static public MyDate date = new MyDate(0);
     static internal bool devMode = false;
     static private int mapMode;
     static private bool surrended = true;
@@ -310,27 +310,22 @@ public class Game : ThreadedJob
     }
 
     static void generateMapImage()
-    {
-        //Texture2D mapImage = new Texture2D(100, 100);
+    {                
 #if UNITY_WEBGL
         int mapSize = 20000;//30000;
         int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
+        //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
 #else
         int mapSize = 40000;
         int width = 200 + Random.Next(80);
 #endif          
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
-        //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
+        
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
-        //if (Game.devMode)
-        //    amountOfProvince = 7;
-        //else
-        //    amountOfProvince = 12 + Game.Random.Next(8);
-        //amountOfProvince = 40 + Game.Random.Next(20);
-        //amountOfProvince = 160 + Game.Random.Next(20);
+        
         amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
@@ -509,9 +504,9 @@ public class Game : ThreadedJob
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
 
-        date = date.AddYears(1);
+        date.AddTick(1);
         // strongly before PrepareForNewTick
-        Game.market.simulatePriceChangeBasingOnLastTurnDate();
+        Game.market.simulatePriceChangeBasingOnLastTurnData();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
         prepareForNewTick(); // including workforce balancing

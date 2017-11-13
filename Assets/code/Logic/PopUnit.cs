@@ -35,7 +35,7 @@ abstract public class PopUnit : Producer
 
     public Value incomeTaxPayed = new Value(0);
 
-    private readonly DateTime born;
+    private readonly MyDate born;
     private Movement movement;
     private readonly KeyVal<IEscapeTarget, int> lastEscaped = new KeyVal<IEscapeTarget, int>();
     //if add new fields make sure it's implemented in second constructor and in merge()  
@@ -107,7 +107,7 @@ abstract public class PopUnit : Producer
     protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(where)
     {
         where.allPopUnits.Add(this);
-        born = Game.date;
+        born = new MyDate(Game.date);
         population = amount;
         this.popType = popType;
         this.culture = culture;
@@ -122,7 +122,7 @@ abstract public class PopUnit : Producer
     /// </summary>    
     protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where)
     {
-        born = Game.date;
+        born = new MyDate(Game.date);
         PopListToAddToGeneralList.Add(this);
         // makeModifiers();
 

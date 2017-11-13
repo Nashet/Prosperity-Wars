@@ -40,7 +40,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     private readonly List<Country> cores = new List<Country>();
     private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
     private TerrainTypes terrain;
-    private readonly Dictionary<Mod, DateTime> modifiers = new Dictionary<Mod, DateTime>();
+    private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
 
     //empty province constructor
     public Province(string name, int iID, Color icolorID, Product resource) : base(name)
@@ -251,7 +251,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         //{
         //    if (item.Value.isDatePassed())
         //}
-        modifiers.RemoveAll((modifier, date) => date != default(DateTime) && date.isDatePassed());
+        modifiers.RemoveAll((modifier, date) => date != null && date.isDatePassed());
     }
     /// <summary>
     /// returns true if ANY of cores matches  predicate
@@ -348,15 +348,15 @@ public class Province : Name, IEscapeTarget, IHasCountry
         setBorderMaterials(false);
         if (addModifier)
             if (modifiers.ContainsKey(Mod.recentlyConquered))
-                modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
+                modifiers[Mod.recentlyConquered].set(Game.date.getNewDate(20));
             else
-                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
+                modifiers.Add(Mod.recentlyConquered, Game.date.getNewDate(20));
     }
     public int howFarFromCapital()
     {
         return 0;
     }
-    public Dictionary<Mod, DateTime> getModifiers()
+    public Dictionary<Mod, MyDate> getModifiers()
     {
         return modifiers;
     }

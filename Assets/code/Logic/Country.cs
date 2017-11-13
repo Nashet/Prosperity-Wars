@@ -22,10 +22,10 @@ public class Country : MultiSeller
     public List<Province> ownedProvinces = new List<Province>();
 
     private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-    private readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
+    private readonly Dictionary<Country, MyDate> myLastAttackDate = new Dictionary<Country, MyDate>();
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
-    
+
 
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
@@ -202,6 +202,7 @@ public class Country : MultiSeller
     {
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
+        //int howMuchCountries =3;
         int howMuchCountries = Province.allProvinces.Count / Options.ProvincesPerCountry;
         howMuchCountries += Game.Random.Next(6);
         if (howMuchCountries < 8)
@@ -313,13 +314,13 @@ public class Country : MultiSeller
     /// Little bugged - returns RANDOM badboy, not biggest
     /// </summary>
     /// <returns></returns>
-    private static DateTime DateOfisThereBadboyCountry;
+    private static MyDate DateOfIsThereBadboyCountry = new MyDate(MyDate.Never);
     private static Country BadboyCountry;
     public static Country isThereBadboyCountry()
     {
-        if (DateOfisThereBadboyCountry != Game.date)
+        if (DateOfIsThereBadboyCountry != Game.date)
         {
-            DateOfisThereBadboyCountry = Game.date;
+            DateOfIsThereBadboyCountry.set(Game.date);
             float worldStrenght = 0f;
             foreach (var item in Country.getExisting())
                 worldStrenght += item.getStregth(null);
@@ -339,12 +340,12 @@ public class Country : MultiSeller
             return false;
     }
 
-    public DateTime getLastAttackDateOn(Country country)
+    public MyDate getLastAttackDateOn(Country country)
     {
         if (myLastAttackDate.ContainsKey(country))
             return myLastAttackDate[country];
         else
-            return DateTime.MinValue;
+            return MyDate.Never;
     }
     private bool hasCores(Country country)
     {
@@ -426,7 +427,7 @@ public class Country : MultiSeller
         base.sendArmy(target, procent);
         //myLastAttackDate.AddMy(target.getCountry(), Game.date);
         if (this.myLastAttackDate.ContainsKey(target.getCountry()))
-            myLastAttackDate[target.getCountry()] = Game.date;
+            myLastAttackDate[target.getCountry()].set(Game.date);
         else
             myLastAttackDate.Add(target.getCountry(), Game.date);
 
@@ -852,7 +853,7 @@ public class Country : MultiSeller
         }
         else return false;
     }
-    
+
     private void tradeNonPE(bool usePlayerTradeSettings)//, int buyProductsForXDays)
     {
         // firstly, buy last tick expenses -NO, buy as set in trade sliders
@@ -861,8 +862,8 @@ public class Country : MultiSeller
         //TODO add x day buying or split buying somehow
 
         foreach (var product in Product.getAllNonAbstract())
-            if (product.isInventedBy(this))
-            {   
+            if (product.isInventedBy(this) || product == Product.Cattle)
+            {
                 Storage maxLimit;
                 Storage minLimit;
 
@@ -886,7 +887,7 @@ public class Country : MultiSeller
                     {
                         minLimit = new Storage(takenFromStorage);
                         maxLimit = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
-                    }                        
+                    }
                 }
                 var howMuchHave = countryStorageSet.getFirstStorage(product);
                 if (howMuchHave.isBiggerThan(maxLimit))
