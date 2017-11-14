@@ -110,25 +110,26 @@ public class Market : Agent//: PrimitiveStorageSet
         if (dateOfgetBought != Game.date)
         {
             //recalculate supply buffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.getExisting())
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
                 {
-                    foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.getBuyers())
-                        {
-                            //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
+                    result = 0;
+                    foreach (Country country in Country.getExisting())
+                    {
+                        foreach (Province province in country.ownedProvinces)
+                            foreach (Producer producer in province.getBuyers())
                             {
-                                Storage re = producer.getConsumedInMarket().getFirstStorage(sup.getProduct());
-                                result += re.get();
+                                //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
+                                {
+                                    Storage re = producer.getConsumedInMarket().getFirstStorage(recalculatingProduct.getProduct());
+                                    result += re.get();
+                                }
                             }
-                        }
-                    Storage countryStor = country.getConsumedInMarket().getFirstStorage(sup.getProduct());
-                    result += countryStor.get();
+                        Storage countryStor = country.getConsumedInMarket().getFirstStorage(recalculatingProduct.getProduct());
+                        result += countryStor.get();
+                    }
+                    bought.set(new Storage(recalculatingProduct.getProduct(), result));
                 }
-                bought.set(new Storage(sup.getProduct(), result));
-            }
             dateOfgetBought.set(Game.date);
         }
 
@@ -176,25 +177,26 @@ public class Market : Agent//: PrimitiveStorageSet
         if (dateOfgetTotalConsumption != Game.date)
         {
             //recalculate buffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.getExisting())
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
                 {
-                    foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.getConsumers())
-                        {
-                            //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
+                    result = 0;
+                    foreach (Country country in Country.getExisting())
+                    {
+                        foreach (Province province in country.ownedProvinces)
+                            foreach (Producer producer in province.getConsumers())
                             {
-                                var re = producer.getConsumed().getFirstStorage(sup.getProduct());
-                                result += re.get();
+                                //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
+                                {
+                                    var re = producer.getConsumed().getFirstStorage(recalculatingProduct.getProduct());
+                                    result += re.get();
+                                }
                             }
-                        }
-                    Storage countryStor = country.getConsumed().getFirstStorage(sup.getProduct());
-                    result += countryStor.get();
+                        Storage countryStor = country.getConsumed().getFirstStorage(recalculatingProduct.getProduct());
+                        result += countryStor.get();
+                    }
+                    totalConsumption.set(new Storage(recalculatingProduct.getProduct(), result));
                 }
-                totalConsumption.set(new Storage(sup.getProduct(), result));
-            }
             dateOfgetTotalConsumption.set(Game.date);
         }
 
@@ -225,17 +227,18 @@ public class Market : Agent//: PrimitiveStorageSet
         if (product.isAbstract())
         {
             foreach (var substitute in product.getSubstitutes())
-            {
-                var DSB = getDemandSupplyBalance(substitute);
-                if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
-                    return true;
-            }
+                if (substitute.isTradable()) //it would be faster to. skip it Or not
+                {
+                    var DSB = getDemandSupplyBalance(substitute);
+                    if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
+                        return true;
+                }
             return false;
         }
         else
         {
             var DSB = getDemandSupplyBalance(product);
-            if (DSB != Options.MarketInfiniteDSB && DSB != Options.MarketEqualityDSB)
+            if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
                 return true;
             else
                 return false;
@@ -287,19 +290,20 @@ public class Market : Agent//: PrimitiveStorageSet
         if (dateOfgetSupplyOnMarket != Game.date)
         {
             //recalculate supply buffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.getExisting())
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
                 {
-                    foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.getProducers())
-                            if (producer.sentToMarket.isExactlySameProduct(sup.getProduct())) //sup.getProduct()
-                                result += producer.sentToMarket.get();
-                    result += country.getSentToMarket(sup.getProduct());
+                    result = 0;
+                    foreach (Country country in Country.getExisting())
+                    {
+                        foreach (Province province in country.ownedProvinces)
+                            foreach (Producer producer in province.getProducers())
+                                if (producer.sentToMarket.isExactlySameProduct(recalculatingProduct.getProduct())) //sup.getProduct()
+                                    result += producer.sentToMarket.get();
+                        result += country.getSentToMarket(recalculatingProduct.getProduct());
+                    }
+                    supplyOnMarket.set(new Storage(recalculatingProduct.getProduct(), result));
                 }
-                supplyOnMarket.set(new Storage(sup.getProduct(), result));
-            }
             dateOfgetSupplyOnMarket.set(Game.date);
         }
         return supplyOnMarket.getFirstStorage(product).get();
@@ -327,20 +331,21 @@ public class Market : Agent//: PrimitiveStorageSet
         if (dateOfgetTotalProduction != Game.date)
         {
             //recalculate Production buffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.getExisting())
-                    foreach (Province province in country.ownedProvinces)
-                    {
-                        foreach (Producer producer in province.getProducers())
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
+                {
+                    result = 0;
+                    foreach (Country country in Country.getExisting())
+                        foreach (Province province in country.ownedProvinces)
                         {
-                            if (producer.gainGoodsThisTurn.isExactlySameProduct(sup.getProduct())) //sup.getProduct()
-                                result += producer.gainGoodsThisTurn.get();
+                            foreach (Producer producer in province.getProducers())
+                            {
+                                if (producer.gainGoodsThisTurn.isExactlySameProduct(recalculatingProduct.getProduct())) //sup.getProduct()
+                                    result += producer.gainGoodsThisTurn.get();
+                            }
                         }
-                    }
-                totalProduction.set(new Storage(sup.getProduct(), result));
-            }
+                    totalProduction.set(new Storage(recalculatingProduct.getProduct(), result));
+                }
             dateOfgetTotalProduction.set(Game.date);
         }
 
@@ -452,12 +457,13 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         // assuming substitutes are sorted in cheap-expensive order
         foreach (var item in abstractProduct.getProduct().getSubstitutes())
-        {
-            Storage substitute = new Storage(item, abstractProduct);
-            // check for availability
-            if (Game.market.sentToMarket.has(substitute))
-                return substitute;
-        }
+            if (item.isTradable())
+            {
+                Storage substitute = new Storage(item, abstractProduct);
+                // check for availability
+                if (Game.market.sentToMarket.has(substitute))
+                    return substitute;
+            }
         return null;
     }
     /// <summary>
@@ -467,9 +473,10 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         // assuming substitutes are sorted in cheap-expensive order
         foreach (var item in abstractProduct.getProduct().getSubstitutes())
-        {
-            return new Storage(item, abstractProduct);
-        }
+            if (item.isTradable())
+            {
+                return new Storage(item, abstractProduct);
+            }
         return null;
     }
     /// <summary>
@@ -597,34 +604,35 @@ public class Market : Agent//: PrimitiveStorageSet
         // recalculate DSBbuffer
         {
             //Debug.Log("Recalculation of DSB started");
-            foreach (Storage stor in marketPrice)
-            {
-                getProductionTotal(product, false); // for pre-turn initialization
-                getTotalConsumption(product, false);// for pre-turn initialization
-                float supply = getMarketSupply(stor.getProduct(), false);
-                float demand = getBouthOnMarket(stor.getProduct(), false);
-                //if (demand == 0) getTotalConsumption(stor.getProduct());
-                //else
-                ////if (demand == 0) balance = 1f;
-                ////else
-                //if (supply == 0) balance = 2f;
-                //else
+            foreach (Storage nextProduct in marketPrice)
+                if (nextProduct.getProduct().isTradable())
+                {
+                    getProductionTotal(product, false); // for pre-turn initialization
+                    getTotalConsumption(product, false);// for pre-turn initialization
+                    float supply = getMarketSupply(nextProduct.getProduct(), false);
+                    float demand = getBouthOnMarket(nextProduct.getProduct(), false);
+                    //if (demand == 0) getTotalConsumption(stor.getProduct());
+                    //else
+                    ////if (demand == 0) balance = 1f;
+                    ////else
+                    //if (supply == 0) balance = 2f;
+                    //else
 
-                if (supply == 0)
-                    balance = Options.MarketInfiniteDSB;
-                else
-                    balance = demand / supply;
+                    if (supply == 0)
+                        balance = Options.MarketInfiniteDSB;
+                    else
+                        balance = demand / supply;
 
-                //if (balance > 1f) balance = 1f;
-                //&& supply == 0
-                if (demand == 0)
-                    balance = Options.MarketZeroDSB; // otherwise - furniture bag
-                                                     // else
-                if (supply == 0)
-                    balance = Options.MarketInfiniteDSB;
+                    //if (balance > 1f) balance = 1f;
+                    //&& supply == 0
+                    if (demand == 0)
+                        balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                                                         // else
+                    if (supply == 0)
+                        balance = Options.MarketInfiniteDSB;
 
-                DSBbuffer.set(new Storage(stor.getProduct(), balance));
-            }
+                    DSBbuffer.set(new Storage(nextProduct.getProduct(), balance));
+                }
             dateOfDSB.set(Game.date);
         }
         Storage tmp = DSBbuffer.getFirstStorage(product);
@@ -690,12 +698,13 @@ public class Market : Agent//: PrimitiveStorageSet
         float highChangingSpeed = 0.04f;//%
         float antiBalance;
         foreach (Storage price in this.marketPrice)
-            if (!price.isExactlySameProduct(Product.Gold))
-            {                   
+            //if (!price.isExactlySameProduct(Product.Gold))
+            if (price.getProduct().isTradable())
+            {
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  
                 /// Result fewer 1 mean supply is higher, price should go down              
-               
+
                 //if (balance < 1f) antiBalance = 1 / balance;
                 //else antiBalance = balance;
                 priceChangeSpeed = 0;

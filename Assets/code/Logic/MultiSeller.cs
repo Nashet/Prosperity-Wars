@@ -21,19 +21,20 @@ public abstract class MultiSeller : Staff, IHasStatistics
     public MultiSeller(Country place) : base(place)
     {
         foreach (var item in Product.getAllNonAbstract())
-        {
-            if (item == Product.Grain)
+            if (item != Product.Gold)
             {
-                buyIfLessLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
-                sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
+                if (item == Product.Grain)
+                {
+                    buyIfLessLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
+                    sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
+                }
+                else
+                {
+                    buyIfLessLimits.Add(item, new Storage(item, Value.Zero));
+                    sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
+                }
+                producedTotal.Add(item, new Value(0f));
             }
-            else
-            {
-                buyIfLessLimits.Add(item, new Storage(item, Value.Zero));
-                sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
-            }
-            producedTotal.Add(item, new Value(0f));
-        }
     }
     //bool wantsToBuy?
     /// <summary>

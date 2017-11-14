@@ -31,7 +31,7 @@ public class Product : Name
         Electronics = new Product("Electronics", 1f, type.consumerProduct);
     // abstract products
     internal static readonly Product Food, Sugar, Fibers, Fuel;
-        
+
     static Product()
     {
         Gold = new Product("Gold", 4f, Color.yellow, type.industrial);
@@ -75,9 +75,10 @@ public class Product : Name
         Fuel = new Product("Fuel", 0.04f, new List<Product> { Wood, Coal, Oil }, type.industrial);
 
         foreach (var item in getAllNonAbstract())
-        {
-            Game.market.SetDefaultPrice(item, item.defaultPrice.get());
-        }
+            if (item != Product.Gold)
+            {
+                Game.market.SetDefaultPrice(item, item.defaultPrice.get());
+            }
     }
     /// <summary>
     /// General constructor
@@ -136,13 +137,13 @@ public class Product : Name
     /// <summary>
     /// Products go in industrial-military-consumer order
     /// </summary>    
-    public static IEnumerable<Product> getAllNonAbstractInPEOrder(Country country)
+    public static IEnumerable<Product> getAllNonAbstractTradableInPEOrder(Country country)
     {
-        foreach (var item in getAllIndustrialProducts(country))
+        foreach (var item in getAllSpecificProductsTradable(x=>x.isIndustrial()))
             yield return item;
-        foreach (var item in getAllMilitaryProducts(country))
+        foreach (var item in getAllSpecificProductsTradable(x=>x.isMilitary()))
             yield return item;
-        foreach (var item in getAllConsumerProducts(country))
+        foreach (var item in getAllSpecificProductsTradable(x=>x.isConsumerProduct()))
             yield return item;
     }
     public static IEnumerable<Product> getAll()
@@ -150,23 +151,48 @@ public class Product : Name
         foreach (var item in allProducts)
             yield return item;
     }
-    public static IEnumerable<Product> getAllMilitaryProducts(Country country)
+    public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
     {
         foreach (var item in getAllNonAbstract())
-            if (item.isMilitary() && item.isInventedBy(country))
+            if (selector(item) && item.isInventedBy(country))
                 yield return item;
     }
-    public static IEnumerable<Product> getAllIndustrialProducts(Country country)
+    public static IEnumerable<Product> getAllSpecificProductsTradable(Func<Product, bool> selector)
     {
         foreach (var item in getAllNonAbstract())
-            if (item.isIndustrial() && item.isInventedBy(country))
+            if (selector(item) && item.isTradable())
                 yield return item;
     }
-    public static IEnumerable<Product> getAllConsumerProducts(Country country)
+    //public static IEnumerable<Product> getAllMilitaryProductsInvented(Country country)
+    //{
+    //    foreach (var item in getAllNonAbstract())
+    //        if (item.isMilitary() && item != Product.Gold && item.isInventedBy(country))
+    //            yield return item;
+    //}
+    //public static IEnumerable<Product> getAllMilitaryProductsTradable()
+    //{
+    //    foreach (var item in getAllNonAbstract())
+    //        if (item.isMilitary() && item.isTradable())
+    //            yield return item;
+    //}
+    //public static IEnumerable<Product> getAllIndustrialProducts(Country country)
+    //{
+    //    foreach (var item in getAllNonAbstract())
+    //        if (item.isIndustrial() && item.isInventedBy(country))
+    //            yield return item;
+    //}
+    //public static IEnumerable<Product> getAllConsumerProducts(Country country)
+    //{
+    //    foreach (var item in getAllNonAbstract())
+    //        if (item.isConsumerProduct() && item.isInventedBy(country))
+    //            yield return item;
+    //}
+    public IEnumerable<Product> getSubstitutes()
     {
-        foreach (var item in getAllNonAbstract())
-            if (item.isConsumerProduct() && item.isInventedBy(country))
-                yield return item;
+        foreach (var item in substitutes)
+        {
+            yield return item;
+        }
     }
     internal static Product getRandomResource(bool ignoreGold)
     {
@@ -177,6 +203,8 @@ public class Product : Name
     public static void sortSubstitutes()
     {
         foreach (var item in getAllAbstract())
+        //if (item.isTradable()) 
+        // Abstract are always invented and not gold
         {
             item.substitutes.Sort(CostOrder);
         }
@@ -189,22 +217,13 @@ public class Product : Name
         return sumX.CompareTo(sumY);
         //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
     }
-    public IEnumerable<Product> getSubstitutes()
-    {
-        //if (!isAbstract())
-        //    return null;
-        //else
-        //return substitutes;
-        foreach (var item in substitutes)
-        {
-            yield return item;
-        }
-    }
+
 
     public bool isTradable()
     {
-        return this != Product.Gold;
+        return this != Product.Gold && isInventedByAnyOne();
     }
+    
     public bool isAbstract()
     {
         return _isAbstract;
@@ -247,6 +266,10 @@ public class Product : Name
 
     public bool isInventedByAnyOne()
     {
+        // including dead countries. Because dead country could organize production
+        //of some freshly invented product
+        if (isAbstract())
+            return true;
         foreach (var country in Country.allCountries)
             if (this.isInventedBy(country))
                 return true;
@@ -254,9 +277,10 @@ public class Product : Name
     }
     public bool isInventedBy(Country country)
     {
+        if (isAbstract())
+            return true;
         if (
-            (
-            (this == Metal || this == MetalOre || this == ColdArms) && !country.isInvented(Invention.Metal))
+            ((this == Metal || this == MetalOre || this == ColdArms) && !country.isInvented(Invention.Metal))
             || (!country.isInvented(Invention.SteamPower) && (this == Machinery || this == Cement))
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))

@@ -17,7 +17,7 @@ public class TradeWindowTable : MyTable
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
-   
+
     override protected void AddButtons()
     {
         int counter = 0;
@@ -41,8 +41,7 @@ public class TradeWindowTable : MyTable
         ////Adding price Change
         //AddButton(null.loyalty.ToString(), null);
         foreach (Product product in Product.getAllNonAbstract())
-        {               
-            if (product != Product.Gold && product.isInventedByAnyOne() )// && !product.isAbstract())
+            if (product.isTradable())// && !product.isAbstract())
             {
                 // Adding product name 
                 AddButton(product.getName(), product);
@@ -70,7 +69,7 @@ public class TradeWindowTable : MyTable
                 counter++;
                 //contentPanel.r
             }
-        }
+
 
     }
 }

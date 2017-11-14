@@ -42,10 +42,10 @@ public class TradeWindowCountryMarketTable : MyTable
         {
             var needs = Game.Player.getRealAllNeeds();
             foreach (var product in Product.getAll())
-            //foreach (var item in Game.market.pr)
-            {   
+                //foreach (var item in Game.market.pr)
+
                 // Product product = next.getProduct();
-                if ( product != Product.Gold && product.isInventedByAnyOne())
+                if (product.isTradable())
                 {
                     var storage = Game.Player.countryStorageSet.getFirstStorage(product);
                     // Adding product name 
@@ -78,7 +78,7 @@ public class TradeWindowCountryMarketTable : MyTable
                     counter++;
                     //contentPanel.r
                 }
-            }
+
         }
     }
 }

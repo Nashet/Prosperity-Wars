@@ -342,8 +342,9 @@ public class PricePool
     internal PricePool()
     {
         foreach (var product in Product.getAllNonAbstract())
-            for (int i = 0; i < lenght; i++)
-                this.addData(product, new Value(0f));
+            if (product != Product.Gold)
+                for (int i = 0; i < lenght; i++)
+                    this.addData(product, new Value(0f));
     }
     internal void addData(Product product, Value indata)
     {
@@ -430,7 +431,7 @@ public static class UtilsMy
         value.Length = 0;
     }
 
-    
+
     public static string FirstLetterToUpper(string str)
     {
         if (str == null)
@@ -515,7 +516,7 @@ public static class UtilsMy
         return textObject;
     }
 
-    
+
 }
 
 

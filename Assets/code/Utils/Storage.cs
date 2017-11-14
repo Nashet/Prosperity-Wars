@@ -376,7 +376,7 @@ public class Storage : Value
     {
         return this.getProduct() == anotherStorage.getProduct();
     }
-    /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>    
+    /// <summary> Returns true only if products exactly same. Does not count substitutes</summary>    
     public bool isExactlySameProduct(Product anotherProduct)
     {
         return this.getProduct() == anotherProduct;

@@ -693,13 +693,13 @@ public class Country : MultiSeller
             if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                 && province.getUnemployedWorkers() > 0)
             {
-                var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllIndustrialProducts(this), province);
+                var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isIndustrial(),this), province);
                 if (industrialProduct == null)
                 {
-                    var militaryProduct = getMostDeficitProductAllowedHere(Product.getAllMilitaryProducts(this), province);
+                    var militaryProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isMilitary(), this), province);
                     if (militaryProduct == null)
                     {
-                        var consumerProduct = getMostDeficitProductAllowedHere(Product.getAllConsumerProducts(this), province);
+                        var consumerProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isConsumerProduct(), this), province);
                         if (consumerProduct != null)
                         {
                             //if there is no enough some consumer product - build it
@@ -862,7 +862,8 @@ public class Country : MultiSeller
         //TODO add x day buying or split buying somehow
 
         foreach (var product in Product.getAllNonAbstract())
-            if (product.isInventedBy(this) || product == Product.Cattle)
+            //if (product.isInventedBy(this) || product == Product.Cattle)
+            if (product.isTradable())
             {
                 Storage maxLimit;
                 Storage minLimit;
@@ -911,7 +912,7 @@ public class Country : MultiSeller
     {
         // planned economy buying
         //1 day buying
-        foreach (var product in Product.getAllNonAbstractInPEOrder(this))
+        foreach (var product in Product.getAllNonAbstractTradableInPEOrder(this))
         //if (product.isInvented(this)) // already checked
         //foreach (var currentStorage in countryStorageSet)
         {
@@ -928,7 +929,7 @@ public class Country : MultiSeller
         }
         // x day buying +sells
         //foreach (var currentStorage in countryStorageSet)
-        foreach (var product in Product.getAllNonAbstractInPEOrder(this))
+        foreach (var product in Product.getAllNonAbstractTradableInPEOrder(this))
         {
             var takenFromStorage = new Storage(countryStorageSet.used.getFirstStorage(product));
             Storage desiredMinimum;

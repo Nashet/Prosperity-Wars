@@ -19,7 +19,7 @@ public class FactoryType
     /// <summary>Per 1 level upgrade</summary>
     public readonly StorageSet upgradeResourceLowTier;
     public readonly StorageSet upgradeResourceMediumTier;
-    public readonly StorageSet upgradeResourceHighTier;    
+    public readonly StorageSet upgradeResourceHighTier;
 
     //internal ConditionsList conditionsBuild;
     internal Condition enoughMoneyOrResourcesToBuild;
@@ -117,7 +117,7 @@ public class FactoryType
         resourceInput.set(new Storage(Product.Machinery, 1f));
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
 
-        resourceInput = new StorageSet();        
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Oil, 1f));
         resourceInput.set(new Storage(Product.Rubber, 1f));
@@ -227,7 +227,7 @@ public class FactoryType
     }
     internal bool isManufacture()
     {
-        return  !isResourceGathering() && this != Barnyard;
+        return !isResourceGathering() && this != Barnyard;
     }
     internal bool isShaft()
     {
@@ -272,10 +272,11 @@ public class FactoryType
         if (hasInput())
         {
             foreach (Storage inputProduct in resourceInput)
-                if (!Game.market.isAvailable(inputProduct.getProduct())                 
-                //if (!Game.market.sentToMarket.has(inputProduct)
-                    || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
-                    return new Value(0);
+                if (!Game.market.isAvailable(inputProduct.getProduct()))
+                    return new Value(0);// inputs are unavailable
+            //if (Game.market.getBouthOnMarket(basicProduction.getProduct(), false) == 0f)
+            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+                return new Value(0); // no demand for result product
             Value outCome = Game.market.getCost(resourceInput);
             return income.subtractOutside(outCome, false);
         }
@@ -298,7 +299,7 @@ public class FactoryType
     //        return false;
     //    return true;
     //}
-    internal bool canBuildNewFactory(Province where )
+    internal bool canBuildNewFactory(Province where)
     {
         if (where.hasFactory(this))
             return false;
@@ -314,7 +315,7 @@ public class FactoryType
     {
         if (!where.hasFactory(this))
             return false;
-        var factory = where.findFactory(this);        
+        var factory = where.findFactory(this);
         if (factory.canUpgrade())
             return true;
         else
