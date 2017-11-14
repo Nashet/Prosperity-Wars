@@ -45,7 +45,7 @@ public class TradeWindowCountryMarketTable : MyTable
             //foreach (var item in Game.market.pr)
             {   
                 // Product product = next.getProduct();
-                if (product == Product.Cattle || product != Product.Gold && product.isInventedByAnyOne())
+                if ( product != Product.Gold && product.isInventedByAnyOne())
                 {
                     var storage = Game.Player.countryStorageSet.getFirstStorage(product);
                     // Adding product name 

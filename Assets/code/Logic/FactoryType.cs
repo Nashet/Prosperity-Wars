@@ -250,7 +250,7 @@ public class FactoryType
         KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
         foreach (Factory factory in province.allFactories)
         {
-            if (province.canUpgradeFactory(factory.getType()))
+            if (factory.getType().canUpgradeFactory(province))
             {
                 float profit = factory.getProfit();
                 if (profit > result.Value)
@@ -286,6 +286,39 @@ public class FactoryType
     {
         return Procent.makeProcent(getPossibleProfit(province), getBuildCost());
     }
+    //internal bool canBuildNewFactory(FactoryType type)
+    //{
+    //    if (HaveFactory(type))
+    //        return false;
+    //    if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
+    //        || !type.basicProduction.getProduct().isInventedBy(getCountry())
+    //        || type.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
+    //        || (type.basicProduction.getProduct() == Product.Cattle && !getCountry().isInvented(Invention.Domestication))
+    //        )
+    //        return false;
+    //    return true;
+    //}
+    internal bool canBuildNewFactory(Province where )
+    {
+        if (where.hasFactory(this))
+            return false;
+        if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
+            || !basicProduction.getProduct().isInventedBy(where.getCountry())
+            || isManufacture() && !where.getCountry().isInvented(Invention.Manufactories)
+            || (basicProduction.getProduct() == Product.Cattle && !where.getCountry().isInvented(Invention.Domestication))
+            )
+            return false;
+        return true;
+    }
+    internal bool canUpgradeFactory(Province where)
+    {
+        if (!where.hasFactory(this))
+            return false;
+        var factory = where.findFactory(this);        
+        if (factory.canUpgrade())
+            return true;
+        else
+            return false;
 
-    
+    }
 }

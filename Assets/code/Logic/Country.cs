@@ -673,7 +673,7 @@ public class Country : MultiSeller
 
                 var proposition = FactoryType.whoCanProduce(item);
                 if (proposition != null)
-                    if (province.canBuildNewFactory(proposition) || province.canUpgradeFactory(proposition))
+                    if (proposition.canBuildNewFactory(province) || proposition.canUpgradeFactory(province))
                     {
                         var found = countryStorageSet.getFirstStorage(item);
                         if (minFound == null || found.isSmallerThan(minFound))
@@ -704,7 +704,7 @@ public class Country : MultiSeller
                         {
                             //if there is no enough some consumer product - build it
                             var proposition = FactoryType.whoCanProduce(consumerProduct);
-                            if (province.canBuildNewFactory(proposition))
+                            if (proposition.canBuildNewFactory(province))
                                 buildIfCanPE(proposition, province);
                             else
                             {
@@ -719,7 +719,7 @@ public class Country : MultiSeller
                     {
                         //if there is no enough some military product - build it
                         var proposition = FactoryType.whoCanProduce(militaryProduct);
-                        if (province.canBuildNewFactory(proposition))
+                        if (proposition.canBuildNewFactory(province))
                             buildIfCanPE(proposition, province);
                         else
                         {
@@ -733,7 +733,7 @@ public class Country : MultiSeller
                 {
                     //if there is no enough some industrial product - build it
                     var proposition = FactoryType.whoCanProduce(industrialProduct);
-                    if (province.canBuildNewFactory(proposition))
+                    if (proposition.canBuildNewFactory(province))
                         buildIfCanPE(proposition, province);
                     else
                     {

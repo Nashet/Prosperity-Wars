@@ -707,9 +707,9 @@ public class Province : Name, IEscapeTarget, IHasCountry
     internal List<FactoryType> whatFactoriesCouldBeBuild()
     {
         List<FactoryType> result = new List<FactoryType>();
-        foreach (FactoryType ft in FactoryType.allTypes)
-            if (canBuildNewFactory(ft))
-                result.Add(ft);
+        foreach (FactoryType type in FactoryType.allTypes)
+            if (type.canBuildNewFactory(this))
+                result.Add(type);
         return result;
     }
 
@@ -717,36 +717,9 @@ public class Province : Name, IEscapeTarget, IHasCountry
     /// check type for null outside
     /// </summary>
 
-    internal bool canBuildNewFactory(FactoryType type)
-    {
-        if (HaveFactory(type))
-            return false;
-        if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
-            || !type.basicProduction.getProduct().isInventedBy(getCountry())
-            || type.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
-            )
-            return false;
-        return true;
-    }
-    internal bool canUpgradeFactory(FactoryType type)
-    {
-        if (!HaveFactory(type))
-            return false;
-        var factory = findFactory(type);
-
-        // if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource)
-        //     return false;
-        //if (factory.isUpgrading() || factory.isBuilding()|| !factory.isWorking())
-        //    return false;        
-        //else
-        //    return true;
-        if (factory.canUpgrade())
-            return true;
-        else
-            return false;
-
-    }
-    internal bool HaveFactory(FactoryType type)
+    
+    
+    internal bool hasFactory(FactoryType type)
     {
         foreach (Factory f in allFactories)
             if (f.getType() == type)

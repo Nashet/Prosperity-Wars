@@ -72,9 +72,9 @@ public class Tribesmen : CattleGetter
         
         if (producedAmount.isNotZero())
         {
-            storage.add(producedAmount);
-            calcStatistics();
+            storage.add(producedAmount);            
             gainGoodsThisTurn.set(producedAmount);
+            calcStatistics();
         }
     }
     internal override bool canTrade()
@@ -481,7 +481,7 @@ public class Capitalists : GrainGetter
             if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(getProvince());
-                if (proposition != null && getProvince().canBuildNewFactory(proposition) &&
+                if (proposition != null && proposition.canBuildNewFactory(getProvince()) &&
                     (getProvince().getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || getProvince().getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
                     Value buildCost = Game.market.getCost(proposition.getBuildNeeds());

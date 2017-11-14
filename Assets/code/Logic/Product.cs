@@ -261,7 +261,7 @@ public class Product : Name
             || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
             || (this == Firearms && !country.isInvented(Invention.Firearms))
             || (this == Coal && !country.isInvented(Invention.Coal))
-            || (this == Cattle && !country.isInvented(Invention.Domestication))
+            //|| (this == Cattle && !country.isInvented(Invention.Domestication))
             || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == MotorFuel || this == Rubber || this == Cars))
             || (!country.isInvented(Invention.Tanks) && this == Tanks)
             || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
