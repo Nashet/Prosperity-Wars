@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ using UnityEngine;
 /// Represents anyone who can produce, store and sell product (1 product)
 /// also linked to Province
 /// </summary>
-public abstract class Producer : Consumer
+public abstract class Producer : Consumer, Seller
 {
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     public Storage gainGoodsThisTurn;
@@ -93,6 +94,12 @@ public abstract class Producer : Consumer
     {
         getConsumed().add(what);
         storage.subtract(what);
+    }
+
+    public float getSentToMarket(Product product)
+    {
+
+        throw new NotImplementedException();
     }
 }
 

@@ -40,8 +40,8 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
     }
     private void HandleClick()
     {
-
-
+        if (link == null)
+            return;
         if (link is Factory)
         {
             MainCamera.factoryPanel.Show((Factory)link);
@@ -59,8 +59,9 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
         }
         else if (link is Storage)
         {
-            MainCamera.tradeWindow.selectProduct((link as Storage).getProduct());
-            
+            var storage = link as Storage;
+            if (!storage.isAbstractProduct())
+                MainCamera.tradeWindow.selectProduct((storage).getProduct());
         }
         else if (link is Invention)
         {

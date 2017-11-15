@@ -102,7 +102,7 @@ public class StorageSet
     /// Do checks outside
     /// </summary>   
     public bool send(StorageSet whom, StorageSet what)
-    {           
+    {
         return send(whom, what.getContainer());
     }
     /// <summary>
@@ -255,9 +255,19 @@ public class StorageSet
     {
         return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());
     }
-    /// <summary>
-    ///  Universal search for storages
-    /// </summary>       
+    /// <summary> Assuming product is abstract product</summary>       
+    public Storage getTotal(Product product)
+    {
+        Value res = new Value(0f);
+        foreach (var item in this)
+            if (item.getProduct().isSubstituteFor(product))
+            {
+                res.add(item);
+            }
+        return new Storage(product, res);
+    }
+
+    /// <summary>Universal search for storages</summary>       
     private Storage getStorage(Product what,
        Func<IEnumerable<Storage>, Func<Storage, float>, Storage> selectorMethod,
        Func<Storage, float> selector)
@@ -372,7 +382,7 @@ public class StorageSet
             this.set(stor);
         // SetZero();
     }
-        
+
 
     internal float sum()
     {

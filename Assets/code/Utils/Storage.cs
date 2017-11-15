@@ -250,6 +250,10 @@ public class Storage : Value
     {
         return product;
     }
+    public string ToStringWithoutSubstitutes()
+    {
+        return get() + " " + getProduct().ToStringWithoutSubstitutes();
+    }
     override public string ToString()
     {
         return get() + " " + getProduct();

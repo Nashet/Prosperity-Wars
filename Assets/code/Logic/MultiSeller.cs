@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+interface Seller
+{
+    float getSentToMarket(Product product);
+}
 /// <summary>
 /// Had to be class representing ability to sell more than 1 product
 /// but actually it contains statistics for Country
 /// </summary>
-public abstract class MultiSeller : Staff, IHasStatistics
+public abstract class MultiSeller : Staff, IHasStatistics, Seller
 {
     public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
     private readonly StorageSet sentToMarket = new StorageSet();
@@ -74,10 +78,23 @@ public abstract class MultiSeller : Staff, IHasStatistics
         //foreach (var item in soldByGovernment)
         //    item.Value.set(Value.Zero);              
     }
+
     public float getSentToMarket(Product product)
     {
         return sentToMarket.getFirstStorage(product).get();
     }
+    /// <summary> Assuming product is abstract product</summary>
+    public Storage getSentToMarketIncludingSubstituts(Product product)
+    {
+        var res = new Value(0f);
+        foreach (var item in product.getSubstitutes())
+            if (item.isTradable())
+            {
+                res.add(sentToMarket.getFirstStorage(item));
+            }
+        return new Storage(product, res);
+    }
+
     /// <summary>
     /// Do checks outside
     /// </summary>    
@@ -101,11 +118,11 @@ public abstract class MultiSeller : Staff, IHasStatistics
                 Value cost = Game.market.getCost(realSold);
 
                 //returning back unsold product
-                if (sent.isBiggerThan(realSold))
-                {
-                    var unSold = sent.subtractOutside(realSold);
-                    countryStorageSet.add(unSold);
-                }
+                //if (sent.isBiggerThan(realSold))
+                //{
+                //    var unSold = sent.subtractOutside(realSold);
+                //    countryStorageSet.add(unSold);
+                //}
 
 
                 if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
@@ -124,5 +141,20 @@ public abstract class MultiSeller : Staff, IHasStatistics
     public Value getProducedTotal(Product product)
     {
         return producedTotal[product];
+    }
+    /// <summary> Assuming product is abstract product</summary>
+    public Value getProducedTotalIncludingSubstitutes(Product product)
+    {
+        var res = new Value(0f);
+        foreach (var item in product.getSubstitutes())
+            if (item.isTradable())
+            {
+                res.add(producedTotal[item]);
+            }
+        return new Storage(product, res);
+    }
+    public Procent getWorldProductionShare(Product product)
+    {
+        return Procent.makeProcent(getProducedTotal(product).get(), Game.market.getProductionTotal(product, true));
     }
 }

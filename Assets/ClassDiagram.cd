@@ -26,7 +26,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ABIAgBUCAgSIABCBQCELABABSQACEQAEgEQAQAAAACA=</HashCode>
+      <HashCode>ABIAgBUCAgSIABCBQCEKABgBSQACEQAEgEAAQAAAACA=</HashCode>
       <FileName>Assets\code\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -37,9 +37,10 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAAAAQAEABAAAAAABAAAAAAAIAAEACAAAgCAAAAAAA=</HashCode>
+      <HashCode>AEAAAAQAEABAAAAAABAAAAAAAIAAEACAAAgCAQAAAAA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Staff">
     <Position X="13" Y="3.25" Width="1.5" />
@@ -126,14 +127,14 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>mMACwI8o6Lj2hgrOrJrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
+      <HashCode>mMACwA8o6Lj2hgrOrJrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
       <FileName>Assets\code\Logic\Country.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MultiSeller" Collapsed="true">
     <Position X="11.75" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAABAAAAABAAAQAIBAAAABAAIAAEAAEAAgCAAgAgEA=</HashCode>
+      <HashCode>AAAABAAAAABAAAaAIBAAAABAAIAAEAAECAgSAAgAgEA=</HashCode>
       <FileName>Assets\code\Logic\MultiSeller.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

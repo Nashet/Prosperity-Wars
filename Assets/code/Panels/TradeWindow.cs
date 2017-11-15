@@ -10,6 +10,7 @@ public class TradeWindow : DragPanel
     public ScrollRect table;
     public Text txtBuyIfLessThan, txtSaleIfMoreThan;
     public Slider slBuyIfLessThan, slSellIfMoreThan;
+    public GameObject tradeSliders;
 
     private Product selectedProduct;
 
@@ -29,15 +30,17 @@ public class TradeWindow : DragPanel
             panelRectTransform.SetAsLastSibling();
         if (selectedProduct == null)
             selectProduct(Product.Fish);
-
+       // refresh(); don't do it - recursion
     }
 
 
     public void refresh()
     {
-
+        
+        tradeSliders.SetActive(!Game.Player.isAI());
         hide();
         show(false);
+
     }
 
     public void refreshTradeLimits()
@@ -50,14 +53,16 @@ public class TradeWindow : DragPanel
     public void onslBuyIfLessThanChange()
     {
         if (slBuyIfLessThan.value > slSellIfMoreThan.value)
-            slBuyIfLessThan.value = slSellIfMoreThan.value;
+            //slBuyIfLessThan.value = slSellIfMoreThan.value;
+            slSellIfMoreThan.value = slBuyIfLessThan.value;
         Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.value);
         refreshTradeLimits();
     }
     public void onslSellIfMoreThanChange()
     {
         if (slBuyIfLessThan.value > slSellIfMoreThan.value)
-            slSellIfMoreThan.value = slBuyIfLessThan.value;
+            //slSellIfMoreThan.value = slBuyIfLessThan.value;
+            slBuyIfLessThan.value = slSellIfMoreThan.value;
         Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.value);
         refreshTradeLimits();
     }

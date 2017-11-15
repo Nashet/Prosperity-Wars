@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class TradeWindowCountryMarketTable : MyTable
 {
@@ -15,16 +16,15 @@ public class TradeWindowCountryMarketTable : MyTable
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
-    override protected void AddButtons()
+    private void addHeader()
     {
-        int counter = 0;
-
         // Adding product name 
         AddButton("Product");
+
         ////Adding production
         AddButton("Gov. storage");
 
-        AddButton("Gov. needs");
+        AddButton("Mil. needs");
 
         AddButton("Production tot.");
 
@@ -34,51 +34,80 @@ public class TradeWindowCountryMarketTable : MyTable
 
         AddButton("Sold by gov.");
 
-        ////Adding price
-        //AddButton("Price");
-        ////Adding price Change
-        //AddButton(null.loyalty.ToString(), null);
+    }
+    override protected void AddButtons()
+    {
+        int counter = 0;
+
+        addHeader();
+
         if (Game.Player != null)
         {
             var needs = Game.Player.getRealAllNeeds();
             foreach (var product in Product.getAll())
                 //foreach (var item in Game.market.pr)
 
-                // Product product = next.getProduct();
                 if (product.isTradable())
                 {
-                    var storage = Game.Player.countryStorageSet.getFirstStorage(product);
+
                     // Adding product name 
-                    AddButton(product.getName(), storage);
+                    if (product.isAbstract())
+                    {
+                        AddButton(product.getName() + " total",null, ()=>product.getSubstitutes().ToList().getString(" or "));
 
-                    ////Adding storage amount
-                    AddButton(storage.ToString(), storage);
+                        ////Adding total amount
+                        AddButton(Game.Player.countryStorageSet.getTotal(product).get().ToString());
 
-                    ////Adding needs
-                    AddButton(needs.getStorage(product).ToString(), storage);
+                        ////Adding mil. needs
+                        //AddButton(needs.getStorage(product).ToStringWithoutSubstitutes());
+                        AddButton(needs.getStorage(product).get().ToString());
 
-                    ////Adding Produced
-                    if (product.isAbstract())//|| !product.isTradable()
-                        AddButton("-", storage);
+                        ////Adding Produced total
+                        AddButton(Game.Player.getProducedTotalIncludingSubstitutes(product).get().ToString()); 
+                        //, null , () => Game.Player.getWorldProductionShare(product) + " of world production");
+                        // can't add statistic about share of abstract product due to Market.GetProduction can't in abstract products
+
+                        ////Adding used by gov.
+                        AddButton(Game.Player.countryStorageSet.used.getTotal(product).get().ToString());
+
+                        ////Adding bought
+                        AddButton(Game.Player.getConsumedInMarket().getTotal(product).get().ToString());
+
+                        ////Adding Sold
+                        //AddButton(Game.Player.getSentToMarketIncludingSubstituts(product).get().ToString());
+                        AddButton("-");
+                    }
                     else
-                        AddButton(Game.Player.getProducedTotal(product).ToString(), storage);
+                    {
+                        var storage = Game.Player.countryStorageSet.getFirstStorage(product);
 
-                    ////Adding taken away
-                    AddButton(Game.Player.countryStorageSet.used.getFirstStorage(product).ToString(), storage);
+                        // Adding product name 
+                        AddButton(product.getName(), storage);
 
-                    ////Adding bought
-                    AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).ToString(), storage);
+                        ////Adding storage amount
+                        AddButton(storage.get().ToString(), storage);
 
-                    ////Adding Sold
-                    if (product.isAbstract())//|| !product.isTradable()
-                        AddButton("-", storage);
-                    else
-                        AddButton(Game.Player.getSentToMarket(product).ToString(), storage);
+                        ////Adding mil. needs
+                        AddButton(needs.getStorage(product).get().ToString(), storage);
+
+                        ////Adding Produced
+                        AddButton(Game.Player.getProducedTotal(product).get().ToString(), storage, () => Game.Player.getWorldProductionShare(product) + " of world production");
+
+                        ////Adding used by gov.
+                        AddButton(Game.Player.countryStorageSet.used.getFirstStorage(product).get().ToString(), storage);
+
+                        ////Adding bought
+                        AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).get().ToString(), storage);
+
+
+                        ////Adding Sold
+                        AddButton((Game.Player.getSentToMarket(product)* Game.market.getDemandSupplyBalance(product)).ToString(), storage);
+                    }
 
                     counter++;
                     //contentPanel.r
                 }
-
         }
+        addHeader();
     }
 }

@@ -86,21 +86,20 @@ public class Market : Agent//: PrimitiveStorageSet
         return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
     }
 
+
     internal float getBouthOnMarket(Product product, bool takeThisTurnData)
     {
         float result = 0f;
         if (takeThisTurnData)
         {
+            // recalculate only 1 product
             foreach (Country country in Country.getExisting())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.getBuyers())
                     {
-                        //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
-                        {
-                            Storage re = producer.getConsumedInMarket().getFirstStorage(product);
-                            result += re.get();
-                        }
+                        Storage re = producer.getConsumedInMarket().getFirstStorage(product);
+                        result += re.get();
                     }
                 Storage countryStor = country.getConsumedInMarket().getFirstStorage(product);
                 result += countryStor.get();
@@ -109,7 +108,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         if (dateOfgetBought != Game.date)
         {
-            //recalculate supply buffer
+            //recalculate all products
             foreach (Storage recalculatingProduct in marketPrice)
                 if (recalculatingProduct.getProduct().isTradable())
                 {
@@ -119,11 +118,8 @@ public class Market : Agent//: PrimitiveStorageSet
                         foreach (Province province in country.ownedProvinces)
                             foreach (Producer producer in province.getBuyers())
                             {
-                                //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
-                                {
-                                    Storage re = producer.getConsumedInMarket().getFirstStorage(recalculatingProduct.getProduct());
-                                    result += re.get();
-                                }
+                                Storage re = producer.getConsumedInMarket().getFirstStorage(recalculatingProduct.getProduct());
+                                result += re.get();
                             }
                         Storage countryStor = country.getConsumedInMarket().getFirstStorage(recalculatingProduct.getProduct());
                         result += countryStor.get();
@@ -152,7 +148,7 @@ public class Market : Agent//: PrimitiveStorageSet
         //    }
         //return result;
     }
-
+    
     internal float getTotalConsumption(Product product, bool takeThisTurnData)
     {
         float result = 0f;
@@ -266,7 +262,22 @@ public class Market : Agent//: PrimitiveStorageSet
     //    return result;
     //}
 
-
+    private Storage recalculateProduct(Product product, Func<Consumer, StorageSet> selector)
+    {
+        Storage result = new Storage(product);
+        foreach (Country country in Country.getExisting())
+        {
+            foreach (Province province in country.ownedProvinces)
+                foreach (Producer producer in province.getBuyers())
+                {
+                    Storage re = selector(producer).getFirstStorage(product);
+                    result.add(re);
+                }
+            Storage countryStor = selector(country).getFirstStorage(product);
+            result.add(countryStor);
+        }
+        return result;
+    }
 
     /// <summary>
     /// Only goods sent to market
