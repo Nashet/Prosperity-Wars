@@ -76,10 +76,10 @@ public class FactoryPanel : DragPanel//for dragging
 
             sb.Append(shownFactory.getType().name).Append(" level: ").Append(shownFactory.getLevel());  
             sb.Append("\n").Append("Workforce: ").Append(shownFactory.getWorkForce());
-            sb.Append("\nGain goods: ").Append(shownFactory.gainGoodsThisTurn.ToString());
+            sb.Append("\nGain goods: ").Append(shownFactory.getGainGoodsThisTurn().ToString());
             sb.Append("\nUnsold: ").Append(shownFactory.storage.ToString());
             sb.Append("\nBasic production: ").Append(shownFactory.getType().basicProduction);            
-            sb.Append("\nSent to market: ").Append(shownFactory.sentToMarket);
+            sb.Append("\nSent to market: ").Append(shownFactory.getSentToMarket());
             sb.Append("\nCash: ").Append(shownFactory.cash.ToString());
             sb.Append("\nMoney income: ").Append(shownFactory.moneyIncomethisTurn);
             sb.Append("\nProfit: ").Append(shownFactory.getProfit());

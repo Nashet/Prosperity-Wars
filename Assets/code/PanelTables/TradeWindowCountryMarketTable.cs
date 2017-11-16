@@ -59,8 +59,9 @@ public class TradeWindowCountryMarketTable : MyTable
                         AddButton(Game.Player.countryStorageSet.getTotal(product).get().ToString());
 
                         ////Adding mil. needs
-                        //AddButton(needs.getStorage(product).ToStringWithoutSubstitutes());
-                        AddButton(needs.getStorage(product).get().ToString());
+                        AddButton(needs.getStorage(product).ToStringWithoutSubstitutes(), null, "That doesn't include non-abstract needs");
+                        //AddButton(needs.getStorageIncludingSubstitutes(product).get().ToString());
+                        //AddButton("-");
 
                         ////Adding Produced total
                         AddButton(Game.Player.getProducedTotalIncludingSubstitutes(product).get().ToString()); 
@@ -99,9 +100,10 @@ public class TradeWindowCountryMarketTable : MyTable
                         ////Adding bought
                         AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).get().ToString(), storage);
 
-
                         ////Adding Sold
-                        AddButton((Game.Player.getSentToMarket(product)* Game.market.getDemandSupplyBalance(product)).ToString(), storage);
+                        var str = Game.Player.getSentToMarket(product);
+                        str.multiply(Game.market.getDemandSupplyBalance(product));
+                        AddButton(str.get().ToString(), storage);
                     }
 
                     counter++;

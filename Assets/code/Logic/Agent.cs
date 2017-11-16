@@ -101,7 +101,8 @@ abstract public class Agent : IHasCountry , IHasStatistics
     {
         Storage realNeed;
         if (need.isAbstractProduct())
-            realNeed = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+            //realNeed = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+            realNeed = Game.market.getCheapestSubstitute(need);
         else
             realNeed = need;
 

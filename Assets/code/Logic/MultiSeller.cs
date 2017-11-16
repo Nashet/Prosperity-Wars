@@ -4,7 +4,8 @@ using UnityEngine;
 
 interface Seller
 {
-    float getSentToMarket(Product product);
+    Storage getSentToMarket(Product product);
+    void sell(Storage what);
 }
 /// <summary>
 /// Had to be class representing ability to sell more than 1 product
@@ -79,9 +80,9 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
         //    item.Value.set(Value.Zero);              
     }
 
-    public float getSentToMarket(Product product)
+    public Storage getSentToMarket(Product product)
     {
-        return sentToMarket.getFirstStorage(product).get();
+        return sentToMarket.getFirstStorage(product);
     }
     /// <summary> Assuming product is abstract product</summary>
     public Storage getSentToMarketIncludingSubstituts(Product product)
@@ -155,6 +156,6 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
     }
     public Procent getWorldProductionShare(Product product)
     {
-        return Procent.makeProcent(getProducedTotal(product).get(), Game.market.getProductionTotal(product, true));
+        return Procent.makeProcent(getProducedTotal(product), Game.market.getProductionTotal(product, true));
     }
 }

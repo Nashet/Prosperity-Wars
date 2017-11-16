@@ -365,7 +365,7 @@ public class Factory : SimpleProduction
                         if (countryPayer.countryStorageSet.has(howMuchPay))
                         {
                             countryPayer.countryStorageSet.send(link.Key, howMuchPay);
-                            link.Key.gainGoodsThisTurn.add(howMuchPay);
+                            link.Key.addProduct(howMuchPay);
                             salary.set(foodSalary);
                         }
                         //todo no salary cuts yet
@@ -378,7 +378,7 @@ public class Factory : SimpleProduction
                         if (popPayer.storage.has(howMuchPay))
                         {
                             popPayer.storage.send(link.Key.storage, howMuchPay);
-                            link.Key.gainGoodsThisTurn.add(howMuchPay);
+                            link.Key.addProduct(howMuchPay);
                             salary.set(foodSalary);
                         }
                         //todo no resources to pay salary
@@ -776,7 +776,7 @@ public class Factory : SimpleProduction
                     //sentToMarket.set(gainGoodsThisTurn);
                     //storage.setZero();
                     //Game.market.sentToMarket.add(gainGoodsThisTurn);
-                    sell(gainGoodsThisTurn);
+                    sell(getGainGoodsThisTurn());
                 }
                 else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                 {
@@ -784,11 +784,11 @@ public class Factory : SimpleProduction
                     if (countryOwner != null)
                         storage.sendAll(countryOwner.countryStorageSet);
                     else // assuming owner is aristocrat/capitalist
-                    {
-                        // send to market?
-                        sentToMarket.set(gainGoodsThisTurn);
-                        storage.setZero();
-                        Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    {                        
+                        sell(getGainGoodsThisTurn());
+                        //sentToMarket.set(gainGoodsThisTurn);
+                        //storage.setZero();
+                        //Game.market.sentToMarket.add(gainGoodsThisTurn);
                     }
                 }
                 else if (getCountry().economy.getValue() == Economy.PlannedEconomy)

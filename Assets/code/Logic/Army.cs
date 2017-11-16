@@ -112,7 +112,7 @@ public class Army
 
     private float getHorsesSupply()
     {
-        if (Product.Cattle.isInventedBy(getOwner().getPlaceDejure()))
+        if (getOwner().getPlaceDejure().isInvented(Invention.Domestication))
             return Procent.makeProcent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
         else return 0f;
     }

@@ -171,15 +171,17 @@ abstract public class PopUnit : Producer
         //{
         if (newPopType == PopType.Tribesmen)
         {
-            storage = new Storage(Product.Cattle);
-            gainGoodsThisTurn = new Storage(Product.Cattle);
-            sentToMarket = new Storage(Product.Cattle);
+            //storage = new Storage(Product.Cattle);
+            //gainGoodsThisTurn = new Storage(Product.Cattle);
+            //sentToMarket = new Storage(Product.Cattle);
+            changeProductionType(Product.Cattle);
         }
         else
         {
-            storage = new Storage(Product.Grain);
-            gainGoodsThisTurn = new Storage(Product.Grain);
-            sentToMarket = new Storage(Product.Grain);
+            //storage = new Storage(Product.Grain);
+            //gainGoodsThisTurn = new Storage(Product.Grain);
+            //sentToMarket = new Storage(Product.Grain);
+            changeProductionType(Product.Grain);
         }
         //}
         //else
@@ -541,11 +543,11 @@ abstract public class PopUnit : Producer
         {
             Storage howMuchSend;
             if (this.popType.isPoorStrata())
-                howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                howMuchSend = getGainGoodsThisTurn().multiplyOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
             {
                 //if (this.popType.isRichStrata())
-                howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                howMuchSend = getGainGoodsThisTurn().multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
             }
             if (storage.isBiggerOrEqual(howMuchSend))
                 storage.send(getCountry().countryStorageSet, howMuchSend);
@@ -928,7 +930,7 @@ abstract public class PopUnit : Producer
     // Not called in capitalism
     public void payTaxToAllAristocrats()
     {
-        Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
+        Value taxSize = getGainGoodsThisTurn().multiplyOutside(getCountry().serfdom.status.getTax());
         getProvince().shareWithAllAristocrats(storage, taxSize);
     }
     abstract public bool shouldPayAristocratTax();

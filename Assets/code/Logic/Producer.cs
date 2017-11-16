@@ -11,13 +11,13 @@ using UnityEngine;
 public abstract class Producer : Consumer, Seller
 {
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
-    public Storage gainGoodsThisTurn;
+    private Storage gainGoodsThisTurn;
 
     /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>    
     public Storage storage;
 
     /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
-    public Storage sentToMarket;
+    private Storage sentToMarket;
 
     /// <summary> /// Return in pieces  /// </summary>    
     //public abstract float getLocalEffectiveDemand(Product product);
@@ -29,7 +29,7 @@ public abstract class Producer : Consumer, Seller
     /// Just adds statistics
     /// </summary>
     abstract public void produce();
-   
+
 
     protected Producer(Province province) : base(province.getCountry().getBank(), province)
     {
@@ -49,10 +49,10 @@ public abstract class Producer : Consumer, Seller
         if (sentToMarket != null)
             sentToMarket.setZero();
     }
-    public Value getProducing()
-    {
-        return gainGoodsThisTurn;
-    }
+    //public Value getProducing()
+    //{
+    //    return gainGoodsThisTurn;
+    //}
     public void getMoneyForSoldProduct()
     {
         if (sentToMarket.get() > 0f)
@@ -96,10 +96,27 @@ public abstract class Producer : Consumer, Seller
         storage.subtract(what);
     }
 
-    public float getSentToMarket(Product product)
+    public Storage getSentToMarket(Product product)
     {
-
-        throw new NotImplementedException();
+        return sentToMarket;
+    }
+    public Storage getSentToMarket()
+    {
+        return sentToMarket;
+    }
+    protected void changeProductionType(Product product)
+    {
+        storage = new Storage(product);
+        gainGoodsThisTurn = new Storage(product);
+        sentToMarket = new Storage(product);
+    }
+    public Storage getGainGoodsThisTurn()
+    {
+        return gainGoodsThisTurn;
+    }
+    public void addProduct(Storage howMuch)
+    {
+        gainGoodsThisTurn.add(howMuch);
     }
 }
 

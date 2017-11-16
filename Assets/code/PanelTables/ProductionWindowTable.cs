@@ -50,7 +50,7 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.getProvince().ToString(), next.getProvince());
 
             ////Adding production
-            AddButton(next.gainGoodsThisTurn.ToString(), next);
+            AddButton(next.getGainGoodsThisTurn().ToString(), next);
 
             ////Adding effective resource income
             AddButton(next.getInputFactor().ToString(), next);

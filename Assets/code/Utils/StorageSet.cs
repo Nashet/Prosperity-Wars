@@ -237,14 +237,7 @@ public class StorageSet
         //if not found
         return new Storage(what.getProduct(), 0f);
     }
-    /// <summary> Finds substitute for abstrat need and returns new storage with product converted to non-abstract product
-    /// Returns copy of need if need was not abstract (make check)
-    /// If didn't find substitute Returns copy of empty storage of need product</summary>  
-    //todo Make same method for chapest substitute?
-    internal Storage convertToBiggestStorageProduct(Storage need)
-    {
-        return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
-    }
+   
     /// <summary>Gets biggest storage of that product type. Returns NEW empty storage if search is failed</summary>    
     internal Storage getBiggestStorage(Product what)
     {
@@ -254,6 +247,44 @@ public class StorageSet
     internal Storage getCheapestStorage(Product what)
     {
         return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());
+    }
+    /// <summary> Finds substitute for abstrat need and returns new storage with product converted to non-abstract product
+    /// Returns copy of need if need was not abstract (make check)
+    /// If didn't find substitute Returns copy of empty storage of need product</summary>  
+
+    internal Storage convertToBiggestStorageProduct(Storage need)
+    {
+        return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
+    }
+    /// <summary>
+    /// Returns NULL if failed
+    /// </summary>    
+    public Storage convertToCheapestExistingSubstitute(Storage abstractProduct)
+    {
+        // assuming substitutes are sorted in cheap-expensive order
+        foreach (var substitute in abstractProduct.getProduct().getSubstitutes())
+            if (substitute.isTradable())
+            {
+                Storage newStor = new Storage(substitute, abstractProduct);
+                // check for availability
+                if (Game.market.sentToMarket.has(newStor))
+                    return newStor;
+                //return this.sentToMarket.getExistingStorage(item);
+            }
+        return null;
+    }
+    /// <summary>
+    /// Returns NULL if failed
+    /// </summary> 
+    public Storage convertToCheapestStorageProduct(Storage abstractProduct)
+    {
+        // assuming substitutes are sorted in cheap-expensive order
+        foreach (var item in abstractProduct.getProduct().getSubstitutes())
+            if (item.isTradable())
+            {
+                return new Storage(item, abstractProduct);
+            }
+        return null;
     }
     /// <summary> Assuming product is abstract product</summary>       
     public Storage getTotal(Product product)

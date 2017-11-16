@@ -15,9 +15,10 @@ abstract public class SimpleProduction : Producer
     protected SimpleProduction(FactoryType type, Province province) : base(province)
     {
         this.type = type;
-        gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
-        storage = new Storage(this.getType().basicProduction.getProduct());
-        sentToMarket = new Storage(this.getType().basicProduction.getProduct());
+        //gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
+        //storage = new Storage(this.getType().basicProduction.getProduct());
+        //sentToMarket = new Storage(this.getType().basicProduction.getProduct());
+        changeProductionType(this.getType().basicProduction.getProduct());
     }
     internal Agent getOwner()
     {
@@ -61,11 +62,11 @@ abstract public class SimpleProduction : Producer
     /// Fills storageNow and gainGoodsThisTurn. Don't not to confuse with Producer.produce()
     /// </summary>
     protected void produce(Value multiplier)
-    {           
-        gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
-        if (gainGoodsThisTurn.isNotZero())
+    {
+        addProduct(getType().basicProduction.multiplyOutside(multiplier));
+        if (getGainGoodsThisTurn().isNotZero())
         {
-            storage.add(gainGoodsThisTurn);
+            storage.add(getGainGoodsThisTurn());
             calcStatistics();
         }
         //consume Input Resources

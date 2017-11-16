@@ -43,9 +43,9 @@ public class ArtisanProduction : SimpleProduction
     public override void produce()
     {
         base.produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
-        if (this.gainGoodsThisTurn.isNotZero())
+        if (this.getGainGoodsThisTurn().isNotZero())
         {
-            getOwner().gainGoodsThisTurn.set(this.gainGoodsThisTurn);
+            getOwner().addProduct(this.getGainGoodsThisTurn());
             if (getOwner().storage.isExactlySameProduct(this.storage))
                 getOwner().storage.add(this.storage);
             else
@@ -58,8 +58,7 @@ public class ArtisanProduction : SimpleProduction
     override public void consumeNeeds()
     {
         List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-
-        //todo !CAPITALISM part
+                
         //if (isSubsidized())
         //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
         //else

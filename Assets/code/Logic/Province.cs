@@ -553,9 +553,9 @@ public class Province : Name, IEscapeTarget, IHasCountry
             aristoctratAmount += aristocrats.getPopulation();
         foreach (Aristocrats aristocrat in getAllPopUnits(PopType.Aristocrats))
         {
-            Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
+            Storage howMuch = new Storage(fromWho.getProduct(), taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
             fromWho.send(aristocrat.storage, howMuch);
-            aristocrat.gainGoodsThisTurn.add(howMuch);
+            aristocrat.addProduct(howMuch);
             aristocrat.dealWithMarket();
             //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);            
         }
@@ -803,7 +803,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         foreach (Storage inputNeed in resourceInput)
             foreach (Factory provinceFactory in allFactories)
                 //if (provinceFactory.isWorking() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
-                if (provinceFactory.gainGoodsThisTurn.isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
+                if (provinceFactory.getGainGoodsThisTurn().isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
                     return true;
         return false;
     }
@@ -1029,8 +1029,8 @@ public class Province : Name, IEscapeTarget, IHasCountry
     {
         Value result = new Value(0);
         foreach (var producer in getAllAgents())
-            if (producer.gainGoodsThisTurn.get() > 0f)
-                result.add(Game.market.getCost(producer.gainGoodsThisTurn).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
+            if (producer.getGainGoodsThisTurn().get() > 0f)
+                result.add(Game.market.getCost(producer.getGainGoodsThisTurn()).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
         return result;
     }
 }

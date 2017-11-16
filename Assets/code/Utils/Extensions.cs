@@ -130,6 +130,32 @@ public static class Texture2DExtensions
         return Game.Random.Next(0, image.height);
     }
 }
+/// <summary>!! Broken. Assuming product is abstract product</summary>
+public static class ListStorageExtensions
+{
+    public static Storage getStorageIncludingSubstitutes(this List<Storage> source, Product product)
+    {
+        var res = new Value(0f);
+        foreach (var substitute in product.getSubstitutes())
+            if (substitute.isTradable())
+            {
+                // how find food & grain? broken
+                //var find = source.Find(x => x.is);
+                //if (find != null)
+                    //var find = source.getStorage(substitute);
+                    //if (find.isNotZero())
+                  //  res.add(find);
+            }
+        return new Storage(product, res);
+    }
+    public static Storage getStorage(this List<Storage> list, Product product)
+    {        
+        foreach (Storage stor in list)
+            if (stor.isExactlySameProduct(product))
+                return stor;
+        return new Storage(product, 0f);
+    }
+}
 public static class CollectionExtensions
 {
     public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
@@ -374,13 +400,7 @@ public static class CollectionExtensions
             dic.Remove(key);
         }
     }
-    public static Storage getStorage(this List<Storage> list, Product product)
-    {
-        foreach (Storage stor in list)
-            if (stor.getProduct() == product)
-                return stor;
-        return new Storage(product, 0f);
-    }
+
 }
 public static class GetStringExtensions
 {
@@ -808,7 +828,7 @@ public static class MeshExtensions
 
 }
 public static class DateExtensions
-{       
+{
     //public static int getYearsSince(this DateTime date2)
     //{
     //    return Game.date.Year - date2.Year;

@@ -44,8 +44,8 @@ public class PopUnitPanel : DragPanel
                 else
                     sb.Append(isArtisan.getType().basicProduction.getProduct());
             }
-            sb.Append("\nGain goods: ").Append(pop.gainGoodsThisTurn.ToString());
-            sb.Append("\nSent to market: ").Append(pop.sentToMarket);  // hide it
+            sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
+            sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
             makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
 
             if (pop.getLastEscapeSize() != 0)

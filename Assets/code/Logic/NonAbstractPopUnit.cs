@@ -7,30 +7,33 @@ abstract public class GrainGetter : PopUnit
 {
     protected GrainGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
     {
-        storage = new Storage(Product.Grain);
-        gainGoodsThisTurn = new Storage(Product.Grain);
-        sentToMarket = new Storage(Product.Grain);
+       
+        changeProductionType(Product.Grain);
+        //sentToMarket = new Storage(Product.Grain);
     }
     protected GrainGetter(int amount, PopType popType, Culture culture, Province where) : base(amount, popType, culture, where)
     {
-        storage = new Storage(Product.Grain);
-        gainGoodsThisTurn = new Storage(Product.Grain);
-        sentToMarket = new Storage(Product.Grain);
+        //storage = new Storage(Product.Grain);
+        //gainGoodsThisTurn = new Storage(Product.Grain);
+        changeProductionType(Product.Grain);
+        //sentToMarket = new Storage(Product.Grain);
     }
 }
 abstract public class CattleGetter : PopUnit
 {
     protected CattleGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
     {
-        storage = new Storage(Product.Cattle);
-        gainGoodsThisTurn = new Storage(Product.Cattle);
-        sentToMarket = new Storage(Product.Cattle);
+        //storage = new Storage(Product.Cattle);
+        //gainGoodsThisTurn = new Storage(Product.Cattle);
+        //sentToMarket = new Storage(Product.Cattle);
+        changeProductionType(Product.Cattle);
     }
     protected CattleGetter(int amount, PopType popType, Culture culture, Province where) : base(amount, popType, culture, where)
     {
-        storage = new Storage(Product.Cattle);
-        gainGoodsThisTurn = new Storage(Product.Cattle);
-        sentToMarket = new Storage(Product.Cattle);
+        //storage = new Storage(Product.Cattle);
+        //gainGoodsThisTurn = new Storage(Product.Cattle);
+        //sentToMarket = new Storage(Product.Cattle);
+        changeProductionType(Product.Cattle);
     }
 }
 public class Tribesmen : CattleGetter
@@ -68,12 +71,12 @@ public class Tribesmen : CattleGetter
             producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
             producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
-        
-        
+
+
         if (producedAmount.isNotZero())
         {
-            storage.add(producedAmount);            
-            gainGoodsThisTurn.set(producedAmount);
+            storage.add(producedAmount);
+            addProduct(producedAmount);
             calcStatistics();
         }
     }
@@ -140,24 +143,24 @@ public class Farmers : GrainGetter
         producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
         if (producedAmount.isNotZero())
         {
-            gainGoodsThisTurn.set(producedAmount);
-            storage.add(gainGoodsThisTurn);
+            addProduct(producedAmount);
+            storage.add(getGainGoodsThisTurn());
             calcStatistics();
         }
         if (Economy.isMarket.checkIftrue(getCountry()))
         {
             //sentToMarket.set(gainGoodsThisTurn);
             //Game.market.sentToMarket.add(gainGoodsThisTurn);
-            sell(gainGoodsThisTurn);
+            sell(getGainGoodsThisTurn());
         }
         else
         {
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                getCountry().countryStorageSet.add(gainGoodsThisTurn);
+                getCountry().countryStorageSet.add(getGainGoodsThisTurn());
             }
         }
-        
+
     }
     override internal bool canSellProducts()
     {
@@ -259,7 +262,7 @@ public class Aristocrats : GrainGetter
         if (storage.get() > Options.aristocratsFoodReserv)
         {
             Storage howMuchSend = new Storage(storage.getProduct(), storage.get() - Options.aristocratsFoodReserv);
-            storage.send(sentToMarket, howMuchSend);
+            storage.send(getSentToMarket(), howMuchSend);
             //sentToMarket.set(howMuchSend);
             Game.market.sentToMarket.add(howMuchSend);
         }
@@ -572,7 +575,7 @@ public class Artisans : GrainGetter
                     artisansProduction.produce();
                     if (Economy.isMarket.checkIftrue(getCountry()))
                     {
-                        sell(gainGoodsThisTurn);
+                        sell(getGainGoodsThisTurn());
                         //sentToMarket.set(gainGoodsThisTurn);
                         //storage.setZero();
                         //Game.market.sentToMarket.add(gainGoodsThisTurn);
@@ -580,9 +583,10 @@ public class Artisans : GrainGetter
                     else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                     {
                         // send to market?
-                        sentToMarket.set(gainGoodsThisTurn);
-                        storage.setZero();
-                        Game.market.sentToMarket.add(gainGoodsThisTurn);
+                        sell(getGainGoodsThisTurn());
+                        //sentToMarket.set(gainGoodsThisTurn);
+                        //storage.setZero();
+                        //Game.market.sentToMarket.add(gainGoodsThisTurn);
                     }
                     else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                     {

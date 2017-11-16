@@ -27,7 +27,7 @@ public class Invention : Name
         Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f)),
         ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f)),
 
-        Domestication = new Invention("Domestication", "Allows barnyard producing cattle", new Value(100f)),
+        Domestication = new Invention("Domestication", "Allows barnyard producing cattle. Also allows using horses in army", new Value(100f)),
         Electronics = new Invention("Electronics", "Allows Electronics", new Value(1000f)),
         Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
         Coal = new Invention("Coal", "Allows coal", new Value(100f))

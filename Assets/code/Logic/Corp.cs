@@ -114,7 +114,7 @@ public class Corps // Consumer
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
-            if (next.getProduct().isInventedBy(country))
+            if (next.getProduct().isInventedBy(country) && (next.getProduct() != Product.Cattle || country.isInvented(Invention.Domestication)))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiply(multiplier);
