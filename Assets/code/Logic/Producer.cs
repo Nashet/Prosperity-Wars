@@ -77,7 +77,8 @@ public abstract class Producer : Consumer, Seller
                 //Game.market.sentToMarket.subtract(realSold);
             }
             else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
-                Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
+                Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
+                        + " for " + realSold); // money in market ended... Only first lucky get money
         }
     }
     /// <summary>

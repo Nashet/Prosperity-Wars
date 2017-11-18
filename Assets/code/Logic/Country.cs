@@ -920,9 +920,11 @@ public class Country : MultiSeller
             if (usePlayerTradeSettings)
                 desiredMinimum = getBuyIfLessLimits(product);
             else
+            {
                 desiredMinimum = new Storage(countryStorageSet.used.getFirstStorage(product));
-            if (desiredMinimum.isZero())
-                desiredMinimum.add(Options.CountryMinStorage);           
+                if (desiredMinimum.isZero())
+                    desiredMinimum.add(Options.CountryMinStorage);
+            }
             var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
             if (toBuy.isBiggerThan(Value.Zero))
                 buyNeeds(toBuy);//go buying

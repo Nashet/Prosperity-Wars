@@ -374,7 +374,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         return neighbors.FindAll(predicate);
 
     }
-    public IEnumerable<Producer> getProducers()
+    public IEnumerable<Producer> getAllProducers()
     {
         foreach (Factory factory in allFactories)
             yield return factory;
@@ -383,7 +383,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
                 //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
                 yield return pop;
     }
-    public IEnumerable<Producer> getBuyers()
+    public IEnumerable<Producer> getAllBuyers()
     {
         foreach (Factory factory in allFactories)
             // if (!factory.getType().isResourceGathering()) // every fabric is buyer (upgrading)
@@ -392,7 +392,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
             if (pop.canTrade())
                 yield return pop;
     }
-    public IEnumerable<Producer> getConsumers()
+    public IEnumerable<Producer> getAllConsumers()
     {
         foreach (Factory factory in allFactories)
             //if (!factory.getType().isResourceGathering())// every fabric is consumer (upgrading)

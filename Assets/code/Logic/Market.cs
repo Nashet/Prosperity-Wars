@@ -88,7 +88,23 @@ public class Market : Agent//: PrimitiveStorageSet
         foreach (Country country in Country.getExisting())
         {
             foreach (Province province in country.ownedProvinces)
-                foreach (Consumer consumer in province.getBuyers())
+                foreach (Consumer consumer in province.getAllAgents())
+                {
+                    Storage re = selector(consumer).getFirstStorage(product);
+                    result.add(re);
+                }
+            Storage countryStor = selector(country).getFirstStorage(product);
+            result.add(countryStor);
+        }
+        return result;
+    }
+    private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
+    {
+        Storage result = new Storage(product);
+        foreach (Country country in Country.getExisting())
+        {
+            foreach (Province province in country.ownedProvinces)
+                foreach (Consumer consumer in province.getAllBuyers())
                 {
                     Storage re = selector(consumer).getFirstStorage(product);
                     result.add(re);
@@ -104,7 +120,7 @@ public class Market : Agent//: PrimitiveStorageSet
         foreach (Country country in Country.getExisting())
         {
             foreach (Province province in country.ownedProvinces)
-                foreach (Seller producer in province.getProducers())
+                foreach (Seller producer in province.getAllProducers())
                 {
                     var found = selector(producer);
                     if (found.isExactlySameProduct(product))
@@ -120,7 +136,7 @@ public class Market : Agent//: PrimitiveStorageSet
         foreach (Country country in Country.getExisting())
         {
             foreach (Province province in country.ownedProvinces)
-                foreach (Producer producer in province.getProducers())
+                foreach (Producer producer in province.getAllProducers())
                 {
                     var found = selector(producer);
                     if (found.isExactlySameProduct(product))
@@ -134,7 +150,7 @@ public class Market : Agent//: PrimitiveStorageSet
         if (takeThisTurnData)
         {
             // recalculate only 1 product
-            return recalculateProductForConsumers(product, x => x.getConsumedInMarket());
+            return recalculateProductForBuyers(product, x => x.getConsumedInMarket());
         }
         if (dateOfgetBought != Game.date)
         {

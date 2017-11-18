@@ -21,7 +21,7 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
     /// <summary> Including enterprises, government and everything    </summary>
     private readonly Dictionary<Product, Value> producedTotal = new Dictionary<Product, Value>();
     /// <summary> Shows actual sells, not sent to market   </summary>
-    //private readonly Dictionary<Product, Value> soldByGovernment = new Dictionary<Product, Value>();
+    private readonly Dictionary<Product, Value> soldByGovernment = new Dictionary<Product, Value>();
 
     public MultiSeller(Country place) : base(place)
     {
@@ -39,6 +39,7 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
                     sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
                 }
                 producedTotal.Add(item, new Value(0f));
+                soldByGovernment.Add(item, new Value(0f));
             }
     }
     //bool wantsToBuy?
@@ -76,8 +77,8 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
         sentToMarket.setZero();
         foreach (var item in producedTotal)
             item.Value.set(Value.Zero);
-        //foreach (var item in soldByGovernment)
-        //    item.Value.set(Value.Zero);              
+        foreach (var item in soldByGovernment)
+            item.Value.set(Value.Zero);
     }
 
     public Storage getSentToMarket(Product product)
@@ -117,7 +118,8 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
                 Storage realSold = new Storage(sent);
                 realSold.multiply(DSB);
                 Value cost = Game.market.getCost(realSold);
-
+                //soldByGovernment.addMy(realSold.getProduct(), realSold);
+                soldByGovernment[realSold.getProduct()].set(realSold);
                 //returning back unsold product
                 //if (sent.isBiggerThan(realSold))
                 //{
@@ -132,7 +134,8 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
                     //Game.market.sentToMarket.subtract(realSold);
                 }
                 else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
-                    Debug.Log("Failed market - producer payment: " + Game.market.howMuchMoneyCanNotPay(cost)); // money in market ended... Only first lucky get money
+                    Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
+                        + " for " + realSold); // money in market ended... Only first lucky get money
             }
     }
     internal void producedTotalAdd(Storage produced)
@@ -142,6 +145,10 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
     public Value getProducedTotal(Product product)
     {
         return producedTotal[product];
+    }
+    public Value getSoldByGovernment(Product product)
+    {
+        return soldByGovernment[product];
     }
     /// <summary> Assuming product is abstract product</summary>
     public Value getProducedTotalIncludingSubstitutes(Product product)
@@ -156,6 +163,10 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
     }
     public Procent getWorldProductionShare(Product product)
     {
-        return Procent.makeProcent(getProducedTotal(product), Game.market.getProductionTotal(product, true));
+        var worldProduction = Game.market.getProductionTotal(product, true);
+        if (worldProduction.isZero())
+            return Procent.ZeroProcent;
+        else
+            return Procent.makeProcent(getProducedTotal(product), worldProduction);
     }
 }

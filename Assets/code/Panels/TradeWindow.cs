@@ -52,17 +52,21 @@ public class TradeWindow : DragPanel
     }
     public void onslBuyIfLessThanChange()
     {
-        if (slBuyIfLessThan.value > slSellIfMoreThan.value)
-            //slBuyIfLessThan.value = slSellIfMoreThan.value;
+        if (slBuyIfLessThan.value > slSellIfMoreThan.value)        
+        {
             slSellIfMoreThan.value = slBuyIfLessThan.value;
+            //Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.value);
+        }
         Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.value);
         refreshTradeLimits();
     }
     public void onslSellIfMoreThanChange()
     {
-        if (slBuyIfLessThan.value > slSellIfMoreThan.value)
-            //slSellIfMoreThan.value = slBuyIfLessThan.value;
+        if (slBuyIfLessThan.value > slSellIfMoreThan.value)        
+        {
             slBuyIfLessThan.value = slSellIfMoreThan.value;
+            //Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.value);
+        }
         Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.value);
         refreshTradeLimits();
     }

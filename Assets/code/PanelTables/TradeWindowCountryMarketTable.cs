@@ -53,7 +53,7 @@ public class TradeWindowCountryMarketTable : MyTable
                     // Adding product name 
                     if (product.isAbstract())
                     {
-                        AddButton(product.getName() + " total",null, ()=>product.getSubstitutes().ToList().getString(" or "));
+                        AddButton(product.getName() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
 
                         ////Adding total amount
                         AddButton(Game.Player.countryStorageSet.getTotal(product).get().ToString());
@@ -64,7 +64,7 @@ public class TradeWindowCountryMarketTable : MyTable
                         //AddButton("-");
 
                         ////Adding Produced total
-                        AddButton(Game.Player.getProducedTotalIncludingSubstitutes(product).get().ToString()); 
+                        AddButton(Game.Player.getProducedTotalIncludingSubstitutes(product).get().ToString());
                         //, null , () => Game.Player.getWorldProductionShare(product) + " of world production");
                         // can't add statistic about share of abstract product due to Market.GetProduction can't in abstract products
 
@@ -101,9 +101,14 @@ public class TradeWindowCountryMarketTable : MyTable
                         AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).get().ToString(), storage);
 
                         ////Adding Sold
-                        var str = Game.Player.getSentToMarket(product);
-                        str.multiply(Game.market.getDemandSupplyBalance(product));
-                        AddButton(str.get().ToString(), storage);
+                        //// finding actually sold from sentToMarket
+                        //var str = Game.Player.getSentToMarket(product);
+                        //var DSB = Game.market.getDemandSupplyBalance(product);
+                        //if (DSB.GetHashCode() == Options.MarketInfiniteDSB.GetHashCode())
+                        //    str.setZero();
+                        //else
+                        //    str.multiply(DSB);
+                        AddButton(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
                     }
 
                     counter++;

@@ -111,6 +111,13 @@ public class CountryStorageSet : StorageSet, IHasStatistics
         else
             return false;
     }
+    //internal void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
+    //{
+    //    foreach (Storage stor in set)
+    //    {
+    //        subtract(stor, showMessageAboutNegativeValue);
+    //    }
+    //}
     public bool subtractNoStatistic(Storage stor, bool showMessageAboutNegativeValue = true)
     {
         return base.subtract(stor, showMessageAboutNegativeValue);

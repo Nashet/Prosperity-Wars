@@ -784,7 +784,7 @@ public class Factory : SimpleProduction
                     if (countryOwner != null)
                         storage.sendAll(countryOwner.countryStorageSet);
                     else // assuming owner is aristocrat/capitalist
-                    {                        
+                    {
                         sell(getGainGoodsThisTurn());
                         //sentToMarket.set(gainGoodsThisTurn);
                         //storage.setZero();
@@ -816,18 +816,23 @@ public class Factory : SimpleProduction
         if (isWorking() && !getType().isResourceGathering())
         {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-            {
-                if (getCountry().countryStorageSet.has(shoppingList))
-                    getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
-            }
-            else
-            {
-                if (isSubsidized())
-                    Game.market.buy(this, new StorageSet(shoppingList), getCountry());
+            if (shoppingList.Count > 0)
+                if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    if (getCountry().countryStorageSet.has(shoppingList))
+                    {
+                        //getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
+                        consumeFromCountryStorage(shoppingList, getCountry());
+                        getInputProductsReserve().add(shoppingList);
+                    }
+                }
                 else
-                    Game.market.buy(this, new StorageSet(shoppingList), null);
-            }
+                {
+                    if (isSubsidized())
+                        Game.market.buy(this, new StorageSet(shoppingList), getCountry());
+                    else
+                        Game.market.buy(this, new StorageSet(shoppingList), null);
+                }
         }
         if (isUpgrading() || isBuilding())
         {

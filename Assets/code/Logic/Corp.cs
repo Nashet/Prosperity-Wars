@@ -70,8 +70,8 @@ public class Corps // Consumer
                     realConsumption = need;
                 if (realConsumption.isNotZero())
                 {
-                    //consumeFromCountryStorage(realConsumption, owner);
-                    owner.countryStorageSet.subtract(realConsumption);
+                    owner.consumeFromCountryStorage(realConsumption, owner);
+                    //owner.countryStorageSet.subtract(realConsumption);
                     consumption.add(realConsumption);
                 }
             }

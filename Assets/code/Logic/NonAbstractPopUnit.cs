@@ -675,7 +675,10 @@ public class Artisans : GrainGetter
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
         if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
+        {
             artisansProduction = new ArtisanProduction(result.Key, getProvince(), this);
+            base.changeProductionType(artisansProduction.getType().basicProduction.getProduct());
+        }
     }
     public StorageSet getInputProducts()
     {
