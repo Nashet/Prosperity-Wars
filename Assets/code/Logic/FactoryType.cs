@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
+
 public class FactoryType
 {
     static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
@@ -145,14 +147,24 @@ public class FactoryType
         enoughMoneyOrResourcesToBuild = new Condition(
             delegate (object forWhom)
             {
-                Value cost = this.getBuildCost();
-                return (forWhom as Agent).canPay(cost);
+                var agent = forWhom as Agent;
+                if (agent.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    return agent.getCountry().countryStorageSet.has(this.getBuildNeeds());
+                }
+                else
+                {
+                    Value cost = Game.market.getCost(this.getBuildNeeds());
+                    return agent.canPay(cost);
+                }
             },
             delegate
             {
-                Game.threadDangerSB.Clear();
-                Game.threadDangerSB.Append("Have ").Append(getBuildCost()).Append(" coins");
-                return Game.threadDangerSB.ToString();
+                var sb = new StringBuilder();
+                Value cost = Game.market.getCost(this.getBuildNeeds());
+                sb.Append("Have ").Append(cost).Append(" coins");
+                sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
+                return sb.ToString();
             }, true);
 
         conditionsBuild = new ConditionsList(new List<Condition>() {
@@ -188,12 +200,12 @@ public class FactoryType
                 yield return next;
     }
 
-    internal Value getBuildCost()
-    {
-        Value result = Game.market.getCost(getBuildNeeds());
-        result.add(Options.factoryMoneyReservPerLevel);
-        return result;
-    }
+    //internal Value getBuildCost()
+    //{
+    //    Value result = Game.market.getCost(getBuildNeeds());
+    //    result.add(Options.factoryMoneyReservPerLevel);
+    //    return result;
+    //}
     internal StorageSet getBuildNeeds()
     {
         //return new Storage(Product.Food, 40f);
@@ -285,7 +297,7 @@ public class FactoryType
     }
     internal Procent getPossibleMargin(Province province)
     {
-        return Procent.makeProcent(getPossibleProfit(province), getBuildCost());
+        return Procent.makeProcent(getPossibleProfit(province), Game.market.getCost(this.getBuildNeeds()));
     }
     //internal bool canBuildNewFactory(FactoryType type)
     //{

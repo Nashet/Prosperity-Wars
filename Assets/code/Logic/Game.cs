@@ -28,7 +28,7 @@ public class Game : ThreadedJob
     static internal readonly Stack<Message> MessageQueue = new Stack<Message>();
     static public readonly Market market = new Market();
 
-    static internal StringBuilder threadDangerSB = new StringBuilder();
+    //static internal StringBuilder threadDangerSB = new StringBuilder();
 
     static public MyDate date = new MyDate(0);
     static internal bool devMode = false;

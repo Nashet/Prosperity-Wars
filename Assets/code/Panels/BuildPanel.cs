@@ -81,7 +81,8 @@ public class BuildPanel : DragPanel
         {
             sb.Clear();
             sb.Append("Build ").Append(selectedFactoryType);
-            sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(selectedFactoryType.getBuildCost());
+            var cost = Game.market.getCost(selectedFactoryType.getBuildNeeds());
+            sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(cost);
             sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
 
             descriptionText.text = sb.ToString();

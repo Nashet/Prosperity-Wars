@@ -129,22 +129,23 @@ public class ProvinceNameGenerator
     static ChanceBox<string> consonants = new ChanceBox<string>();
     public static string generateWord(int length)
     {
-        Game.threadDangerSB.Clear();
+        var sb = new StringBuilder();
         if (Game.Random.Next(10) == 1)
         {
-            Game.threadDangerSB.Append(vowels.getRandom());
+            sb.Append(vowels.getRandom());
             if (Game.Random.Next(2) == 1)
-                Game.threadDangerSB.Append(consonants.getRandom());
+                sb.Append(consonants.getRandom());
         }
         //if (Game.random.Next(6) == 1)
         //    Game.threadDangerSB.Append(consonants.getRandom());
 
         for (int i = 0; i < length; i += 2)
         {
-            Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
-            if (Game.Random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
+            sb.Append(consonants.getRandom()).Append(vowels.getRandom());
+            if (Game.Random.Next(5) == 1 || length == 2)
+                sb.Append(consonants.getRandom());
         }
-        return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
+        return UtilsMy.FirstLetterToUpper(sb.ToString());
         //return Game.threadDangerSB.ToString();
     }
     public ProvinceNameGenerator()

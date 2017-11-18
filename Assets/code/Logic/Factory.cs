@@ -55,19 +55,39 @@ public class Factory : SimpleProduction
 
         conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)
         {
-            Game.threadDangerSB.Clear();
-            Game.threadDangerSB.Append("Have ").Append((x as Factory).getReopenCost()).Append(" coins");
-            return Game.threadDangerSB.ToString();
+            var sb = new StringBuilder();
+            sb.Append("Have ").Append((x as Factory).getReopenCost()).Append(" coins");
+            return sb.ToString();
         }, true);
     internal static readonly ConditionForDoubleObjects
-        conHaveMoneyToUpgrade = new ConditionForDoubleObjects((factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),
-            (factory) => "Have " + (factory as Factory).getUpgradeCost() + " coins"
-            //delegate (object x)
-            //{
-            //    Game.threadDangerSB.Clear();
-            //    Game.threadDangerSB.Append("Have ").Append((x as Factory).getUpgradeCost()).Append(" coins");
-            //    return Game.threadDangerSB.ToString();
-            //}
+        conHaveMoneyOrResourcesToUpgrade = new ConditionForDoubleObjects(
+            //(factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),
+
+            delegate (object factory, object upgrader)
+            {
+                var agent = upgrader as Agent;
+                var typedfactory = factory as Factory;
+                if (agent.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    return agent.getCountry().countryStorageSet.has(typedfactory.getUpgradeNeeds());
+                }
+                else
+                {
+                    Value cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
+                    return agent.canPay(cost);
+                }
+            },
+
+
+            delegate (object x)
+            {
+                var sb = new StringBuilder();
+                var factory = x as Factory;
+                Value cost = Game.market.getCost(factory.getUpgradeNeeds());
+                sb.Append("Have ").Append(cost).Append(" coins");
+                sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds());
+                return sb.ToString();
+            }
             , true),
         conPlacedInOurCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
         (factory) => "Enterprise placed in our country", true),
@@ -78,7 +98,7 @@ public class Factory : SimpleProduction
         conditionsUpgrade = new ConditionsListForDoubleObjects(new List<Condition>
         {
             conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved, conNotLForNotCountry,
-            conHaveMoneyToUpgrade, conPlacedInOurCountry
+            conHaveMoneyOrResourcesToUpgrade, conPlacedInOurCountry
         }),
         conditionsClose = new ConditionsListForDoubleObjects(new List<Condition> { conNotBuilding, conOpen, conPlacedInOurCountry, conNotLForNotCountry }),
         conditionsReopen = new ConditionsListForDoubleObjects(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conPlacedInOurCountry, conNotLForNotCountry }),
@@ -392,7 +412,7 @@ public class Factory : SimpleProduction
 
     internal Procent getMargin()
     {
-        float x = getProfit() / (getUpgradeCost().get() * level);
+        float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
         return new Procent(x, false);
     }
     internal Value getReopenCost()
@@ -400,13 +420,13 @@ public class Factory : SimpleProduction
         return new Value(Options.factoryMoneyReservPerLevel);
 
     }
-    internal Value getUpgradeCost()
-    {
-        Value result = Game.market.getCost(getUpgradeNeeds());
-        result.add(Options.factoryMoneyReservPerLevel);
-        return result;
-        //return Game.market.getCost(type.getUpgradeNeeds());
-    }
+    //internal Value getUpgradeCost()
+    //{
+    //    Value result = Game.market.getCost(getUpgradeNeeds());
+    //    result.add(Options.factoryMoneyReservPerLevel);
+    //    return result;
+    //    //return Game.market.getCost(type.getUpgradeNeeds());
+    //}
 
 
     /// <summary> only make sense if called before HireWorkforce()
@@ -717,7 +737,7 @@ public class Factory : SimpleProduction
         upgrading = true;
         constructionNeeds.add(getUpgradeNeeds().getCopy());
         if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
-            byWhom.payWithoutRecord(this, getUpgradeCost());
+            byWhom.payWithoutRecord(this, Game.market.getCost(getUpgradeNeeds()));
     }
 
     internal int getDaysInConstruction()

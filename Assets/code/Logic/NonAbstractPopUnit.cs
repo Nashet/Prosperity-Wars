@@ -7,7 +7,7 @@ abstract public class GrainGetter : PopUnit
 {
     protected GrainGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
     {
-       
+
         changeProductionType(Product.Grain);
         //sentToMarket = new Storage(Product.Grain);
     }
@@ -510,7 +510,7 @@ public class Capitalists : GrainGetter
                         && factory.getMargin().get() >= Options.minMarginToUpgrade
                         && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
                     {
-                        Value upgradeCost = factory.getUpgradeCost();
+                        Value upgradeCost = Game.market.getCost(factory.getUpgradeNeeds());
                         if (canPay(upgradeCost))
                             factory.upgrade(this);
                         else if (getBank().giveLackingMoney(this, upgradeCost))
