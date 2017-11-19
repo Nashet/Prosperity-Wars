@@ -4,14 +4,14 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class BottomPanel : MonoBehaviour
-{    
+{
     public Text generalText;
     // Use this for initialization
     void Start()
     {
         //btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
         //btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
-        
+
         MainCamera.bottomPanel = this;
         hide();
     }
@@ -27,12 +27,17 @@ public class BottomPanel : MonoBehaviour
     }
     public void refresh()
     {
-        generalText.text = "Economic Simulation v0.16.0";
+        generalText.text = "Economic Simulation Demo v0.16.0";
     }
-    
+
     public void onExitClick()
     {
-        Application.Quit();
+#if UNITY_WEBGL
+        Screen.fullScreen = false;
+#else
+                Application.Quit();
+#endif
+
     }
     public void onddMapModesChange(int newMapMode)
     {
