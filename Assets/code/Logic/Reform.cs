@@ -26,7 +26,7 @@ abstract public class AbstractReformStepValue : AbstractReformValue
 }
 abstract public class AbstractReformValue : Name
 {
-    public readonly static ConditionForDoubleObjects isNotLFOrMoreConservative = new ConditionForDoubleObjects((country, newReform) => (country as Country).economy.getValue() != Economy.LaissezFaire 
+    public readonly static ConditionForDoubleObjects isNotLFOrMoreConservative = new ConditionForDoubleObjects((country, newReform) => (country as Country).economy.getValue() != Economy.LaissezFaire
     || (newReform as AbstractReformValue).isMoreConservative(
         (country as Country).getReform((newReform as AbstractReformValue)).getValue()
         ), x => "Economy policy is not Laissez Faire or that is reform rollback", true);
@@ -34,6 +34,9 @@ abstract public class AbstractReformValue : Name
     public readonly int ID;
     public readonly ConditionsListForDoubleObjects allowed;
     readonly public Condition isEnacted;// = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
+
+    abstract internal bool isAvailable(Country country);
+    abstract protected Procent howIsItGoodForPop(PopUnit pop);
     static AbstractReformValue()
     {
         //allowed.add();
@@ -72,9 +75,7 @@ abstract public class AbstractReformValue : Name
         return description;
     }
 
-    abstract internal bool isAvailable(Country country);
 
-    protected abstract Procent howIsItGoodForPop(PopUnit pop);
     private readonly Modifier loyalty;
     private readonly Modifier education = new Modifier(Condition.IsNotImplemented, 0f, false);
     private readonly Modifier wantsReform;
@@ -100,19 +101,17 @@ public abstract class AbstractReform : Name
         return description;
     }
 
-
     abstract internal AbstractReformValue getValue();
-    internal abstract bool canHaveValue(AbstractReformValue abstractReformValue);
-
+    abstract internal bool canHaveValue(AbstractReformValue abstractReformValue);
 
     //abstract internal AbstractReformValue getValue(int value);
     //abstract internal void setValue(int value);
-    
+
 }
 public class Government : AbstractReform
 {
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    public ReformValue status;
+    private ReformValue status;
     private readonly Country country;
     public Country getCountry()
     {
@@ -123,6 +122,7 @@ public class Government : AbstractReform
         readonly private int MaxiSizeLimitForDisloyaltyModifier;
         readonly private string prefix;
         readonly private float scienceModifier;
+
         public ReformValue(string inname, string indescription, int idin, ConditionsListForDoubleObjects condition, string prefix, int MaxiSizeLimitForDisloyaltyModifier, float scienceModifier)
     : base(inname, indescription, idin, condition)
         {
@@ -132,7 +132,8 @@ public class Government : AbstractReform
             PossibleStatuses.Add(this);
             this.prefix = prefix;
         }
-
+        //public void onEnacted()
+        //{ }
         internal override bool isAvailable(Country country)
         {
             if (ID == 4 && !country.isInvented(Invention.Collectivism))
@@ -140,7 +141,6 @@ public class Government : AbstractReform
             else
                 return true;
         }
-
         protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             Procent result;
@@ -164,14 +164,9 @@ public class Government : AbstractReform
         }
         public override string getDescription()
         {
-
             return base.getDescription() + ". Max size before loyalty penalty applied: " + getLoyaltySizeLimit()
                 + ". Science points modifier: " + scienceModifier;
         }
-        //public string getDescription(Country country)
-        //{
-
-        //}
     }
 
     readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0,
@@ -202,7 +197,7 @@ public class Government : AbstractReform
         new ConditionsListForDoubleObjects(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta", 20, 0.3f);
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
-        new ConditionsListForDoubleObjects(Condition.IsNotImplemented), "ssr", 20, 0.5f);
+        new ConditionsListForDoubleObjects(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f);
 
     internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
     internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.getName(), true);
@@ -248,11 +243,53 @@ public class Government : AbstractReform
         foreach (ReformValue f in PossibleStatuses)
             yield return f;
     }
+    public void onReformEnacted(Province province)
+    {
 
+        foreach (var factory in province.getAllFactories())
+        {
+            factory.setOwner(country);
+            factory.sendAllAvailableMoney(country);
+            factory.loans.setZero();
+            factory.deposits.setZero();
+            factory.setSubsidized(false);
+            factory.setZeroSalary();
+            factory.setPriorityAutoWithPlannedEconomy();
+            factory.setStatisticToZero();
+        }
+        foreach (var item in province.getAllPopUnits())
+        {
+            item.sendAllAvailableMoney(country);
+            item.loans.setZero();
+            item.deposits.setZero();
+        }
+    }
     internal override void setValue(AbstractReformValue selectedReform)
     {
         status = (ReformValue)selectedReform;
         country.setPrefix();
+        if (status == Government.ProletarianDictatorship)
+        {
+            country.economy.setValue(Economy.PlannedEconomy);
+            country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            country.minimalWage.setValue(MinimalWage.None);
+            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
+            //nationalization
+            country.getBank().sendAllAvailableMoney(country);
+            country.getBank().getGivenLoans().setZero();
+            country.loans.setZero();
+            country.deposits.setZero();
+
+            foreach (var province in country.ownedProvinces)
+            {
+                onReformEnacted(province);
+            }
+            if (country == Game.Player)
+                MainCamera.refreshAllActive();
+        }
     }
     //internal void setValue(AbstractReformValue selectedReform, bool setPrefix)
     //{
@@ -351,11 +388,11 @@ public class Economy : AbstractReform
     internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
         new ConditionsListForDoubleObjects(new List<Condition> {
-            Invention.CollectivismInvented, Government.isProletarianDictatorship, Condition.IsNotImplemented }));
+            Invention.CollectivismInvented, Government.isProletarianDictatorship }));
     internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new ConditionsListForDoubleObjects(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes)); 
     internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new ConditionsListForDoubleObjects(capitalism));
-    internal static readonly ReformValue Interventionism = new ReformValue("Limited Interventionism", "", 3, new ConditionsListForDoubleObjects(capitalism));
-    internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez Faire", "", 4, new ConditionsListForDoubleObjects(capitalism));
+    internal static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, new ConditionsListForDoubleObjects(capitalism));
+    internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, new ConditionsListForDoubleObjects(capitalism));
 
 
     /// ////////////
@@ -461,12 +498,12 @@ public class Serfdom : AbstractReform
             return result;
         }
     }
-    internal ReformValue status;
+    public ReformValue status;
     internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
     internal static ReformValue Allowed;
     internal static ReformValue Brutal;
     internal static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
-        new ConditionsListForDoubleObjects(new List<Condition>() { Invention.IndividualRightsInvented }));
+        new ConditionsListForDoubleObjects(new List<Condition>() { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
     internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
         new ConditionsListForDoubleObjects(new List<Condition>()
         {
@@ -483,13 +520,13 @@ public class Serfdom : AbstractReform
             Allowed = new ReformValue("Allowed", "- Peasants and other plebes pay 10% of income to Aristocrats", 1,
                 new ConditionsListForDoubleObjects(new List<Condition>()
                 {
-            Economy.isNotMarket
+            Economy.isNotMarket,  Condition.IsNotImplemented
                 }));
         if (Brutal == null)
             Brutal = new ReformValue("Brutal", "- Peasants and other plebes pay 20% of income to Aristocrats", 0,
             new ConditionsListForDoubleObjects(new List<Condition>()
             {
-            Economy.isNotMarket
+            Economy.isNotMarket, Condition.IsNotImplemented
             }));
 
         status = Allowed;
@@ -647,30 +684,30 @@ public class MinimalWage : AbstractReform
             return result;
         }
     }
-    ReformValue status;
+    private ReformValue status;
 
     internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal readonly static ReformValue None = new ReformValue("No minimal wage", "", 0, new ConditionsListForDoubleObjects(new List<Condition> { AbstractReformValue.isNotLFOrMoreConservative }));
 
     internal readonly static ReformValue Scanty = new ReformValue("Scanty minimal wage", "- Half-hungry", 1, new ConditionsListForDoubleObjects(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Minimal = new ReformValue("Tiny minimal wage", "- Just enough to feed yourself", 2, new ConditionsListForDoubleObjects(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Trinket = new ReformValue("Trinket minimal wage", "- You can buy some small stuff", 3, new ConditionsListForDoubleObjects(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Middle = new ReformValue("Middle minimal wage", "- Plenty good wage", 4, new ConditionsListForDoubleObjects(new List<Condition>
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Big = new ReformValue("Generous minimal wage", "- Can live almost like a king. Almost..", 5, new ConditionsListForDoubleObjects(new List<Condition>()
         {
-            Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
 
     public MinimalWage(Country country) : base("Minimal wage", "", country)
@@ -818,28 +855,28 @@ public class UnemploymentSubsidies : AbstractReform
             return result;
         }
     }
-    ReformValue status;
+    private ReformValue status;
     internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal readonly static ReformValue None = new ReformValue("No unemployment subsidies", "", 0, new ConditionsListForDoubleObjects(new List<Condition>()));
     internal readonly static ReformValue Scanty = new ReformValue("Scanty unemployment subsidies", "- Half-hungry", 1, new ConditionsListForDoubleObjects(new List<Condition>()
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Minimal = new ReformValue("Minimal unemployment subsidies", "- Just enough to feed yourself", 2, new ConditionsListForDoubleObjects(new List<Condition>()
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Trinket = new ReformValue("Trinket unemployment subsidies", "- You can buy some small stuff", 3, new ConditionsListForDoubleObjects(new List<Condition>()
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Middle = new ReformValue("Middle unemployment subsidies", "- Plenty good subsidies", 4, new ConditionsListForDoubleObjects(new List<Condition>()
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
     internal readonly static ReformValue Big = new ReformValue("Generous unemployment subsidies", "- Can live almost like a king. Almost..", 5, new ConditionsListForDoubleObjects(new List<Condition>()
         {
-            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative,
+            Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
 
 
@@ -942,12 +979,12 @@ public class TaxationForPoor : AbstractReform
             return result;
         }
     }
-    ReformValue status;
+    private ReformValue status;
     internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
     static TaxationForPoor()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects()));
+            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects( Economy.isNotPlanned)));
     }
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
@@ -1040,12 +1077,12 @@ public class TaxationForRich : AbstractReform
             return result;
         }
     }
-    ReformValue status;
+    private ReformValue status;
     internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
     static TaxationForRich()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects()));
+            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects( Economy.isNotPlanned)));
     }
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
@@ -1097,16 +1134,16 @@ public class MinorityPolicy : AbstractReform
         internal override bool isAvailable(Country country)
         {
             ReformValue requested = this;
-            if ((requested.ID == 4) && country.isInvented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+            if ((requested.ID == 4) && country.isInvented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
                 return true;
             else
-            if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+            if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 3))
                 return true;
             else
-            if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
+            if ((requested.ID == 2) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 2))
                 return true;
             else
-                if ((requested.ID == 1) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1))
+                if ((requested.ID == 1) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1))
                 return true;
             else
             if ((requested.ID == 0))
@@ -1135,7 +1172,7 @@ public class MinorityPolicy : AbstractReform
             return result;
         }
     }
-    internal ReformValue status;
+    private ReformValue status;
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
     internal static ReformValue Equality; // all can vote
     internal static ReformValue Residency; // state culture only can vote    

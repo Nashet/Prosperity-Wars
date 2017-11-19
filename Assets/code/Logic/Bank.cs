@@ -106,7 +106,7 @@ public class Bank : Agent
 
     internal Value getGivenLoans()
     {
-        return new Value(givenLoans.get());
+        return givenLoans;
     }
     /// <summary>
     /// how much money have in cash
@@ -180,5 +180,10 @@ public class Bank : Agent
     {
         cash.sendAll(byWhom.cash);
         givenLoans.setZero();
+    }
+
+    public override void simulate()
+    {
+        throw new NotImplementedException();
     }
 }

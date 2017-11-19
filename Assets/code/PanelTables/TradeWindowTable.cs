@@ -17,11 +17,8 @@ public class TradeWindowTable : MyTable
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
-   
-    override protected void AddButtons()
+    private void addHeader()
     {
-        int counter = 0;
-
         // Adding product name 
         AddButton("Product");
         ////Adding production
@@ -39,29 +36,35 @@ public class TradeWindowTable : MyTable
         ////Adding price
         AddButton("Price");
         ////Adding price Change
-        //AddButton(null.loyalty.ToString(), null);
+        
+    }
+    override protected void AddButtons()
+    {
+        int counter = 0;
+        addHeader();
+     
         foreach (Product product in Product.getAllNonAbstract())
-        {               
-            if (product != Product.Gold && product.isInventedByAnyOne() || product==Product.Cattle )// && !product.isAbstract())
+            if (product.isTradable())// && !product.isAbstract())
             {
                 // Adding product name 
                 AddButton(product.getName(), product);
                 ////Adding production
-                AddButton(Game.market.getProductionTotal(product, !Game.devMode).ToString(), product);
+                AddButton(Game.market.getProductionTotal(product, true).get().ToString(), product);
                 ////Adding abstract Demand
                 //AddButton(Game.market.get(pro).ToString().name, next);
 
                 ////Adding On market
-                AddButton(Game.market.getSupply(product, !Game.devMode).ToString(), product);
+                AddButton(Game.market.getMarketSupply(product, true).get().ToString(), product);
 
                 ////Adding total consumption
-                AddButton(Game.market.getTotalConsumption(product, !Game.devMode).ToString(), product);
+                AddButton(Game.market.getTotalConsumption(product, true).get().ToString(), product);
 
                 ////Adding Bought
-                AddButton(Game.market.getBouth(product, !Game.devMode).ToString(), product);
+                AddButton(Game.market.getBouthOnMarket(product, true).get().ToString(), product);
 
                 ////Adding effective Demand/Supply
                 AddButton(Game.market.getDemandSupplyBalance(product).ToString(), product);
+                //AddButton("-", product);
                 ////Adding price
                 AddButton(Game.market.getPrice(product).get().ToString(), product);
                 ////Adding price Change
@@ -69,7 +72,6 @@ public class TradeWindowTable : MyTable
                 counter++;
                 //contentPanel.r
             }
-        }
-
+        addHeader();
     }
 }

@@ -144,7 +144,7 @@ public class ProvincePanel : MonoBehaviour
         sb.Append("\nRural overpopulation: ").Append(province.getOverpopulation());
         sb.Append("\nCores: ").Append(province.getCoresDescription());
         if (province.getModifiers().Count > 0)
-            sb.Append("\nModifiers: ").Append(CollectionExtensions.getString(province.getModifiers()));
+            sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(province.getModifiers()));
 
 
         //+ "\nNeighbors " + province.getNeigborsList()

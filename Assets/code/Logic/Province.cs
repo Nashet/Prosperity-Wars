@@ -40,7 +40,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     private readonly List<Country> cores = new List<Country>();
     private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
     private TerrainTypes terrain;
-    private readonly Dictionary<Mod, DateTime> modifiers = new Dictionary<Mod, DateTime>();
+    private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
 
     //empty province constructor
     public Province(string name, int iID, Color icolorID, Product resource) : base(name)
@@ -251,7 +251,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         //{
         //    if (item.Value.isDatePassed())
         //}
-        modifiers.RemoveAll((modifier, date) => date != default(DateTime) && date.isDatePassed());
+        modifiers.RemoveAll((modifier, date) => date != null && date.isDatePassed());
     }
     /// <summary>
     /// returns true if ANY of cores matches  predicate
@@ -331,6 +331,8 @@ public class Province : Name, IEscapeTarget, IHasCountry
             Movement.leave(pop);
         }
 
+        taker.government.onReformEnacted(this);
+
         if (oldCountry != null)
             if (oldCountry.ownedProvinces != null)
                 oldCountry.ownedProvinces.Remove(this);
@@ -346,15 +348,15 @@ public class Province : Name, IEscapeTarget, IHasCountry
         setBorderMaterials(false);
         if (addModifier)
             if (modifiers.ContainsKey(Mod.recentlyConquered))
-                modifiers[Mod.recentlyConquered] = Game.date.AddYears(20);
+                modifiers[Mod.recentlyConquered].set(Game.date.getNewDate(20));
             else
-                modifiers.Add(Mod.recentlyConquered, Game.date.AddYears(20));
+                modifiers.Add(Mod.recentlyConquered, Game.date.getNewDate(20));
     }
     public int howFarFromCapital()
     {
         return 0;
     }
-    public Dictionary<Mod, DateTime> getModifiers()
+    public Dictionary<Mod, MyDate> getModifiers()
     {
         return modifiers;
     }
@@ -372,7 +374,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         return neighbors.FindAll(predicate);
 
     }
-    public IEnumerable<Producer> getProducers()
+    public IEnumerable<Producer> getAllProducers()
     {
         foreach (Factory factory in allFactories)
             yield return factory;
@@ -381,16 +383,16 @@ public class Province : Name, IEscapeTarget, IHasCountry
                 //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
                 yield return pop;
     }
-    public IEnumerable<Producer> getBuyers()
+    public IEnumerable<Producer> getAllBuyers()
     {
         foreach (Factory factory in allFactories)
             // if (!factory.getType().isResourceGathering()) // every fabric is buyer (upgrading)
             yield return factory;
         foreach (PopUnit pop in allPopUnits)
-            if (pop.canBuyProducts())
+            if (pop.canTrade())
                 yield return pop;
     }
-    public IEnumerable<Producer> getConsumers()
+    public IEnumerable<Producer> getAllConsumers()
     {
         foreach (Factory factory in allFactories)
             //if (!factory.getType().isResourceGathering())// every fabric is consumer (upgrading)
@@ -406,8 +408,11 @@ public class Province : Name, IEscapeTarget, IHasCountry
         foreach (PopUnit pop in allPopUnits)
             yield return pop;
     }
-
-
+    public IEnumerable<Factory> getAllFactories()
+    {
+        foreach (Factory factory in allFactories)
+            yield return factory;
+    }
     public static Vector3 setProvinceCenter(MeshStructure meshStructure)
     {
         Vector3 accu = new Vector3(0, 0, 0);
@@ -427,7 +432,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
             //    cultures[pop.culture] += pop.getPopulation();
             //else
             //    cultures.Add(pop.culture, pop.getPopulation());
-            cultures.AddMy(pop.culture, pop.getPopulation());
+            cultures.addMy(pop.culture, pop.getPopulation());
         ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.getPopulation()));
         return cultures.MaxBy(y => y.Value).Key as Culture;
     }
@@ -437,6 +442,14 @@ public class Province : Name, IEscapeTarget, IHasCountry
         int result = 0;
         foreach (PopUnit pop in allPopUnits)
             result += pop.getPopulation();
+        return result;
+    }
+    public int getMenPopulationEmployable()
+    {
+        int result = 0;
+        foreach (PopUnit pop in allPopUnits)
+            if (pop.popType.canBeUnemployed())
+                result += pop.getPopulation();
         return result;
     }
 
@@ -504,7 +517,11 @@ public class Province : Name, IEscapeTarget, IHasCountry
             if (pop.popType == ipopType)
                 yield return pop;
     }
-
+    public IEnumerable<PopUnit> getAllPopUnits()
+    {
+        foreach (PopUnit pop in allPopUnits)
+            yield return pop;
+    }
     public static Province find(Color color)
     {
         foreach (Province anyProvince in allProvinces)
@@ -536,9 +553,9 @@ public class Province : Name, IEscapeTarget, IHasCountry
             aristoctratAmount += aristocrats.getPopulation();
         foreach (Aristocrats aristocrat in getAllPopUnits(PopType.Aristocrats))
         {
-            Value howMuch = new Value(taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
+            Storage howMuch = new Storage(fromWho.getProduct(), taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
             fromWho.send(aristocrat.storage, howMuch);
-            aristocrat.gainGoodsThisTurn.add(howMuch);
+            aristocrat.addProduct(howMuch);
             aristocrat.dealWithMarket();
             //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);            
         }
@@ -584,11 +601,11 @@ public class Province : Name, IEscapeTarget, IHasCountry
             return new Value(1f);
     }
     /// <summary>
-    /// Returns result divided on groups of factories (List) each with own level of salary
+    /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
     /// </summary>    
-    public IEnumerable<List<Factory>> getFactoriesSalaryDescendingOrder()
+    private IEnumerable<List<Factory>> getFactoriesDescendingOrder(Func<Factory, float> orderMethod)
     {
-        var sortedfactories = allFactories.OrderByDescending(o => o.getSalary());
+        var sortedfactories = allFactories.OrderByDescending(o => orderMethod(o));
         var iterator = sortedfactories.GetEnumerator();
         // Pre read first element
         if (iterator.MoveNext())
@@ -599,7 +616,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
 
             while (iterator.MoveNext())
             {
-                if (iterator.Current.getSalary() == previousFactory.getSalary())
+                if (orderMethod(iterator.Current) == orderMethod(previousFactory))
                     result.Add(iterator.Current);
                 else
                 {
@@ -620,7 +637,13 @@ public class Province : Name, IEscapeTarget, IHasCountry
         if (unemplyedWorkForce > 0)
         {
             // workforceList = workforceList.OrderByDescending(o => o.population).ToList();            
-            foreach (List<Factory> factoryGroup in getFactoriesSalaryDescendingOrder())
+            Func<Factory, float> order;
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                order = (x => x.getPriority());
+            else
+                order = (x => x.getSalary());
+
+            foreach (List<Factory> factoryGroup in getFactoriesDescendingOrder(order))
             {
                 // if there is no enough workforce to fill all factories in group then
                 // workforce should be distributed proportionally
@@ -633,7 +656,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
 
                 int hiredInThatGroup = 0;
                 foreach (var factory in factoryGroup)
-                    if (factory.getSalary() > 0f)//factory.isWorking() &&
+                    if (factory.getSalary() > 0f || getCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
                         int factoryWants = factory.howMuchWorkForceWants();
 
@@ -684,35 +707,22 @@ public class Province : Name, IEscapeTarget, IHasCountry
     internal List<FactoryType> whatFactoriesCouldBeBuild()
     {
         List<FactoryType> result = new List<FactoryType>();
-        foreach (FactoryType ft in FactoryType.allTypes)
-            if (canBuildNewFactory(ft))
-                result.Add(ft);
+        foreach (FactoryType type in FactoryType.allTypes)
+            if (type.canBuildNewFactory(this))
+                result.Add(type);
         return result;
     }
 
-    internal bool canBuildNewFactory(FactoryType ft)
-    {
-        if (HaveFactory(ft))
-            return false;
-        if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource
-            || !ft.basicProduction.getProduct().isInvented(getCountry())
-            || ft.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
-            )
-            return false;
-        return true;
-    }
-    internal bool canUpgradeFactory(FactoryType ft)
-    {
-        if (!HaveFactory(ft))
-            return false;
-        // if (ft.isResourceGathering() && ft.basicProduction.getProduct() != this.resource)
-        //     return false;
-        return true;
-    }
-    internal bool HaveFactory(FactoryType ft)
+    /// <summary>
+    /// check type for null outside
+    /// </summary>
+
+    
+    
+    internal bool hasFactory(FactoryType type)
     {
         foreach (Factory f in allFactories)
-            if (f.getType() == ft)
+            if (f.getType() == type)
                 return true;
         return false;
     }
@@ -746,7 +756,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
     {
         int counter = 0;
         foreach (Factory factory in allFactories)
-            if (factory.isUpgrading())
+            if (factory.isUpgrading() || factory.isBuilding())
             {
                 counter++;
                 if (counter == limit)
@@ -793,7 +803,7 @@ public class Province : Name, IEscapeTarget, IHasCountry
         foreach (Storage inputNeed in resourceInput)
             foreach (Factory provinceFactory in allFactories)
                 //if (provinceFactory.isWorking() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
-                if (provinceFactory.gainGoodsThisTurn.isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
+                if (provinceFactory.getGainGoodsThisTurn().isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
                     return true;
         return false;
     }
@@ -1019,8 +1029,8 @@ public class Province : Name, IEscapeTarget, IHasCountry
     {
         Value result = new Value(0);
         foreach (var producer in getAllAgents())
-            if (producer.gainGoodsThisTurn.get() > 0f)
-                result.add(Game.market.getCost(producer.gainGoodsThisTurn).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
+            if (producer.getGainGoodsThisTurn().get() > 0f)
+                result.add(Game.market.getCost(producer.getGainGoodsThisTurn()).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
         return result;
     }
 }
@@ -1039,10 +1049,7 @@ public class Mod : Name
     //    expireDate.AddYears(years);
     //}
 }
-public interface IHasStatistics
-{
-    void setStatisticToZero();
-}
+
 public interface IHasCountry
 {
     Country getCountry();

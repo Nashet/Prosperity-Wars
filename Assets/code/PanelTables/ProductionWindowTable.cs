@@ -35,7 +35,7 @@ public class ProductionWindowTable : MyTableNew
         AddButton("Profit");
 
         ////Adding profit
-        AddButton("% Profit");
+        AddButton("Profitability");
 
         ////Adding salary
         AddButton("Salary");
@@ -50,7 +50,7 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.getProvince().ToString(), next.getProvince());
 
             ////Adding production
-            AddButton(next.gainGoodsThisTurn.ToString(), next);
+            AddButton(next.getGainGoodsThisTurn().ToString(), next);
 
             ////Adding effective resource income
             AddButton(next.getInputFactor().ToString(), next);
@@ -59,7 +59,10 @@ public class ProductionWindowTable : MyTableNew
             AddButton(next.getWorkForce().ToString(), next);
 
             ////Adding profit
-            AddButton(next.getProfit().ToString(), next);
+            if (next.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                AddButton("none", next);
+            else
+                AddButton(next.getProfit().ToString(), next);
 
             ////Adding margin
             if (next.isUpgrading())
@@ -73,15 +76,26 @@ public class ProductionWindowTable : MyTableNew
                     if (!next.isWorking())
                         AddButton("Closed", next);
                     else
-                        AddButton(next.getMargin().ToString(), next);
+                    {
+                        if (next.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                            AddButton("none", next);
+                        else
+                            AddButton(next.getMargin().ToString(), next);
+                    }
                 }
             }
+
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Economy.isMarket.checkIftrue(Game.Player))
-                AddButton(next.getSalary().ToString() + " coins", next);
+            if (next.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                AddButton("centralized", next);
             else
-                AddButton(next.getSalary().ToString() + " food", next);
+            {
+                if (next.getCountry().economy.getValue() == Economy.NaturalEconomy)
+                    AddButton(next.getSalary().ToString() + " food", next);
+                else
+                    AddButton(next.getSalary().ToString() + " coins", next);
+            }
             //counter++;
             //contentPanel.r
         }

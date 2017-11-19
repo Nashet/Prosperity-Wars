@@ -7,19 +7,7 @@ using System.Text;
 
 using System.Linq.Expressions;
 
-public class KeyVal<Key, Val>
-{
-    public Key key { get; set; }
-    public Val value { get; set; }
 
-    public KeyVal() { }
-
-    public KeyVal(Key key, Val val)
-    {
-        this.key = key;
-        this.value = val;
-    }
-}
 abstract public class PopUnit : Producer
 {
     ///<summary>buffer popList. To avoid iteration breaks</summary>
@@ -30,9 +18,7 @@ abstract public class PopUnit : Producer
     private int mobilized;
 
     public readonly PopType popType;
-
     public readonly Culture culture;
-
     public readonly Procent education;
     public readonly Procent needsFullfilled;
 
@@ -49,10 +35,10 @@ abstract public class PopUnit : Producer
 
     public Value incomeTaxPayed = new Value(0);
 
-    private readonly DateTime born;
+    private readonly MyDate born;
     private Movement movement;
     private readonly KeyVal<IEscapeTarget, int> lastEscaped = new KeyVal<IEscapeTarget, int>();
-    //if add new fields make sure it's implemented in second constructor and in merge()   
+    //if add new fields make sure it's implemented in second constructor and in merge()  
 
 
     static PopUnit()
@@ -76,8 +62,8 @@ abstract public class PopUnit : Producer
         modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
         modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
         new Modifier(x => !(x as PopUnit).isStateCulture()
-        && ((x as PopUnit).getCountry().minorityPolicy.status == MinorityPolicy.Residency
-        || (x as PopUnit).getCountry().minorityPolicy.status == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
+        && ((x as PopUnit).getCountry().minorityPolicy.getValue() == MinorityPolicy.Residency
+        || (x as PopUnit).getCountry().minorityPolicy.getValue() == MinorityPolicy.NoRights), "Is minority", -0.05f, false);
 
 
         //MinorityPolicy.IsResidency
@@ -121,7 +107,7 @@ abstract public class PopUnit : Producer
     protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(where)
     {
         where.allPopUnits.Add(this);
-        born = Game.date;
+        born = new MyDate(Game.date);
         population = amount;
         this.popType = popType;
         this.culture = culture;
@@ -136,7 +122,7 @@ abstract public class PopUnit : Producer
     /// </summary>    
     protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where)
     {
-        born = Game.date;
+        born = new MyDate(Game.date);
         PopListToAddToGeneralList.Add(this);
         // makeModifiers();
 
@@ -185,15 +171,17 @@ abstract public class PopUnit : Producer
         //{
         if (newPopType == PopType.Tribesmen)
         {
-            storage = new Storage(Product.Cattle);
-            gainGoodsThisTurn = new Storage(Product.Cattle);
-            sentToMarket = new Storage(Product.Cattle);
+            //storage = new Storage(Product.Cattle);
+            //gainGoodsThisTurn = new Storage(Product.Cattle);
+            //sentToMarket = new Storage(Product.Cattle);
+            changeProductionType(Product.Cattle);
         }
         else
         {
-            storage = new Storage(Product.Grain);
-            gainGoodsThisTurn = new Storage(Product.Grain);
-            sentToMarket = new Storage(Product.Grain);
+            //storage = new Storage(Product.Grain);
+            //gainGoodsThisTurn = new Storage(Product.Grain);
+            //sentToMarket = new Storage(Product.Grain);
+            changeProductionType(Product.Grain);
         }
         //}
         //else
@@ -207,7 +195,7 @@ abstract public class PopUnit : Producer
 
         //Consumer's fields:
         // Do I really need it?
-        getConsumedTotal().setZero();// = new PrimitiveStorageSet();
+        getConsumed().setZero();// = new PrimitiveStorageSet();
         getConsumedLastTurn().setZero();// = new PrimitiveStorageSet();
         getConsumedInMarket().setZero();// = new PrimitiveStorageSet();
 
@@ -254,7 +242,7 @@ abstract public class PopUnit : Producer
 
         //consumer's fields
         //isn't that important. That is fucking important
-        getConsumedTotal().add(source.getConsumedTotal());
+        getConsumed().add(source.getConsumed());
         getConsumedLastTurn().add(source.getConsumedLastTurn());
         getConsumedInMarket().add(source.getConsumedInMarket());
 
@@ -438,7 +426,6 @@ abstract public class PopUnit : Producer
         return randomPopulation;
     }
 
-
     internal bool isAlive()
     {
         return getPopulation() > 0;
@@ -474,7 +461,7 @@ abstract public class PopUnit : Producer
     {
         return getNeedsInCommon(this.popType.getLuxuryNeedsPer1000());
     }
-    override public List<Storage> getRealNeeds()
+    override public List<Storage> getRealAllNeeds()
     {
         return getNeedsInCommon(this.popType.getAllNeedsPer1000());
     }
@@ -552,20 +539,20 @@ abstract public class PopUnit : Producer
 
         }
         else// non market
-        if (this.popType != PopType.Aristocrats)
+            //if (this.popType != PopType.Aristocrats)
         {
             Storage howMuchSend;
             if (this.popType.isPoorStrata())
-                howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                howMuchSend = getGainGoodsThisTurn().multiplyOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
             else
             {
                 //if (this.popType.isRichStrata())
-                howMuchSend = gainGoodsThisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                howMuchSend = getGainGoodsThisTurn().multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
             }
             if (storage.isBiggerOrEqual(howMuchSend))
-                storage.send(getCountry().storageSet, howMuchSend);
+                storage.send(getCountry().countryStorageSet, howMuchSend);
             else
-                storage.sendAll(getCountry().storageSet);
+                storage.sendAll(getCountry().countryStorageSet);
         }
     }
 
@@ -577,31 +564,37 @@ abstract public class PopUnit : Producer
     public Procent getLifeNeedsFullfilling()
     {
         float need = needsFullfilled.get();
-        if (need < 1f / 3f)
-            return new Procent(needsFullfilled.get() * 3f);
+        if (need < Options.PopOneThird)
+            return new Procent(needsFullfilled.get() * Options.PopStrataWeight.get());
+        //return needsFullfilled;
         else
-            return new Procent(1f);
+            return Procent.HundredProcent;
     }
     public Procent getEveryDayNeedsFullfilling()
     {
         float need = needsFullfilled.get();
-        if (need <= 1f / 3f)
-            return new Procent(0f);
-        if (need < 2f / 3f)
-            return new Procent((needsFullfilled.get() - (1f / 3f)) * 3f);
+        if (need <= Options.PopOneThird)
+            return Procent.ZeroProcent;
+        if (need < Options.PopTwoThird)
+            return new Procent((needsFullfilled.get() - Options.PopOneThird) * Options.PopStrataWeight.get());
+        //return needsFullfilled;
         else
-            return new Procent(1f);
+            return Procent.HundredProcent;
     }
 
     public Procent getLuxuryNeedsFullfilling()
     {
         float need = needsFullfilled.get();
-        if (need <= 2f / 3f)
-            return new Procent(0f);
-        if (need == 0.999f)
-            return new Procent(1f);
-        else
-            return new Procent((needsFullfilled.get() - 0.666f) * 3f);
+        if (need <= Options.PopTwoThird)
+            return Procent.ZeroProcent;
+        //if (need == 0.999f)
+        //    return Procent.HundredProcent;
+        //else
+        //    return new Procent((needsFullfilled.get() - Options.PopTwoThird) * Options.PopStrataWeight.get());
+        //if (needsFullfilled.isSmallerThan(Procent.HundredProcent))
+        return new Procent((needsFullfilled.get() - Options.PopTwoThird) * Options.PopStrataWeight.get());
+        //else 
+        //    return new 
 
     }
     /// <summary>
@@ -630,7 +623,7 @@ abstract public class PopUnit : Producer
             }
     }
 
-    void buyNeeds(List<Storage> lifeNeeds, bool skipLifeneeds)
+    private void consumeNeedsWithMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
     {
         //buy life needs
         Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
@@ -648,44 +641,56 @@ abstract public class PopUnit : Producer
                 //storage.subtract(need); // danger moment - may subtracts different type of product
                 //consumedTotal.set(storage.getProduct(), need);
                 consumeFromItself(realConsumption);
-                needsFullfilled.set(1f / 3f);
+                needsFullfilled.set(Options.PopOneThird);
             }
             else
-            //needsFullfilled.set(Game.market.buy(this, need, null).get() / 3f);
-            {
-                needsFullfilled.set(Game.market.buy(this, need, null), need);
-                needsFullfilled.divide(Options.PopStrataWeight);
-            }
+                needsFullfilled.set(Game.market.buy(this, need, null).get() / need.get() / Options.PopStrataWeight.get());
+            //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
+            //{
+            //    needsFullfilled.set(Game.market.buy(this, need, null), need);
+            //    needsFullfilled.divide(Options.PopStrataWeight);
+            //}
         }
 
         // buy everyday needs
-        if (getLifeNeedsFullfilling().get() >= 0.95f)
+        if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
         {
             // save some money in reserve to avoid spending all money on luxury 
             //Agent reserve = new Agent(0f, null, null); // temporally removed for testing
             // payWithoutRecord(reserve, cash.multipleOutside(Options.savePopMoneyReserv));            
 
             Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
-            var everyDayNeeds = getRealEveryDayNeeds();
-            foreach (Storage need in everyDayNeeds)
+            var everyDayNeedsConsumed = new List<Storage>();
+            foreach (Storage need in getRealEveryDayNeeds())
             {
                 //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
-                Game.market.buy(this, need, null);
+                var consumed = Game.market.buy(this, need, null);
+                if (consumed.isNotZero())
+                    everyDayNeedsConsumed.Add(consumed);
             }
-            Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-            if (spentMoneyOnEveryDayNeeds.isNotZero())
-                needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
+            //Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+            //if (spentMoneyOnEveryDayNeeds.isNotZero())
+            //    needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
+            var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+            everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
+            needsFullfilled.add(everyDayNeedsFulfilled);
 
             // buy luxury needs
-            if (getEveryDayNeedsFullfilling().get() >= 0.95f)
+            if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
             {
                 var luxuryNeeds = getRealLuxuryNeeds();
 
                 Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                 bool someLuxuryProductUnavailable = false;
+                var luxuryNeedsConsumed = new List<Storage>();
                 foreach (Storage nextNeed in luxuryNeeds)
-                    if (Game.market.buy(this, nextNeed, null).isZero())
+                {
+                    var consumed = Game.market.buy(this, nextNeed, null);
+                    if (consumed.isZero())
                         someLuxuryProductUnavailable = true;
+                    else
+                        luxuryNeedsConsumed.Add(consumed);
+                }
                 Value luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
 
                 // unlimited consumption
@@ -696,7 +701,7 @@ abstract public class PopUnit : Producer
                 {
                     Value spentOnUnlimitedConsumption = new Value(cash);
                     Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-                    Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by already spent money
+                    Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by income - already spent money
 
                     if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
                         spentOnUnlimitedConsumption.set(spendingLimit); // don't spent more than gained                    
@@ -708,27 +713,82 @@ abstract public class PopUnit : Producer
                         foreach (Storage nextNeed in luxuryNeeds)
                         {
                             nextNeed.multiply(buyExtraGoodsMultiplier);
-                            Game.market.buy(this, nextNeed, null);
+                            var consumed = Game.market.buy(this, nextNeed, null);
+                            if (consumed.isNotZero())
+                                luxuryNeedsConsumed.Add(consumed);
                         }
                     }
                 }
-
-                Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
-                // wrong consumption calculation?
-                if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
-                    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
+                var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
+                needsFullfilled.add(luxuryNeedsFulfilled);
+                //Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                //if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
+                //    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
             }
             // reserve.payWithoutRecord(this, reserve.cash);
         }
+
     }
-    /// <summary> !!! Overloaded for artisans </summary>
+    protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
+    {
+        if (hasToPayGovernmentTaxes())
+            payTaxes(); // that is here because pop shoul pay taxes from all income
+        foreach (Storage need in lifeNeeds)
+            if (storage.has(need))// don't need to buy on market
+            {
+                Storage realConsumption;
+                if (need.isAbstractProduct())
+                    realConsumption = new Storage(storage.getProduct(), need);
+                else
+                    realConsumption = need;
+
+                consumeFromItself(realConsumption);
+                needsFullfilled.set(1f / 3f);
+                consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
+            }
+            else
+            {
+                //its about lifeneeds only
+                float canConsume = storage.get();
+                consumeFromItself(storage);
+                needsFullfilled.set(canConsume / need.get() / 3f);
+            }
+    }
+    /// <summary>
+    /// Returns list of actually consumed
+    /// </summary>    
+    private List<Storage> consumeWithPlannedEconomy(List<Storage> needs)
+    {
+        var consumed = new List<Storage>();
+        foreach (var item in needs)
+        {
+            if (getCountry().countryStorageSet.hasMoreThan(item, Options.CountryPopConsumptionLimitPE))
+                if (item.isAbstractProduct())
+                {
+                    var stor = getCountry().countryStorageSet.convertToBiggestStorageProduct(item);
+                    consumeFromCountryStorage(stor, getCountry());
+                    consumed.Add(stor);
+                    //getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            
+                }
+
+                else
+                {
+                    consumeFromCountryStorage(item, getCountry());
+                    consumed.Add(item);
+                    //getCountry().countryStorageSet.subtract(item);
+                }
+        }
+        return consumed;
+    }
+    /// <summary> !!! Overloaded for artisans and tribesmen </summary>
     public override void consumeNeeds()
     {
         //life needs First
-        List<Storage> needs = getRealLifeNeeds();
-        if (canBuyProducts())
+        List<Storage> lifeNeeds = getRealLifeNeeds();
+        if (canTrade())
         {
-            buyNeeds(needs, false);
+            consumeNeedsWithMarket(lifeNeeds, false);
         }
         else
         {
@@ -736,63 +796,39 @@ abstract public class PopUnit : Producer
             // todo - !! - check for substitutes
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                if (getCountry().storageSet.has(needs))
+                consumeWithPlannedEconomy(getRealLifeNeeds());
+                //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
+                var lifeNeedsFulfilled = Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds());
+                lifeNeedsFulfilled.divide(Options.PopStrataWeight);
+                needsFullfilled.set(lifeNeedsFulfilled);
+
+                var everyDayNeedsConsumed = consumeWithPlannedEconomy(getRealEveryDayNeeds());
+                if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    //getCountry().storageSet.subtract(needs);
-                    //consumedTotal.add(needs);
-                    consumeFromCountryStorage(needs, getCountry());
-                    needsFullfilled.set(1f / 3f);
+                    var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+                    everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
+                    needsFullfilled.add(everyDayNeedsFulfilled);
                 }
-                var everyDayNeeds = getRealEveryDayNeeds();
-                if (getCountry().storageSet.has(everyDayNeeds))
+
+                var luxuryNeedsConsumed = consumeWithPlannedEconomy(getRealLuxuryNeeds());
+                if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    //getCountry().storageSet.subtract(everyDayNeeds);
-                    //consumedTotal.add(everyDayNeeds);
-                    consumeFromCountryStorage(everyDayNeeds, getCountry());
-                    needsFullfilled.set(2f / 3f);
+                    var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
+                    needsFullfilled.add(luxuryNeedsFulfilled);
                 }
-                var luxuryNeeds = getRealEveryDayNeeds();
-                if (getCountry().storageSet.has(luxuryNeeds))
-                {
-                    //getCountry().storageSet.subtract(luxuryNeeds);
-                    //consumedTotal.add(luxuryNeeds);
-                    consumeFromCountryStorage(luxuryNeeds, getCountry());
-                    needsFullfilled.set(1f);
-                }
+                //var consumed = Procent.makeProcent(getConsumed().getContainer(), getRealAllNeeds());
+                //consumed.multiply(Options.PopStrataWeight);
+                //needsFullfilled.set(consumed);
             }
             else
-            {
-                payTaxes(); // pops who can't trade always should pay taxes -  hasToPayGovernmentTaxes() is  excessive DUE TO aRISTOCRATS always can trade. Well, may be except planned economy
-                foreach (Storage need in needs)
-
-                    if (storage.has(need))// don't need to buy on market
-                    {
-                        Storage realConsumption;
-                        if (need.isAbstractProduct())
-                            realConsumption = new Storage(storage.getProduct(), need);
-                        else
-                            realConsumption = need;
-
-
-                        consumeFromItself(realConsumption);
-                        //storage.subtract(need);
-                        //consumedTotal.set(need);
-                        needsFullfilled.set(1f / 3f);
-                        consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
-                    }
-                    else
-                    {
-                        //its about lifeneeds only
-                        float canConsume = storage.get();
-                        //consumedTotal.set(storage);
-                        //storage.set(0);
-                        consumeFromItself(storage);
-                        needsFullfilled.set(canConsume / need.get() / 3f);
-                    }
-            }
+                consumeWithNaturalEconomy(lifeNeeds);
         }
     }
-    virtual internal bool canBuyProducts()
+    /// <summary>
+    /// Overrode for some pop types
+    /// </summary>      
+    virtual internal bool canTrade()
     {
         if (Economy.isMarket.checkIftrue(getCountry()))
             return true;
@@ -894,7 +930,7 @@ abstract public class PopUnit : Producer
     // Not called in capitalism
     public void payTaxToAllAristocrats()
     {
-        Value taxSize = gainGoodsThisTurn.multiplyOutside(getCountry().serfdom.status.getTax());
+        Value taxSize = getGainGoodsThisTurn().multiplyOutside(getCountry().serfdom.status.getTax());
         getProvince().shareWithAllAristocrats(storage, taxSize);
     }
     abstract public bool shouldPayAristocratTax();
@@ -1166,12 +1202,11 @@ abstract public class PopUnit : Producer
             }
         }
     }
-
     virtual internal void invest()
     {
         if (getCountry().isInvented(Invention.Banking))
         {
-            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
+            Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
             if (extraMoney.isNotZero())
                 getBank().takeMoney(this, extraMoney);
         }
@@ -1196,5 +1231,18 @@ abstract public class PopUnit : Producer
         sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(getProvince());
         //return popType + " from " + province;
         return sb.ToString();
+    }
+}
+public class KeyVal<Key, Val>
+{
+    public Key key { get; set; }
+    public Val value { get; set; }
+
+    public KeyVal() { }
+
+    public KeyVal(Key key, Val val)
+    {
+        this.key = key;
+        this.value = val;
     }
 }

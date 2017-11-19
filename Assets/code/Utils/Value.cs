@@ -7,6 +7,8 @@ public class Value
     private uint value;
     internal readonly static uint precision = 1000; // 0.01
     internal static readonly Value Zero = new Value(0);
+    internal static readonly Value Max999 = new Value(999.99f);
+    internal static readonly Value Max = new Value(int.MaxValue/ 1000f);
 
     public Value(float number, bool showMessageAboutNegativeValue = true)
     {
@@ -191,7 +193,7 @@ public class Value
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Value divide failed");
-            value = 0;
+            value = 99999;
         }
         else
             set(this.value / (float)invalue.value);
@@ -203,7 +205,7 @@ public class Value
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Value divide failed");
-            value = 0;
+            value = 99999;
         }
         else
             set(this.get() / (float)v);
@@ -217,7 +219,7 @@ public class Value
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Value divide by zero");
-            return new Value(0);
+            return Max999;
         }
         else
             return new Value(get() / invalue);
@@ -229,7 +231,7 @@ public class Value
         {
             if (showMessageAboutNegativeValue)
                 Debug.Log("Value divide by zero");
-            return new Value(0);
+            return Max999;
         }
         else
             return new Value(get() / invalue.get());

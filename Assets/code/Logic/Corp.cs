@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class Corps
+//todo inherit from consumer?
+public class Corps // Consumer
 {
     PopUnit origin;
     int size;
@@ -17,7 +18,7 @@ public class Corps
         this.morale.set(0f);
         consumption.setZero();
     }
-    public Corps(PopUnit origin, int size)
+    public Corps(PopUnit origin, int size)//:base(null,null)
     {
         initialize(origin, size);
     }
@@ -51,14 +52,6 @@ public class Corps
         //here - delete all links on that object        
     }
 
-
-
-    //internal void demobilizeFrom(Army army)
-    //{
-    //    //army.remove(this);
-    //    origin.demobilize();
-    //    Pool.ReleaseObject(this);
-    //}
     public void consume(Country owner)
     {
         var needs = getRealNeeds(owner);
@@ -68,16 +61,17 @@ public class Corps
         foreach (var need in needs)
         {
             // refactor substraction for more abstract??
-            if (owner.storageSet.has(need))
-            {       
+            if (owner.countryStorageSet.has(need))
+            {
                 if (need.isAbstractProduct())
                     // convertToBiggestStorageProduct here are duplicated in this.getConsumptionProcent() (getBiggestStorage())
-                    realConsumption = owner.storageSet.convertToBiggestStorageProduct(need);
+                    realConsumption = owner.countryStorageSet.convertToBiggestStorageProduct(need);
                 else
                     realConsumption = need;
                 if (realConsumption.isNotZero())
                 {
-                    owner.storageSet.subtract(realConsumption);
+                    owner.consumeFromCountryStorage(realConsumption, owner);
+                    //owner.countryStorageSet.subtract(realConsumption);
                     consumption.add(realConsumption);
                 }
             }
@@ -86,7 +80,7 @@ public class Corps
                 shortage += need.get();
             }
         }
-        
+
         float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
         moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
         if (morale.get() + moraleChange < 0)
@@ -120,17 +114,17 @@ public class Corps
 
         List<Storage> result = new List<Storage>();
         foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
-            if (next.getProduct().isInvented(country))
+            if (next.getProduct().isInventedBy(country) && (next.getProduct() != Product.Cattle || country.isInvented(Invention.Domestication)))
             {
                 Storage nStor = new Storage(next.getProduct(), next.get());
                 nStor.multiply(multiplier);
                 result.Add(nStor);
-            }       
+            }
         return new StorageSet(result);
     }
     public Storage getRealNeeds(Country country, Product product)
     {
-        if (product.isInvented(country))
+        if (product.isInventedBy(country))
         {
             Storage found = origin.popType.getMilitaryNeedsPer1000().getFirstStorage(product);
             if (found.isZero())

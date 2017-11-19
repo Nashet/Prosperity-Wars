@@ -33,3 +33,7 @@ dev.log
 /[Rr]eleases/
 /[Rr]eserv/
 
+Assets/ClassDiagram.cd
+.vs/Supercharger/EconomicSimulation/workbench.dat
+*.dat
+Assets/ClassDiagram.cd

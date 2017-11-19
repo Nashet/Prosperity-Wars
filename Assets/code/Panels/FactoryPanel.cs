@@ -76,20 +76,24 @@ public class FactoryPanel : DragPanel//for dragging
 
             sb.Append(shownFactory.getType().name).Append(" level: ").Append(shownFactory.getLevel());  
             sb.Append("\n").Append("Workforce: ").Append(shownFactory.getWorkForce());
-            sb.Append("\nGain goods: ").Append(shownFactory.gainGoodsThisTurn.ToString());
+            sb.Append("\nGain goods: ").Append(shownFactory.getGainGoodsThisTurn().ToString());
             sb.Append("\nUnsold: ").Append(shownFactory.storage.ToString());
             sb.Append("\nBasic production: ").Append(shownFactory.getType().basicProduction);            
-            sb.Append("\nSent to market: ").Append(shownFactory.sentToMarket);
+            sb.Append("\nSent to market: ").Append(shownFactory.getSentToMarket());
             sb.Append("\nCash: ").Append(shownFactory.cash.ToString());
             sb.Append("\nMoney income: ").Append(shownFactory.moneyIncomethisTurn);
-            sb.Append("\nProfit: ").Append(shownFactory.getProfit());
+            //if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
+            {
+                
+                sb.Append("\nProfit: ").Append(shownFactory.getProfit());
+            }
             if (shownFactory.getType().hasInput())
             {
                 sb.Append("\nInput required: ");
                 foreach (Storage next in shownFactory.getType().resourceInput)
                     sb.Append(next.get() * shownFactory.getWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
             }  
-            sb.Append("\nConsumed: ").Append(shownFactory.getConsumedTotal().ToString()).Append(" Cost: ").Append(Game.market.getCost(shownFactory.getConsumedTotal()));
+            sb.Append("\nConsumed: ").Append(shownFactory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(shownFactory.getConsumed()));
             if (Game.devMode)
                 sb.Append("\nConsumed LT: ").Append(shownFactory.getConsumedLastTurn());
             sb.Append("\nInput reserves: ").Append(shownFactory.getInputProductsReserve());
@@ -146,15 +150,13 @@ public class FactoryPanel : DragPanel//for dragging
     }
     public void onPriorityChanged()
     {
-        shownFactory.setPriority((byte)Mathf.RoundToInt(priority.value)); 
+        shownFactory.setPriority((int)Mathf.RoundToInt(priority.value)); 
     }
     public void onReopenClick()
     {
-        if (reopenButtonflag == reopenButtonStatus.close)
-            //if (shownFactory.whyCantCloseFactory() == null)
+        if (reopenButtonflag == reopenButtonStatus.close)            
             shownFactory.close();
-        else
-            //if (shownFactory.whyCantReopenFactory() == null)
+        else                                             
             shownFactory.open(Game.Player);
         refresh();
         if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();

@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Contains common mechanics for Factory and ArtisanProduction
+/// </summary>
 abstract public class SimpleProduction : Producer
 {
     private Agent owner;
@@ -12,9 +15,10 @@ abstract public class SimpleProduction : Producer
     protected SimpleProduction(FactoryType type, Province province) : base(province)
     {
         this.type = type;
-        gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
-        storage = new Storage(this.getType().basicProduction.getProduct());
-        sentToMarket = new Storage(this.getType().basicProduction.getProduct());
+        //gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
+        //storage = new Storage(this.getType().basicProduction.getProduct());
+        //sentToMarket = new Storage(this.getType().basicProduction.getProduct());
+        changeProductionType(this.getType().basicProduction.getProduct());
     }
     internal Agent getOwner()
     {
@@ -55,16 +59,19 @@ abstract public class SimpleProduction : Producer
     }
 
     /// <summary>
-    /// Fills storageNow and gainGoodsThisTurn
+    /// Fills storageNow and gainGoodsThisTurn. Don't not to confuse with Producer.produce()
     /// </summary>
     protected void produce(Value multiplier)
-    {           
-        gainGoodsThisTurn = getType().basicProduction.multiplyOutside(multiplier);
-        storage.add(gainGoodsThisTurn);
-
+    {
+        addProduct(getType().basicProduction.multiplyOutside(multiplier));
+        if (getGainGoodsThisTurn().isNotZero())
+        {
+            storage.add(getGainGoodsThisTurn());
+            calcStatistics();
+        }
         //consume Input Resources
         if (!getType().isResourceGathering())
-            foreach (Storage next in getRealNeeds())
+            foreach (Storage next in getRealAllNeeds())
                 if (next.isAbstractProduct())
                 {
                     var substitute = getInputProductsReserve().convertToBiggestStorageProduct(next);
@@ -218,11 +225,11 @@ abstract public class SimpleProduction : Producer
     }
     virtual internal float getExpences()
     {
-        return Game.market.getCost(getConsumedTotal()).get();
+        return Game.market.getCost(getConsumed()).get();
     }
     public bool isAllInputProductsCollected()
     {
-        var realNeeds = getRealNeeds();
+        var realNeeds = getRealAllNeeds();
         foreach (var item in realNeeds)
         {
             if (!inputProductsReserve.has(item))

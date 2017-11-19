@@ -8,7 +8,8 @@ public class Procent : Value
 {
     internal static readonly Procent HundredProcent = new Procent(1f);
     internal static readonly Procent ZeroProcent = new Procent(0f);
-
+    internal static readonly Procent Max999 = new Procent(999.99f);
+    internal static readonly Procent Max = new Procent(int.MaxValue / 1000f);
 
     public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
     {
@@ -17,13 +18,38 @@ public class Procent : Value
     {
 
     }
+    public static Procent makeProcent(List<Storage> numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
+    {
+        //result should be  amount of numerator / amount of denominator
+        Value numeratorSum = new Value(0f);
+        foreach (var item in numerator)
+        {
+            numeratorSum.add(item);
+        }
+        Value denominatorSum = new Value(0f);
+        foreach (var item in denominator)
+        {
+            denominatorSum.add(item);
+        }
+
+        if (denominatorSum.isZero())
+        {
+            if (showMessageAboutOperationFails)            
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");
+                
+            
+            return Procent.Max999;
+        }
+        else
+            return new Procent(numeratorSum.get() / denominatorSum.get());
+    }
     public static Procent makeProcent(Value numerator, Value denominator, bool showMessageAboutOperationFails = true)
     {
         if (denominator.isZero())
         {
             if (showMessageAboutOperationFails)
                 Debug.Log("Division by zero in Procent.makeProcent(Value)");
-            return new Procent(0f);
+            return Procent.Max999;
         }
         else
             return new Procent(numerator.get() / denominator.get());
@@ -34,7 +60,7 @@ public class Procent : Value
         {
             if (showMessageAboutOperationFails)
                 Debug.Log("Division by zero in Procent.makeProcent(float)");
-            return new Procent(0f);
+            return Procent.Max999;
         }
         else
             return new Procent(numerator / denominator, showMessageAboutOperationFails);
@@ -44,8 +70,8 @@ public class Procent : Value
         if (denominator == 0)
         {
             if (showMessageAboutOperationFails)
-                Debug.Log("Division by zero in Procent.makeProcent(int)");
-            return new Procent(0f);
+                Debug.Log("Division by zero in Percent.makeProcent(int)");
+            return Procent.Max999;
         }
         else
             return new Procent(numerator / (float)denominator, showMessageAboutOperationFails);

@@ -229,8 +229,7 @@ public class Movement : Staff
 
         sendArmy(place.getCapital(), Procent.HundredProcent);
         _isInRevolt = true;
-    }
-    
+    }    
 }
 
 // todo make generic

@@ -56,7 +56,7 @@ public class BuildPanelTable : MyTable
                 ////Adding cost
                 //if (Game.player.isInvented(InventionType.capitalism))
                 if (Economy.isMarket.checkIftrue(Game.Player))
-                    AddButton(next.getBuildCost().ToString(), next);
+                    AddButton(Game.market.getCost(next.getBuildNeeds()).ToString(), next);
                 else
                     AddButton(next.getBuildNeeds().ToString(), next);
 
@@ -68,8 +68,11 @@ public class BuildPanelTable : MyTable
                 AddButton(next.basicProduction.ToString(), next);
 
                 ////Adding potential profit
-                AddButton(next.getPossibleMargin(Game.selectedProvince).ToString(), next);
-                
+                if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                    AddButton("unknown", next);
+                else
+                    AddButton(next.getPossibleMargin(Game.selectedProvince).ToString(), next);
+
                 counter++;
             }
         }

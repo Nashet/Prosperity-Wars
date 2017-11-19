@@ -20,7 +20,7 @@ public class ArtisanProduction : SimpleProduction
     {
         throw new DontUseThatMethod();
     }
-    override public List<Storage> getRealNeeds()
+    override public List<Storage> getRealAllNeeds()
     {
         return getRealNeeds(new Value(getOwner().getPopulation() / 1000f));
     }
@@ -43,14 +43,14 @@ public class ArtisanProduction : SimpleProduction
     public override void produce()
     {
         base.produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
-        if (this.gainGoodsThisTurn.isNotZero())
+        if (this.getGainGoodsThisTurn().isNotZero())
         {
-            getOwner().gainGoodsThisTurn.set(this.gainGoodsThisTurn);
+            getOwner().addProduct(this.getGainGoodsThisTurn());
             if (getOwner().storage.isExactlySameProduct(this.storage))
                 getOwner().storage.add(this.storage);
             else
                 getOwner().storage.set(this.storage);
-        }
+        }           
     }
     /// <summary>
     /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
@@ -58,14 +58,11 @@ public class ArtisanProduction : SimpleProduction
     override public void consumeNeeds()
     {
         List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-
-        //todo !CAPITALISM part
+                
         //if (isSubsidized())
         //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
         //else
         //shoppingList - getInputProductsReserve(); that is included in getHowMuchInputProductsReservesWants()
         Game.market.buy(this, new StorageSet(shoppingList), null);
     }
-
-
 }

@@ -130,6 +130,32 @@ public static class Texture2DExtensions
         return Game.Random.Next(0, image.height);
     }
 }
+/// <summary>!! Broken. Assuming product is abstract product</summary>
+public static class ListStorageExtensions
+{
+    public static Storage getStorageIncludingSubstitutes(this List<Storage> source, Product product)
+    {
+        var res = new Value(0f);
+        foreach (var substitute in product.getSubstitutes())
+            if (substitute.isTradable())
+            {
+                // how find food & grain? broken
+                //var find = source.Find(x => x.is);
+                //if (find != null)
+                    //var find = source.getStorage(substitute);
+                    //if (find.isNotZero())
+                  //  res.add(find);
+            }
+        return new Storage(product, res);
+    }
+    public static Storage getStorage(this List<Storage> list, Product product)
+    {        
+        foreach (Storage stor in list)
+            if (stor.isExactlySameProduct(product))
+                return stor;
+        return new Storage(product, 0f);
+    }
+}
 public static class CollectionExtensions
 {
     public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
@@ -146,12 +172,26 @@ public static class CollectionExtensions
     //    else
     //        dictionary.Add(what, size);
     //}
-    public static void AddMy<T>(this Dictionary<T, int> dictionary, T what, int size)
+    public static void addMy<T>(this Dictionary<T, int> dictionary, T what, int size)
     {
         if (dictionary.ContainsKey(what))
             dictionary[what] += size;
         else
             dictionary.Add(what, size);
+    }
+    public static void addMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
+    {
+        if (dictionary.ContainsKey(what))
+            dictionary[what].add(value);
+        else
+            dictionary.Add(what, value);
+    }
+    public static void setMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
+    {
+        if (dictionary.ContainsKey(what))
+            dictionary[what].set(value);
+        else
+            dictionary.Add(what, value);
     }
     public static void AddIfNotNull<T>(this List<T> list, T what)
     {
@@ -164,7 +204,6 @@ public static class CollectionExtensions
             destination.Add(item);
 
     }
-
 
     public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
     {
@@ -348,9 +387,23 @@ public static class CollectionExtensions
     public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
     {
         return source.FindAll(predicate).PickRandom();
-        //return source.ElementAt(Game.random.Next(source.Count));
-
+        //return source.ElementAt(Game.random.Next(source.Count));    
     }
+
+
+    public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
+        Func<TKey, TValue, bool> predicate)
+    {
+        var keys = dic.Keys.Where(k => predicate(k, dic[k])).ToList();
+        foreach (var key in keys)
+        {
+            dic.Remove(key);
+        }
+    }
+
+}
+public static class GetStringExtensions
+{
     public static string getString(this List<Storage> list, string lineBreaker)
     {
         if (list.Count > 0)
@@ -373,6 +426,46 @@ public static class CollectionExtensions
                 return sb.ToString();
             else
                 return "none";
+        }
+        else
+            return "none";
+    }
+
+    public static string getString(this List<KeyValuePair<Culture, Procent>> list, string lineBreaker, int howMuchStringsToShow)
+    {
+        if (list.Count > 0)
+        {
+            var sb = new StringBuilder();
+
+
+            if (list.Count <= howMuchStringsToShow)
+            {
+                bool isFirstRow = true;
+                foreach (var item in list)
+                {
+                    if (!isFirstRow)
+                        sb.Append(lineBreaker);
+                    isFirstRow = false;
+                    sb.Append(item.Key).Append(": ").Append(item.Value);
+                }
+            }
+            else  // there is at least howMuchStringsToShow + 1 elements
+            {
+                bool isFirstRow = true;
+                for (int i = 0; i < howMuchStringsToShow; i++)
+                {
+                    if (!isFirstRow)
+                        sb.Append(lineBreaker);
+                    isFirstRow = false;
+                    sb.Append(list[i].Key).Append(": ").Append(list[i].Value);
+                }
+                var othersSum = new Procent(0f);
+                for (int i = howMuchStringsToShow; i < list.Count; i++)
+                    othersSum.add(list[i].Value);
+                sb.Append(lineBreaker);
+                sb.Append("Others: ").Append(othersSum);
+            }
+            return sb.ToString();
         }
         else
             return "none";
@@ -413,7 +506,7 @@ public static class CollectionExtensions
         }
         return sb.ToString();
     }
-    public static string getString(Dictionary<Mod, DateTime> dictionary)
+    public static string getString(Dictionary<Mod, MyDate> dictionary)
     {
         var sb = new StringBuilder();
         bool isFirstRow = true;
@@ -424,32 +517,12 @@ public static class CollectionExtensions
                 sb.Append("\n");
             }
             isFirstRow = false;
-            if (item.Value == default(DateTime))
+            if (item.Value == null)
                 sb.Append(item.Key).Append(" (permanent)");
             else
                 sb.Append(item.Key).Append(" expires in ").Append(item.Value.getYearsUntill()).Append(" years");
-
-
-
         }
         return sb.ToString();
-    }
-
-    public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
-        Func<TKey, TValue, bool> predicate)
-    {
-        var keys = dic.Keys.Where(k => predicate(k, dic[k])).ToList();
-        foreach (var key in keys)
-        {
-            dic.Remove(key);
-        }
-    }
-    public static Storage getStorage(this List<Storage> list, Product product)
-    {
-        foreach (Storage stor in list)
-            if (stor.getProduct() == product)
-                return stor;
-        return new Storage(product, 0f);
     }
 }
 public static class ColorExtensions
@@ -756,24 +829,20 @@ public static class MeshExtensions
 }
 public static class DateExtensions
 {
-    //public static int getYearsSince(this DateTime source, DateTime date2)
+    //public static int getYearsSince(this DateTime date2)
     //{
-    //    return source.Year - date2.Year;
+    //    return Game.date.Year - date2.Year;
     //}
-    public static int getYearsSince(this DateTime date2)
-    {
-        return Game.date.Year - date2.Year;
-    }
-    public static int getYearsUntill(this DateTime date2)
-    {
-        return date2.Year - Game.date.Year;
-    }
-    public static bool isYearsPassed(this DateTime date, int years)
-    {
-        return date.Year % years == 0;
-    }
-    public static bool isDatePassed(this DateTime date)
-    {
-        return date.CompareTo(Game.date) < 1;
-    }
+    //public static int getYearsUntill(this DateTime date2)
+    //{
+    //    return date2.Year - Game.date.Year;
+    //}
+    //public static bool isDivisible(this DateTime date, int years)
+    //{
+    //    return date.Year % years == 0;
+    //}
+    //public static bool isDatePassed(this DateTime date)
+    //{
+    //    return date.CompareTo(Game.date) < 1;
+    //}
 }

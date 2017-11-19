@@ -5,22 +5,29 @@ using UnityEngine;
 
 public static class Options
 {
-    internal static readonly float cellMultiplier = 1f;
-    internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw   
-
+    // ARMY
     internal static readonly float ArmyDefenceBonus = 0.5f;
     internal static readonly float ArmyMobilizationFactor = 0.2f;
     internal static readonly float ArmyMaxMoralChangePerTic = 0.05f;
 
+    // COUNTRY
     internal static readonly int CountryForHowMuchDaysMakeReservs = 20;
     internal static readonly float CountryBadBoyWorldLimit = 0.1f;
     internal static readonly int CountryTimeToForgetBattle = 40;
     internal static readonly float defaultSciencePointMultiplier = 1.1f;//0.00001f; 
     internal static readonly float GovernmentTakesShareOfGoldOutput = 0.5f;
-
-    internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
-    internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly
     internal static readonly int ProvinceChanceToGetCore = 70;
+    internal static readonly Value CountryMinStorage = new Value(5f);
+    internal static readonly Value CountryMaxStorage = new Value(50f);
+    internal static readonly Value CountryBuyProductsForXDays = new Value(20f);
+    internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
+    internal static readonly Value CountryPopConsumptionLimitPE = new Value(40f);
+
+    // MAP
+    internal static readonly int ProvinceLakeShance = 8; // bigger - less lakes
+    internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly    
+    internal static readonly float cellMultiplier = 1f;
+    internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw   
 
     // MARKET
     internal static readonly float minPrice = 0.001f;
@@ -108,13 +115,15 @@ public static class Options
     internal static readonly Procent MovementStrenthToStartRebellion = new Procent(1f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
     internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
-    internal static readonly Value PopUnlimitedConsumptionLimit = new Value(50f);
+    internal static readonly Value PopUnlimitedConsumptionLimit = new Value(100f);
 
 
     internal static readonly float aristocratsFoodReserv = 50;
     internal static readonly float ArtisansProductionModifier = 0.5f;
     internal static readonly int ArtisansChangeProductionRate = 60;
     internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
+    internal static readonly float PopOneThird = 0.333f;
+    internal static readonly float PopTwoThird = 0.666f;
     /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
     internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
     internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;

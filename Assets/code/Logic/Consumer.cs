@@ -8,14 +8,17 @@ using UnityEngine;
 /// </summary>
 public abstract class Consumer : Agent
 {
-    /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
-    // may move it back to Producer
-    public Storage storage;
-    private readonly StorageSet consumedTotal = new StorageSet();
-    private readonly StorageSet consumedLastTurn = new StorageSet();
+    /// <summary> Amount of consumed product (destroyed by consumption) including market and non-market consumption. Used for statistics </summary>
+    private readonly StorageSet consumed = new StorageSet();    
+    private readonly StorageSet consumedLastTurnAwq = new StorageSet(); 
+    /// <summary> Amount of product bought and consumed (destroyed by consumption). Included only market bought products. Used to calculate prices on market</summary>
     private readonly StorageSet consumedInMarket = new StorageSet();
+    
+    /// <summary>
+    /// Represents buying and/or consuming needs     
+    /// </summary>
     public abstract void consumeNeeds();
-    public abstract List<Storage> getRealNeeds();
+    public abstract List<Storage> getRealAllNeeds();
 
     protected Consumer(Bank bank, Province province) : base(0f, bank, province)
     {
@@ -24,16 +27,16 @@ public abstract class Consumer : Agent
     /// <summary>
     /// Use for only reads!
     /// </summary>    
-    public StorageSet getConsumedTotal()
+    public StorageSet getConsumed()
     {
-        return consumedTotal;
+        return consumed;
     }
     /// <summary>
     /// Use for only reads!
     /// </summary>    
     public StorageSet getConsumedLastTurn()
     {
-        return consumedLastTurn;
+        return consumed;
     }
     /// <summary>
     /// Use for only reads!
@@ -42,36 +45,30 @@ public abstract class Consumer : Agent
     {
         return consumedInMarket;
     }
+    // Do I use where need to? Yes, I do. It goes to Market.Buy()
     public void consumeFromMarket(Storage what)
     {
-        //pay(Game.market, what.multiplyOutside(price));
-        //if (fromMarket)
-        ///{
-        consumedTotal.add(what);
+        consumed.add(what);
         consumedInMarket.add(what);
         Game.market.sentToMarket.subtract(what);
-        //}        
+    }
 
-        // from Market
-        //if (this is SimpleProduction)
-        //    (this as SimpleProduction).getInputProductsReserve().add(what);
-    }
-    /// <summary> Do checks outside</summary>
-    public void consumeFromItself(Storage what)
-    {
-        consumedTotal.add(what);
-        storage.subtract(what);
-    }
     public void consumeFromCountryStorage(List<Storage> what, Country country)
     {
-        consumedTotal.add(what);
-        country.storageSet.subtract(what);
-    }                            
+        consumed.add(what);
+        country.countryStorageSet.subtract(what);
+
+    }
+    public void consumeFromCountryStorage(Storage what, Country country)
+    {
+        consumed.add(what);
+        country.countryStorageSet.subtract(what);
+    }
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
-        consumedLastTurn.copyDataFrom(consumedTotal); // temp   
-        consumedTotal.setZero();
+        consumed.copyDataFrom(consumed); // temp   
+        consumed.setZero();
         consumedInMarket.setZero();
     }
 

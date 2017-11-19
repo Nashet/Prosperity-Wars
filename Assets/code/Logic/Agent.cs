@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+interface IHasStatistics
+{
+    void setStatisticToZero();
+}
 /// <summary>
 /// represent ability to take loans/deposits
 /// </summary>
-abstract public class Agent : IHasCountry
+abstract public class Agent : IHasCountry , IHasStatistics
 {
     /// <summary> Must be filled together with wallet </summary>
     public Value moneyIncomethisTurn = new Value(0);
@@ -16,6 +20,8 @@ abstract public class Agent : IHasCountry
     public Value loans = new Value(0);
     public Value deposits = new Value(0);
     private readonly Province province;
+
+    public abstract void simulate();
 
     protected Agent(float inAmount, Bank bank, Province province)
     {
@@ -95,7 +101,8 @@ abstract public class Agent : IHasCountry
     {
         Storage realNeed;
         if (need.isAbstractProduct())
-            realNeed = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+            //realNeed = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+            realNeed = Game.market.getCheapestSubstitute(need);
         else
             realNeed = need;
 
@@ -204,7 +211,7 @@ abstract public class Agent : IHasCountry
                 bank.giveLackingMoney(this, howMuch);
                 bank.giveLackingMoney(this, howMuch.multiplyOutside(5));
             }
-            whom.cash.add(howMuch); // rise warning if have enough money to pay (with deposits) but did't get enough from bank
+            whom.cash.add(howMuch); // rise warning if have enough money to pay (with deposits) but didn't get enough from bank
             this.cash.subtract(howMuch);
             return true;
         }

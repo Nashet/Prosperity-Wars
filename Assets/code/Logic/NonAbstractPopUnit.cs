@@ -7,30 +7,33 @@ abstract public class GrainGetter : PopUnit
 {
     protected GrainGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
     {
-        storage = new Storage(Product.Grain);
-        gainGoodsThisTurn = new Storage(Product.Grain);
-        sentToMarket = new Storage(Product.Grain);
+
+        changeProductionType(Product.Grain);
+        //sentToMarket = new Storage(Product.Grain);
     }
     protected GrainGetter(int amount, PopType popType, Culture culture, Province where) : base(amount, popType, culture, where)
     {
-        storage = new Storage(Product.Grain);
-        gainGoodsThisTurn = new Storage(Product.Grain);
-        sentToMarket = new Storage(Product.Grain);
+        //storage = new Storage(Product.Grain);
+        //gainGoodsThisTurn = new Storage(Product.Grain);
+        changeProductionType(Product.Grain);
+        //sentToMarket = new Storage(Product.Grain);
     }
 }
 abstract public class CattleGetter : PopUnit
 {
     protected CattleGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
     {
-        storage = new Storage(Product.Cattle);
-        gainGoodsThisTurn = new Storage(Product.Cattle);
-        sentToMarket = new Storage(Product.Cattle);
+        //storage = new Storage(Product.Cattle);
+        //gainGoodsThisTurn = new Storage(Product.Cattle);
+        //sentToMarket = new Storage(Product.Cattle);
+        changeProductionType(Product.Cattle);
     }
     protected CattleGetter(int amount, PopType popType, Culture culture, Province where) : base(amount, popType, culture, where)
     {
-        storage = new Storage(Product.Cattle);
-        gainGoodsThisTurn = new Storage(Product.Cattle);
-        sentToMarket = new Storage(Product.Cattle);
+        //storage = new Storage(Product.Cattle);
+        //gainGoodsThisTurn = new Storage(Product.Cattle);
+        //sentToMarket = new Storage(Product.Cattle);
+        changeProductionType(Product.Cattle);
     }
 }
 public class Tribesmen : CattleGetter
@@ -68,10 +71,16 @@ public class Tribesmen : CattleGetter
             producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
         else
             producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
-        storage.add(producedAmount);
-        gainGoodsThisTurn.set(producedAmount);
+
+
+        if (producedAmount.isNotZero())
+        {
+            storage.add(producedAmount);
+            addProduct(producedAmount);
+            calcStatistics();
+        }
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
         return false;
     }
@@ -79,48 +88,11 @@ public class Tribesmen : CattleGetter
     {
         return true;
     }
-    //internal override bool getSayingYes(AbstractReformValue reform)
-    //{
-    //    if (reform == Government.Tribal)
-    //    {
-    //        var baseOpinion = new Procent(1f);
-    //        baseOpinion.add(this.loyalty);
-    //        //return baseOpinion.getProcent(this.population);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Aristocracy)
-    //    {
-    //        var baseOpinion = new Procent(0f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Democracy)
-    //    {
-    //        var baseOpinion = new Procent(0.8f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.Despotism)
-    //    {
-    //        var baseOpinion = new Procent(0.1f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else if (reform == Government.ProletarianDictatorship)
-    //    {
-    //        var baseOpinion = new Procent(0.2f);
-    //        baseOpinion.add(this.loyalty);
-    //        return baseOpinion.get() > Options.votingPassBillLimit;
-    //    }
-    //    else
-    //        return false;
-
-    //}
 
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Tribal || reform == Government.Democracy)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -132,6 +104,11 @@ public class Tribesmen : CattleGetter
             return 1;
         else
             return 0;
+    }
+    public override void consumeNeeds()
+    {
+        //life needs First
+        consumeWithNaturalEconomy(getRealLifeNeeds());
     }
 }
 public class Farmers : GrainGetter
@@ -154,7 +131,7 @@ public class Farmers : GrainGetter
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == PopType.Aristocrats
-          || targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories)
+          || targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactures)
             )
             return true;
         else
@@ -163,28 +140,27 @@ public class Farmers : GrainGetter
     public override void produce()
     {
         Storage producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
-        producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
-        gainGoodsThisTurn.set(producedAmount);
-
+        producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
+        if (producedAmount.isNotZero())
+        {
+            addProduct(producedAmount);
+            storage.add(getGainGoodsThisTurn());
+            calcStatistics();
+        }
         if (Economy.isMarket.checkIftrue(getCountry()))
         {
-            sentToMarket.set(gainGoodsThisTurn);
-            Game.market.sentToMarket.add(gainGoodsThisTurn);
+            //sentToMarket.set(gainGoodsThisTurn);
+            //Game.market.sentToMarket.add(gainGoodsThisTurn);
+            sell(getGainGoodsThisTurn());
         }
         else
         {
-            if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                storage.add(gainGoodsThisTurn);
-            }
-            else
-            {
-                if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-                {
-                    getCountry().storageSet.add(gainGoodsThisTurn);
-                }
+                getCountry().countryStorageSet.add(getGainGoodsThisTurn());
             }
         }
+
     }
     override internal bool canSellProducts()
     {
@@ -248,7 +224,7 @@ public class Farmers : GrainGetter
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -286,7 +262,7 @@ public class Aristocrats : GrainGetter
         if (storage.get() > Options.aristocratsFoodReserv)
         {
             Storage howMuchSend = new Storage(storage.getProduct(), storage.get() - Options.aristocratsFoodReserv);
-            storage.send(sentToMarket, howMuchSend);
+            storage.send(getSentToMarket(), howMuchSend);
             //sentToMarket.set(howMuchSend);
             Game.market.sentToMarket.add(howMuchSend);
         }
@@ -295,9 +271,12 @@ public class Aristocrats : GrainGetter
     {
         //Aristocrats don't produce anything
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
-        return true;
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return false;
+        else
+            return true;
     }
     override internal bool canSellProducts()
     {
@@ -311,7 +290,7 @@ public class Aristocrats : GrainGetter
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.Aristocracy || reform == Government.Tribal)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -408,7 +387,7 @@ public class Soldiers : GrainGetter
     internal override bool canVote(Government.ReformValue reform)
     {
         if ((reform == Government.Democracy || reform == Government.Junta)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -466,9 +445,12 @@ public class Capitalists : GrainGetter
     {
         // Caps don't produce products directly
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
-        return true;
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return false;
+        else
+            return true;
     }
     public override bool shouldPayAristocratTax()
     {
@@ -478,7 +460,7 @@ public class Capitalists : GrainGetter
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.BourgeoisDictatorship)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -495,14 +477,14 @@ public class Capitalists : GrainGetter
     }
     internal override void invest()
     {
-        if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactories))
+        if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
             if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
             {
                 FactoryType proposition = FactoryType.getMostTeoreticalProfitable(getProvince());
-                if (proposition != null && getProvince().canBuildNewFactory(proposition) &&
+                if (proposition != null && proposition.canBuildNewFactory(getProvince()) &&
                     (getProvince().getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || getProvince().getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
                     Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
@@ -528,7 +510,7 @@ public class Capitalists : GrainGetter
                         && factory.getMargin().get() >= Options.minMarginToUpgrade
                         && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
                     {
-                        Value upgradeCost = factory.getUpgradeCost();
+                        Value upgradeCost = Game.market.getCost(factory.getUpgradeNeeds());
                         if (canPay(upgradeCost))
                             factory.upgrade(this);
                         else if (getBank().giveLackingMoney(this, upgradeCost))
@@ -536,7 +518,7 @@ public class Capitalists : GrainGetter
                     }
                 }
             }
-            
+
         }
         base.invest();
     }
@@ -569,43 +551,51 @@ public class Artisans : GrainGetter
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories))
+        if (targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactures))
             return true;
         else
             return false;
     }
     public override void produce()
     {
-        if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
-           )// && (artisansProduction==null 
-            //|| (artisansProduction !=null && needsFullfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
-            changeProductionType();
-
-        if (artisansProduction != null)
+        // artisan shouldn't work with PE
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            artisansProduction = null;
+        else
         {
-            if (artisansProduction.isAllInputProductsCollected())
+            if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
+               )// && (artisansProduction==null 
+                //|| (artisansProduction !=null && needsFulfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
+                changeProductionType();
+
+            if (artisansProduction != null)
             {
-                artisansProduction.produce();
-                if (Economy.isMarket.checkIftrue(getCountry()))
+                if (artisansProduction.isAllInputProductsCollected())
                 {
-                    sentToMarket.set(gainGoodsThisTurn);
-                    storage.setZero();
-                    Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    artisansProduction.produce();
+                    if (Economy.isMarket.checkIftrue(getCountry()))
+                    {
+                        sell(getGainGoodsThisTurn());
+                        //sentToMarket.set(gainGoodsThisTurn);
+                        //storage.setZero();
+                        //Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    }
+                    else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+                    {
+                        // send to market?
+                        sell(getGainGoodsThisTurn());
+                        //sentToMarket.set(gainGoodsThisTurn);
+                        //storage.setZero();
+                        //Game.market.sentToMarket.add(gainGoodsThisTurn);
+                    }
+                    else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                    {
+                        storage.sendAll(getCountry().countryStorageSet);
+                    }
                 }
-                else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
-                {
-                    // send to market?
-                    sentToMarket.set(gainGoodsThisTurn);
-                    storage.setZero();
-                    Game.market.sentToMarket.add(gainGoodsThisTurn);
-                }
-                else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-                {
-                    storage.sendAll(getCountry().storageSet);
-                }
+                //else
+                //   changeProductionType();
             }
-            //else
-            //   changeProductionType();
         }
     }
     public override void consumeNeeds()
@@ -619,7 +609,7 @@ public class Artisans : GrainGetter
             if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
                 if (artisansProduction.getType().getPossibleProfit(getProvince()).isNotZero())
                 {
-                    var needs = artisansProduction.getRealNeeds();
+                    var needs = artisansProduction.getRealAllNeeds();
                     if (!artisansProduction.canAfford(needs))
                     {
                         var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed
@@ -636,13 +626,16 @@ public class Artisans : GrainGetter
             // here is data transfering
             // todo rework data transfering from artisans?
             this.getConsumedInMarket().add(artisansProduction.getConsumedInMarket());
-            this.getConsumedTotal().add(artisansProduction.getConsumedTotal());
+            this.getConsumed().add(artisansProduction.getConsumed());
             this.getConsumedLastTurn().add(artisansProduction.getConsumedLastTurn());
         }
     }
-    internal override bool canBuyProducts()
+    internal override bool canTrade()
     {
-        return true;
+        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            return false;
+        else
+            return true;
     }
     override internal bool canSellProducts()
     {
@@ -657,7 +650,7 @@ public class Artisans : GrainGetter
     {
         if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
             || reform == Government.BourgeoisDictatorship)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
             return true;
         else
             return false;
@@ -682,7 +675,10 @@ public class Artisans : GrainGetter
                 result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
         }
         if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
+        {
             artisansProduction = new ArtisanProduction(result.Key, getProvince(), this);
+            base.changeProductionType(artisansProduction.getType().basicProduction.getProduct());
+        }
     }
     public StorageSet getInputProducts()
     {
@@ -746,8 +742,9 @@ public class Workers : GrainGetter
 
     internal override bool canVote(Government.ReformValue reform)
     {
-        if ((reform == Government.Democracy)
-            && (isStateCulture() || getCountry().minorityPolicy.status == MinorityPolicy.Equality))
+        if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
+            && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
+            )
             return true;
         else
             return false;

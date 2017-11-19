@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-public class Country : Staff
+public class Country : MultiSeller
 {
     public readonly static List<Country> allCountries = new List<Country>();
     internal static readonly Country NullCountry;
@@ -22,15 +22,15 @@ public class Country : Staff
     public List<Province> ownedProvinces = new List<Province>();
 
     private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-    private readonly Dictionary<Country, DateTime> myLastAttackDate = new Dictionary<Country, DateTime>();
+    private readonly Dictionary<Country, MyDate> myLastAttackDate = new Dictionary<Country, MyDate>();
     private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
-    
+
+
+
     public readonly List<AbstractReform> reforms = new List<AbstractReform>();
     public readonly List<Movement> movements = new List<Movement>();
-    public readonly StorageSet storageSet = new StorageSet();
 
-    private TextMesh meshCapitalText;
-    private Material borderMaterial;
+    //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
 
     private readonly string name;
     private readonly Culture culture;
@@ -52,6 +52,10 @@ public class Country : Staff
     private readonly Value soldiersWageExpense = new Value(0f);
     private readonly Value factorySubsidiesExpense = new Value(0f);
     private readonly Value storageBuyingExpense = new Value(0f);
+
+
+    private TextMesh meshCapitalText;
+    private Material borderMaterial;
 
     private readonly Modifier modXHasMyCores;
     public readonly ModifiersList modMyOpinionOfXCountry;
@@ -105,7 +109,8 @@ public class Country : Staff
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
             new Modifier (delegate(object x) {isThereBadboyCountry();  return isThereBadboyCountry()!= null && isThereBadboyCountry()!= x as Country  && isThereBadboyCountry()!= this; },
                 delegate  { return "There is bigger threat to the world - " + isThereBadboyCountry(); },  0.05f, false),
-            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false)
+            new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
+            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue() && government.getValue()==Government.ProletarianDictatorship, "Comintern aka Third International", 0.2f, false),
             });
         setBank(new Bank());
         //staff = new GeneralStaff(this);
@@ -131,9 +136,9 @@ public class Country : Staff
         {
             economy.setValue(Economy.StateCapitalism);
             //economy.setValue( Economy.NaturalEconomy);
-            serfdom.status = Serfdom.Abolished;
+            serfdom.setValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
-            government.status = Government.Aristocracy;
+            government.setValue(Government.Aristocracy);
             markInvented(Invention.Farming);
 
             markInvented(Invention.Banking);
@@ -143,8 +148,17 @@ public class Country : Staff
             //markInvented(Invention.Welfare);
 
             //markInvented(Invention.Manufactories);
+            //markInvented(Invention.Collectivism);
         }
     }
+    private void ressurect(Province province, Government.ReformValue newGovernment)
+    {
+        alive = true;
+        moveCapitalTo(province);
+        government.setValue(newGovernment);
+        setPrefix();
+    }
+
     internal void onGrantedProvince(Province province)
     {
         var oldCountry = province.getCountry();
@@ -152,11 +166,9 @@ public class Country : Staff
         oldCountry.changeRelation(this, 1.00f);
         if (!this.isAlive())
         {
-            alive = true;
-            moveCapitalTo(province);
-            setPrefix();
+            ressurect(province, oldCountry.government.getTypedValue());
         }
-        province.secedeTo(this, false);         
+        province.secedeTo(this, false);
     }
     internal void onSeparatismWon(Country oldCountry)
     {
@@ -165,13 +177,11 @@ public class Country : Staff
             {
                 item.secedeTo(this, false);
             }
-        moveCapitalTo(getRandomOwnedProvince());
+        ressurect(getRandomOwnedProvince(), this.government.getTypedValue());
         foreach (var item in oldCountry.getInvented()) // copying inventions
         {
             this.markInvented(item.Key);
         }
-        setPrefix();
-        alive = true;
     }
     public static void setUnityAPI()
     {
@@ -192,6 +202,7 @@ public class Country : Staff
     {
         var countryNameGenerator = new CountryNameGenerator();
         var cultureNameGenerator = new CultureNameGenerator();
+        //int howMuchCountries =3;
         int howMuchCountries = Province.allProvinces.Count / Options.ProvincesPerCountry;
         howMuchCountries += Game.Random.Next(6);
         if (howMuchCountries < 8)
@@ -253,7 +264,8 @@ public class Country : Staff
     }
     internal void setPrefix()
     {
-        meshCapitalText.text = getDescription();
+        if (meshCapitalText != null)
+            meshCapitalText.text = getDescription();
     }
     public List<Country> getAllCoresOnMyland()
     {
@@ -302,13 +314,13 @@ public class Country : Staff
     /// Little bugged - returns RANDOM badboy, not biggest
     /// </summary>
     /// <returns></returns>
-    private static DateTime DateOfisThereBadboyCountry;
+    private static MyDate DateOfIsThereBadboyCountry = new MyDate(MyDate.Never);
     private static Country BadboyCountry;
     public static Country isThereBadboyCountry()
     {
-        if (DateOfisThereBadboyCountry != Game.date)
+        if (DateOfIsThereBadboyCountry != Game.date)
         {
-            DateOfisThereBadboyCountry = Game.date;
+            DateOfIsThereBadboyCountry.set(Game.date);
             float worldStrenght = 0f;
             foreach (var item in Country.getExisting())
                 worldStrenght += item.getStregth(null);
@@ -328,12 +340,12 @@ public class Country : Staff
             return false;
     }
 
-    public DateTime getLastAttackDateOn(Country country)
+    public MyDate getLastAttackDateOn(Country country)
     {
         if (myLastAttackDate.ContainsKey(country))
             return myLastAttackDate[country];
         else
-            return DateTime.MinValue;
+            return MyDate.Never;
     }
     private bool hasCores(Country country)
     {
@@ -383,7 +395,6 @@ public class Country : Staff
     {
         if (meshCapitalText != null) //todo WTF!!
             UnityEngine.Object.Destroy(meshCapitalText.gameObject);
-        setStatisticToZero();
 
         //take all money from bank
         if (byWhom.isInvented(Invention.Banking))
@@ -394,11 +405,13 @@ public class Country : Staff
         //byWhom.storageSet.
         this.sendAllAvailableMoney(byWhom);
         this.getBank().defaultLoaner(this);
-        storageSet.sendAll(byWhom.storageSet);
+        countryStorageSet.sendAll(byWhom.countryStorageSet);
 
         if (!this.isAI())
             new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
         alive = false;
+
+        setStatisticToZero();
     }
 
     internal bool isOneProvince()
@@ -414,7 +427,7 @@ public class Country : Staff
         base.sendArmy(target, procent);
         //myLastAttackDate.AddMy(target.getCountry(), Game.date);
         if (this.myLastAttackDate.ContainsKey(target.getCountry()))
-            myLastAttackDate[target.getCountry()] = Game.date;
+            myLastAttackDate[target.getCountry()].set(Game.date);
         else
             myLastAttackDate.Add(target.getCountry(), Game.date);
 
@@ -629,42 +642,115 @@ public class Country : Staff
             return //new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
             new Value(Options.defaultSciencePointMultiplier);
     }
-    internal void simulate()
+    /// <summary>
+    /// Returns true if succeeded
+    /// </summary>    
+    private bool buildIfCanPE(FactoryType propositionFactory, Province province)
     {
-        base.simulate();
-        var spBase = getSciencePointsBase();
-        spBase.multiply(modSciencePoints.getModifier(this));
-        sciencePoints.add(spBase);
-
-        if (this.autoPutInBankLimit > 0f)
+        // could it give uninvented factory?
+        if (propositionFactory != null)
         {
-            float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
-            if (extraMoney > 0f)
-                getBank().takeMoney(this, new Value(extraMoney));
-        }
-        //buyNeeds();
-        foreach (var item in getAllArmies())
-        {
-            item.consume();
-        }
-
-        consumeNeeds(); // Should go After all Armies consumption
-
-        //Procent opinion;
-        foreach (var item in Country.getExisting())
-            if (item != this)
+            var cost = propositionFactory.getBuildNeeds();
+            if (countryStorageSet.has(cost))
             {
-                changeRelation(item, modMyOpinionOfXCountry.getModifier(item));                
+                var newFactory = new Factory(province, this, propositionFactory);
+                consumeFromCountryStorage(cost.getContainer(), this);
+                return true;
+                //newFactory.constructionNeeds.setZero();
             }
-        movements.RemoveAll(x => x.isEmpty());
-        foreach (var item in movements.ToArray())
-            item.simulate();   
+        }
+        return false;
     }
+    /// <summary>
+    ///  Retirns null if needs are satisfied
+    /// </summary>         
+    private Product getMostDeficitProductAllowedHere(IEnumerable<Product> selector, Province province)
+    {
+        Storage minFound = null;
+        foreach (var item in selector)
+            if (item.isInventedBy(this))
+            {
+
+                var proposition = FactoryType.whoCanProduce(item);
+                if (proposition != null)
+                    if (proposition.canBuildNewFactory(province) || proposition.canUpgradeFactory(province))
+                    {
+                        var found = countryStorageSet.getFirstStorage(item);
+                        if (minFound == null || found.isSmallerThan(minFound))
+                            minFound = found;
+                    }
+            }
+        if (minFound == null)
+            return null;
+        else
+            return minFound.getProduct();
+    }
+
+    // todo should be redone as country-wise method
+    internal void invest(Province province)
+    {
+        if (economy.getValue() == Economy.PlannedEconomy && getCountry().isInvented(Invention.Manufactures))
+            if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
+                && province.getUnemployedWorkers() > 0)
+            {
+                var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isIndustrial(),this), province);
+                if (industrialProduct == null)
+                {
+                    var militaryProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isMilitary(), this), province);
+                    if (militaryProduct == null)
+                    {
+                        var consumerProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isConsumerProduct(), this), province);
+                        if (consumerProduct != null)
+                        {
+                            //if there is no enough some consumer product - build it
+                            var proposition = FactoryType.whoCanProduce(consumerProduct);
+                            if (proposition.canBuildNewFactory(province))
+                                buildIfCanPE(proposition, province);
+                            else
+                            {
+                                var factory = province.findFactory(proposition);
+                                if (countryStorageSet.has(factory.getUpgradeNeeds()))
+                                    factory.upgrade(this);
+                            }
+                        }
+                        //else - all needs are satisfied
+                    }
+                    else
+                    {
+                        //if there is no enough some military product - build it
+                        var proposition = FactoryType.whoCanProduce(militaryProduct);
+                        if (proposition.canBuildNewFactory(province))
+                            buildIfCanPE(proposition, province);
+                        else
+                        {
+                            var factory = province.findFactory(proposition);
+                            if (countryStorageSet.has(factory.getUpgradeNeeds()))
+                                factory.upgrade(this);
+                        }
+                    }
+                }
+                else
+                {
+                    //if there is no enough some industrial product - build it
+                    var proposition = FactoryType.whoCanProduce(industrialProduct);
+                    if (proposition.canBuildNewFactory(province))
+                        buildIfCanPE(proposition, province);
+                    else
+                    {
+                        var factory = province.findFactory(proposition);
+                        if (countryStorageSet.has(factory.getUpgradeNeeds()))
+                            factory.upgrade(this);
+                    }
+                }
+            }
+    }
+
     /// <summary>
     /// For AI only
     /// </summary>
     public void AIThink()
     {
+        // attacking neigbors
         if (!isOnlyCountry())
             if (Game.Random.Next(10) == 1)
             {
@@ -685,32 +771,64 @@ public class Country : Staff
             }
         if (Game.Random.Next(90) == 1)
             aiInvent();
-        if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
-        {
-            float newWage;
-            var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get();
-            if (failedToPaySoldiers)
+        // changing salary for soldiers
+        if (economy.getValue() != Economy.PlannedEconomy)
+            if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
             {
-                newWage = getSoldierWage() - getSoldierWage() * 0.2f;
-            }
-            else
-            {
-                var balance = getBalance();
-
-                if (balance > 200f)
-                    newWage = getSoldierWage() + soldierAllNeedsCost * 0.002f + 1f;
-                else if (balance > 50f)
-                    newWage = getSoldierWage() + soldierAllNeedsCost * 0.0005f + 0.1f;
-                else if (balance < -800f)
-                    newWage = 0.0f;
-                else if (balance < 0f)
-                    newWage = getSoldierWage() - getSoldierWage() * 0.5f;
+                float newWage;
+                var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get();
+                if (failedToPaySoldiers)
+                {
+                    newWage = getSoldierWage() - getSoldierWage() * 0.2f;
+                }
                 else
-                    newWage = getSoldierWage(); // don't change wage
+                {
+                    var balance = getBalance();
+
+                    if (balance > 200f)
+                        newWage = getSoldierWage() + soldierAllNeedsCost * 0.002f + 1f;
+                    else if (balance > 50f)
+                        newWage = getSoldierWage() + soldierAllNeedsCost * 0.0005f + 0.1f;
+                    else if (balance < -800f)
+                        newWage = 0.0f;
+                    else if (balance < 0f)
+                        newWage = getSoldierWage() - getSoldierWage() * 0.5f;
+                    else
+                        newWage = getSoldierWage(); // don't change wage
+                }
+                newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
+                setSoldierWage(newWage);
             }
-            newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
-            setSoldierWage(newWage);
-        }
+    }
+    internal void simulate()
+    {
+        // military staff
+        base.simulate();
+
+        // getsciense points
+        var spBase = getSciencePointsBase();
+        spBase.multiply(modSciencePoints.getModifier(this));
+        sciencePoints.add(spBase);
+
+        // put extra money in bank
+        if (economy.getValue() != Economy.PlannedEconomy)
+            if (this.autoPutInBankLimit > 0f)
+            {
+                float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
+                if (extraMoney > 0f)
+                    getBank().takeMoney(this, new Value(extraMoney));
+            }
+
+        //International opinion;
+        foreach (var item in Country.getExisting())
+            if (item != this)
+            {
+                changeRelation(item, modMyOpinionOfXCountry.getModifier(item));
+            }
+        //movements
+        movements.RemoveAll(x => x.isEmpty());
+        foreach (var item in movements.ToArray())
+            item.simulate();
     }
     public IEnumerable<PopUnit> getAllPopUnits()
     {
@@ -735,51 +853,174 @@ public class Country : Staff
         }
         else return false;
     }
+
+    private void tradeNonPE(bool usePlayerTradeSettings)//, int buyProductsForXDays)
+    {
+        // firstly, buy last tick expenses -NO, buy as set in trade sliders
+        // then by rest but avoid huge market interference 
+        //1 day trade
+        //TODO add x day buying or split buying somehow
+
+        foreach (var product in Product.getAllNonAbstract())
+            //if (product.isInventedBy(this) || product == Product.Cattle)
+            if (product.isTradable())
+            {
+                Storage maxLimit;
+                Storage minLimit;
+
+                if (usePlayerTradeSettings)
+                {
+                    maxLimit = getSellIfMoreLimits(product);
+                    minLimit = getBuyIfLessLimits(product);
+                    //if (buyProductsForXDays > 1)                    
+                    //    minLimit.multiply(buyProductsForXDays);                    
+                }
+                else
+                {
+                    var takenFromStorage = new Storage(countryStorageSet.used.getFirstStorage(product));
+
+                    if (takenFromStorage.isZero())
+                    {
+                        minLimit = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);
+                        maxLimit = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
+                    }
+                    else
+                    {
+                        minLimit = new Storage(takenFromStorage);
+                        maxLimit = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                    }
+                }
+                var howMuchHave = countryStorageSet.getFirstStorage(product);
+                if (howMuchHave.isBiggerThan(maxLimit))
+                {
+                    var howMuchToSell = howMuchHave.subtractOutside(maxLimit);
+                    sell(howMuchToSell);
+                }
+                else
+                {
+                    if (howMuchHave.isSmallerThan(minLimit))
+                    {
+                        var howMuchToBuy = minLimit.subtractOutside(howMuchHave);
+                        buyNeeds(howMuchToBuy);
+                    }
+                }
+                if (getMoneyAvailable().isZero()) // no more money to buy
+                    break;
+            }
+    }
+    private void tradeWithPE(bool usePlayerTradeSettings)
+    {
+        // planned economy buying
+        //1 day buying
+        foreach (var product in Product.getAllNonAbstractTradableInPEOrder(this))
+        //if (product.isInvented(this)) // already checked
+        //foreach (var currentStorage in countryStorageSet)
+        {
+            Storage desiredMinimum;
+            if (usePlayerTradeSettings)
+                desiredMinimum = getBuyIfLessLimits(product);
+            else
+            {
+                desiredMinimum = new Storage(countryStorageSet.used.getFirstStorage(product));
+                if (desiredMinimum.isZero())
+                    desiredMinimum.add(Options.CountryMinStorage);
+            }
+            var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
+            if (toBuy.isBiggerThan(Value.Zero))
+                buyNeeds(toBuy);//go buying
+        }
+        // x day buying +sells
+        //foreach (var currentStorage in countryStorageSet)
+        foreach (var product in Product.getAllNonAbstractTradableInPEOrder(this))
+        {
+            var takenFromStorage = new Storage(countryStorageSet.used.getFirstStorage(product));
+            Storage desiredMinimum;
+            if (usePlayerTradeSettings)
+                desiredMinimum = getBuyIfLessLimits(product);
+            else
+            {
+                if (takenFromStorage.isZero())
+                    desiredMinimum = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);// todo change
+                else
+                    desiredMinimum = takenFromStorage.multiplyOutside(Options.CountryBuyProductsForXDays);
+            }
+            var toBuy = desiredMinimum.subtractOutside(countryStorageSet.getFirstStorage(product), false);
+            if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
+                buyNeeds(toBuy);//go buying
+            else    // no need to buy anything
+            {
+                Storage desiredMaximum;
+                if (usePlayerTradeSettings)
+                    desiredMaximum = getSellIfMoreLimits(product);
+                else
+                {
+                    if (takenFromStorage.isZero())
+                        desiredMaximum = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
+                    else
+                        desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                }
+                var toSell = countryStorageSet.getFirstStorage(product).subtractOutside(desiredMaximum, false);
+                if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
+                {
+                    sell(toSell);//go sell
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// Represents buying and/or consuming needs.
+    /// </summary>
     public override void consumeNeeds()
     {
-        var needs = getRealNeeds();
-        //buy 1 day needs
-        foreach (var need in needs)
-            if (!storageSet.has(need)) // may reduce extra circles
-            {
-                // if I want to buy             
-                //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
-                Storage realNeed;
-                if (need.isAbstractProduct())
-                    realNeed = storageSet.convertToBiggestStorageProduct(need);
-                else
-                    realNeed = need;
-                //Storage toBuy = need.subtractOutside(realNeed);            
-
-                if (realNeed.isNotZero())
-                    buyNeeds(realNeed);  // todo - return result? - no
-            }
-        //buy x day needs
-        foreach (var need in needs)
+        foreach (var item in getAllArmies())
         {
-            Storage toBuy = new Storage(need.getProduct(),
-                need.get() * Options.CountryForHowMuchDaysMakeReservs - storageSet.getBiggestStorage(need.getProduct()).get(), false);
-            if (toBuy.isNotZero())
-                buyNeeds(toBuy);
+            item.consume();
         }
+        // Should go After all Armies consumption
+
+        if (economy.getValue() == Economy.PlannedEconomy)
+            tradeWithPE(!isAI());
+        else
+        {
+            tradeNonPE(!isAI());   //non PE - trade as PE but in normal order
+        }
+
+
+        //var needs = getRealAllNeeds();
+        ////buy 1 day needs
+        //foreach (var need in needs)
+        //    if (!countryStorageSet.has(need)) // may reduce extra circles
+        //    {
+        //        // if I want to buy             
+        //        //Storage toBuy = new Storage(need.getProduct(), need.get() - storageSet.getStorage(need.getProduct()).get(), false);
+        //        Storage realNeed;
+        //        if (need.isAbstractProduct())
+        //            realNeed = countryStorageSet.convertToBiggestStorageProduct(need);
+        //        else
+        //            realNeed = need;
+        //        //Storage toBuy = need.subtractOutside(realNeed);            
+
+        //        if (realNeed.isNotZero())
+        //            buyNeeds(realNeed);  // todo - return result? - no
+        //    }
+        ////buy x day needs
+        //foreach (var need in needs)
+        //{
+        //    Storage toBuy = new Storage(need.getProduct(),
+        //        need.get() * Options.CountryForHowMuchDaysMakeReservs - countryStorageSet.getBiggestStorage(need.getProduct()).get(), false);
+        //    if (toBuy.isNotZero())
+        //        buyNeeds(toBuy);
+        //}
     }
 
     void buyNeeds(Storage toBuy)
     {
-        //if (toBuy.get() < 10f) toBuy.set(10);
         Storage realyBougth = Game.market.buy(this, toBuy, null);
-        storageSet.add(realyBougth);
-        storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
-    }
-
-    public Value getGDP()
-    {
-        Value result = new Value(0);
-        foreach (var province in ownedProvinces)
+        if (realyBougth.isNotZero())
         {
-            result.add(province.getGDP());
+            countryStorageSet.add(realyBougth);
+            storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
         }
-        return result;
     }
     public Procent getUnemployment()
     {
@@ -787,7 +1028,7 @@ public class Country : Staff
         int calculatedBase = 0;
         foreach (var item in ownedProvinces)
         {
-            int population = item.getMenPopulation();
+            int population = item.getMenPopulationEmployable();
             result.addPoportionally(calculatedBase, population, item.getUnemployment());
             calculatedBase += population;
         }
@@ -811,7 +1052,35 @@ public class Country : Staff
             result += pro.getPopulationAmountByType(ipopType);
         return result;
     }
-
+    public IEnumerable<PopUnit> getAllPopUnits(PopType type)
+    {
+        foreach (var province in ownedProvinces)
+        {
+            foreach (var item in province.getAllPopUnits(type))
+            {
+                yield return item;
+            }
+        }
+    }
+    public IEnumerable<Factory> getAllFactories()
+    {
+        foreach (var province in ownedProvinces)
+        {
+            foreach (var item in province.getAllFactories())
+            {
+                yield return item;
+            }
+        }
+    }
+    public Value getGDP()
+    {
+        Value result = new Value(0);
+        foreach (var province in ownedProvinces)
+        {
+            result.add(province.getGDP());
+        }
+        return result;
+    }
     internal float getGDPPer1000()
     {
         return getGDP().get() * 1000f / getFamilyPopulation();
@@ -821,24 +1090,112 @@ public class Country : Staff
 
         //return res;
     }
-    //****************************
-    internal Value getAllExpenses()
+    static private int ValueOrder(KeyValuePair<Country, Value> x, KeyValuePair<Country, Value> y)
     {
-        Value result = new Value(0f);
-        result.add(unemploymentSubsidiesExpense);
-        result.add(factorySubsidiesExpense);
-        result.add(storageBuyingExpense);
-        result.add(soldiersWageExpense);
+        float sumX = x.Value.get();
+        float sumY = y.Value.get();
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    static private int ProcentOrder(KeyValuePair<Culture, Procent> x, KeyValuePair<Culture, Procent> y)
+    {
+        float sumX = x.Value.get();
+        float sumY = y.Value.get();
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    static private int FloatOrder(KeyValuePair<Country, float> x, KeyValuePair<Country, float> y)
+    {
+        float sumX = x.Value;
+        float sumY = y.Value;
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    static private int IntOrder(KeyValuePair<Country, int> x, KeyValuePair<Country, int> y)
+    {
+        float sumX = x.Value;
+        float sumY = y.Value;
+        return sumY.CompareTo(sumX); // bigger - first
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>              
+    public int getGDPRank()
+    {
+        var list = new List<KeyValuePair<Country, Value>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, Value>(item, item.getGDP()));
+        }
+        list.Sort(ValueOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero;
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>
+    public int getGDPPer1000Rank()
+    {
+        var list = new List<KeyValuePair<Country, float>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, float>(item, item.getGDPPer1000()));
+        }
+        list.Sort(FloatOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero
+    }
+    public Procent getWorldGDPShare()
+    {
+        Value worldGDP = new Value(0f);
+        foreach (var item in Country.getExisting())
+        {
+            worldGDP.add(item.getGDP());
+        }
+        return Procent.makeProcent(this.getGDP(), worldGDP);
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>
+    public int getPopulationRank()
+    {
+        var list = new List<KeyValuePair<Country, int>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, int>(item, item.getFamilyPopulation()));
+        }
+        list.Sort(IntOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero
+    }
+    /// <summary>
+    /// Returns 0 if failed
+    /// </summary>
+    public int getSizeRank()
+    {
+        var list = new List<KeyValuePair<Country, int>>();
+        foreach (var item in Country.getExisting())
+        {
+            list.Add(new KeyValuePair<Country, int>(item, item.getSize()));
+        }
+        list.Sort(IntOrder);
+        return list.FindIndex(x => x.Key == this) + 1; // starts with zero
+    }
+    public List<KeyValuePair<Culture, Procent>> getCultures()
+    {
+        var cultures = new Dictionary<Culture, int>();
+        var totalPopulation = this.getMenPopulation();
+        foreach (var item in getAllPopUnits())
+        {
+            cultures.addMy(item.culture, item.getPopulation());
+        }
+        var result = new List<KeyValuePair<Culture, Procent>>();
+        foreach (var item in cultures)
+        {
+            result.Add(new KeyValuePair<Culture, Procent>(item.Key, Procent.makeProcent(item.Value, totalPopulation)));
+        }
+        result.Sort(ProcentOrder);
         return result;
     }
-    internal float getBalance()
-    {
-        return moneyIncomethisTurn.get() - getAllExpenses().get();
-    }
-
+    //****************************
     override public void setStatisticToZero()
     {
         base.setStatisticToZero();
+        countryStorageSet.setStatisticToZero();
         failedToPaySoldiers = false;
         poorTaxIncome.set(0f);
         richTaxIncome.set(0f);
@@ -848,6 +1205,30 @@ public class Country : Staff
         factorySubsidiesExpense.set(0f);
         storageBuyingExpense.set(0f);
         soldiersWageExpense.setZero();
+    }
+
+    internal float getBalance()
+    {
+        return moneyIncomethisTurn.get() - getAllExpenses().get();
+    }
+
+    internal Value getAllExpenses()
+    {
+        Value result = new Value(0f);
+        result.add(unemploymentSubsidiesExpense);
+        result.add(factorySubsidiesExpense);
+        result.add(storageBuyingExpense);
+        result.add(soldiersWageExpense);
+        return result;
+    }
+    internal Value getAllIncome()
+    {
+        Value result = new Value(0f);
+        result.add(poorTaxIncome);
+        result.add(richTaxIncome);
+        result.add(goldMinesIncome);
+        result.add(ownedFactoriesIncome);
+        return result;
     }
 
     internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
@@ -877,6 +1258,14 @@ public class Country : Staff
     {
         return factorySubsidiesExpense.get();
     }
+    internal float getUnemploymentSubsidiesExpense()
+    {
+        return unemploymentSubsidiesExpense.get();
+    }
+    internal float getStorageBuyingExpense()
+    {
+        return storageBuyingExpense.get();
+    }
     internal float getPoorTaxIncome()
     {
         return poorTaxIncome.get();
@@ -891,20 +1280,14 @@ public class Country : Staff
     {
         return goldMinesIncome.get();
     }
-
-
     internal float getOwnedFactoriesIncome()
     {
         return ownedFactoriesIncome.get();
     }
 
-    internal float getUnemploymentSubsidiesExpense()
+    internal float getRestIncome()
     {
-        return unemploymentSubsidiesExpense.get();
-    }
-    internal float getStorageBuyingExpense()
-    {
-        return storageBuyingExpense.get();
+        return moneyIncomethisTurn.get() - getAllIncome().get();
     }
 
     internal void poorTaxIncomeAdd(Value toAdd)
@@ -947,4 +1330,6 @@ public class Country : Staff
         }
         return null;
     }
+
+
 }

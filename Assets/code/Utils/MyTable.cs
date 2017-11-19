@@ -66,6 +66,22 @@ abstract public class MyTable : MonoBehaviour
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, this, product);
     }
+    protected void AddButton(string text, Storage storage)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, storage);
+    }
+    protected void AddButton(string text, Storage storage, Func<string> dynamicTooltip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, this, storage);
+        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+    }
     protected void RemoveButtons()
     {
         int count = gameObject.transform.childCount;

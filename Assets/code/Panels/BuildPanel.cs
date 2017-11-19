@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 
 public class BuildPanel : DragPanel
-{   
+{
     public ScrollRect table;
     public Text descriptionText;
     public Button buildButton;
@@ -19,7 +19,7 @@ public class BuildPanel : DragPanel
         buildButton.interactable = false;
         hide();
     }
-    
+
     public void show(bool bringOnTop)
     {
         gameObject.SetActive(true);
@@ -52,11 +52,11 @@ public class BuildPanel : DragPanel
             {
                 //todo remove grain connection
                 Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
-                if (Game.Player.storageSet.has(needFood))
+                if (Game.Player.countryStorageSet.has(needFood))
                 {
                     Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
                     //wallet.pay(fact.wallet, new Value(100f));
-                    Game.Player.storageSet.subtract(needFood);
+                    Game.Player.countryStorageSet.subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.Show(fact);
                 }
@@ -81,26 +81,27 @@ public class BuildPanel : DragPanel
         {
             sb.Clear();
             sb.Append("Build ").Append(selectedFactoryType);
-            sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(selectedFactoryType.getBuildCost());            
+            var cost = Game.market.getCost(selectedFactoryType.getBuildNeeds());
+            sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(cost);
             sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
 
             descriptionText.text = sb.ToString();
-           
+
             buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, out buildButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-            if (!Game.selectedProvince.canBuildNewFactory(selectedFactoryType))
+            if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince))
                 buildButton.interactable = false;
             if (buildButton.interactable)
                 buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
         }
         else
         {
-            buildButton.interactable = false;           
+            buildButton.interactable = false;
             {
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
                 descriptionText.text = "Select building from left";
             }
-            
-        }        
+
+        }
         show(false);
-    }    
+    }
 }

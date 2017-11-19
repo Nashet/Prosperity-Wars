@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text;
+
 public class FactoryType
 {
     static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
@@ -19,7 +21,7 @@ public class FactoryType
     /// <summary>Per 1 level upgrade</summary>
     public readonly StorageSet upgradeResourceLowTier;
     public readonly StorageSet upgradeResourceMediumTier;
-    public readonly StorageSet upgradeResourceHighTier;    
+    public readonly StorageSet upgradeResourceHighTier;
 
     //internal ConditionsList conditionsBuild;
     internal Condition enoughMoneyOrResourcesToBuild;
@@ -117,11 +119,11 @@ public class FactoryType
         resourceInput.set(new Storage(Product.Machinery, 1f));
         new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
 
-        resourceInput = new StorageSet();        
+        resourceInput = new StorageSet();
         resourceInput.set(new Storage(Product.Metal, 1f));
         resourceInput.set(new Storage(Product.Oil, 1f));
         resourceInput.set(new Storage(Product.Rubber, 1f));
-        new FactoryType("Electonics factory", new Storage(Product.Electronics, 6f), resourceInput);
+        new FactoryType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
     }
     /// <summary>
     /// Basic constructor for resource getting FactoryType
@@ -145,14 +147,24 @@ public class FactoryType
         enoughMoneyOrResourcesToBuild = new Condition(
             delegate (object forWhom)
             {
-                Value cost = this.getBuildCost();
-                return (forWhom as Agent).canPay(cost);
+                var agent = forWhom as Agent;
+                if (agent.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                {
+                    return agent.getCountry().countryStorageSet.has(this.getBuildNeeds());
+                }
+                else
+                {
+                    Value cost = Game.market.getCost(this.getBuildNeeds());
+                    return agent.canPay(cost);
+                }
             },
             delegate
             {
-                Game.threadDangerSB.Clear();
-                Game.threadDangerSB.Append("Have ").Append(getBuildCost()).Append(" coins");
-                return Game.threadDangerSB.ToString();
+                var sb = new StringBuilder();
+                Value cost = Game.market.getCost(this.getBuildNeeds());
+                sb.Append("Have ").Append(cost).Append(" coins");
+                sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
+                return sb.ToString();
             }, true);
 
         conditionsBuild = new ConditionsList(new List<Condition>() {
@@ -172,7 +184,7 @@ public class FactoryType
     public static IEnumerable<FactoryType> getInventedTypes(Country country)
     {
         foreach (var next in allTypes)
-            if (next.basicProduction.getProduct().isInvented(country))
+            if (next.basicProduction.getProduct().isInventedBy(country))
                 yield return next;
     }
     public static IEnumerable<FactoryType> getResourceTypes(Country country)
@@ -188,12 +200,12 @@ public class FactoryType
                 yield return next;
     }
 
-    internal Value getBuildCost()
-    {
-        Value result = Game.market.getCost(getBuildNeeds());
-        result.add(Options.factoryMoneyReservPerLevel);
-        return result;
-    }
+    //internal Value getBuildCost()
+    //{
+    //    Value result = Game.market.getCost(getBuildNeeds());
+    //    result.add(Options.factoryMoneyReservPerLevel);
+    //    return result;
+    //}
     internal StorageSet getBuildNeeds()
     {
         //return new Storage(Product.Food, 40f);
@@ -227,7 +239,7 @@ public class FactoryType
     }
     internal bool isManufacture()
     {
-        return  !isResourceGathering() && this != Barnyard;
+        return !isResourceGathering() && this != Barnyard;
     }
     internal bool isShaft()
     {
@@ -250,7 +262,7 @@ public class FactoryType
         KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
         foreach (Factory factory in province.allFactories)
         {
-            if (province.canUpgradeFactory(factory.getType()))
+            if (factory.getType().canUpgradeFactory(province))
             {
                 float profit = factory.getProfit();
                 if (profit > result.Value)
@@ -272,10 +284,11 @@ public class FactoryType
         if (hasInput())
         {
             foreach (Storage inputProduct in resourceInput)
-                if (!Game.market.isAvailable(inputProduct.getProduct())                 
-                //if (!Game.market.sentToMarket.has(inputProduct)
-                    || Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
-                    return new Value(0);
+                if (!Game.market.isAvailable(inputProduct.getProduct()))
+                    return new Value(0);// inputs are unavailable
+            //if (Game.market.getBouthOnMarket(basicProduction.getProduct(), false) == 0f)
+            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+                return new Value(0); // no demand for result product
             Value outCome = Game.market.getCost(resourceInput);
             return income.subtractOutside(outCome, false);
         }
@@ -284,8 +297,41 @@ public class FactoryType
     }
     internal Procent getPossibleMargin(Province province)
     {
-        return Procent.makeProcent(getPossibleProfit(province), getBuildCost());
+        return Procent.makeProcent(getPossibleProfit(province), Game.market.getCost(this.getBuildNeeds()));
     }
+    //internal bool canBuildNewFactory(FactoryType type)
+    //{
+    //    if (HaveFactory(type))
+    //        return false;
+    //    if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
+    //        || !type.basicProduction.getProduct().isInventedBy(getCountry())
+    //        || type.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
+    //        || (type.basicProduction.getProduct() == Product.Cattle && !getCountry().isInvented(Invention.Domestication))
+    //        )
+    //        return false;
+    //    return true;
+    //}
+    internal bool canBuildNewFactory(Province where)
+    {
+        if (where.hasFactory(this))
+            return false;
+        if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
+            || !basicProduction.getProduct().isInventedBy(where.getCountry())
+            || isManufacture() && !where.getCountry().isInvented(Invention.Manufactures)
+            || (basicProduction.getProduct() == Product.Cattle && !where.getCountry().isInvented(Invention.Domestication))
+            )
+            return false;
+        return true;
+    }
+    internal bool canUpgradeFactory(Province where)
+    {
+        if (!where.hasFactory(this))
+            return false;
+        var factory = where.findFactory(this);
+        if (factory.canUpgrade())
+            return true;
+        else
+            return false;
 
-    
+    }
 }

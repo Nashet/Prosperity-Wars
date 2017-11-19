@@ -28,14 +28,14 @@ public class Game : ThreadedJob
     static internal readonly Stack<Message> MessageQueue = new Stack<Message>();
     static public readonly Market market = new Market();
 
-    static internal StringBuilder threadDangerSB = new StringBuilder();
+    //static internal StringBuilder threadDangerSB = new StringBuilder();
 
-    static public DateTime date = new DateTime(50, 1, 1);
+    static public MyDate date = new MyDate(0);
     static internal bool devMode = false;
     static private int mapMode;
     static private bool surrended = true;
     static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
-        impassableBorder;     
+        impassableBorder;
 
     static private List<Province> seaProvinces;
     static private VoxelGrid grid;
@@ -73,7 +73,7 @@ public class Game : ThreadedJob
         сreateRandomPopulation();
 
         setStartResources();
-        makeHelloMessage();
+        // makeHelloMessage();   !!!
         updateStatus("Finishing generation..");
     }
     public static void setUnityAPI()
@@ -215,7 +215,7 @@ public class Game : ThreadedJob
     {
         return mapMode;
     }
-    
+
     public static void redrawMapAccordingToMapMode(int newMapMode)
     {
         mapMode = newMapMode;
@@ -310,27 +310,22 @@ public class Game : ThreadedJob
     }
 
     static void generateMapImage()
-    {
-        //Texture2D mapImage = new Texture2D(100, 100);
-#if UNITY_WEBGL
+    {                
+//#if UNITY_WEBGL
         int mapSize = 20000;//30000;
         int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
-#else
-        int mapSize = 40000;
-        int width = 200 + Random.Next(80);
-#endif          
+        //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
+//#else
+//        int mapSize = 40000;
+//        int width = 200 + Random.Next(80);
+//#endif          
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
-        //Texture2D mapImage = new Texture2D(180 + Random.Next(100), 180 + Random.Next(100));
+        
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
-        //if (Game.devMode)
-        //    amountOfProvince = 7;
-        //else
-        //    amountOfProvince = 12 + Game.Random.Next(8);
-        //amountOfProvince = 40 + Game.Random.Next(20);
-        //amountOfProvince = 160 + Game.Random.Next(20);
+        
         amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
@@ -441,10 +436,7 @@ public class Game : ThreadedJob
     {
         Game.market.sentToMarket.setZero();
         foreach (Country country in Country.getExisting())
-        // if (country != Country.NullCountry)
         {
-            //country.wallet.moneyIncomethisTurn.set(0);
-            //country.storageSet.setStatisticToZero(); // was CountryStorageSet, not used actually            
             country.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
             {
@@ -512,30 +504,31 @@ public class Game : ThreadedJob
         if (Game.haveToStepSimulation)
             Game.haveToStepSimulation = false;
 
-        date = date.AddYears(1);
+        date.AddTick(1);
         // strongly before PrepareForNewTick
-        Game.market.simulatePriceChangeBasingOnLastTurnDate();
+        Game.market.simulatePriceChangeBasingOnLastTurnData();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-        prepareForNewTick(); // including workforce balancing
+        // includes workforce balancing
+        // and sets statistics to zero. Should go after price calculation
+        prepareForNewTick(); 
 
         // big PRODUCE circle
         foreach (Country country in Country.getExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
-                //Now factories time!               
-                foreach (Factory fact in province.allFactories)
+                foreach (Factory factory in province.allFactories)
                 {
-                    fact.produce();
-                    fact.payTaxes(); // empty for now
-                    fact.paySalary(); // workers get gold or food here                   
+                    factory.produce();
+                    factory.payTaxes(); // empty for now
+                    factory.paySalary(); // workers get gold or food here                   
                 }
                 foreach (PopUnit pop in province.allPopUnits)
                 //That placed here to avoid issues with Aristocrats and Clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
-                        pop.produce();
+                    //if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
+                    pop.produce();
                     pop.takeUnemploymentSubsidies();
                     if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                     // don't need salary with PE
@@ -547,80 +540,97 @@ public class Game : ThreadedJob
                 }
             }
         //Game.market.ForceDSBRecalculation();
-        // big CONCUME circle
-
+        // big CONCUME circle   
         foreach (Country country in Country.getExisting())
-            foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+        {
+            country.consumeNeeds();
+            if (country.economy.getValue() == Economy.PlannedEconomy)
             {
-                foreach (Factory factory in province.allFactories)
+                //consume in PE order
+                foreach (Factory factory in country.getAllFactories())
                 {
                     factory.consumeNeeds();
                 }
-
-                foreach (PopUnit pop in province.allPopUnits)
+                if (country.isInvented(Invention.ProfessionalArmy))
+                    foreach (var item in country.getAllPopUnits(PopType.Soldiers))
+                    {
+                        item.consumeNeeds();
+                    }
+                foreach (var item in country.getAllPopUnits(PopType.Workers))
                 {
-                    if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.shouldPayAristocratTax())
-                            pop.payTaxToAllAristocrats();
+                    item.consumeNeeds();
                 }
-                foreach (PopUnit pop in province.allPopUnits)
+                foreach (var item in country.getAllPopUnits(PopType.Farmers))
                 {
-                    pop.consumeNeeds();
-                    // stopped here with planned economy
+                    item.consumeNeeds();
+                }
+                foreach (var item in country.getAllPopUnits(PopType.Tribesmen))
+                {
+                    item.consumeNeeds();
                 }
             }
+            else  //consume in regular order
+                foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+                {
+                    foreach (Factory factory in province.allFactories)
+                    {
+                        factory.consumeNeeds();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        if (country.serfdom.getValue() == Serfdom.Allowed || country.serfdom.getValue() == Serfdom.Brutal)
+                            if (pop.shouldPayAristocratTax())
+                                pop.payTaxToAllAristocrats();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        pop.consumeNeeds();
+                    }
+                }
+        }
         // big AFTER all circle
         foreach (Country country in Country.getExisting())
         {
+            country.getMoneyForSoldProduct();
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 foreach (Factory factory in province.allFactories)
                 {
-                    factory.getMoneyForSoldProduct();
-                    factory.changeSalary();
-                    factory.payDividend();
+                    if (country.economy.getValue() != Economy.PlannedEconomy)
+                    {
+                        factory.getMoneyForSoldProduct();
+                        factory.changeSalary();
+                        factory.payDividend();
+                        factory.simulateClosing(); // that too
+                    }
+                    //todo that should be done by owners, like capitalists or bureaucrats 
+                    factory.simulateOpening();
                 }
+
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    //if (pop.popType == PopType.Aristocrats || (pop.popType == PopType.Farmers && Economy.isMarket.checkIftrue(getCountry())))
                     if (pop.canSellProducts())
                         pop.getMoneyForSoldProduct();
-                    // this is no good cause it changes production type only if someone is unprofitable
-                    // alternative is in Artisans.produce
-                    //if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1)
-                    //{
-                    //    var artisan = pop as Artisans;
-                    //    if (artisan != null)
-                    //        artisan.checkProfit();
-                    //}
                     //because income come only after consuming, and only after FULL consumption
-                    if (pop.canBuyProducts() && pop.hasToPayGovernmentTaxes())
+                    if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();
-
                     pop.calcLoyalty();
-
                     //if (Game.Random.Next(10) == 1)
                     {
                         pop.calcGrowth();
-
                         pop.calcPromotions();
-
-                        //pop.calcDemotions();
-                        //pop.calcMigrations();
-                        //pop.calcImmigrations();
                         if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
                             pop.findBetterLife();
-
                         pop.calcAssimilations();
                     }
-
-                    if (Game.Random.Next(15) == 1)
+                    if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)
                         pop.invest();
-
                 }
+                if (country.isAI())
+                    country.invest(province);
                 //if (Game.random.Next(3) == 0)
                 //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)

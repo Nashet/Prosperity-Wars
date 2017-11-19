@@ -12,7 +12,7 @@ public class Invention : Name
     string inventedPhrase;
     public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
         Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
-        Manufactories = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(100f)),
+        Manufactures = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(100f)),
         Mining = new Invention("Mining", "Allows resource gathering from holes in ground, increasing it's efficiency by 50%", new Value(100f)),
         //religion = new InventionType("Religion", "Allows clerics, gives loyalty boost", new Value(100f)),
         Metal = new Invention("Metal", "Allows metal ore and smelting. Allows Cold arms", new Value(100f)),
@@ -27,7 +27,7 @@ public class Invention : Name
         Airplanes = new Invention("Airplanes", "Allows Airplanes", new Value(1200f)),
         ProfessionalArmy = new Invention("Professional Army", "Allows soldiers", new Value(200f)),
 
-        Domestication = new Invention("Domestication", "Allows barnyard producing cattle", new Value(100f)),
+        Domestication = new Invention("Domestication", "Allows barnyard producing cattle. Also allows using horses in army", new Value(100f)),
         Electronics = new Invention("Electronics", "Allows Electronics", new Value(1000f)),
         Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
         Coal = new Invention("Coal", "Allows coal", new Value(100f))
@@ -39,6 +39,7 @@ public class Invention : Name
     readonly public static Condition BankingInvented = new Condition(x => (x as Country).isInvented(Invention.Banking), "Banking is invented", true);
     readonly public static Condition WelfareInvented = new Condition(x => (x as Country).isInvented(Invention.Welfare), "Welfare is invented", true);
     readonly public static Condition CollectivismInvented = new Condition(x => (x as Country).isInvented(Invention.Collectivism), "Collectivism is invented", true);
+    readonly public static Condition ManufacturesInvented = new Condition(x => (x as Country).isInvented(Invention.Collectivism), "Manufactures are invented", true);
     internal Invention(string name, string description, Value cost) : base(name)
     {
         //this.name = name;
@@ -55,10 +56,11 @@ public class Invention : Name
     }
     public bool isAvailable(Country country)
     {
-        if (this == Collectivism
-            || (this == Gunpowder && !country.isInvented(Metal))
+        if (//this == Collectivism
+            //||
+            (this == Gunpowder && !country.isInvented(Metal))
             || (this == Coal && !country.isInvented(Metal))
-            || (this == SteamPower && (!country.isInvented(Metal) || !country.isInvented(Manufactories)))
+            || (this == SteamPower && (!country.isInvented(Metal) || !country.isInvented(Manufactures)))
             || (this == Firearms && !country.isInvented(Gunpowder))
             || (this == CombustionEngine && !country.isInvented(SteamPower))
             || (this == Tanks && !country.isInvented(CombustionEngine))

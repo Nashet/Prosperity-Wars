@@ -51,20 +51,20 @@ public class StorageSet
     /// <summary>
     /// If duplicated than adds
     /// </summary>
-    internal void add(Storage need)
+    internal void add(Storage what)
     {
-        Storage find = hasStorage(need.getProduct());
+        Storage find = hasStorage(what.getProduct());
         if (find == null)
-            container.Add(new Storage(need));
+            container.Add(new Storage(what));
         else
-            find.add(need);
+            find.add(what);
     }
     /// <summary>
     /// If duplicated than adds
     /// </summary>
-    internal void add(StorageSet need)
+    internal void add(StorageSet what)
     {
-        foreach (Storage n in need)
+        foreach (Storage n in what)
             this.add(n);
     }
     /// <summary>
@@ -101,15 +101,27 @@ public class StorageSet
     /// <summary>
     /// Do checks outside
     /// </summary>   
-    public bool send(Producer whom, StorageSet what)
+    public bool send(StorageSet whom, StorageSet what)
+    {
+        return send(whom, what.getContainer());
+    }
+    /// <summary>
+    /// Do checks outside
+    /// </summary>   
+    public bool send(StorageSet whom, List<Storage> what)
     {
         bool res = true;
         foreach (var item in what)
         {
-            if (!send(whom, item))//!has(item) || 
-                res = false;
+            whom.add(item);
+            this.subtract(item);
         }
         return res;
+    }
+    internal void sendAll(StorageSet toWhom)
+    {
+        toWhom.add(this);
+        this.setZero();
     }
     /// <summary>
     /// Do checks outside
@@ -145,8 +157,13 @@ public class StorageSet
                 return false;
         return true;
     }
+    internal bool hasMoreThan(Storage item, Value limit)
+    {
+        Storage disiredAmount = new Storage(item.getProduct(), item.get() + limit.get());
+        return has(disiredAmount);
+    }
     /// <summary>Returns non null if container allready has storage for that product</summary>    
-    private Storage hasStorage(Product product)
+    protected Storage hasStorage(Product product)
     {
         foreach (Storage stor in container)
             if (stor.isExactlySameProduct(product))
@@ -220,14 +237,7 @@ public class StorageSet
         //if not found
         return new Storage(what.getProduct(), 0f);
     }
-    /// <summary> Finds substitute for abstrat need and returns new storage with product converted to non-abstract product
-    /// Returns copy of need if need was not abstract (make check)
-    /// If didn't find substitute Returns copy of empty storage of need product</summary>  
-    //todo Make same method for chapest substitute?
-    internal Storage convertToBiggestStorageProduct(Storage need)
-    {
-        return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
-    }
+   
     /// <summary>Gets biggest storage of that product type. Returns NEW empty storage if search is failed</summary>    
     internal Storage getBiggestStorage(Product what)
     {
@@ -238,9 +248,57 @@ public class StorageSet
     {
         return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());
     }
+    /// <summary> Finds substitute for abstrat need and returns new storage with product converted to non-abstract product
+    /// Returns copy of need if need was not abstract (make check)
+    /// If didn't find substitute Returns copy of empty storage of need product</summary>  
+
+    internal Storage convertToBiggestStorageProduct(Storage need)
+    {
+        return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
+    }
     /// <summary>
-    ///  Universal search for storages
-    /// </summary>       
+    /// Returns NULL if failed
+    /// </summary>    
+    public Storage convertToCheapestExistingSubstitute(Storage abstractProduct)
+    {
+        // assuming substitutes are sorted in cheap-expensive order
+        foreach (var substitute in abstractProduct.getProduct().getSubstitutes())
+            if (substitute.isTradable())
+            {
+                Storage newStor = new Storage(substitute, abstractProduct);
+                // check for availability
+                if (Game.market.sentToMarket.has(newStor))
+                    return newStor;
+                //return this.sentToMarket.getExistingStorage(item);
+            }
+        return null;
+    }
+    /// <summary>
+    /// Returns NULL if failed
+    /// </summary> 
+    public Storage convertToCheapestStorageProduct(Storage abstractProduct)
+    {
+        // assuming substitutes are sorted in cheap-expensive order
+        foreach (var item in abstractProduct.getProduct().getSubstitutes())
+            if (item.isTradable())
+            {
+                return new Storage(item, abstractProduct);
+            }
+        return null;
+    }
+    /// <summary> Assuming product is abstract product</summary>       
+    public Storage getTotal(Product product)
+    {
+        Value res = new Value(0f);
+        foreach (var item in this)
+            if (item.getProduct().isSubstituteFor(product))
+            {
+                res.add(item);
+            }
+        return new Storage(product, res);
+    }
+
+    /// <summary>Universal search for storages</summary>       
     private Storage getStorage(Product what,
        Func<IEnumerable<Storage>, Func<Storage, float>, Storage> selectorMethod,
        Func<Storage, float> selector)
@@ -307,7 +365,7 @@ public class StorageSet
     //        }
     //    }
     //}
-    internal bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
+    virtual public bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
     {
         Storage found = hasStorage(storage.getProduct());
         if (found == null)
@@ -330,7 +388,7 @@ public class StorageSet
         else
             return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
     }
-    internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
+    public void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
     {
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);
@@ -356,12 +414,6 @@ public class StorageSet
         // SetZero();
     }
 
-
-    internal void sendAll(StorageSet toWhom)
-    {
-        toWhom.add(this);
-        this.setZero();
-    }
 
     internal float sum()
     {
