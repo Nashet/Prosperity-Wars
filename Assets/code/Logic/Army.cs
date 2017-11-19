@@ -572,7 +572,7 @@ public class Army
         {
             int totalSize = getSize();
             int currentLoss;
-            foreach (var corp in personal.Values)
+            foreach (var corp in personal.Values.ToList())
                 if (totalSize > 0)
                 {
                     currentLoss = Mathf.RoundToInt(corp.getSize() * loss / (float)totalSize);

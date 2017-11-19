@@ -208,7 +208,8 @@ public class Movement : Staff
         {
             killMovement();
             return;
-        }
+        }        
+
         //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
                 && getAverageLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
@@ -217,6 +218,15 @@ public class Movement : Staff
             doRevolt();
         }
     }
+    // clearing dead pops (0 population)
+    //public void clearDeadPops()
+    //{
+    //    foreach (var item in members)
+    //        if (!item.isAlive())
+    //    {
+
+    //    }
+    //}
     private void doRevolt()
     {
         //revolt

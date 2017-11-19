@@ -805,7 +805,7 @@ public class Country : MultiSeller
         // military staff
         base.simulate();
 
-        // getsciense points
+        // get sciense points
         var spBase = getSciencePointsBase();
         spBase.multiply(modSciencePoints.getModifier(this));
         sciencePoints.add(spBase);

@@ -164,10 +164,10 @@ public class Corps // Consumer
 
     internal int TakeLoss(int loss)
     {
-        int sum = size - loss;
-        if (sum > 0)
+        int alive = size - loss;
+        if (alive > 0)
         {
-            size = sum;
+            size = alive;
             origin.takeLoss(loss);
             return loss;
         }
