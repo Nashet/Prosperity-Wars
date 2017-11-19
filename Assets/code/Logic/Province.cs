@@ -584,22 +584,6 @@ public class Province : Name, IEscapeTarget, IHasCountry
         return color;
     }
 
-    public Value getAverageNeedsFulfilling(PopType type)
-    {
-        Value result = new Value(0);
-        int allPopulation = 0;
-
-        foreach (PopUnit pop in getAllPopUnits(type))
-        // get middle needs fulfilling according to pop weight            
-        {
-            allPopulation += pop.getPopulation();
-            result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
-        }
-        if (allPopulation > 0)
-            return result.divideOutside(allPopulation);
-        else
-            return new Value(1f);
-    }
     /// <summary>
     /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
     /// </summary>    
@@ -717,8 +701,8 @@ public class Province : Name, IEscapeTarget, IHasCountry
     /// check type for null outside
     /// </summary>
 
-    
-    
+
+
     internal bool hasFactory(FactoryType type)
     {
         foreach (Factory f in allFactories)
@@ -1033,6 +1017,30 @@ public class Province : Name, IEscapeTarget, IHasCountry
                 result.add(Game.market.getCost(producer.getGainGoodsThisTurn()).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
         return result;
     }
+    /// <summary>
+    /// If type is null than return average value for ALL Pops
+    /// </summary>    
+    public Value getAverageNeedsFulfilling(PopType type)
+    {
+        Value result = new Value(0);
+        int allPopulation = 0;
+        IEnumerable<PopUnit> selector;
+        if (type == null)
+            selector = getAllPopUnits();
+        else
+            selector = getAllPopUnits(type);
+
+        foreach (PopUnit pop in getAllPopUnits(type))
+        // get middle needs fulfilling according to pop weight            
+        {
+            allPopulation += pop.getPopulation();
+            result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
+        }
+        if (allPopulation > 0)
+            return result.divideOutside(allPopulation);
+        else
+            return Procent.HundredProcent;
+    }
 }
 public class Mod : Name
 {
@@ -1048,6 +1056,7 @@ public class Mod : Name
     //    expireDate = Game.date;
     //    expireDate.AddYears(years);
     //}
+
 }
 
 public interface IHasCountry

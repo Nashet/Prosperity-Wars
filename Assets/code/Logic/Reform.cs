@@ -255,7 +255,7 @@ public class Government : AbstractReform
             factory.setSubsidized(false);
             factory.setZeroSalary();
             factory.setPriorityAutoWithPlannedEconomy();
-            factory.setStatisticToZero();
+            //factory.setStatisticToZero();
         }
         foreach (var item in province.getAllPopUnits())
         {

@@ -37,7 +37,7 @@ public class Country : MultiSeller
     private readonly Color nationalColor;
     private Province capital;
     private bool alive = true;
-
+    
     private readonly Value soldiersWage = new Value(0f);
     public readonly Value sciencePoints = new Value(0f);
     public bool failedToPaySoldiers;
@@ -306,6 +306,23 @@ public class Country : MultiSeller
             foreach (var pop in province.allPopUnits)
             {
                 result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.loyalty);
+                calculatedPopulation += pop.getPopulation();
+            }
+        return result;
+    }
+    internal Procent getAverageNeedsFulfilling()
+    {
+        //foreach (var item in ownedProvinces)
+        //{
+        //    item.getAverageNeedsFulfilling(null);
+        //}
+
+        Procent result = new Procent(0f);
+        int calculatedPopulation = 0;
+        foreach (var province in ownedProvinces)
+            foreach (var pop in province.allPopUnits)
+            {
+                result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.needsFullfilled);
                 calculatedPopulation += pop.getPopulation();
             }
         return result;
@@ -1319,7 +1336,7 @@ public class Country : MultiSeller
         return this;
     }
     /// <summary>
-    /// Gets reform wich can take given value
+    /// Gets reform which can take given value
     /// </summary>   
     internal AbstractReform getReform(AbstractReformValue abstractReformValue)
     {
@@ -1331,5 +1348,5 @@ public class Country : MultiSeller
         return null;
     }
 
-
+    
 }

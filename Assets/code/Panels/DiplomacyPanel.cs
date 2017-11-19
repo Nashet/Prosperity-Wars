@@ -35,6 +35,7 @@ public class DiplomacyPanel : DragPanel
 
         sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append(", rank: ").Append(selectedCountry.getGDPRank()).Append(", world share: ").Append(selectedCountry.getWorldGDPShare());
         sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append(", rank: ").Append(selectedCountry.getGDPPer1000Rank());
+        sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAverageNeedsFulfilling());
         sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append(", ").Append(selectedCountry.economy.getValue()).Append(", ").Append(selectedCountry.minorityPolicy.getValue());
         sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
         sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
