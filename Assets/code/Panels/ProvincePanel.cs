@@ -173,10 +173,5 @@ public class ProvincePanel : MonoBehaviour
         btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(province, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().tooltip);
         generaltext.text = sb.ToString();
     }
-    public void onddMapModesChange(int newMapMode)
-    {
-        if (Game.getMapMode() != newMapMode)
-            Game.redrawMapAccordingToMapMode(newMapMode);
-
-    }
+    
 }

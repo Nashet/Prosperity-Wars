@@ -31,6 +31,7 @@ public class MainCamera : MonoBehaviour
     static bool gameIsLoaded;
     internal static LoadingPanel loadingPanel;
     private Camera myCamera;
+    internal static BottomPanel bottomPanel;
 
     //internal static MessagePanel messagePanel;
 
@@ -94,6 +95,7 @@ public class MainCamera : MonoBehaviour
                     Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
                 loadingPanel.hide();
                 topPanel.show();
+                bottomPanel.show();
                 gameIsLoaded = true;
             }
 #if !UNITY_WEBGL
@@ -178,6 +180,7 @@ public class MainCamera : MonoBehaviour
         if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
         if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
         if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
+        if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
     }
 
     internal static void SelectProvince(int number)
