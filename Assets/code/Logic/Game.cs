@@ -101,10 +101,10 @@ public class Game : ThreadedJob
         grid = null;
         map = null;
         // Annex all countries to P)layer
-        foreach (var item in Country.allCountries)
-        {
-            item.annexTo(Game.Player);
-        }
+        //foreach (var item in Country.allCountries)
+        //{
+        //    item.annexTo(Game.Player);
+        //}
     }
     public Rect getMapBorders()
     {
@@ -311,14 +311,14 @@ public class Game : ThreadedJob
 
     static void generateMapImage()
     {                
-#if UNITY_WEBGL
+//#if UNITY_WEBGL
         int mapSize = 20000;//30000;
         int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
         //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
-#else
-        int mapSize = 40000;
-        int width = 200 + Random.Next(80);
-#endif          
+//#else
+//        int mapSize = 40000;
+//        int width = 200 + Random.Next(80);
+//#endif          
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
         
 

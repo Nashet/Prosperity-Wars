@@ -197,7 +197,7 @@ public class Government : AbstractReform
         new ConditionsListForDoubleObjects(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta", 20, 0.3f);
 
     readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
-        new ConditionsListForDoubleObjects(Invention.CollectivismInvented), "SSR", 20, 0.5f);
+        new ConditionsListForDoubleObjects(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f);
 
     internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
     internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.getName(), true);
@@ -274,7 +274,7 @@ public class Government : AbstractReform
             country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
             country.minimalWage.setValue(MinimalWage.None);
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
-            country.minorityPolicy.setValue(MinorityPolicy.Residency);
+            country.minorityPolicy.setValue(MinorityPolicy.Equality);
             country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
             country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
             //nationalization
@@ -503,7 +503,7 @@ public class Serfdom : AbstractReform
     internal static ReformValue Allowed;
     internal static ReformValue Brutal;
     internal static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
-        new ConditionsListForDoubleObjects(new List<Condition>() { Invention.IndividualRightsInvented }));
+        new ConditionsListForDoubleObjects(new List<Condition>() { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
     internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
         new ConditionsListForDoubleObjects(new List<Condition>()
         {
@@ -520,13 +520,13 @@ public class Serfdom : AbstractReform
             Allowed = new ReformValue("Allowed", "- Peasants and other plebes pay 10% of income to Aristocrats", 1,
                 new ConditionsListForDoubleObjects(new List<Condition>()
                 {
-            Economy.isNotMarket
+            Economy.isNotMarket,  Condition.IsNotImplemented
                 }));
         if (Brutal == null)
             Brutal = new ReformValue("Brutal", "- Peasants and other plebes pay 20% of income to Aristocrats", 0,
             new ConditionsListForDoubleObjects(new List<Condition>()
             {
-            Economy.isNotMarket
+            Economy.isNotMarket, Condition.IsNotImplemented
             }));
 
         status = Allowed;

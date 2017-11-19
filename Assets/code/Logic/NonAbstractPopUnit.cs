@@ -131,7 +131,7 @@ public class Farmers : GrainGetter
     public override bool canThisPromoteInto(PopType targetType)
     {
         if (targetType == PopType.Aristocrats
-          || targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories)
+          || targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactures)
             )
             return true;
         else
@@ -477,7 +477,7 @@ public class Capitalists : GrainGetter
     }
     internal override void invest()
     {
-        if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactories))
+        if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
         {
             //should I build?
             //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
@@ -551,7 +551,7 @@ public class Artisans : GrainGetter
     }
     public override bool canThisPromoteInto(PopType targetType)
     {
-        if (targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactories))
+        if (targetType == PopType.Capitalists && getCountry().isInvented(Invention.Manufactures))
             return true;
         else
             return false;

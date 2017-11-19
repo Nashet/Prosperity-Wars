@@ -317,7 +317,7 @@ public class FactoryType
             return false;
         if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
             || !basicProduction.getProduct().isInventedBy(where.getCountry())
-            || isManufacture() && !where.getCountry().isInvented(Invention.Manufactories)
+            || isManufacture() && !where.getCountry().isInvented(Invention.Manufactures)
             || (basicProduction.getProduct() == Product.Cattle && !where.getCountry().isInvented(Invention.Domestication))
             )
             return false;

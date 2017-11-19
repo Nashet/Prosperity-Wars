@@ -68,8 +68,11 @@ public class BuildPanelTable : MyTable
                 AddButton(next.basicProduction.ToString(), next);
 
                 ////Adding potential profit
-                AddButton(next.getPossibleMargin(Game.selectedProvince).ToString(), next);
-                
+                if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                    AddButton("unknown", next);
+                else
+                    AddButton(next.getPossibleMargin(Game.selectedProvince).ToString(), next);
+
                 counter++;
             }
         }

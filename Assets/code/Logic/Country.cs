@@ -147,8 +147,8 @@ public class Country : MultiSeller
             //markInvented(Invention.ProfessionalArmy);
             //markInvented(Invention.Welfare);
 
-            markInvented(Invention.Manufactories);
-            markInvented(Invention.Collectivism);
+            //markInvented(Invention.Manufactories);
+            //markInvented(Invention.Collectivism);
         }
     }
     private void ressurect(Province province, Government.ReformValue newGovernment)
@@ -689,7 +689,7 @@ public class Country : MultiSeller
     // todo should be redone as country-wise method
     internal void invest(Province province)
     {
-        if (economy.getValue() == Economy.PlannedEconomy && getCountry().isInvented(Invention.Manufactories))
+        if (economy.getValue() == Economy.PlannedEconomy && getCountry().isInvented(Invention.Manufactures))
             if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                 && province.getUnemployedWorkers() > 0)
             {

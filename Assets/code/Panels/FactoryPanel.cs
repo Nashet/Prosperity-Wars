@@ -82,7 +82,11 @@ public class FactoryPanel : DragPanel//for dragging
             sb.Append("\nSent to market: ").Append(shownFactory.getSentToMarket());
             sb.Append("\nCash: ").Append(shownFactory.cash.ToString());
             sb.Append("\nMoney income: ").Append(shownFactory.moneyIncomethisTurn);
-            sb.Append("\nProfit: ").Append(shownFactory.getProfit());
+            //if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
+            {
+                
+                sb.Append("\nProfit: ").Append(shownFactory.getProfit());
+            }
             if (shownFactory.getType().hasInput())
             {
                 sb.Append("\nInput required: ");
