@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
+using System.Linq;
 
 public class PopUnitPanel : DragPanel
 {
@@ -103,7 +104,18 @@ public class PopUnitPanel : DragPanel
             + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
             efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
-            issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => pop.getIssues().getString(" willing ", "\n"));
+            issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(
+                delegate ()
+                {
+                    //var list = pop.getIssues().Values.ToList().Sort();
+                    var items = from pair in pop.getIssues()
+                                orderby pair.Value descending
+                                select pair;
+                    return items.getString(" willing ", "\n");
+                }
+                //() => pop.getIssues().ToList().getString(" willing ", "\n")
+                
+                );
         }
     }
     private void makeLine(StringBuilder sb, IEscapeTarget target, int size, string header, bool boolCheck)

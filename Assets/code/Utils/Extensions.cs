@@ -142,14 +142,14 @@ public static class ListStorageExtensions
                 // how find food & grain? broken
                 //var find = source.Find(x => x.is);
                 //if (find != null)
-                    //var find = source.getStorage(substitute);
-                    //if (find.isNotZero())
-                  //  res.add(find);
+                //var find = source.getStorage(substitute);
+                //if (find.isNotZero())
+                //  res.add(find);
             }
         return new Storage(product, res);
     }
     public static Storage getStorage(this List<Storage> list, Product product)
-    {        
+    {
         foreach (Storage stor in list)
             if (stor.isExactlySameProduct(product))
                 return stor;
@@ -404,9 +404,9 @@ public static class CollectionExtensions
 }
 public static class GetStringExtensions
 {
-    public static string getString(this List<Storage> list, string lineBreaker)
+    public static string getString(this IEnumerable<Storage> list, string lineBreaker)
     {
-        if (list.Count > 0)
+        if (list.Count() > 0)
         {
             var sb = new StringBuilder();
             bool isFirstRow = true;
@@ -431,14 +431,12 @@ public static class GetStringExtensions
             return "none";
     }
 
-    public static string getString(this List<KeyValuePair<Culture, Procent>> list, string lineBreaker, int howMuchStringsToShow)
+    public static string getString(this IList<KeyValuePair<Culture, Procent>> list, string lineBreaker, int howMuchStringsToShow)
     {
-        if (list.Count > 0)
+        if (list.Count() > 0)
         {
             var sb = new StringBuilder();
-
-
-            if (list.Count <= howMuchStringsToShow)
+            if (list.Count() <= howMuchStringsToShow)
             {
                 bool isFirstRow = true;
                 foreach (var item in list)
@@ -471,9 +469,9 @@ public static class GetStringExtensions
             return "none";
     }
 
-    public static string getString<TValue>(this List<TValue> list, string lineBreaker)
+    public static string getString<TValue>(this IEnumerable<TValue> list, string lineBreaker)
     {
-        if (list.Count > 0)
+        if (list.Count() > 0)
         {
             var sb = new StringBuilder();
             bool isFirstRow = true;
@@ -491,8 +489,10 @@ public static class GetStringExtensions
         else
             return "none";
     }
-    public static string getString<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, string intermediateString, string lineBreaker)
+    public static string getString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dictionary, string intermediateString, string lineBreaker)
     {
+        if (dictionary.Count() == 0)
+            return "none";
         var sb = new StringBuilder();
         bool isFirstRow = true;
         foreach (var item in dictionary)
@@ -504,10 +504,30 @@ public static class GetStringExtensions
             isFirstRow = false;
             sb.Append(item.Key).Append(intermediateString).Append(item.Value);
         }
-        return sb.ToString();
+        return sb.ToString();        
     }
-    public static string getString(Dictionary<Mod, MyDate> dictionary)
+
+    //public static string getString(this IEnumerable<KeyValuePair<AbstractReformValue, float>> source, string intermediateString, string lineBreaker)
+    //{
+    //    if (source.Count() == 0)
+    //        return "none";
+    //    var sb = new StringBuilder();
+    //    bool isFirstRow = true;
+    //    foreach (var item in source)
+    //    {
+    //        if (!isFirstRow)
+    //        {
+    //            sb.Append(lineBreaker);
+    //        }
+    //        isFirstRow = false;
+    //        sb.Append(item.Key).Append(intermediateString).Append(item.Value);
+    //    }
+    //    return sb.ToString();
+    //}
+    public static string getString(IEnumerable<KeyValuePair<Mod, MyDate>> dictionary)
     {
+        if (dictionary.Count() == 0)
+            return "none";
         var sb = new StringBuilder();
         bool isFirstRow = true;
         foreach (var item in dictionary)
