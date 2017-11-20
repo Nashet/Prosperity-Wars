@@ -339,7 +339,7 @@ public class Country : MultiSeller
         {
             DateOfIsThereBadboyCountry.set(Game.date);
             float worldStrenght = 0f;
-            foreach (var item in Country.getExisting())
+            foreach (var item in Country.getAllExisting())
                 worldStrenght += item.getStregth(null);
             float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
             BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStregth(null) >= streghtLimit).MaxBy(x => x.getStregth(null));
@@ -401,7 +401,7 @@ public class Country : MultiSeller
     {
         return alive;
     }
-    static public IEnumerable<Country> getExisting()
+    static public IEnumerable<Country> getAllExisting()
     {
         foreach (var c in allCountries)
             if (c.isAlive() && c != Country.NullCountry)
@@ -475,7 +475,7 @@ public class Country : MultiSeller
     }
     private bool isOnlyCountry()
     {
-        foreach (var any in Country.getExisting())
+        foreach (var any in Country.getAllExisting())
             if (any != this)
                 return false;
         return true;
@@ -837,7 +837,7 @@ public class Country : MultiSeller
             }
 
         //International opinion;
-        foreach (var item in Country.getExisting())
+        foreach (var item in Country.getAllExisting())
             if (item != this)
             {
                 changeRelation(item, modMyOpinionOfXCountry.getModifier(item));
@@ -1137,7 +1137,7 @@ public class Country : MultiSeller
     public int getGDPRank()
     {
         var list = new List<KeyValuePair<Country, Value>>();
-        foreach (var item in Country.getExisting())
+        foreach (var item in Country.getAllExisting())
         {
             list.Add(new KeyValuePair<Country, Value>(item, item.getGDP()));
         }
@@ -1150,17 +1150,17 @@ public class Country : MultiSeller
     public int getGDPPer1000Rank()
     {
         var list = new List<KeyValuePair<Country, float>>();
-        foreach (var item in Country.getExisting())
+        foreach (var item in Country.getAllExisting())
         {
             list.Add(new KeyValuePair<Country, float>(item, item.getGDPPer1000()));
         }
         list.Sort(FloatOrder);
         return list.FindIndex(x => x.Key == this) + 1; // starts with zero
     }
-    public Procent getWorldGDPShare()
+    public Procent getGDPShare()
     {
         Value worldGDP = new Value(0f);
-        foreach (var item in Country.getExisting())
+        foreach (var item in Country.getAllExisting())
         {
             worldGDP.add(item.getGDP());
         }
@@ -1172,7 +1172,7 @@ public class Country : MultiSeller
     public int getPopulationRank()
     {
         var list = new List<KeyValuePair<Country, int>>();
-        foreach (var item in Country.getExisting())
+        foreach (var item in Country.getAllExisting())
         {
             list.Add(new KeyValuePair<Country, int>(item, item.getFamilyPopulation()));
         }
@@ -1185,7 +1185,7 @@ public class Country : MultiSeller
     public int getSizeRank()
     {
         var list = new List<KeyValuePair<Country, int>>();
-        foreach (var item in Country.getExisting())
+        foreach (var item in Country.getAllExisting())
         {
             list.Add(new KeyValuePair<Country, int>(item, item.getSize()));
         }

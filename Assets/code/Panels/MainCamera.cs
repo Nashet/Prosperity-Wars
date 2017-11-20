@@ -32,6 +32,7 @@ public class MainCamera : MonoBehaviour
     internal static LoadingPanel loadingPanel;
     private Camera myCamera;
     internal static BottomPanel bottomPanel;
+    internal static StatisticsPanel StatisticPanel;
 
     //internal static MessagePanel messagePanel;
 
@@ -180,7 +181,8 @@ public class MainCamera : MonoBehaviour
         if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
         if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
         if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
-        if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
+        if (StatisticPanel.isActiveAndEnabled) StatisticPanel.refreshContent();
+        //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
     }
 
     internal static void SelectProvince(int number)

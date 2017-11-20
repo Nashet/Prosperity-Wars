@@ -85,7 +85,7 @@ public class Market : Agent//: PrimitiveStorageSet
     private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
     {
         Storage result = new Storage(product);
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             foreach (Province province in country.ownedProvinces)
                 foreach (Consumer consumer in province.getAllAgents())
@@ -101,7 +101,7 @@ public class Market : Agent//: PrimitiveStorageSet
     private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
     {
         Storage result = new Storage(product);
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             foreach (Province province in country.ownedProvinces)
                 foreach (Consumer consumer in province.getAllBuyers())
@@ -117,7 +117,7 @@ public class Market : Agent//: PrimitiveStorageSet
     private Storage recalculateProductForSellers(Product product, Func<Seller, Storage> selector)
     {
         Storage result = new Storage(product);
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             foreach (Province province in country.ownedProvinces)
                 foreach (Seller producer in province.getAllProducers())
@@ -133,7 +133,7 @@ public class Market : Agent//: PrimitiveStorageSet
     private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
     {
         Storage result = new Storage(product);
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             foreach (Province province in country.ownedProvinces)
                 foreach (Producer producer in province.getAllProducers())

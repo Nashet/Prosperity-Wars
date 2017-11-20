@@ -16,7 +16,7 @@ public class TradeWindowCountryMarketTable : MyTable
             gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
         }
     }
-    private void addHeader()
+    protected override void addHeader()
     {
         // Adding product name 
         AddButton("Product");

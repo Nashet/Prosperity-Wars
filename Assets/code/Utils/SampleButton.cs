@@ -21,16 +21,10 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
     }
 
     //public void Setup(string text, PopUnit ipopUnit, MyTable currentScrollList)
-    public void Setup(string text, MyTable currentScrollList, object pr)
-    {
-        //item = currentItem;
-        link = pr;
-        nameLabel.text = text; // item.name;
-                               //call = incall;  UnityEngine.Events.UnityAction incall,
-                               //popUnit = ipopUnit; // currentItem.popUnit;
-                               //iconImage.sprite = item.icon;
-                               // priceText.text = item.price.ToString();
-
+    public void Setup(string text, MyTable currentScrollList, object link)
+    {        
+        this.link = link;
+        nameLabel.text = text; 
         scrollList = currentScrollList;
         parent = GetComponentInParent<DragPanel>();
     }
@@ -86,7 +80,20 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
             //MainCamera.politicsPanel.selectedReformValue = null;
             Province temp = (Province)(link);
             MainCamera.SelectProvince(temp.getID());
+        }
+        else if (link is Country)
+        {
+            var country = link as Country;
+            if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            {
+                if (MainCamera.diplomacyPanel.getSelectedCountry() == country)
 
+                    MainCamera.diplomacyPanel.hide();
+                else
+                    MainCamera.diplomacyPanel.show(country);
+            }
+            else
+                MainCamera.diplomacyPanel.show(country);
         }
 
 

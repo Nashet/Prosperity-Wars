@@ -435,7 +435,7 @@ public class Game : ThreadedJob
     public static void prepareForNewTick()
     {
         Game.market.sentToMarket.setZero();
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             country.setStatisticToZero();
             foreach (Province province in country.ownedProvinces)
@@ -514,7 +514,7 @@ public class Game : ThreadedJob
         prepareForNewTick(); 
 
         // big PRODUCE circle
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 foreach (Factory factory in province.allFactories)
@@ -541,7 +541,7 @@ public class Game : ThreadedJob
             }
         //Game.market.ForceDSBRecalculation();
         // big CONCUME circle   
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             country.consumeNeeds();
             if (country.economy.getValue() == Economy.PlannedEconomy)
@@ -589,7 +589,7 @@ public class Game : ThreadedJob
                 }
         }
         // big AFTER all circle
-        foreach (Country country in Country.getExisting())
+        foreach (Country country in Country.getAllExisting())
         {
             country.getMoneyForSoldProduct();
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)

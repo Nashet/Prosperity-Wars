@@ -4,15 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 abstract public class MyTable : MonoBehaviour
-{
-    //public List<Record> recordList;
-    //public Transform contentPanel; // myself
-    public SimpleObjectPool buttonObjectPool;
-    //public GameObject parentPanel;
-    //public ShopScrollList otherShop;
+{    
+    public SimpleObjectPool buttonObjectPool;   
     protected int rowHeight = 20;
     public int columnsAmount;
-
+    abstract protected void addHeader();
     // Use this for initialization
     void Start()
     {
@@ -140,7 +136,7 @@ abstract public class MyTableNew : MonoBehaviour
     protected int offset;
 
     protected bool alreadyInUpdate;
-
+    abstract protected void addHeader();
 
     public abstract void refreshContent();
 
@@ -186,6 +182,13 @@ abstract public class MyTableNew : MonoBehaviour
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, null, prov);
     }
+    protected void AddButton(string text, Country country)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, country);
+    }
     protected void AddButton(string text, Factory stor)
     {
         GameObject newButton = buttonObjectPool.GetObject();
@@ -208,6 +211,15 @@ abstract public class MyTableNew : MonoBehaviour
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
         sampleButton.Setup(text, null, null);
+    }
+    protected void AddButton(string text, string toolTip)
+    {
+        GameObject newButton = buttonObjectPool.GetObject();
+        newButton.transform.SetParent(gameObject.transform, true);
+        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        sampleButton.Setup(text, null, null);
+        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
+        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
 
     protected void AddButton(string text, PopUnit record)

@@ -29,21 +29,9 @@ public class BuildPanelTable : MyTable
     override protected void AddButtons()
     {
         int counter = 0;
+        addHeader();
 
-        // Adding shownFactory type
-        AddButton("Name");
 
-        ////Adding cost
-        AddButton("Cost");
-
-        ////Adding resource needed
-        //AddButton("Input", null);
-
-        ////Adding potential output
-        AddButton("Output");
-
-        ////Adding potential profit
-        AddButton("Potential margin");
         if (Game.selectedProvince != null)
         {
             var factoryList = Game.selectedProvince.whatFactoriesCouldBeBuild();
@@ -76,5 +64,23 @@ public class BuildPanelTable : MyTable
                 counter++;
             }
         }
+    }
+
+    protected override void addHeader()
+    {
+        // Adding shownFactory type
+        AddButton("Name");
+
+        ////Adding cost
+        AddButton("Cost");
+
+        ////Adding resource needed
+        //AddButton("Input", null);
+
+        ////Adding potential output
+        AddButton("Output");
+
+        ////Adding potential profit
+        AddButton("Potential margin");
     }
 }

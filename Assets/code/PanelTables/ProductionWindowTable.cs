@@ -8,37 +8,13 @@ using System;
 
 public class ProductionWindowTable : MyTableNew
 {
-
     public override void refreshContent()
     {
         alreadyInUpdate = true;
         base.RemoveButtons();
         calcSize(Game.factoriesToShowInProductionPanel.Count);
         //int counter = 0;
-
-        // Adding product name 
-        AddButton("Type");
-
-        // Adding province 
-        AddButton("Province");
-
-        ////Adding production
-        AddButton("Production");
-
-        ////Adding effective resource income
-        AddButton("Resources");
-
-        ////Adding workforce
-        AddButton("Workforce");
-
-        ////Adding money income
-        AddButton("Profit");
-
-        ////Adding profit
-        AddButton("Profitability");
-
-        ////Adding salary
-        AddButton("Salary");
+        addHeader();
         for (int i = 0; i < howMuchRowsShow; i++)
         //foreach (Factory next in Game.factoriesToShowInProductionPanel)
         {
@@ -100,5 +76,32 @@ public class ProductionWindowTable : MyTableNew
             //contentPanel.r
         }
         alreadyInUpdate = false;
+    }
+
+    protected override void addHeader()
+    {
+        // Adding product name 
+        AddButton("Type");
+
+        // Adding province 
+        AddButton("Province");
+
+        ////Adding production
+        AddButton("Production");
+
+        ////Adding effective resource income
+        AddButton("Resources");
+
+        ////Adding workforce
+        AddButton("Workforce");
+
+        ////Adding money income
+        AddButton("Profit");
+
+        ////Adding profit
+        AddButton("Profitability");
+
+        ////Adding salary
+        AddButton("Salary");
     }
 }

@@ -1134,7 +1134,7 @@ abstract public class PopUnit : Producer
         Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
         //where to g0?
         // where life is rich and I where I have some rights
-        foreach (var country in Country.getExisting())
+        foreach (var country in Country.getAllExisting())
             if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                 if (country != this.getCountry())
                     foreach (var pro in country.ownedProvinces)

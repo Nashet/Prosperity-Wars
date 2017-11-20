@@ -14,91 +14,93 @@ public class PopulationPanelTable : MyTableNew
         {
             RemoveButtons();
             calcSize(Game.popsToShowInPopulationPanel.Count);
-
-            // Adding number
-            // AddButton("Number");
-
-            // Adding PopType
-            AddButton("Type");
-
-            ////Adding population
-            AddButton("Population");
-
-            ////Adding culture
-            AddButton("Culture");
-
-            ////Adding province
-            AddButton("Province");
-
-            ////Adding education
-            AddButton("Education");
-
-            ////Adding storage
-            //if (null.storage != null)
-            AddButton("Cash");
-            //else AddButton("Administration");
-
-            ////Adding needs fulfilling
-            AddButton("Needs fulfilled");
-
-            ////Adding loyalty
-            AddButton("Loyalty");
-
-            ////Adding Unemployment
-            AddButton("Unemployment");
-
-            //Adding Movement
-            AddButton("Movement");
-
+            addHeader();
             if (Game.popsToShowInPopulationPanel.Count > 0)
             {
                 for (int i = 0; i < howMuchRowsShow; i++)
                 //foreach (PopUnit record in Game.popsToShowInPopulationPanel)
                 {
-                    PopUnit record = Game.popsToShowInPopulationPanel[i + offset];
+                    PopUnit pop = Game.popsToShowInPopulationPanel[i + offset];
 
                     // Adding number
                     //AddButton(Convert.ToString(i + offset), record);
 
                     // Adding PopType
-                    AddButton(record.popType.ToString(), record);
+                    AddButton(pop.popType.ToString(), pop);
                     ////Adding population
-                    AddButton(System.Convert.ToString(record.getPopulation()), record);
+                    AddButton(System.Convert.ToString(pop.getPopulation()), pop);
                     ////Adding culture
-                    AddButton(record.culture.ToString(), record);
+                    AddButton(pop.culture.ToString(), pop);
                     ////Adding province
-                    AddButton(record.getProvince().ToString(), record.getProvince(), "Click to select this province");
+                    AddButton(pop.getProvince().ToString(), pop.getProvince(), "Click to select this province");
                     ////Adding education
-                    AddButton(record.education.ToString(), record);
+                    AddButton(pop.education.ToString(), pop);
 
                     ////Adding cash
-                    AddButton(record.cash.ToString(), record);
+                    AddButton(pop.cash.ToString(), pop);
 
                     ////Adding needs fulfilling
 
                     //PopUnit ert = record;
-                    AddButton(record.needsFullfilled.ToString(), record,
+                    AddButton(pop.needsFullfilled.ToString(), pop,
                         //() => ert.consumedTotal.ToStringWithLines()                        
-                        () => "Consumed:\n" + record.getConsumed().getContainer().getString("\n")
+                        () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
                         );
 
                     ////Adding loyalty
                     string accu;
-                    PopUnit.modifiersLoyaltyChange.getModifier(record, out accu);
-                    AddButton(record.loyalty.ToString(), record, accu);
+                    PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
+                    AddButton(pop.loyalty.ToString(), pop, accu);
 
                     //Adding Unemployment
-                    AddButton(record.getUnemployedProcent().ToString(), record);
+                    AddButton(pop.getUnemployedProcent().ToString(), pop);
 
                     //Adding Movement
-                    if (record.getMovement() == null)
-                        AddButton("", record);
+                    if (pop.getMovement() == null)
+                        AddButton("", pop);
                     else
-                        AddButton(record.getMovement().getShortName(), record);
+                        AddButton(pop.getMovement().getShortName(), pop,()=> pop.getMovement().getName());
                 }
 
             }
         }
         alreadyInUpdate = false;
+    }
+    protected override void addHeader()
+    {
+        // Adding number
+        // AddButton("Number");
+
+        // Adding PopType
+        AddButton("Type");
+
+        ////Adding population
+        AddButton("Population");
+
+        ////Adding culture
+        AddButton("Culture");
+
+        ////Adding province
+        AddButton("Province");
+
+        ////Adding education
+        AddButton("Education");
+
+        ////Adding storage
+        //if (null.storage != null)
+        AddButton("Cash");
+        //else AddButton("Administration");
+
+        ////Adding needs fulfilling
+        AddButton("Needs fulfilled");
+
+        ////Adding loyalty
+        AddButton("Loyalty");
+
+        ////Adding Unemployment
+        AddButton("Unemployment");
+
+        //Adding Movement
+        AddButton("Movement");
     }
 }

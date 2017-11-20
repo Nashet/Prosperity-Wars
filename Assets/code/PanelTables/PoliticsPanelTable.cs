@@ -31,16 +31,7 @@ public class PoliticsPanelTable : MyTable
     override protected void AddButtons()
     {
         int counter = 0;
-
-        // Adding reform name
-        AddButton("Reform", null);
-
-        ////Adding Status
-        AddButton("Status", null);
-
-        ////Adding Can change possibility
-       // AddButton("Can change", null);
-
+        addHeader();
         if (Game.Player != null)
         {
             //var factoryList = Game.player;
@@ -63,5 +54,17 @@ public class PoliticsPanelTable : MyTable
                 counter++;
             }
         }
+    }
+
+    protected override void addHeader()
+    {
+        // Adding reform name
+        AddButton("Reform", null);
+
+        ////Adding Status
+        AddButton("Status", null);
+
+        ////Adding Can change possibility
+        // AddButton("Can change", null);
     }
 }

@@ -39,6 +39,13 @@ public class BottomPanel : MonoBehaviour
 #endif
 
     }
+    public void onStatisticsClick()
+    {
+        if (MainCamera.StatisticPanel.isActiveAndEnabled)
+            MainCamera.StatisticPanel.hide();
+        else
+            MainCamera.StatisticPanel.show(true);
+    }
     public void onddMapModesChange(int newMapMode)
     {
         if (Game.getMapMode() != newMapMode)
