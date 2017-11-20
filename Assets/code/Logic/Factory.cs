@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Text;
-public class Factory : SimpleProduction
+public class Factory : SimpleProduction, ICanBeCellInTable
 {
     public enum Priority { none, low, medium, high }
     private static readonly int workForcePerLevel = 1000;

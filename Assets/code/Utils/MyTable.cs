@@ -193,7 +193,7 @@ abstract public class MyTableNew : MonoBehaviour
         return howMuchRowsShow;
     }
 
-    protected void AddButton(string text, System.Object bject = null, Func<string> dynamicTooltip = null)
+    protected void AddButton(string text, ICanBeCellInTable bject = null, Func<string> dynamicTooltip = null)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
@@ -221,5 +221,9 @@ abstract public class MyTableNew : MonoBehaviour
             }
         }
     }
+
+}
+public interface ICanBeCellInTable
+{
 
 }

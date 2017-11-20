@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
-public class Country : MultiSeller
+public class Country : MultiSeller, ICanBeCellInTable
 {
     public readonly static List<Country> allCountries = new List<Country>();
     internal static readonly Country NullCountry;

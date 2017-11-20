@@ -26,7 +26,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ABIAgBUCAgSIABCBQCEKABgBSQACEQAEgEAAQAAAACA=</HashCode>
+      <HashCode>ABIAgBUCAgCIABCAQCGKABABSQACFQAEgAEAQEAAACA=</HashCode>
       <FileName>Assets\code\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -37,7 +37,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAAAAQAEABAAAAAABAAAAAAAIAAEACAAAgCAQAAAAA=</HashCode>
+      <HashCode>AEAAAAQAEABAAAAAABAAAAAAAMACEACAAAgCAQAAAAA=</HashCode>
       <FileName>Assets\code\Logic\Producer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -73,6 +73,7 @@
       <HashCode>cOHUgECEEQgGY2RGBFAhPsACi4BUkSpwqSQEVi0YFyQ=</HashCode>
       <FileName>Assets\code\Logic\PopUnit.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="ArtisanProduction">
     <Position X="7.25" Y="7.25" Width="1.5" />
@@ -98,9 +99,10 @@
       </Enum>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>lTGYAcbwEFRroJIGzKspATATrSGaIsBEFJJAEqZQDAQ=</HashCode>
+      <HashCode>lTGYAcZwEFRroJIHzKMpATATrSGaIsBEFJJAEqZQDAQ=</HashCode>
       <FileName>Assets\code\Logic\Factory.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="SimpleProduction">
     <Position X="6.25" Y="5.25" Width="1.5" />
@@ -127,14 +129,15 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>mMACwA8o6Lj2hgrOrJrVTXrAH6EtDloQoEJOjDWimLY=</HashCode>
+      <HashCode>mMACwA8o6Lj2hgrOrJrVTX7AH6EtDlgQoEJOjDWimLY=</HashCode>
       <FileName>Assets\code\Logic\Country.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="MultiSeller" Collapsed="true">
     <Position X="11.75" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAABAAAAABAAAaAIBAAAABAAIAAEAAECAgSAAgAgEA=</HashCode>
+      <HashCode>gAAABAAAAABAAAaAIBAAAABCAIAAEAAECAgSAAgAgEA=</HashCode>
       <FileName>Assets\code\Logic\MultiSeller.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

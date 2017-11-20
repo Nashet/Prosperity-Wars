@@ -8,7 +8,7 @@ using System.Text;
 using System.Linq.Expressions;
 
 
-abstract public class PopUnit : Producer
+abstract public class PopUnit : Producer, ICanBeCellInTable
 {
     ///<summary>buffer popList. To avoid iteration breaks</summary>
     public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();

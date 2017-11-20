@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-public class Province : Name, IEscapeTarget, IHasCountry
+public class Province : Name, IEscapeTarget, IHasCountry, ICanBeCellInTable
 {
     public enum TerrainTypes
     {
