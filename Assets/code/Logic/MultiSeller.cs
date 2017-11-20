@@ -150,6 +150,15 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
     {
         return soldByGovernment[product];
     }
+    public Value getCostOfAllSellsByGovernment()
+    {
+        var res = new Value(0f);
+        foreach (var item in soldByGovernment)
+        {
+            res.add(Game.market.getCost(new Storage(item.Key, item.Value)));
+        }
+        return res;
+    }
     /// <summary> Assuming product is abstract product</summary>
     public Value getProducedTotalIncludingSubstitutes(Product product)
     {

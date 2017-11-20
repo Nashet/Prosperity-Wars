@@ -1254,6 +1254,7 @@ public class Country : MultiSeller, ICanBeCellInTable
         result.add(richTaxIncome);
         result.add(goldMinesIncome);
         result.add(ownedFactoriesIncome);
+        result.add(getCostOfAllSellsByGovernment());
         return result;
     }
 
