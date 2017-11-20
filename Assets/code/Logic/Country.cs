@@ -10,6 +10,14 @@ public class Country : MultiSeller
     public readonly static List<Country> allCountries = new List<Country>();
     internal static readonly Country NullCountry;
 
+    internal static int howMuchCountriesAlive()
+    {
+        int res = 0;
+        foreach (var item in getAllExisting())
+            res++;
+        return res;
+    }
+
     internal readonly Government government;
     internal readonly Economy economy;
     internal readonly Serfdom serfdom;
@@ -93,6 +101,7 @@ public class Country : MultiSeller
     static Country()
     {
         NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
+        NullCountry.government.setValue( Government.Tribal);
     }
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {

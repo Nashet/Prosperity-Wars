@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 abstract public class MyTable : MonoBehaviour
-{    
-    public SimpleObjectPool buttonObjectPool;   
+{
+    public SimpleObjectPool buttonObjectPool;
     protected int rowHeight = 20;
     public int columnsAmount;
     abstract protected void addHeader();
@@ -37,14 +37,14 @@ abstract public class MyTable : MonoBehaviour
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, prov);
+        sampleButton.Setup(text,  prov);
     }
     protected void AddButton(string text, Province prov, string tooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, prov);
+        sampleButton.Setup(text,  prov);
         newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
@@ -53,28 +53,28 @@ abstract public class MyTable : MonoBehaviour
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, null);
+        sampleButton.Setup(text,  null);
     }
     protected void AddButton(string text, Product product)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, product);
+        sampleButton.Setup(text,  product);
     }
     protected void AddButton(string text, Storage storage)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, storage);
+        sampleButton.Setup(text,  storage);
     }
     protected void AddButton(string text, Storage storage, Func<string> dynamicTooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, this, storage);
+        sampleButton.Setup(text,  storage);
         newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
@@ -128,19 +128,33 @@ abstract public class MyTable : MonoBehaviour
 abstract public class MyTableNew : MonoBehaviour
 {
     public SimpleObjectPool buttonObjectPool;
-
-    protected readonly int rowHeight = 20;
-    //public int columnsAmount;
     public Scrollbar verticalSlider;
-    protected int howMuchRowsShow;
-    protected int offset;
 
-    protected bool alreadyInUpdate;
+    /// <summary>in pixels</summary>
+    private readonly int rowHeight = 20;
+    private int rowOffset;
+    private bool alreadyInUpdate;
     abstract protected void addHeader();
 
     public abstract void refreshContent();
 
 
+    public int getRowOffset()
+    {
+        return rowOffset;
+    }
+    //public int getHowMuchRowsShow()
+    //{
+    //    return howMuchRowsShow;
+    //}
+    public void startUpdate()
+    {
+        alreadyInUpdate = true;
+    }
+    public void endUpdate()
+    {
+        alreadyInUpdate = false;
+    }
     /// <summary>
     /// assuming amount of pops didn't changed
     /// </summary>
@@ -149,19 +163,21 @@ abstract public class MyTableNew : MonoBehaviour
         if (!alreadyInUpdate)
             refreshContent();
     }
-
-    protected void calcSize(int totalRows)
+    /// <summary>
+    /// Returns how much rows should be shown. It's never bigger than totalRows
+    /// </summary>    
+    protected int calcSize(int totalRows)
     {
         var rect = GetComponent<RectTransform>();
         //LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
 
-        howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header    
+        int howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header    
 
         if (howMuchRowsShow > totalRows)
             howMuchRowsShow = totalRows;
 
         int hiddenRows = totalRows - howMuchRowsShow;
-        offset = (int)(hiddenRows * (1f - verticalSlider.value));
+        rowOffset = (int)(hiddenRows * (1f - verticalSlider.value));
 
         // check if scrollbar size should be changed
         if (totalRows > 0)
@@ -174,88 +190,25 @@ abstract public class MyTableNew : MonoBehaviour
             verticalSlider.size = 1;
             verticalSlider.numberOfSteps = 10;
         }
-    }
-    protected void AddButton(string text, Province prov)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, prov);
-    }
-    protected void AddButton(string text, Country country)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, country);
-    }
-    protected void AddButton(string text, Factory stor)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, stor);
-    }
-    protected void AddButton(string text, Province prov, string tooltip)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, prov);
-        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
-        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-    }
-    protected void AddButton(string text)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, null);
-    }
-    protected void AddButton(string text, string toolTip)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, null);
-        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
-        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+        return howMuchRowsShow;
     }
 
-    protected void AddButton(string text, PopUnit record)
+    protected void AddButton(string text, System.Object bject = null, Func<string> dynamicTooltip = null)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
-        //newButton.transform.SetParent(contentPanel);
-        //newButton.transform.localScale = Vector3.one;
-
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, record);
+        sampleButton.Setup(text, bject);
+        if (dynamicTooltip != null)
+        {
+            newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+            newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+        }
     }
-    protected void AddButton(string text, PopUnit record, string toolTip)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        //newButton.transform.SetParent(contentPanel);
-        //newButton.transform.localScale = Vector3.one;
 
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, record);
-        newButton.GetComponentInChildren<ToolTipHandler>().tooltip = toolTip;
-        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-    }
-    protected void AddButton(string text, PopUnit record, Func<string> dynamicTooltip)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        //newButton.transform.SetParent(contentPanel);
-        //newButton.transform.localScale = Vector3.one;
+    //newButton.transform.SetParent(contentPanel);
+    //newButton.transform.localScale = Vector3.one;
 
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text, null, record);
-        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
-        newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
-    }
     protected void RemoveButtons()
     {
         //lock (buttonObjectPool)

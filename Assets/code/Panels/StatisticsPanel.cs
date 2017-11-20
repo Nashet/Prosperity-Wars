@@ -37,10 +37,7 @@ public class StatisticsPanel : DragPanel
     //    show(true);
     //}
     public void refreshContent()
-    {
-        //if (showingProvince == null)
-        //    SetAllPopsToShow();
-        //foreach (var item in tables)
+    {       
         table.refreshContent();
     }
 }

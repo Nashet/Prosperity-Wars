@@ -12,7 +12,7 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
     public Image iconImage;
     private object link;
     private DragPanel parent;
-    private MyTable scrollList;
+    
 
     // Use this for initialization
     void Start()
@@ -21,11 +21,10 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
     }
 
     //public void Setup(string text, PopUnit ipopUnit, MyTable currentScrollList)
-    public void Setup(string text, MyTable currentScrollList, object link)
+    public void Setup(string text,  object link)
     {        
         this.link = link;
-        nameLabel.text = text; 
-        scrollList = currentScrollList;
+        nameLabel.text = text;         
         parent = GetComponentInParent<DragPanel>();
     }
     public void OnPointerDown(PointerEventData data)

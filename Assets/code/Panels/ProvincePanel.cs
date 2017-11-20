@@ -42,6 +42,7 @@ public class ProvincePanel : MonoBehaviour
             whomGrant = Game.selectedProvince.getRandomCore(x => x != Game.Player);
 
         whomGrant.onGrantedProvince(Game.selectedProvince);
+        MainCamera.refreshAllActive();
     }
     public void onCountryDiplomacyClick()
     {

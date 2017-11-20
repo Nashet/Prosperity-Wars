@@ -4,7 +4,9 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-
+/// <summary>
+/// Obsolete, should be changed to MyTableNew
+/// </summary>
 public class BuildPanelTable : MyTable
 {
     override protected void refresh()
@@ -24,7 +26,7 @@ public class BuildPanelTable : MyTable
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);
         //else
-        sampleButton.Setup(text, this, type);
+        sampleButton.Setup(text,  type);
     }
     override protected void AddButtons()
     {

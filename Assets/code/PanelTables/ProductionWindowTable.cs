@@ -10,15 +10,15 @@ public class ProductionWindowTable : MyTableNew
 {
     public override void refreshContent()
     {
-        alreadyInUpdate = true;
+        startUpdate();
         base.RemoveButtons();
-        calcSize(Game.factoriesToShowInProductionPanel.Count);
+        var howMuchRowsShow=calcSize(Game.factoriesToShowInProductionPanel.Count);
         //int counter = 0;
         addHeader();
         for (int i = 0; i < howMuchRowsShow; i++)
         //foreach (Factory next in Game.factoriesToShowInProductionPanel)
         {
-            Factory next = Game.factoriesToShowInProductionPanel[i + offset];
+            Factory next = Game.factoriesToShowInProductionPanel[i + getRowOffset()];
             // Adding shownFactory name 
             AddButton(next.getType().name + " L" + next.getLevel(), next);
 
@@ -75,7 +75,7 @@ public class ProductionWindowTable : MyTableNew
             //counter++;
             //contentPanel.r
         }
-        alreadyInUpdate = false;
+        endUpdate();
     }
 
     protected override void addHeader()

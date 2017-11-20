@@ -25,7 +25,7 @@ public class InventionsPanelTable : MyTable
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);
         //else
-        sampleButton.Setup(text, this, inventionType);
+        sampleButton.Setup(text, inventionType);
     }
     override protected void AddButtons()
     {

@@ -26,7 +26,7 @@ public class PoliticsPanelTable : MyTable
         //if (inventionType == null)
         //    sampleButton.Setup(text, this, null);
         //else
-        sampleButton.Setup(text, this, type);
+        sampleButton.Setup(text, type);
     }
     override protected void AddButtons()
     {

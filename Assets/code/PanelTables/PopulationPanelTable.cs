@@ -9,18 +9,18 @@ public class PopulationPanelTable : MyTableNew
 {
     public override void refreshContent()
     {
-        alreadyInUpdate = true;
+        startUpdate();
         //lock (gameObject)
         {
             RemoveButtons();
-            calcSize(Game.popsToShowInPopulationPanel.Count);
+            var howMuchRowsShow = calcSize(Game.popsToShowInPopulationPanel.Count);
             addHeader();
             if (Game.popsToShowInPopulationPanel.Count > 0)
             {
                 for (int i = 0; i < howMuchRowsShow; i++)
                 //foreach (PopUnit record in Game.popsToShowInPopulationPanel)
                 {
-                    PopUnit pop = Game.popsToShowInPopulationPanel[i + offset];
+                    PopUnit pop = Game.popsToShowInPopulationPanel[i + getRowOffset()];
 
                     // Adding number
                     //AddButton(Convert.ToString(i + offset), record);
@@ -32,7 +32,7 @@ public class PopulationPanelTable : MyTableNew
                     ////Adding culture
                     AddButton(pop.culture.ToString(), pop);
                     ////Adding province
-                    AddButton(pop.getProvince().ToString(), pop.getProvince(), "Click to select this province");
+                    AddButton(pop.getProvince().ToString(), pop.getProvince(), ()=>"Click to select this province");
                     ////Adding education
                     AddButton(pop.education.ToString(), pop);
 
@@ -50,7 +50,7 @@ public class PopulationPanelTable : MyTableNew
                     ////Adding loyalty
                     string accu;
                     PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
-                    AddButton(pop.loyalty.ToString(), pop, accu);
+                    AddButton(pop.loyalty.ToString(), pop, ()=>accu);
 
                     //Adding Unemployment
                     AddButton(pop.getUnemployedProcent().ToString(), pop);
@@ -59,12 +59,11 @@ public class PopulationPanelTable : MyTableNew
                     if (pop.getMovement() == null)
                         AddButton("", pop);
                     else
-                        AddButton(pop.getMovement().getShortName(), pop,()=> pop.getMovement().getName());
+                        AddButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
                 }
-
             }
         }
-        alreadyInUpdate = false;
+        endUpdate();
     }
     protected override void addHeader()
     {
