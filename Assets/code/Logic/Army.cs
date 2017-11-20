@@ -50,7 +50,7 @@ public class MyDate
     }
     public bool isDatePassed()
     {
-        return this.year > Game.date.year;
+        return Game.date.year > this.year;
     }
 
     internal void set(MyDate newDate)

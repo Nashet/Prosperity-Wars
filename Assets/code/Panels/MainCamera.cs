@@ -121,10 +121,11 @@ public class MainCamera : MonoBehaviour
             {
                 Game.simulate();
                 refreshAllActive();
+                if (Game.selectedProvince != null)
+                    provincePanel.refresh(Game.selectedProvince);
             }
 
-            if (Game.selectedProvince != null)
-                provincePanel.refresh(Game.selectedProvince);
+            
             if (Game.MessageQueue.Count > 0)
                 showMessageBox();
         }

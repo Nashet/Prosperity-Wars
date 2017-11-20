@@ -18,7 +18,7 @@ public abstract class Staff : Consumer
     /// Sum of existing armies men + unmobilized reserve
     /// </summary>
     /// <returns></returns>
-    public float getStregth(Movement againstWho)
+    public float getStrength(Movement againstWho)
     {
         return howMuchCanMobilize(againstWho) + getAllArmiesSize();
     }
@@ -35,15 +35,20 @@ public abstract class Staff : Consumer
     {
         //var governmentHomeArmy = country.getDefenceForces();
         Movement isToWhomMovement = toWhom as Movement;
-        var thisStrenght = getStregth(isToWhomMovement); // null or not null
+        var thisStrenght = getStrength(isToWhomMovement); // null or not null
 
         Movement isThisMovement = this as Movement;
-        var toWhomStrenght = toWhom.getStregth(isThisMovement);// null or not null
+        var toWhomStrenght = toWhom.getStrength(isThisMovement);// null or not null
 
-        if (toWhomStrenght == 0f && thisStrenght > 0f)
-            return new Procent(999.999f);
+        if (toWhomStrenght == 0f)
+        {
+            if (thisStrenght == 0f)
+                return Procent.ZeroProcent;
+            else
+                return Procent.Max999;
+        }
         else
-            return Procent.makeProcent(thisStrenght, toWhomStrenght, false);
+            return Procent.makeProcent(thisStrenght, toWhomStrenght);
 
     }
     public float howMuchCanMobilize(Movement againstWho)
@@ -161,10 +166,10 @@ public abstract class Staff : Consumer
     {
         allArmies.ForEach(x => x.rebelTo(popSelector, movement));
     }
-   
+
     override public List<Storage> getRealAllNeeds()
     {
-        StorageSet res = new StorageSet();        
+        StorageSet res = new StorageSet();
         foreach (var item in allArmies)
             res.add(item.getNeeds());
         return res.getContainer();

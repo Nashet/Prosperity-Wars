@@ -22,6 +22,7 @@ public class ProvincePanel : MonoBehaviour
     public void show()
     {
         gameObject.SetActive(true);
+        refresh(Game.selectedProvince);
     }
     public void onCloseClick()
     {
@@ -148,7 +149,7 @@ public class ProvincePanel : MonoBehaviour
             sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(province.getModifiers()));
 
 
-        //+ "\nNeighbors " + province.getNeigborsList()
+        // "\nNeighbors " + province.getNeigborsList()
         ;
         Text text = btnOwner.GetComponentInChildren<Text>();
         text.text = "Owner: " + province.getCountry();

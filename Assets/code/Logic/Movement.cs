@@ -14,7 +14,7 @@ public class Movement : Staff
     //private readonly Country separatism;
     private readonly List<PopUnit> members = new List<PopUnit>();
     private bool _isInRevolt;
-    
+
     Movement(PopUnit firstPop, Country place) : base(place)
     {
         members.Add(firstPop);
@@ -208,11 +208,12 @@ public class Movement : Staff
         {
             killMovement();
             return;
-        }        
+        }
 
         //&& canWinUprising())
         if (getRelativeStrength(getPlaceDejure()).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
                 && getAverageLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
+                //&& getStrength(getPlaceDejure()) > Options.PopMinStrengthToRevolt
                 )//&& isValidGoal()) do it in before battle
         {
             doRevolt();
@@ -232,27 +233,14 @@ public class Movement : Staff
         //revolt
         if (place == Game.Player && !Game.Player.isAI())
             new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
-        
+
         getPlaceDejure().rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
         base.mobilize(place.ownedProvinces);
 
         sendArmy(place.getCapital(), Procent.HundredProcent);
         _isInRevolt = true;
-    }    
-}
-
-// todo make generic
-public static class MovementExtensions
-{
-    public static string getDescription(this List<Movement> list)
-    {
-        StringBuilder sb = new StringBuilder();
-        foreach (var item in list)
-        {
-            sb.Append("  ").Append(item.getDescription()).Append(" \n");
-        }
-        return sb.ToString();
     }
-
 }
+
+

@@ -110,7 +110,7 @@ public class PoliticsPanel : DragPanel
     {
         hide();
         //if (Game.Player.movements != null)
-        movementsText.text = Game.Player.movements.getDescription();// +"\n\n\n\n";
+        movementsText.text = Game.Player.movements.getString();
         if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
             movementsText.text += "\n\n\n\n";
 
@@ -180,7 +180,6 @@ public class PoliticsPanel : DragPanel
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }
             }
-
         } //didn't selected reform
         else
         {

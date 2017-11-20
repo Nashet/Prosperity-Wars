@@ -349,9 +349,9 @@ public class Country : MultiSeller, ICanBeCellInTable
             DateOfIsThereBadboyCountry.set(Game.date);
             float worldStrenght = 0f;
             foreach (var item in Country.getAllExisting())
-                worldStrenght += item.getStregth(null);
+                worldStrenght += item.getStrength(null);
             float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStregth(null) >= streghtLimit).MaxBy(x => x.getStregth(null));
+            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStrength(null) >= streghtLimit).MaxBy(x => x.getStrength(null));
         }
         return BadboyCountry;
 
@@ -360,7 +360,7 @@ public class Country : MultiSeller, ICanBeCellInTable
     {
         if (country == this)
             return false;
-        if (country.getStregth(null) > this.getStregth(null) * 2)
+        if (country.getStrength(null) > this.getStrength(null) * 2)
             return true;
         else
             return false;
@@ -783,11 +783,11 @@ public class Country : MultiSeller, ICanBeCellInTable
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
                     && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(200) == 1)
-                    && this.getStregth(null) > 0
+                    && this.getStrength(null) > 0
                     && (this.getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
-                    && (this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.25f
+                    && (this.getStrength(null) > possibleTarget.getCountry().getStrength(null) * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
-                        || possibleTarget.getCountry().isAI() && this.getStregth(null) > possibleTarget.getCountry().getStregth(null) * 0.1f)
+                        || possibleTarget.getCountry().isAI() && this.getStrength(null) > possibleTarget.getCountry().getStrength(null) * 0.1f)
                     && Country.canAttack.isAllTrue(possibleTarget, this)
                     )
                 {

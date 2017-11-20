@@ -430,6 +430,18 @@ public static class GetStringExtensions
         else
             return "none";
     }
+    /// <summary>
+    /// Uses getDescription() instead of standard ToString()
+    /// </summary>    
+    public static string getString(this IEnumerable<Movement> source)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var item in source)
+        {
+            sb.Append("  ").Append(item.getDescription()).Append(" \n");
+        }
+        return sb.ToString();
+    }
 
     public static string getString(this IList<KeyValuePair<Culture, Procent>> list, string lineBreaker, int howMuchStringsToShow)
     {
@@ -504,7 +516,7 @@ public static class GetStringExtensions
             isFirstRow = false;
             sb.Append(item.Key).Append(intermediateString).Append(item.Value);
         }
-        return sb.ToString();        
+        return sb.ToString();
     }
 
     //public static string getString(this IEnumerable<KeyValuePair<AbstractReformValue, float>> source, string intermediateString, string lineBreaker)
