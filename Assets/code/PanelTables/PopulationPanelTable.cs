@@ -26,23 +26,23 @@ public class PopulationPanelTable : MyTableNew
                     //AddButton(Convert.ToString(i + offset), record);
 
                     // Adding PopType
-                    AddButton(pop.popType.ToString(), pop);
+                    addButton(pop.popType.ToString(), pop);
                     ////Adding population
-                    AddButton(System.Convert.ToString(pop.getPopulation()), pop);
+                    addButton(System.Convert.ToString(pop.getPopulation()), pop);
                     ////Adding culture
-                    AddButton(pop.culture.ToString(), pop);
+                    addButton(pop.culture.ToString(), pop);
                     ////Adding province
-                    AddButton(pop.getProvince().ToString(), pop.getProvince(), ()=>"Click to select this province");
+                    addButton(pop.getProvince().ToString(), pop.getProvince(), ()=>"Click to select this province");
                     ////Adding education
-                    AddButton(pop.education.ToString(), pop);
+                    addButton(pop.education.ToString(), pop);
 
                     ////Adding cash
-                    AddButton(pop.cash.ToString(), pop);
+                    addButton(pop.cash.ToString(), pop);
 
                     ////Adding needs fulfilling
 
                     //PopUnit ert = record;
-                    AddButton(pop.needsFullfilled.ToString(), pop,
+                    addButton(pop.needsFullfilled.ToString(), pop,
                         //() => ert.consumedTotal.ToStringWithLines()                        
                         () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
                         );
@@ -50,16 +50,16 @@ public class PopulationPanelTable : MyTableNew
                     ////Adding loyalty
                     string accu;
                     PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
-                    AddButton(pop.loyalty.ToString(), pop, ()=>accu);
+                    addButton(pop.loyalty.ToString(), pop, ()=>accu);
 
                     //Adding Unemployment
-                    AddButton(pop.getUnemployedProcent().ToString(), pop);
+                    addButton(pop.getUnemployedProcent().ToString(), pop);
 
                     //Adding Movement
                     if (pop.getMovement() == null)
-                        AddButton("", pop);
+                        addButton("", pop);
                     else
-                        AddButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
+                        addButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
                 }
             }
         }
@@ -71,35 +71,35 @@ public class PopulationPanelTable : MyTableNew
         // AddButton("Number");
 
         // Adding PopType
-        AddButton("Type");
+        addButton("Type");
 
         ////Adding population
-        AddButton("Population");
+        addButton("Population");
 
         ////Adding culture
-        AddButton("Culture");
+        addButton("Culture");
 
         ////Adding province
-        AddButton("Province");
+        addButton("Province");
 
         ////Adding education
-        AddButton("Education");
+        addButton("Education");
 
         ////Adding storage
         //if (null.storage != null)
-        AddButton("Cash");
+        addButton("Cash");
         //else AddButton("Administration");
 
         ////Adding needs fulfilling
-        AddButton("Needs fulfilled");
+        addButton("Needs fulfilled");
 
         ////Adding loyalty
-        AddButton("Loyalty");
+        addButton("Loyalty");
 
         ////Adding Unemployment
-        AddButton("Unemployment");
+        addButton("Unemployment");
 
         //Adding Movement
-        AddButton("Movement");
+        addButton("Movement");
     }
 }
