@@ -15,20 +15,17 @@ public class Movement : Staff
     private readonly List<PopUnit> members = new List<PopUnit>();
     private bool _isInRevolt;
 
-    Movement(PopUnit firstPop, Country place) : base(place)
+    private Movement(PopUnit firstPop, Country place) : base(place)
     {
         members.Add(firstPop);
         getPlaceDejure().movements.Add(this);
     }
-    Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : this(firstPop, place)
+    private Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : this(firstPop, place)
     {
         this.targetReform = reform;
         this.targetReformValue = goal;
     }
-    //Movement(Country separatism, PopUnit firstPop, Country place) : this(firstPop, place)
-    //{
-    //    this.separatism = separatism;
-    //}
+    
     public static void join(PopUnit pop)
     {
         if (pop.getMovement() == null)

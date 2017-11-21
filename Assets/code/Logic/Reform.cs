@@ -46,7 +46,7 @@ abstract public class AbstractReformValue : Name
         this.ID = ID;
         description = indescription;
         this.allowed = condition;
-        isEnacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
+        isEnacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", false);
         allowed.add(isEnacted);
         wantsReform = new Modifier(x => this.howIsItGoodForPop(x as PopUnit).get(),
                     "How much is it good for population", 1f, true);

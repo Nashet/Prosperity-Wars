@@ -69,7 +69,7 @@ public class Country : MultiSeller, ICanBeCellInTable
     public readonly ModifiersList modMyOpinionOfXCountry;
     public static readonly ConditionsListForDoubleObjects canAttack = new ConditionsListForDoubleObjects(new List<Condition>
     {
-        new ConditionForDoubleObjects((province, country)=>(province as Province).isNeighbor(country as Country), x=>"Is neighbor province", true),
+        new ConditionForDoubleObjects((province, country)=>(province as Province).isNeighborButNotOwn(country as Country), x=>"Is neighbor province", true),
         //new ConditionForDoubleObjects((province, province)=>(province as Province).getCountry().government.getValue, x=>"Is neighbor province", false),
         new ConditionForDoubleObjects((province, country)=>!Government.isDemocracy.checkIftrue(country)
         || !Government.isDemocracy.checkIftrue((province as Province).getCountry()), x=>"Democracies can't attack each other", true),

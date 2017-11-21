@@ -457,9 +457,9 @@ public class Province : Name, IEscapeTarget, IHasCountry, ICanBeCellInTable
     {
         return this.getCountry() == country;
     }
-    internal bool isNeighbor(Country country)
+    internal bool isNeighborButNotOwn(Country country)
     {
-        return neighbors.Any(x => x.getCountry() == country);
+        return neighbors.Any(x => x.getCountry() == country && this.getCountry() != country);
     }
     internal bool isNeighbor(Province province)
     {
