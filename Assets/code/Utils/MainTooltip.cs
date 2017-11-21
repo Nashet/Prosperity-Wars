@@ -15,26 +15,6 @@ public class MainTooltip : MonoBehaviour
 
     //horizontal layout of the tooltip
     public HorizontalLayoutGroup hlG;
-    
-
-    public MainTooltip getThis
-    {
-        get
-        {
-            return this;
-        }
-    }
-    //tooltip background image
-    public RectTransform bgImage;
-
-    internal void redrawDynamicString(string text)
-    {       
-
-        //init tooltip string
-        thisText.text = text;
-
-    }
-
     Image bgImageSource;
 
     //needed as the layout refreshes only on the first Update() call
@@ -74,6 +54,8 @@ public class MainTooltip : MonoBehaviour
     float tooltipRealWidth;
     public static MainTooltip thatObj;
 
+    //tooltip background image
+    public RectTransform bgImage;
     // Use this for initialization
     void Start()
     {
@@ -102,7 +84,20 @@ public class MainTooltip : MonoBehaviour
         this.transform.parent.gameObject.SetActive(false);
         thatObj = this;
     }
+    internal void redrawDynamicString(string text)
+    {
 
+        //init tooltip string
+        thisText.text = text;
+
+    }
+    public MainTooltip getThis
+    {
+        get
+        {
+            return this;
+        }
+    }
 
     //single string input tooltip
     public void SetTooltip(string text)
@@ -111,15 +106,15 @@ public class MainTooltip : MonoBehaviour
 
         //init tooltip string
         thisText.text = text;
-        
+
         //call the position function
         OnScreenSpaceCamera();
         LayoutInit();
         firstUpdate = true;
         //LayoutInit();
     }
-   
-    
+
+
 
     // Update is called once per frame
     void Update()
@@ -127,10 +122,10 @@ public class MainTooltip : MonoBehaviour
         LayoutInit();
         if (inside)
         {
-        //    if (GUIMode == RenderMode.ScreenSpaceCamera)
-           
-                OnScreenSpaceCamera();
-           
+            //    if (GUIMode == RenderMode.ScreenSpaceCamera)
+
+            OnScreenSpaceCamera();
+
         }
     }
 
@@ -284,7 +279,41 @@ public class MainTooltip : MonoBehaviour
 
         //this.transform.parent.transform.position = new Vector3(GUICamera.ViewportToWorldPoint(newPos).x, GUICamera.ViewportToWorldPoint(newPos).y, 0f);
         // was it: - nash
-        this.transform.parent.transform.position = new Vector3(newPos.x, newPos.y - 40f, 0f);//
+
+        //my new fit in window logic - nash
+        // check right edge
+        //var ter = GetC<RectTransform>();
+        var rt = transform.parent.parent.GetComponentInParent<RectTransform>();
+
+        var rightEdge = newPos.x + tooltipRealWidth / 2f;
+        var leftEdge = newPos.x - tooltipRealWidth / 2f;
+
+        var topEdge = newPos.y  - 40f;
+        var bottomEdge = newPos.y - tooltipRealHeight - 40f;
+
+        float moveByX = 0f, moveByY = 0f;
+        if (rightEdge > rt.rect.width)
+        {
+            moveByX = rt.rect.width - rightEdge;
+        }
+        else
+        {
+            if (leftEdge < 0)
+
+                moveByX = leftEdge * -1f;
+        }
+        if (topEdge > rt.rect.height)
+        {
+            moveByY = rt.rect.height - topEdge;
+        }
+        else
+        {
+            if (bottomEdge < 0)
+
+                moveByY = bottomEdge * -1f;
+        }
+
+        this.transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - 40f, 0f);//
 
         //this.transform.SetParent(this.transform.parent, false);
 

@@ -29,14 +29,14 @@ public class DiplomacyPanel : DragPanel
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation()).Append(", rank: ").Append(selectedCountry.getPopulationRank());
-        sb.Append(". Provinces: ").Append(selectedCountry.getSize()).Append(", rank: ").Append(selectedCountry.getSizeRank());
+        sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation().ToString("N0")).Append("; rank: ").Append(selectedCountry.getPopulationRank());
+        sb.Append(". Provinces: ").Append(selectedCountry.getSize()).Append("; rank: ").Append(selectedCountry.getSizeRank());
         //sb.Append(", str: ").Append(selectedCountry.getStregth(null));
 
-        sb.Append("\nGDP: ").Append(selectedCountry.getGDP()).Append(", rank: ").Append(selectedCountry.getGDPRank()).Append(", world share: ").Append(selectedCountry.getGDPShare());
-        sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append(", rank: ").Append(selectedCountry.getGDPPer1000Rank());
+        sb.Append("\nGDP: ").Append(selectedCountry.getGDP().get().ToString("N3")).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
+        sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000().ToString("F3")).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
         sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAverageNeedsFulfilling());
-        sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append(", ").Append(selectedCountry.economy.getValue()).Append(", ").Append(selectedCountry.minorityPolicy.getValue());
+        sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
         sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
         sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
         sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());
