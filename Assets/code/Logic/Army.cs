@@ -597,7 +597,7 @@ public class Army
             if (totalStrenght > 0f)
             {
 
-                foreach (var corp in personal)
+                foreach (var corp in personal.ToList())
                 {
 
                     var corpsStrenght = corp.Value.getType().getStrenght();
