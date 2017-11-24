@@ -13,7 +13,7 @@ public class PopUnitPanel : DragPanel
     void Start()
     {
         MainCamera.popUnitPanel = this;
-        GetComponent<RectTransform>().position = new Vector2(900f, -58 + Screen.height);
+        GetComponent<RectTransform>().anchoredPosition= new Vector2(600f, 53f);
         hide();
     }
     public PopUnit whomShowing()

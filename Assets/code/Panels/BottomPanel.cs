@@ -7,7 +7,7 @@ public class BottomPanel : MonoBehaviour
 {
     public Text generalText;
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         //btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
         //btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));

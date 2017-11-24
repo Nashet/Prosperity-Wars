@@ -14,6 +14,7 @@ public class DiplomacyPanel : DragPanel
     void Start()
     {
         MainCamera.diplomacyPanel = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
         hide();
     }
     // Update is called once per frame

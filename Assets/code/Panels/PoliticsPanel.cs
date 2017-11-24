@@ -22,11 +22,8 @@ public class PoliticsPanel : DragPanel
         MainCamera.politicsPanel = this;
         voteButton.interactable = false;
         dropDown.interactable = false;
-        forceDecisionButton.interactable = false;
-        //var oldRect = GetComponent<RectTransform>().rect;
-        //oldRect = new Rect(0, oldRect.y, oldRect.width, oldRect.height);
-        //GetComponent<RectTransform>().localPosition = new Vector2(-960f, -60f);
-        GetComponent<RectTransform>().position = new Vector2(0f, -57f + Screen.height);
+        forceDecisionButton.interactable = false;        
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
         hide();
     }
 

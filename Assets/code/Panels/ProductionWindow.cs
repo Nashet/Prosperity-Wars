@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System;
 
 public class ProductionWindow : DragPanel
-{        
-    public List<MyTableNew> tables = new List<MyTableNew>();    
+{
+    public List<MyTableNew> tables = new List<MyTableNew>();
     Province showingProvince;
     void Start()
     {
         MainCamera.productionWindow = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.bottomPanel.GetComponent<RectTransform>().rect.height - 2f);
         Canvas.ForceUpdateCanvases();
         hide();
     }
@@ -29,7 +30,7 @@ public class ProductionWindow : DragPanel
             Game.factoriesToShowInProductionPanel = showingProvince.allFactories;
         }
         refreshContent();
-    }   
+    }
     internal void SetAllFactoriesToShow()
     {
         List<Factory> er = new List<Factory>();
@@ -41,8 +42,8 @@ public class ProductionWindow : DragPanel
         Game.factoriesToShowInProductionPanel = er;
     }
     public void onShowAllClick()
-    {       
-        SetAllFactoriesToShow();       
+    {
+        SetAllFactoriesToShow();
         show(null, true);
     }
     public void refreshContent()
@@ -63,5 +64,5 @@ public class ProductionWindow : DragPanel
             Game.factoriesToShowInProductionPanel.Remove(fact);
             if (MainCamera.productionWindow.isActiveAndEnabled) refreshContent();
         }
-    }   
+    }
 }

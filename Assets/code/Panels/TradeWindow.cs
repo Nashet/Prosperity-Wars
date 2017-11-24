@@ -20,6 +20,7 @@ public class TradeWindow : DragPanel
         slBuyIfLessThan.setExpotential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
         slSellIfMoreThan.setExpotential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
         MainCamera.tradeWindow = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
         hide();
 
     }

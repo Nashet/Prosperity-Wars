@@ -16,6 +16,7 @@ public class GoodsPanel : DragPanel
         graphTexture = new Texture2D(textureWidth, textureHeight);
         priceGraph = GameObject.Find("PriceGraph").GetComponent<RawImage>();
         MainCamera.goodsPanel = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
         hide();
     }
 

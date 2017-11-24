@@ -10,6 +10,7 @@ public class StatisticsPanel : DragPanel
     void Start()
     {
         MainCamera.StatisticPanel = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -100f);
         //show(false);
         Canvas.ForceUpdateCanvases();
         hide();

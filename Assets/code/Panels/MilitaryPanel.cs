@@ -19,6 +19,7 @@ public class MilitaryPanel : DragPanel
     void Start()
     {
         MainCamera.militaryPanel = this;
+        GetComponent<RectTransform>().position = new Vector2(180f, 111);// + Screen.height);
         hide();
 
     }

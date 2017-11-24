@@ -16,6 +16,7 @@ public class BuildPanel : DragPanel
     void Start()
     {
         MainCamera.buildPanel = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
         buildButton.interactable = false;
         hide();
     }

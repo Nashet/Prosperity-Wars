@@ -16,6 +16,7 @@ public class FinancePanel : DragPanel
     void Start()
     {
         MainCamera.financePanel = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
         hide();
     }
     public void refresh()
