@@ -169,8 +169,8 @@ public class ProvincePanel : MonoBehaviour
             btMobilize.interactable = false;
         }
 
-        if (Game.devMode)
-            sb.Append("\nColor: ").Append(province.getColorID());
+        //if (Game.devMode)
+        //    sb.Append("\nColor: ").Append(province.getColorID());
         btAttackThat.interactable = Country.canAttack.isAllTrue(province, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
         btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(province, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().tooltip);
         generaltext.text = sb.ToString();

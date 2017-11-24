@@ -37,7 +37,10 @@ public class BottomPanel : MonoBehaviour
 #else
                 Application.Quit();
 #endif
-
+    }
+    public void onWikiClick()
+    {
+        Application.OpenURL("https://github.com/Nashet/EconomicSimulation/wiki");
     }
     public void onStatisticsClick()
     {

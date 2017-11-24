@@ -17,7 +17,7 @@ public class FactoryPanel : DragPanel//for dragging
     void Start()
     {
         MainCamera.factoryPanel = this;
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(295f, -53);
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(295f, -50f);
         hide();
     }
     //void OnGUI()

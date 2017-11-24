@@ -37,7 +37,11 @@ public class DiplomacyPanel : DragPanel
         sb.Append("\nGDP: ").Append(selectedCountry.getGDP().get().ToString("N3")).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
         sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000().ToString("F3")).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
         sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAverageNeedsFulfilling());
-        sb.Append("\nGovernment: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
+        sb.Append("\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
         sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
         sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
         sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());

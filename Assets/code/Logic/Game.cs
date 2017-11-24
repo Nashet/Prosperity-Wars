@@ -31,9 +31,9 @@ public class Game : ThreadedJob
     //static internal StringBuilder threadDangerSB = new StringBuilder();
 
     static public MyDate date = new MyDate(0);
-    static internal bool devMode = false;
+    static internal bool devMode = true;
     static private int mapMode;
-    static private bool surrended = true;
+    static private bool surrended = devMode;
     static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
         impassableBorder;
 
@@ -73,8 +73,9 @@ public class Game : ThreadedJob
         сreateRandomPopulation();
 
         setStartResources();
-        // makeHelloMessage();   !!!
-        updateStatus("Finishing generation..");
+        if (!devMode)
+            makeHelloMessage(); 
+         updateStatus("Finishing generation..");
     }
     public static void setUnityAPI()
     {
@@ -269,9 +270,9 @@ public class Game : ThreadedJob
             else
             {
                 PopUnit pop;
-                if (Game.devMode)
-                    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
-                else
+                //if (Game.devMode)
+                //    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
+                //else
                     pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
 
 
@@ -280,16 +281,16 @@ public class Game : ThreadedJob
                     //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                     //province.allPopUnits.Add(pop);
                 }
-                if (Game.devMode)
-                    pop = new Aristocrats(100, province.getCountry().getCulture(), province);
-                else
+                //if (Game.devMode)
+                //    pop = new Aristocrats(1000, province.getCountry().getCulture(), province);
+                //else
                     pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.getCountry().getCulture(), province);
 
 
                 pop.cash.set(9000);
                 pop.storage.add(new Storage(Product.Grain, 60f));
-                if (!Game.devMode)
-                {
+                //if (!Game.devMode)
+                //{
                     //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
                     //pop.cash.set(9000);
 
@@ -298,7 +299,7 @@ public class Game : ThreadedJob
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
                     pop.cash.set(20);
-                }
+                //}
                 //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
             }
         }
@@ -310,22 +311,22 @@ public class Game : ThreadedJob
     }
 
     static void generateMapImage()
-    {                
-//#if UNITY_WEBGL
+    {
+        //#if UNITY_WEBGL
         int mapSize = 20000;//30000;
         int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
-        //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
-//#else
-//        int mapSize = 40000;
-//        int width = 200 + Random.Next(80);
-//#endif          
+                                             //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
+                                             //#else
+                                             //        int mapSize = 40000;
+                                             //        int width = 200 + Random.Next(80);
+                                             //#endif          
         Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
-        
+
 
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
-        
+
         amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
         //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
@@ -455,13 +456,13 @@ public class Game : ThreadedJob
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurrently there is: "
             + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
-            + "\n\tbasic trade & production \n\tbasic warfare \n\tbasic inventions"
+            + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"
             + "\n\tbasic reforms (population can vote for reforms)"
             + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
-            + "\n\tpolitical \\ culture \\ core map mode"
+            + "\n\tpolitical \\ culture \\ core \\ resource map mode"
             + "\n\tmovements and rebellions"
             + "\n\nYou play as " + Game.Player.getDescription() + " You can try to growth economy or conquer the world."
-            + "\nOr, You can give control to AI and watch it"
+            + "\n\nOr, You can give control to AI and watch it"
             + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
             + "\n'Enter' key to close top window, space - to pause \\ unpause"
             , "Ok");
@@ -511,7 +512,7 @@ public class Game : ThreadedJob
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
         // includes workforce balancing
         // and sets statistics to zero. Should go after price calculation
-        prepareForNewTick(); 
+        prepareForNewTick();
 
         // big PRODUCE circle
         foreach (Country country in Country.getAllExisting())

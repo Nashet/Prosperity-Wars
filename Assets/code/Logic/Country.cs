@@ -664,11 +664,10 @@ public class Country : MultiSeller, ICanBeCellInTable
     }
     public Value getSciencePointsBase()
     {
-        if (Game.devMode)
-            return new Value(this.getMenPopulation());
-        else
-            return //new Value(this.getMenPopulation() * Options.defaultSciencePointMultiplier);
-            new Value(Options.defaultSciencePointMultiplier);
+        //if (Game.devMode)
+        //    return new Value(this.getMenPopulation());
+        //else
+            return new Value(Options.defaultSciencePointMultiplier);
     }
     /// <summary>
     /// Returns true if succeeded
@@ -683,7 +682,7 @@ public class Country : MultiSeller, ICanBeCellInTable
             if (buildNeeds != null)
             {
                 var newFactory = new Factory(province, this, propositionFactory);
-                consumeFromCountryStorage(buildNeeds, this); 
+                consumeFromCountryStorage(buildNeeds, this);
                 return true;
                 //newFactory.constructionNeeds.setZero();
             }
