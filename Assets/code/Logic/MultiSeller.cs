@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-interface Seller
+interface ICanSell
 {
     Storage getSentToMarket(Product product);
     void sell(Storage what);
+    void getMoneyForSoldProduct();
 }
 /// <summary>
 /// Had to be class representing ability to sell more than 1 product
 /// but actually it contains statistics for Country
 /// </summary>
-public abstract class MultiSeller : Staff, IHasStatistics, Seller
+public abstract class MultiSeller : Staff, IHasStatistics, ICanSell
 {
     public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
     private readonly StorageSet sentToMarket = new StorageSet();
@@ -113,29 +114,35 @@ public abstract class MultiSeller : Staff, IHasStatistics, Seller
             if (sent.isNotZero())
             {
                 Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.getProduct()));
-                if (DSB.get() > 1f)
-                    DSB.set(1f);
+                if (DSB.get() == Options.MarketInfiniteDSB)
+                    DSB.setZero();// real DSB is unknown
+                else
+                if (DSB.get() > Options.MarketEqualityDSB)
+                    DSB.set(Options.MarketEqualityDSB);
                 Storage realSold = new Storage(sent);
                 realSold.multiply(DSB);
-                Value cost = Game.market.getCost(realSold);
-                //soldByGovernment.addMy(realSold.getProduct(), realSold);
-                soldByGovernment[realSold.getProduct()].set(realSold);
-                //returning back unsold product
-                //if (sent.isBiggerThan(realSold))
-                //{
-                //    var unSold = sent.subtractOutside(realSold);
-                //    countryStorageSet.add(unSold);
-                //}
-
-
-                if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                if (realSold.isNotZero())
                 {
-                    Game.market.pay(this, cost);
-                    //Game.market.sentToMarket.subtract(realSold);
+                    Value cost = Game.market.getCost(realSold);
+                    //soldByGovernment.addMy(realSold.getProduct(), realSold);
+                    soldByGovernment[realSold.getProduct()].set(realSold);
+                    //returning back unsold product
+                    //if (sent.isBiggerThan(realSold))
+                    //{
+                    //    var unSold = sent.subtractOutside(realSold);
+                    //    countryStorageSet.add(unSold);
+                    //}
+
+
+                    if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                    {
+                        Game.market.pay(this, cost);
+                        //Game.market.sentToMarket.subtract(realSold);
+                    }
+                    else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
+                        Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
+                            + " for " + realSold); // money in market ended... Only first lucky get money
                 }
-                else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
-                    Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
-                        + " for " + realSold); // money in market ended... Only first lucky get money
             }
     }
     internal void producedTotalAdd(Storage produced)

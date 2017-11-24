@@ -74,7 +74,7 @@ abstract public class SimpleProduction : Producer
             foreach (Storage next in getRealAllNeeds())
                 if (next.isAbstractProduct())
                 {
-                    var substitute = getInputProductsReserve().convertToBiggestStorageProduct(next);
+                    var substitute = getInputProductsReserve().convertToBiggestStorage(next);
                     if (substitute.isNotZero())
                         getInputProductsReserve().subtract(substitute, false); // could be zero reserves if isJustHiredPeople() 
                 }

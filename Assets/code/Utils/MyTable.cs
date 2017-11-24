@@ -21,7 +21,7 @@ abstract public class MyTable : MonoBehaviour
         if (MainCamera.gameIsLoaded)
             refresh();
     }
-    abstract protected void refresh();   
+    abstract protected void refresh();
     protected void AddButton(string text, Province prov)
     {
         GameObject newButton = buttonObjectPool.GetObject();

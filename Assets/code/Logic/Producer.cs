@@ -8,7 +8,7 @@ using UnityEngine;
 /// Represents anyone who can produce, store and sell product (1 product)
 /// also linked to Province
 /// </summary>
-public abstract class Producer : Consumer, Seller
+public abstract class Producer : Consumer, ICanSell
 {
     /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
     private Storage gainGoodsThisTurn;
@@ -58,27 +58,34 @@ public abstract class Producer : Consumer, Seller
         if (sentToMarket.get() > 0f)
         {
             Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
-            if (DSB.get() > 1f) DSB.set(1f);
+            if (DSB.get() == Options.MarketInfiniteDSB)
+                DSB.setZero(); // real DSB is unknown
+            else
+            if (DSB.get() > Options.MarketEqualityDSB)
+                DSB.set(Options.MarketEqualityDSB);
             Storage realSold = new Storage(sentToMarket);
             realSold.multiply(DSB);
-            Value cost = Game.market.getCost(realSold);
-
-            // adding unsold product
-            // assuming gainGoodsThisTurn & realSold have same product
-            if (storage.isExactlySameProduct(gainGoodsThisTurn))
-                storage.add(gainGoodsThisTurn);
-            else
-                storage = new Storage(gainGoodsThisTurn);
-            storage.subtract(realSold.get());
-
-            if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+            if (realSold.isNotZero())
             {
-                Game.market.pay(this, cost);
-                //Game.market.sentToMarket.subtract(realSold);
+                Value cost = Game.market.getCost(realSold);
+
+                // adding unsold product
+                // assuming gainGoodsThisTurn & realSold have same product
+                if (storage.isExactlySameProduct(gainGoodsThisTurn))
+                    storage.add(gainGoodsThisTurn);
+                else
+                    storage = new Storage(gainGoodsThisTurn);
+                storage.subtract(realSold.get());
+
+                if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                {
+                    Game.market.pay(this, cost);
+                    //Game.market.sentToMarket.subtract(realSold);
+                }
+                else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
+                    Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
+                            + " for " + realSold); // money in market ended... Only first lucky get money
             }
-            else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f)
-                Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
-                        + " for " + realSold); // money in market ended... Only first lucky get money
         }
     }
     /// <summary>

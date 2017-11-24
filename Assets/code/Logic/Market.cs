@@ -38,7 +38,7 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         priceHistory = new PricePool();
     }
-    
+
     internal Value getCost(StorageSet need)
     {
         Value cost = new Value(0f);
@@ -50,7 +50,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return cost;
     }
-    
+
     /// <summary>
     /// returns new Value
     /// </summary>
@@ -73,7 +73,7 @@ public class Market : Agent//: PrimitiveStorageSet
     }
 
 
-    
+
 
     /// <summary>
     /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
@@ -114,13 +114,13 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return result;
     }
-    private Storage recalculateProductForSellers(Product product, Func<Seller, Storage> selector)
+    private Storage recalculateProductForSellers(Product product, Func<ICanSell, Storage> selector)
     {
         Storage result = new Storage(product);
         foreach (Country country in Country.getAllExisting())
         {
             foreach (Province province in country.ownedProvinces)
-                foreach (Seller producer in province.getAllProducers())
+                foreach (ICanSell producer in province.getAllProducers())
                 {
                     var found = selector(producer);
                     if (found.isExactlySameProduct(product))
@@ -167,7 +167,7 @@ public class Market : Agent//: PrimitiveStorageSet
         return bought.getFirstStorage(product);
     }
     internal Storage getTotalConsumption(Product product, bool takeThisTurnData)
-    {        
+    {
         if (takeThisTurnData)
         {
             return recalculateProductForConsumers(product, x => x.getConsumed());
@@ -185,23 +185,23 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return totalConsumption.getFirstStorage(product);
     }
-    
+
     /// <summary>
     /// Only goods sent to market
     /// Based  on last turn data
     /// </summary>    
     internal Storage getMarketSupply(Product product, bool takeThisTurnData)
-    {       
+    {
         if (takeThisTurnData)
         {
-            return recalculateProductForSellers(product, x => x.getSentToMarket(product));          
-         }
-            if (dateOfgetSupplyOnMarket != Game.date)
+            return recalculateProductForSellers(product, x => x.getSentToMarket(product));
+        }
+        if (dateOfgetSupplyOnMarket != Game.date)
         {
             //recalculate supply buffer
             foreach (Storage recalculatingProduct in marketPrice)
                 if (recalculatingProduct.getProduct().isTradable())
-                {                    
+                {
                     var result = recalculateProductForSellers(recalculatingProduct.getProduct(), x => x.getSentToMarket(recalculatingProduct.getProduct()));
                     supplyOnMarket.set(new Storage(recalculatingProduct.getProduct(), result));
                 }
@@ -209,23 +209,23 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return supplyOnMarket.getFirstStorage(product);
     }
-    
+
     /// <summary>
     /// All produced supplies
     /// Based  on last turn data
     /// </summary>    
     internal Storage getProductionTotal(Product product, bool takeThisTurnData)
-    {        
+    {
         if (takeThisTurnData)
         {
-            return recalculateProductForProducers(product, x => x.getGainGoodsThisTurn());           
+            return recalculateProductForProducers(product, x => x.getGainGoodsThisTurn());
         }
         if (dateOfgetTotalProduction != Game.date)
         {
             //recalculate Production buffer
             foreach (Storage recalculatingProduct in marketPrice)
                 if (recalculatingProduct.getProduct().isTradable())
-                {                  
+                {
                     var result = recalculateProductForProducers(recalculatingProduct.getProduct(), x => x.getGainGoodsThisTurn());
                     totalProduction.set(new Storage(recalculatingProduct.getProduct(), result));
                 }
@@ -353,8 +353,8 @@ public class Market : Agent//: PrimitiveStorageSet
         else
             return whatWantedToBuy; // assuming buying is empty here
     }
-    
-        
+
+
     /// <summary>
     /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
     /// </summary>    
@@ -456,7 +456,7 @@ public class Market : Agent//: PrimitiveStorageSet
 
         //return new Storage(need.getProduct(), BuyingAmountAvailable);
     }
-   
+
     /// <summary>
     /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
     /// based on last turn data   
@@ -465,7 +465,7 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
         float balance;
-        
+
         if (dateOfDSB != Game.date)
         // recalculate DSBbuffer
         {
@@ -478,27 +478,27 @@ public class Market : Agent//: PrimitiveStorageSet
                     float supply = getMarketSupply(nextProduct.getProduct(), false).get();
                     float demand = getBouthOnMarket(nextProduct.getProduct(), false).get();
 
-                    if (supply == 0 && demand == 0) // both zero
-                        balance = Options.MarketInfiniteDSB;
+                    //if (supply == 0 && demand == 0) // both zero
+                    //    balance = Options.MarketInfiniteDSB;
+                    //else
+                    //{
+                    if (supply == 0)
+                        balance = Options.MarketInfiniteDSB; // supply zero
                     else
                     {
-                        if (supply == 0)
-                            balance = Options.MarketInfiniteDSB; // supply zero
+                        if (demand == 0) // demand zero
+                            balance = Options.MarketZeroDSB; // otherwise - furniture bag
                         else
-                        {
-                            if (demand == 0) // demand zero
-                                balance = Options.MarketZeroDSB; // otherwise - furniture bag
-                            else
-                                balance = demand / supply;
-                        }
+                            balance = demand / supply;
                     }
+                    //}
                     DSBbuffer.set(new Storage(nextProduct.getProduct(), balance));
                 }
             dateOfDSB.set(Game.date);
         }
         return DSBbuffer.getFirstStorage(product).get();
     }
-  
+
     /// <summary>
     /// Changes price for every product in market
     /// That's first call for DSB in tick
@@ -510,7 +510,7 @@ public class Market : Agent//: PrimitiveStorageSet
         float highestChangingSpeed = 0.2f; //%
         float highChangingSpeed = 0.04f;//%
         float antiBalance;
-        foreach (Storage price in this.marketPrice)           
+        foreach (Storage price in this.marketPrice)
             if (price.getProduct().isTradable())
             {
                 balance = getDemandSupplyBalance(price.getProduct());
@@ -523,11 +523,11 @@ public class Market : Agent//: PrimitiveStorageSet
                 if (balance >= 1f)//0.95f)
                     priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
-                {                    
+                {
                     if (balance <= 0.8f)
-                        priceChangeSpeed = -0.001f + price.get() * -0.02f;                   
-                }                
-                ChangePrice(price, priceChangeSpeed);                
+                        priceChangeSpeed = -0.001f + price.get() * -0.02f;
+                }
+                ChangePrice(price, priceChangeSpeed);
             }
     }
 

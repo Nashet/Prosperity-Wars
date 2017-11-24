@@ -27,7 +27,7 @@ public class StorageSet
         container.Sort(comparison);
     }
     /// <summary>
-    /// If duplicated than overwrites
+    /// If duplicated than overwrites. Doesn't take abstract products
     /// </summary>    
     public void set(Storage setValue)
     {
@@ -38,7 +38,7 @@ public class StorageSet
             find.set(setValue);
     }
     /// <summary>
-    /// If duplicated than overwrites
+    /// If duplicated than overwrites. Doesn't take abstract products
     /// </summary>    
     public void set(Product product, Value value)
     {
@@ -49,7 +49,7 @@ public class StorageSet
             find.set(value);
     }
     /// <summary>
-    /// If duplicated than adds
+    /// If duplicated than adds. Doesn't take abstract products
     /// </summary>
     internal void add(Storage what)
     {
@@ -60,7 +60,7 @@ public class StorageSet
             find.add(what);
     }
     /// <summary>
-    /// If duplicated than adds
+    /// If duplicated than adds. Doesn't take abstract products
     /// </summary>
     internal void add(StorageSet what)
     {
@@ -68,7 +68,7 @@ public class StorageSet
             this.add(n);
     }
     /// <summary>
-    /// If duplicated than adds
+    /// If duplicated than adds. Doesn't take abstract products
     /// </summary>
     internal void add(List<Storage> need)
     {
@@ -149,7 +149,7 @@ public class StorageSet
                 return false;
         return true;
     }
-    /// <summary>Returns False if any item from are not available in that storage</summary>    
+    /// <summary>Returns False if any item from list are not available</summary>    
     internal bool has(List<Storage> list)
     {
         foreach (Storage stor in list)
@@ -157,12 +157,27 @@ public class StorageSet
                 return false;
         return true;
     }
+    /// <summary>Returns null if any item from list are not available, otherwise returns what real have (converted to un-abstract products)</summary>    
+    internal List<Storage> hasAllOf(List<Storage> list)
+    {
+        var res = new List<Storage>();
+        foreach (Storage what in list)
+        {
+            //Storage foundStorage = getBiggestStorage(what.getProduct());
+            var foundStorage = convertToBiggestExistingStorage(what);
+            if (foundStorage.isNotZero())
+                res.Add(foundStorage);
+            else
+                return null;
+        }
+        return res;   
+    }
     internal bool hasMoreThan(Storage item, Value limit)
     {
         Storage disiredAmount = new Storage(item.getProduct(), item.get() + limit.get());
         return has(disiredAmount);
     }
-    /// <summary>Returns non null if container allready has storage for that product</summary>    
+    /// <summary>Returns non null if container already has storage for that product</summary>    
     protected Storage hasStorage(Product product)
     {
         foreach (Storage stor in container)
@@ -248,13 +263,25 @@ public class StorageSet
     {
         return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());
     }
-    /// <summary> Finds substitute for abstrat need and returns new storage with product converted to non-abstract product
+    /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
     /// Returns copy of need if need was not abstract (make check)
-    /// If didn't find substitute Returns copy of empty storage of need product</summary>  
+    /// If didn't find substitute returns copy of empty storage of need product</summary>  
 
-    internal Storage convertToBiggestStorageProduct(Storage need)
+    internal Storage convertToBiggestStorage(Storage need)
     {
         return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
+    }
+    /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
+    /// Returns copy of need if need was not abstract (make check)
+    /// If didn't find substitute OR there is no enough product returns copy of empty storage of need product</summary>  
+
+    internal Storage convertToBiggestExistingStorage(Storage need)
+    {
+        var substitute = getBiggestStorage(need.getProduct());
+        if (substitute.isBiggerOrEqual(need))
+            return new Storage(substitute.getProduct(), need);
+        else
+            return new Storage(substitute.getProduct(), 0f);
     }
     /// <summary>
     /// Returns NULL if failed
@@ -365,9 +392,13 @@ public class StorageSet
     //        }
     //    }
     //}
+    /// <summary>
+    /// Takes abstract products
+    /// </summary>    
     virtual public bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
     {
-        Storage found = hasStorage(storage.getProduct());
+        //Storage found = hasStorage(storage.getProduct());
+        Storage found = getBiggestStorage(storage.getProduct());
         if (found == null)
         {
             if (showMessageAboutNegativeValue)
@@ -377,9 +408,12 @@ public class StorageSet
         else
             return found.subtract(storage, showMessageAboutNegativeValue);
     }
+    /// <summary>
+    /// Takes abstract products
+    /// </summary>
     internal Storage subtractOutside(Storage stor)
     {
-        Storage found = hasStorage(stor.getProduct());
+        Storage found = getBiggestStorage(stor.getProduct());
         if (found == null)
         {
             Debug.Log("Someone tried to subtract from StorageSet more than it has");
@@ -388,16 +422,25 @@ public class StorageSet
         else
             return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
     }
+    /// <summary>
+    /// Takes abstract products
+    /// </summary>
     public void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
     {
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);
     }
+    /// <summary>
+    /// Takes abstract products
+    /// </summary>
     internal void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
     {
         foreach (Storage stor in set)
             this.subtract(stor, showMessageAboutNegativeValue);
     }
+    /// <summary>
+    /// Takes abstract products
+    /// </summary>
     internal StorageSet subtractOuside(StorageSet substracting)
     {
         StorageSet result = new StorageSet();

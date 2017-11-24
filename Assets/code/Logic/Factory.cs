@@ -839,11 +839,12 @@ public class Factory : SimpleProduction, ICanBeCellInTable
             if (shoppingList.Count > 0)
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    if (getCountry().countryStorageSet.has(shoppingList))
+                    var realNeed = getCountry().countryStorageSet.hasAllOf(shoppingList);
+                    if (realNeed != null)
                     {
                         //getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
-                        consumeFromCountryStorage(shoppingList, getCountry());
-                        getInputProductsReserve().add(shoppingList);
+                        consumeFromCountryStorage(realNeed, getCountry());
+                        getInputProductsReserve().add(realNeed);
                     }
                 }
                 else

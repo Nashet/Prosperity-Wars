@@ -766,7 +766,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
             if (getCountry().countryStorageSet.hasMoreThan(item, Options.CountryPopConsumptionLimitPE))
                 if (item.isAbstractProduct())
                 {
-                    var stor = getCountry().countryStorageSet.convertToBiggestStorageProduct(item);
+                    var stor = getCountry().countryStorageSet.convertToBiggestStorage(item);
                     consumeFromCountryStorage(stor, getCountry());
                     consumed.Add(stor);
                     //getCountry().countryStorageSet.subtract(getCountry().countryStorageSet.convertToBiggestStorageProduct(item));            

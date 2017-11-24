@@ -65,7 +65,7 @@ public class Corps // Consumer
             {
                 if (need.isAbstractProduct())
                     // convertToBiggestStorageProduct here are duplicated in this.getConsumptionProcent() (getBiggestStorage())
-                    realConsumption = owner.countryStorageSet.convertToBiggestStorageProduct(need);
+                    realConsumption = owner.countryStorageSet.convertToBiggestStorage(need);
                 else
                     realConsumption = need;
                 if (realConsumption.isNotZero())
