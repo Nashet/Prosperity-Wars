@@ -281,7 +281,7 @@ public class Government : AbstractReform, IHasGetCountry
             country.minimalWage.setValue(MinimalWage.None);
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
             country.minorityPolicy.setValue(MinorityPolicy.Residency);
-            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[1]);
+            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
             //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
         }
         else
@@ -293,7 +293,7 @@ public class Government : AbstractReform, IHasGetCountry
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
             country.minorityPolicy.setValue(MinorityPolicy.Residency);
             //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[0]);
+            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
         }
         else
         if (reform == Government.Polis)
@@ -360,7 +360,7 @@ public class Government : AbstractReform, IHasGetCountry
             country.minimalWage.setValue(MinimalWage.None);
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
             country.minorityPolicy.setValue(MinorityPolicy.Equality);
-            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[1]); //todo or make it "not hire in LF"?
+            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[1]);
             country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[1]);
         }
         else

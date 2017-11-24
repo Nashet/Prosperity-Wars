@@ -59,8 +59,7 @@ public class Corps // Consumer
         float shortage = 0f;
         Storage realConsumption = Storage.EmptyProduct;
         foreach (var need in needs)
-        {
-            // refactor substraction for more abstract??
+        {            
             if (owner.countryStorageSet.has(need))
             {
                 if (need.isAbstractProduct())

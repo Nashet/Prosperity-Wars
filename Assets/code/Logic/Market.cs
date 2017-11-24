@@ -387,14 +387,14 @@ public class Market : Agent//: PrimitiveStorageSet
         bool buyingIsFinished = true;
         foreach (Storage what in ofWhat)
         {
-            Storage consumeOnThisEteration = new Storage(what.getProduct(), what.get() * buyInTime.get());
-            if (consumeOnThisEteration.isZero())
+            Storage consumeOnThisIteration = new Storage(what.getProduct(), what.get() * buyInTime.get());
+            if (consumeOnThisIteration.isZero())
                 return true;
 
-            // check if consumeOnThisEteration is not bigger than stillHaveToBuy
-            if (!stillHaveToBuy.has(consumeOnThisEteration))
-                consumeOnThisEteration = stillHaveToBuy.getBiggestStorage(what.getProduct());
-            var reallyBought = buy(buyer, consumeOnThisEteration, null);
+            // check if consumeOnThisIteration is not bigger than stillHaveToBuy
+            if (!stillHaveToBuy.has(consumeOnThisIteration))
+                consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.getProduct());
+            var reallyBought = buy(buyer, consumeOnThisIteration, null); 
 
             stillHaveToBuy.subtract(reallyBought);
 

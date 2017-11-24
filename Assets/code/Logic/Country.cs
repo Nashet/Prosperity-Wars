@@ -45,7 +45,7 @@ public class Country : MultiSeller, ICanBeCellInTable
     private readonly Color nationalColor;
     private Province capital;
     private bool alive = true;
-    
+
     private readonly Value soldiersWage = new Value(0f);
     public readonly Value sciencePoints = new Value(0f);
     public bool failedToPaySoldiers;
@@ -101,7 +101,7 @@ public class Country : MultiSeller, ICanBeCellInTable
     static Country()
     {
         NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
-        NullCountry.government.setValue( Government.Tribal);
+        NullCountry.government.setValue(Government.Tribal);
     }
     public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
     {
@@ -678,11 +678,12 @@ public class Country : MultiSeller, ICanBeCellInTable
         // could it give uninvented factory?
         if (propositionFactory != null)
         {
-            var cost = propositionFactory.getBuildNeeds();
-            if (countryStorageSet.has(cost))
+
+            var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.getBuildNeeds().getContainer());
+            if (buildNeeds != null)
             {
                 var newFactory = new Factory(province, this, propositionFactory);
-                consumeFromCountryStorage(cost.getContainer(), this);
+                consumeFromCountryStorage(buildNeeds, this); 
                 return true;
                 //newFactory.constructionNeeds.setZero();
             }
@@ -690,7 +691,7 @@ public class Country : MultiSeller, ICanBeCellInTable
         return false;
     }
     /// <summary>
-    ///  Retirns null if needs are satisfied
+    ///  Returns null if needs are satisfied
     /// </summary>         
     private Product getMostDeficitProductAllowedHere(IEnumerable<Product> selector, Province province)
     {
@@ -721,7 +722,7 @@ public class Country : MultiSeller, ICanBeCellInTable
             if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                 && province.getUnemployedWorkers() > 0)
             {
-                var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isIndustrial(),this), province);
+                var industrialProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isIndustrial(), this), province);
                 if (industrialProduct == null)
                 {
                     var militaryProduct = getMostDeficitProductAllowedHere(Product.getAllSpecificProductsInvented(x => x.isMilitary(), this), province);
@@ -1360,5 +1361,5 @@ public class Country : MultiSeller, ICanBeCellInTable
         return null;
     }
 
-    
+
 }

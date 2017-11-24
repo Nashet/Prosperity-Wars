@@ -385,7 +385,7 @@ public class Factory : SimpleProduction, ICanBeCellInTable
                         if (countryPayer.countryStorageSet.has(howMuchPay))
                         {
                             countryPayer.countryStorageSet.send(link.Key, howMuchPay);
-                            link.Key.addProduct(howMuchPay);
+                            link.Key.addProduct(howMuchPay); // todo fails if is abstract
                             salary.set(foodSalary);
                         }
                         //todo no salary cuts yet
@@ -839,7 +839,7 @@ public class Factory : SimpleProduction, ICanBeCellInTable
             if (shoppingList.Count > 0)
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    var realNeed = getCountry().countryStorageSet.hasAllOf(shoppingList);
+                    var realNeed = getCountry().countryStorageSet.hasAllOfConvertToBiggest(shoppingList);
                     if (realNeed != null)
                     {
                         //getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);

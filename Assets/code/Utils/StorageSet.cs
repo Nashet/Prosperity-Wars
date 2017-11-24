@@ -158,7 +158,7 @@ public class StorageSet
         return true;
     }
     /// <summary>Returns null if any item from list are not available, otherwise returns what real have (converted to un-abstract products)</summary>    
-    internal List<Storage> hasAllOf(List<Storage> list)
+    internal List<Storage> hasAllOfConvertToBiggest(List<Storage> list)
     {
         var res = new List<Storage>();
         foreach (Storage what in list)
@@ -313,7 +313,8 @@ public class StorageSet
             }
         return null;
     }
-    /// <summary> Assuming product is abstract product</summary>       
+    /// <summary> Assuming product is abstract product
+    /// Returns total sum of all substitute products</summary>       
     public Storage getTotal(Product product)
     {
         Value res = new Value(0f);
@@ -393,12 +394,12 @@ public class StorageSet
     //    }
     //}
     /// <summary>
-    /// Takes abstract products
+    /// Does not take abstract products
     /// </summary>    
     virtual public bool subtract(Storage storage, bool showMessageAboutNegativeValue = true)
     {
-        //Storage found = hasStorage(storage.getProduct());
-        Storage found = getBiggestStorage(storage.getProduct());
+        Storage found = hasStorage(storage.getProduct());
+        //Storage found = getBiggestStorage(storage.getProduct());
         if (found == null)
         {
             if (showMessageAboutNegativeValue)
@@ -408,22 +409,9 @@ public class StorageSet
         else
             return found.subtract(storage, showMessageAboutNegativeValue);
     }
+
     /// <summary>
-    /// Takes abstract products
-    /// </summary>
-    internal Storage subtractOutside(Storage stor)
-    {
-        Storage found = getBiggestStorage(stor.getProduct());
-        if (found == null)
-        {
-            Debug.Log("Someone tried to subtract from StorageSet more than it has");
-            return new Storage(stor.getProduct(), 0f);
-        }
-        else
-            return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
-    }
-    /// <summary>
-    /// Takes abstract products
+    /// Does not take  abstract products
     /// </summary>
     public void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
     {
@@ -431,7 +419,7 @@ public class StorageSet
             this.subtract(stor, showMessageAboutNegativeValue);
     }
     /// <summary>
-    /// Takes abstract products
+    /// Does not take  abstract products
     /// </summary>
     internal void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
     {
@@ -439,7 +427,7 @@ public class StorageSet
             this.subtract(stor, showMessageAboutNegativeValue);
     }
     /// <summary>
-    /// Takes abstract products
+    /// Does not take  abstract products
     /// </summary>
     internal StorageSet subtractOuside(StorageSet substracting)
     {
@@ -448,7 +436,21 @@ public class StorageSet
             result.add(this.subtractOutside(stor));
         return result;
     }
-
+    /// <summary>
+    /// Does not take abstract products
+    /// </summary>
+    internal Storage subtractOutside(Storage stor)
+    {
+        //Storage found = getBiggestStorage(stor.getProduct());
+        Storage found = hasStorage(stor.getProduct());
+        if (found == null)
+        {
+            Debug.Log("Someone tried to subtract from StorageSet more than it has");
+            return new Storage(stor.getProduct(), 0f);
+        }
+        else
+            return new Storage(stor.getProduct(), found.subtractOutside(stor).get());
+    }
     internal void copyDataFrom(StorageSet consumed)
     {
         foreach (Storage stor in consumed)

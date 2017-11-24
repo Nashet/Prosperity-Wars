@@ -598,7 +598,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
 
     }
     /// <summary>
-    /// !!Recursion is here!! Used for non-market consumption
+    /// !!Recursion is here!! Used for NE consumption
     /// </summary>    
     private void consumeEveryDayAndLuxury(List<Storage> needs, byte howDeep)
     {
@@ -609,7 +609,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
             {
                 //storage.subtract(need);
                 //consumedTotal.add(need);
-                consumeFromItself(need);
+                consumeFromItself(need); // todo fails if is abstract
                 needsFullfilled.set(2f / 3f);
                 if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
             }
@@ -618,7 +618,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
                 float canConsume = storage.get();
                 //consumedTotal.add(storage);
                 //storage.set(0);
-                consumeFromItself(storage);
+                consumeFromItself(storage); // todo fails if is abstract
                 needsFullfilled.add(canConsume / need.get() / 3f);
             }
     }
@@ -751,7 +751,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
             {
                 //its about lifeneeds only
                 float canConsume = storage.get();
-                consumeFromItself(storage);
+                consumeFromItself(storage); // todo fails if is abstract
                 needsFullfilled.set(canConsume / need.get() / 3f);
             }
     }
