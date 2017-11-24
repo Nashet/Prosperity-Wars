@@ -351,9 +351,9 @@ public class Country : MultiSeller, ICanBeCellInTable
             DateOfIsThereBadboyCountry.set(Game.date);
             float worldStrenght = 0f;
             foreach (var item in Country.getAllExisting())
-                worldStrenght += item.getStrength(null);
+                worldStrenght += item.getStrengthExluding(null);
             float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStrength(null) >= streghtLimit).MaxBy(x => x.getStrength(null));
+            BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
         }
         return BadboyCountry;
 
@@ -362,7 +362,7 @@ public class Country : MultiSeller, ICanBeCellInTable
     {
         if (country == this)
             return false;
-        if (country.getStrength(null) > this.getStrength(null) * 2)
+        if (country.getStrengthExluding(null) > this.getStrengthExluding(null) * 2)
             return true;
         else
             return false;
@@ -786,11 +786,11 @@ public class Country : MultiSeller, ICanBeCellInTable
                 var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.getCountry()).get());
                 if (possibleTarget != null
                     && (getRelationTo(possibleTarget.getCountry()).get() < 1f || Game.Random.Next(200) == 1)
-                    && this.getStrength(null) > 0
+                    && this.getStrengthExluding(null) > 0
                     && (this.getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
-                    && (this.getStrength(null) > possibleTarget.getCountry().getStrength(null) * 0.25f
+                    && (this.getStrengthExluding(null) > possibleTarget.getCountry().getStrengthExluding(null) * 0.25f
                         || possibleTarget.getCountry() == Country.NullCountry
-                        || possibleTarget.getCountry().isAI() && this.getStrength(null) > possibleTarget.getCountry().getStrength(null) * 0.1f)
+                        || possibleTarget.getCountry().isAI() && this.getStrengthExluding(null) > possibleTarget.getCountry().getStrengthExluding(null) * 0.1f)
                     && Country.canAttack.isAllTrue(possibleTarget, this)
                     )
                 {

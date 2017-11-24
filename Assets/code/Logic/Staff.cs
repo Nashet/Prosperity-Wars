@@ -18,7 +18,7 @@ public abstract class Staff : Consumer
     /// Sum of existing armies men + unmobilized reserve
     /// </summary>
     /// <returns></returns>
-    public float getStrength(Movement againstWho)
+    public float getStrengthExluding(Staff againstWho)
     {
         return howMuchCanMobilize(againstWho) + getAllArmiesSize();
     }
@@ -31,27 +31,8 @@ public abstract class Staff : Consumer
         //if (Game.Random.Next(20) == 1)
         //    ;
     }
-    public Procent getRelativeStrength(Staff toWhom)
-    {
-        //var governmentHomeArmy = country.getDefenceForces();
-        Movement isToWhomMovement = toWhom as Movement;
-        var thisStrenght = getStrength(isToWhomMovement); // null or not null
-
-        Movement isThisMovement = this as Movement;
-        var toWhomStrenght = toWhom.getStrength(isThisMovement);// null or not null
-
-        if (toWhomStrenght == 0f)
-        {
-            if (thisStrenght == 0f)
-                return Procent.ZeroProcent;
-            else
-                return Procent.Max999;
-        }
-        else
-            return Procent.makeProcent(thisStrenght, toWhomStrenght);
-
-    }
-    public float howMuchCanMobilize(Movement againstWho)
+   
+    public float howMuchCanMobilize(Staff againstWho)
     {
         float result = 0f;
         foreach (var province in place.ownedProvinces)

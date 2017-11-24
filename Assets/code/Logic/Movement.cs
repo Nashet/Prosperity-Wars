@@ -238,6 +238,26 @@ public class Movement : Staff
         sendArmy(place.getCapital(), Procent.HundredProcent);
         _isInRevolt = true;
     }
+    public Procent getRelativeStrength(Staff toWhom)
+    {
+        //var governmentHomeArmy = country.getDefenceForces();
+       // Movement isToWhomMovement = toWhom as Movement;
+        var thisStrenght = getStrengthExluding(toWhom); // null or not null
+
+       // Movement isThisMovement = this as Movement;
+        var toWhomStrenght = toWhom.getStrengthExluding(this);// null or not null
+
+        if (toWhomStrenght == 0f)
+        {
+            if (thisStrenght == 0f)
+                return Procent.ZeroProcent;
+            else
+                return Procent.Max999;
+        }
+        else
+            return Procent.makeProcent(thisStrenght, toWhomStrenght);
+
+    }
 }
 
 

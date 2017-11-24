@@ -58,7 +58,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
         modifierCanNotVote = new Modifier(x => !(x as PopUnit).canVote(), "Can't vote with that government ", -0.1f, false);
         //Game.threadDangerSB.Clear();
         //Game.threadDangerSB.Append("Upset by forced reform - ").Append(daysUpsetByForcedReform).Append(" days");
-        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", -0.3f, false);
+        modifierUpsetByForcedReform = new Modifier(x => (x as PopUnit).daysUpsetByForcedReform > 0, "Upset by forced reform", -3.0f, false);
         modifierNotGivenUnemploymentSubsidies = new Modifier(x => (x as PopUnit).didntGetPromisedUnemloymentSubsidy, "Didn't got promised Unemployment Subsidies", -1.0f, false);
         modifierMinorityPolicy = //new Modifier(MinorityPolicy.IsResidencyPop, 0.02f);
         new Modifier(x => !(x as PopUnit).isStateCulture()
@@ -325,7 +325,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
     {
         return population;
     }
-    internal int howMuchCanMobilize(Staff byWhom, Movement againstWho)
+    internal int howMuchCanMobilize(Staff byWhom, Staff againstWho)
     {
         int howMuchCanMobilizeTotal = 0;
         if (byWhom == getCountry())
@@ -347,7 +347,7 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
                 howMuchCanMobilizeTotal = 0;
         }
         howMuchCanMobilizeTotal -= mobilized; //shouldn't mobilize more than howMuchCanMobilize
-        if (howMuchCanMobilizeTotal + mobilized < Options.PopMinimalMobilazation) // except if it's remobilization
+        if (howMuchCanMobilizeTotal < Options.PopMinimalMobilazation) // except if it's remobilization
             howMuchCanMobilizeTotal = 0;
         return howMuchCanMobilizeTotal;
     }
