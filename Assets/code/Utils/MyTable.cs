@@ -18,33 +18,23 @@ abstract public class MyTable : MonoBehaviour
     void OnEnable()
     {
         //if (Game.date !=0)
-        refresh();
+        if (MainCamera.gameIsLoaded)
+            refresh();
     }
-    //void Update()
-    //{
-    //    //if (Game.date !=0)
-    //    refresh();
-    //}
-
-    abstract protected void refresh();
-
-    //void Update()
-    //{
-    //    // refresh();
-    //}
+    abstract protected void refresh();   
     protected void AddButton(string text, Province prov)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  prov);
+        sampleButton.Setup(text, prov);
     }
     protected void AddButton(string text, Province prov, string tooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  prov);
+        sampleButton.Setup(text, prov);
         newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }
@@ -53,28 +43,28 @@ abstract public class MyTable : MonoBehaviour
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  null);
+        sampleButton.Setup(text, null);
     }
     protected void AddButton(string text, Product product)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  product);
+        sampleButton.Setup(text, product);
     }
     protected void AddButton(string text, Storage storage)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  storage);
+        sampleButton.Setup(text, storage);
     }
     protected void AddButton(string text, Storage storage, Func<string> dynamicTooltip)
     {
         GameObject newButton = buttonObjectPool.GetObject();
         newButton.transform.SetParent(gameObject.transform, true);
         SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  storage);
+        sampleButton.Setup(text, storage);
         newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
         newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
     }

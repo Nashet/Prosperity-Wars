@@ -955,9 +955,10 @@ abstract public class PopUnit : Producer, ICanBeCellInTable
 
     public bool wantsToPromote()
     {
-        if (this.needsFullfilled.get() > Options.PopNeedsPromotionLimit.get())
+        if (this.needsFullfilled.isBiggerThan(Options.PopNeedsPromotionLimit))
             return true;
-        else return false;
+        else
+            return false;
     }
 
     public PopType getRichestPromotionTarget()

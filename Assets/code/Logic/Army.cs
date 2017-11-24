@@ -596,7 +596,6 @@ public class Army
             float totalStrenght = getStrenght(armyStrenghtModifier);
             if (totalStrenght > 0f)
             {
-
                 foreach (var corp in personal.ToList())
                 {
 

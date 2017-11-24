@@ -108,10 +108,10 @@ public abstract class AbstractReform : Name
     //abstract internal void setValue(int value);
 
 }
-public class Government : AbstractReform
+public class Government : AbstractReform, IHasGetCountry
 {
     readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-    private ReformValue status;
+    private ReformValue reform;
     private readonly Country country;
     public Country getCountry()
     {
@@ -214,20 +214,20 @@ public class Government : AbstractReform
     public Government(Country country) : base("Government", "Form of government", country)
     {
         //status = Tribal;
-        status = Aristocracy;
+        reform = Aristocracy;
         this.country = country;
     }
     internal string getPrefix()
     {
-        return status.getPrefix();
+        return reform.getPrefix();
     }
     internal override AbstractReformValue getValue()
     {
-        return status;
+        return reform;
     }
     internal Government.ReformValue getTypedValue()
     {
-        return status;
+        return reform;
     }
     //internal override AbstractReformValue getValue(int value)
     //{
@@ -245,33 +245,140 @@ public class Government : AbstractReform
     }
     public void onReformEnacted(Province province)
     {
-
-        foreach (var factory in province.getAllFactories())
+        var government = province.getCountry().government.getValue();
+        if (government == Government.ProletarianDictatorship)
         {
-            factory.setOwner(country);
-            factory.sendAllAvailableMoney(country);
-            factory.loans.setZero();
-            factory.deposits.setZero();
-            factory.setSubsidized(false);
-            factory.setZeroSalary();
-            factory.setPriorityAutoWithPlannedEconomy();
-            //factory.setStatisticToZero();
-        }
-        foreach (var item in province.getAllPopUnits())
-        {
-            item.sendAllAvailableMoney(country);
-            item.loans.setZero();
-            item.deposits.setZero();
+            //nationalization
+            foreach (var factory in province.getAllFactories())
+            {
+                factory.setOwner(country);
+                factory.sendAllAvailableMoney(country);
+                factory.loans.setZero();
+                factory.deposits.setZero();
+                factory.setSubsidized(false);
+                factory.setZeroSalary();
+                factory.setPriorityAutoWithPlannedEconomy();
+                //factory.setStatisticToZero();
+            }
+            //nationalize banks
+            foreach (var item in province.getAllPopUnits())
+            {
+                item.sendAllAvailableMoney(country);
+                item.loans.setZero();
+                item.deposits.setZero();
+            }
         }
     }
     internal override void setValue(AbstractReformValue selectedReform)
     {
-        status = (ReformValue)selectedReform;
+        reform = (ReformValue)selectedReform;
         country.setPrefix();
-        if (status == Government.ProletarianDictatorship)
+
+        if (reform == Government.Tribal)
+        {
+            country.economy.setValue(Economy.StateCapitalism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalized);
+            country.minimalWage.setValue(MinimalWage.None);
+            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            country.minorityPolicy.setValue(MinorityPolicy.Residency);
+            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[1]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
+        }
+        else
+        if (reform == Government.Aristocracy)
+        {
+            country.economy.setValue(Economy.StateCapitalism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            country.minimalWage.setValue(MinimalWage.None);
+            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            country.minorityPolicy.setValue(MinorityPolicy.Residency);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[0]);
+        }
+        else
+        if (reform == Government.Polis)
+        {
+            if (country.economy.getValue() == Economy.PlannedEconomy)
+                country.economy.setValue(Economy.StateCapitalism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.minimalWage.setValue(MinimalWage.None);
+            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            //country.minorityPolicy.setValue(MinorityPolicy.Residency);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);            
+        }
+        else
+        if (reform == Government.Despotism)
+        {
+            country.economy.setValue(Economy.StateCapitalism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.minimalWage.setValue(MinimalWage.None);
+            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            //country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);            
+        }
+        else
+    if (reform == Government.Theocracy)
+        {
+            country.economy.setValue(Economy.StateCapitalism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.minimalWage.setValue(MinimalWage.None);
+            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);            
+        }
+        else
+        if (reform == Government.WealthDemocracy)
+        {
+            country.economy.setValue(Economy.Interventionism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.minimalWage.setValue(MinimalWage.None);
+            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            //country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);            
+        }
+        else
+        if (reform == Government.Democracy)
+        {
+            if (country.economy.getValue() == Economy.PlannedEconomy)
+                country.economy.setValue(Economy.LaissezFaire);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.minimalWage.setValue(MinimalWage.None);
+            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            //country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);            
+        }
+        else
+    if (reform == Government.BourgeoisDictatorship)
+        {
+            country.economy.setValue(Economy.LaissezFaire);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            country.minimalWage.setValue(MinimalWage.None);
+            country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[1]); //todo or make it "not hire in LF"?
+            country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[1]);
+        }
+        else
+    if (reform == Government.Junta)
+        {
+            country.economy.setValue(Economy.StateCapitalism);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.minimalWage.setValue(MinimalWage.None);
+            //country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
+            //country.minorityPolicy.setValue(MinorityPolicy.Equality);
+            //country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+            //country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);            
+        }
+        else
+    if (reform == Government.ProletarianDictatorship)
         {
             country.economy.setValue(Economy.PlannedEconomy);
-            country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
+            //country.serfdom.setValue(Serfdom.AbolishedAndNationalizated);
             country.minimalWage.setValue(MinimalWage.None);
             country.unemploymentSubsidies.setValue(UnemploymentSubsidies.None);
             country.minorityPolicy.setValue(MinorityPolicy.Equality);
@@ -287,9 +394,9 @@ public class Government : AbstractReform
             {
                 onReformEnacted(province);
             }
-            if (country == Game.Player)
-                MainCamera.refreshAllActive();
         }
+        if (country == Game.Player)
+            MainCamera.refreshAllActive();
     }
     //internal void setValue(AbstractReformValue selectedReform, bool setPrefix)
     //{
@@ -307,8 +414,13 @@ public class Government : AbstractReform
         return PossibleStatuses.Contains(abstractReformValue as ReformValue);
     }
 }
-public class Economy : AbstractReform
+public class Economy : AbstractReform, IHasGetCountry
 {
+    private readonly Country country;
+    public Country getCountry()
+    {
+        return country;
+    }
     internal readonly static Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
     internal readonly static Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status == Economy.LaissezFaire; }, "Economy policy is Laissez Faire", true);
 
@@ -323,6 +435,35 @@ public class Economy : AbstractReform
 
     internal readonly static Condition isNotPlanned = new Condition(x => (x as Country).economy.status != Economy.PlannedEconomy, "Economy policy is not Planned Economy", true);
     internal readonly static Condition isPlanned = new Condition(x => (x as Country).economy.status == Economy.PlannedEconomy, "Economy policy is Planned Economy", true);
+
+    internal readonly static ConditionForDoubleObjects taxesInsideLFLimit = new ConditionForDoubleObjects(
+    delegate (object x, object y)
+    {
+        //if it's poor taxes
+        var taxesForPoor = y as TaxationForPoor.ReformValue;
+        if (taxesForPoor != null)
+            return (x as Country).economy.status != Economy.LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
+        else
+        {
+            var taxesForRich = y as TaxationForRich.ReformValue;
+            return (x as Country).economy.status != Economy.LaissezFaire || taxesForRich.tax.get() <= 0.5f;
+        }
+    },
+        x => "Economy policy is Laissez Faire and tax is not higher than 50%", false);
+    internal readonly static ConditionForDoubleObjects taxesInsideSCLimit = new ConditionForDoubleObjects(
+    delegate (object x, object y)
+    {
+        //if it's poor taxes
+        var taxesForPoor = y as TaxationForPoor.ReformValue;
+        if (taxesForPoor != null)
+            return (x as Country).economy.status != Economy.StateCapitalism || taxesForPoor.tax.get() >= 0.2f;
+        else
+        {
+            var taxesForRich = y as TaxationForRich.ReformValue;
+            return (x as Country).economy.status != Economy.StateCapitalism || taxesForRich.tax.get() >= 0.2f;
+        }
+    },
+        x => "Economy policy is State capitalism and tax is not lower than 20%", false);
 
     internal static Condition isNotMarket = new Condition(x => (x as Country).economy.status == Economy.NaturalEconomy || (x as Country).economy.status == Economy.PlannedEconomy,
       "Economy is not market economy", true);
@@ -399,6 +540,7 @@ public class Economy : AbstractReform
     public Economy(Country country) : base("Economy", "Your economy policy", country)
     {
         status = NaturalEconomy;
+        this.country = country;
     }
     internal override AbstractReformValue getValue()
     {
@@ -407,6 +549,22 @@ public class Economy : AbstractReform
     internal override void setValue(AbstractReformValue selectedReform)
     {
         status = (ReformValue)selectedReform;
+        if (status == LaissezFaire)
+        {
+            if (getCountry().taxationForRich.getTypedValue().tax.get() > 0.5f)
+                getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
+            if (getCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
+                getCountry().taxationForPoor.setValue(TaxationForRich.PossibleStatuses[5]);
+        }
+        else
+            if (status == StateCapitalism)
+        {
+            if (getCountry().taxationForRich.getTypedValue().tax.get() < 0.2f)
+                getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
+            if (getCountry().taxationForPoor.getTypedValue().tax.get() < 0.2f)
+                getCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
+        }
+
     }
     //internal override AbstractReformValue getValue(int value)
     //{
@@ -509,7 +667,7 @@ public class Serfdom : AbstractReform
         {
             Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
         }));
-    internal static ReformValue AbolishedAndNationalizated = new ReformValue("Abolished and nationalized land", "- Aristocrats loose property", 4,
+    internal static ReformValue AbolishedAndNationalized = new ReformValue("Abolished and nationalized land", "- Aristocrats loose property", 4,
         new ConditionsListForDoubleObjects(new List<Condition>()
         {
             Government.isProletarianDictatorship, Condition.IsNotImplemented
@@ -559,7 +717,7 @@ public class Serfdom : AbstractReform
         return true;
     }
     internal static Condition IsAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Serfdom.Abolished
-    || (x as Country).serfdom.status == Serfdom.AbolishedAndNationalizated || (x as Country).serfdom.status == Serfdom.AbolishedWithLandPayment,
+    || (x as Country).serfdom.status == Serfdom.AbolishedAndNationalized || (x as Country).serfdom.status == Serfdom.AbolishedWithLandPayment,
         "Serfdom is abolished", true);
     internal static Condition IsNotAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Serfdom.Allowed
     || (x as Country).serfdom.status == Serfdom.Brutal,
@@ -984,7 +1142,7 @@ public class TaxationForPoor : AbstractReform
     static TaxationForPoor()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects( Economy.isNotPlanned)));
+            PossibleStatuses.Add(new ReformValue(" tax for poor", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects(new List<Condition> { Economy.isNotPlanned, Economy.taxesInsideLFLimit, Economy.taxesInsideSCLimit })));
     }
     public TaxationForPoor(Country country) : base("Taxation for poor", "", country)
     {
@@ -998,7 +1156,10 @@ public class TaxationForPoor : AbstractReform
     {
         return status;
     }
-
+    internal TaxationForPoor.ReformValue getTypedValue()
+    {
+        return status;
+    }
     internal override bool canChange()
     {
         return true;
@@ -1082,7 +1243,7 @@ public class TaxationForRich : AbstractReform
     static TaxationForRich()
     {
         for (int i = 0; i <= 10; i++)
-            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects( Economy.isNotPlanned)));
+            PossibleStatuses.Add(new ReformValue(" tax for rich", "", new Procent(i * 0.1f), i, new ConditionsListForDoubleObjects(new List<Condition> { Economy.isNotPlanned, Economy.taxesInsideLFLimit, Economy.taxesInsideSCLimit })));
     }
     public TaxationForRich(Country country) : base("Taxation for rich", "", country)
     {
@@ -1093,6 +1254,10 @@ public class TaxationForRich : AbstractReform
         return status == PossibleStatuses[value];
     }
     internal override AbstractReformValue getValue()
+    {
+        return status;
+    }
+    internal TaxationForRich.ReformValue getTypedValue()
     {
         return status;
     }

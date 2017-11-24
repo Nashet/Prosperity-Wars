@@ -148,6 +148,8 @@ public class Country : MultiSeller, ICanBeCellInTable
             serfdom.setValue(Serfdom.Abolished);
             //government.setValue(Government.Tribal, false);
             government.setValue(Government.Aristocracy);
+            taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
+
             markInvented(Invention.Farming);
 
             markInvented(Invention.Banking);

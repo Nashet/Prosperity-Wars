@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-public class Province : Name, IEscapeTarget, IHasCountry, ICanBeCellInTable
+public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable
 {
     public enum TerrainTypes
     {
@@ -312,8 +312,12 @@ public class Province : Name, IEscapeTarget, IHasCountry, ICanBeCellInTable
             agent.setBank(taker.getBank());
         }
 
+        // transfer government owned factories
         allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
+
         oldCountry.demobilize(x => x.getPopUnit().getProvince() == this);
+
+        //kill country or move capital
         if (oldCountry.isOneProvince())
             oldCountry.killCountry(taker);
         else
@@ -329,10 +333,9 @@ public class Province : Name, IEscapeTarget, IHasCountry, ICanBeCellInTable
                 pop.loyalty.subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
             pop.loyalty.clamp100();
             Movement.leave(pop);
-        }
+        }        
 
-        taker.government.onReformEnacted(this);
-
+        //transfer province
         if (oldCountry != null)
             if (oldCountry.ownedProvinces != null)
                 oldCountry.ownedProvinces.Remove(this);
@@ -342,6 +345,9 @@ public class Province : Name, IEscapeTarget, IHasCountry, ICanBeCellInTable
             taker.ownedProvinces = new List<Province>();
         taker.ownedProvinces.Add(this);
 
+        taker.government.onReformEnacted(this);
+
+        //graphic stuff
         color = taker.getColor().getAlmostSameColor();
         meshRenderer.material.color = this.getColorAccordingToMapMode();
 
@@ -1059,7 +1065,7 @@ public class Mod : Name
 
 }
 
-public interface IHasCountry
+public interface IHasGetCountry
 {
     Country getCountry();
 }
