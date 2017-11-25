@@ -40,6 +40,7 @@ public class Invention : Name
     readonly public static Condition WelfareInvented = new Condition(x => (x as Country).isInvented(Invention.Welfare), "Welfare is invented", true);
     readonly public static Condition CollectivismInvented = new Condition(x => (x as Country).isInvented(Invention.Collectivism), "Collectivism is invented", true);    
     readonly public static Condition ManufacturesInvented = new Condition(x => (x as Country).isInvented(Invention.Manufactures), "Manufactures are invented", true);
+    readonly public static Condition ManufacturesUnInvented = new Condition(x => !(x as Country).isInvented(Invention.Manufactures), "Manufactures aren't invented", true);
     internal Invention(string name, string description, Value cost) : base(name)
     {
         //this.name = name;

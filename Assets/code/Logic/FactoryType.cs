@@ -155,6 +155,7 @@ public class FactoryType
                 else
                 {
                     Value cost = Game.market.getCost(this.getBuildNeeds());
+                    cost.add(Options.factoryMoneyReservPerLevel);
                     return agent.canPay(cost);
                 }
             },
@@ -162,6 +163,7 @@ public class FactoryType
             {
                 var sb = new StringBuilder();
                 Value cost = Game.market.getCost(this.getBuildNeeds());
+                cost.add(Options.factoryMoneyReservPerLevel);
                 sb.Append("Have ").Append(cost).Append(" coins");
                 sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
                 return sb.ToString();

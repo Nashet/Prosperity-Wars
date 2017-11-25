@@ -34,7 +34,10 @@ public class Factory : SimpleProduction, ICanBeCellInTable
     private int hiredLastTurn;
 
     internal static readonly Modifier
-        modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() && (x as Factory).getProvince().isProducingOnFactories((x as Factory).getType().resourceInput),
+        modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() &&
+        ((x as Factory).getProvince().isProducingOnEnterprises((x as Factory).getType().resourceInput)
+        || ((x as Factory).getProvince().getResource() == Product.Grain && (x as Factory).getType() == FactoryType.Barnyard)
+        ),
               "Has input resource in this province", 0.20f, false),
 
         modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 1f, false),
@@ -148,7 +151,9 @@ public class Factory : SimpleProduction, ICanBeCellInTable
              && (x as Factory).getProvince().isCapital(), "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -1.0f, false),
-             new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -0.30f, false) // remove this?
+             new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -0.30f, false), // remove this?
+             new Modifier(x=>!(x as Factory).getCountry().isInvented(Invention.Manufactures) 
+             && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
         });
 
     internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(type, province)

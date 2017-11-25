@@ -333,7 +333,7 @@ public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable
                 pop.loyalty.subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
             pop.loyalty.clamp100();
             Movement.leave(pop);
-        }        
+        }
 
         //transfer province
         if (oldCountry != null)
@@ -788,12 +788,12 @@ public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable
                 return f;
         return null;
     }
-    internal bool isProducingOnFactories(StorageSet resourceInput)
+    internal bool isProducingOnEnterprises(StorageSet resourceInput)
     {
         foreach (Storage inputNeed in resourceInput)
             foreach (Factory provinceFactory in allFactories)
-                //if (provinceFactory.isWorking() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
-                if (provinceFactory.getGainGoodsThisTurn().isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct()))
+                if (provinceFactory.getGainGoodsThisTurn().isNotZero() && provinceFactory.getType().basicProduction.getProduct().isSameProduct(inputNeed.getProduct())
+                      )
                     return true;
         return false;
     }
