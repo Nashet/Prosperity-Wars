@@ -75,9 +75,9 @@ public class PopUnitPanel : DragPanel
                 sb.Append("\nMember of ").Append(pop.getMovement());
             sb.Append("\nConsumed: ").Append(pop.getConsumed());
 
-            if (Game.devMode)
-                sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedLastTurn())
-                    ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedInMarket()));
+            //if (Game.devMode)
+            //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedLastTurn())
+            //        ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedInMarket()));
 
             generaltext.text = sb.ToString();
 

@@ -27,12 +27,13 @@ public class PopulationPanelTable : MyTableNew
 
                     // Adding PopType
                     addButton(pop.popType.ToString(), pop);
+                    ////Adding province
+                    addButton(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
                     ////Adding population
                     addButton(System.Convert.ToString(pop.getPopulation()), pop);
                     ////Adding culture
                     addButton(pop.culture.ToString(), pop);
-                    ////Adding province
-                    addButton(pop.getProvince().ToString(), pop.getProvince(), ()=>"Click to select this province");
+                    
                     ////Adding education
                     addButton(pop.education.ToString(), pop);
 
@@ -72,16 +73,16 @@ public class PopulationPanelTable : MyTableNew
 
         // Adding PopType
         addButton("Type");
+        
+        ////Adding province
+        addButton("Province");
 
         ////Adding population
         addButton("Population");
 
         ////Adding culture
         addButton("Culture");
-
-        ////Adding province
-        addButton("Province");
-
+        
         ////Adding education
         addButton("Education");
 

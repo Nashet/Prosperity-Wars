@@ -413,6 +413,7 @@ public class Soldiers : GrainGetter
         {
             getCountry().pay(this, payCheck);
             getCountry().soldiersWageExpenseAdd(payCheck);
+            this.didntGetPromisedSalary = false;
         }
         else
         {

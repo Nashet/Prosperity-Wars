@@ -17,8 +17,8 @@ public class TradeWindow : DragPanel
     // Use this for initialization
     void Start()
     {
-        slBuyIfLessThan.setExpotential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
-        slSellIfMoreThan.setExpotential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
+        slBuyIfLessThan.setExponential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
+        slSellIfMoreThan.setExponential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
         MainCamera.tradeWindow = this;
         GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
         hide();
@@ -49,28 +49,28 @@ public class TradeWindow : DragPanel
     public void refreshTradeLimits()
     {
         var sb = new StringBuilder();
-        sb.Append(selectedProduct).Append(": Buy if less than: ").Append(slBuyIfLessThan.expotentialValue.ToString("F0"));
+        sb.Append(selectedProduct).Append(": Buy if less than: ").Append(slBuyIfLessThan.exponentialValue.ToString("F0"));
         txtBuyIfLessThan.text = sb.ToString();
-        txtSaleIfMoreThan.text = "Sell if more than: " + slSellIfMoreThan.expotentialValue.ToString("F0");
+        txtSaleIfMoreThan.text = "Sell if more than: " + slSellIfMoreThan.exponentialValue.ToString("F0");
     }
     public void onslBuyIfLessThanChange()
     {
-        if (slBuyIfLessThan.expotentialValue > slSellIfMoreThan.expotentialValue)
+        if (slBuyIfLessThan.exponentialValue > slSellIfMoreThan.exponentialValue)
         {
-            slSellIfMoreThan.expotentialValue = slBuyIfLessThan.expotentialValue;
+            slSellIfMoreThan.exponentialValue = slBuyIfLessThan.exponentialValue;
             //Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.value);
         }
-        Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.expotentialValue);
+        Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.exponentialValue);
         refreshTradeLimits();
     }
     public void onslSellIfMoreThanChange()
     {
-        if (slBuyIfLessThan.expotentialValue > slSellIfMoreThan.expotentialValue)
+        if (slBuyIfLessThan.exponentialValue > slSellIfMoreThan.exponentialValue)
         {
-            slBuyIfLessThan.expotentialValue = slSellIfMoreThan.expotentialValue;
+            slBuyIfLessThan.exponentialValue = slSellIfMoreThan.exponentialValue;
             //Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.value);
         }
-        Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.expotentialValue);
+        Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.exponentialValue);
         refreshTradeLimits();
     }
     internal void selectProduct(Product product)
@@ -78,8 +78,8 @@ public class TradeWindow : DragPanel
         if (!product.isAbstract())
         {
             selectedProduct = product;
-            slBuyIfLessThan.expotentialValue = Game.Player.getBuyIfLessLimits(selectedProduct).get();
-            slSellIfMoreThan.expotentialValue = Game.Player.getSellIfMoreLimits(selectedProduct).get();
+            slBuyIfLessThan.exponentialValue = Game.Player.getBuyIfLessLimits(selectedProduct).get();
+            slSellIfMoreThan.exponentialValue = Game.Player.getSellIfMoreLimits(selectedProduct).get();
             refreshTradeLimits();
         }
     }

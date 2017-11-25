@@ -3,10 +3,10 @@ using UnityEngine.UI;
 
 public class SliderExponential : Slider
 {
-    private Func<float, float> getValueFunction = x => x;
-    private Func<float, float> setValueFunction = x => x;
+    public Func<float, float> getValueFunction = x => x;
+    public Func<float, float> setValueFunction = x => x;
    
-    public float expotentialValue
+    public float exponentialValue
     {
         get
         {
@@ -18,8 +18,21 @@ public class SliderExponential : Slider
             base.value = setValueFunction(value);
         }
     }
-  
-    public void setExpotential(Func<float, float> getValueFunction, Func<float, float> setValueFunction)
+    [Obsolete]
+    public override float value
+    {
+        get
+        {
+            return base.value;
+        }
+
+        set
+        {
+            base.value = value;
+        }
+    }
+
+    public void setExponential(Func<float, float> getValueFunction, Func<float, float> setValueFunction)
     {
         this.getValueFunction = getValueFunction;
         this.setValueFunction = setValueFunction;

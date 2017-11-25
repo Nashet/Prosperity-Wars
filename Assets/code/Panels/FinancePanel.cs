@@ -8,7 +8,8 @@ public class FinancePanel : DragPanel
 {
     public Text expensesText, captionText, incomeText, bankText, loanLimitText, depositLimitText, AutoPutInBankText,
         totalText;
-    public Slider loanLimit, depositLimit, autoPutInBankLimit, ssSoldiersWage;
+    public Slider loanLimit, depositLimit;
+    public SliderExponential ssSoldiersWage, autoPutInBankLimit;
     public Toggle autoSendMoneyToBank;
     public CanvasGroup bankPanel;
     StringBuilder sb = new StringBuilder();
@@ -17,6 +18,9 @@ public class FinancePanel : DragPanel
     {
         MainCamera.financePanel = this;
         GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
+        //ssSoldiersWage.setExponential(x => 0.001f * Mathf.Pow(x, 1.5f), f => Mathf.Pow(f / 0.001f, 1f / 1.5f));
+        ssSoldiersWage.setExponential(x =>  Mathf.Pow(x, 5f), f => Mathf.Pow(f , 1f / 5f));
+        autoPutInBankLimit.setExponential(x => Mathf.Pow(x, 2f), f => Mathf.Pow(f, 1f / 2f));
         hide();
     }
     public void refresh()
@@ -30,7 +34,7 @@ public class FinancePanel : DragPanel
         sb.Append("\n Poor tax (").Append(Game.Player.taxationForPoor.getValue()).Append("): ").Append(Game.Player.getPoorTaxIncome());
         sb.Append("\n Rich tax (").Append(Game.Player.taxationForRich.getValue()).Append("): ").Append(Game.Player.getRichTaxIncome());
         sb.Append("\n Gold mines: ").Append(Game.Player.getGoldMinesIncome());
-        sb.Append("\n Owned enterprises: ").Append(Game.Player.getOwnedFactoriesIncome());        
+        sb.Append("\n Owned enterprises: ").Append(Game.Player.getOwnedFactoriesIncome());
         sb.Append("\n Storage sells: ").Append(Game.Player.getCostOfAllSellsByGovernment());
         sb.Append("\n Rest: ").Append(Game.Player.getRestIncome());
         sb.Append("\nTotal: ").Append(Game.Player.moneyIncomethisTurn);
@@ -63,7 +67,8 @@ public class FinancePanel : DragPanel
 
         onLoanLimitChange();
         onDepositLimitChange();
-        AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
+        //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
+        autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
         if (Game.Player.isInvented(Invention.Banking))
             bankPanel.interactable = true;
         else
@@ -73,9 +78,9 @@ public class FinancePanel : DragPanel
         }
         if (Game.Player.isInvented(Invention.ProfessionalArmy))
         {
-            ssSoldiersWage.maxValue = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get() * 2f;
-            ssSoldiersWage.value = Game.Player.getSoldierWage();
-            onSoldierWageChange();
+            ssSoldiersWage.maxValue = ssSoldiersWage.setValueFunction(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get() * 2f);
+            ssSoldiersWage.exponentialValue = Game.Player.getSoldierWage(); // could be changed by AI
+            refreshSoldierWageText();
             ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
         }
         else
@@ -86,7 +91,7 @@ public class FinancePanel : DragPanel
         gameObject.SetActive(true);
         panelRectTransform.SetAsLastSibling();
         refresh();
-    }   
+    }
 
     public void findNoonesEterprises()
     {
@@ -139,17 +144,20 @@ public class FinancePanel : DragPanel
     {
         depositLimitText.text = Game.Player.cash.multiplyOutside(depositLimit.value).ToString();
     }
-    public void onSoldierWageChange()
+    private void refreshSoldierWageText()
     {
         sb.Clear();
-        sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.value)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
+        sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
         ssSoldiersWage.GetComponentInChildren<Text>().text = sb.ToString();
-        //if (!Game.Player.isAI())
-            Game.Player.setSoldierWage(ssSoldiersWage.value);
+    }
+    public void onSoldierWageChange()
+    {
+        refreshSoldierWageText();
+        Game.Player.setSoldierWage(ssSoldiersWage.exponentialValue);
     }
     public void onAutoPutInBankLimitChange()
     {
-        Game.Player.autoPutInBankLimit = (int)autoPutInBankLimit.value;
+        Game.Player.autoPutInBankLimit = (int)autoPutInBankLimit.exponentialValue;
         AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
     }
     public void onAutoSendMoneyToBankToggleChange()
@@ -158,8 +166,8 @@ public class FinancePanel : DragPanel
         if (!autoSendMoneyToBank.isOn)
         {
             Game.Player.autoPutInBankLimit = 0;
-            autoPutInBankLimit.value = 0f;
-            AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
+            //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
+            autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
         }
 
     }
