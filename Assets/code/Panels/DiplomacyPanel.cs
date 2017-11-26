@@ -8,6 +8,7 @@ public class DiplomacyPanel : DragPanel
 {
     public Text captionText, generalText;
     public Button giveControlToAi, giveControlToPlayer;
+    public MainCamera mainCamera;
     Country selectedCountry;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
@@ -78,6 +79,11 @@ public class DiplomacyPanel : DragPanel
     {
         Game.givePlayerControlToAI();
         setButtonsState();
+    }
+    public void onGoToClick()
+    {
+        if (selectedCountry != Country.NullCountry)
+            mainCamera.focusCamera(selectedCountry.getCapital());
     }
     public void onRegainControlClick()
     {

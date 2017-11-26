@@ -166,6 +166,10 @@ public class Factory : SimpleProduction, ICanBeCellInTable
         if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             setPriorityAutoWithPlannedEconomy();
     }
+    //internal Value getMinimalMoneyForUpgrade()
+    //{
+    //    return Game.market.getCost(getUpgradeNeeds());
+    //}
     internal StorageSet getUpgradeNeeds()
     {
         if (getLevel() < Options.FactoryMediumTierLevels)
@@ -422,7 +426,7 @@ public class Factory : SimpleProduction, ICanBeCellInTable
     }
     internal Value getReopenCost()
     {
-        return new Value(Options.factoryMoneyReservPerLevel);
+        return new Value(Options.factoryMoneyReservePerLevel);
 
     }
     //internal Value getUpgradeCost()
@@ -628,7 +632,7 @@ public class Factory : SimpleProduction, ICanBeCellInTable
 
     float wantsMinMoneyReserv()
     {
-        return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservPerLevel * level;
+        return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
     }
     public void simulateClosing()
     {

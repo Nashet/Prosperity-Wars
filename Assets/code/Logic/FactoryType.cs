@@ -154,16 +154,18 @@ public class FactoryType
                 }
                 else
                 {
-                    Value cost = Game.market.getCost(this.getBuildNeeds());
-                    cost.add(Options.factoryMoneyReservPerLevel);
+                    //Value cost = Game.market.getCost(this.getBuildNeeds());
+                    //cost.add(Options.factoryMoneyReservPerLevel);
+                    Value cost = getMinimalMoneyToBuild();
                     return agent.canPay(cost);
                 }
             },
             delegate
             {
                 var sb = new StringBuilder();
-                Value cost = Game.market.getCost(this.getBuildNeeds());
-                cost.add(Options.factoryMoneyReservPerLevel);
+                //Value cost = Game.market.getCost(this.getBuildNeeds());
+                //cost.add(Options.factoryMoneyReservPerLevel);
+                Value cost = getMinimalMoneyToBuild();
                 sb.Append("Have ").Append(cost).Append(" coins");
                 sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
                 return sb.ToString();
@@ -202,12 +204,12 @@ public class FactoryType
                 yield return next;
     }
 
-    //internal Value getBuildCost()
-    //{
-    //    Value result = Game.market.getCost(getBuildNeeds());
-    //    result.add(Options.factoryMoneyReservPerLevel);
-    //    return result;
-    //}
+    internal Value getMinimalMoneyToBuild()
+    {
+        Value result = Game.market.getCost(getBuildNeeds());
+        result.add(Options.factoryMoneyReservePerLevel);
+        return result;
+    }
     internal StorageSet getBuildNeeds()
     {
         //return new Storage(Product.Food, 40f);
@@ -299,7 +301,7 @@ public class FactoryType
     }
     internal Procent getPossibleMargin(Province province)
     {
-        return Procent.makeProcent(getPossibleProfit(province), Game.market.getCost(this.getBuildNeeds()));
+        return Procent.makeProcent(getPossibleProfit(province), getMinimalMoneyToBuild());
     }
     //internal bool canBuildNewFactory(FactoryType type)
     //{

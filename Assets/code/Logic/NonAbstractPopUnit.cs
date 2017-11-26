@@ -488,8 +488,9 @@ public class Capitalists : GrainGetter
                 if (proposition != null && proposition.canBuildNewFactory(getProvince()) &&
                     (getProvince().getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || getProvince().getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
                 {
-                    Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
-                    buildCost.add(Options.factoryMoneyReservPerLevel);
+                    //Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
+                    //buildCost.add(Options.factoryMoneyReservePerLevel);
+                    Value buildCost = proposition.getMinimalMoneyToBuild();
                     if (canPay(buildCost))
                     {
                         Factory found = new Factory(getProvince(), this, proposition);

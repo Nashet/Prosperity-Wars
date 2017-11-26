@@ -92,8 +92,9 @@ public class MainCamera : MonoBehaviour
                 Game.setUnityAPI();
 
                 myCamera = this.GetComponent<Camera>();
-                gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
-                    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
+                focusCamera(Game.Player.getCapital());
+                //gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
+                //    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
                 loadingPanel.hide();
                 topPanel.show();
                 bottomPanel.show();
@@ -256,4 +257,10 @@ public class MainCamera : MonoBehaviour
         mesPanel.show(mes);
     }
     // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
+    public void focusCamera(Province province)
+    {
+        gameObject.transform.position = new Vector3(province.getPosition().x,
+                    province.getPosition().y, gameObject.transform.position.z);
+    }
+    
 }

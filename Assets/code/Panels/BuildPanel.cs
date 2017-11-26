@@ -16,7 +16,7 @@ public class BuildPanel : DragPanel
     void Start()
     {
         MainCamera.buildPanel = this;
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -100f);
         buildButton.interactable = false;
         hide();
     }
@@ -33,13 +33,14 @@ public class BuildPanel : DragPanel
         //if (Game.player.economy.allowsFactoryBuildingByGovernment())
         {
             bool buildSomething = false;
-            var resourceToBuild = selectedFactoryType.getBuildNeeds();
+            
             if (Economy.isMarket.checkIftrue(Game.Player))
             //if (Game.player.economy.status == Economy.StateCapitalism)
             //have money /resource
             {
-                Value cost = Game.market.getCost(resourceToBuild);
-                cost.add(Options.factoryMoneyReservPerLevel);
+                //Value cost = Game.market.getCost(resourceToBuild);
+                //cost.add(Options.factoryMoneyReservePerLevel);
+                Value cost = selectedFactoryType.getMinimalMoneyToBuild();
                 if (Game.Player.canPay(cost))
                 {
                     var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
@@ -52,6 +53,7 @@ public class BuildPanel : DragPanel
             else // non market
             {
                 //todo remove grain connection
+                var resourceToBuild = selectedFactoryType.getBuildNeeds();
                 Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
@@ -82,7 +84,7 @@ public class BuildPanel : DragPanel
         {
             sb.Clear();
             sb.Append("Build ").Append(selectedFactoryType);
-            var cost = Game.market.getCost(selectedFactoryType.getBuildNeeds());
+            var cost =selectedFactoryType.getMinimalMoneyToBuild();
             sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(cost);
             sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
 

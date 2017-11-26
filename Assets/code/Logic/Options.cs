@@ -52,7 +52,7 @@ public static class Options
     internal static readonly int minDaysBeforeSalaryCut = 2;
     internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
-    internal static readonly float factoryMoneyReservPerLevel = 20f;
+    internal static readonly float factoryMoneyReservePerLevel = 20f;
     internal static readonly float minMarginToRiseSalary = 0.01f;
     internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
     //internal static float factoryHaveResourceInProvinceBonus = 0.2f;

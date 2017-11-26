@@ -87,7 +87,9 @@ public class ConditionsList
 /// </summary> 
 public class Condition : Name
 {
-    internal static readonly Condition IsNotImplemented = new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
+    internal static readonly Condition IsNotImplemented
+        //= new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
+        = new Condition(delegate { return 2 * 2 == 5; }, "Feature is implemented", true);
     internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
 
     protected readonly Func<object, bool> checkingFunction;
