@@ -29,18 +29,13 @@ public class BottomPanel : MonoBehaviour
     {
         generalText.text = "Economic Simulation Demo v0.16.0";
     }
-
     public void onExitClick()
     {
 #if UNITY_WEBGL
         Screen.fullScreen = false;
 #else
-                Application.Quit();
+        Application.Quit();
 #endif
-    }
-    public void onWikiClick()
-    {
-        Application.OpenURL("https://github.com/Nashet/EconomicSimulation/wiki");
     }
     public void onStatisticsClick()
     {

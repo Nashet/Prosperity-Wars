@@ -358,6 +358,7 @@ public class Country : MultiSeller, ICanBeCellInTable
         return BadboyCountry;
 
     }
+    //todo performance hit 132 calls 183kb 82 ms
     private bool isThreatenBy(Country country)
     {
         if (country == this)
@@ -847,6 +848,7 @@ public class Country : MultiSeller, ICanBeCellInTable
                     getBank().takeMoney(this, new Value(extraMoney));
             }
 
+        //todo performance - do it not every tick?
         //International opinion;
         foreach (var item in Country.getAllExisting())
             if (item != this)

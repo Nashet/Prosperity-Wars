@@ -31,7 +31,7 @@ public class Game : ThreadedJob
     //static internal StringBuilder threadDangerSB = new StringBuilder();
 
     static public MyDate date = new MyDate(0);
-    static internal bool devMode = true;
+    static internal bool devMode = false;
     static private int mapMode;
     static private bool surrended = devMode;
     static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,

@@ -16,8 +16,9 @@ So, main principles of that simulation are:
 * factories have specific owner like government or population unit
 * capitalists can take loans form national bank for business expansion 
 * governments can put extra money in bank
+* governments can compete by wars
 
-## What it has now (v0.15.0)
+## What it has now (v0.16.0)
  - provinces and countries
  - Movements and Rebellions
  - factories and national banks
@@ -30,7 +31,8 @@ So, main principles of that simulation are:
  - migration\immigration\assimilation
  - political\culture\core\resorce map mode
  - basic diplomacy (only relations for now)
- - substitute products - https://github.com/Nashet/EconomicSimulation/wiki/Products
+ - [substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
+ - [planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
  - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.svg?columns=all)](https://waffle.io/Nashet/EconomicSimulation) 
 
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           

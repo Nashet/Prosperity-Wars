@@ -33,7 +33,7 @@ public class BuildPanel : DragPanel
         //if (Game.player.economy.allowsFactoryBuildingByGovernment())
         {
             bool buildSomething = false;
-            
+
             if (Economy.isMarket.checkIftrue(Game.Player))
             //if (Game.player.economy.status == Economy.StateCapitalism)
             //have money /resource
@@ -83,9 +83,13 @@ public class BuildPanel : DragPanel
         if (selectedFactoryType != null)
         {
             sb.Clear();
-            sb.Append("Build ").Append(selectedFactoryType);
-            var cost =selectedFactoryType.getMinimalMoneyToBuild();
-            sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds()).Append(" cost: ").Append(cost);
+            sb.Append("Build ").Append(selectedFactoryType);            
+            sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds());
+            if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
+            {
+                var cost = selectedFactoryType.getMinimalMoneyToBuild();
+                sb.Append(" cost: ").Append(cost);
+            }
             sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
 
             descriptionText.text = sb.ToString();

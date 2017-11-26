@@ -338,7 +338,7 @@ public class ChanceBox<T>
 
 public class PricePool
 {
-    Dictionary<Product, DataStorage2> pool = new Dictionary<Product, DataStorage2>();
+    Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
     static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
     internal PricePool()
     {
@@ -349,10 +349,10 @@ public class PricePool
     }
     internal void addData(Product product, Value indata)
     {
-        DataStorage2 cell;
+        DataStorageProduct cell;
         if (!pool.TryGetValue(product, out cell))
         {
-            cell = new DataStorage2(product);
+            cell = new DataStorageProduct(product);
             pool.Add(product, cell);
         }
         cell.addData(indata);
@@ -364,10 +364,10 @@ public class PricePool
     //        yield return pool.GetEnumerator();
     //    }
     //}
-    internal DataStorage2 getPool(Product product)
+    internal DataStorageProduct getPool(Product product)
     {
         //return pool[pro];
-        DataStorage2 result;
+        DataStorageProduct result;
         if (pool.TryGetValue(product, out result)) // Returns true.
         {
             return result;
@@ -376,9 +376,9 @@ public class PricePool
             return null;
     }
 }
-public class DataStorage2 : DataStorage<Product>
+public class DataStorageProduct : DataStorage<Product>
 {
-    public DataStorage2(Product inn) : base(inn)
+    public DataStorageProduct(Product inn) : base(inn)
     {
     }
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Text;
 
 public class TopPanel : MonoBehaviour
 {
@@ -8,12 +9,12 @@ public class TopPanel : MonoBehaviour
     public Text generalText;
     // Use this for initialization
     void Awake()
-    {        
+    {
         btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
         btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
         btnPlay.image.color = Color.grey;
-        MainCamera.topPanel = this;        
-        hide();        
+        MainCamera.topPanel = this;
+        hide();
     }
     public void hide()
     {
@@ -27,11 +28,14 @@ public class TopPanel : MonoBehaviour
     }
     public void refresh()
     {
-        generalText.text = "Date: "+Game.date + ", Country: " + Game.Player.getName()
-            + "\nMoney: " + Game.Player.cash.get().ToString("N0")
-            + ", Science points: " + Game.Player.sciencePoints.get().ToString("F0")
-            + ", Men: " + Game.Player.getMenPopulation().ToString("N0")
-            + ", avg. loyalty: " + Game.Player.getAverageLoyalty();
+        var sb = new StringBuilder();
+
+        sb.Append("Date: ").Append(Game.date).Append("; Country: ").Append(Game.Player.getName())
+            .Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
+            .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"))
+            .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
+            .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
+        generalText.text = sb.ToString();
     }
     public void onTradeClick()
     {
@@ -50,7 +54,7 @@ public class TopPanel : MonoBehaviour
             MainCamera.militaryPanel.hide();
         else
             MainCamera.militaryPanel.show(null);
-        
+
     }
     public void onInventionsClick()
     {
@@ -61,7 +65,7 @@ public class TopPanel : MonoBehaviour
             MainCamera.inventionsPanel.show(true);
     }
     public void onEnterprisesClick()
-    {        
+    {
         if (MainCamera.productionWindow.isActiveAndEnabled)
             if (MainCamera.productionWindow.getShowingProvince() == null)
                 MainCamera.productionWindow.hide();
@@ -77,10 +81,10 @@ public class TopPanel : MonoBehaviour
         }
     }
     public void onPopulationClick()
-    {    
+    {
 
         if (MainCamera.populationPanel.isActiveAndEnabled)
-            if (MainCamera.populationPanel.showingProvince==null)
+            if (MainCamera.populationPanel.showingProvince == null)
                 MainCamera.populationPanel.hide();
             else
                 MainCamera.populationPanel.onShowAllClick();

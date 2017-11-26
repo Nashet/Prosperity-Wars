@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class GoodsPanel : DragPanel
-{    
+{
     public Text generaltext;
     Product product;
     RawImage priceGraph;
@@ -46,37 +46,42 @@ public class GoodsPanel : DragPanel
             graphTexture.Apply();
             Color32 graphColor = new Color32(10, 200, 20, 255);
 
-            int yValue = 0;
-            float remainsA = 0;
-            float nearestPoint = 0;
             var dataStorage = Game.market.priceHistory.getPool(product);
             if (dataStorage != null)
             {
                 var priceArray = dataStorage.data.ToArray();
-                for (int i = 0; i < textureWidth; i++)
-                {
 
-                    if (i == 0)
+                var maxValue = priceArray.MaxBy(x => x.get());
+
+                float yValueMultiplier = 300f / maxValue.get() * 0.99f; ;
+                if (maxValue.get() < 300f)
+                    yValueMultiplier = yValueMultiplier / 2f;
+
+                for (int textureX = 0; textureX < textureWidth; textureX++)
+                {
+                    int yValue = 0;
+                    if (textureX == 0)
                     {
-                        yValue = (int)priceArray[0].get();
-                        graphTexture.SetPixel(i, yValue, graphColor);
+                        yValue = (int)(priceArray[0].get() * yValueMultiplier);
+                        graphTexture.SetPixel(textureX, yValue, graphColor);
                     }
                     else
                     {
                         //nearestPoint = (float)i / PricePool.lenght;
-                        nearestPoint = (float)i / (textureWidth / (float)PricePool.lenght);
+                        float nearestPoint = (float)textureX / (textureWidth / (float)PricePool.lenght);
                         int nearesPointInt = (int)nearestPoint;
-                        remainsA = nearestPoint - nearesPointInt;
+                        float remainsA = nearestPoint - nearesPointInt;
                         if (remainsA == 0f)
                         {
-                            yValue = (int)priceArray[nearesPointInt].get();
-                            graphTexture.SetPixel(i, yValue, graphColor);
+                            yValue = (int)(priceArray[nearesPointInt].get() * yValueMultiplier);
+                            graphTexture.SetPixel(textureX, yValue, graphColor);
                         }
-                        else if (nearesPointInt +1 < priceArray.Length)
+                        else if (nearesPointInt + 1 < priceArray.Length)
                         {
                             float remainsB = 1f - remainsA;
-                            int yValueMiddle = (int)(priceArray[nearesPointInt].get() * remainsB + priceArray[nearesPointInt + 1].get() * remainsA);
-                            graphTexture.SetPixel(i, yValueMiddle, graphColor);
+                            int yValueMiddle = (int)((priceArray[nearesPointInt].get() * remainsB
+                                + priceArray[nearesPointInt + 1].get() * remainsA) * yValueMultiplier);
+                            graphTexture.SetPixel(textureX, yValueMiddle, graphColor);
                         }
                         //float dif = 
                     }
@@ -100,9 +105,9 @@ public class GoodsPanel : DragPanel
         gameObject.SetActive(true);
         product = inn;
         if (bringOnTop)
-        panelRectTransform.SetAsLastSibling();
+            panelRectTransform.SetAsLastSibling();
     }
-    
-   
+
+
 
 }

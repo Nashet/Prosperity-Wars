@@ -82,6 +82,7 @@ public class Market : Agent//: PrimitiveStorageSet
     {
         return marketPrice.convertToCheapestStorageProduct(need);
     }
+    //todo change it to 1 run by every products, not run for every product
     private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
     {
         Storage result = new Storage(product);
@@ -114,6 +115,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return result;
     }
+    //todo change it to 1 run by every products, not run for every product
     private Storage recalculateProductForSellers(Product product, Func<ICanSell, Storage> selector)
     {
         Storage result = new Storage(product);
@@ -130,6 +132,7 @@ public class Market : Agent//: PrimitiveStorageSet
         }
         return result;
     }
+    //todo change it to 1 run by every products, not run for every product
     private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
     {
         Storage result = new Storage(product);
@@ -394,7 +397,7 @@ public class Market : Agent//: PrimitiveStorageSet
             // check if consumeOnThisIteration is not bigger than stillHaveToBuy
             if (!stillHaveToBuy.has(consumeOnThisIteration))
                 consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.getProduct());
-            var reallyBought = buy(buyer, consumeOnThisIteration, null); 
+            var reallyBought = buy(buyer, consumeOnThisIteration, null);
 
             stillHaveToBuy.subtract(reallyBought);
 
@@ -523,9 +526,12 @@ public class Market : Agent//: PrimitiveStorageSet
                 if (balance >= 1f)//0.95f)
                     priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
-                {
+                {                    
                     if (balance <= 0.8f)
-                        priceChangeSpeed = -0.001f + price.get() * -0.02f;
+                        //priceChangeSpeed = -0.001f + price.get() * -0.02f;
+                        priceChangeSpeed = -0.001f + price.get() * -0.1f;
+                    // - 0.1f; caused dsb 1-0 fluctuation, destroying industry
+                    //}
                 }
                 ChangePrice(price, priceChangeSpeed);
             }
