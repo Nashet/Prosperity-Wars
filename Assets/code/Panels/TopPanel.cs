@@ -5,8 +5,12 @@ using System.Text;
 
 public class TopPanel : MonoBehaviour
 {
-    public Button btnPlay, btnStep, btnTrade;
-    public Text generalText;
+    [SerializeField]
+    private Button btnPlay, btnStep, btnTrade;
+
+    [SerializeField]
+    private Text generalText;
+
     // Use this for initialization
     void Awake()
     {
@@ -84,7 +88,7 @@ public class TopPanel : MonoBehaviour
     {
 
         if (MainCamera.populationPanel.isActiveAndEnabled)
-            if (MainCamera.populationPanel.showingProvince == null)
+            if (MainCamera.populationPanel.ShowingProvince == null)
                 MainCamera.populationPanel.hide();
             else
                 MainCamera.populationPanel.onShowAllClick();
@@ -119,9 +123,9 @@ public class TopPanel : MonoBehaviour
     }
     void onbtnPlayClick(Button button)
     {
-        switchHaveToRunSimulation(button);
+        switchHaveToRunSimulation();
     }
-    public void switchHaveToRunSimulation(Button button)
+    public void switchHaveToRunSimulation()
     {
         if (Game.isRunningSimulation())
             Game.pauseSimulation();
@@ -130,14 +134,14 @@ public class TopPanel : MonoBehaviour
 
         if (Game.isRunningSimulation())
         {
-            button.image.color = Color.white;
-            Text text = button.GetComponentInChildren<Text>();
+            btnPlay.image.color = Color.white;
+            Text text = btnPlay.GetComponentInChildren<Text>();
             text.text = "Playing";
         }
         else
         {
-            button.image.color = Color.grey;
-            Text text = button.GetComponentInChildren<Text>();
+            btnPlay.image.color = Color.grey;
+            Text text = btnPlay.GetComponentInChildren<Text>();
             text.text = "Pause";
         }
     }

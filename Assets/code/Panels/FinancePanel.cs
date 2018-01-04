@@ -6,13 +6,23 @@ using System.Text;
 
 public class FinancePanel : DragPanel
 {
-    public Text expensesText, captionText, incomeText, bankText, loanLimitText, depositLimitText, AutoPutInBankText,
+    [SerializeField]
+    private Text expensesText, captionText, incomeText, bankText, loanLimitText, depositLimitText, AutoPutInBankText,
         totalText;
-    public Slider loanLimit, depositLimit;
-    public SliderExponential ssSoldiersWage, autoPutInBankLimit;
-    public Toggle autoSendMoneyToBank;
-    public CanvasGroup bankPanel;
-    StringBuilder sb = new StringBuilder();
+
+    [SerializeField]
+    private Slider loanLimit, depositLimit;
+
+    [SerializeField]
+    private SliderExponential ssSoldiersWage, autoPutInBankLimit;
+
+    [SerializeField]
+    private Toggle autoSendMoneyToBank;
+
+    [SerializeField]
+    private CanvasGroup bankPanel;
+
+    private readonly StringBuilder sb = new StringBuilder();
     // Use this for initialization
     void Start()
     {

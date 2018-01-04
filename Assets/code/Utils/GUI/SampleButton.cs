@@ -58,18 +58,18 @@ public class SampleButton : MonoBehaviour, IPointerDownHandler
         }
         else if (link is Invention)
         {
-            MainCamera.inventionsPanel.selectedInvention = (Invention)link;
-            MainCamera.inventionsPanel.refresh();
+            //(Invention)link            
+            MainCamera.inventionsPanel.refresh((Invention)link);
         }
         else if (link is FactoryType)
         {
-            MainCamera.buildPanel.selectedFactoryType = (FactoryType)link;
-            MainCamera.buildPanel.refresh();
+            //MainCamera.buildPanel.selectedFactoryType = (FactoryType)link;
+            MainCamera.buildPanel.refresh((FactoryType)link);
         }
         else if (link is AbstractReform)
         {
-            MainCamera.politicsPanel.selectedReform = (AbstractReform)link;
-            MainCamera.politicsPanel.refresh(true);
+            //MainCamera.politicsPanel.selectedReform = (AbstractReform)link;
+            MainCamera.politicsPanel.refresh(true, (AbstractReform)link);
             //MainCamera.politicsPanel.selectedReformValue = null;
         }
         else if (link is Province)

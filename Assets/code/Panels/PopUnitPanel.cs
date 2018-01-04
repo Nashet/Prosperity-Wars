@@ -7,7 +7,8 @@ using System.Linq;
 
 public class PopUnitPanel : DragPanel
 {
-    public Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText, issues, money;
+    [SerializeField]
+    private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText, issues, money;
     private PopUnit pop;
     // Use this for initialization
     void Start()

@@ -6,23 +6,26 @@ using System.Text;
 
 public class InventionsPanel : DragPanel
 {
-    public ScrollRect table;
-    public Text descriptionText;
-    public Button inventButton;
-    public Invention selectedInvention;
+    [SerializeField]
+    private ScrollRect table;
+
+    [SerializeField]
+    private Text descriptionText;
+
+    [SerializeField]
+    private Button inventButton;
+
+
+    private Invention selectedInvention;
+
     // Use this for initialization
     void Start()
     {
         MainCamera.inventionsPanel = this;
-        inventButton.interactable = false;              
+        inventButton.interactable = false;
         GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
         hide();
     }
-    //public void hide()
-    //{
-    //    inventionsPanel.SetActive(false);
-    //    //todo add button removal?      
-    //}
     public void show(bool bringOnTop)
     {
         gameObject.SetActive(true);
@@ -37,16 +40,18 @@ public class InventionsPanel : DragPanel
             Game.Player.invent(selectedInvention);
             inventButton.interactable = false;
             MainCamera.topPanel.refresh();
-            if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
-            if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.refresh(true);
+            if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh(null);
+            if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.refresh(true, null);
             if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
             //Hide();
             //show();
-            refresh();
+            refresh(null);
         }
     }
-    public void refresh()
+    public void refresh(Invention newSelection)
     {
+        if (newSelection != null)
+            selectedInvention = newSelection;
         hide();
         var sb = new StringBuilder();
         string scienceModifier;
@@ -80,8 +85,4 @@ public class InventionsPanel : DragPanel
         descriptionText.text = sb.ToString();
         show(false);
     }
-    // Update is called once per frame
-    //   void Update () {
-
-    //}
 }

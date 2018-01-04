@@ -7,10 +7,17 @@ using System.Text;
 
 public class TradeWindow : DragPanel
 {
-    public ScrollRect table;
-    public Text txtBuyIfLessThan, txtSaleIfMoreThan;
-    public SliderExponential slBuyIfLessThan, slSellIfMoreThan;
-    public GameObject tradeSliders;
+    [SerializeField]
+    private ScrollRect table;
+
+    [SerializeField]
+    private Text txtBuyIfLessThan, txtSaleIfMoreThan;
+
+    [SerializeField]
+    private SliderExponential slBuyIfLessThan, slSellIfMoreThan;
+
+    [SerializeField]
+    private GameObject tradeSliders;
 
     private Product selectedProduct;
 

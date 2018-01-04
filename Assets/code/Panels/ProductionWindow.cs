@@ -6,8 +6,9 @@ using System;
 
 public class ProductionWindow : DragPanel
 {
-    public List<MyTableNew> tables = new List<MyTableNew>();
-    Province showingProvince;
+    [SerializeField]
+    private MyTableNew table;
+    private Province showingProvince;
     void Start()
     {
         MainCamera.productionWindow = this;
@@ -53,8 +54,9 @@ public class ProductionWindow : DragPanel
         {
             SetAllFactoriesToShow();
         }
-        foreach (var item in tables)
-            item.refreshContent();
+        //foreach (var item in tables)
+        //    item.refreshContent();
+        table.refreshContent();
     }
 
     public void removeFactory(Factory fact)

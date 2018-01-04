@@ -7,14 +7,22 @@ using System.Text;
 
 public class MilitaryPanel : DragPanel
 {
-    public Dropdown ddProvinceSelect;
-    public Text allArmySizeText, captionText, sendingArmySizeText;
-    public Slider armySendLimit;
-    public Button sendArmy;
-    StringBuilder sb = new StringBuilder();
+    [SerializeField]
+    private Dropdown ddProvinceSelect;
 
-    List<Province> availableProvinces = new List<Province>();
-    Army virtualArmyToSend;
+    [SerializeField]
+    private Text allArmySizeText, captionText, sendingArmySizeText;
+
+    [SerializeField]
+    private Slider armySendLimit;
+
+    [SerializeField]
+    private Button sendArmy;
+
+    private readonly StringBuilder sb = new StringBuilder();
+
+    private readonly List<Province> availableProvinces = new List<Province>();
+    private Army virtualArmyToSend;
     // Use this for initialization
     void Start()
     {

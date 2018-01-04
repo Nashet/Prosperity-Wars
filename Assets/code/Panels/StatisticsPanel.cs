@@ -4,8 +4,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 public class StatisticsPanel : DragPanel
 {
-    //public List<MyTableNew> tables = new List<MyTableNew>();
-    public MyTableNew table;
+    [SerializeField]
+    private MyTableNew table;
     // Use this for initialization
     void Start()
     {

@@ -5,14 +5,27 @@ using System.Collections.Generic;
 
 public class PoliticsPanel : DragPanel
 {
-    public Text descriptionText, movementsText;
+    [SerializeField]
+    private Text descriptionText, movementsText;
     //public ScrollRect movementsScrollView;
-    public Button voteButton;
-    public Button forceDecisionButton;
-    public Dropdown dropDown;
-    public Scrollbar movementsHorizontalScrollBar;
-    public AbstractReform selectedReform;
-    public AbstractReformValue selectedReformValue;
+
+    [SerializeField]
+    private Button voteButton;
+
+    [SerializeField]
+    private Button forceDecisionButton;
+
+    [SerializeField]
+    private Dropdown dropDown;
+
+    [SerializeField]
+    private Scrollbar movementsHorizontalScrollBar;
+
+    [SerializeField]
+    private AbstractReform selectedReform;
+
+    [SerializeField]
+    private AbstractReformValue selectedReformValue;
 
     private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
 
@@ -40,8 +53,8 @@ public class PoliticsPanel : DragPanel
         if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
         {
             selectedReform.setValue(selectedReformValue);
-            refresh(true);
-            if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
+            refresh(true, null);
+            if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh(null);
             if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.refreshContent();
             if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
 
@@ -71,7 +84,7 @@ public class PoliticsPanel : DragPanel
     public void onChoiceValueChanged()
     {
         selectedReformValue = assotiateTable[dropDown.value];
-        refresh(false);
+        refresh(false, null);
     }
     void rebuildDropDown()
     {
@@ -103,8 +116,10 @@ public class PoliticsPanel : DragPanel
         dropDown.RefreshShownValue();
         //dropDown.Show();
     }
-    public void refresh(bool callRebuildDropDown)
+    public void refresh(bool callRebuildDropDown, AbstractReform newSelection)
     {
+        if (newSelection != null)
+            selectedReform = newSelection;
         hide();
         //if (Game.Player.movements != null)
         movementsText.text = Game.Player.movements.getString();

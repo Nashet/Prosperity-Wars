@@ -5,13 +5,11 @@ using UnityEngine.UI;
 
 public class BottomPanel : MonoBehaviour
 {
-    public Text generalText;
+    [SerializeField]
+    private Text generalText;
     // Use this for initialization
     void Awake()
     {
-        //btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
-        //btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
-
         MainCamera.bottomPanel = this;
         hide();
     }

@@ -6,10 +6,14 @@ using System.Text;
 
 public class FactoryPanel : DragPanel//for dragging
 {
-    public Button upgradeButton, reopenButton, destroyButton, buyButton, sellButton, nationalizeButton;
-    public Toggle subidize, dontHireOnSubsidies;
-    public Slider priority;
-    public Text generaltext, efficiencyText;
+    [SerializeField]
+    private Button upgradeButton, reopenButton, destroyButton, buyButton, sellButton, nationalizeButton;
+    [SerializeField]
+    private Toggle subidize, dontHireOnSubsidies;
+    [SerializeField]
+    private Slider priority;
+    [SerializeField]
+    private Text generaltext, efficiencyText;
 
     private Factory shownFactory;
     private reopenButtonStatus reopenButtonflag;

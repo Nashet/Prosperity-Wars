@@ -6,10 +6,13 @@ using System.Text;
 
 public class DiplomacyPanel : DragPanel
 {
-    public Text captionText, generalText;
-    public Button giveControlToAi, giveControlToPlayer;
-    public MainCamera mainCamera;
-    Country selectedCountry;
+    [SerializeField]
+    private Text captionText, generalText;
+    [SerializeField]
+    private Button giveControlToAi, giveControlToPlayer;
+    [SerializeField]
+    private MainCamera mainCamera;
+    private Country selectedCountry;
     StringBuilder sb = new StringBuilder();
     // Use this for initialization
     void Start()

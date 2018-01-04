@@ -6,10 +6,14 @@ using System.Text;
 
 public class BuildPanel : DragPanel
 {
-    public ScrollRect table;
-    public Text descriptionText;
-    public Button buildButton;
-    public FactoryType selectedFactoryType;
+    [SerializeField]
+    private ScrollRect table;
+    [SerializeField]
+    private Text descriptionText;
+    [SerializeField]
+    private Button buildButton;
+        
+    private FactoryType selectedFactoryType;
     StringBuilder sb = new StringBuilder();
     //Province province;
     // Use this for initialization
@@ -77,8 +81,10 @@ public class BuildPanel : DragPanel
             }
         }
     }
-    public void refresh()
+    public void refresh(FactoryType newSelection)
     {
+        if (newSelection != null)
+            selectedFactoryType = newSelection;
         hide();
         if (selectedFactoryType != null)
         {

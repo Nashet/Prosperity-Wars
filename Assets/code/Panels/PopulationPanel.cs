@@ -3,15 +3,23 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 public class PopulationPanel : DragPanel
-{    
-    internal Province showingProvince;
-    public List<MyTableNew> tables = new List<MyTableNew>();
+{
+    [SerializeField]
+    private MyTableNew table;
+    private Province m_showingProvince;
+
+    public Province ShowingProvince
+    {
+        get { return m_showingProvince; }
+        set { m_showingProvince = value; }
+    }
+
     // Use this for initialization
     void Start()
     {
         MainCamera.populationPanel = this;
         //show(false);
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height *-1f);
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
         Canvas.ForceUpdateCanvases();
         hide();
     }
@@ -23,11 +31,11 @@ public class PopulationPanel : DragPanel
             panelRectTransform.SetAsLastSibling();
         refreshContent();
     }
-    override public void onCloseClick()
-    {
-        base.onCloseClick();
-        //showAll = false;
-    }
+    //override public void onCloseClick()
+    //{
+    //    base.onCloseClick();
+    //    //showAll = false;
+    //}
     internal void SetAllPopsToShow()
     {
         if (Game.Player != null)
@@ -41,19 +49,21 @@ public class PopulationPanel : DragPanel
             Game.popsToShowInPopulationPanel = er;
         }
     }
+   
     public void onShowAllClick()
     {
         //hide();
         SetAllPopsToShow();
         //showAll = true;
-        showingProvince = null;                
+        ShowingProvince = null;
         show(true);
     }
     public void refreshContent()
-    {       
-        if (showingProvince == null)
+    {
+        if (ShowingProvince == null)
             SetAllPopsToShow();
-        foreach (var item in tables)
-            item.refreshContent();     
-    }    
+        //foreach (var item in tables)
+        //    item.refreshContent();     
+        table.refreshContent();
+    }
 }

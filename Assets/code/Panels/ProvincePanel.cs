@@ -6,8 +6,11 @@ using System.Text;
 
 public class ProvincePanel : MonoBehaviour
 {
-    public Text generaltext;
-    public Button btnOwner, btnBuild, btAttackThat, btMobilize, btGrandIndependence;
+    [SerializeField]
+    private Text generaltext;
+
+    [SerializeField]
+    private Button btnOwner, btnBuild, btAttackThat, btMobilize, btGrandIndependence;
 
     // Use this for initialization    
     void Start()
@@ -66,23 +69,23 @@ public class ProvincePanel : MonoBehaviour
     public void onPopulationDetailsClick()
     {
         if (MainCamera.populationPanel.isActiveAndEnabled)
-            if (MainCamera.populationPanel.showingProvince == null)
+            if (MainCamera.populationPanel.ShowingProvince == null)
             {
                 MainCamera.populationPanel.hide();
                 Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                 //MainCamera.populationPanel.showAll = false;
                 MainCamera.populationPanel.show(true);
             }
             else
             {
-                if (MainCamera.populationPanel.showingProvince == Game.selectedProvince)
+                if (MainCamera.populationPanel.ShowingProvince == Game.selectedProvince)
                     MainCamera.populationPanel.hide();
                 else
                 {
                     MainCamera.populationPanel.hide();
                     Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                    MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                    MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                     //MainCamera.populationPanel.showAll = false;
                     MainCamera.populationPanel.show(true);
                 }
@@ -90,7 +93,7 @@ public class ProvincePanel : MonoBehaviour
         else
         {
             Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-            MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+            MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
             //MainCamera.populationPanel.showAll = false;
             MainCamera.populationPanel.show(true);
         }
@@ -174,6 +177,5 @@ public class ProvincePanel : MonoBehaviour
         btAttackThat.interactable = Country.canAttack.isAllTrue(province, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
         btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(province, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().tooltip);
         generaltext.text = sb.ToString();
-    }
-    
+    }    
 }

@@ -115,9 +115,11 @@ public class MainCamera : MonoBehaviour
                 SelectProvince(meshNumber);
             }
             if (Input.GetKeyUp(KeyCode.Space))
-                topPanel.switchHaveToRunSimulation(topPanel.btnPlay);
+                topPanel.switchHaveToRunSimulation();
+
             if (Input.GetKeyDown(KeyCode.Return))
                 closeToppestPanel();
+
             if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
             {
                 Game.simulate();
@@ -176,9 +178,9 @@ public class MainCamera : MonoBehaviour
         if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
         if (productionWindow.isActiveAndEnabled) productionWindow.refreshContent();
         if (goodsPanel.isActiveAndEnabled) goodsPanel.refresh();
-        if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh();
-        if (buildPanel.isActiveAndEnabled) buildPanel.refresh();
-        if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true);
+        if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh(null);
+        if (buildPanel.isActiveAndEnabled) buildPanel.refresh(null);
+        if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true, null);
         if (financePanel.isActiveAndEnabled) financePanel.refresh();
         if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
         if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
@@ -223,7 +225,7 @@ public class MainCamera : MonoBehaviour
 
             }
             if (buildPanel.isActiveAndEnabled)
-                buildPanel.refresh();
+                buildPanel.refresh(null);
 
         }
     }

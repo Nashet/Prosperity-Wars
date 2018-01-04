@@ -5,16 +5,20 @@ using UnityEngine.EventSystems;
 
 public class GoodsPanel : DragPanel
 {
-    public Text generaltext;
-    Product product;
-    RawImage priceGraph;
-    static int textureWidth = 300, textureHeight = 300;
-    Texture2D graphTexture;
+    [SerializeField]
+    private Text generaltext;
+
+    [SerializeField]
+    private RawImage priceGraph;
+
+    private Product product;    
+    private readonly int textureWidth = 300, textureHeight = 300;
+    private Texture2D graphTexture;
     // Use this for initialization
     void Start()
     {
         graphTexture = new Texture2D(textureWidth, textureHeight);
-        priceGraph = GameObject.Find("PriceGraph").GetComponent<RawImage>();
+        //priceGraph = GameObject.Find("PriceGraph").GetComponent<RawImage>();
         MainCamera.goodsPanel = this;
         GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
         hide();

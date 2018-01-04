@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class LoadingPanel :MonoBehaviour
 {
-    public Text loadingText;
+    [SerializeField]
+    private Text loadingText;
     // Use this for initialization
     void Start()
     {
@@ -16,12 +17,4 @@ public class LoadingPanel :MonoBehaviour
     {
         gameObject.SetActive(false);
     }
-    // Update is called once per frame
-    void Update()
-    {
-       
-
-    }
-
-
 }
