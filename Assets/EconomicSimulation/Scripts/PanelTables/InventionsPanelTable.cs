@@ -3,36 +3,36 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
-
-
-
-public class InventionsPanelTable : MyTable
+namespace Nashet.EconomicSimulation
 {
-    override protected void refresh()
+
+    public class InventionsPanelTable : MyTable
     {
-        ////if (Game.date != 0)
+        override protected void refresh()
         {
-            base.RemoveButtons();
-            AddButtons();
-            gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
+            ////if (Game.date != 0)
+            {
+                base.RemoveButtons();
+                AddButtons();
+                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
+            }
         }
-    }
-    protected void AddButton(string text, Invention inventionType)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(gameObject.transform, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        //if (inventionType == null)
-        //    sampleButton.Setup(text, this, null);
-        //else
-        sampleButton.Setup(text, inventionType);
-    }
-    override protected void AddButtons()
-    {
-        int counter = 0;
-        addHeader();
-        if (Game.Player != null)
-            foreach (var next in Game.Player.getAvailable())
+        protected void AddButton(string text, Invention inventionType)
+        {
+            GameObject newButton = buttonObjectPool.GetObject();
+            newButton.transform.SetParent(gameObject.transform, true);
+            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            //if (inventionType == null)
+            //    sampleButton.Setup(text, this, null);
+            //else
+            sampleButton.Setup(text, inventionType);
+        }
+        override protected void AddButtons()
+        {
+            int counter = 0;
+            addHeader();
+            if (Game.Player != null)
+                foreach (var next in Game.Player.getAvailable())
                 //if (next.Key.isAvailable(Game.Player))
                 {
                     // Adding invention name 
@@ -46,15 +46,16 @@ public class InventionsPanelTable : MyTable
                     AddButton(next.Key.cost.ToString(), next.Key);
                     counter++;
                 }
-    }
+        }
 
-    protected override void addHeader()
-    {
-        // Adding invention name 
-        AddButton("Invention");
-        ////Adding possibleStatues
-        AddButton("Status");
-        ////Adding invention price
-        AddButton("Science points");
+        protected override void addHeader()
+        {
+            // Adding invention name 
+            AddButton("Invention");
+            ////Adding possibleStatues
+            AddButton("Status");
+            ////Adding invention price
+            AddButton("Science points");
+        }
     }
 }

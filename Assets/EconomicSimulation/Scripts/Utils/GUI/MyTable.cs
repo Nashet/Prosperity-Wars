@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Nashet.EconomicSimulation;
 abstract public class MyTable : MonoBehaviour
 {
     public SimpleObjectPool buttonObjectPool;

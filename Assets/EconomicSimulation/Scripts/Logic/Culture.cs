@@ -1,18 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
-public class Culture
+namespace Nashet.EconomicSimulation
 {
-    string name;
-    List<Culture> allCultures = new List<Culture>();
-    public Culture(string iname)
+    public class Culture
     {
-        name = iname;
-        allCultures.Add(this);
-    }
-    public override string ToString()
-    {
-        return name;
+        string name;
+        List<Culture> allCultures = new List<Culture>();
+        public Culture(string iname)
+        {
+            name = iname;
+            allCultures.Add(this);
+        }
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
-
+using Nashet.EconomicSimulation;
 public class Message
 {
     public string caption, message, closeText;

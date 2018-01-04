@@ -7,6 +7,7 @@ using System.IO;
 using System;
 using System.Text;
 using System.ComponentModel;
+using Nashet.EconomicSimulation;
 
 public class ConditionsList
 {

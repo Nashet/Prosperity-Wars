@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
-
+using Nashet.EconomicSimulation;
 public class SampleButton : MonoBehaviour, IPointerDownHandler
 {
 

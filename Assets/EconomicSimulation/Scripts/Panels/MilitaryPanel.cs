@@ -4,136 +4,138 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
-
-public class MilitaryPanel : DragPanel
+namespace Nashet.EconomicSimulation
 {
-    [SerializeField]
-    private Dropdown ddProvinceSelect;
-
-    [SerializeField]
-    private Text allArmySizeText, captionText, sendingArmySizeText;
-
-    [SerializeField]
-    private Slider armySendLimit;
-
-    [SerializeField]
-    private Button sendArmy;
-
-    private readonly StringBuilder sb = new StringBuilder();
-
-    private readonly List<Province> availableProvinces = new List<Province>();
-    private Army virtualArmyToSend;
-    // Use this for initialization
-    void Start()
+    public class MilitaryPanel : DragPanel
     {
-        MainCamera.militaryPanel = this;
-        GetComponent<RectTransform>().position = new Vector2(180f, 111);// + Screen.height);
-        hide();
+        [SerializeField]
+        private Dropdown ddProvinceSelect;
 
-    }
+        [SerializeField]
+        private Text allArmySizeText, captionText, sendingArmySizeText;
 
-    // Update is called once per frame
-    void Update()
-    {
-        //refresh();
-    }
-    public void refresh(bool rebuildDropdown)
-    {
+        [SerializeField]
+        private Slider armySendLimit;
 
-        if (rebuildDropdown)
+        [SerializeField]
+        private Button sendArmy;
+
+        private readonly StringBuilder sb = new StringBuilder();
+
+        private readonly List<Province> availableProvinces = new List<Province>();
+        private Army virtualArmyToSend;
+        // Use this for initialization
+        void Start()
         {
-            //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
-            armySendLimit.value = 0; // cause extra mobilization
-            rebuildDropDown();
+            MainCamera.militaryPanel = this;
+            GetComponent<RectTransform>().position = new Vector2(180f, 111);// + Screen.height);
+            hide();
+
         }
-        sb.Clear();
-        sb.Append("Military of ").Append(Game.Player);
-        captionText.text = sb.ToString();
 
-        sb.Clear();
-        sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
-        allArmySizeText.text = sb.ToString();
-
-        if (virtualArmyToSend == null)
-            virtualArmyToSend = new Army(Game.Player);
-        sb.Clear();
-        sb.Append("Sending army: ").Append(virtualArmyToSend.getName());
-        sendingArmySizeText.text = sb.ToString();
-        //sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
-        sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
-
-    }
-
-    public void show(Province province)
-    {
-        gameObject.SetActive(true);
-        panelRectTransform.SetAsLastSibling();
-
-        refresh(true);
-        if (province != null)
+        // Update is called once per frame
+        void Update()
         {
-            var list = Game.Player.getNeighborProvinces();
-            ddProvinceSelect.value = list.IndexOf(province);
+            //refresh();
         }
-    }
-
-    public void onMobilizationClick()
-    {
-        //if (Game.Player.homeArmy.getSize() == 0)
-        //  Game.Player.homeArmy = new Army(Game.Player);
-        Game.Player.mobilize(Game.Player.ownedProvinces);
-        //onArmyLimitChanged(0f);
-        //MainCamera.tradeWindow.refresh();
-        refresh(false);
-    }
-    public void onDemobilizationClick()
-    {
-        Game.Player.demobilize();
-        virtualArmyToSend.demobilize();
-        //MainCamera.tradeWindow.refresh();
-        refresh(false);
-    }
-    public void onSendArmyClick()
-    {
-        //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-        Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
-        //virtualArmyToSend = new Army(null);
-        //Game.Player.sendingArmy = new Army(Game.Player);
-        refresh(false);
-    }
-    void rebuildDropDown()
-    {
-        ddProvinceSelect.interactable = true;
-        ddProvinceSelect.ClearOptions();
-        byte count = 0;
-        availableProvinces.Clear();           
-        foreach (Province next in Game.Player.getNeighborProvinces())
+        public void refresh(bool rebuildDropdown)
         {
-            //if (next.isAvailable(Game.player))
+
+            if (rebuildDropdown)
             {
-                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getCountry() + ")" });
-                availableProvinces.Add(next);
+                //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
+                armySendLimit.value = 0; // cause extra mobilization
+                rebuildDropDown();
+            }
+            sb.Clear();
+            sb.Append("Military of ").Append(Game.Player);
+            captionText.text = sb.ToString();
 
-                //selectedReformValue = next;
-                // selecting non empty option
-                //ddProvinceSelect.value = count; 
-                count++;
+            sb.Clear();
+            sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
+            allArmySizeText.text = sb.ToString();
+
+            if (virtualArmyToSend == null)
+                virtualArmyToSend = new Army(Game.Player);
+            sb.Clear();
+            sb.Append("Sending army: ").Append(virtualArmyToSend.getName());
+            sendingArmySizeText.text = sb.ToString();
+            //sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
+            sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
+
+        }
+
+        public void show(Province province)
+        {
+            gameObject.SetActive(true);
+            panelRectTransform.SetAsLastSibling();
+
+            refresh(true);
+            if (province != null)
+            {
+                var list = Game.Player.getNeighborProvinces();
+                ddProvinceSelect.value = list.IndexOf(province);
             }
         }
-        ddProvinceSelect.RefreshShownValue();
-        //onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
-    }
-    public void onddProvinceSelectValueChanged()
-    {
 
-    }
-    public void onArmyLimitChanged(float value)
-    {
-        //Game.Player.staff.consolidateArmies();
-        //actually creates new army here
-        //virtualArmyToSend = (Game.Player.staff.consolidateArmies().getSize() * value).ToString("0");
-        virtualArmyToSend = Game.Player.consolidateArmies().balance(new Procent(value));
-        //virtualArmyToSend = del.getShortName();
-        refresh(false);
+        public void onMobilizationClick()
+        {
+            //if (Game.Player.homeArmy.getSize() == 0)
+            //  Game.Player.homeArmy = new Army(Game.Player);
+            Game.Player.mobilize(Game.Player.ownedProvinces);
+            //onArmyLimitChanged(0f);
+            //MainCamera.tradeWindow.refresh();
+            refresh(false);
+        }
+        public void onDemobilizationClick()
+        {
+            Game.Player.demobilize();
+            virtualArmyToSend.demobilize();
+            //MainCamera.tradeWindow.refresh();
+            refresh(false);
+        }
+        public void onSendArmyClick()
+        {
+            //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
+            Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+            //virtualArmyToSend = new Army(null);
+            //Game.Player.sendingArmy = new Army(Game.Player);
+            refresh(false);
+        }
+        void rebuildDropDown()
+        {
+            ddProvinceSelect.interactable = true;
+            ddProvinceSelect.ClearOptions();
+            byte count = 0;
+            availableProvinces.Clear();
+            foreach (Province next in Game.Player.getNeighborProvinces())
+            {
+                //if (next.isAvailable(Game.player))
+                {
+                    ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getCountry() + ")" });
+                    availableProvinces.Add(next);
+
+                    //selectedReformValue = next;
+                    // selecting non empty option
+                    //ddProvinceSelect.value = count; 
+                    count++;
+                }
+            }
+            ddProvinceSelect.RefreshShownValue();
+            //onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
+        }
+        public void onddProvinceSelectValueChanged()
+        {
+
+        }
+        public void onArmyLimitChanged(float value)
+        {
+            //Game.Player.staff.consolidateArmies();
+            //actually creates new army here
+            //virtualArmyToSend = (Game.Player.staff.consolidateArmies().getSize() * value).ToString("0");
+            virtualArmyToSend = Game.Player.consolidateArmies().balance(new Procent(value));
+            //virtualArmyToSend = del.getShortName();
+            refresh(false);
+        }
     }
 }

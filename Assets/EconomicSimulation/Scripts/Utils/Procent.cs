@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 //using System;
-
+using Nashet.EconomicSimulation;
 public class Procent : Value
 {
     internal static readonly Procent HundredProcent = new Procent(1f);

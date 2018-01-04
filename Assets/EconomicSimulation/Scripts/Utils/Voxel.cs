@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System;
-
+using Nashet.EconomicSimulation;
 [Serializable]
 public class Voxel
 {
