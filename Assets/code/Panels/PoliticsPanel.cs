@@ -2,43 +2,37 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+
 public class PoliticsPanel : DragPanel
 {
-    public GameObject politicsPanel;
-    public ScrollRect table;
-    public Text descriptionText;
+    public Text descriptionText, movementsText;
+    //public ScrollRect movementsScrollView;
     public Button voteButton;
     public Button forceDecisionButton;
     public Dropdown dropDown;
+    public Scrollbar movementsHorizontalScrollBar;
     public AbstractReform selectedReform;
     public AbstractReformValue selectedReformValue;
-    List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
-   
-    //Province province;
+
+    private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
+
     // Use this for initialization
     void Start()
     {
         MainCamera.politicsPanel = this;
         voteButton.interactable = false;
         dropDown.interactable = false;
-        forceDecisionButton.interactable = false;
+        forceDecisionButton.interactable = false;        
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
         hide();
     }
-    public void hide()
-    {
-        politicsPanel.SetActive(false);
-        //todo add button removal?      
-    }
+
     public void show(bool bringOnTop)
     {
-        politicsPanel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
-
-    }
-    public void onCloseClick()
-    {
-        hide();
+        //refresh(true); - recursion
     }
 
     void setNewReform()
@@ -48,7 +42,7 @@ public class PoliticsPanel : DragPanel
             selectedReform.setValue(selectedReformValue);
             refresh(true);
             if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
-            if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.refresh();
+            if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.refreshContent();
             if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
 
         }
@@ -60,7 +54,7 @@ public class PoliticsPanel : DragPanel
     public void onForceDecisionClick()
     {
         //uint votersSayedYes;
-        foreach (Province pro in Game.player.ownedProvinces)
+        foreach (Province pro in Game.Player.ownedProvinces)
             foreach (PopUnit pop in pro.allPopUnits)
             {
                 if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
@@ -76,21 +70,15 @@ public class PoliticsPanel : DragPanel
 
     public void onChoiceValueChanged()
     {
-        ////if current reform does not contain reform value
-        //bool contain = false;
-        //foreach (AbstractReformValue reformValue in selectedReform)
-        //{
-        //    if (reformValue == selectedReformValue) contain = true;
-        //}
-        //if (!contain)
-        {
-            //selectedReformValue = selectedReform.getValue(assotiateTable[choise.value]);
-            selectedReformValue = assotiateTable[dropDown.value];
-            refresh(false);
-        }
+        selectedReformValue = assotiateTable[dropDown.value];
+        refresh(false);
     }
     void rebuildDropDown()
     {
+        //dropDown.Hide();        
+        var toDestroy = dropDown.transform.Find("Dropdown List");
+        if (toDestroy != null)
+            Destroy(toDestroy.gameObject);
         dropDown.interactable = true;
         dropDown.ClearOptions();
         byte count = 0;
@@ -106,90 +94,90 @@ public class PoliticsPanel : DragPanel
                     //selectedReformValue = next;
                     // selecting non empty option
                     dropDown.value = count;
-                    dropDown.RefreshShownValue();
                 }
                 count++;
             }
         }
+
         onChoiceValueChanged(); // need it to set correct caption in DropDown
+        dropDown.RefreshShownValue();
+        //dropDown.Show();
     }
     public void refresh(bool callRebuildDropDown)
     {
         hide();
+        //if (Game.Player.movements != null)
+        movementsText.text = Game.Player.movements.getString();
+        if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
+            movementsText.text += "\n\n\n\n";
+
+
+        movementsHorizontalScrollBar.value = 0;
         if (selectedReform != null)
         {
             if (callRebuildDropDown) // meaning changed whole reform            
                 rebuildDropDown();
-
-            descriptionText.text = selectedReform + " reforms - " + selectedReform.getDescription()
-           + "\n\nCurrently: " + selectedReform.getValue() + " - " + selectedReform.getValue().getDescription()
-           + "\n\nSelected: ";
+            descriptionText.text = selectedReform + " reforms " + selectedReform.getDescription()
+           + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
+           + "\nSelected: ";
 
             //if (selectedReformValue != null)
             if (selectedReformValue != selectedReform.getValue())
-                descriptionText.text += selectedReformValue + " - " + selectedReformValue.getDescription();
+                descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
             else
-                descriptionText.text += "current";     
+                descriptionText.text += "current";
 
-           
             ////
             Procent procentPopulationSayedYes = new Procent(0f);
-            Procent procentVotersSayedYes = Game.player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
+            Procent procentVotersSayedYes = Game.Player.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 
             Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
-            Dictionary<PopType, int> divisionVotersResult = Game.player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
+            Dictionary<PopType, int> divisionVotersResult = Game.Player.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
 
             if (selectedReformValue != selectedReform.getValue())
             {
-                if (Game.player.government.status != Government.Despotism)
+                if (Game.Player.government.getValue() != Government.Despotism)
                 {
-                    descriptionText.text += "\n\n" + procentVotersSayedYes + " of voters want this reform ( ";
-                    foreach (PopType type in PopType.allPopTypes)
+                    descriptionText.text += "\n" + procentVotersSayedYes + " of voters want this reform ( ";
+                    foreach (PopType type in PopType.getAllPopTypes())
                         if (divisionVotersResult[type] > 0)
                         {
-                            Procent res = new Procent(divisionVotersResult[type] / (float)Game.player.FindPopulationAmountByType(type));
+                            Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.getPopulationAmountByType(type));
                             descriptionText.text += res + " of " + type + "; ";
                         }
                     descriptionText.text += ")";
                 }
                 else
-                    descriptionText.text += "\n\nNobody to vote - Despot rule everything";
+                    descriptionText.text += "\nNobody to vote - Despot rule everything";
+
                 descriptionText.text += "\n" + procentPopulationSayedYes + " of population want this reform ( ";
-                foreach (PopType type in PopType.allPopTypes)
+                foreach (PopType type in PopType.getAllPopTypes())
                     if (divisionPopulationResult[type] > 0)
                     {
-                        Procent res = new Procent(divisionPopulationResult[type] / (float)Game.player.FindPopulationAmountByType(type));
+                        Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.getPopulationAmountByType(type));
                         descriptionText.text += res + " of " + type + "; ";
                     }
                 descriptionText.text += ")";
             }
 
-
-            if (selectedReformValue != null && selectedReformValue != selectedReform.getValue())
+            if (selectedReformValue != null)// && selectedReformValue != selectedReform.getValue())
             {
-                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.player.government.status == Government.Despotism)
+                if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                 { // has enough voters
-                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = voteButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     forceDecisionButton.interactable = false;
-                    voteButton.GetComponentInChildren<Text>().text = "Vote " + selectedReformValue;
+                    voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                 }
                 else // not enough voters
                 {
                     voteButton.interactable = false;
-                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.player, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                    forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue( Game.Player, selectedReformValue, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip);
                     voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip;
                     voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                 }
             }
-            else // this reform already enacted
-            {
-                voteButton.interactable = false;
-                forceDecisionButton.interactable = false;
-                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-                voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
-            }
-        } //didnt selected reform
+        } //didn't selected reform
         else
         {
             voteButton.interactable = false;
@@ -198,11 +186,6 @@ public class PoliticsPanel : DragPanel
             forceDecisionButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
             voteButton.GetComponentInChildren<ToolTipHandler>().tooltip = "";
         }
-
         show(false);
     }
-    // Update is called once per frame
-    //   void Update () {
-
-    //}
 }

@@ -1,84 +1,181 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 //using System;
 
 public class Procent : Value
 {
-    private int v;
+    internal static readonly Procent HundredProcent = new Procent(1f);
+    internal static readonly Procent ZeroProcent = new Procent(0f);
+    internal static readonly Procent Max999 = new Procent(999.99f);
+    internal static readonly Procent Max = new Procent(int.MaxValue / 1000f);
 
-    //uint value;
-    public static bool GetChance(uint procent)
+    public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
     {
-        //TODO fix that GetChance shit
-        float realLuck = UnityEngine.Random.value * 100; // (0..100 including)
-        if (procent >= realLuck)
-            return true;
+    }
+    public Procent(Procent number) : base(number.get())
+    {
+
+    }
+    public static Procent makeProcent(List<Storage> numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
+    {
+        //result should be  amount of numerator / amount of denominator
+        Value numeratorSum = new Value(0f);
+        foreach (var item in numerator)
+        {
+            numeratorSum.add(item);
+        }
+        Value denominatorSum = new Value(0f);
+        foreach (var item in denominator)
+        {
+            denominatorSum.add(item);
+        }
+
+        if (denominatorSum.isZero())
+        {
+            if (showMessageAboutOperationFails)            
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");
+                
+            
+            return Procent.Max999;
+        }
         else
-            return false;
+            return new Procent(numeratorSum.get() / denominatorSum.get());
     }
-
-    public Procent(float number) : base(number)
+    public static Procent makeProcent(Value numerator, Value denominator, bool showMessageAboutOperationFails = true)
     {
-
+        if (denominator.isZero())
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");
+            return Procent.Max999;
+        }
+        else
+            return new Procent(numerator.get() / denominator.get());
     }
-    public static Procent makeProcent(int numerator, int denominator)
+    public static Procent makeProcent(float numerator, float denominator, bool showMessageAboutOperationFails = true)
+    {
+        if (denominator == 0f)
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(float)");
+            return Procent.Max999;
+        }
+        else
+            return new Procent(numerator / denominator, showMessageAboutOperationFails);
+    }
+    public static Procent makeProcent(int numerator, int denominator, bool showMessageAboutOperationFails = true)
     {
         if (denominator == 0)
         {
-            Debug.Log("Division by zero in Procent.makeProcent()");
-            return new Procent(0f);
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Percent.makeProcent(int)");
+            return Procent.Max999;
         }
         else
-            return new Procent(numerator / (float)denominator);
+            return new Procent(numerator / (float)denominator, showMessageAboutOperationFails);
     }
+    //TODO check it
+    //public static Procent makeProcent(PrimitiveStorageSet numerator, PrimitiveStorageSet denominator)
+    //{
+    //    float allGoodsAmount = numerator.sum();
+    //    if (allGoodsAmount == 0f)
+    //        return new Procent(1f);
+    //    Dictionary<Product, float> dic = new Dictionary<Product, float>();
+    //    //numerator / denominator
+    //    float relation;
+    //    foreach (var item in numerator)
+    //    {
+    //        Storage denominatorStorage = denominator.findStorage(item.getProduct());
+    //        if (denominatorStorage == null) // no such product
+    //            relation = 0f;
+    //        else
+    //        {
+    //            if (denominatorStorage.get() == 0f) // division by zero
+    //                relation = 0f;
+    //            else
+    //            {
+    //                relation = item.get() / denominatorStorage.get();
+    //                if (relation > 1f) relation = 1f;
+    //            }
+    //        }
+    //        dic.Add(item.getProduct(), relation);
+    //    }
+    //    float result = 0f;
+
+    //    foreach (var item in dic)
+    //    {
+    //        result += item.Value * numerator.findStorage(item.Key).get() / allGoodsAmount;
+    //    }
+    //    return new Procent(result);
+    //}
+
+    internal float get50Centre()
+    {
+        return get() - 0.5f;
+    }
+
     public Value sendProcentToNew(Value source)
     {
 
         Value result = new Value(0f);
-        source.pay(result, source.multiple(this));
+        source.send(result, source.multiplyOutside(this));
         return result;
     }
     public Storage sendProcentToNew(Storage source)
     {
         Storage result = new Storage(source.getProduct(), 0f);
-        source.pay(result, source.multiple(this));
+        source.send(result, source.multiplyOutside(this));
         return result;
     }
 
-    public void add(Procent pro)
+    public void add(Procent pro, bool showMessageAboutNegativeValue = true)
     {
-        base.add(pro);
-        if (base.get() > 1f)
-            set(1f);
+        base.add(pro, showMessageAboutNegativeValue);
+        //if (base.get() > 1f)
+        //    set(1f);
     }
     public void addPoportionally(int baseValue, int secondValue, Procent secondProcent)
     {
-        set((this.get() * baseValue + secondProcent.get() * secondValue) / (float)(baseValue + secondValue));
+        if ((baseValue + secondValue) != 0)
+            set((this.get() * baseValue + secondProcent.get() * secondValue) / (float)(baseValue + secondValue));
     }
     public override string ToString()
     {
         if (get() > 0)
-            return System.Convert.ToString(get() * 100f) + "%";
+            return (get() * 100f).ToString("0.00") + "%";
         else return "0%";
     }
 
-    //internal uint getProcent(int population)
-    //{
-    //    return (uint)Mathf.RoundToInt(get() * population);
-    //}
-    internal int getProcent(int population)
+    internal int getProcent(int value)
     {
-        return Mathf.RoundToInt(get() * population);
+        return Mathf.RoundToInt(get() * value);
     }
-    override public void set(float invalue)
+    //override public void set(float invalue)
+    //{
+    //    if (invalue < 0f)
+    //        base.set(0f);
+    //    //else
+    //    //    if (invalue > 1f)
+    //    //    base.set(1f);
+    //    else
+    //        base.set(invalue);
+    //}
+
+    internal void clamp100()
     {
-        if (invalue < 0f)
-            base.set(0f);
-        //else
-        //    if (invalue > 1f)
-        //    base.set(1f);
+        if (this.isBiggerThan(Procent.HundredProcent))
+            this.set(1f);
+    }
+    public void set(Storage numerator, Storage denominator, bool showMessageAboutOperationFails = true)
+    {
+        if (denominator.isZero())
+        {
+            if (showMessageAboutOperationFails)
+                Debug.Log("Division by zero in Procent.makeProcent(Value)");            
+        }
         else
-            base.set(invalue);
+            set(numerator.get() / denominator.get());
     }
 }

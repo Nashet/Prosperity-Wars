@@ -3,350 +3,334 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
 using System;
+using System.Linq;
 
-public class Game
+public class Game : ThreadedJob
 {
-    Texture2D mapImage;
-    GameObject mapObject;
-    internal static GameObject r3dTextPrefab;
+    static private readonly bool readMapFormFile = false;
+    static private MyTexture map;
+    static public GameObject mapObject;
+    static internal GameObject r3dTextPrefab;
 
-    List<int> trianglesList = new List<int>();
-    List<Vector3> vertices = new List<Vector3>();
-    int triangleCounter = 0;
+    static public Country Player;
 
-    public static Country player;
-    internal InventionType inventions = new InventionType();
+    static bool haveToRunSimulation;
+    static bool haveToStepSimulation;
+    static internal int howMuchPausedWindowsOpen = 0;
 
-    internal static bool haveToRunSimulation;
-    internal static bool haveToStepSimulation;
-    internal static int howMuchPausedWindowsOpen = 0;
+    static public System.Random Random = new System.Random();
 
-    public static System.Random random = new System.Random();
+    static public Province selectedProvince;
+    static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
+    static public List<Factory> factoriesToShowInProductionPanel;
 
-    public static Province selectedProvince;
-    public static List<PopUnit> popsToShowInPopulationPanel;
-    public static List<Factory> factoriesToShowInProductionPanel;
+    static internal List<BattleResult> allBattles = new List<BattleResult>();
+    static internal readonly Stack<Message> MessageQueue = new Stack<Message>();
+    static public readonly Market market = new Market();
 
-    internal static List<BattleResult> allBattles = new List<BattleResult>();
-    internal static Stack<Message> MessageQueue = new Stack<Message>();
-    public static Market market = new Market();
+    //static internal StringBuilder threadDangerSB = new StringBuilder();
 
-    internal static StringBuilder threadDangerSB = new StringBuilder();
+    static public MyDate date = new MyDate(0);
+    static internal bool devMode = false;
+    static private int mapMode;
+    static private bool surrended = devMode;
+    static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
+        impassableBorder;
 
-    public static int date;
-    internal static bool devMode = false;
+    static private List<Province> seaProvinces;
+    static private VoxelGrid grid;
+
+    private readonly Rect mapBorders;
     public Game()
     {
-        Application.runInBackground = true;
-        //LoadImages();        
-        generateMapImage();
-        makeProducts();
+        if (readMapFormFile)
+        {
+            Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;                
+            map = new MyTexture(mapImage);
+        }
+        else
+            generateMapImage();
+        mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
+    }
+    public void initialize()
+    {
         market.initialize();
-        r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-        makeProvinces();
-        roundMesh();
-        deleteEdgeProvinces();
-        findNeighborprovinces();
-        var mapWidth = mapImage.width * Options.cellMultiplier;
-        var mapHeight = mapImage.height * Options.cellMultiplier;
 
-        
-        makeFactoryTypes();
-        makePopTypes();
+        //FactoryType.getResourceTypes(); // FORCING FactoryType to initializate?
 
-        var countryNameGenerator = new CountryNameGenerator();
-        int extraCountries = random.Next(6);
-        for (int i = 0; i < 16 + extraCountries; i++)
-            makeCountry(countryNameGenerator);
+        updateStatus("Reading provinces..");
+        Province.preReadProvinces(Game.map, this);
+        seaProvinces = getSeaProvinces();
+        deleteSomeProvinces();
 
-        foreach (var pro in Province.allProvinces)
-            if (pro.getOwner() == null)
-                pro.InitialOwner(Country.NullCountry);
+        updateStatus("Making grid..");
+        grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.seaProvinces, this, Province.allProvinces);
 
-        CreateRandomPopulation();
-        //Province.allProvinces[0].allPopUnits[0].education.set(1f);
+        updateStatus("Making countries..");
+        Country.makeCountries(this);
+
+        updateStatus("Making population..");
+        сreateRandomPopulation();
+
         setStartResources();
-        MainCamera.topPanel.refresh();
-        makeHelloMessage();
-        //MainCamera.cameraMy.transform.position = new Vector3(mapWidth / 2f, mapHeight / 2f, MainCamera.cameraMy.transform.position.z);
-        MainCamera.cameraMy.transform.position = new Vector3(Game.player.getCapital().centre.x, Game.player.getCapital().centre.y, MainCamera.cameraMy.transform.position.z);
+        if (!devMode)
+            makeHelloMessage(); 
+         updateStatus("Finishing generation..");
     }
-
-    private void deleteEdgeProvinces()
+    public static void setUnityAPI()
     {
-        for (int x = 0; x < mapImage.width; x++)
+        // Assigns a material named "Assets/Resources/..." to the object.
+        //defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
+        defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+        defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
+        selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
+        impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
+
+        //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
+        r3dTextPrefab = GameObject.Find("3dProvinceNameText");
+
+        mapObject = GameObject.Find("MapObject");
+        Province.generateUnityData(grid);
+        Country.setUnityAPI();
+        seaProvinces = null;
+        grid = null;
+        map = null;
+        // Annex all countries to P)layer
+        //foreach (var item in Country.allCountries)
+        //{
+        //    item.annexTo(Game.Player);
+        //}
+    }
+    public Rect getMapBorders()
+    {
+        return mapBorders;
+    }
+    static List<Province> getSeaProvinces()
+    {
+        List<Province> res = new List<Province>();
+        if (!readMapFormFile)
         {
-            removeProvince(x, 0);
-            removeProvince(x, mapImage.height - 1);
-        }
-        for (int y = 0; y < mapImage.height; y++)
-        {
-            removeProvince(0, y);
-            removeProvince(mapImage.width - 1, y);
-        }
-
-    }
-    void removeProvince(int x, int y)
-    {
-        var toremove = Province.findProvince(mapImage.GetPixel(x, y));
-        if (Province.allProvinces.Contains(toremove))
-        {
-            UnityEngine.Object.Destroy(toremove.gameObject);
-            Province.allProvinces.Remove(toremove);
-        }
-    }
-
-    private void setStartResources()
-    {
-        //Country.allCountries[0] is null country
-        Country.allCountries[1].getCapital().setResource(Product.Fruit);
-        
-        //Country.allCountries[0].getCapital().setResource(Product.Wood;
-        Country.allCountries[2].getCapital().setResource(Product.Wood);
-        Country.allCountries[3].getCapital().setResource(Product.Gold);
-        Country.allCountries[4].getCapital().setResource(Product.Wool);
-        Country.allCountries[5].getCapital().setResource(Product.Stone);
-        Country.allCountries[6].getCapital().setResource(Product.MetallOre);
-    }
-
-    private void makePopTypes()
-    {
-        //new PopType(PopType.PopTypes.TribeMen, new Storage(Product.findByName("Food"), 1.5f), "Tribesmen");
-        new PopType(PopType.PopTypes.Tribemen, new Storage(Product.findByName("Food"), 1.0f), "Tribesmen", 2f);
-        new PopType(PopType.PopTypes.Aristocrats, null, "Aristocrats", 4f);
-        new PopType(PopType.PopTypes.Capitalists, null, "Capitalists", 1f);
-        new PopType(PopType.PopTypes.Farmers, new Storage(Product.findByName("Food"), 2.0f), "Farmers", 1f);
-        //new PopType(PopType.PopTypes.Artisans, null, "Artisans");
-        //new PopType(PopType.PopTypes.Soldiers, null, "Soldiers");
-        new PopType(PopType.PopTypes.Workers, null, "Workers", 1f);
-    }
-
-    void makeCountry(CountryNameGenerator name)
-    {
-        Culture cul = new Culture("Ridvans");
-
-        Province province = Province.getRandomProvinceInWorld((x) => x.getOwner() == null);// Country.NullCountry);
-        Country count = new Country(name.generateCountryName(), cul, new CountryWallet(0f), UtilsMy.getRandomColor(), province);
-        player = Country.allCountries[1]; // not wild Tribes DONT touch that
-        province.InitialOwner(count);
-        count.moveCapitalTo(province);
-
-        count.storageSet.add(new Storage(Product.Food, 200f));
-        count.wallet.haveMoney.add(100f);
-    }
-    void makeFactoryTypes()
-    {
-        new FactoryType("Forestry", new Storage(Product.Wood, 2f), null, false);
-        new FactoryType("Gold pit", new Storage(Product.Gold, 2f), null, true);
-        new FactoryType("Metal pit", new Storage(Product.MetallOre, 2f), null, true);
-        new FactoryType("Sheepfold", new Storage(Product.Wool, 2f), null, false);
-        new FactoryType("Quarry", new Storage(Product.Stone, 2f), null, true);
-        new FactoryType("Orchard", new Storage(Product.Fruit, 2f), null, false);
-
-        PrimitiveStorageSet resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Lumber, 1f));
-        new FactoryType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput, false);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wood, 1f));
-        new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput, false);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wood, 0.5f));
-        resourceInput.Set(new Storage(Product.MetallOre, 2f));
-        new FactoryType("Metal smelter", new Storage(Product.Metal, 3f), resourceInput, false);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wool, 1f));
-        new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput, false);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Wood, 0.5f));
-        resourceInput.Set(new Storage(Product.Stone, 1f));
-        new FactoryType("Cement factory", new Storage(Product.Cement, 3f), resourceInput, false);
-
-        resourceInput = new PrimitiveStorageSet();
-        resourceInput.Set(new Storage(Product.Fruit, 0.3333f));
-        new FactoryType("Winery", new Storage(Product.Wine, 2f), resourceInput, false);
-    }
-
-    void makeProducts()
-    {
-        new Product("Food", false, 0.4f);
-        new Product("Wood", true, 2.7f);
-        new Product("Lumber", false, 8f);
-        new Product("Gold", true, 4f);
-        new Product("Metal ore", true, 3f);
-        new Product("Metal", false, 6f);
-        new Product("Wool", true, 1);
-        new Product("Clothes", false, 3);
-        new Product("Furniture", false, 7);
-        new Product("Stone", true, 1);
-        new Product("Cement", false, 2);
-        new Product("Fruit", true, 1);
-        new Product("Wine", false, 3);
-    }
-    internal static float getAllMoneyInWorld()
-    {
-        float allMoney = 0f;
-        foreach (Country co in Country.allCountries)
-        {
-            allMoney += co.wallet.haveMoney.get();
-            allMoney += co.bank.getReservs();
-            foreach (Province pr in co.ownedProvinces)
+            Province seaProvince;
+            for (int x = 0; x < map.getWidth(); x++)
             {
-                foreach (var factory in pr.allProducers)
-                    allMoney += factory.wallet.haveMoney.get();
+                seaProvince = Province.find(map.GetPixel(x, 0));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+                seaProvince = Province.find(map.GetPixel(x, map.getHeight() - 1));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+            }
+            for (int y = 0; y < map.getHeight(); y++)
+            {
+                seaProvince = Province.find(map.GetPixel(0, y));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+                seaProvince = Province.find(map.GetPixel(map.getWidth() - 1, y));
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+            }
+
+            seaProvince = Province.find(map.getRandomPixel());
+            if (!res.Contains(seaProvince))
+                res.Add(seaProvince);
+
+            if (Game.Random.Next(3) == 1)
+            {
+                seaProvince = Province.find(map.getRandomPixel());
+                if (!res.Contains(seaProvince))
+                    res.Add(seaProvince);
+                if (Game.Random.Next(20) == 1)
+                {
+                    seaProvince = Province.find(map.getRandomPixel());
+                    if (!res.Contains(seaProvince))
+                        res.Add(seaProvince);
+                }
             }
         }
+        else
+        {
+            foreach (var item in Province.allProvinces)
+            {
+                var color = item.getColorID();
+                if (color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f)
+                    //if (color.g + color.b + color.r > 492f / 255f)
+                    res.Add(item);
+
+            }
+        }
+        return res;
+    }
+    internal static void takePlayerControlOfThatCountry(Country country)
+    {
+        if (country != Country.NullCountry)
+        {
+            surrended = false;
+            Player = country;
+            MainCamera.refreshAllActive();
+        }
+    }
+
+    public static void givePlayerControlToAI()
+    {
+        surrended = true;
+    }
+    static private void deleteSomeProvinces()
+    {
+        //Province.allProvinces.FindAndDo(x => blockedProvinces.Contains(x.getColorID()), x => x.removeProvince());
+        foreach (var item in Province.allProvinces.ToArray())
+            if (seaProvinces.Contains(item))
+            {
+                Province.allProvinces.Remove(item);
+                //item.removeProvince();
+            }
+        //todo move it in seaProvinces
+        if (!readMapFormFile)
+        {
+            int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
+            for (int i = 0; i < howMuchLakes; i++)
+                Province.allProvinces.Remove(Province.allProvinces.PickRandom());
+        }
+    }
+
+    static private void setStartResources()
+    {
+        //Country.allCountries[0] is null country
+        //Country.allCountries[1].getCapital().setResource(Product.Wood);// player
+
+        //Country.allCountries[0].getCapital().setResource(Product.Wood;
+        Country.allCountries[2].getCapital().setResource(Product.Fruit);
+        Country.allCountries[3].getCapital().setResource(Product.Gold);
+        Country.allCountries[4].getCapital().setResource(Product.Cotton);
+        Country.allCountries[5].getCapital().setResource(Product.Stone);
+        Country.allCountries[6].getCapital().setResource(Product.MetalOre);
+        Country.allCountries[7].getCapital().setResource(Product.Wood);
+    }
+
+    internal static int getMapMode()
+    {
+        return mapMode;
+    }
+
+    public static void redrawMapAccordingToMapMode(int newMapMode)
+    {
+        mapMode = newMapMode;
+        foreach (var item in Province.allProvinces)
+            item.updateColor(item.getColorAccordingToMapMode());
+    }
+
+    internal static void continueSimulation()
+    {
+        haveToRunSimulation = true;
+    }
+
+    internal static bool isRunningSimulation()
+    {
+        return haveToRunSimulation || haveToStepSimulation;
+    }
+    internal static void pauseSimulation()
+    {
+        haveToRunSimulation = false;
+    }
+    internal static void makeOneStepSimulation()
+    {
+        haveToStepSimulation = true;
+    }
+
+    internal static Value getAllMoneyInWorld()
+    {
+        Value allMoney = new Value(0f);
+        foreach (Country country in Country.allCountries)
+        {
+            allMoney.add(country.cash);
+            allMoney.add(country.getBank().getReservs());
+            foreach (Province province in country.ownedProvinces)
+            {
+                foreach (var factory in province.getAllAgents())
+                    allMoney.add(factory.cash);
+            }
+        }
+        allMoney.add(Game.market.cash);
         return allMoney;
     }
-    void CreateRandomPopulation()
+    static void сreateRandomPopulation()
     {
-        int chanceForA = 85;
 
         foreach (Province province in Province.allProvinces)
         {
-            Culture culture = new Culture(province + "landers");
-            if (province.getOwner() == Country.NullCountry)
+            if (province.getCountry() == Country.NullCountry)
             {
-                Tribemen f = new Tribemen(PopUnit.getRandomPopulationAmount(500, 1000), PopType.tribeMen, province.getOwner().culture, province);
-                province.allPopUnits.Add(f);
+                Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);
             }
             else
             {
                 PopUnit pop;
-                if (!Game.devMode)
-                    pop = new Tribemen(PopUnit.getRandomPopulationAmount(1800, 2000), PopType.tribeMen, province.getOwner().culture, province);
-                else
-                    pop = new Tribemen(2000, PopType.tribeMen, province.getOwner().culture, province);
-                province.allPopUnits.Add(pop);
+                //if (Game.devMode)
+                //    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
+                //else
+                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
 
-                if (province.getOwner() == Game.player)
+
+                if (province.getCountry() == Game.Player)
                 {
                     //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                     //province.allPopUnits.Add(pop);
                 }
-                if (!Game.devMode)
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(80, 100), PopType.aristocrats, province.getOwner().culture, province);
-                else
-                    pop = new Aristocrats(100, PopType.aristocrats, province.getOwner().culture, province);
+                //if (Game.devMode)
+                //    pop = new Aristocrats(1000, province.getCountry().getCulture(), province);
+                //else
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.getCountry().getCulture(), province);
 
-                pop.wallet.haveMoney.set(9000);
-                pop.storageNow.add(60f);
-                province.allPopUnits.Add(pop);
-                if (!Game.devMode)
-                {
-                    pop = new Capitalists(PopUnit.getRandomPopulationAmount(30, 50), PopType.capitalists, province.getOwner().culture, province);
-                    pop.wallet.haveMoney.set(9000);
-                    province.allPopUnits.Add(pop);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(500, 600), PopType.farmers, province.getOwner().culture, province);
-                    pop.wallet.haveMoney.set(20);
-                    province.allPopUnits.Add(pop);
+                pop.cash.set(9000);
+                pop.storage.add(new Storage(Product.Grain, 60f));
+                //if (!Game.devMode)
+                //{
+                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
+                    //pop.cash.set(9000);
 
-                }
-                //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
+                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    pop.cash.set(900);
 
-                //if (Procent.GetChance(chanceForA))
-                //    province.allPopUnits.Add(
-                //    new PopUnit(PopUnit.getRandomPopulationAmount(), PopType.aristocrats, culture, province)
-                //    );
-
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
+                    pop.cash.set(20);
+                //}
+                //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
             }
-
         }
     }
-    /// <summary>
-    /// Makes polygonal Stripe and stores it vertices[] and trianglesList[]
-    /// </summary>    
-    void makePolygonalStripe(float x, float y, float x2, float y2, int xpos1, int ypos1, int xpos2, int ypos2)
-    //void makePolygonalStripe(float x, float y, float x2, float y2)
+
+    internal static bool isPlayerSurrended()
     {
-        //float x = xpos1 * Options.cellMuliplier;
-        //float y = ypos1 * Options.cellMuliplier;
-        //float x2 = xpos2 * Options.cellMuliplier;
-        //float y2 = ypos1 * Options.cellMuliplier;
-
-        //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-        //    x -= Options.cellMuliplier;
-        //if (mapImage.isRightTopCorner(xpos1, ypos1))
-        //    x += Options.cellMuliplier;
-
-        //if (mapImage.isLeftBottomCorner(xpos1, ypos1))
-        //    vertices.Add(new Vector3(x + Options.cellMuliplier, y, 0));
-        //else
-        vertices.Add(new Vector3(x, y, 0));
-
-        //if (mapImage.isRightBottomCorner(xpos2 - 1, ypos1))
-        //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y, 0));
-        //else
-        vertices.Add(new Vector3(x2, y, 0));
-
-        //if (mapImage.isRightTopCorner(xpos2 - 1, ypos1))
-        //    vertices.Add(new Vector3(x2 - Options.cellMuliplier, y2, 0));
-        //else
-        vertices.Add(new Vector3(x2, y2, 0));
-
-        //if (mapImage.isLeftTopCorner(xpos1, ypos1))
-        //    vertices.Add(new Vector3(x + Options.cellMuliplier, y2, 0));
-        //else
-        vertices.Add(new Vector3(x, y2, 0));
-
-        trianglesList.Add(0 + triangleCounter);
-        trianglesList.Add(2 + triangleCounter);
-        trianglesList.Add(1 + triangleCounter);
-
-        trianglesList.Add(2 + triangleCounter);
-        trianglesList.Add(0 + triangleCounter);
-        trianglesList.Add(3 + triangleCounter);
-        triangleCounter += 4;
+        return surrended;
     }
-    void checkCoordinateForNeighbors(Province province, int x1, int y1, int x2, int y2)
+
+    static void generateMapImage()
     {
-        if (mapImage.coordinatesExist(x2, y2) && mapImage.isDifferentColor(x1, y1, x2, y2))
-        {
-            Province found;
-            found = Province.findProvince(mapImage.GetPixel(x2, y2));
-            if (found != null) // for remove edge provinces
-                province.addNeigbor(found);
-        }
-    }
-    void findNeighborprovinces()
-    {
-        int f = 0;
-        foreach (var province in Province.allProvinces)
-        {
-            f++;
-            for (int j = 0; j < mapImage.height; j++)
-                for (int i = 0; i < mapImage.width; i++)
-                {
-                    Color currentColor = mapImage.GetPixel(i, j);
-                    if (currentColor == province.getColorID())
-                    {
-                        checkCoordinateForNeighbors(province, i, j, i + 1, j);
-                        checkCoordinateForNeighbors(province, i, j, i - 1, j);
-                        checkCoordinateForNeighbors(province, i, j, i, j + 1);
-                        checkCoordinateForNeighbors(province, i, j, i, j - 1);
-                    }
-                }
-        }
-    }
-    void generateMapImage()
-    {
-        //mapImage = new Texture2D(200, 100);
-        mapImage = new Texture2D(100, 50);
+        //#if UNITY_WEBGL
+        int mapSize = 20000;//30000;
+        int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
+                                             //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
+                                             //#else
+                                             //        int mapSize = 40000;
+                                             //        int width = 200 + Random.Next(80);
+                                             //#endif          
+        Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
+
+
         Color emptySpaceColor = Color.black;//.setAlphaToZero();
         mapImage.setColor(emptySpaceColor);
         int amountOfProvince;
-        if (Game.devMode)
-            amountOfProvince = 10;
-        else
-            amountOfProvince = 12 + Game.random.Next(8);
-        amountOfProvince = 60 + Game.random.Next(20);
-        //amountOfProvince = 160 + Game.random.Next(20);
+
+        amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
+        //amountOfProvince = 400 + Game.Random.Next(100);
         for (int i = 0; i < amountOfProvince; i++)
-            mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), UtilsMy.getRandomColor());
+            mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 
         int emptyPixels = int.MaxValue;
         Color currentColor = mapImage.GetPixel(0, 0);
@@ -369,191 +353,11 @@ public class Game
             mapImage.setAlphaToMax();
         }
         mapImage.Apply();
-    }
-    Mesh getMeshID(Color color)
-    {
-        foreach (var all in Province.allProvinces)
-            if (color == all.getColorID())
-                return all.mesh;
-        return null;
-    }
-    Mesh getMeshID(int xpos, int ypos)
-    {
-        Color color = mapImage.GetPixel(xpos, ypos);
-        foreach (var all in Province.allProvinces)
-            if (color == all.getColorID())
-                return all.mesh;
-        return null;
-    }
-    private bool movePointRight(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
-    {
-        Vector3[] editingVertices = mesh.vertices;
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
-            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
-            if (editingVertices[i] == sr)
-            {
-                editingVertices[i].x += Options.cellMultiplier * xMove / 2;
-                mesh.vertices = editingVertices;
-                mesh.RecalculateBounds();
-                return true;
-            }
-        }
-        return false;
-    }
-    private bool movePointLeft(Mesh mesh, int xpos, int ypos, int xMove, int yMove)
-    {
-        Vector3[] mesh1Vertices = mesh.vertices;
-
-        Mesh mesh2 = getMeshID(xpos + 1, ypos);
-        Vector3[] mesh2Vertices = mesh2.vertices;
-        for (int i = 0; i < mesh.vertices.Length; i++)
-        {
-            Vector3 sr = new Vector3(xpos * Options.cellMultiplier, (ypos + 2) * Options.cellMultiplier, 0f);
-            //Vector3 sr2 = new Vector3(xpos * Options.cellMuliplier, (ypos ) * Options.cellMuliplier, 0f);
-            //if (editingVertices[i] == sr || editingVertices[i] == sr2)
-            if (mesh1Vertices[i] == sr)
-            {
-                mesh1Vertices[i].x += Options.cellMultiplier * xMove / 2;
-                mesh.vertices = mesh1Vertices;
-                mesh.RecalculateBounds();
-                return true;
-            }
-        }
-        return false;
+        map = new MyTexture(mapImage);
+        Texture2D.Destroy(mapImage);
     }
 
-    void roundMesh()
-    {
-        for (int ypos = 0; ypos < mapImage.height; ypos++)
-        {
-            for (int xpos = 0; xpos < mapImage.width; xpos++)
-            {
-                if (mapImage.isRightTopCorner(xpos, ypos))
-                {
-                    movePointLeft(getMeshID(xpos, ypos), xpos + 1, ypos - 1, -1, 0);
-                    movePointLeft(getMeshID(xpos + 1, ypos), xpos + 1, ypos - 1, -1, 0);
-                }
-                else
-                if (mapImage.isLeftTopCorner(xpos, ypos))
-                {
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos, 1, 0);
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos, 1, 0);
-                }
-                else
-                if (mapImage.isLeftBottomCorner(xpos, ypos))
-                {
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos, ypos - 1, 1, 0);
-                    movePointRight(getMeshID(mapImage.GetPixel(xpos - 1, ypos)), xpos, ypos - 1, 1, 0);
-                }
-                else
-                if (mapImage.isRightBottomCorner(xpos, ypos))
-                {
-                    movePointLeft(getMeshID(mapImage.GetPixel(xpos, ypos)), xpos + 1, ypos - 2, -1, 0);
-                    movePointLeft(getMeshID(mapImage.GetPixel(xpos + 1, ypos)), xpos + 1, ypos - 2, -1, 0);
-                }
-            }
-        }
-    }
-
-    void makeProvinces()
-    {
-        ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
-
-        mapObject = GameObject.Find("MapObject");
-
-        Color currentProvinceColor = mapImage.GetPixel(0, 0);
-        Color currentColor, lastColor, lastprovinceColor = mapImage.GetPixel(0, 0); //, stripeColor;
-        int provinceCounter = 0;
-        for (int j = 0; j < mapImage.height; j++) // cicle by province        
-            for (int i = 0; i < mapImage.width; i++)
-            {
-                currentProvinceColor = mapImage.GetPixel(i, j);
-                if ((lastprovinceColor != currentProvinceColor) && !Province.isProvinceCreated(currentProvinceColor))
-                { // fill up province's mesh
-                    // making mesh from texture
-                    int stripeLenght = 0;
-                    lastColor = Color.black.setAlphaToZero(); // unexisting color
-
-                    for (int ypos = 0; ypos < mapImage.height; ypos++)
-                    {
-                        lastColor = Color.black.setAlphaToZero(); // unexisting color
-                        for (int xpos = 0; xpos < mapImage.width; xpos++)
-                        {
-                            currentColor = mapImage.GetPixel(xpos, ypos);
-                            if (currentColor == currentProvinceColor)
-                                stripeLenght++;
-                            else //place for trangle making
-                            {
-                                if (lastColor == currentProvinceColor)
-                                {
-                                    makePolygonalStripe((xpos - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, xpos * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
-                                        (xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
-                                    //makePolygonalStripe((xpos - stripeLenght), ypos, xpos, (ypos + 1)); //should form 2 triangles
-                                    stripeLenght = 0;
-                                }
-                            }
-                            lastColor = currentColor;
-                        }
-                        if (stripeLenght != 0)
-                            if (lastColor == currentProvinceColor)
-                            {
-                                makePolygonalStripe((mapImage.width - stripeLenght) * Options.cellMultiplier, ypos * Options.cellMultiplier, (mapImage.width) * Options.cellMultiplier, (ypos + 1) * Options.cellMultiplier,
-                                    (mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
-                                //makePolygonalStripe((mapImage.width - stripeLenght), ypos, (mapImage.width), (ypos + 1)); //should form 2 triangles
-                                stripeLenght = 0;
-                            }
-                        stripeLenght = 0;
-                    }
-                    //finished all map search for currentProvince
-                    makeProvince(provinceCounter, currentProvinceColor, nameGenerator.generateProvinceName());
-                    provinceCounter++;
-                }
-                lastprovinceColor = currentProvinceColor;
-            }
-    }
-
-    void makeProvince(int provinceID, Color colorID, string name)
-    {//spawn object
-        GameObject objToSpawn = new GameObject(string.Format("{0}", provinceID));
-
-        //Add Components
-        MeshFilter meshFilter = objToSpawn.AddComponent<MeshFilter>();
-        MeshRenderer meshRenderer = objToSpawn.AddComponent<MeshRenderer>();
-
-        // in case you want the new gameobject to be a child
-        // of the gameobject that your script is attached to
-        objToSpawn.transform.parent = mapObject.transform;
-
-        Mesh mesh = meshFilter.mesh;
-        mesh.Clear();
-
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = trianglesList.ToArray();
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-
-        meshRenderer.material.shader = Shader.Find("Standard");
-        meshRenderer.material.color = colorID;
-
-        MeshCollider groundMeshCollider;
-        groundMeshCollider = objToSpawn.AddComponent(typeof(MeshCollider)) as MeshCollider;
-        groundMeshCollider.sharedMesh = mesh;
-
-        vertices.Clear();
-        trianglesList.Clear();
-        triangleCounter = 0;
-
-        mesh.name = provinceID.ToString();
-
-        Province newProvince = new Province(name,
-            provinceID, colorID, mesh, meshFilter, objToSpawn, meshRenderer, Product.getRandomResource(false));
-        Province.allProvinces.Add(newProvince);
-
-    }
-    bool FindProvinceCenters()
+    static bool FindProvinceCenters()
     {
         //Vector3 accu = new Vector3(0, 0, 0);
         //foreach (Province pro in Province.allProvinces)
@@ -628,177 +432,228 @@ public class Game
         //}
         //return false;
     }
-    bool isThereOtherColorsIn4Negbors(int x, int y, short[,] bordersMarkers, short borderDeepLevel)
+
+    public static void prepareForNewTick()
     {
-        Color color = mapImage.GetPixel(x, y);
-        //if (x == 0)
-        //    return true;
-        //else
-        //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x - 1, y), color)) return true;
-
-        //if (x == mapImage.width - 1)
-        //    return true;
-        //else
-        //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x + 1, y), color)) return true;
-        //if (y == 0)
-        //    return true;
-        //else
-        //    if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y - 1), color)) return true;
-        //if (y == mapImage.height - 1)
-        //    return true;
-        //if (!UtilsMy.isSameColorsWithoutAlpha(mapImage.GetPixel(x, y + 1), color)) return true;
-        //return false;
-        if (x == 0)
-            return true;
-        else
-          if (mapImage.GetPixel(x - 1, y) != color || bordersMarkers[x - 1, y] != borderDeepLevel) return true;
-
-        if (x == mapImage.width - 1)
-            return true;
-        else
-            if (mapImage.GetPixel(x + 1, y) != color || bordersMarkers[x + 1, y] != borderDeepLevel) return true;
-        if (y == 0)
-            return true;
-        else
-            if (mapImage.GetPixel(x, y - 1) != color || bordersMarkers[x, y - 1] != borderDeepLevel) return true;
-        if (y == mapImage.height - 1)
-            return true;
-        if (mapImage.GetPixel(x, y + 1) != color || bordersMarkers[x, y + 1] != borderDeepLevel) return true;
-        return false;
+        Game.market.sentToMarket.setZero();
+        foreach (Country country in Country.getAllExisting())
+        {
+            country.setStatisticToZero();
+            foreach (Province province in country.ownedProvinces)
+            {
+                province.BalanceEmployableWorkForce();
+                {
+                    foreach (var item in province.getAllAgents())
+                        item.setStatisticToZero();
+                }
+            }
+        }
+        PopType.sortNeeds();
+        Product.sortSubstitutes();
     }
-    void makeHelloMessage()
+    static void makeHelloMessage()
     {
         new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
             "\n\nCurrently there is: "
-            + "\n\npopulation agents \nbasic trade & production \nbasic warfare \ntechnologies \nbasic reforms (voting is not implemented)"
-            + "\n\nYou play as " + Game.player.name + " country yet there is no much gameplay for now. You can try to growth economy or conquer the world."
-            + "\nTry arrows or WASD for scrolling map and mouse wheel for scale"            
+            + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
+            + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"
+            + "\n\tbasic reforms (population can vote for reforms)"
+            + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
+            + "\n\tpolitical \\ culture \\ core \\ resource map mode"
+            + "\n\tmovements and rebellions"
+            + "\n\nYou play as " + Game.Player.getDescription() + " You can try to growth economy or conquer the world."
+            + "\n\nOr, You can give control to AI and watch it"
+            + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
+            + "\n'Enter' key to close top window, space - to pause \\ unpause"
             , "Ok");
-        ;
+    }
 
-    }
-    void LoadImages()
-    {
-        mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;        
-        RawImage ri = GameObject.Find("RawImage").GetComponent<RawImage>();
-        ri.texture = mapImage;
-    }
     private static void calcBattles()
     {
-        foreach (Country country in Country.allExisting)
+        foreach (Staff attacker in Staff.getAllStaffs().ToList())
         {
-            foreach (var attackerArmy in country.allArmies)
+            foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
             {
-                if (attackerArmy.getDestination() != null)
+                var movement = attacker as Movement;
+                if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
                 {
                     var result = attackerArmy.attack(attackerArmy.getDestination());
                     if (result.isAttackerWon())
                     {
-                        attackerArmy.getDestination().secedeTo(country);
+                        if (movement == null)
+                            attackerArmy.getDestination().secedeTo(attacker as Country, true);
+                        else
+                            movement.onRevolutionWon();
                     }
-                    if (result.getAttacker() == Game.player || result.getDefender() == Game.player)
+                    else if (result.isDefenderWon())
                     {
-                        result.createMessage();
-                        //new Message("2th message", "", "");
-                        //new Message("3th message", "", "");
-                        //new Message("4th message", "", "");
+                        if (movement != null)
+                            movement.onRevolutionLost();
                     }
-                    attackerArmy.moveTo(null); // go home
+                    if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+                        result.createMessage();
                 }
+                attackerArmy.sendTo(null); // go home
             }
-            country.allArmies.consolidate(country);
+            attacker.consolidateArmies();
         }
+
+
     }
-    internal static void stepSimulation()
+    internal static void simulate()
     {
-        date++;
+        if (Game.haveToStepSimulation)
+            Game.haveToStepSimulation = false;
+
+        date.AddTick(1);
         // strongly before PrepareForNewTick
-        Game.market.simulatePriceChangeBasingOnLastTurnDate();
+        Game.market.simulatePriceChangeBasingOnLastTurnData();
 
         Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-        PopUnit.PrepareForNewTick();
+        // includes workforce balancing
+        // and sets statistics to zero. Should go after price calculation
+        prepareForNewTick();
 
         // big PRODUCE circle
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getAllExisting())
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
-                //Now factories time!               
-                foreach (Factory fact in province.allFactories)
+                foreach (Factory factory in province.allFactories)
                 {
-                    fact.produce();
-                    fact.payTaxes(); // empty for now
-                    fact.paySalary(); // workers get gold or food here                   
+                    factory.produce();
+                    factory.payTaxes(); // empty for now
+                    factory.paySalary(); // workers get gold or food here                   
                 }
                 foreach (PopUnit pop in province.allPopUnits)
-                //That placed here to avoid issues with Aristocrats and clerics
+                //That placed here to avoid issues with Aristocrats and Clerics
                 //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                 {
-                    if (pop.type.basicProduction != null)// only Farmers and Tribesmen
-                        pop.produce();
+                    //if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
+                    pop.produce();
                     pop.takeUnemploymentSubsidies();
+                    if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                    // don't need salary with PE
+                    {
+                        var soldier = pop as Soldiers;
+                        if (soldier != null)
+                            soldier.takePayCheck();
+                    }
                 }
             }
         //Game.market.ForceDSBRecalculation();
-        // big CONCUME circle
-        foreach (Country country in Country.allExisting)
-            foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+        // big CONCUME circle   
+        foreach (Country country in Country.getAllExisting())
+        {
+            country.consumeNeeds();
+            if (country.economy.getValue() == Economy.PlannedEconomy)
             {
-                foreach (Factory factory in province.allFactories)
+                //consume in PE order
+                foreach (Factory factory in country.getAllFactories())
                 {
-                    factory.consume();
+                    factory.consumeNeeds();
                 }
-
-                foreach (PopUnit pop in province.allPopUnits)
+                if (country.isInvented(Invention.ProfessionalArmy))
+                    foreach (var item in country.getAllPopUnits(PopType.Soldiers))
+                    {
+                        item.consumeNeeds();
+                    }
+                foreach (var item in country.getAllPopUnits(PopType.Workers))
                 {
-                    if (country.serfdom.status == Serfdom.Allowed || country.serfdom.status == Serfdom.Brutal)
-                        if (pop.ShouldPayAristocratTax())
-                            pop.PayTaxToAllAristocrats();
+                    item.consumeNeeds();
                 }
-                foreach (PopUnit pop in province.allPopUnits)
+                foreach (var item in country.getAllPopUnits(PopType.Farmers))
                 {
-                    pop.consume();
+                    item.consumeNeeds();
+                }
+                foreach (var item in country.getAllPopUnits(PopType.Tribesmen))
+                {
+                    item.consumeNeeds();
                 }
             }
+            else  //consume in regular order
+                foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+                {
+                    foreach (Factory factory in province.allFactories)
+                    {
+                        factory.consumeNeeds();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        if (country.serfdom.getValue() == Serfdom.Allowed || country.serfdom.getValue() == Serfdom.Brutal)
+                            if (pop.shouldPayAristocratTax())
+                                pop.payTaxToAllAristocrats();
+                    }
+                    foreach (PopUnit pop in province.allPopUnits)
+                    {
+                        pop.consumeNeeds();
+                    }
+                }
+        }
         // big AFTER all circle
-        foreach (Country country in Country.allExisting)
+        foreach (Country country in Country.getAllExisting())
         {
+            country.getMoneyForSoldProduct();
             foreach (Province province in country.ownedProvinces)//Province.allProvinces)
             {
                 foreach (Factory factory in province.allFactories)
                 {
-                    factory.getMoneyFromMarket();
-                    factory.changeSalary();
-                    factory.PayDividend();
+                    if (country.economy.getValue() != Economy.PlannedEconomy)
+                    {
+                        factory.getMoneyForSoldProduct();
+                        factory.changeSalary();
+                        factory.payDividend();
+                        factory.simulateClosing(); // that too
+                    }
+                    //todo that should be done by owners, like capitalists or bureaucrats 
+                    factory.simulateOpening();
                 }
+
                 province.allFactories.RemoveAll(item => item.isToRemove());
                 foreach (PopUnit pop in province.allPopUnits)
                 {
-                    if (pop.type == PopType.aristocrats || pop.type == PopType.capitalists || (pop.type == PopType.farmers && Economy.isMarket.checkIftrue(province.getOwner())))
-                        pop.getMoneyFromMarket();
-
-                    //becouse income come only after consuming, and only after FULL consumption
+                    if (pop.canSellProducts())
+                        pop.getMoneyForSoldProduct();
+                    //because income come only after consuming, and only after FULL consumption
                     if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         pop.payTaxes();
-
                     pop.calcLoyalty();
-                    pop.calcPromotions();
-                    pop.calcDemotions();
-                    pop.calcGrowth();
-                    pop.Invest();
+                    //if (Game.Random.Next(10) == 1)
+                    {
+                        pop.calcGrowth();
+                        pop.calcPromotions();
+                        if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
+                            pop.findBetterLife();
+                        pop.calcAssimilations();
+                    }
+                    if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)
+                        pop.invest();
                 }
+                if (country.isAI())
+                    country.invest(province);
+                //if (Game.random.Next(3) == 0)
+                //    province.consolidatePops();                
                 foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                 {
-                    PopUnit targetToMerge = province.FindSimularPopUnit(pop);
+                    PopUnit targetToMerge = pop.getProvince().getSimilarPopUnit(pop);
                     if (targetToMerge == null)
-                        province.allPopUnits.Add(pop);
+                        pop.getProvince().allPopUnits.Add(pop);
                     else
-                        targetToMerge.merge(pop);
+                        targetToMerge.mergeIn(pop);
                 }
+                province.allPopUnits.RemoveAll(x => !x.isAlive());
                 PopUnit.PopListToAddToGeneralList.Clear();
+                province.simulate();
             }
-            country.Think();
+            country.simulate();
+            if (country.isAI())
+                country.AIThink();
         }
+    }
+
+    protected override void ThreadFunction()
+    {
+        initialize();
     }
 }

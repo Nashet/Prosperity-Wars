@@ -7,6 +7,55 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
+
+public class CultureNameGenerator
+{
+    static ChanceBox<string> prefix;
+    static ChanceBox<string> postfix;
+    public CultureNameGenerator()
+    {
+        postfix = new ChanceBox<string>();
+        postfix.add("nian", 1.6f);
+        postfix.add("rian", 1f);
+        postfix.add("man", 3.0f);
+        postfix.add("men", 2.2f);
+        postfix.add("tian", 1f);
+        postfix.add("sian", 1.5f);
+
+        postfix.add("pian", 1f);
+        postfix.add("vian", 1f);
+        postfix.add("lian", 1.8f);
+
+
+        postfix.add("", 5f);
+        postfix.initiate();
+
+        prefix = new ChanceBox<string>();
+
+        prefix.add("South ", 0.3f);
+        prefix.add("West ", 0.3f);
+        prefix.add("North ", 0.3f);
+        prefix.add("East ", 0.3f);
+        prefix.add("Great ", 0.8f);
+        prefix.add("Upper ", 0.2f);
+        prefix.add("Middle ", 0.1f);
+        prefix.add("", 40f);
+        prefix.initiate();
+    }
+    StringBuilder result = new StringBuilder();
+    public string generateCultureName()
+    {
+        result.Clear();
+        result.Append(prefix.getRandom());
+
+        //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
+        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
+        result.Append(postfix.getRandom());
+
+        return (result.ToString());
+    }
+}
 public class CountryNameGenerator
 {
     static ChanceBox<string> prefix;
@@ -17,8 +66,6 @@ public class CountryNameGenerator
     {
         postfix = new ChanceBox<string>();
         postfix.add("burg", 1.2f);
-
-
 
         postfix.add("hill", 0.31f);
 
@@ -58,9 +105,6 @@ public class CountryNameGenerator
         prefix.add("Upper ", 0.2f);
         prefix.add("Middle ", 0.1f);
 
-        
-
-
         prefix.add("", 80f);
         prefix.initiate();
     }
@@ -69,12 +113,12 @@ public class CountryNameGenerator
     {
         result.Clear();
         result.Append(prefix.getRandom());
-        
+
         //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-        result.Append(ProvinceNameGenerator.generateWord(Game.random.Next(3, 5)));
+        result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
         result.Append(postfix.getRandom());
 
-        return UtilsMy.FirstLetterToUpper(result.ToString());
+        return (result.ToString());
     }
 }
 public class ProvinceNameGenerator
@@ -85,23 +129,24 @@ public class ProvinceNameGenerator
     static ChanceBox<string> consonants = new ChanceBox<string>();
     public static string generateWord(int length)
     {
-        Game.threadDangerSB.Clear();
-        if (Game.random.Next(10) == 1)
+        var sb = new StringBuilder();
+        if (Game.Random.Next(10) == 1)
         {
-            Game.threadDangerSB.Append(vowels.getRandom());
-            if (Game.random.Next(2) == 1)
-                Game.threadDangerSB.Append(consonants.getRandom());
+            sb.Append(vowels.getRandom());
+            if (Game.Random.Next(2) == 1)
+                sb.Append(consonants.getRandom());
         }
         //if (Game.random.Next(6) == 1)
         //    Game.threadDangerSB.Append(consonants.getRandom());
 
         for (int i = 0; i < length; i += 2)
         {
-            Game.threadDangerSB.Append(consonants.getRandom()).Append(vowels.getRandom());
-            if (Game.random.Next(5) == 1 || length == 2) Game.threadDangerSB.Append(consonants.getRandom());
+            sb.Append(consonants.getRandom()).Append(vowels.getRandom());
+            if (Game.Random.Next(5) == 1 || length == 2)
+                sb.Append(consonants.getRandom());
         }
-        //return UtilsMy.FirstLetterToUpper(Game.threadDangerSB.ToString());
-        return Game.threadDangerSB.ToString();
+        return UtilsMy.FirstLetterToUpper(sb.ToString());
+        //return Game.threadDangerSB.ToString();
     }
     public ProvinceNameGenerator()
     {
@@ -134,7 +179,7 @@ public class ProvinceNameGenerator
         postfix.add("minster", 0.1f);
         postfix.add("ton", 2f);
         postfix.add("bury", 2f);
-        postfix.add("wich", 2f);
+        postfix.add("wich", 1f);
 
         postfix.add("caster", 0.1f);
         postfix.add("ham", 2f);
@@ -143,7 +188,7 @@ public class ProvinceNameGenerator
         postfix.add("ness", 2f);
         postfix.add("pool", 2f);
         postfix.add("stead", 2f);
-        postfix.add("wick", 2f);
+        postfix.add("wick", 1f);
 
         postfix.add("worth", 2f);
 
@@ -164,20 +209,20 @@ public class ProvinceNameGenerator
         prefix.add("Middle ", 0.1f);
 
         prefix.add("Gate ", 0.2f);
-        prefix.add("King ", 0.3f);
-        prefix.add("Knock", 0.6f);
-        prefix.add("Ling", 0.6f);
-        prefix.add("Weald", 0.6f);
+        prefix.add("Kings ", 0.3f);
+        //prefix.add("Knock", 0.6f);
+        //prefix.add("Ling", 0.6f);
+        //prefix.add("Weald", 0.6f);
 
-        prefix.add("Kirk", 0.6f);
-        prefix.add("Brad", 0.6f);
-        prefix.add("Inner ", 0.6f);
-        prefix.add("Lang", 0.6f);
-        prefix.add("Nor", 0.6f);
+        //prefix.add("Kirk", 0.6f);
+        //prefix.add("Brad", 0.6f);
+        //prefix.add("Inner ", 0.6f);
+        //prefix.add("Lang", 0.6f);
+        //prefix.add("Nor", 0.6f);
 
-        prefix.add("Pen", 0.6f);
-        prefix.add("Sud", 0.6f);
-     
+        //prefix.add("Pen", 0.6f);
+        //prefix.add("Sud", 0.6f);
+
 
         prefix.add("", 60f);
         prefix.initiate();
@@ -198,7 +243,7 @@ public class ProvinceNameGenerator
         consonants.add("g", 2.015f);
         consonants.add("h", 0.1f); //IRL -  6.094f);
 
-        consonants.add("j", 0.153f);
+        consonants.add("j", 0.03f);//0.153f);
         consonants.add("k", 0.772f);
         consonants.add("l", 4.025f);
         consonants.add("m", 2.406f);
@@ -213,7 +258,7 @@ public class ProvinceNameGenerator
         consonants.add("v", 0.978f);
         consonants.add("w", 2.360f);
         consonants.add("x", 0.150f);
-        consonants.add("y", 1.974f);
+        consonants.add("y", 0.174f); //IRL 1.974f
         consonants.add("z", 0.074f);
         consonants.initiate();
     }
@@ -222,9 +267,9 @@ public class ProvinceNameGenerator
     {
         result.Clear();
         result.Append(prefix.getRandom());
-        if (Game.random.Next(3) == 1) result.Append(generateWord(Game.random.Next(2, 5)));
+        if (Game.Random.Next(3) == 1) result.Append(generateWord(Game.Random.Next(2, 5)));
         else
-            result.Append(generateWord(Game.random.Next(3, 5)));
+            result.Append(generateWord(Game.Random.Next(3, 5)));
         result.Append(postfix.getRandom());
 
         return UtilsMy.FirstLetterToUpper(result.ToString());
@@ -282,9 +327,10 @@ public class ChanceBox<T>
     /// <summary>Gives random T according element weight  /// </summary>    
     public T getRandom()
     {
-        float randomNumver = UnityEngine.Random.value;
+        //float randomNumver = UnityEngine.Random.value;
+        float randomNumber = Game.Random.getFloat(0f, 1f);
         foreach (Mean next in list)
-            if (randomNumver <= next.weight)
+            if (randomNumber <= next.weight)
                 return next.element;
         return default(T);
     }
@@ -292,36 +338,37 @@ public class ChanceBox<T>
 
 public class PricePool
 {
-    Dictionary<Product, DataStorage2> pool = new Dictionary<Product, DataStorage2>();
-    static internal int lenght = 40; // !! duplicate of DataStorage!!
+    Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
+    static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
     internal PricePool()
     {
-        foreach (var pro in Product.allProducts)
-            for (int i = 0; i < lenght; i++)
-                this.addData(pro, new Value(0f));
+        foreach (var product in Product.getAllNonAbstract())
+            if (product != Product.Gold)
+                for (int i = 0; i < lenght; i++)
+                    this.addData(product, new Value(0f));
     }
-    internal void addData(Product pro, Value indata)
+    internal void addData(Product product, Value indata)
     {
-        DataStorage2 cell;
-        if (!pool.TryGetValue(pro, out cell))
+        DataStorageProduct cell;
+        if (!pool.TryGetValue(product, out cell))
         {
-            cell = new DataStorage2(pro);
-            pool.Add(pro, cell);
+            cell = new DataStorageProduct(product);
+            pool.Add(product, cell);
         }
         cell.addData(indata);
     }
-    public System.Collections.IEnumerator GetEnumerator()
-    {
-        for (int i = 0; i < pool.Count; i++)
-        {
-            yield return pool.GetEnumerator();
-        }
-    }
-    internal DataStorage2 getPool(Product pro)
+    //public System.Collections.IEnumerator GetEnumerator()
+    //{
+    //    for (int i = 0; i < pool.Count; i++)
+    //    {
+    //        yield return pool.GetEnumerator();
+    //    }
+    //}
+    internal DataStorageProduct getPool(Product product)
     {
         //return pool[pro];
-        DataStorage2 result;
-        if (pool.TryGetValue(pro, out result)) // Returns true.
+        DataStorageProduct result;
+        if (pool.TryGetValue(product, out result)) // Returns true.
         {
             return result;
         }
@@ -329,9 +376,9 @@ public class PricePool
             return null;
     }
 }
-public class DataStorage2 : DataStorage<Product>
+public class DataStorageProduct : DataStorage<Product>
 {
-    public DataStorage2(Product inn) : base(inn)
+    public DataStorageProduct(Product inn) : base(inn)
     {
     }
 }
@@ -369,182 +416,23 @@ public class LimitedQueue<T> : Queue<T>
         base.Enqueue(item);
     }
 }
-public static class WordGenerator
-{
 
-}
-public static class EnumerableExtension
-{   
-    private static System.Random rng = new System.Random();
 
-    public static void Shuffle<T>(this IList<T> list)
-    {
-        int n = list.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = rng.Next(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-    }
-    //public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
-    //{
-    //    if (target == null)
-    //        throw new ArgumentNullException("target");
-    //    if (source == null)
-    //        throw new ArgumentNullException("source");
-    //    foreach (var element in source)
-    //        //if (target)
-    //        target.Add(element);
-    //}
-    public static T PickRandom<T>(this List<T> source)
-    {
-        //return source.ElementAt(Game.random.Next(source.Count));
-        return source[Game.random.Next(source.Count)];
-
-    }
-    public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
-    {
-        return source.FindAll(predicate).PickRandom();
-        //return source.ElementAt(Game.random.Next(source.Count));
-
-    }
-}
 public static class UtilsMy
 {
-
-    public static Color getRandomColor()
+    public static float getFloat(this System.Random random, float minValue, float maxValue)
     {
-        return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+        //float m = (maxValue - minValue) ;
+
+        return (float)(random.NextDouble()) * (maxValue - minValue) + minValue;
     }
+
     public static void Clear(this StringBuilder value)
     {
         value.Length = 0;
     }
-    public static Color setAlphaToZero(this Color color)
-    {
-        color.a = 0f;
-        return color;
-    }
-    public static Color getAlmostSameColor(this Color color)
-    {
-        float maxDeviation = 0.02f;//not including
-
-        var result = new Color();
-        float deviation = maxDeviation - UnityEngine.Random.Range(0f, maxDeviation * 2);
-        result.r = color.r + deviation;
-        result.g = color.g + deviation;
-        result.b = color.b + deviation;
 
 
-        return result;
-    }
-    public static Color setAlphaToMax(this Color color)
-    {
-        color.a = 1f;
-        return color;
-    }
-    public static bool isDifferentColor(this Texture2D image, int thisx, int thisy, int x, int y)
-    {
-        if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))
-            return true;
-        else
-            return false;
-    }
-    public static void setColor(this Texture2D image, Color color)
-    {
-        for (int j = 0; j < image.height; j++) // cicle by province        
-            for (int i = 0; i < image.width; i++)
-                image.SetPixel(i, j, color);
-    }
-
-    public static void setAlphaToMax(this Texture2D image)
-    {
-        for (int j = 0; j < image.height; j++) // cicle by province        
-            for (int i = 0; i < image.width; i++)
-                // if (image.GetPixel(i, j) != Color.black)
-                image.SetPixel(i, j, image.GetPixel(i, j).setAlphaToMax());
-    }
-    static void drawSpot(Texture2D image, int x, int y, Color color)
-    {
-        int straightBorderChance = 4;// 5;
-        //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
-
-        if (image.coordinatesExist(x, y))
-            if (Game.random.Next(straightBorderChance) != 1)
-                //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
-                if (image.GetPixel(x, y) == Color.black)
-                    image.SetPixel(x, y, color.setAlphaToZero());
-    }
-    public static bool coordinatesExist(this Texture2D image, int x, int y)
-    {
-        return (x >= 0 && x < image.width && y >= 0 && y < image.height);
-    }
-    public static bool isRightTopCorner(this Texture2D image, int x, int y)
-    {
-        if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) == image.GetPixel(x, y)
-            && image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) == image.GetPixel(x, y)
-            )
-            return true;
-        else
-            return false;
-    }
-    public static bool isRightBottomCorner(this Texture2D image, int x, int y)
-    {
-        if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) == image.GetPixel(x, y)
-            && image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) == image.GetPixel(x, y)
-            )
-            return true;
-        else
-            return false;
-    }
-    public static bool isLeftTopCorner(this Texture2D image, int x, int y)
-    {
-        if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) == image.GetPixel(x, y)
-            && image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) == image.GetPixel(x, y)
-            )
-            return true;
-        else
-            return false;
-    }
-    public static bool isLeftBottomCorner(this Texture2D image, int x, int y)
-    {
-        if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y - 1) && image.GetPixel(x, y - 1) != image.GetPixel(x, y)
-            && image.coordinatesExist(x, y + 1) && image.GetPixel(x, y + 1) == image.GetPixel(x, y)
-            && image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) == image.GetPixel(x, y)
-            )
-            return true;
-        else
-            return false;
-    }
-
-    public static void drawRandomSpot(this Texture2D image, int x, int y, Color color)
-    {
-        //draw 4 points around x, y
-        //int chance = 90;
-        drawSpot(image, x - 1, y, color);
-        drawSpot(image, x + 1, y, color);
-        drawSpot(image, x, y - 1, color);
-        drawSpot(image, x, y + 1, color);
-
-    }
-    public static int getRandomX(this Texture2D image)
-    {
-        return Game.random.Next(0, image.width);
-    }
-    public static int getRandomY(this Texture2D image)
-    {
-        return Game.random.Next(0, image.height);
-    }
     public static string FirstLetterToUpper(string str)
     {
         if (str == null)
@@ -556,21 +444,6 @@ public static class UtilsMy
         return str.ToUpper();
     }
 
-
-
-    public static bool isSameColorsWithoutAlpha(Color colorA, Color colorB)
-    {
-        if (colorA.b == colorB.b && colorA.g == colorB.g && colorA.r == colorB.r)
-            return true;
-        else
-            return false;
-
-    }
-
-    public static float getHumidityRatio(float massVapor, float massDryAir)
-    {
-        return massVapor / massDryAir;
-    }
     public static GameObject CreateButton(Transform parent, float x, float y,
                                         float w, float h, string message,
                                         UnityAction eventListner)
@@ -644,159 +517,299 @@ public static class UtilsMy
         return textObject;
     }
 
-    public static Texture2D FlipTexture(Texture2D original)
-    {
-        Texture2D flipped = new Texture2D(original.width, original.height);
 
-        int xN = original.width;
-        int yN = original.height;
-
-
-        for (int i = 0; i < xN; i++)
-        {
-            for (int j = 0; j < yN; j++)
-            {
-                flipped.SetPixel(xN - i - 1, j, original.GetPixel(i, j));
-            }
-        }
-        flipped.Apply();
-
-        return flipped;
-    }
 }
 
-public static class MyExtensions
+
+public class DontUseThatMethod : Exception
 {
-    public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
+    /// <summary>
+    /// Just create the exception
+    /// </summary>
+    public DontUseThatMethod()
+      : base()
     {
-        foreach (var keyValue in dictionary)
+    }
+
+    /// <summary>
+    /// Create the exception with description
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    public DontUseThatMethod(String message)
+      : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception with description and inner cause
+    /// </summary>
+    /// <param name="message">Exception description</param>
+    /// <param name="innerException">Exception inner cause</param>
+    public DontUseThatMethod(String message, Exception innerException)
+      : base(message, innerException)
+    {
+    }
+
+    /// <summary>
+    /// Create the exception from serialized data.
+    /// Usual scenario is when exception is occurred somewhere on the remote workstation
+    /// and we have to re-create/re-throw the exception on the local machine
+    /// </summary>
+    /// <param name="info">Serialization info</param>
+    /// <param name="context">Serialization context</param>
+    protected DontUseThatMethod(SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
+    }
+}
+//DateTime
+//public struct Date 
+//{
+//    int blya;
+//    public Date(int date)
+//    {
+//        this.blya = date;
+//    }
+//    /// <summary>
+//    /// copy constructor
+//    /// </summary>    
+//    public Date(Date date)
+//    {
+//        this.blya = date.blya;
+//    }
+//    public int getDate()
+//    {
+//        return blya;
+//    }
+//    public int getTimeSince(Date anotherDate)
+//    {
+//        return blya - anotherDate.getDate();
+//    }
+
+//    internal void StepSimulation()
+//    {
+//        //blya++;
+//        blya = 100;
+//    }
+
+//    internal bool isItTimeOf(Date anotherDate)
+//    {
+//        return blya == anotherDate.blya;
+//    }
+//    public override string ToString()
+//    {
+//        return "year " + blya;
+//    }
+
+//    internal void set(Date date)
+//    {
+//        this.blya = date.blya;
+//    }
+//}
+public static class EdgeHelpers
+{
+    public struct Edge
+    {
+        public int v1;
+        public int v2;
+        public int triangleIndex;
+        public Edge(int aV1, int aV2, int aIndex)
         {
-            invokeMe(keyValue.Key, keyValue.Value);
+            v1 = aV1;
+            v2 = aV2;
+            triangleIndex = aIndex;
+        }
+        public static bool operator ==(Edge c1, Edge c2)
+        {
+            return (c1.v1 == c2.v1 && c1.v2 == c2.v2) || (c1.v1 == c2.v2 && c1.v2 == c2.v1);
+        }
+        public static bool operator !=(Edge c1, Edge c2)
+        {
+            return (c1.v1 != c2.v1 || c1.v2 != c2.v2) && (c1.v1 != c2.v2 || c1.v2 != c2.v1);
         }
     }
-    public static void move<T>(this List<T> source, T item, List<T> destination)
-    {
-        if (source.Remove(item)) // don't remove this
-            destination.Add(item);
 
-    }
-    //public static bool Any<TSource>(this IEnumerable<TSource> source);
-    public static void move(this Dictionary<PopUnit, Corps> source, Corps item, Dictionary<PopUnit, Corps> destination)
+    public static List<Edge> GetEdges(int[] aIndices)
     {
-        //if (source.TryGetValue(corpsToAdd.getPopUnit(), out found))
+        List<Edge> result = new List<Edge>();
+        for (int i = 0; i < aIndices.Length; i += 3)
+        {
+            int v1 = aIndices[i];
+            int v2 = aIndices[i + 1];
+            int v3 = aIndices[i + 2];
+            result.Add(new Edge(v1, v2, i));
+            result.Add(new Edge(v2, v3, i));
+            result.Add(new Edge(v3, v1, i));
+        }
 
-        if (source.Remove(item.getPopUnit())) // don't remove this
-            destination.Add(item.getPopUnit(), item);
-    }
-    /// <summary>
-    /// Unites all armies in one
-    /// </summary>
-    public static void consolidate(this List<Army> source, Country country)
-    {
-        foreach (Army next in source)
-            if (next.getDestination() == null)
-                country.homeArmy.join(next);
 
-        source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
+
+        return result;
     }
-    public static bool demobilize(this List<Army> source, PopUnit pop)
+
+    public static List<Edge> FindBoundary(this List<Edge> aEdges)
     {
-        foreach (Army nextArmy in source)
-            foreach (Corps corps in nextArmy.getCorps())
-                if (corps.getPopUnit() == pop)
+        List<Edge> result = new List<Edge>(aEdges);
+        for (int i = result.Count - 1; i > 0; i--)
+        {
+            for (int n = i - 1; n >= 0; n--)
+            {
+                if (result[i].v1 == result[n].v2 && result[i].v2 == result[n].v1)
                 {
-                    //nextArmy.remove(corps);
-                    corps.demobilizeFrom(nextArmy);
-                    //pop.demobilize();
-                    return true;
+                    // shared edge so remove both
+                    result.RemoveAt(i);
+                    result.RemoveAt(n);
+                    i--;
+                    break;
                 }
+            }
+        }
+        return result;
+    }
+    public static List<Edge> SortEdges(this List<Edge> aEdges)
+    {
+        List<Edge> result = new List<Edge>(aEdges);
+        for (int i = 0; i < result.Count - 2; i++)
+        {
+            Edge E = result[i];
+            for (int n = i + 1; n < result.Count; n++)
+            {
+                Edge a = result[n];
+                if (E.v2 == a.v1)
+                {
+                    // in this case they are already in order so just continoue with the next one
+                    if (n == i + 1)
+                        break;
+                    // if we found a match, swap them with the next one after "i"
+                    result[n] = result[i + 1];
+                    result[i + 1] = a;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+}
+public abstract class ThreadedJob
+{
+    private bool m_IsDone = false;
+    private string status = "Not started yet";
+    private object m_Handle = new object();
+    private System.Threading.Thread m_Thread = null;
+    public bool IsDone
+    {
+        get
+        {
+            bool tmp;
+            lock (m_Handle)
+            {
+                tmp = m_IsDone;
+            }
+            return tmp;
+        }
+        set
+        {
+            lock (m_Handle)
+            {
+                m_IsDone = value;
+            }
+        }
+    }
+    public void updateStatus(String status)
+    {
+        lock (this.status)
+        {
+            this.status = status;
+        }
+    }
+    public string getStatus()
+    {
+        //tmp = status;
+        lock (status)
+        {
+            return status;
+        }
+    }
+    public virtual void Start()
+    {
+        m_Thread = new System.Threading.Thread(Run);
+        m_Thread.Start();
+    }
+    public virtual void Abort()
+    {
+        m_Thread.Abort();
+    }
+
+    protected abstract void ThreadFunction();
+
+    protected virtual void OnFinished() { }
+
+    public virtual bool Update()
+    {
+        if (IsDone)
+        {
+            OnFinished();
+            return true;
+        }
         return false;
     }
-    public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+    public IEnumerator WaitFor()
     {
-        return source.MinBy(selector, null);
-    }
-
-    public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
-        Func<TSource, TKey> selector, IComparer<TKey> comparer)
-    {
-        if (source == null) throw new ArgumentNullException("source");
-        if (selector == null) throw new ArgumentNullException("selector");
-        comparer = comparer ?? Comparer<TKey>.Default;
-
-        using (var sourceIterator = source.GetEnumerator())
+        while (!Update())
         {
-            if (!sourceIterator.MoveNext())
-            {
-                throw new InvalidOperationException("Sequence contains no elements");
-            }
-            var min = sourceIterator.Current;
-            var minKey = selector(min);
-            while (sourceIterator.MoveNext())
-            {
-                var candidate = sourceIterator.Current;
-                var candidateProjected = selector(candidate);
-                if (comparer.Compare(candidateProjected, minKey) < 0)
-                {
-                    min = candidate;
-                    minKey = candidateProjected;
-                }
-            }
-            return min;
+            yield return null;
         }
     }
-    public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
-           Func<TSource, TKey> selector)
+    private void Run()
     {
-        return source.MaxBy(selector, null);
+        ThreadFunction();
+        IsDone = true;
     }
-
-    /// <summary>
-    /// Returns the maximal element of the given sequence, based on
-    /// the given projection and the specified comparer for projected values. 
-    /// </summary>
-    /// <remarks>
-    /// If more than one element has the maximal projected value, the first
-    /// one encountered will be returned. This operator uses immediate execution, but
-    /// only buffers a single result (the current maximal element).
-    /// </remarks>
-    /// <typeparam name="TSource">Type of the source sequence</typeparam>
-    /// <typeparam name="TKey">Type of the projected element</typeparam>
-    /// <param name="source">Source sequence</param>
-    /// <param name="selector">Selector to use to pick the results to compare</param>
-    /// <param name="comparer">Comparer to use to compare projected values</param>
-    /// <returns>The maximal element, according to the projection.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
-    /// or <paramref name="comparer"/> is null</exception>
-    /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
-
-    public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
-        Func<TSource, TKey> selector, IComparer<TKey> comparer)
+}
+public class MyTexture
+{
+    readonly int width, height;
+    readonly Color[] map;
+    public MyTexture(Texture2D image)
     {
-        //if (source == null) throw new ArgumentNullException(nameof(source)); //todo fix exception
-        //if (selector == null) throw new ArgumentNullException(nameof(selector)); 
-        //todo fix exception
-        comparer = comparer ?? Comparer<TKey>.Default;
-
-        using (var sourceIterator = source.GetEnumerator())
-        {
-            if (!sourceIterator.MoveNext())
-            {
-                throw new InvalidOperationException("Sequence contains no elements");
-            }
-            var max = sourceIterator.Current;
-            var maxKey = selector(max);
-            while (sourceIterator.MoveNext())
-            {
-                var candidate = sourceIterator.Current;
-                var candidateProjected = selector(candidate);
-                if (comparer.Compare(candidateProjected, maxKey) > 0)
-                {
-                    max = candidate;
-                    maxKey = candidateProjected;
-                }
-            }
-            return max;
-        }
+        width = image.width;
+        height = image.height;
+        map = image.GetPixels();
+    }
+    internal int getWidth()
+    {
+        return width;
+    }
+    internal int getHeight()
+    {
+        return height;
+    }
+    internal Color GetPixel(int x, int v)
+    {
+        return map[x + v * width];
+    }
+    public Color getRandomPixel()
+    {
+        return map[Game.Random.Next((width * height) - 1)];
+    }
+}
+public abstract class Name
+{
+    protected readonly string name;
+    protected Name(string name)
+    {
+        this.name = name;
+    }
+    virtual public string getName()
+    {
+        return name;
+    }
+    virtual public string getDescription()
+    {
+        return name;
+    }
+    public override string ToString()
+    {
+        return name;
     }
 }

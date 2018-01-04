@@ -77,7 +77,7 @@ public class SimpleObjectPool : MonoBehaviour
             ToolTipHandler s = toReturn.GetComponent<ToolTipHandler>();
             // s.GetComponent<ToolTipHandler>().tooltip = "";
             s.tooltip = "";
-            s.dynamicString = null;
+            s.setDynamicString(null);
             //if (s.tip != null)
             //    s.tip.HideTooltip();
             //s.tip = null;

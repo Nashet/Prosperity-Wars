@@ -4,686 +4,431 @@ using System.Collections.Generic;
 using System;
 
 /// <summary>
-/// directly itself it contains goods storage (amount). No Nahuya?
+/// Represent World market, currently exists only in 1 instance (Game.market)
 /// </summary>
-public class Market : Owner//: PrimitiveStorageSet
+public class Market : Agent//: PrimitiveStorageSet
 {
+    private readonly StorageSet marketPrice = new StorageSet();
 
-    internal PrimitiveStorageSet marketPrice = new PrimitiveStorageSet();
-    int dateOfDSB = int.MaxValue;
-    PrimitiveStorageSet DSBbuffer = new PrimitiveStorageSet();
-    int dateOfgetSupply = int.MaxValue;
-    int dateOfgetProductionTotal = int.MaxValue;
-    int dateOfgetTotalConsumption = int.MaxValue;
-    int dateOfgetBouth = int.MaxValue;
-    PrimitiveStorageSet getSupplyBuffer = new PrimitiveStorageSet();
-    PrimitiveStorageSet getProductionTotalBuffer = new PrimitiveStorageSet();
-    PrimitiveStorageSet getTotalConsumptionBuffer = new PrimitiveStorageSet();
-    PrimitiveStorageSet getBouthBuffer = new PrimitiveStorageSet();
+    // todo make Better class for it? - yes
+    private MyDate dateOfDSB = new MyDate(int.MaxValue);
+    private readonly StorageSet DSBbuffer = new StorageSet();
+
+    private MyDate dateOfgetSupplyOnMarket = new MyDate(int.MaxValue);
+    private readonly StorageSet supplyOnMarket = new StorageSet();
+
+    private MyDate dateOfgetTotalProduction = new MyDate(int.MaxValue);
+    private readonly StorageSet totalProduction = new StorageSet();
+
+    private MyDate dateOfgetTotalConsumption = new MyDate(int.MaxValue);
+    private readonly StorageSet totalConsumption = new StorageSet();
+
+    private MyDate dateOfgetBought = new MyDate(int.MaxValue);
+    private readonly StorageSet bought = new StorageSet();
+
     internal PricePool priceHistory;
-    internal PrimitiveStorageSet sentToMarket = new PrimitiveStorageSet();
-    internal Storage findPrice(Product whom)
+    internal StorageSet sentToMarket = new StorageSet();
+    public Market() : base(0f, null, null)
+    { }
+    internal Value getPrice(Product whom)
     {
-        return marketPrice.findStorage(whom);
+        return marketPrice.getCheapestStorage(whom);
     }
     internal void initialize()
     {
         priceHistory = new PricePool();
     }
-    /// <summary>
-    /// Including potentially unsold goods
-    /// Basing on last turn production
-    /// </summary>    
-    //float getTotalDemand(Product pro)
-    //{
 
-    //}
-    internal Value getCost(PrimitiveStorageSet need)
+    internal Value getCost(StorageSet need)
     {
-        float cost = 0;
-        // float price;
-        foreach (Storage stor in need)
-        {
-            //price = Game.market.findPrice(stor.getProduct()).get();
-            cost += getCost(stor);
-        }
-        return new Value(cost);
-    }
-    //internal Value getCost(Storage need)
-    //{
-    //    float cost = 0;
-    //    // float price;
-
-    //    return new Value(cost);
-    //}
-
-    internal Value getCost(List<Storage> need)
-    {//todo convert return in Value??
         Value cost = new Value(0f);
         // float price;
         foreach (Storage stor in need)
         {
             //price = Game.market.findPrice(stor.getProduct()).get();
-            //cost += getCost(stor);
             cost.add(getCost(stor));
         }
-        //return new Value(cost);
         return cost;
     }
-    internal float getCost(Storage need)
+
+    /// <summary>
+    /// returns new Value
+    /// </summary>
+    internal Value getCost(List<Storage> need)
     {
-        float cost = 0;
-        float price;
-
-        price = Game.market.findPrice(need.getProduct()).get();
-        cost = need.get() * price;
-
+        Value cost = new Value(0f);
+        foreach (Storage stor in need)
+            cost.add(getCost(stor));
         return cost;
     }
     /// <summary>
-    /// Meaning demander actyally can pay for item in current prices
-    /// Basing on current prices and needs
-    /// Not encounting ConsumedInMarket
-    /// </summary>    
-    internal float getBouth(Product pro, bool takeThisTurnData)
+    /// returns new Value
+    /// </summary>
+    internal Value getCost(Storage need)
     {
-        float result = 0f;
-        if (takeThisTurnData)
-        {
-            foreach (Country country in Country.allExisting)
-                foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.allProducers)
-                    {
-                        //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
-                        {
-                            Storage re = producer.consumedInMarket.findStorage(pro);
-                            if (re != null)
-                                result += re.get();
-                        }
-                    }
-            return result;
-        }
-        if (dateOfgetBouth != Game.date)
-        {
-            //recalculate supplybuffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.allExisting)
-                    foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.allProducers)
-                        {
-                            //if (any.c.getProduct() == sup.getProduct()) //sup.getProduct()
-                            {
-                                Storage re = producer.consumedInMarket.findStorage(sup.getProduct());
-                                if (re != null)
-                                    result += re.get();
-                            }
-                        }
-                getBouthBuffer.Set(new Storage(sup.getProduct(), result));
-            }
-            dateOfgetBouth = Game.date;
-        }
-        Storage tmp = getBouthBuffer.findStorage(pro);
-        if (tmp == null)
-            return 0;
-        else
-            return getBouthBuffer.findStorage(pro).get();
-        //float result = 0f;
-        //foreach (Country country in Country.allCountries)
-        //    foreach (Province province in country.ownedProvinces)
-        //    {
-        //        foreach (Producer shownFactory in province)
-        //            //result += shownFactory.getLocalEffectiveDemand(pro);
-        //            if (shownFactory.consumedInMarket.findStorage(pro) != null)
-        //                result += shownFactory.consumedInMarket.findStorage(pro).get();
-
-
-        //        //foreach (PopUnit pop in province.allPopUnits)
-        //        //    //result += pop.getLocalEffectiveDemand(pro);
-        //        //    if (pop.consumedInMarket.findStorage(pro) != null)
-        //        //        result += pop.consumedInMarket.findStorage(pro).get();
-        //        // todo add same for country and any demander
-        //    }
-        //return result;
+        // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
+        //if (need.isAbstractProduct())
+        //    Debug.Log("Can't determinate price of abstract product " + need.getProduct());
+        return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
     }
+
+
+
+
     /// <summary>
-    /// Meaning demander actyally can pay for item in current prices
-    /// Basing on current prices and needs
-    /// Not encounting ConumedInMarket
+    /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
     /// </summary>    
-    internal float getTotalConsumption(Product pro, bool takeThisTurnData)
+    internal Storage getCheapestSubstitute(Storage need)
     {
-        float result = 0f;
+        return marketPrice.convertToCheapestStorageProduct(need);
+    }
+    //todo change it to 1 run by every products, not run for every product
+    private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
+    {
+        Storage result = new Storage(product);
+        foreach (Country country in Country.getAllExisting())
+        {
+            foreach (Province province in country.ownedProvinces)
+                foreach (Consumer consumer in province.getAllAgents())
+                {
+                    Storage re = selector(consumer).getFirstStorage(product);
+                    result.add(re);
+                }
+            Storage countryStor = selector(country).getFirstStorage(product);
+            result.add(countryStor);
+        }
+        return result;
+    }
+    private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
+    {
+        Storage result = new Storage(product);
+        foreach (Country country in Country.getAllExisting())
+        {
+            foreach (Province province in country.ownedProvinces)
+                foreach (Consumer consumer in province.getAllBuyers())
+                {
+                    Storage re = selector(consumer).getFirstStorage(product);
+                    result.add(re);
+                }
+            Storage countryStor = selector(country).getFirstStorage(product);
+            result.add(countryStor);
+        }
+        return result;
+    }
+    //todo change it to 1 run by every products, not run for every product
+    private Storage recalculateProductForSellers(Product product, Func<ICanSell, Storage> selector)
+    {
+        Storage result = new Storage(product);
+        foreach (Country country in Country.getAllExisting())
+        {
+            foreach (Province province in country.ownedProvinces)
+                foreach (ICanSell producer in province.getAllProducers())
+                {
+                    var found = selector(producer);
+                    if (found.isExactlySameProduct(product))
+                        result.add(found);
+                }
+            result.add(selector(country));
+        }
+        return result;
+    }
+    //todo change it to 1 run by every products, not run for every product
+    private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
+    {
+        Storage result = new Storage(product);
+        foreach (Country country in Country.getAllExisting())
+        {
+            foreach (Province province in country.ownedProvinces)
+                foreach (Producer producer in province.getAllProducers())
+                {
+                    var found = selector(producer);
+                    if (found.isExactlySameProduct(product))
+                        result.add(found);
+                }
+        }
+        return result;
+    }
+    internal Storage getBouthOnMarket(Product product, bool takeThisTurnData)
+    {
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
-                foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.allProducers)
-                    {
-                        //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
-                        {
-                            var re = producer.consumedTotal.findStorage(pro);
-                            if (re != null)
-                                result += re.get();
-                        }
-                    }
-            return result;
+            // recalculate only 1 product
+            return recalculateProductForBuyers(product, x => x.getConsumedInMarket());
+        }
+        if (dateOfgetBought != Game.date)
+        {
+            //recalculate all products
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
+                {
+                    var result = recalculateProductForConsumers(recalculatingProduct.getProduct(), x => x.getConsumedInMarket());
+
+                    bought.set(new Storage(recalculatingProduct.getProduct(), result));
+                }
+            dateOfgetBought.set(Game.date);
+        }
+        return bought.getFirstStorage(product);
+    }
+    internal Storage getTotalConsumption(Product product, bool takeThisTurnData)
+    {
+        if (takeThisTurnData)
+        {
+            return recalculateProductForConsumers(product, x => x.getConsumed());
         }
         if (dateOfgetTotalConsumption != Game.date)
         {
             //recalculate buffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.allExisting)
-                    foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.allProducers)
-                        {
-                            //if (any.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
-                            {
-                                var re = producer.consumedTotal.findStorage(sup.getProduct());
-                                if (re != null)
-                                    result += re.get();
-                            }
-                        }
-
-
-                getTotalConsumptionBuffer.Set(new Storage(sup.getProduct(), result));
-            }
-            dateOfgetTotalConsumption = Game.date;
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
+                {
+                    var result = recalculateProductForConsumers(recalculatingProduct.getProduct(), x => x.getConsumed());
+                    totalConsumption.set(new Storage(recalculatingProduct.getProduct(), result));
+                }
+            dateOfgetTotalConsumption.set(Game.date);
         }
-        Storage tmp = getTotalConsumptionBuffer.findStorage(pro);
-        if (tmp == null)
-            return 0;
-        else
-            return getTotalConsumptionBuffer.findStorage(pro).get();
-        return result;
-        ////////////
-        //float result = 0f;
-        //foreach (Country country in Country.allCountries)
-        //    foreach (Province province in country.ownedProvinces)
-        //    {
-        //        foreach (Producer shownFactory in province)
-        //            //result += shownFactory.getLocalEffectiveDemand(pro);
-        //            if (shownFactory.consumedTotal.findStorage(pro) != null)
-        //                result += shownFactory.consumedTotal.findStorage(pro).get();
-
-
-        //        //foreach (PopUnit pop in province.allPopUnits)
-        //        //    //result += pop.getLocalEffectiveDemand(pro);
-        //        //    if (pop.consumedTotal.findStorage(pro) != null)
-        //        //        result += pop.consumedTotal.findStorage(pro).get();
-        //        // todo add same for country and any demander
-        //    }
-        //return result;
+        return totalConsumption.getFirstStorage(product);
     }
-    internal float getGlobalEffectiveDemandOlder(Product pro)
-    {
-        float result = 0f;
-        foreach (Country country in Country.allExisting)
-            foreach (Province province in country.ownedProvinces)
-            {
-                foreach (Factory factory in province.allFactories)
-                    result += factory.getLocalEffectiveDemand(pro);
-                //if (shownFactory.consumedTotal.findStorage(pro) != null)
-                //    result += shownFactory.consumedTotal.findStorage(pro).get();
-
-
-                foreach (PopUnit pop in province.allPopUnits)
-                    result += pop.getLocalEffectiveDemand(pro);
-                //if (pop.consumedTotal.findStorage(pro) != null)
-                //    result += pop.consumedTotal.findStorage(pro).get();
-                // todo add same for country and any demander
-            }
-        return result;
-    }
-
-
 
     /// <summary>
     /// Only goods sent to market
     /// Based  on last turn data
     /// </summary>    
-    internal float getSupply(Product pro, bool takeThisTurnData)
+    internal Storage getMarketSupply(Product product, bool takeThisTurnData)
     {
-        float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
-                foreach (Province province in country.ownedProvinces)
-                    foreach (Producer producer in province.allProducers)
-                        if (producer.sentToMarket.getProduct() == pro) //sup.getProduct()
-                            result += producer.sentToMarket.get();
-            return result;
+            return recalculateProductForSellers(product, x => x.getSentToMarket(product));
         }
-        if (dateOfgetSupply != Game.date)
+        if (dateOfgetSupplyOnMarket != Game.date)
         {
-            //recalculate supplybuffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.allExisting)
-                    foreach (Province province in country.ownedProvinces)
-                        foreach (Producer producer in province.allProducers)
-                            if (producer.sentToMarket.getProduct() == sup.getProduct()) //sup.getProduct()
-                                result += producer.sentToMarket.get();
-
-                getSupplyBuffer.Set(new Storage(sup.getProduct(), result));
-            }
-            dateOfgetSupply = Game.date;
+            //recalculate supply buffer
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
+                {
+                    var result = recalculateProductForSellers(recalculatingProduct.getProduct(), x => x.getSentToMarket(recalculatingProduct.getProduct()));
+                    supplyOnMarket.set(new Storage(recalculatingProduct.getProduct(), result));
+                }
+            dateOfgetSupplyOnMarket.set(Game.date);
         }
-        Storage tmp = getSupplyBuffer.findStorage(pro);
-        if (tmp == null)
-            return 0;
-        else
-            return getSupplyBuffer.findStorage(pro).get();
-        //return result;
+        return supplyOnMarket.getFirstStorage(product);
     }
+
     /// <summary>
     /// All produced supplies
     /// Based  on last turn data
     /// </summary>    
-    internal float getProductionTotal(Product pro, bool takeThisTurnData)
+    internal Storage getProductionTotal(Product product, bool takeThisTurnData)
     {
-        float result = 0f;
         if (takeThisTurnData)
         {
-            foreach (Country country in Country.allExisting)
-                foreach (Province province in country.ownedProvinces)
-                {
-                    foreach (Producer producer in province.allProducers)
-                    {
-                        if (producer.gainGoodsThisTurn.getProduct() == pro) //sup.getProduct()
-                            result += producer.gainGoodsThisTurn.get();
-                    }
-                }
-            return result;
+            return recalculateProductForProducers(product, x => x.getGainGoodsThisTurn());
         }
-        if (dateOfgetProductionTotal != Game.date)
+        if (dateOfgetTotalProduction != Game.date)
         {
-            //recalculate Productionbuffer
-            foreach (Storage sup in marketPrice)
-            {
-                result = 0;
-                foreach (Country country in Country.allExisting)
-                    foreach (Province province in country.ownedProvinces)
-                    {
-                        foreach (Producer producer in province.allProducers)
-                        {
-                            if (producer.gainGoodsThisTurn.getProduct() == sup.getProduct()) //sup.getProduct()
-                                result += producer.gainGoodsThisTurn.get();
-                        }
-                    }
-                getProductionTotalBuffer.Set(new Storage(sup.getProduct(), result));
-            }
-            dateOfgetProductionTotal = Game.date;
+            //recalculate Production buffer
+            foreach (Storage recalculatingProduct in marketPrice)
+                if (recalculatingProduct.getProduct().isTradable())
+                {
+                    var result = recalculateProductForProducers(recalculatingProduct.getProduct(), x => x.getGainGoodsThisTurn());
+                    totalProduction.set(new Storage(recalculatingProduct.getProduct(), result));
+                }
+            dateOfgetTotalProduction.set(Game.date);
         }
-        Storage tmp = getProductionTotalBuffer.findStorage(pro);
-        if (tmp == null)
-            return 0;
-        else
-            return getProductionTotalBuffer.findStorage(pro).get();
-        return result;
-    }
-    internal void ForceDSBRecalculation()
-    {
-        dateOfDSB--;
-        getDemandSupplyBalance(null);
-    }
 
-
-    /// <summary>
-    /// per 1 unit
-    /// </summary>
-    //Value defaultPrice = new Value(2f);
-    public void SetDefaultPrice(Product pro, float inprice)
-    {
-        marketPrice.Set(new Storage(pro, inprice));
-    }/// <summary>
-     /// returns how much was sold de-facto
-     /// contains pre-seller code & pre Market storage code with long circle on all sellers
-     /// </summary>   
-    //internal Storage BuyOld(Producer buyer, Storage buying)
+        return totalProduction.getFirstStorage(product);
+    }
+    //internal void ForceDSBRecalculation()
     //{
-    //    float producedThisTurn = 0;
-    //    float stillHaveOnStorage = 0f;
-    //    float DSB = getDemandSupplyBalance(buying.getProduct());
-    //    float BuyingAmountAvailable = 0;
-    //    float consumedDeFacto = 0;
-    //    Value actualBuyingAmountOnThisIteration;
-    //    Storage price = findPrice(buying.getProduct());
-    //    Value trade;
-    //    if (DSB < 1f) DSB = 1f;
-    //    BuyingAmountAvailable = buying.get() / DSB;
-    //    foreach (Country country in Country.allCountries)//todo add RicherOrder Iterator/ own country
-    //                                                     //if (country.isInvented(InventionType.capitalism))
-    //        foreach (Province province in country.ownedProvinces)
-    //        {
-    //            ///////////////////
-    //            //refactor//
-    //            foreach (Producer seller in province)
-    //            {
-    //                // don't buy from your self?
-    //                if (seller.storageNow.getProduct() == buying.getProduct())// && seller != buyer)
-    //                {
-    //                    producedThisTurn = seller.gainGoodsThisTurn.get();
-    //                    stillHaveOnStorage = seller.storageNow.get();
-    //                    if (producedThisTurn > 0f || stillHaveOnStorage > 0f)
-    //                    {
-    //                        float supply = getSupply(buying.getProduct());
-    //                        //if (supply ==0f)
-
-    //                        actualBuyingAmountOnThisIteration = new Value(BuyingAmountAvailable * producedThisTurn / supply);
-    //                        if (actualBuyingAmountOnThisIteration.get() > stillHaveOnStorage)
-    //                            actualBuyingAmountOnThisIteration.set(stillHaveOnStorage);
-    //                        if (actualBuyingAmountOnThisIteration.get() > 0f)
-    //                        {
-    //                            trade = actualBuyingAmountOnThisIteration.multiple(price);
-    //                            if (buyer.wallet.canPay(trade))
-    //                                buyer.wallet.pay(seller.wallet, trade);
-    //                            else
-    //                            {
-    //                                //just fighting roundation errors
-    //                                //Debug.Log("Buying failed in payment");
-    //                                buyer.wallet.pay(seller.wallet, buyer.wallet.haveMoney);
-    //                            }
-    //                            if (seller.storageNow.canPay(actualBuyingAmountOnThisIteration))
-    //                            {
-    //                                seller.storageNow.subtract(actualBuyingAmountOnThisIteration);
-    //                                consumedDeFacto += actualBuyingAmountOnThisIteration.get();
-    //                            }
-    //                            else
-    //                            {
-    //                                //just fighting roundation errors
-    //                                //Debug.Log("Buying failed in storage transaction");
-    //                                // Should never be fired in new DSB
-    //                                seller.storageNow.set(0);
-    //                            }
-    //                        }
-
-    //                    }
-    //                }
-    //            }
-    //            ///////////////////
-    //            //foreach (Factory seller in province.allFactories)
-    //            //    {
-    //            //        // don't buy from your self?
-    //            //        if (seller.storageNow.getProduct() == buying.getProduct())// && seller != buyer)
-    //            //        {
-    //            //            producedThisTurn = seller.gainGoodsThisTurn.get();
-    //            //            stillHaveOnStorage = seller.storageNow.get();
-    //            //            if (producedThisTurn > 0f && stillHaveOnStorage > 0f)
-    //            //            {
-    //            //                float supply = getSupply(buying.getProduct());
-    //            //                //if (supply ==0f)
-
-    //            //                actualBuyingAmountOnThisIteration = new Value(BuyingAmountAvailable * producedThisTurn / supply);
-    //            //                if (actualBuyingAmountOnThisIteration.get() > stillHaveOnStorage)
-    //            //                    actualBuyingAmountOnThisIteration.set(stillHaveOnStorage);
-    //            //                if (actualBuyingAmountOnThisIteration.get() > 0f)
-    //            //                {
-    //            //                    trade = actualBuyingAmountOnThisIteration.multiple(price);
-    //            //                    if (buyer.wallet.canPay(trade))
-    //            //                        buyer.wallet.pay(seller.wallet, trade);
-    //            //                    else
-    //            //                    {
-    //            //                        //just fighting roundation errors
-    //            //                        //Debug.Log("Buying failed in payment");
-    //            //                        buyer.wallet.pay(seller.wallet, buyer.wallet.haveMoney);
-    //            //                    }
-    //            //                    if (seller.storageNow.canPay(actualBuyingAmountOnThisIteration))
-    //            //                    {
-    //            //                        seller.storageNow.subtract(actualBuyingAmountOnThisIteration);
-    //            //                        consumedDeFacto += actualBuyingAmountOnThisIteration.get();
-    //            //                    }
-    //            //                    else
-    //            //                    {
-    //            //                        //just fighting roundation errors
-    //            //                        //Debug.Log("Buying failed in storage transaction");
-    //            //                        // Should never be fired in new DSB
-    //            //                        seller.storageNow.set(0);
-    //            //                    }
-    //            //                }
-
-    //            //            }
-    //            //        }
-    //            //    }
-
-    //            //    // todo isServiceProvider() and as iterator
-    //            //    foreach (PopUnit seller in province.allPopUnits)
-    //            //    {
-    //            //        // don't buy from your self?
-    //            //        if (seller.storageNow.getProduct() == buying.getProduct())// && seller != buyer)
-    //            //        {
-    //            //            producedThisTurn = seller.gainGoodsThisTurn.get();
-    //            //            stillHaveOnStorage = seller.storageNow.get();
-    //            //            //seller.ge
-    //            //            if (producedThisTurn > 0f && stillHaveOnStorage > 0f)
-    //            //            {
-    //            //                //todo add here checks for zero
-    //            //                actualBuyingAmountOnThisIteration = new Value(BuyingAmountAvailable * producedThisTurn / getSupply(buying.getProduct()));
-    //            //                if (actualBuyingAmountOnThisIteration.get() > stillHaveOnStorage)
-    //            //                    actualBuyingAmountOnThisIteration.set(stillHaveOnStorage);
-    //            //                if (actualBuyingAmountOnThisIteration.get() > 0f)
-    //            //                {
-    //            //                    trade = actualBuyingAmountOnThisIteration.multiple(price);
-    //            //                    if (buyer.wallet.canPay(trade))
-    //            //                        buyer.wallet.pay(seller.wallet, trade);
-    //            //                    else
-    //            //                    {
-    //            //                        //just fighting roundation errors
-    //            //                        //Debug.Log("Buying failed in payment");
-    //            //                        buyer.wallet.pay(seller.wallet, buyer.wallet.haveMoney);
-    //            //                    }
-    //            //                    if (seller.storageNow.canPay(actualBuyingAmountOnThisIteration))
-    //            //                    {
-    //            //                        seller.storageNow.subtract(actualBuyingAmountOnThisIteration);
-    //            //                        consumedDeFacto += actualBuyingAmountOnThisIteration.get();
-    //            //                    }
-    //            //                    else
-    //            //                    {
-    //            //                        //just fighting roundation errors
-    //            //                        //Debug.Log("Buying failed in storage transaction");
-    //            //                        // Should never be fired in new DSB
-    //            //                        seller.storageNow.set(0);
-    //            //                    }
-    //            //                }
-    //            //            }
-    //            //        }
-    //            //    }
-    //            // todo add same for country and any seller
-    //        }
-
-    //    //return new Storage(buying.getProduct(), BuyingAmountAvailable);
-    //    return new Storage(buying.getProduct(), consumedDeFacto);
+    //    //dateOfDSB--;//!!! Warning! This need to be uncommented to work properly
+    //    getDemandSupplyBalance(null);
     //}
     /// <summary>
-    /// returns how much was sold de-facto
-    /// new version of byy-old
-    /// </summary>   
-    internal Storage Buy(Producer buyer, Storage buying)
+    /// per 1 unit
+    /// </summary>    
+    public void SetDefaultPrice(Product pro, float inprice)
     {
-
-        //Storage storage = findStorage(what.getProduct());
-        // float producedThisTurn = 0;
-        //float stillHaveOnStorage = 0f;
-        //float DSB = getDemandSupplyBalance(buying.getProduct());
-        //Storage BuyingAmountAvailable;
-        Storage howMuchCanConsume;
-        //Value actualBuyingAmountOnThisIteration;
-        Storage price = findPrice(buying.getProduct());
-        Value cost;
-        // not using DSB anyway
-        //if (DSB < 1f) DSB = 1f;
-        // BuyingAmountAvailable = buying.get() / DSB;
-        // todo reduce can afford barnhes
-
-        //cost = Game.market.getCost(buying);
-        if (Game.market.sentToMarket.has(buying))
+        marketPrice.set(new Storage(pro, inprice));
+    }
+    internal bool isAvailable(Product product)
+    {
+        if (product.isAbstract())
         {
-            cost = buying.multiple(price);
-            if (buyer.wallet.canPay(cost))
-            {
-                buyer.wallet.pay(Game.market.wallet, cost);
-                Game.market.sentToMarket.subtract(buying);
-                if (buyer is Factory)
-                    (buyer as Factory).inputReservs.add(buying);
-                howMuchCanConsume = buying;
-            }
-            else
-            {
-                float val = buyer.wallet.haveMoney.get() / price.get();
-                val = Mathf.Floor(val * Value.precision) / Value.precision;
-                howMuchCanConsume = new Storage(price.getProduct(), val);
-                buyer.wallet.pay(Game.market.wallet, howMuchCanConsume.multiple(price));
-                Game.market.sentToMarket.subtract(howMuchCanConsume);
-                if (buyer is Factory)
-                    (buyer as Factory).inputReservs.add(howMuchCanConsume);
-            }
+            foreach (var substitute in product.getSubstitutes())
+                if (substitute.isTradable()) //it would be faster to. skip it Or not
+                {
+                    var DSB = getDemandSupplyBalance(substitute);
+                    if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
+                        return true;
+                }
+            return false;
         }
         else
         {
-            // assuming available < buying
-
-            Storage available = Game.market.HowMuchAvailable(buying);
-            if (available.get() > 0f)
+            var DSB = getDemandSupplyBalance(product);
+            if (DSB != Options.MarketInfiniteDSB && DSB < Options.MarketEqualityDSB)
+                return true;
+            else
+                return false;
+        }
+    }
+    /// <summary>
+    /// returns how much was sold de facto
+    /// new version of buy-old,
+    /// real deal. If not enough money to buy (including deposits) then buys some part of desired
+    /// </summary>   
+    internal Storage buy(Consumer buyer, Storage whatWantedToBuy)
+    {
+        if (whatWantedToBuy.isNotZero())
+        {
+            Storage buying;
+            if (whatWantedToBuy.getProduct().isAbstract())
             {
-                cost = available.multiple(price);
-
-                if (buyer.wallet.canPay(cost))
+                buying = marketPrice.convertToCheapestExistingSubstitute(whatWantedToBuy);
+                if (buying == null)//no substitution available on market
+                    return new Storage(whatWantedToBuy.getProduct());
+            }
+            else
+                buying = whatWantedToBuy;
+            Storage howMuchCanConsume;
+            Value price = getPrice(buying.getProduct());
+            Value cost;
+            if (Game.market.sentToMarket.has(buying))
+            {
+                cost = buying.multiplyOutside(price);
+                //if (cost.isNotZero())
+                //{
+                if (buyer.canPay(cost))
                 {
-                    buyer.wallet.pay(Game.market.wallet, cost);
-                    Game.market.sentToMarket.subtract(available);
-                    if (buyer is Factory)
-                        (buyer as Factory).inputReservs.add(available);
-                    howMuchCanConsume = available;
+                    buyer.pay(Game.market, cost);
+                    buyer.consumeFromMarket(buying);
+                    if (buyer is SimpleProduction)
+                        (buyer as SimpleProduction).getInputProductsReserve().add(buying);
+                    howMuchCanConsume = buying;
                 }
                 else
                 {
-                    howMuchCanConsume = new Storage(price.getProduct(), buyer.wallet.haveMoney.get() / price.get());
-                    if (howMuchCanConsume.get() > available.get())
-                        howMuchCanConsume.set(available.get()); // you don't buy more than there is
-                    buyer.wallet.pay(Game.market.wallet, buyer.wallet.haveMoney); //pay all money cause you don't have more
-                    Game.market.sentToMarket.subtract(howMuchCanConsume);
-                    if (buyer is Factory)
-                        (buyer as Factory).inputReservs.add(howMuchCanConsume);
+                    float val = buyer.cash.get() / price.get();
+                    val = Mathf.Floor(val * Value.precision) / Value.precision;
+                    howMuchCanConsume = new Storage(buying.getProduct(), val);
+                    buyer.pay(Game.market, howMuchCanConsume.multiplyOutside(price));
+                    buyer.consumeFromMarket(howMuchCanConsume);
+                    if (buyer is SimpleProduction)
+                        (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
                 }
+                //}
+                //else
+                //    return new Storage(buying.getProduct(), 0f);
             }
             else
-                howMuchCanConsume = new Storage(buying.getProduct(), 0f);
-        }
-        return howMuchCanConsume;
-
-
-    }
-
-    float DoPartialBuying(Producer forWhom, Storage need)
-    {
-        Storage howMuchCanAfford = forWhom.wallet.HowMuchCanAfford(need);
-        if (howMuchCanAfford.get() > 0f)
-        {
-            howMuchCanAfford = Game.market.Buy(forWhom, howMuchCanAfford);
-            if (howMuchCanAfford.get() > 0f)
             {
-                forWhom.consumedTotal.add(howMuchCanAfford);
-                forWhom.consumedInMarket.add(howMuchCanAfford);
-                //actuallyNeedsFullfilled = howMuchCanAfford.get() / need.get();
-                return howMuchCanAfford.get() / need.get();
+                // assuming available < buying
+                Storage howMuchAvailable = new Storage(Game.market.HowMuchAvailable(buying));
+                if (howMuchAvailable.get() > 0f)
+                {
+                    cost = howMuchAvailable.multiplyOutside(price);
+                    if (buyer.canPay(cost))
+                    {
+                        buyer.pay(Game.market, cost);
+                        buyer.consumeFromMarket(howMuchAvailable);
+                        if (buyer is SimpleProduction)
+                            (buyer as SimpleProduction).getInputProductsReserve().add(howMuchAvailable);
+                        howMuchCanConsume = howMuchAvailable;
+                    }
+                    else
+                    {
+                        howMuchCanConsume = new Storage(howMuchAvailable.getProduct(), buyer.cash.get() / price.get());
+                        if (howMuchCanConsume.get() > howMuchAvailable.get())
+                            howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
+                        if (howMuchCanConsume.isNotZero())
+                        {
+                            buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
+                            buyer.consumeFromMarket(howMuchCanConsume);
+                            if (buyer is SimpleProduction)
+                                (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
+                        }
+                    }
+                }
+                else
+                    howMuchCanConsume = new Storage(buying.getProduct(), 0f);
             }
+            return howMuchCanConsume;
         }
-        return 0f;
-    }
-    float DoFullBuying(Producer forWhom, Storage need)
-    {
-        var actualConsumption = Game.market.Buy(forWhom, need);
-        // todo connect to Buy,                     
-        forWhom.consumedTotal.add(actualConsumption);
-        forWhom.consumedInMarket.add(actualConsumption);
-        //actuallyNeedsFullfilled = actualConsumption.get() / need.get();
-        return actualConsumption.get() / need.get();
-    }
-    /// <summary>
-    /// return procent of actual buying
-    /// </summary>    
-    public Storage Consume(Producer forWhom, Storage need, CountryWallet subsidizer)
-    {
-        float actuallyNeedsFullfilled = 0f;
-        //Storage actualConsumption;
-
-        if (forWhom.wallet.CanAfford(need))
-            actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
         else
-        if (subsidizer == null)
-            actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
+            return whatWantedToBuy; // assuming buying is empty here
+    }
+
+
+    /// <summary>
+    /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
+    /// </summary>    
+    public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
+    {
+        if (forWhom.canAfford(need) || subsidizer == null)
+            return buy(forWhom, need);
         else
         {
-            forWhom.province.getOwner().getCountryWallet().takeFactorySubsidies(forWhom, forWhom.wallet.HowMuchCanNotAfford(need));
-            //repeat attempt
-            if (forWhom.wallet.CanAfford(need))
-                actuallyNeedsFullfilled = DoFullBuying(forWhom, need);
-            else
-                actuallyNeedsFullfilled = DoPartialBuying(forWhom, need);
+            subsidizer.takeFactorySubsidies(forWhom, forWhom.howMuchMoneyCanNotPay(need));
+            return buy(forWhom, need);
         }
+    }
 
-        return new Storage(need.getProduct(), actuallyNeedsFullfilled);
+    /// <summary>
+    /// Buying PrimitiveStorageSet, subsidizations allowed
+    /// </summary>
+    internal void buy(Consumer buyer, StorageSet buying, Country subsidizer)
+    {
+        foreach (Storage item in buying)
+            if (item.isNotZero())
+                buy(buyer, item, subsidizer);
     }
     /// <summary>
-    /// return true if buying is zero
+    /// Buying needs in circle, by Procent in time
+    /// return true if buying is zero (bought all what it wanted)
     /// </summary>    
-    internal bool Buy(Producer buyer, PrimitiveStorageSet buying, Procent buyInTime, PrimitiveStorageSet ofWhat)
+    internal bool buy(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, StorageSet ofWhat)
     {
-        bool buyingIsEmpty = true;
+        bool buyingIsFinished = true;
         foreach (Storage what in ofWhat)
         {
-            Storage consumeOnThisEteration = new Storage(what.getProduct(), what.get() * buyInTime.get());
-            if (consumeOnThisEteration.get() == 0)
+            Storage consumeOnThisIteration = new Storage(what.getProduct(), what.get() * buyInTime.get());
+            if (consumeOnThisIteration.isZero())
                 return true;
-            // check if buying still have enoth to subtract consumeOnThisEteration
-            if (!buying.has(consumeOnThisEteration))
-                consumeOnThisEteration = buying.findStorage(what.getProduct());
-            consumeOnThisEteration.multipleInside(Consume(buyer, consumeOnThisEteration, null));
 
-            buying.subtract(consumeOnThisEteration);
+            // check if consumeOnThisIteration is not bigger than stillHaveToBuy
+            if (!stillHaveToBuy.has(consumeOnThisIteration))
+                consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.getProduct());
+            var reallyBought = buy(buyer, consumeOnThisIteration, null);
 
-            if (buying.findStorage(what.getProduct()).get() > 0)
-                buyingIsEmpty = false;
+            stillHaveToBuy.subtract(reallyBought);
+
+            if (stillHaveToBuy.getBiggestStorage(what.getProduct()).isNotZero())
+                buyingIsFinished = false;
         }
-        return buyingIsEmpty;
+        return buyingIsFinished;
+    }
 
-    }
-    internal void Buy(Factory buyer, PrimitiveStorageSet buying, CountryWallet subsidizer)
-    {
-        // Storage actualConsumption;
-        foreach (Storage input in buying)
-        {
-            Consume(buyer, input, subsidizer);
-        }
-    }
     /// <summary>
     /// Date actual for how much produced on turn start, not how much left
-    /// </summary>
-    /// <param name="need"></param>
-    /// <returns></returns>
-    internal bool HasProducedThatMuch(Storage need)
-    {
-        //Storage availible = findStorage(need.getProduct());
-        //if (availible.get() >= need.get()) return true;
-        //else return false;
-        Storage availible = HowMuchProduced(need.getProduct());
-        if (availible.get() >= need.get()) return true;
-        else return false;
-    }
+    /// </summary>   
+    //internal bool HasProducedThatMuch(Storage need)
+    //{
+    //    //Storage availible = findStorage(need.getProduct());
+    //    //if (availible.get() >= need.get()) return true;
+    //    //else return false;
+    //    Storage availible = HowMuchProduced(need.getProduct());
+    //    if (availible.get() >= need.get()) return true;
+    //    else return false;
+    //}
     /// <summary>
     /// Must be safe - returns new Storage
     /// Date actual for how much produced on turn start, not how much left
     /// </summary>
-    internal Storage HowMuchProduced(Product need)
-    {
-        //return findStorage(need.getProduct());
-        // here DSB is based not on last turn data, but on this turn.
-        return new Storage(need, getSupply(need, false));
-    }
+    //internal Storage HowMuchProduced(Product need)
+    //{
+    //    //return findStorage(need.getProduct());
+    //    // here DSB is based not on last turn data, but on this turn.
+    //    return new Storage(need, getMarketSupply(need, false));
+    //}
     /// <summary>
     /// Based on DSB, assuming you have enough money
     /// </summary>    
@@ -701,14 +446,8 @@ public class Market : Owner//: PrimitiveStorageSet
     /// </summary>
     internal Storage HowMuchAvailable(Storage need)
     {
-
-
         //float BuyingAmountAvailable = 0;
-        Storage result = sentToMarket.findStorage(need.getProduct());
-        if (result == null)
-            return new Storage(need.getProduct(), 0f);
-        else
-            return new Storage(result);
+        return sentToMarket.getBiggestStorage(need.getProduct());
 
         //BuyingAmountAvailable = need.get() / DSB;
 
@@ -720,113 +459,54 @@ public class Market : Owner//: PrimitiveStorageSet
 
         //return new Storage(need.getProduct(), BuyingAmountAvailable);
     }
-    /// <summary>    
-    /// Based on DSB, shows how much you can get assuming you have enough money
 
-    /// </summary>
-    internal List<Storage> CutToAvailable(List<Storage> need)
-    {
-        foreach (Storage stor in need)
-        {
-            stor.set(HowMuchAvailable(stor));
-        }
-
-        return need;
-    }
     /// <summary>
     /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
-    /// based on last turn data    
-    internal float getDemandSupplyBalance(Product pro)
+    /// based on last turn data   
+    ///</summary>
+    internal float getDemandSupplyBalance(Product product)
     {
+        //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
         float balance;
+
         if (dateOfDSB != Game.date)
         // recalculate DSBbuffer
         {
+            //Debug.Log("Recalculation of DSB started");
+            foreach (Storage nextProduct in marketPrice)
+                if (nextProduct.getProduct().isTradable())
+                {
+                    getProductionTotal(product, false); // for pre-turn initialization
+                    getTotalConsumption(product, false);// for pre-turn initialization
+                    float supply = getMarketSupply(nextProduct.getProduct(), false).get();
+                    float demand = getBouthOnMarket(nextProduct.getProduct(), false).get();
 
-            foreach (Storage stor in marketPrice)
-            {
-                getProductionTotal(pro, false); // for pre-turn initialization
-                getTotalConsumption(pro, false);// for pre-turn initialization
-                float supply = getSupply(stor.getProduct(), false);
-                float demand = getBouth(stor.getProduct(), false);
-                //if (demand == 0) getTotalConsumption(stor.getProduct());
-                //else
-                ////if (demand == 0) balance = 1f;
-                ////else
-                //if (supply == 0) balance = 2f;
-                //else
-
-                if (supply == 0)
-                    balance = 999f;
-                else
-                    balance = demand / supply;
-
-                //if (balance > 1f) balance = 1f;
-                //&& supply == 0
-                if (demand == 0) balance = 0f; // otherwise - furniture bag
-                                               // else
-                if (supply == 0)
-                    balance = 999f;
-
-                DSBbuffer.Set(new Storage(stor.getProduct(), balance));
-            }
-            dateOfDSB = Game.date;
+                    //if (supply == 0 && demand == 0) // both zero
+                    //    balance = Options.MarketInfiniteDSB;
+                    //else
+                    //{
+                    if (supply == 0)
+                        balance = Options.MarketInfiniteDSB; // supply zero
+                    else
+                    {
+                        if (demand == 0) // demand zero
+                            balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                        else
+                            balance = demand / supply;
+                    }
+                    //}
+                    DSBbuffer.set(new Storage(nextProduct.getProduct(), balance));
+                }
+            dateOfDSB.set(Game.date);
         }
-        Storage tmp = DSBbuffer.findStorage(pro);
-
-        if (tmp == null)
-            return float.NaN;
-        else
-            return tmp.get();
+        return DSBbuffer.getFirstStorage(product).get();
     }
-    /// <summary>
-    /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
-    /// based on last turn data    
-    //internal float getDemandSupplyBalanceOldNOLder(Product pro)
-    //{
-    //    float balance;
-    //    if (dateOfDSB != Game.date)
-    //    // recalculate DSBbuffer
-    //    {
-
-    //        foreach (Storage stor in marketPrice)
-    //        {
-
-    //            float supply = getSupply(stor.getProduct());
-    //            float demand = getBouth(stor.getProduct());
-    //            //if (demand == 0) getTotalConsumption(stor.getProduct());
-    //            //else
-    //            ////if (demand == 0) balance = 1f;
-    //            ////else
-    //            //if (supply == 0) balance = 2f;
-    //            //else
-
-    //            balance = demand / supply;
-
-    //            //if (balance > 1f) balance = 1f;
-    //            //&& supply == 0
-    //            if (demand == 0) balance = 0f; // otherwise - furniture bag
-    //                                           // else
-    //            if (supply == 0) balance = float.MaxValue;
-    //            //if (float.IsInfinity(balance)) // if divided by zero, s = zero
-    //            //    balance = float.NaN;
-    //            DSBbuffer.Set(new Storage(stor.getProduct(), balance));
-    //        }
-    //        dateOfDSB = Game.date;
-    //    }
-    //    Storage tmp = DSBbuffer.findStorage(pro);
-
-    //    if (tmp == null)
-    //        return float.NaN;
-    //    else
-    //        return tmp.get();
-    //}
 
     /// <summary>
     /// Changes price for every product in market
     /// That's first call for DSB in tick
     /// </summary>
-    public void simulatePriceChangeBasingOnLastTurnDate()
+    public void simulatePriceChangeBasingOnLastTurnData()
     {
         float balance;
         float priceChangeSpeed = 0;
@@ -834,59 +514,34 @@ public class Market : Owner//: PrimitiveStorageSet
         float highChangingSpeed = 0.04f;//%
         float antiBalance;
         foreach (Storage price in this.marketPrice)
-            if (price.getProduct() != Product.findByName("Gold"))
+            if (price.getProduct().isTradable())
             {
                 balance = getDemandSupplyBalance(price.getProduct());
                 /// Result > 1 mean demand is higher, price should go up  
-                /// Result fewer 1 mean supply is higher, price should go down               
-                //if (getSupply(price.getProduct()) == 0)
-                //    balance = 1;
+                /// Result fewer 1 mean supply is higher, price should go down              
+
                 //if (balance < 1f) antiBalance = 1 / balance;
                 //else antiBalance = balance;
                 priceChangeSpeed = 0;
-                if (balance == 1f) priceChangeSpeed = 0.001f + price.get() * 0.1f;
+                if (balance >= 1f)//0.95f)
+                    priceChangeSpeed = 0.001f + price.get() * 0.1f;
                 else
-                //if (balance > 1f && getSupply(price.getProduct()) == 0f) priceChangeSpeed = 0;
-                // else
-                //(0.0001f <= balance &&
-                if (balance <= 0.75f)
-                    priceChangeSpeed = -0.001f + price.get() * -0.02f;
-                else
-                if (balance > 1f)
-                    ChangePrice(price, price.getProduct().getDefaultPrice().get() - price.get());
-
-                // antiBalance = price.get();
-                //if (antiBalance > 10) antiBalance = 10;
-                // old DSB
-                //if (balance >= 4) priceChangeSpeed = antiBalance * highestChangingSpeed * 10f;
-                //else
-                //    if (balance > 2) priceChangeSpeed = antiBalance * highChangingSpeed * 10f;
-                //else
-                //    if (balance > 1 && balance <= 2) priceChangeSpeed = 0.01f * 10f;
-                //else
-                //    if (balance > 0.5 && balance < 1) priceChangeSpeed = -0.01f;
-                //else
-                //    if (balance <= 0.5 && balance > 0.25f) priceChangeSpeed = antiBalance * highChangingSpeed * -1f;
-                //else
-                //    if (balance <= 0.25) priceChangeSpeed = antiBalance * highestChangingSpeed * -1f;
-                //else
-                //    if (balance == float.NaN) priceChangeSpeed = 0.04f;
-
-                // if (balance > 1) priceChangeSpeed = 1;
-                //if (balance < 1) balance = 1 / balance;
-                // if (priceChangeSpeed != 0f)
+                {                    
+                    if (balance <= 0.8f)
+                        //priceChangeSpeed = -0.001f + price.get() * -0.02f;
+                        priceChangeSpeed = -0.001f + price.get() * -0.1f;
+                    // - 0.1f; caused dsb 1-0 fluctuation, destroying industry
+                    //}
+                }
                 ChangePrice(price, priceChangeSpeed);
-                //if (balance < 1f || balance == float.NaN) ChangePrice(price, -0.01f);
-                //else
-                //    if (balance > 1f) ChangePrice(price, 0.01f);
-                // do nothing if balance is perfect "1"
             }
     }
 
     private void ChangePrice(Storage price, float HowMuch)
     {
         float newValue = HowMuch + price.get();
-        if (newValue <= 0) newValue = Options.minPrice;
+        if (newValue <= 0)
+            newValue = Options.minPrice;
         if (newValue >= Options.maxPrice)
         {
             newValue = Options.maxPrice;
@@ -896,4 +551,8 @@ public class Market : Owner//: PrimitiveStorageSet
         priceHistory.addData(price.getProduct(), price);
     }
 
+    public override void simulate()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -2,76 +2,188 @@
 using System.Collections;
 using System;
 
-public class Bank
+public class Bank : Agent
 {
-    Wallet reservs = new Wallet(0);
     Value givenLoans = new Value(0);
-    internal void PutOnDeposit(Wallet fromWho, Value howMuch)
+
+    public Bank() : base(0f, null, null)
     {
-        fromWho.pay(reservs, howMuch);
-    }
-    internal void TakeFromDeposit(Wallet forWho, Value howMuch)
-    {
-        reservs.pay(forWho, howMuch);
+        //setBank(this);
     }
     /// <summary>
-    /// checks are outside
-    /// </summary>   
-    internal void TakeLoan(Producer taker, Value howMuch)
+    /// Returns money to bank. checks inside.
+    /// Just wouldn't take money if giver hasn't enough money
+    /// Don't provide variables like Cash as argument!! It would default to zero!
+    /// </summary>    
+    internal void takeMoney(Agent giver, Value howMuchTake)
     {
-        reservs.pay(taker.wallet, howMuch);
-        taker.loans.add(howMuch);
-        this.givenLoans.add(howMuch);
-    }
-    /// <summary>
-    /// checks are outside
-    /// </summary>
-    internal void returnLoan(Producer returner, Value howMuch)
-    {
-        //reservs.pay(taker.wallet, howMuch);
-        returner.wallet.pay(reservs, howMuch);
-        returner.loans.subtract(howMuch);
-        this.givenLoans.subtract(howMuch);
-    }
-    internal Value getGivenLoans()
-    {
-        return new Value(givenLoans.get());
-    }
-    internal float getReservs()
-    {
-        return reservs.haveMoney.get();
+        if (giver.pay(this, howMuchTake))
+            if (giver.loans.isBiggerThan(Value.Zero))  //has debt (meaning has no deposits)
+                if (howMuchTake.isBiggerOrEqual(giver.loans)) // cover debt
+                {
+                    Value extraMoney = howMuchTake.subtractOutside(giver.loans);
+                    this.givenLoans.subtract(giver.loans);
+                    giver.loans.set(0f);
+                    giver.deposits.set(extraMoney);
+                }
+                else// not cover debt
+                {
+                    giver.loans.subtract(howMuchTake);
+                    this.givenLoans.subtract(howMuchTake);
+                }
+            else
+            {
+                giver.deposits.add(howMuchTake);
+            }
     }
 
-    internal bool CanITakeThisLoan(Value loan)
+    /// <summary>
+    ///checks outside 
+    /// </summary>   
+    internal void giveMoney(Agent taker, Value howMuch)
     {
-        //if there is enough money and enough reserves
-        if (reservs.haveMoney.get() - loan.get() >= getMinimalReservs().get())
-            return true;
+        payWithoutRecord(taker, howMuch);
+        if (taker.deposits.isBiggerThan(Value.Zero)) // has deposit (meaning, has no loans)
+            if (howMuch.isBiggerOrEqual(taker.deposits))// loan is bigger than this deposit
+            {
+                Value notEnoughMoney = howMuch.subtractOutside(taker.deposits);
+                taker.deposits.set(0f);
+                taker.loans.set(notEnoughMoney);
+                this.givenLoans.add(notEnoughMoney);
+            }
+            else // not cover
+            {
+                taker.deposits.subtract(howMuch);
+            }
+        else
+        {
+            taker.loans.add(howMuch);
+            this.givenLoans.add(howMuch);
+        }
+    }
+    /// <summary>
+    ///checks outside 
+    /// </summary>   
+    //internal bool giveMoneyIf(Consumer taker, Value howMuch)
+    //{
+    //    
+    //        Value needLoan = howMuch.subtractOutside(taker.cash);
+    //        if (this.canGiveMoney(taker, needLoan))
+    //        {
+    //            this.giveMoney(taker, needLoan);
+    //            return true;
+    //        }
+    //   
+    //    return false;
+    //}
+    /// <summary>
+    /// checks inside. Just wouldn't give money if can't
+    /// </summary>    
+    internal bool giveLackingMoney(Agent taker, Value sum)
+    {
+        if (taker.getCountry().isInvented(Invention.Banking))// find money in bank?
+        {
+            Value lackOfSum = sum.subtractOutside(taker.cash);
+            if (canGiveMoney(taker, lackOfSum))
+            {
+                giveMoney(taker, lackOfSum);
+                return true;
+            }            
+        }
         return false;
+    }
+    /// <summary>
+    /// Returns deposits only. As much as possible. checks inside. Just wouldn't give money if can't
+    /// </summary>
+    /// //todo - add some cross bank money transfer?
+    internal void returnAllMoney(Agent agent)
+    {
+        //if (canGiveLoan(agent.deposits))
+        //    giveMoney(agent, agent.deposits);
+
+        giveMoney(agent, howMuchDepositCanReturn(agent));
+    }
+
+    internal Value getGivenLoans()
+    {
+        return givenLoans;
+    }
+    /// <summary>
+    /// how much money have in cash
+    /// </summary>
+    internal Value getReservs()
+    {
+        return new Value(cash);
+    }
+    /// <summary>
+    /// Checks reserve limits and deposits
+    /// </summary>    
+    internal bool canGiveMoney(Agent agent, Value loan)
+    {       
+        return howMuchCanGive(agent).isBiggerOrEqual(loan);
     }
 
     private Value getMinimalReservs()
     {
         //todo improve reserves
-        return new Value(100f);
+        return new Value(1000f);
     }
 
     override public string ToString()
     {
-        return reservs.ToString();
+        return cash.ToString();
     }
 
-    internal void defaultLoaner(Producer producer)
+    internal void defaultLoaner(Agent agent)
     {
-        givenLoans.subtract(producer.loans);
-        producer.loans.set(0);
+        givenLoans.subtract(agent.loans);
+        agent.loans.set(0);
     }
     /// <summary>
     /// Assuming all clients already defaulted theirs loans
     /// </summary>    
     internal void add(Bank annexingBank)
     {
-        annexingBank.reservs.sendAll(this.reservs);
-        annexingBank.givenLoans.sendAll(this.givenLoans);        
+        annexingBank.cash.sendAll(this.cash);
+        annexingBank.givenLoans.sendAll(this.givenLoans);
+    }
+    bool isItEnoughReserves(Value sum)
+    {
+        return cash.subtractOutside(getMinimalReservs()).isNotZero();
+    }
+
+    /// <summary>
+    /// Checks reserve limits and deposits
+    /// </summary>    
+    internal Value howMuchCanGive(Agent agent)
+    {
+        Value wouldGive = cash.subtractOutside(getMinimalReservs(), false);
+        if (agent.deposits.isBiggerThan(wouldGive))
+        {
+            wouldGive = new Value(agent.deposits); // increase wouldGive to deposits size
+            if (wouldGive.isBiggerThan(cash)) //decrease wouldGive to cash size
+                wouldGive = new Value(cash);
+        }
+        return wouldGive;
+    }
+    /// <summary>
+    /// includes checks for cash and deposit size
+    /// </summary>   
+    internal Value howMuchDepositCanReturn(Agent agent)
+    {
+        if (cash.isBiggerOrEqual(agent.deposits))
+            return new Value(agent.deposits);
+        else
+            return new Value(cash);
+    }
+    internal void destroy(Country byWhom)
+    {
+        cash.sendAll(byWhom.cash);
+        givenLoans.setZero();
+    }
+
+    public override void simulate()
+    {
+        throw new NotImplementedException();
     }
 }

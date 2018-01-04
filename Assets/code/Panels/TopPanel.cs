@@ -1,34 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Text;
 
 public class TopPanel : MonoBehaviour
 {
     public Button btnPlay, btnStep, btnTrade;
     public Text generalText;
     // Use this for initialization
-    void Start()
+    void Awake()
     {
-        //generaltext = transform.FindChild("GeneralText").gameObject.GetComponent<Text>();
         btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
         btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
         btnPlay.image.color = Color.grey;
         MainCamera.topPanel = this;
+        hide();
     }
-
-    // Update is called once per frame
-    void Update()
+    public void hide()
     {
-
+        gameObject.SetActive(false);
+    }
+    public void show()
+    {
+        gameObject.SetActive(true);
+        //panelRectTransform.SetAsLastSibling();
+        refresh();
     }
     public void refresh()
     {
+        var sb = new StringBuilder();
 
-        generalText.text = "Economic Simulation v9 Date: " + Game.date + " Country: " + Game.player.name
-            + "\nMoney: " + Game.player.wallet.haveMoney
-            + " Science points: " + Game.player.sciencePoints
-            + " Men: " + Game.player.getMenPopulation()
-            + " Storage: " + Game.player.storageSet.ToString();
+        sb.Append("Date: ").Append(Game.date).Append("; Country: ").Append(Game.Player.getName())
+            .Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
+            .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"))
+            .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
+            .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
+        generalText.text = sb.ToString();
     }
     public void onTradeClick()
     {
@@ -37,12 +44,17 @@ public class TopPanel : MonoBehaviour
         else
             MainCamera.tradeWindow.show(true);
     }
-    public void onDiplomacyClick()
+    public void onExitClick()
     {
-        if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-            MainCamera.diplomacyPanel.hide();
+        Application.Quit();
+    }
+    public void onMilitaryClick()
+    {
+        if (MainCamera.militaryPanel.isActiveAndEnabled)
+            MainCamera.militaryPanel.hide();
         else
-            MainCamera.diplomacyPanel.show();
+            MainCamera.militaryPanel.show(null);
+
     }
     public void onInventionsClick()
     {
@@ -54,18 +66,8 @@ public class TopPanel : MonoBehaviour
     }
     public void onEnterprisesClick()
     {
-        //MainCamera.productionWindow.show(null, true);
-        //MainCamera.productionWindow.onShowAllClick();
-
-        //if (MainCamera.productionWindow.isActiveAndEnabled)
-        //    MainCamera.productionWindow.hide();
-        //else
-        //{
-        //    MainCamera.productionWindow.show(null, true);
-        //    MainCamera.productionWindow.onShowAllClick();
-        //}
         if (MainCamera.productionWindow.isActiveAndEnabled)
-            if (MainCamera.productionWindow.showingProvince == null)
+            if (MainCamera.productionWindow.getShowingProvince() == null)
                 MainCamera.productionWindow.hide();
             else
             {
@@ -80,11 +82,9 @@ public class TopPanel : MonoBehaviour
     }
     public void onPopulationClick()
     {
-        //MainCamera.populationPanel.onShowAllClick();
-        ////MainCamera.populationPanel.show();
 
         if (MainCamera.populationPanel.isActiveAndEnabled)
-            if (MainCamera.populationPanel.showAll)
+            if (MainCamera.populationPanel.showingProvince == null)
                 MainCamera.populationPanel.hide();
             else
                 MainCamera.populationPanel.onShowAllClick();
@@ -107,20 +107,28 @@ public class TopPanel : MonoBehaviour
     }
     void onbtnStepClick(Button button)
     {
-        if (Game.haveToRunSimulation)
+        if (Game.isRunningSimulation())
         {
-            Game.haveToRunSimulation = false;
+            Game.pauseSimulation();
             button.image.color = Color.grey;
             Text text = button.GetComponentInChildren<Text>();
             text.text = "Pause";
         }
         else
-            Game.haveToStepSimulation = true;
+            Game.makeOneStepSimulation();
     }
     void onbtnPlayClick(Button button)
     {
-        Game.haveToRunSimulation = !Game.haveToRunSimulation;
-        if (Game.haveToRunSimulation)
+        switchHaveToRunSimulation(button);
+    }
+    public void switchHaveToRunSimulation(Button button)
+    {
+        if (Game.isRunningSimulation())
+            Game.pauseSimulation();
+        else
+            Game.continueSimulation();
+
+        if (Game.isRunningSimulation())
         {
             button.image.color = Color.white;
             Text text = button.GetComponentInChildren<Text>();

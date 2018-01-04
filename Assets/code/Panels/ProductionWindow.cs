@@ -6,48 +6,36 @@ using System;
 
 public class ProductionWindow : DragPanel
 {
-    public GameObject panel;
-    // public GameObject ScrollViewMy;
-    public ScrollRect table;
-    // Use this for initialization
-    //bool showAll;
-    public Province showingProvince;
+    public List<MyTableNew> tables = new List<MyTableNew>();
+    Province showingProvince;
     void Start()
     {
         MainCamera.productionWindow = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.bottomPanel.GetComponent<RectTransform>().rect.height - 2f);
+        Canvas.ForceUpdateCanvases();
         hide();
     }
-    public void hide()
+    public Province getShowingProvince()
     {
-        panel.SetActive(false);
-        //todo add button removal?      
+        return showingProvince;
     }
     public void show(Province inn, bool bringOnTop)
     {
-        panel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
             panelRectTransform.SetAsLastSibling();
         showingProvince = inn;
-        if (showingProvince != null && Game.selectedProvince != null)
+        if (showingProvince != null)
         {
-            Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
+            Game.factoriesToShowInProductionPanel = showingProvince.allFactories;
         }
+        refreshContent();
     }
-    public void onCloseClick()
-    {
-        hide();
-        //showAll = false;
-        //showingProvince
-    }
-    //internal void setShowAll()
-    //{
-    //    showAll = true;
-    //}
     internal void SetAllFactoriesToShow()
     {
         List<Factory> er = new List<Factory>();
         //Game.popListToShow.Clear();
-        foreach (Province province in Game.player.ownedProvinces)
+        foreach (Province province in Game.Player.ownedProvinces)
             foreach (Factory factory in province.allFactories)
                 // Game.popListToShow.Add(popUnit);
                 er.Add(factory);
@@ -55,39 +43,26 @@ public class ProductionWindow : DragPanel
     }
     public void onShowAllClick()
     {
-        hide();
         SetAllFactoriesToShow();
-        //showAll = true;
-        showingProvince = null;
         show(null, true);
     }
-    public void refresh()
+    public void refreshContent()
     {
 
-        hide();
-        //if (showAll)
-        if (showingProvince ==null)
+        if (showingProvince == null)
         {
             SetAllFactoriesToShow();
-            show(null, false);
         }
-        else // take factories from province
-            show(showingProvince, false); ;
-
+        foreach (var item in tables)
+            item.refreshContent();
     }
 
     public void removeFactory(Factory fact)
     {
-
-
         if (Game.factoriesToShowInProductionPanel != null && Game.factoriesToShowInProductionPanel.Contains(fact))
         {
             Game.factoriesToShowInProductionPanel.Remove(fact);
-            if (MainCamera.productionWindow.isActiveAndEnabled) refresh();
+            if (MainCamera.productionWindow.isActiveAndEnabled) refreshContent();
         }
     }
-    // Update is called once per frame
-    //   void Update () {
-
-    //}
 }

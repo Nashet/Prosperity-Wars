@@ -4,12 +4,15 @@ using System.Collections.Generic;
 
 public class Culture
 {
-    public string name;
+    string name;
     List<Culture> allCultures = new List<Culture>();
     public Culture(string iname)
     {
         name = iname;
         allCultures.Add(this);
-
+    }
+    public override string ToString()
+    {
+        return name;
     }
 }

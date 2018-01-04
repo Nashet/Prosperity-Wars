@@ -6,95 +6,105 @@ using System;
 
 
 
-public class ProductionWindowTable : MyTable
+public class ProductionWindowTable : MyTableNew
 {
-
-    override protected void Refresh()
+    public override void refreshContent()
     {
-        if (Game.factoriesToShowInProductionPanel != null)
+        startUpdate();
+        base.RemoveButtons();
+        var howMuchRowsShow = calcSize(Game.factoriesToShowInProductionPanel.Count);
+        //int counter = 0;
+        addHeader();
+        for (int i = 0; i < howMuchRowsShow; i++)
+        //foreach (Factory next in Game.factoriesToShowInProductionPanel)
         {
-            base.RemoveButtons();
-            AddButtons();
-            contentPanel.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, contentPanel.childCount / this.columnsAmount * rowHeight + 50);
-        }
-    }
-    protected void AddButton(string text, Factory stor)
-    {
-        GameObject newButton = buttonObjectPool.GetObject();
-        newButton.transform.SetParent(contentPanel, true);
-        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-        sampleButton.Setup(text,  this, stor);
-    }
-   
-    override protected void AddButtons()
-    {
-        int counter = 0;
-
-        // Adding product name 
-        AddButton("Type");
-
-        // Adding province 
-        AddButton("Province");
-
-        ////Adding production
-        AddButton("Production");
-
-        ////Adding effective resource income
-        AddButton("Resources");
-
-        ////Adding workforce
-        AddButton("Workforce");
-
-        ////Adding money income
-        AddButton("Profit");
-
-        ////Adding profit
-        AddButton("% Profit");
-
-        ////Adding slary
-        AddButton("Salary");
-        foreach (Factory next in Game.factoriesToShowInProductionPanel)
-        {           
-
+            Factory factory = Game.factoriesToShowInProductionPanel[i + getRowOffset()];
             // Adding shownFactory name 
-            AddButton(next.type.name +" L"+next.getLevel(), next);
+            addButton(factory.getType().name + " L" + factory.getLevel(), factory);
 
             // Adding province 
-            AddButton(next.province.ToString(), next.province);
+            addButton(factory.getProvince().ToString(), factory.getProvince());
 
             ////Adding production
-            AddButton(next.gainGoodsThisTurn.ToString(), next);
+            addButton(factory.getGainGoodsThisTurn().ToString(), factory);
 
             ////Adding effective resource income
-            AddButton(next.getResouceFullfillig().ToString(), next);
+            addButton(factory.getInputFactor().ToString(), factory);
 
             ////Adding workforce
-            AddButton(next.getWorkForce().ToString(), next);
+            addButton(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
-            AddButton(next.getProfit().ToString(), next);
+            if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                addButton("none", factory);
+            else
+                addButton(factory.getProfit().ToString("F3"), factory);
 
             ////Adding margin
-            if (next.isUpgrading())
-                AddButton("Upgrading", next);
+            if (factory.isUpgrading())
+                addButton("Upgrading", factory);
             else
-            if (next.isBuilding())
-                AddButton("Building", next);
-            else
-                if (!next.isWorking())
-                AddButton("Closed", next);
-            else
-                AddButton(next.getMargin().ToString(), next);
+            {
+                if (factory.isBuilding())
+                    addButton("Building", factory);
+                else
+                {
+                    if (!factory.isWorking())
+                        addButton("Closed", factory);
+                    else
+                    {
+                        if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                            addButton("none", factory);
+                        else
+                            addButton(factory.getMargin().ToString(), factory);
+                    }
+                }
+            }
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Economy.isMarket.checkIftrue(Game.player))
-                AddButton(next.getSalary().ToString() + " coins", next);
+            if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                addButton("centralized", factory);
             else
-                AddButton(next.getSalary().ToString()+ " food", next);
-            counter++;
+            {
+                if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
+                    addButton(factory.getSalary().ToString() + " food", factory);
+                else
+                    addButton(factory.getSalary().ToString() + " coins", factory);
+            }
+            addButton(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
+            //counter++;
             //contentPanel.r
         }
+        endUpdate();
+    }
 
+    protected override void addHeader()
+    {
+        // Adding product name 
+        addButton("Type");
+
+        // Adding province 
+        addButton("Province");
+
+        ////Adding production
+        addButton("Production");
+
+        ////Adding effective resource income
+        addButton("Resources");
+
+        ////Adding workforce
+        addButton("Workforce");
+
+        ////Adding money income
+        addButton("Profit");
+
+        ////Adding profit
+        addButton("Profitability");
+
+        ////Adding salary
+        addButton("Salary");
+
+        addButton("Unemployed", null, () => "Unemployed in province");
     }
 }

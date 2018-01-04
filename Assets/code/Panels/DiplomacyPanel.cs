@@ -1,130 +1,93 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
 
-class badGrsdamis{ }
-
 public class DiplomacyPanel : DragPanel
 {
-
-    public Dropdown ddProvinceSelect;
-    public GameObject diplomacyPanel;
-    public Text allArmySizeText, captionText, sendingArmySizeText;
-    public Slider armySendLimit;
-    public Button sendArmy;
+    public Text captionText, generalText;
+    public Button giveControlToAi, giveControlToPlayer;
+    public MainCamera mainCamera;
+    Country selectedCountry;
     StringBuilder sb = new StringBuilder();
-    
-    List<Province> availableProvinces = new List<Province>();
     // Use this for initialization
     void Start()
     {
         MainCamera.diplomacyPanel = this;
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
         hide();
-
     }
-
     // Update is called once per frame
     void Update()
     {
         //refresh();
     }
-    public void refresh(bool rebuildDropdown)
+    public void refresh()
     {
-        
-        if (rebuildDropdown)
-        {
-            //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
-            //armySendLimit.value = 0; //rtrt cause extra mobilization
-            rebuildDropDown();            
-        }
+        setButtonsState();
         sb.Clear();
-        sb.Append("Diplomacy of ").Append(Game.player);
+        sb.Append("Diplomacy of ").Append(selectedCountry);
         captionText.text = sb.ToString();
 
         sb.Clear();
-        sb.Append("Have army: ").Append(Game.player.homeArmy);
-        //sb.Append("\n Poor tax: ").Append(Game.player.getCountryWallet().getPoorTaxIncome());
+        sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation().ToString("N0")).Append("; rank: ").Append(selectedCountry.getPopulationRank());
+        sb.Append(". Provinces: ").Append(selectedCountry.getSize()).Append("; rank: ").Append(selectedCountry.getSizeRank());
+        //sb.Append(", str: ").Append(selectedCountry.getStregth(null));
 
-        allArmySizeText.text = sb.ToString();
-
-        sb.Clear();
-        sb.Append("Sending army: ").Append(Game.player.sendingArmy);        
-
-        sendingArmySizeText.text = sb.ToString();
-
-        sendArmy.interactable = Game.player.sendingArmy.getSize() > 0 ? true : false;
-        //armySendLimit.interactable = Game.player.homeArmy.getSize() > 0 ? true : false;
-    }
-
-    public void show()
-    {
-        diplomacyPanel.SetActive(true);
-
-        panelRectTransform.SetAsLastSibling();
-        refresh(true);
-    }
-    public void hide()
-    {
-        diplomacyPanel.SetActive(false);
-    }
-    public void onCloseClick()
-    {
-        hide();
-    }
-    public void onMobilizationClick()
-    {
-        Game.player.mobilize();
-        //onArmyLimitChanged(0f);
-        refresh(false);
-    }
-    public void onDemobilizationClick()
-    {
-        Game.player.demobilize();
-        refresh(false);
-    }
-    public void onSendArmyClick()
-    {
-        Game.player.sendArmy(Game.player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-        Game.player.sendingArmy = new Army(Game.player);
-        refresh(false);
-    }
-    void rebuildDropDown()
-    {
-        ddProvinceSelect.interactable = true;
-        ddProvinceSelect.ClearOptions();
-        byte count = 0;
-        availableProvinces.Clear();
-        var list = Game.player.getNeighborProvinces();
-        foreach (Province next in list)
+        sb.Append("\nGDP: ").Append(selectedCountry.getGDP().get().ToString("N3")).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
+        sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000().ToString("F3")).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
+        sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAverageNeedsFulfilling());
+        sb.Append("\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
+        sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
+        sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
+        sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
+        sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());
+        if (selectedCountry == Game.Player)
+            sb.Append("\n\nOpinion of myself: I'm cool!");
+        else
         {
-            //if (next.isAvailable(Game.player))
-            {
-                ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getOwner() + ")" });
-                availableProvinces.Add(next);
-
-                //selectedReformValue = next;
-                // selecting non empty option
-                ddProvinceSelect.value = count;
-                ddProvinceSelect.RefreshShownValue();
-
-                count++;
-            }
+            sb.Append("\n\n").Append(selectedCountry.getDescription()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+            string str;
+            selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
+            sb.Append(" Dynamics: ").Append(str);
         }
-        onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
+        //sb.Append("\nInventions: ").Append(selectedCountry.inventions.getInvented(selectedCountry).ToString());
+        //selectedCountry.inventions.getInvented(selectedCountry).ToString();
+        generalText.text = sb.ToString();
     }
-    public void onddProvinceSelectValueChanged()
+    public Country getSelectedCountry()
     {
-      
+        return selectedCountry;
     }
-    public void onArmyLimitChanged(float value)
+    public void show(Country count)
     {
-      
-        Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(value));      
-        refresh(false);
-       
-
+        gameObject.SetActive(true);
+        panelRectTransform.SetAsLastSibling();
+        selectedCountry = count;
+        refresh();
+    }
+    private void setButtonsState()
+    {
+        giveControlToPlayer.interactable = selectedCountry.isAI();
+        giveControlToAi.interactable = !selectedCountry.isAI();
+    }
+    public void onSurrenderClick()
+    {
+        Game.givePlayerControlToAI();
+        setButtonsState();
+    }
+    public void onGoToClick()
+    {
+        if (selectedCountry != Country.NullCountry)
+            mainCamera.focusCamera(selectedCountry.getCapital());
+    }
+    public void onRegainControlClick()
+    {
+        Game.takePlayerControlOfThatCountry(selectedCountry);
+        setButtonsState();
     }
 }

@@ -2,61 +2,58 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-public class PopulationPanel :  DragPanel
-{
-    public GameObject populationPanel;
-   // public GameObject ScrollViewMy;
-    public ScrollRect table;
-    public bool showAll;
+public class PopulationPanel : DragPanel
+{    
     internal Province showingProvince;
-
+    public List<MyTableNew> tables = new List<MyTableNew>();
     // Use this for initialization
-    void Start () {
-        MainCamera.populationPanel = this;
-        hide();        
-    }
-    public void hide()
+    void Start()
     {
-        populationPanel.SetActive(false);
-        //todo add button removal?      
-    }   
+        MainCamera.populationPanel = this;
+        //show(false);
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height *-1f);
+        Canvas.ForceUpdateCanvases();
+        hide();
+    }
+
     public void show(bool bringOnTop)
     {
-        populationPanel.SetActive(true);
-        if ( bringOnTop)
-        panelRectTransform.SetAsLastSibling();
+        gameObject.SetActive(true);
+        if (bringOnTop)
+            panelRectTransform.SetAsLastSibling();
+        refreshContent();
     }
-    public void onCloseClick()
+    override public void onCloseClick()
     {
-        hide();
-        showAll = false;
+        base.onCloseClick();
+        //showAll = false;
     }
     internal void SetAllPopsToShow()
     {
-        List<PopUnit> er = new List<PopUnit>();
-        //Game.popListToShow.Clear();
-        foreach (Province province in Game.player.ownedProvinces)
-            foreach (PopUnit popUnit in province.allPopUnits)
-                // Game.popListToShow.Add(popUnit);
-                er.Add(popUnit);
-        Game.popsToShowInPopulationPanel = er;
+        if (Game.Player != null)
+        {
+            List<PopUnit> er = new List<PopUnit>();
+            //Game.popListToShow.Clear();
+            foreach (Province province in Game.Player.ownedProvinces)
+                foreach (PopUnit popUnit in province.allPopUnits)
+                    // Game.popListToShow.Add(popUnit);
+                    er.Add(popUnit);
+            Game.popsToShowInPopulationPanel = er;
+        }
     }
     public void onShowAllClick()
     {
-        hide();
+        //hide();
         SetAllPopsToShow();
-        showAll = true;
-        show(true);            
+        //showAll = true;
+        showingProvince = null;                
+        show(true);
     }
-    public void refresh()
-    {
-        hide();
-        if (showAll)
+    public void refreshContent()
+    {       
+        if (showingProvince == null)
             SetAllPopsToShow();
-        show(false);
-    }
-    // Update is called once per frame
- //   void Update () {
-	
-	//}
+        foreach (var item in tables)
+            item.refreshContent();     
+    }    
 }

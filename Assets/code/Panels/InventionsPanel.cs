@@ -2,44 +2,39 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Text;
+
 public class InventionsPanel : DragPanel
 {
-    public GameObject inventionsPanel;
     public ScrollRect table;
     public Text descriptionText;
     public Button inventButton;
-    public InventionType selectedInvention;
+    public Invention selectedInvention;
     // Use this for initialization
     void Start()
     {
         MainCamera.inventionsPanel = this;
-        inventButton.interactable = false;
+        inventButton.interactable = false;              
+        GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
         hide();
     }
-    public void hide()
-    {
-        inventionsPanel.SetActive(false);
-        //todo add button removal?      
-    }
+    //public void hide()
+    //{
+    //    inventionsPanel.SetActive(false);
+    //    //todo add button removal?      
+    //}
     public void show(bool bringOnTop)
     {
-        inventionsPanel.SetActive(true);
+        gameObject.SetActive(true);
         if (bringOnTop)
-        panelRectTransform.SetAsLastSibling();
+            panelRectTransform.SetAsLastSibling();
     }
-    public void onCloseClick()
-    {
-        hide();
 
-    }
-   
-   
     public void onInventClick()
     {
-        if (!Game.player.inventions.isInvented(selectedInvention) && Game.player.sciencePoints.get() >= selectedInvention.cost.get())
+        if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
         {
-            Game.player.inventions.MarkInvented(selectedInvention);
-            Game.player.sciencePoints.subtract(selectedInvention.cost);
+            Game.Player.invent(selectedInvention);
             inventButton.interactable = false;
             MainCamera.topPanel.refresh();
             if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh();
@@ -53,13 +48,17 @@ public class InventionsPanel : DragPanel
     public void refresh()
     {
         hide();
+        var sb = new StringBuilder();
+        string scienceModifier;
+        var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
+        sb.Append("Science points: ").Append(Game.Player.sciencePoints).Append(" + ");
+        sb.Append(Game.Player.getSciencePointsBase().multiplyOutside(spModifier)).Append(" Modifiers: ").Append(scienceModifier);
         if (selectedInvention != null)
         {
-            descriptionText.text = "Science points: " + Game.player.sciencePoints
-                + "\n\n" + selectedInvention.ToString() + " description: " + selectedInvention.getDescription();
+            sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());
 
             // invention available
-            if (!Game.player.inventions.isInvented(selectedInvention) && Game.player.sciencePoints.get() >= selectedInvention.cost.get())
+            if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
             {
                 inventButton.GetComponentInChildren<Text>().text = "Invent " + selectedInvention.ToString();
                 inventButton.interactable = true;
@@ -67,20 +66,18 @@ public class InventionsPanel : DragPanel
             else
             {
                 inventButton.interactable = false;
-                if (Game.player.inventions.isInvented(selectedInvention))
+                if (Game.Player.isInvented(selectedInvention))
                     inventButton.GetComponentInChildren<Text>().text = "Already invented " + selectedInvention.ToString();
                 else
-                    inventButton.GetComponentInChildren<Text>().text = "Not enough SP to invent " + selectedInvention.ToString();
-
+                    inventButton.GetComponentInChildren<Text>().text = "Not enough Science points to invent " + selectedInvention.ToString();
             }
         }
         else
         {
             inventButton.interactable = false;
-            descriptionText.text = "Select invention from left panel";
-
+            sb.Append("\n\nSelect invention from left panel");
         }
-
+        descriptionText.text = sb.ToString();
         show(false);
     }
     // Update is called once per frame
