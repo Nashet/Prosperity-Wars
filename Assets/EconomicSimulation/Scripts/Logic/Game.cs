@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using System.Text;
+
 using System;
 using System.Linq;
+using Nashet.UnityUIUtils;
+using Nashet.MarchingSquares;
 namespace Nashet.EconomicSimulation
 {
     public class Game : ThreadedJob

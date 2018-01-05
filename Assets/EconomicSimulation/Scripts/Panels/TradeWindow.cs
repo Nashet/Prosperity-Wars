@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using System.Text;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     public class TradeWindow : DragPanel

@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 using System.Text;
+using Nashet.UnityUIUtils;
+using Nashet.Conditions;
 namespace Nashet.EconomicSimulation
 {
     public class Factory : SimpleProduction, ICanBeCellInTable

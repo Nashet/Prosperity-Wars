@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Text;
 using System.Linq;
 using System;
+using Nashet.UnityUIUtils;
+using Nashet.Conditions;
 namespace Nashet.EconomicSimulation
 {
     public class MyDate

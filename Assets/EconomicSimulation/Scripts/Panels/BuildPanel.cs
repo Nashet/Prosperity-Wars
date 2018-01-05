@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
-using Nashet.EconomicSimulation;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     

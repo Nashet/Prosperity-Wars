@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using Nashet.UnityUIUtils;
+
 namespace Nashet.EconomicSimulation
 {
     /// <summary>

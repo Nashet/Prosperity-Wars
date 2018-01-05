@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
-
+using Nashet.UnityUIUtils;
+using Nashet.Conditions;
 namespace Nashet.EconomicSimulation
 {
     abstract public class PopUnit : Producer, ICanBeCellInTable

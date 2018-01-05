@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     public class FinancePanel : DragPanel

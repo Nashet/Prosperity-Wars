@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : MyTableNew

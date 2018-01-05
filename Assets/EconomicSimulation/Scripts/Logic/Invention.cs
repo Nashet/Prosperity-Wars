@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Nashet.Conditions;
 namespace Nashet.EconomicSimulation
 {
     public class Invention : Name

@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Text;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     public class TopPanel : MonoBehaviour

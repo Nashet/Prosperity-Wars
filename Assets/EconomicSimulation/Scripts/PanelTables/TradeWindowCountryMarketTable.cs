@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     public class TradeWindowCountryMarketTable : MyTable

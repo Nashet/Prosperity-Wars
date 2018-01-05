@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Text;
+using Nashet.UnityUIUtils;
+using Nashet.MarchingSquares;
+using Nashet.Conditions;
 namespace Nashet.EconomicSimulation
 {
     public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable

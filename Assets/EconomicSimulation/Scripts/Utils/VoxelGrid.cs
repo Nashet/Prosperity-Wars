@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
-namespace Nashet.EconomicSimulation
+using Nashet.EconomicSimulation;
+namespace Nashet.MarchingSquares
 {
     [SelectionBase]
     public class VoxelGrid
