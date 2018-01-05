@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.productionWindow = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.bottomPanel.GetComponent<RectTransform>().rect.height - 2f);
             Canvas.ForceUpdateCanvases();
-            hide();
+            Hide();
         }
         public Province getShowingProvince()
         {
@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
             {
                 Game.factoriesToShowInProductionPanel = showingProvince.allFactories;
             }
-            refreshContent();
+            Refresh();
         }
         internal void SetAllFactoriesToShow()
         {
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
             SetAllFactoriesToShow();
             show(null, true);
         }
-        public void refreshContent()
+        public override void Refresh()
         {
 
             if (showingProvince == null)
@@ -66,7 +66,8 @@ namespace Nashet.EconomicSimulation
             if (Game.factoriesToShowInProductionPanel != null && Game.factoriesToShowInProductionPanel.Contains(fact))
             {
                 Game.factoriesToShowInProductionPanel.Remove(fact);
-                if (MainCamera.productionWindow.isActiveAndEnabled) refreshContent();
+                if (MainCamera.productionWindow.isActiveAndEnabled)
+                    Refresh();
             }
         }
     }

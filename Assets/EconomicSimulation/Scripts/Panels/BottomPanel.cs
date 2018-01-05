@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
         public void onStatisticsClick()
         {
             if (MainCamera.StatisticPanel.isActiveAndEnabled)
-                MainCamera.StatisticPanel.hide();
+                MainCamera.StatisticPanel.Hide();
             else
                 MainCamera.StatisticPanel.show(true);
         }

@@ -36,9 +36,9 @@ namespace Nashet.EconomicSimulation
             //ssSoldiersWage.setExponential(x => 0.001f * Mathf.Pow(x, 1.5f), f => Mathf.Pow(f / 0.001f, 1f / 1.5f));
             ssSoldiersWage.setExponential(x => Mathf.Pow(x, 5f), f => Mathf.Pow(f, 1f / 5f));
             autoPutInBankLimit.setExponential(x => Mathf.Pow(x, 2f), f => Mathf.Pow(f, 1f / 2f));
-            hide();
+            Hide();
         }
-        public void refresh()
+        public override void Refresh()
         {
             sb.Clear();
             sb.Append("Finances of ").Append(Game.Player);
@@ -105,7 +105,7 @@ namespace Nashet.EconomicSimulation
         {
             gameObject.SetActive(true);
             panelRectTransform.SetAsLastSibling();
-            refresh();
+            Refresh();
         }
 
         public void findNoonesEterprises()

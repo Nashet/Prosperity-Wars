@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.inventionsPanel = this;
             inventButton.interactable = false;
             GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
-            hide();
+            Hide();
         }
         public void show(bool bringOnTop)
         {
@@ -42,19 +42,23 @@ namespace Nashet.EconomicSimulation
                 Game.Player.invent(selectedInvention);
                 inventButton.interactable = false;
                 MainCamera.topPanel.refresh();
-                if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh(null);
-                if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.refresh(true, null);
-                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
+                if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.Refresh();
+                if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.Refresh();
+                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();
                 //Hide();
                 //show();
-                refresh(null);
+                Refresh();
             }
         }
-        public void refresh(Invention newSelection)
+        public void selectInvention(Invention newSelection)
         {
             if (newSelection != null)
                 selectedInvention = newSelection;
-            hide();
+        }
+        public override void Refresh()
+        {
+
+            Hide();
             var sb = new StringBuilder();
             string scienceModifier;
             var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);

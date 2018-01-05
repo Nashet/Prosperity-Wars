@@ -4,9 +4,21 @@ using UnityEngine.EventSystems;
 using System.Collections;
 namespace Nashet.UnityUIUtils
 {
-    abstract public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
+    public interface IRefreshable
     {
-
+        void Refresh();
+    }
+    public interface IHideable
+    {
+        void Hide();
+        void Show();
+    }
+    abstract public class Window : MonoBehaviour, IRefreshable
+    {
+        public abstract void Refresh();
+    }
+    abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler, IHideable
+    {
         private Vector2 pointerOffset;
         private RectTransform canvasRectTransform;
         protected RectTransform panelRectTransform;
@@ -49,7 +61,7 @@ namespace Nashet.UnityUIUtils
 
         }
 
-        Vector2 ClampToWindow(PointerEventData data)
+        private Vector2 ClampToWindow(PointerEventData data)
         {
             Vector2 rawPointerPosition = data.position;
 
@@ -64,14 +76,20 @@ namespace Nashet.UnityUIUtils
 
         }
 
-        public void hide()
-        {
-            gameObject.SetActive(false);
-        }
         virtual public void onCloseClick()
         {
             panelRectTransform.SetAsFirstSibling();
-            hide();
+            Hide();
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
         }
     }
 }

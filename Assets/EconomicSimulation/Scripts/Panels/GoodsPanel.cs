@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
             //priceGraph = GameObject.Find("PriceGraph").GetComponent<RawImage>();
             MainCamera.goodsPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
-            hide();
+           Hide();
         }
 
         // Update is called once per frame
@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         {
             //refresh();
         }
-        public void refresh()
+        public override void Refresh()
         {
             if (product != null)
             {
@@ -108,12 +108,13 @@ namespace Nashet.EconomicSimulation
         }
         //internal int getGraphPoint()
         //{ }
-        public void Show(Product inn, bool bringOnTop)
+        public void show(Product inn, bool bringOnTop)
         {
             gameObject.SetActive(true);
             product = inn;
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();
+            //Refresh();
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
             dropDown.interactable = false;
             forceDecisionButton.interactable = false;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
-            hide();
+            Hide();
         }
 
         public void show(bool bringOnTop)
@@ -58,10 +58,10 @@ namespace Nashet.EconomicSimulation
             if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
                 selectedReform.setValue(selectedReformValue);
-                refresh(true, null);
-                if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.refresh(null);
-                if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.refreshContent();
-                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.refresh();
+                refresh(true);
+                if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.Refresh();
+                if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.Refresh();
+                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();
 
             }
         }
@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
         public void onChoiceValueChanged()
         {
             selectedReformValue = assotiateTable[dropDown.value];
-            refresh(false, null);
+            refresh(false);
         }
         void rebuildDropDown()
         {
@@ -121,11 +121,19 @@ namespace Nashet.EconomicSimulation
             dropDown.RefreshShownValue();
             //dropDown.Show();
         }
-        public void refresh(bool callRebuildDropDown, AbstractReform newSelection)
+        public override void Refresh()
+        {
+            refresh(true);
+        }
+        public void selectReform(AbstractReform newSelection)
         {
             if (newSelection != null)
                 selectedReform = newSelection;
-            hide();
+        }
+        private void refresh(bool callRebuildDropDown)
+        {
+            
+            Hide();
             //if (Game.Player.movements != null)
             movementsText.text = Game.Player.movements.getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)

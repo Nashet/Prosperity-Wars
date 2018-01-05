@@ -42,25 +42,24 @@ namespace Nashet.UnityUIUtils
         {
             //refresh();
         }
-        public void refresh(Message mess)
+        public override void Refresh()
         {
-            caption.text = mess.caption;
-            message.text = mess.message;
-            closeText.text = mess.closeText;
+            
         }
 
 
         public void show(Message mess)
         {
-
-
             Game.howMuchPausedWindowsOpen++;
             gameObject.SetActive(true);
             //this.pa
             //panelRectTransform = GetComponent<RectTransform>();
             //canvasRectTransform = GetComponent<RectTransform>();
             panelRectTransform.SetAsLastSibling();
-            refresh(mess);
+            Refresh();
+            caption.text = mess.caption;
+            message.text = mess.message;
+            closeText.text = mess.closeText;
         }
 
         override public void onCloseClick()

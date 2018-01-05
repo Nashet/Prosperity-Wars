@@ -172,19 +172,19 @@ namespace Nashet.EconomicSimulation
         internal static void refreshAllActive()
         {
             if (topPanel.isActiveAndEnabled) topPanel.refresh();
-            if (populationPanel.isActiveAndEnabled) populationPanel.refreshContent();
-            if (tradeWindow.isActiveAndEnabled) tradeWindow.refresh();
-            if (factoryPanel.isActiveAndEnabled) factoryPanel.refresh();
-            if (productionWindow.isActiveAndEnabled) productionWindow.refreshContent();
-            if (goodsPanel.isActiveAndEnabled) goodsPanel.refresh();
-            if (inventionsPanel.isActiveAndEnabled) inventionsPanel.refresh(null);
-            if (buildPanel.isActiveAndEnabled) buildPanel.refresh(null);
-            if (politicsPanel.isActiveAndEnabled) politicsPanel.refresh(true, null);
-            if (financePanel.isActiveAndEnabled) financePanel.refresh();
-            if (militaryPanel.isActiveAndEnabled) militaryPanel.refresh(true);
-            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.refresh();
-            if (popUnitPanel.isActiveAndEnabled) popUnitPanel.refresh();
-            if (StatisticPanel.isActiveAndEnabled) StatisticPanel.refreshContent();
+            if (populationPanel.isActiveAndEnabled) populationPanel.Refresh();
+            if (tradeWindow.isActiveAndEnabled) tradeWindow.Refresh();
+            if (factoryPanel.isActiveAndEnabled) factoryPanel.Refresh();
+            if (productionWindow.isActiveAndEnabled) productionWindow.Refresh();
+            if (goodsPanel.isActiveAndEnabled) goodsPanel.Refresh();
+            if (inventionsPanel.isActiveAndEnabled) inventionsPanel.Refresh();
+            if (buildPanel.isActiveAndEnabled) buildPanel.Refresh();
+            if (politicsPanel.isActiveAndEnabled) politicsPanel.Refresh();
+            if (financePanel.isActiveAndEnabled) financePanel.Refresh();
+            if (militaryPanel.isActiveAndEnabled) militaryPanel.Refresh();
+            if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
+            if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
+            if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
             //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
@@ -224,7 +224,7 @@ namespace Nashet.EconomicSimulation
 
                 }
                 if (buildPanel.isActiveAndEnabled)
-                    buildPanel.refresh(null);
+                    buildPanel.Refresh();
 
             }
         }

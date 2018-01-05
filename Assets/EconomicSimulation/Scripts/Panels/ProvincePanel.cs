@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
         {
             //MainCamera.buildPanel.show(true);
             if (MainCamera.buildPanel.isActiveAndEnabled)
-                MainCamera.buildPanel.hide();
+                MainCamera.buildPanel.Hide();
             else
                 MainCamera.buildPanel.show(true);
         }
@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.getCountry())
 
-                    MainCamera.diplomacyPanel.hide();
+                    MainCamera.diplomacyPanel.Hide();
                 else
                     MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
             }
@@ -75,7 +75,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.populationPanel.isActiveAndEnabled)
                 if (MainCamera.populationPanel.ShowingProvince == null)
                 {
-                    MainCamera.populationPanel.hide();
+                    MainCamera.populationPanel.Hide();
                     Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
                     MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                     //MainCamera.populationPanel.showAll = false;
@@ -84,10 +84,10 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (MainCamera.populationPanel.ShowingProvince == Game.selectedProvince)
-                        MainCamera.populationPanel.hide();
+                        MainCamera.populationPanel.Hide();
                     else
                     {
-                        MainCamera.populationPanel.hide();
+                        MainCamera.populationPanel.Hide();
                         Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
                         MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                         //MainCamera.populationPanel.showAll = false;
@@ -112,7 +112,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.productionWindow.isActiveAndEnabled)
                 if (MainCamera.productionWindow.getShowingProvince() == null)
                 {
-                    MainCamera.productionWindow.hide();
+                    MainCamera.productionWindow.Hide();
                     Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
                     //MainCamera.productionWindow.getShowingProvince() = Game.selectedProvince;
                     MainCamera.productionWindow.show(Game.selectedProvince, true);
@@ -120,10 +120,10 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (MainCamera.productionWindow.getShowingProvince() == Game.selectedProvince)
-                        MainCamera.productionWindow.hide();
+                        MainCamera.productionWindow.Hide();
                     else
                     {
-                        MainCamera.productionWindow.hide();
+                        MainCamera.productionWindow.Hide();
                         Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories; ;
                         //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
                         MainCamera.productionWindow.show(Game.selectedProvince, true);

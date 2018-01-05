@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
             //show(false);
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
             Canvas.ForceUpdateCanvases();
-            hide();
+            Hide();
         }
 
         public void show(bool bringOnTop)
@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
             gameObject.SetActive(true);
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();
-            refreshContent();
+            Refresh();
         }
         //override public void onCloseClick()
         //{
@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
             ShowingProvince = null;
             show(true);
         }
-        public void refreshContent()
+        public override void Refresh()
         {
             if (ShowingProvince == null)
                 SetAllPopsToShow();

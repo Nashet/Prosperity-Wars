@@ -7,6 +7,7 @@ using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System;
 
 namespace Nashet.EconomicSimulation
 {
@@ -33,7 +34,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.militaryPanel = this;
             GetComponent<RectTransform>().position = new Vector2(180f, 111);// + Screen.height);
-            hide();
+            Hide();
 
         }
 
@@ -41,6 +42,10 @@ namespace Nashet.EconomicSimulation
         void Update()
         {
             //refresh();
+        }
+        public override void Refresh()
+        {
+            refresh(true);
         }
         public void refresh(bool rebuildDropdown)
         {

@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.factoryPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(295f, -50f);
-            hide();
+            Hide();
         }
         //void OnGUI()
         //{
@@ -74,7 +74,7 @@ namespace Nashet.EconomicSimulation
             subidize.isOn = shownFactory.isSubsidized();
             dontHireOnSubsidies.isOn = shownFactory.isDontHireOnSubsidies();
         }
-        public void refresh()
+        public override void Refresh()
         {
             if (shownFactory != null)
             {
@@ -131,26 +131,26 @@ namespace Nashet.EconomicSimulation
                 efficiencyText.text = "Efficiency: " + Factory.modifierEfficiency.getModifier(shownFactory);
             }
         }
-        public void Show(Factory fact)
+        public void show(Factory fact)
         {
             gameObject.SetActive(true);
             shownFactory = fact;
             panelRectTransform.SetAsLastSibling();
-            refresh();
+            //Refresh();
         }
         public void removeFactory(Factory fact)
         {
             if (fact == shownFactory)
             {
                 shownFactory = null;
-                hide();
+                Hide();
             }
         }
 
         public void onSubsidizeValueChanged()
         {
             shownFactory.setSubsidized(subidize.isOn);
-            refresh();
+            Refresh();
         }
         public void ondontHireOnSubsidiesValueChanged()
         {
@@ -166,20 +166,20 @@ namespace Nashet.EconomicSimulation
                 shownFactory.close();
             else
                 shownFactory.open(Game.Player);
-            refresh();
-            if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();
+            Refresh();
+            if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.Refresh();
             MainCamera.topPanel.refresh();
-            if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.refresh();
+            if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.Refresh();
         }
         public void onUpgradeClick()
         {
             //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
             {
                 shownFactory.upgrade(Game.Player);
-                if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.refreshContent();
+                if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.Refresh();
                 MainCamera.topPanel.refresh();
-                if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.refresh();
-                this.refresh();
+                if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.Refresh();
+                this.Refresh();
             }
         }
         public void onDestroyClick()

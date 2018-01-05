@@ -23,14 +23,14 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.diplomacyPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
-            hide();
+            Hide();
         }
         // Update is called once per frame
         void Update()
         {
             //refresh();
         }
-        public void refresh()
+        public override void Refresh()
         {
             setButtonsState();
             sb.Clear();
@@ -75,7 +75,7 @@ namespace Nashet.EconomicSimulation
             gameObject.SetActive(true);
             panelRectTransform.SetAsLastSibling();
             selectedCountry = count;
-            refresh();
+            Refresh();
         }
         private void setButtonsState()
         {

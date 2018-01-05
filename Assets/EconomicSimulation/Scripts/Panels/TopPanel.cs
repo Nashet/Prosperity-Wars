@@ -46,7 +46,7 @@ namespace Nashet.EconomicSimulation
         public void onTradeClick()
         {
             if (MainCamera.tradeWindow.isActiveAndEnabled)
-                MainCamera.tradeWindow.hide();
+                MainCamera.tradeWindow.Hide();
             else
                 MainCamera.tradeWindow.show(true);
         }
@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
         public void onMilitaryClick()
         {
             if (MainCamera.militaryPanel.isActiveAndEnabled)
-                MainCamera.militaryPanel.hide();
+                MainCamera.militaryPanel.Hide();
             else
                 MainCamera.militaryPanel.show(null);
 
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
         {
 
             if (MainCamera.inventionsPanel.isActiveAndEnabled)
-                MainCamera.inventionsPanel.hide();
+                MainCamera.inventionsPanel.Hide();
             else
                 MainCamera.inventionsPanel.show(true);
         }
@@ -74,7 +74,7 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
                 if (MainCamera.productionWindow.getShowingProvince() == null)
-                    MainCamera.productionWindow.hide();
+                    MainCamera.productionWindow.Hide();
                 else
                 {
                     MainCamera.productionWindow.show(null, true);
@@ -91,7 +91,7 @@ namespace Nashet.EconomicSimulation
 
             if (MainCamera.populationPanel.isActiveAndEnabled)
                 if (MainCamera.populationPanel.ShowingProvince == null)
-                    MainCamera.populationPanel.hide();
+                    MainCamera.populationPanel.Hide();
                 else
                     MainCamera.populationPanel.onShowAllClick();
             else
@@ -100,14 +100,14 @@ namespace Nashet.EconomicSimulation
         public void onPoliticsClick()
         {
             if (MainCamera.politicsPanel.isActiveAndEnabled)
-                MainCamera.politicsPanel.hide();
+                MainCamera.politicsPanel.Hide();
             else
                 MainCamera.politicsPanel.show(true);
         }
         public void onFinanceClick()
         {
             if (MainCamera.financePanel.isActiveAndEnabled)
-                MainCamera.financePanel.hide();
+                MainCamera.financePanel.Hide();
             else
                 MainCamera.financePanel.show();
         }

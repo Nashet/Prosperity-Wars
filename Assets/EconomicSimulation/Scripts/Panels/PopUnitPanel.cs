@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.popUnitPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(600f, 53f);
-            hide();
+            Hide();
         }
         public PopUnit whomShowing()
         {
@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         {
             //refresh();
         }
-        public void refresh()
+        public override void Refresh()
         {
             if (pop != null)
             {
@@ -189,6 +189,7 @@ namespace Nashet.EconomicSimulation
             gameObject.SetActive(true);
             pop = ipopUnit;
             panelRectTransform.SetAsLastSibling();
+            //Refresh();
         }
     }
 }

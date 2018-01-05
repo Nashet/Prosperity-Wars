@@ -270,7 +270,7 @@ namespace Nashet.EconomicSimulation
             //province.allPopUnits.Remove(this); // gives exception        
             //Game.popsToShowInPopulationPanel.Remove(this);
             if (MainCamera.popUnitPanel.whomShowing() == this)
-                MainCamera.popUnitPanel.hide();
+                MainCamera.popUnitPanel.Hide();
             //remove from population panel.. Would do it automatically        
             //secede property... to government
             getOwnedFactories().ForEach(x => x.setOwner(getCountry()));

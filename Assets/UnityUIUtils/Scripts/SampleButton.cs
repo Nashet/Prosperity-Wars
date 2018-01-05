@@ -40,18 +40,18 @@ namespace Nashet.UnityUIUtils
                 return;
             if (link is Factory)
             {
-                MainCamera.factoryPanel.Show((Factory)link);
-                MainCamera.factoryPanel.refresh();
+                MainCamera.factoryPanel.show((Factory)link);
+                MainCamera.factoryPanel.Refresh();
             }
             else if (link is PopUnit)
             {
                 MainCamera.popUnitPanel.show((PopUnit)link);
-                MainCamera.popUnitPanel.refresh();
+                MainCamera.popUnitPanel.Refresh();
             }
             else if (link is Product)
             {
-                MainCamera.goodsPanel.Show((Product)link, true);
-                MainCamera.goodsPanel.refresh();
+                MainCamera.goodsPanel.show((Product)link, true);
+                MainCamera.goodsPanel.Refresh();
             }
             else if (link is Storage)
             {
@@ -60,20 +60,19 @@ namespace Nashet.UnityUIUtils
                     MainCamera.tradeWindow.selectProduct((storage).getProduct());
             }
             else if (link is Invention)
-            {
-                //(Invention)link            
-                MainCamera.inventionsPanel.refresh((Invention)link);
+            {                
+                MainCamera.inventionsPanel.selectInvention((Invention)link);
+                MainCamera.inventionsPanel.Refresh();
             }
             else if (link is FactoryType)
             {
-                //MainCamera.buildPanel.selectedFactoryType = (FactoryType)link;
-                MainCamera.buildPanel.refresh((FactoryType)link);
+                MainCamera.buildPanel.selectFactoryType((FactoryType)link);
+                MainCamera.buildPanel.Refresh();
             }
             else if (link is AbstractReform)
             {
-                //MainCamera.politicsPanel.selectedReform = (AbstractReform)link;
-                MainCamera.politicsPanel.refresh(true, (AbstractReform)link);
-                //MainCamera.politicsPanel.selectedReformValue = null;
+                MainCamera.politicsPanel.selectReform((AbstractReform)link);
+                MainCamera.politicsPanel.Refresh();                
             }
             else if (link is Province)
             {
@@ -90,7 +89,7 @@ namespace Nashet.UnityUIUtils
                 {
                     if (MainCamera.diplomacyPanel.getSelectedCountry() == country)
 
-                        MainCamera.diplomacyPanel.hide();
+                        MainCamera.diplomacyPanel.Hide();
                     else
                         MainCamera.diplomacyPanel.show(country);
                 }

@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.buildPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -100f);
             buildButton.interactable = false;
-            hide();
+            Hide();
         }
 
         public void show(bool bringOnTop)
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
                         var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
                         Game.Player.payWithoutRecord(factory, cost);
                         buildSomething = true;
-                        MainCamera.factoryPanel.Show(factory);
+                        MainCamera.factoryPanel.show(factory);
                     }
 
                 }
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
                         //wallet.pay(fact.wallet, new Value(100f));
                         Game.Player.countryStorageSet.subtract(needFood);
                         buildSomething = true;
-                        MainCamera.factoryPanel.Show(fact);
+                        MainCamera.factoryPanel.show(fact);
                     }
                 }
 
@@ -86,11 +86,14 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        public void refresh(FactoryType newSelection)
+        public void selectFactoryType(FactoryType newSelection)
         {
             if (newSelection != null)
                 selectedFactoryType = newSelection;
-            hide();
+        }
+        public override void Refresh()
+        {        
+            Hide();
             if (selectedFactoryType != null)
             {
                 sb.Clear();
