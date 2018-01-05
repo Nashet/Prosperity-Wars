@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     abstract public class PopUnit : Producer, ICanBeCellInTable

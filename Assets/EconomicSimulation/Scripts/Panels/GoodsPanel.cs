@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class GoodsPanel : DragPanel

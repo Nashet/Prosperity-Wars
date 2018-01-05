@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using System;
 using System.Text;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class ProvincePanel : MonoBehaviour

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour

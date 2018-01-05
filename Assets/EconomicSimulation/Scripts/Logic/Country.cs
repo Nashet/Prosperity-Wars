@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class Country : MultiSeller, ICanBeCellInTable

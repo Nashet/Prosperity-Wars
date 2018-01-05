@@ -64,9 +64,9 @@ namespace Nashet.MarchingSquares
 
             AddBorderQuad(
     (Vector3)a,
-    MeshExtensions.makeArrow(a, b, borderWidth),
+    Utils.MeshExtensions.makeArrow(a, b, borderWidth),
     (Vector3)b,
-    MeshExtensions.makeArrow(b, a, borderWidth2),
+    Utils.MeshExtensions.makeArrow(b, a, borderWidth2),
     true
     );
 

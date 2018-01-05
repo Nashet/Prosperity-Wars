@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class Invention : Name

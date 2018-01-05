@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class PopulationPanelTable : MyTableNew

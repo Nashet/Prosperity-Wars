@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using Nashet.EconomicSimulation;
+using Nashet.Utils;
 namespace Nashet.ValueSpace
 {
     /// <summary>

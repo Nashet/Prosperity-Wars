@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class PoliticsPanel : DragPanel

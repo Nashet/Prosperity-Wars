@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class Product : Name

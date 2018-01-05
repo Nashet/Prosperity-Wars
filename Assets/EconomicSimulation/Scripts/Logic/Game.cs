@@ -5,6 +5,8 @@ using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.MarchingSquares;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class Game : ThreadedJob

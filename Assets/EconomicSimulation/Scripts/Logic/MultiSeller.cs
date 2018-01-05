@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     interface ICanSell

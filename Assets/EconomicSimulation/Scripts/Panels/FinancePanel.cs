@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class FinancePanel : DragPanel

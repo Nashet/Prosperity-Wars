@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using System.Text;
 using System.Linq;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class PopUnitPanel : DragPanel

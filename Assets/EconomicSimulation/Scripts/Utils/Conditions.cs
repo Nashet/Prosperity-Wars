@@ -8,6 +8,7 @@ using System;
 using System.Text;
 using System.ComponentModel;
 using Nashet.EconomicSimulation;
+using Nashet.Utils;
 namespace Nashet.Conditions
 {
     public class ConditionsList
