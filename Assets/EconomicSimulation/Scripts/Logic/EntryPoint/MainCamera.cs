@@ -77,14 +77,14 @@ namespace Nashet.EconomicSimulation
 #if UNITY_WEBGL
                 MainCamera.Game.initialize(); // non multi-threading
 #else
-            MainCamera.Game.Start(); //initialize is here 
+                MainCamera.Game.Start(); //initialize is here 
 #endif
             }
             if (MainCamera.Game != null)
 #if UNITY_WEBGL
                 if (!gameIsLoaded)  // non multi-threading
 #else
-            if (MainCamera.Game.IsDone && !gameIsLoaded)
+                if (MainCamera.Game.IsDone && !gameIsLoaded)
 #endif
 
                 {
@@ -100,8 +100,8 @@ namespace Nashet.EconomicSimulation
                     gameIsLoaded = true;
                 }
 #if !UNITY_WEBGL
-            else // multi-threading
-                loadingPanel.loadingText.text = Game.getStatus();
+                else // multi-threading
+                    loadingPanel.updateStatus(Game.getStatus());
 #endif
             if (gameIsLoaded)
             {

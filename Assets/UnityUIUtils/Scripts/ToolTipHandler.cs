@@ -6,45 +6,70 @@ namespace Nashet.UnityUIUtils
 {
     public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        private Func<string> dynamicString;
-        public string tooltip;
-        public MainTooltip tip;
+        [SerializeField]
+        private Func<string> dynamicText;
 
-        //int counter = 0;
+        //[SerializeField]
+        public string text;
+        //public string Text
+        //{
+        //    get { return m_text; }
+        //    set { m_text = value; }
+        //}
+        [SerializeField]
+        private bool isDynamic;
 
+        // now auto update all dynamic tooltips
+        //[SerializeField]
+        //private bool updateEachTick;
 
+        protected TooltipBase tooltipHolder;
+        private bool inside;
+
+        protected void Start()
+        {
+            tooltipHolder = TooltipBase.get();
+        }
         public void setDynamicString(Func<string> dynamicString)
         {
-            this.dynamicString = dynamicString;
-            //if (dynamicString != null && tip != null)
-            //{
-            //    //tip.HideTooltip();
-            //    //tip.SetTooltip(dynamicString());
-            //    tip.redrawDynamicString(dynamicString());
-            //    //OnPointerExit(null);
-            //    //OnPointerEnter(null);
-            //}
+            this.dynamicText = dynamicString;
+            isDynamic = true;
+        }
+        public void setText(string data)
+        {
+            text = data;
+            isDynamic = false;
         }
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (tooltip != "" || dynamicString != null)
+            if (text != "" || dynamicText != null)
             {
-                if (dynamicString == null)
-                    tip.SetTooltip(tooltip);
+                if (dynamicText == null)
+                    tooltipHolder.SetTooltip(text);
                 else
-                    tip.SetTooltip(dynamicString());
+                    tooltipHolder.SetTooltip(dynamicText());
+                inside = true;
             }
         }
-
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (tip != null)
-                tip.HideTooltip();
+            if (tooltipHolder != null)
+                tooltipHolder.HideTooltip();
+            inside = false;
         }
-        public void OnMouseOver()
+        public bool isInside()
         {
-            if (dynamicString != null && tip != null)
-                tip.SetTooltip(dynamicString());
+            return inside;
+        }
+        private void Update()
+        {
+            if (isInside() && isDynamic)
+                OnPointerEnter(null);
+        }
+
+        internal string getText()
+        {
+            return text;
         }
     }
 }

@@ -163,23 +163,23 @@ namespace Nashet.EconomicSimulation
 
             if (province.getCountry() == Game.Player)
             {
-                btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+                btnBuild.GetComponentInChildren<ToolTipHandler>().setText("");
                 btnBuild.interactable = true;
-                btMobilize.GetComponentInChildren<ToolTipHandler>().tooltip = "";
+                btMobilize.GetComponentInChildren<ToolTipHandler>().setText("");
                 btMobilize.interactable = true;
             }
             else
             {
-                btnBuild.GetComponentInChildren<ToolTipHandler>().tooltip = "That isn't your province, right?";
+                btnBuild.GetComponentInChildren<ToolTipHandler>().setText("That isn't your province, right?");
                 btnBuild.interactable = false;
-                btMobilize.GetComponentInChildren<ToolTipHandler>().tooltip = "That isn't your province, right?";
+                btMobilize.GetComponentInChildren<ToolTipHandler>().setText("That isn't your province, right?");
                 btMobilize.interactable = false;
             }
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
-            btAttackThat.interactable = Country.canAttack.isAllTrue(province, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().tooltip);
-            btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(province, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().tooltip);
+            btAttackThat.interactable = Country.canAttack.isAllTrue(province, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().text);
+            btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(province, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
         }
     }

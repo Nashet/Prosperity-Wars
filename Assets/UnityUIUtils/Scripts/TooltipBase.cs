@@ -4,61 +4,67 @@ using UnityEngine.UI;
 using System;
 namespace Nashet.UnityUIUtils
 {
-    public class MainTooltip : MonoBehaviour
+    public class TooltipBase : MonoBehaviour
     {
-
         //manually selectable padding for the background image
-        public int horizontalPadding;
-        public int verticalPadding;
+        [SerializeField]
+        private int horizontalPadding;
+        [SerializeField]
+        private int verticalPadding;
 
         //tooltip text
-        public Text thisText;
+        [SerializeField]
+        private Text thisText;
 
         //horizontal layout of the tooltip
-        public HorizontalLayoutGroup hlG;
-        Image bgImageSource;
+        [SerializeField]
+        private HorizontalLayoutGroup hlG;
+        [SerializeField]
+        private Image bgImageSource;
 
         //needed as the layout refreshes only on the first Update() call
-        bool firstUpdate;
+        private bool firstUpdate;
 
         //if the tooltip is inside a UI element
-        bool inside;
+        private bool inside;
 
         //size of the tooltip, needed to track if out of screen
         // public float width;
         // public float height;
 
         //detect canvas mode so to apply different behaviors to different canvas modes, currently only RenderMode.ScreenSpaceCamera implemented
-        int canvasMode;
-        RenderMode GUIMode;
+        private int canvasMode;
+        private RenderMode GUIMode;
 
         //the scene GUI camera
-        Camera GUICamera;
+        private Camera GUICamera;
 
         //the default tooltip object has the following pivots, so that the offset from the mouse is always proportional to the screen resolution (the y pivot)
         //Pivot(0.5,-0.5)
 
         //screen viewport corners for out of screen detection
-        Vector3 lowerLeft;
-        Vector3 upperRight;
+        private Vector3 lowerLeft;
+        private Vector3 upperRight;
 
         //scale factor of proportionality to the reference resolution (1280x720)
-        float currentYScaleFactor;
-        float currentXScaleFactor;
+        private float currentYScaleFactor;
+        private float currentXScaleFactor;
 
         //standard X and Y offsets of the new tooltip
-        float defaultYOffset;
-        float defaultXOffset;
+        private float defaultYOffset;
+        private float defaultXOffset;
 
         //real on screen sizes of the tooltip object
-        float tooltipRealHeight;
-        float tooltipRealWidth;
-        public static MainTooltip thatObj;
+        private float tooltipRealHeight;
+        private float tooltipRealWidth;
+
+        private static TooltipBase thatObjectLink;
 
         //tooltip background image
-        public RectTransform bgImage;
+        [SerializeField]
+        private RectTransform bgImage;
         // Use this for initialization
-        void Start()
+        private void Awake()
         {
 
             //in this line you need to change the string in order to get your Camera //TODO MAYBE DO IT FROM THE INSPECTOR
@@ -83,7 +89,11 @@ namespace Nashet.UnityUIUtils
             //hide the tooltip
             HideTooltipVisibility();
             this.transform.parent.gameObject.SetActive(false);
-            thatObj = this;
+            thatObjectLink = this;
+        }
+        public bool isInside()
+        {
+            return inside;
         }
         internal void redrawDynamicString(string text)
         {
@@ -92,12 +102,9 @@ namespace Nashet.UnityUIUtils
             thisText.text = text;
 
         }
-        public MainTooltip getThis
+        public static TooltipBase get()
         {
-            get
-            {
-                return this;
-            }
+            return thatObjectLink;
         }
 
         //single string input tooltip
@@ -114,8 +121,6 @@ namespace Nashet.UnityUIUtils
             firstUpdate = true;
             //LayoutInit();
         }
-
-
 
         // Update is called once per frame
         void Update()
@@ -157,8 +162,8 @@ namespace Nashet.UnityUIUtils
             lowerLeft = GUICamera.ViewportToScreenPoint(new Vector3(0.0f, 0.0f, 0.0f));
             upperRight = GUICamera.ViewportToScreenPoint(new Vector3(1.0f, 1.0f, 0.0f));
 
-            currentYScaleFactor = Screen.height / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.y;
-            currentXScaleFactor = Screen.width / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.x;
+            //currentYScaleFactor = Screen.height / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.y;
+            //currentXScaleFactor = Screen.width / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.x;
 
         }
 

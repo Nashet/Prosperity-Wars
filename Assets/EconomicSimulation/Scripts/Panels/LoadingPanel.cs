@@ -18,5 +18,9 @@ namespace Nashet.EconomicSimulation
         {
             gameObject.SetActive(false);
         }
+        public void updateStatus(string text)
+        {
+            loadingText.text = text;
+        }
     }
 }

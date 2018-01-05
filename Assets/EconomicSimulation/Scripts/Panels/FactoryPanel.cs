@@ -41,9 +41,9 @@ namespace Nashet.EconomicSimulation
 
         void setGUIElementsAccesability()
         {
-            upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(shownFactory, Game.Player, out upgradeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(shownFactory, Game.Player, out upgradeButton.GetComponentInChildren<ToolTipHandler>().text);
 
-            subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
+            subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().text);
 
             if (shownFactory.isWorking())
                 reopenButtonflag = reopenButtonStatus.close;
@@ -52,23 +52,23 @@ namespace Nashet.EconomicSimulation
             if (reopenButtonflag == reopenButtonStatus.close)
             {
                 reopenButton.GetComponentInChildren<Text>().text = "Close";
-                reopenButton.interactable = Factory.conditionsClose.isAllTrue(shownFactory, Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                reopenButton.interactable = Factory.conditionsClose.isAllTrue(shownFactory, Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().text);
             }
             else
             {
-                reopenButton.interactable = Factory.conditionsReopen.isAllTrue(shownFactory, Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+                reopenButton.interactable = Factory.conditionsReopen.isAllTrue(shownFactory, Game.Player, out reopenButton.GetComponentInChildren<ToolTipHandler>().text);
                 reopenButton.GetComponentInChildren<Text>().text = "Reopen";
             }
 
-            destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(shownFactory, Game.Player, out destroyButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(shownFactory, Game.Player, out destroyButton.GetComponentInChildren<ToolTipHandler>().text);
 
-            sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-            buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponentInChildren<ToolTipHandler>().tooltip);
-            nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(shownFactory, Game.Player, out nationalizeButton.GetComponentInChildren<ToolTipHandler>().tooltip);
+            sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponentInChildren<ToolTipHandler>().text);
+            buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponentInChildren<ToolTipHandler>().text);
+            nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(shownFactory, Game.Player, out nationalizeButton.GetComponentInChildren<ToolTipHandler>().text);
 
-            this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(shownFactory, Game.Player, out priority.GetComponentInChildren<ToolTipHandler>().tooltip);
-            this.subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().tooltip);
-            this.dontHireOnSubsidies.interactable = Factory.conditionsDontHireOnSubsidies.isAllTrue(shownFactory, Game.Player, out dontHireOnSubsidies.GetComponentInChildren<ToolTipHandler>().tooltip);
+            this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(shownFactory, Game.Player, out priority.GetComponentInChildren<ToolTipHandler>().text);
+            this.subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponentInChildren<ToolTipHandler>().text);
+            this.dontHireOnSubsidies.interactable = Factory.conditionsDontHireOnSubsidies.isAllTrue(shownFactory, Game.Player, out dontHireOnSubsidies.GetComponentInChildren<ToolTipHandler>().text);
 
             priority.value = shownFactory.getPriority();
             subidize.isOn = shownFactory.isSubsidized();
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
             if (shownFactory != null)
             {
                 setGUIElementsAccesability();
-                Factory.modifierEfficiency.getModifier(shownFactory, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
+                Factory.modifierEfficiency.getModifier(shownFactory, out efficiencyText.GetComponentInChildren<ToolTipHandler>().text);
                 var sb = new StringBuilder();
 
                 sb.Append(shownFactory.getType().name).Append(" level: ").Append(shownFactory.getLevel());

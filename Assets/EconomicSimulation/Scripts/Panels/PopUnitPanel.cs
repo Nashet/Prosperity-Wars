@@ -107,7 +107,7 @@ namespace Nashet.EconomicSimulation
                 + "\nIncome tax: " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
-                efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().tooltip);
+                efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().text);
                 issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(
                     delegate ()
                     {

@@ -78,7 +78,7 @@ namespace Nashet.Utils
             {
                 ToolTipHandler s = toReturn.GetComponent<ToolTipHandler>();
                 // s.GetComponent<ToolTipHandler>().tooltip = "";
-                s.tooltip = "";
+                s.setText("");
                 s.setDynamicString(null);
                 //if (s.tip != null)
                 //    s.tip.HideTooltip();

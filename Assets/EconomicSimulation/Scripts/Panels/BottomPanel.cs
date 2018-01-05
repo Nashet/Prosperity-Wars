@@ -28,14 +28,7 @@ namespace Nashet.EconomicSimulation
         {
             generalText.text = "Economic Simulation Demo v0.16.0";
         }
-        public void onExitClick()
-        {
-#if UNITY_WEBGL
-            Screen.fullScreen = false;
-#else
-        Application.Quit();
-#endif
-        }
+        
         public void onStatisticsClick()
         {
             if (MainCamera.StatisticPanel.isActiveAndEnabled)

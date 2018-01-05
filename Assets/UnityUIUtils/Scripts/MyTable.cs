@@ -34,14 +34,14 @@ namespace Nashet.UnityUIUtils
             SampleButton sampleButton = newButton.GetComponent<SampleButton>();
             sampleButton.Setup(text, prov);
         }
-        protected void AddButton(string text, Province prov, string tooltip)
+        protected void AddButton(string text, Province prov, string tooltipText)
         {
             GameObject newButton = buttonObjectPool.GetObject();
             newButton.transform.SetParent(gameObject.transform, true);
             SampleButton sampleButton = newButton.GetComponent<SampleButton>();
             sampleButton.Setup(text, prov);
-            newButton.GetComponentInChildren<ToolTipHandler>().tooltip = tooltip;
-            newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+            newButton.GetComponentInChildren<ToolTipHandler>().setText(tooltipText);
+            
         }
         protected void AddButton(string text)
         {
@@ -70,8 +70,7 @@ namespace Nashet.UnityUIUtils
             newButton.transform.SetParent(gameObject.transform, true);
             SampleButton sampleButton = newButton.GetComponent<SampleButton>();
             sampleButton.Setup(text, storage);
-            newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
-            newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+            newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);            
         }
         protected void RemoveButtons()
         {
@@ -196,8 +195,7 @@ namespace Nashet.UnityUIUtils
             sampleButton.Setup(text, bject);
             if (dynamicTooltip != null)
             {
-                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
-                newButton.GetComponentInChildren<ToolTipHandler>().tip = MainTooltip.thatObj;
+                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);                
             }
         }
 
