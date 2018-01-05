@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Nashet.EconomicSimulation;
+using Nashet.ValueSpace;
 public static class Texture2DExtensions
 {
     public static Texture2D FlipTexture(Texture2D original)

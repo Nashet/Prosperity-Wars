@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Nashet.EconomicSimulation;
+using Nashet.ValueSpace;
 namespace Nashet.UnityUIUtils
 {
     abstract public class MyTable : MonoBehaviour

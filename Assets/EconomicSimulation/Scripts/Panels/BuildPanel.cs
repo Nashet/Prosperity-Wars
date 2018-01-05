@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
 using Nashet.UnityUIUtils;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     

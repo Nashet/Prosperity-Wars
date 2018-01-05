@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using Nashet.Conditions;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     public static class ReformExtensions

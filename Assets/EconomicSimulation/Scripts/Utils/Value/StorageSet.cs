@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.EconomicSimulation;
-public class StorageSet
+namespace Nashet.ValueSpace
+{
+    public class StorageSet
     {
         //private static Storage tStorage;
         private List<Storage> container = new List<Storage>();
@@ -488,3 +490,4 @@ public class StorageSet
         //    });
         //}
     }
+}

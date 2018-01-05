@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     public class Bank : Agent

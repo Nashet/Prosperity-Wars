@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Nashet.UnityUIUtils;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     //public class StaffOwner :Consumer

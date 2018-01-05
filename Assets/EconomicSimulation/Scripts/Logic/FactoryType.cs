@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Text;
 using Nashet.Conditions;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     public class FactoryType

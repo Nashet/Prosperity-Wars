@@ -2,6 +2,7 @@
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Conditions;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     public class Factory : SimpleProduction, ICanBeCellInTable

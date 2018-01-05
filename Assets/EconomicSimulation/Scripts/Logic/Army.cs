@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using Nashet.UnityUIUtils;
 using Nashet.Conditions;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     public class MyDate

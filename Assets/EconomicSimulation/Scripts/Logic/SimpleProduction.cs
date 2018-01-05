@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     /// <summary>

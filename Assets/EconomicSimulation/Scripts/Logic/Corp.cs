@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     //todo inherit from consumer?

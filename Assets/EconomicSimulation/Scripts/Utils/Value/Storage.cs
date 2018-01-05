@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using Nashet.EconomicSimulation;
-
-/// <summary>
-/// Allows to keep info about how much product was taken from StorageSet
-/// !!! if someone would change returning object (Storage) then country takenAway logic would be broken!!
-/// </summary>
-public class CountryStorageSet : StorageSet, IHasStatistics
+namespace Nashet.ValueSpace
+{
+    /// <summary>
+    /// Allows to keep info about how much product was taken from StorageSet
+    /// !!! if someone would change returning object (Storage) then country takenAway logic would be broken!!
+    /// </summary>
+    public class CountryStorageSet : StorageSet, IHasStatistics
     {
         /// <summary>
         /// Counts how much products was taken from country storage 
@@ -430,3 +431,4 @@ public class CountryStorageSet : StorageSet, IHasStatistics
                 return new Storage(getProduct(), this.get() - storage.get());
         }
     }
+}

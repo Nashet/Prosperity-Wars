@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Runtime.Serialization;
 using Nashet.EconomicSimulation;
-
+using Nashet.ValueSpace;
 public class CultureNameGenerator
 {
     static ChanceBox<string> prefix;

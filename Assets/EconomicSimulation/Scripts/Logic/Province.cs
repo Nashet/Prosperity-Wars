@@ -7,6 +7,7 @@ using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.MarchingSquares;
 using Nashet.Conditions;
+using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
     public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable

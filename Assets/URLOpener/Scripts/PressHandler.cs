@@ -11,8 +11,10 @@ namespace Nashet.UnityUIUtils
     /// </summary>
     public class PressHandler : MonoBehaviour, IPointerDownHandler
     {
-        public string url;        
-        private UnityEvent OnPress = new UnityEvent();
+        [SerializeField]
+        private string url;
+        private readonly UnityEvent OnPress = new UnityEvent();
+        
 
         private void Start()
         {
@@ -22,13 +24,13 @@ namespace Nashet.UnityUIUtils
         {
             OnPress.Invoke();
         }
-        private void OpenLinkJSPlugin(string url)
+        private static void OpenLinkJSPlugin(string url)
         {
-        #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             openWindow(url);
-        #else
+#else
             Application.OpenURL(url);
-        #endif
+#endif
         }
 
         [DllImport("__Internal")]
