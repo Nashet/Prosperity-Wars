@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Nashet.UnityUIUtils;
-namespace Nashet.Utils
+namespace Nashet.UnityUIUtils
 {
     // A very simple object pooling class
     public class SimpleObjectPool : MonoBehaviour
     {
-        // the prefab that this object pool returns instances of
-        public GameObject prefab;
+        ///<summary>The prefab that this object pool returns instances of</summary>        
+        [SerializeField]
+        private GameObject prefab;
         // collection of currently inactive instances of the prefab
         private Stack<GameObject> inactiveInstances = new Stack<GameObject>();
 
@@ -99,11 +100,10 @@ namespace Nashet.Utils
                 Destroy(toReturn);
             }
         }
-    }
-
-    // a component that simply identifies the pool that a GameObject came from
-    public class PooledObject : MonoBehaviour
-    {
-        public SimpleObjectPool pool;
-    }
+        // a component that simply identifies the pool that a GameObject came from
+        public class PooledObject : MonoBehaviour
+        {
+            public SimpleObjectPool pool;
+        }
+    }    
 }

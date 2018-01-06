@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
         //internal static Camera cameraMy;
         //static GameObject mapPointer;
 
-        public SimpleObjectPool buttonObjectPool;
+        //public SimpleObjectPool buttonObjectPool;
         //public Transform panelParent;
         
         public Canvas canvas;

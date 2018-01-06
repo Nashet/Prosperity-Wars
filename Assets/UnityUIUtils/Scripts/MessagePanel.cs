@@ -108,5 +108,3 @@ namespace Nashet.UnityUIUtils
         }
     }
 }
-// add prefab pool
-// fix sample button

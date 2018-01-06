@@ -9,10 +9,14 @@ namespace Nashet.UnityUIUtils
 {
     public class SampleButton : MonoBehaviour, IPointerDownHandler
     {
+        [SerializeField]
+        private Button buttonComponent;
 
-        public Button buttonComponent;
-        public Text nameLabel;
-        public Image iconImage;
+        [SerializeField]
+        private Text nameLabel;
+
+        [SerializeField]
+        private Image iconImage;
         private object link;
         private DragPanel parent;
 
@@ -96,12 +100,6 @@ namespace Nashet.UnityUIUtils
                 else
                     MainCamera.diplomacyPanel.show(country);
             }
-
-
-        }
-        //internal void Setup(string text, UnityEngine.Events.UnityAction handleClick, ProductionWindowTable productionWindowTable, Factory stor)
-        //{
-        //    Setup( text,  handleClick, productionWindowTable);
-        //}
+        }        
     }
 }
