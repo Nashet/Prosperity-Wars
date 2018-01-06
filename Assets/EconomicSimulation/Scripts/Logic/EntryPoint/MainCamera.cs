@@ -27,16 +27,10 @@ namespace Nashet.EconomicSimulation
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
 
-        private Camera camera;
+        private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
-        // Use this for initialization
-
-        void Start()
-        {
-            //topPanel.hide();
-            //Canvas.ForceUpdateCanvases();
-        }
+        
         void FixedUpdate()
         {
             if (gameIsLoaded)
@@ -70,7 +64,7 @@ namespace Nashet.EconomicSimulation
                 Application.runInBackground = true;
                 game = new Game();
 #if UNITY_WEBGL
-                MainCamera.Game.initialize(); // non multi-threading
+                game.initialize(); // non multi-threading
 #else
                 game.Start(); //initialize is here 
 #endif

@@ -5,8 +5,8 @@ namespace Nashet.EconomicSimulation
 {
     public class Culture
     {
-        string name;
-        List<Culture> allCultures = new List<Culture>();
+        private readonly string name;
+        private readonly List<Culture> allCultures = new List<Culture>();
         public Culture(string iname)
         {
             name = iname;
