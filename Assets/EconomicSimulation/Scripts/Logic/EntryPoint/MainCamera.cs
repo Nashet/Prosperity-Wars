@@ -4,15 +4,10 @@ using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
-    {
-        public static Game Game;
-        //internal static Camera cameraMy;
-        //static GameObject mapPointer;
+    {   
+        [SerializeField]
+        private Canvas canvas;
 
-        //public SimpleObjectPool buttonObjectPool;
-        //public Transform panelParent;
-        
-        public Canvas canvas;
         public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
         public static PopulationPanel populationPanel;
@@ -27,16 +22,16 @@ namespace Nashet.EconomicSimulation
         internal static PoliticsPanel politicsPanel;
         internal static FinancePanel financePanel;
         internal static MilitaryPanel militaryPanel;
-        internal static bool gameIsLoaded;
+        
         internal static LoadingPanel loadingPanel;
-        private Camera myCamera;
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
 
-        //internal static MessagePanel messagePanel;
-
+        private Camera camera;
+        private Game game;
+        public static bool gameIsLoaded; // remove public after deletion of MyTable class
         // Use this for initialization
-        //public Text generalText;
+
         void Start()
         {
             //topPanel.hide();
@@ -47,7 +42,7 @@ namespace Nashet.EconomicSimulation
             if (gameIsLoaded)
             {
                 var position = this.transform.position;
-                var mapBorders = Game.getMapBorders();
+                var mapBorders = game.getMapBorders();
                 float xyCameraSpeed = 2f;
                 float zCameraSpeed = 55f;
                 float xMove = Input.GetAxis("Horizontal");
@@ -70,28 +65,27 @@ namespace Nashet.EconomicSimulation
         void Update()
         {
             //starts loading thread
-            if (MainCamera.Game == null)// && Input.GetKeyUp(KeyCode.Backspace))
+            if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
             {
                 Application.runInBackground = true;
-                MainCamera.Game = new Game();
+                game = new Game();
 #if UNITY_WEBGL
                 MainCamera.Game.initialize(); // non multi-threading
 #else
-                MainCamera.Game.Start(); //initialize is here 
+                game.Start(); //initialize is here 
 #endif
             }
-            if (MainCamera.Game != null)
+            if (game != null)
 #if UNITY_WEBGL
                 if (!gameIsLoaded)  // non multi-threading
 #else
-                if (MainCamera.Game.IsDone && !gameIsLoaded)
+                if (game.IsDone && !gameIsLoaded)
 #endif
-
                 {
                     Game.setUnityAPI();
 
-                    myCamera = this.GetComponent<Camera>();
-                    focusCamera(Game.Player.getCapital());
+                    camera = this.GetComponent<Camera>();
+                    focus(Game.Player.getCapital());
                     //gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
                     //    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
                     loadingPanel.Hide();
@@ -101,7 +95,7 @@ namespace Nashet.EconomicSimulation
                 }
 #if !UNITY_WEBGL
                 else // multi-threading
-                    loadingPanel.updateStatus(Game.getStatus());
+                    loadingPanel.updateStatus(game.getStatus());
 #endif
             if (gameIsLoaded)
             {
@@ -109,9 +103,9 @@ namespace Nashet.EconomicSimulation
                     Game.redrawMapAccordingToMapMode(Game.getMapMode());
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
-                    int meshNumber = GetRayCastMeshNumber();
+                    int meshNumber = getRayCastMeshNumber();
                     //found something correct            
-                    SelectProvince(meshNumber);
+                    selectProvince(meshNumber);
                 }
                 if (Input.GetKeyUp(KeyCode.Space))
                     topPanel.switchHaveToRunSimulation();
@@ -119,7 +113,7 @@ namespace Nashet.EconomicSimulation
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();
 
-                if (Game.isRunningSimulation() && Game.howMuchPausedWindowsOpen == 0)
+                if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
                     Game.simulate();
                     refreshAllActive();
@@ -132,7 +126,7 @@ namespace Nashet.EconomicSimulation
                     MessagePanel.showMessageBox(canvas);
             }
         }
-        int GetRayCastMeshNumber()
+        int getRayCastMeshNumber()
         {
             //RaycastHit hit = new RaycastHit();//temp
             //int layerMask = 1 << 8;
@@ -140,7 +134,7 @@ namespace Nashet.EconomicSimulation
             //Physics.DefaultRaycastLayers;
             RaycastHit hit;
             if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                if (!Physics.Raycast(myCamera.ScreenPointToRay(Input.mousePosition), out hit))
+                if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
                     return -1;
                 else; // go on
             else return -3; //hovering over UI
@@ -188,7 +182,7 @@ namespace Nashet.EconomicSimulation
             //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
-        internal static void SelectProvince(int number)
+        internal static void selectProvince(int number)
         {
             //if (Game.selectedProvince != null && number >= 0)
             //{
@@ -243,8 +237,8 @@ namespace Nashet.EconomicSimulation
         }
 
         
-        // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
-        public void focusCamera(Province province)
+        // This function is called every fixed framerate frame, if the MonoBehavior is enabled.
+        public void focus(Province province)
         {
             gameObject.transform.position = new Vector3(province.getPosition().x,
                         province.getPosition().y, gameObject.transform.position.z);

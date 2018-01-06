@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
 
         static bool haveToRunSimulation;
         static bool haveToStepSimulation;
-        static internal int howMuchPausedWindowsOpen = 0;
+        
 
         static public System.Random Random = new System.Random();
 

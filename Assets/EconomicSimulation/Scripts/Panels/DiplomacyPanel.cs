@@ -90,7 +90,7 @@ namespace Nashet.EconomicSimulation
         public void onGoToClick()
         {
             if (selectedCountry != Country.NullCountry)
-                mainCamera.focusCamera(selectedCountry.getCapital());
+                mainCamera.focus(selectedCountry.getCapital());
         }
         public void onRegainControlClick()
         {

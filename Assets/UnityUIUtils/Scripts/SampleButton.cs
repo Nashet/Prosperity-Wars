@@ -84,7 +84,7 @@ namespace Nashet.UnityUIUtils
                 //MainCamera.politicsPanel.refresh(true);
                 //MainCamera.politicsPanel.selectedReformValue = null;
                 Province temp = (Province)(link);
-                MainCamera.SelectProvince(temp.getID());
+                MainCamera.selectProvince(temp.getID());
             }
             else if (link is Country)
             {

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
-using Nashet.EconomicSimulation;
-using System;
 
 namespace Nashet.UnityUIUtils
 {
@@ -53,6 +51,7 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private static GameObject messagePanelPrefab; //FixedJoint it
 
+        private static int howMuchPausedWindowsOpen = 0;
         private StringBuilder sb = new StringBuilder();
         // Use this for initialization
         void Start()
@@ -61,8 +60,6 @@ namespace Nashet.UnityUIUtils
             position.Set(lastDragPosition.x - 10f, lastDragPosition.y - 10f, 0);
             transform.localPosition = position;
             lastDragPosition = transform.localPosition;
-
-
         }
 
         override public void OnDrag(PointerEventData data)
@@ -79,7 +76,7 @@ namespace Nashet.UnityUIUtils
         public void show(Message mess)
         {
             Show();
-            Game.howMuchPausedWindowsOpen++;
+            howMuchPausedWindowsOpen++;
 
             panelRectTransform.SetAsLastSibling();
 
@@ -103,8 +100,13 @@ namespace Nashet.UnityUIUtils
         override public void onCloseClick()
         {
             base.onCloseClick();
-            Game.howMuchPausedWindowsOpen--;
+            howMuchPausedWindowsOpen--;
             Destroy(gameObject);
+        }
+
+        internal static bool IsOpenAny()
+        {
+            return howMuchPausedWindowsOpen > 0;
         }
     }
 }

@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Nashet.UnityUIUtils;
 namespace Nashet.UnityUIUtils
 {
     // A very simple object pooling class
     public class SimpleObjectPool : MonoBehaviour
     {
         ///<summary>The prefab that this object pool returns instances of</summary>        
-        [SerializeField]
-        private GameObject prefab;
+        [SerializeField] // Don't make it static since there could be > 1 pools
+        private GameObject pooledPrefab;
         // collection of currently inactive instances of the prefab
-        private Stack<GameObject> inactiveInstances = new Stack<GameObject>();
+        private readonly Stack<GameObject> inactiveInstances = new Stack<GameObject>();
 
         //public GameObject GetObject(GameObject prefabAnother)
         //{
@@ -54,7 +53,7 @@ namespace Nashet.UnityUIUtils
             // otherwise, create a new instance
             else
             {
-                spawnedGameObject = (GameObject)GameObject.Instantiate(prefab);
+                spawnedGameObject = (GameObject)GameObject.Instantiate(pooledPrefab);
 
                 // add the PooledObject component to the prefab so we know it came from this pool
                 PooledObject pooledObject = spawnedGameObject.AddComponent<PooledObject>();
