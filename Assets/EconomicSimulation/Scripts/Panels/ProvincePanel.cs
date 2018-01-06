@@ -8,7 +8,7 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class ProvincePanel : MonoBehaviour
+    public class ProvincePanel :  Hideable
     {
         [SerializeField]
         private Text generaltext;
@@ -20,20 +20,17 @@ namespace Nashet.EconomicSimulation
         void Start()
         {
             MainCamera.provincePanel = this;
-            hide();
+            Hide();
         }
-        public void hide()    // it's cause it did not inherit my panel class
+       
+        public override void Show()
         {
-            gameObject.SetActive(false);
-        }
-        public void show()
-        {
-            gameObject.SetActive(true);
+            base.Show();
             refresh(Game.selectedProvince);
         }
         public void onCloseClick()
         {
-            hide();
+            Hide();
         }
         public void onBuildClick()
         {

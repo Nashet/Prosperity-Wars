@@ -9,29 +9,20 @@ namespace Nashet.EconomicSimulation
 
     public class InventionsPanelTable : MyTable
     {
-        override protected void refresh()
+        public override void Refresh()
         {
             ////if (Game.date != 0)
             {
                 base.RemoveButtons();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
+                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
         }
-        protected void AddButton(string text, Invention inventionType)
-        {
-            GameObject newButton = buttonObjectPool.GetObject();
-            newButton.transform.SetParent(gameObject.transform, true);
-            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-            //if (inventionType == null)
-            //    sampleButton.Setup(text, this, null);
-            //else
-            sampleButton.Setup(text, inventionType);
-        }
+        
         override protected void AddButtons()
         {
             int counter = 0;
-            addHeader();
+            AddHeader();
             if (Game.Player != null)
                 foreach (var next in Game.Player.getAvailable())
                 //if (next.Key.isAvailable(Game.Player))
@@ -49,7 +40,7 @@ namespace Nashet.EconomicSimulation
                 }
         }
 
-        protected override void addHeader()
+        protected override void AddHeader()
         {
             // Adding invention name 
             AddButton("Invention");

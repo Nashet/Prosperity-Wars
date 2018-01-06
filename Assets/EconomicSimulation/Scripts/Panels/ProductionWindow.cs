@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
         }
         public void show(Province inn, bool bringOnTop)
         {
-            gameObject.SetActive(true);
+            Show();
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();
             showingProvince = inn;
@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
             }
             //foreach (var item in tables)
             //    item.refreshContent();
-            table.refreshContent();
+            table.Refresh();
         }
 
         public void removeFactory(Factory fact)

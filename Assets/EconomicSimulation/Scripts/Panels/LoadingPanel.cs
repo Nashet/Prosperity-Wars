@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Nashet.UnityUIUtils;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 namespace Nashet.EconomicSimulation
 {
-    public class LoadingPanel : MonoBehaviour
+    public class LoadingPanel : Hideable
     {
         [SerializeField]
         private Text loadingText;
@@ -14,10 +15,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.loadingPanel = this;
         }
-        public void hide()
-        {
-            gameObject.SetActive(false);
-        }
+
         public void updateStatus(string text)
         {
             loadingText.text = text;

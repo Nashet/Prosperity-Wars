@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         static public List<Factory> factoriesToShowInProductionPanel;
 
         static internal List<BattleResult> allBattles = new List<BattleResult>();
-        static internal readonly Stack<Message> MessageQueue = new Stack<Message>();
+        
         static public readonly Market market = new Market();
 
         //static internal StringBuilder threadDangerSB = new StringBuilder();

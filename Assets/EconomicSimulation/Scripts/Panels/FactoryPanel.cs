@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
         }
         public void show(Factory fact)
         {
-            gameObject.SetActive(true);
+            Show();
             shownFactory = fact;
             panelRectTransform.SetAsLastSibling();
             //Refresh();
@@ -168,7 +168,7 @@ namespace Nashet.EconomicSimulation
                 shownFactory.open(Game.Player);
             Refresh();
             if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.Refresh();
-            MainCamera.topPanel.refresh();
+            MainCamera.topPanel.Refresh();
             if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.Refresh();
         }
         public void onUpgradeClick()
@@ -177,7 +177,7 @@ namespace Nashet.EconomicSimulation
             {
                 shownFactory.upgrade(Game.Player);
                 if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.Refresh();
-                MainCamera.topPanel.refresh();
+                MainCamera.topPanel.Refresh();
                 if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.Refresh();
                 this.Refresh();
             }

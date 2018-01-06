@@ -8,25 +8,34 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.UnityUIUtils
 {
-    abstract public class MyTable : MonoBehaviour
+    public interface ICanBeCellInTable
     {
-        public SimpleObjectPool buttonObjectPool;
-        protected int rowHeight = 20;
-        public int columnsAmount;
-        abstract protected void addHeader();
-        // Use this for initialization
-        void Start()
-        {
 
-        }
+    }
+    abstract public class MyTable : MonoBehaviour, IRefreshable
+    {
+        [SerializeField]
+        private SimpleObjectPool buttonObjectPool;
+
+        [SerializeField]
+        private int columnsAmount;
+
+        protected int rowHeight = 20;
+
+        abstract protected void AddHeader();
+        abstract public void Refresh();
+        abstract protected void AddButtons();
         // here magic is going
         void OnEnable()
         {
             //if (Game.date !=0)
             if (MainCamera.gameIsLoaded)
-                refresh();
+                Refresh();
         }
-        abstract protected void refresh();
+        public int GetColumnsAmount()
+        {
+            return columnsAmount;
+        }
         protected void AddButton(string text, Province prov)
         {
             GameObject newButton = buttonObjectPool.GetObject();
@@ -41,7 +50,7 @@ namespace Nashet.UnityUIUtils
             SampleButton sampleButton = newButton.GetComponent<SampleButton>();
             sampleButton.Setup(text, prov);
             newButton.GetComponentInChildren<ToolTipHandler>().setText(tooltipText);
-            
+
         }
         protected void AddButton(string text)
         {
@@ -70,7 +79,38 @@ namespace Nashet.UnityUIUtils
             newButton.transform.SetParent(gameObject.transform, true);
             SampleButton sampleButton = newButton.GetComponent<SampleButton>();
             sampleButton.Setup(text, storage);
-            newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);            
+            newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+        }
+        protected void AddButton(string text, FactoryType type)
+        {
+            GameObject newButton = buttonObjectPool.GetObject();
+            newButton.transform.SetParent(gameObject.transform, true);
+            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            //if (inventionType == null)
+            //    sampleButton.Setup(text, this, null);
+            //else
+            sampleButton.Setup(text, type);
+        }
+        protected void AddButton(string text, Invention inventionType)
+        {
+            GameObject newButton = buttonObjectPool.GetObject();
+            newButton.transform.SetParent(gameObject.transform, true);
+            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            //if (inventionType == null)
+            //    sampleButton.Setup(text, this, null);
+            //else
+            sampleButton.Setup(text, inventionType);
+        }
+        protected void AddButton(string text, AbstractReform type)
+        {
+            GameObject newButton = buttonObjectPool.GetObject();
+            //newButton.transform.SetParent(contentPanel, false);
+            newButton.transform.SetParent(gameObject.transform);
+            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            //if (inventionType == null)
+            //    sampleButton.Setup(text, this, null);
+            //else
+            sampleButton.Setup(text, type);
         }
         protected void RemoveButtons()
         {
@@ -82,7 +122,7 @@ namespace Nashet.UnityUIUtils
             }
         }
 
-        abstract protected void AddButtons();
+
         //abstract protected void AddButton(string text, PopUnit record);
 
         //public void TryTransferItemToOtherShop(Item item)
@@ -119,28 +159,27 @@ namespace Nashet.UnityUIUtils
         //    }
         //}
     }
-    abstract public class MyTableNew : MonoBehaviour
+    abstract public class MyTableNew : MonoBehaviour, IRefreshable
     {
-        public SimpleObjectPool buttonObjectPool;
-        public Scrollbar verticalSlider;
+        [SerializeField]
+        private SimpleObjectPool buttonObjectPool;
+
+        [SerializeField]
+        private Scrollbar verticalSlider;
 
         /// <summary>in pixels</summary>
         private readonly int rowHeight = 20;
         private int rowOffset;
         private bool alreadyInUpdate;
+
         abstract protected void addHeader();
-
-        public abstract void refreshContent();
-
+        abstract public void Refresh();
 
         public int getRowOffset()
         {
             return rowOffset;
         }
-        //public int getHowMuchRowsShow()
-        //{
-        //    return howMuchRowsShow;
-        //}
+        
         public void startUpdate()
         {
             alreadyInUpdate = true;
@@ -155,7 +194,7 @@ namespace Nashet.UnityUIUtils
         public void OnVerticalScroll()
         {
             if (!alreadyInUpdate)
-                refreshContent();
+                Refresh();
         }
         /// <summary>
         /// Returns how much rows should be shown. It's never bigger than totalRows
@@ -195,7 +234,7 @@ namespace Nashet.UnityUIUtils
             sampleButton.Setup(text, bject);
             if (dynamicTooltip != null)
             {
-                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);                
+                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
             }
         }
 
@@ -215,9 +254,5 @@ namespace Nashet.UnityUIUtils
             }
         }
 
-    }
-    public interface ICanBeCellInTable
-    {
-
-    }
+    }    
 }

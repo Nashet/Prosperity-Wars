@@ -5,23 +5,55 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
 using Nashet.EconomicSimulation;
+using System;
+
 namespace Nashet.UnityUIUtils
 {
     public class Message
-{
-    public string caption, message, closeText;
-    public Message(string caption, string message, string closeText)
     {
-        this.caption = caption; this.message = message; this.closeText = closeText;
-        Game.MessageQueue.Push(this);
+        static private readonly Stack<Message> Queue = new Stack<Message>();
+        private readonly string caption, text, closeText;
+        static public bool HasUnshownMessages()
+        {
+            return Queue.Count > 0;
+        }
+        static public Message PopAndDeleteMessage()
+        {
+            return Queue.Pop();
+        }
+
+        public Message(string caption, string message, string closeText)
+        {
+            this.caption = caption;
+            this.text = message;
+            this.closeText = closeText;
+            Queue.Push(this);
+        }
+        public string GetCaption()
+        {
+            return caption;
+        }
+        public string GetText()
+        {
+            return text;
+        }
+        public string GetClosetext()
+        {
+            return closeText;
+        }
     }
-}
     public class MessagePanel : DragPanel
     {
+        ///<summary>Stores position of top-level message window. Used to correctly place next message window</summary>
         static Vector3 lastDragPosition;
-        public Text caption, message, closeText;
 
-        StringBuilder sb = new StringBuilder();
+        [SerializeField]
+        private Text caption, message, closeText;
+
+        [SerializeField]
+        private static GameObject messagePanelPrefab; //FixedJoint it
+
+        private StringBuilder sb = new StringBuilder();
         // Use this for initialization
         void Start()
         {
@@ -37,31 +69,35 @@ namespace Nashet.UnityUIUtils
             lastDragPosition = transform.localPosition;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            //refresh();
-        }
         public override void Refresh()
         {
-            
+            //
         }
-
 
         public void show(Message mess)
         {
+            Show();
             Game.howMuchPausedWindowsOpen++;
-            gameObject.SetActive(true);
-            //this.pa
-            //panelRectTransform = GetComponent<RectTransform>();
-            //canvasRectTransform = GetComponent<RectTransform>();
+            
             panelRectTransform.SetAsLastSibling();
-            Refresh();
-            caption.text = mess.caption;
-            message.text = mess.message;
-            closeText.text = mess.closeText;
-        }
 
+            caption.text = mess.GetCaption();
+            message.text = mess.GetText();
+            closeText.text = mess.GetClosetext();
+            Refresh();
+        }
+        static public void showMessageBox(Canvas canvas)
+        {
+            Message mes = Message.PopAndDeleteMessage();
+            //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
+
+            GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
+            newObject.transform.SetParent(canvas.transform, true);
+
+            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
+            mesPanel.Awake();
+            mesPanel.show(mes);
+        }
         override public void onCloseClick()
         {
             base.onCloseClick();
@@ -70,3 +106,6 @@ namespace Nashet.UnityUIUtils
         }
     }
 }
+//fix show inheritance
+// add prefab pool
+// fix sample button

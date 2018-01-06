@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
 
         public SimpleObjectPool buttonObjectPool;
         //public Transform panelParent;
-        public GameObject messagePanelPrefab;
+        
         public Canvas canvas;
         public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
@@ -94,9 +94,9 @@ namespace Nashet.EconomicSimulation
                     focusCamera(Game.Player.getCapital());
                     //gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
                     //    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
-                    loadingPanel.hide();
-                    topPanel.show();
-                    bottomPanel.show();
+                    loadingPanel.Hide();
+                    topPanel.Show();
+                    bottomPanel.Show();
                     gameIsLoaded = true;
                 }
 #if !UNITY_WEBGL
@@ -128,8 +128,8 @@ namespace Nashet.EconomicSimulation
                 }
 
 
-                if (Game.MessageQueue.Count > 0)
-                    showMessageBox();
+                if (Message.HasUnshownMessages())
+                    MessagePanel.showMessageBox(canvas);
             }
         }
         int GetRayCastMeshNumber()
@@ -171,7 +171,7 @@ namespace Nashet.EconomicSimulation
 
         internal static void refreshAllActive()
         {
-            if (topPanel.isActiveAndEnabled) topPanel.refresh();
+            if (topPanel.isActiveAndEnabled) topPanel.Refresh();
             if (populationPanel.isActiveAndEnabled) populationPanel.Refresh();
             if (tradeWindow.isActiveAndEnabled) tradeWindow.Refresh();
             if (factoryPanel.isActiveAndEnabled) factoryPanel.Refresh();
@@ -206,7 +206,7 @@ namespace Nashet.EconomicSimulation
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                     lastSelected.setBorderMaterials(true);
 
-                    provincePanel.hide();
+                    provincePanel.Hide();
 
                 }
                 else // new province selected
@@ -218,7 +218,7 @@ namespace Nashet.EconomicSimulation
                     }
                     Game.selectedProvince = Province.find(number);
                     Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
-                    provincePanel.show();
+                    provincePanel.Show();
                     if (Game.getMapMode() == 2) //core map mode
                         Game.redrawMapAccordingToMapMode(2);
 
@@ -242,21 +242,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        void showMessageBox()
-        {
-            Message mes = Game.MessageQueue.Pop();
-            //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
-
-            GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
-            newObject.transform.SetParent(canvas.transform, true);
-
-            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
-            mesPanel.Awake();
-            //Vector3 position = Vector3.zero;
-            //position.Set(position.x - 10f * Game.MessageQueue.Count, position.y - 10f * Game.MessageQueue.Count, 0);
-            //newObject.transform.localPosition = position;
-            mesPanel.show(mes);
-        }
+        
         // This function is called every fixed framerate frame, if the MonoBehaviour is enabled.
         public void focusCamera(Province province)
         {

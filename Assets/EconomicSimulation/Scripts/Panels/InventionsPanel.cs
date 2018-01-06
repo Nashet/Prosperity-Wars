@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
         }
         public void show(bool bringOnTop)
         {
-            gameObject.SetActive(true);
+            Show();
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();
         }
@@ -41,7 +41,7 @@ namespace Nashet.EconomicSimulation
             {
                 Game.Player.invent(selectedInvention);
                 inventButton.interactable = false;
-                MainCamera.topPanel.refresh();
+                MainCamera.topPanel.Refresh();
                 if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.Refresh();
                 if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.Refresh();
                 if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();

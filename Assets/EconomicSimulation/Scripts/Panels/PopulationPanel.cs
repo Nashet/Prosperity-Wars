@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         public void show(bool bringOnTop)
         {
-            gameObject.SetActive(true);
+            Show();
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();
             Refresh();
@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
                 SetAllPopsToShow();
             //foreach (var item in tables)
             //    item.refreshContent();     
-            table.refreshContent();
+            table.Refresh();
         }
     }
 }

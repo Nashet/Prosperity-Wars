@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
 {
     public class PopulationPanelTable : MyTableNew
     {
-        public override void refreshContent()
+        public override void Refresh()
         {
             startUpdate();
             //lock (gameObject)

@@ -47,7 +47,7 @@ namespace Nashet.EconomicSimulation
 
         public void show(bool bringOnTop)
         {
-            gameObject.SetActive(true);
+            Show();
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();
             //refresh(true); - recursion

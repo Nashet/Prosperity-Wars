@@ -2,9 +2,11 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using Nashet.UnityUIUtils;
+
 namespace Nashet.EconomicSimulation
 {
-    public class BottomPanel : MonoBehaviour
+    public class BottomPanel : Hideable, IRefreshable
     {
         [SerializeField]
         private Text generalText;
@@ -12,23 +14,20 @@ namespace Nashet.EconomicSimulation
         void Awake()
         {
             MainCamera.bottomPanel = this;
-            hide();
+            Hide();
         }
-        public void hide()
+
+        public override void Show()
         {
-            gameObject.SetActive(false);
-        }
-        public void show()
-        {
-            gameObject.SetActive(true);
+            base.Show();
             //panelRectTransform.SetAsLastSibling();
-            refresh();
+            Refresh();
         }
-        public void refresh()
+        public void Refresh()
         {
             generalText.text = "Economic Simulation Demo v0.16.0";
         }
-        
+
         public void onStatisticsClick()
         {
             if (MainCamera.StatisticPanel.isActiveAndEnabled)

@@ -13,11 +13,26 @@ namespace Nashet.UnityUIUtils
         void Hide();
         void Show();
     }
-    abstract public class Window : MonoBehaviour, IRefreshable
+    abstract public class Hideable : MonoBehaviour, IHideable
+    {
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        virtual public void Show()
+        {
+            gameObject.SetActive(true);
+
+            //uncomment it after deleting MyTable class
+            //panelRectTransform.SetAsLastSibling();
+        }
+    }
+    abstract public class Window : Hideable, IRefreshable
     {
         public abstract void Refresh();
     }
-    abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler, IHideable
+    abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler
     {
         private Vector2 pointerOffset;
         private RectTransform canvasRectTransform;
@@ -80,16 +95,6 @@ namespace Nashet.UnityUIUtils
         {
             panelRectTransform.SetAsFirstSibling();
             Hide();
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
-
-        public void Show()
-        {
-            gameObject.SetActive(true);
-        }
+        }        
     }
 }

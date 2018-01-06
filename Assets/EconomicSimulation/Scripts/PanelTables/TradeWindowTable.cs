@@ -9,16 +9,16 @@ namespace Nashet.EconomicSimulation
 {
     public class TradeWindowTable : MyTable
     {
-        override protected void refresh()
+        public override void Refresh()
         {
             ////if (Game.date != 0)
             {
                 base.RemoveButtons();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
+                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
         }
-        protected override void addHeader()
+        protected override void AddHeader()
         {
             // Adding product name 
             AddButton("Product");
@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
         override protected void AddButtons()
         {
             int counter = 0;
-            addHeader();
+            AddHeader();
 
             foreach (Product product in Product.getAllNonAbstract())
                 if (product.isTradable())// && !product.isAbstract())
@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
                     counter++;
                     //contentPanel.r
                 }
-            addHeader();
+            AddHeader();
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Nashet.EconomicSimulation
 
         public void show(Province province)
         {
-            gameObject.SetActive(true);
+            Show();
             panelRectTransform.SetAsLastSibling();
 
             refresh(true);

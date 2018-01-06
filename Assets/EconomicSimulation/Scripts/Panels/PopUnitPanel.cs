@@ -186,7 +186,7 @@ namespace Nashet.EconomicSimulation
         //}
         public void show(PopUnit ipopUnit)
         {
-            gameObject.SetActive(true);
+            Show();
             pop = ipopUnit;
             panelRectTransform.SetAsLastSibling();
             //Refresh();

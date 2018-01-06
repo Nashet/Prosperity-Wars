@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Nashet.UnityUIUtils
 {
-    public class HideStandAlone : MonoBehaviour
+    public class HideWebGL : MonoBehaviour
     {
         // Use this for initialization
         void Start()
         {
-#if !UNITY_STANDALONE
-            gameObject.SetActive(false);
+#if UNITY_WEBGL
+        gameObject.SetActive(false);
 #endif
         }
-       
     }
 }

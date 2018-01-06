@@ -11,30 +11,20 @@ namespace Nashet.EconomicSimulation
 
     public class PoliticsPanelTable : MyTable
     {
-        override protected void refresh()
+        public override void Refresh()
         {
             ////if (Game.date != 0)
             {
                 base.RemoveButtons();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / this.columnsAmount * rowHeight + 50);
+                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
         }
-        protected void AddButton(string text, AbstractReform type)
-        {
-            GameObject newButton = buttonObjectPool.GetObject();
-            //newButton.transform.SetParent(contentPanel, false);
-            newButton.transform.SetParent(gameObject.transform);
-            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-            //if (inventionType == null)
-            //    sampleButton.Setup(text, this, null);
-            //else
-            sampleButton.Setup(text, type);
-        }
+        
         override protected void AddButtons()
         {
             int counter = 0;
-            addHeader();
+            AddHeader();
             if (Game.Player != null)
             {
                 //var factoryList = Game.player;
@@ -59,13 +49,13 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        protected override void addHeader()
+        protected override void AddHeader()
         {
             // Adding reform name
-            AddButton("Reform", null);
+            AddButton("Reform");
 
             ////Adding Status
-            AddButton("Status", null);
+            AddButton("Status");
 
             ////Adding Can change possibility
             // AddButton("Can change", null);

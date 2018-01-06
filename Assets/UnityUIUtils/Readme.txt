@@ -1,2 +1,2 @@
 Version - 3
-Put TooltipBase into Canvas
+Put TooltipBase prefab into Canvas

@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
 {
     public class ProductionWindowTable : MyTableNew
     {
-        public override void refreshContent()
+        public override void Refresh()
         {
             startUpdate();
             base.RemoveButtons();

@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
         //{ }
         public void show(Product inn, bool bringOnTop)
         {
-            gameObject.SetActive(true);
+            Show();
             product = inn;
             if (bringOnTop)
                 panelRectTransform.SetAsLastSibling();

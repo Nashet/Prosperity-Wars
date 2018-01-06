@@ -5,7 +5,7 @@ using System.Text;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class TopPanel : MonoBehaviour
+    public class TopPanel : Hideable, IRefreshable
     {
         [SerializeField]
         private Button btnPlay, btnStep, btnTrade;
@@ -20,19 +20,10 @@ namespace Nashet.EconomicSimulation
             btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
             btnPlay.image.color = Color.grey;
             MainCamera.topPanel = this;
-            hide();
+            Hide();
         }
-        public void hide()
-        {
-            gameObject.SetActive(false);
-        }
-        public void show()
-        {
-            gameObject.SetActive(true);
-            //panelRectTransform.SetAsLastSibling();
-            refresh();
-        }
-        public void refresh()
+
+        public void Refresh()
         {
             var sb = new StringBuilder();
 
@@ -109,7 +100,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.financePanel.isActiveAndEnabled)
                 MainCamera.financePanel.Hide();
             else
-                MainCamera.financePanel.show();
+                MainCamera.financePanel.Show();
         }
         void onbtnStepClick(Button button)
         {
