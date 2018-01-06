@@ -61,6 +61,8 @@ namespace Nashet.UnityUIUtils
             position.Set(lastDragPosition.x - 10f, lastDragPosition.y - 10f, 0);
             transform.localPosition = position;
             lastDragPosition = transform.localPosition;
+
+
         }
 
         override public void OnDrag(PointerEventData data)
@@ -78,7 +80,7 @@ namespace Nashet.UnityUIUtils
         {
             Show();
             Game.howMuchPausedWindowsOpen++;
-            
+
             panelRectTransform.SetAsLastSibling();
 
             caption.text = mess.GetCaption();
@@ -88,9 +90,9 @@ namespace Nashet.UnityUIUtils
         }
         static public void showMessageBox(Canvas canvas)
         {
+            if (messagePanelPrefab == null)
+                messagePanelPrefab = Resources.Load("Prefabs\\MessagePanel", typeof(GameObject)) as GameObject;
             Message mes = Message.PopAndDeleteMessage();
-            //GameObject newObject = buttonObjectPool.GetObject(messagePanelPrefab);
-
             GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
             newObject.transform.SetParent(canvas.transform, true);
 
@@ -106,6 +108,5 @@ namespace Nashet.UnityUIUtils
         }
     }
 }
-//fix show inheritance
 // add prefab pool
 // fix sample button
