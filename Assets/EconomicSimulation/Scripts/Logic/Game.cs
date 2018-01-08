@@ -19,8 +19,7 @@ namespace Nashet.EconomicSimulation
         static public Country Player;
 
         static bool haveToRunSimulation;
-        static bool haveToStepSimulation;
-        
+        static bool haveToStepSimulation;        
 
         static public System.Random Random = new System.Random();
 
@@ -35,7 +34,7 @@ namespace Nashet.EconomicSimulation
         //static internal StringBuilder threadDangerSB = new StringBuilder();
 
         static public MyDate date = new MyDate(0);
-        static internal bool devMode = false;
+        static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -176,6 +175,9 @@ namespace Nashet.EconomicSimulation
             {
                 surrended = false;
                 Player = country;
+                MainCamera.politicsPanel.selectReform(null);
+                MainCamera.inventionsPanel.selectInvention(null);
+                MainCamera.buildPanel.selectFactoryType(null);
                 MainCamera.refreshAllActive();
             }
         }

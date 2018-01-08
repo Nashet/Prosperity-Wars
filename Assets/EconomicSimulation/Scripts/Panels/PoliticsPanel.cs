@@ -126,13 +126,12 @@ namespace Nashet.EconomicSimulation
             refresh(true);
         }
         public void selectReform(AbstractReform newSelection)
-        {
-            if (newSelection != null)
-                selectedReform = newSelection;
+        {            
+            selectedReform = newSelection;
         }
         private void refresh(bool callRebuildDropDown)
         {
-            
+
             Hide();
             //if (Game.Player.movements != null)
             movementsText.text = Game.Player.movements.getString();
@@ -193,7 +192,7 @@ namespace Nashet.EconomicSimulation
                     if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                     { // has enough voters
                         voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponentInChildren<ToolTipHandler>().text);
-                        forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText( voteButton.GetComponentInChildren<ToolTipHandler>().getText());
+                        forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText(voteButton.GetComponentInChildren<ToolTipHandler>().getText());
                         forceDecisionButton.interactable = false;
                         voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                     }
@@ -201,7 +200,7 @@ namespace Nashet.EconomicSimulation
                     {
                         voteButton.interactable = false;
                         forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().text);
-                        voteButton.GetComponentInChildren<ToolTipHandler>().setText( forceDecisionButton.GetComponentInChildren<ToolTipHandler>().getText());
+                        voteButton.GetComponentInChildren<ToolTipHandler>().setText(forceDecisionButton.GetComponentInChildren<ToolTipHandler>().getText());
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                     }
                 }
@@ -211,7 +210,7 @@ namespace Nashet.EconomicSimulation
                 voteButton.interactable = false;
                 voteButton.GetComponentInChildren<Text>().text = "Select reform";
                 descriptionText.text = "Select reform from left";
-                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText( "");
+                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText("");
                 voteButton.GetComponentInChildren<ToolTipHandler>().setText("");
             }
             show(false);

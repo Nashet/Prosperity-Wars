@@ -52,8 +52,7 @@ namespace Nashet.EconomicSimulation
         }
         public void selectInvention(Invention newSelection)
         {
-            if (newSelection != null)
-                selectedInvention = newSelection;
+            selectedInvention = newSelection;
         }
         public override void Refresh()
         {

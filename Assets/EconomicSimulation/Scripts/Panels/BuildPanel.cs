@@ -8,7 +8,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    
+
     public class BuildPanel : DragPanel
     {
         [SerializeField]
@@ -88,11 +88,10 @@ namespace Nashet.EconomicSimulation
         }
         public void selectFactoryType(FactoryType newSelection)
         {
-            if (newSelection != null)
-                selectedFactoryType = newSelection;
+            selectedFactoryType = newSelection;
         }
         public override void Refresh()
-        {        
+        {
             Hide();
             if (selectedFactoryType != null)
             {

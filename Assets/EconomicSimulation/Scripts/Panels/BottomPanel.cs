@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         }
         public void Refresh()
         {
-            generalText.text = "Economic Simulation Demo v0.16.0";
+            generalText.text = "Economic Simulation Demo v0.16.1";
         }
 
         public void onStatisticsClick()
