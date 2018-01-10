@@ -172,19 +172,19 @@ namespace Nashet.UnityUIUtils
         private int rowOffset;
         private bool alreadyInUpdate;
 
-        abstract protected void addHeader();
+        abstract protected void AddHeader();
         abstract public void Refresh();
 
-        public int getRowOffset()
+        protected int GetRowOffset()
         {
             return rowOffset;
         }
-        
-        public void startUpdate()
+
+        protected void StartUpdate()
         {
             alreadyInUpdate = true;
         }
-        public void endUpdate()
+        protected void EndUpdate()
         {
             alreadyInUpdate = false;
         }
@@ -199,7 +199,7 @@ namespace Nashet.UnityUIUtils
         /// <summary>
         /// Returns how much rows should be shown. It's never bigger than totalRows
         /// </summary>    
-        protected int calcSize(int totalRows)
+        protected int CalcSize(int totalRows)
         {
             var rect = GetComponent<RectTransform>();
             //LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
@@ -226,7 +226,7 @@ namespace Nashet.UnityUIUtils
             return howMuchRowsShow;
         }
 
-        protected void addButton(string text, ICanBeCellInTable bject = null, Func<string> dynamicTooltip = null)
+        protected void AddButton(string text, ICanBeCellInTable bject = null, Func<string> dynamicTooltip = null)
         {
             GameObject newButton = buttonObjectPool.GetObject();
             newButton.transform.SetParent(gameObject.transform, true);

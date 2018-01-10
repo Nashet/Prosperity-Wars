@@ -5,9 +5,10 @@ using System;
 using System.Text;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType
+    public class FactoryType : ICanBeCellInTable
     {
         static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;

@@ -12,41 +12,41 @@ namespace Nashet.EconomicSimulation
     {
         public override void Refresh()
         {
-            startUpdate();
+            StartUpdate();
             //lock (gameObject)
             {
                 RemoveButtons();
-                var howMuchRowsShow = calcSize(Game.popsToShowInPopulationPanel.Count);
-                addHeader();
+                var howMuchRowsShow = CalcSize(Game.popsToShowInPopulationPanel.Count);
+                AddHeader();
                 if (Game.popsToShowInPopulationPanel.Count > 0)
                 {
                     for (int i = 0; i < howMuchRowsShow; i++)
                     //foreach (PopUnit record in Game.popsToShowInPopulationPanel)
                     {
-                        PopUnit pop = Game.popsToShowInPopulationPanel[i + getRowOffset()];
+                        PopUnit pop = Game.popsToShowInPopulationPanel[i + GetRowOffset()];
 
                         // Adding number
                         //AddButton(Convert.ToString(i + offset), record);
 
                         // Adding PopType
-                        addButton(pop.popType.ToString(), pop);
+                        AddButton(pop.popType.ToString(), pop);
                         ////Adding province
-                        addButton(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
+                        AddButton(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
                         ////Adding population
-                        addButton(System.Convert.ToString(pop.getPopulation()), pop);
+                        AddButton(System.Convert.ToString(pop.getPopulation()), pop);
                         ////Adding culture
-                        addButton(pop.culture.ToString(), pop);
+                        AddButton(pop.culture.ToString(), pop);
 
                         ////Adding education
-                        addButton(pop.education.ToString(), pop);
+                        AddButton(pop.education.ToString(), pop);
 
                         ////Adding cash
-                        addButton(pop.cash.ToString(), pop);
+                        AddButton(pop.cash.ToString(), pop);
 
                         ////Adding needs fulfilling
 
                         //PopUnit ert = record;
-                        addButton(pop.needsFullfilled.ToString(), pop,
+                        AddButton(pop.needsFullfilled.ToString(), pop,
                             //() => ert.consumedTotal.ToStringWithLines()                        
                             () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
                             );
@@ -54,57 +54,57 @@ namespace Nashet.EconomicSimulation
                         ////Adding loyalty
                         string accu;
                         PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
-                        addButton(pop.loyalty.ToString(), pop, () => accu);
+                        AddButton(pop.loyalty.ToString(), pop, () => accu);
 
                         //Adding Unemployment
-                        addButton(pop.getUnemployedProcent().ToString(), pop);
+                        AddButton(pop.getUnemployedProcent().ToString(), pop);
 
                         //Adding Movement
                         if (pop.getMovement() == null)
-                            addButton("", pop);
+                            AddButton("", pop);
                         else
-                            addButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
+                            AddButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
                     }
                 }
             }
-            endUpdate();
+            EndUpdate();
         }
-        protected override void addHeader()
+        protected override void AddHeader()
         {
             // Adding number
             // AddButton("Number");
 
             // Adding PopType
-            addButton("Type");
+            AddButton("Type");
 
             ////Adding province
-            addButton("Province");
+            AddButton("Province");
 
             ////Adding population
-            addButton("Population");
+            AddButton("Population");
 
             ////Adding culture
-            addButton("Culture");
+            AddButton("Culture");
 
             ////Adding education
-            addButton("Education");
+            AddButton("Education");
 
             ////Adding storage
             //if (null.storage != null)
-            addButton("Cash");
+            AddButton("Cash");
             //else AddButton("Administration");
 
             ////Adding needs fulfilling
-            addButton("Needs fulfilled");
+            AddButton("Needs fulfilled");
 
             ////Adding loyalty
-            addButton("Loyalty");
+            AddButton("Loyalty");
 
             ////Adding Unemployment
-            addButton("Unemployment");
+            AddButton("Unemployment");
 
             //Adding Movement
-            addButton("Movement");
+            AddButton("Movement");
         }
     }
 }

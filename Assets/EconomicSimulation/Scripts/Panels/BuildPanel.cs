@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     public class BuildPanel : DragPanel
     {
         [SerializeField]
-        private ScrollRect table;
+        private MyTableNew table;
         [SerializeField]
         private Text descriptionText;
         [SerializeField]
@@ -30,12 +30,13 @@ namespace Nashet.EconomicSimulation
             Hide();
         }
 
-        public void show(bool bringOnTop)
+        public override void Show()
         {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
+            base.Show();
 
+            panelRectTransform.SetAsLastSibling();
+            selectedFactoryType = null; // changed province
+            Refresh();
         }
         public void onBuildClick()
         {
@@ -92,7 +93,10 @@ namespace Nashet.EconomicSimulation
         }
         public override void Refresh()
         {
-            Hide();
+            if (Game.previoslySelectedProvince != Game.selectedProvince)
+                selectFactoryType(null);
+            
+            table.Refresh();
             if (selectedFactoryType != null)
             {
                 sb.Clear();
@@ -121,8 +125,7 @@ namespace Nashet.EconomicSimulation
                     descriptionText.text = "Select building from left";
                 }
 
-            }
-            show(false);
+            }            
         }
     }
 }

@@ -112,12 +112,14 @@ namespace Nashet.EconomicSimulation
                     Game.simulate();
                     refreshAllActive();
                     if (Game.selectedProvince != null)
-                        provincePanel.refresh(Game.selectedProvince);
+                        //provincePanel.Refresh(Game.selectedProvince);
+                        provincePanel.Refresh();
                 }
 
 
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(canvas);
+                Game.previoslySelectedProvince = Game.selectedProvince;
             }
         }
         int getRayCastMeshNumber()
@@ -173,6 +175,8 @@ namespace Nashet.EconomicSimulation
             if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
             if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
             if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
+            if (provincePanel.isActiveAndEnabled) provincePanel.Refresh();
+            
             //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
@@ -189,6 +193,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
                 {
+                    
                     var lastSelected = Game.selectedProvince;
                     Game.selectedProvince = null;
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
@@ -203,7 +208,7 @@ namespace Nashet.EconomicSimulation
                     {
                         Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                         Game.selectedProvince.setBorderMaterials(true);
-                    }
+                    }                    
                     Game.selectedProvince = Province.find(number);
                     Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                     provincePanel.Show();

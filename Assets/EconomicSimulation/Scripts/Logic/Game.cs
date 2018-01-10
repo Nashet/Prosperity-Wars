@@ -24,6 +24,7 @@ namespace Nashet.EconomicSimulation
         static public System.Random Random = new System.Random();
 
         static public Province selectedProvince;
+        static public Province previoslySelectedProvince;
         static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
         static public List<Factory> factoriesToShowInProductionPanel;
 
@@ -178,6 +179,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.politicsPanel.selectReform(null);
                 MainCamera.inventionsPanel.selectInvention(null);
                 MainCamera.buildPanel.selectFactoryType(null);
+                //MainCamera.provincePanel.selectProvince(null);
                 MainCamera.refreshAllActive();
             }
         }

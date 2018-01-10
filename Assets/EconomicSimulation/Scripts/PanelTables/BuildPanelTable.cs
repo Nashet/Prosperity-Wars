@@ -7,22 +7,22 @@ using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
-    /// <summary>
-    /// Obsolete, should be changed to MyTableNew
-    /// </summary>
-    public class BuildPanelTable : MyTable
+    
+    public class BuildPanelTable : MyTableNew
     {
         public override void Refresh()
         {
             ////if (Game.date != 0)
+            StartUpdate();
             {
                 base.RemoveButtons();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
+                //gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
+            EndUpdate();
         }
         
-        override protected void AddButtons()
+        private void AddButtons()
         {
             int counter = 0;
             AddHeader();
@@ -61,6 +61,8 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
+
+      
 
         protected override void AddHeader()
         {

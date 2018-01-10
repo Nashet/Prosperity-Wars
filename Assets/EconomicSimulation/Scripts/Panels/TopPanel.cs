@@ -34,6 +34,11 @@ namespace Nashet.EconomicSimulation
                 .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
             generalText.text = sb.ToString();
         }
+        public override void Show()
+        {
+            base.Show();
+            Refresh();
+        }
         public void onTradeClick()
         {
             if (MainCamera.tradeWindow.isActiveAndEnabled)
