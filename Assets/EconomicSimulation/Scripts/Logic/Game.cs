@@ -178,8 +178,10 @@ namespace Nashet.EconomicSimulation
                 Player = country;
                 MainCamera.politicsPanel.selectReform(null);
                 MainCamera.inventionsPanel.selectInvention(null);
+                
+                // not necessary since it will change automatically on province selection
                 MainCamera.buildPanel.selectFactoryType(null);
-                //MainCamera.provincePanel.selectProvince(null);
+                
                 MainCamera.refreshAllActive();
             }
         }

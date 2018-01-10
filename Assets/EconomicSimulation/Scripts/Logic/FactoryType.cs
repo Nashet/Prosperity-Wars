@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         //internal ConditionsList conditionsBuild;
         internal Condition enoughMoneyOrResourcesToBuild;
-        internal ConditionsList conditionsBuild;
+        internal ConditionsListForDoubleObjects conditionsBuild;
         private readonly bool shaft;
 
         static FactoryType()
@@ -158,25 +158,25 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                    //Value cost = Game.market.getCost(this.getBuildNeeds());
-                    //cost.add(Options.factoryMoneyReservPerLevel);
-                    Value cost = getMinimalMoneyToBuild();
+                        //Value cost = Game.market.getCost(this.getBuildNeeds());
+                        //cost.add(Options.factoryMoneyReservPerLevel);
+                        Value cost = getMinimalMoneyToBuild();
                         return agent.canPay(cost);
                     }
                 },
                 delegate
                 {
                     var sb = new StringBuilder();
-                //Value cost = Game.market.getCost(this.getBuildNeeds());
-                //cost.add(Options.factoryMoneyReservPerLevel);
-                Value cost = getMinimalMoneyToBuild();
+                    //Value cost = Game.market.getCost(this.getBuildNeeds());
+                    //cost.add(Options.factoryMoneyReservPerLevel);
+                    Value cost = getMinimalMoneyToBuild();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
                     return sb.ToString();
                 }, true);
 
-            conditionsBuild = new ConditionsList(new List<Condition>() {
-        Economy.isNotLF, enoughMoneyOrResourcesToBuild}); // can build
+            conditionsBuild = new ConditionsListForDoubleObjects(new List<Condition>() {
+                Economy.isNotLF, enoughMoneyOrResourcesToBuild, Province.doesCountryOwn }); // can build
             this.shaft = shaft;
         }
         /// <summary>

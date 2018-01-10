@@ -22,6 +22,8 @@ namespace Nashet.EconomicSimulation
         new ConditionForDoubleObjects((province, country)=>(province as Province).hasCore(x=>x!=country), x=>"Has another core", true),
         new ConditionForDoubleObjects((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),
     });
+        public static readonly ConditionForDoubleObjects doesCountryOwn =
+        new ConditionForDoubleObjects((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
         public readonly static List<Province> allProvinces = new List<Province>();
 
         private readonly int ID;

@@ -128,6 +128,8 @@ namespace Nashet.EconomicSimulation
         public void selectReform(AbstractReform newSelection)
         {            
             selectedReform = newSelection;
+            //if (newSelection == null)
+            //    rebuildDropDown();
         }
         private void refresh(bool callRebuildDropDown)
         {

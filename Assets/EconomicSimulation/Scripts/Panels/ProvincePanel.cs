@@ -164,20 +164,12 @@ namespace Nashet.EconomicSimulation
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.getCountry();
 
-            if (Game.selectedProvince.getCountry() == Game.Player)
-            {
-                btnBuild.GetComponentInChildren<ToolTipHandler>().setText("");
-                btnBuild.interactable = true;
-                btMobilize.GetComponentInChildren<ToolTipHandler>().setText("");
-                btMobilize.interactable = true;
-            }
-            else
-            {
-                btnBuild.GetComponentInChildren<ToolTipHandler>().setText("That isn't your province, right?");
-                btnBuild.interactable = false;
-                btMobilize.GetComponentInChildren<ToolTipHandler>().setText("That isn't your province, right?");
-                btMobilize.interactable = false;
-            }
+
+            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+
+            btMobilize.GetComponentInChildren<ToolTipHandler>().setText(btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+            btMobilize.interactable = btnBuild.interactable;
+
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
