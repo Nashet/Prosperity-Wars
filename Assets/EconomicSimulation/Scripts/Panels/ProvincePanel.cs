@@ -153,7 +153,7 @@ namespace Nashet.EconomicSimulation
             else
                 sb.Append(Game.selectedProvince.getResource());
             sb.Append("\nTerrain: ").Append(Game.selectedProvince.getTerrain());
-            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation());
+            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation()*100).Append("%");
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));

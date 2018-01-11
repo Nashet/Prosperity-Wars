@@ -53,21 +53,17 @@ namespace Nashet.EconomicSimulation
             //refresh(true); - recursion
         }
 
-        void setNewReform()
+        void changeReformValue()
         {
             if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
-                selectedReform.setValue(selectedReformValue);
-                refresh(true);
-                if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.Refresh();
-                if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.Refresh();
-                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();
-
+                selectedReform.setValue(selectedReformValue);                
+                MainCamera.refreshAllActive();
             }
         }
         public void onVoteClick()
         {
-            setNewReform();
+            changeReformValue();
         }
         public void onForceDecisionClick()
         {
@@ -82,7 +78,7 @@ namespace Nashet.EconomicSimulation
                         pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                     }
                 }
-            setNewReform();
+            changeReformValue();
         }
         //slider.onValueChanged.AddListener(ListenerMethod);
 
@@ -128,8 +124,8 @@ namespace Nashet.EconomicSimulation
         public void selectReform(AbstractReform newSelection)
         {            
             selectedReform = newSelection;
-            //if (newSelection == null)
-            //    rebuildDropDown();
+            if (newSelection == null)
+                dropDown.interactable = false;
         }
         private void refresh(bool callRebuildDropDown)
         {
@@ -142,7 +138,15 @@ namespace Nashet.EconomicSimulation
 
 
             movementsHorizontalScrollBar.value = 0;
-            if (selectedReform != null)
+            if (selectedReform == null)
+            {
+                voteButton.interactable = false;
+                voteButton.GetComponentInChildren<Text>().text = "Select reform";
+                descriptionText.text = "Select reform from left";
+                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText("");
+                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");                
+            } //did selected reform
+            else
             {
                 if (callRebuildDropDown) // meaning changed whole reform            
                     rebuildDropDown();
@@ -206,14 +210,6 @@ namespace Nashet.EconomicSimulation
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                     }
                 }
-            } //didn't selected reform
-            else
-            {
-                voteButton.interactable = false;
-                voteButton.GetComponentInChildren<Text>().text = "Select reform";
-                descriptionText.text = "Select reform from left";
-                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText("");
-                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");
             }
             show(false);
         }

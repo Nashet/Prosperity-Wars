@@ -17,7 +17,6 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button inventButton;
 
-
         private Invention selectedInvention;
 
         // Use this for initialization
@@ -63,7 +62,13 @@ namespace Nashet.EconomicSimulation
             var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
             sb.Append("Science points: ").Append(Game.Player.sciencePoints).Append(" + ");
             sb.Append(Game.Player.getSciencePointsBase().multiplyOutside(spModifier)).Append(" Modifiers: ").Append(scienceModifier);
-            if (selectedInvention != null)
+            if (selectedInvention == null)
+            {
+                inventButton.interactable = false;
+                inventButton.GetComponentInChildren<Text>().text = "Select from left" ;
+                sb.Append("\n\nSelect invention from left panel");                
+            }
+            else
             {
                 sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());
 
@@ -81,11 +86,6 @@ namespace Nashet.EconomicSimulation
                     else
                         inventButton.GetComponentInChildren<Text>().text = "Not enough Science points to invent " + selectedInvention.ToString();
                 }
-            }
-            else
-            {
-                inventButton.interactable = false;
-                sb.Append("\n\nSelect invention from left panel");
             }
             descriptionText.text = sb.ToString();
             show(false);
