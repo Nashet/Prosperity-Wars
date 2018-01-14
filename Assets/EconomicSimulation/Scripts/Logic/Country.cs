@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
         }
         public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
         {
-            foreach (var each in Invention.allInventions)
+            foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
             place = this;
             modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
@@ -249,8 +249,13 @@ namespace Nashet.EconomicSimulation
         {
             return ownedProvinces.Count;
         }
-
-        public IEnumerable<KeyValuePair<Invention, bool>> getAvailable()
+        //public IEnumerable<KeyValuePair<Invention, bool>> getAllI()
+        //{
+        //    foreach (var invention in inventions)
+        //        if (invention.Key.isAvailable(this))
+        //            yield return invention;
+        //}
+        public IEnumerable<KeyValuePair<Invention, bool>> getAvailableInventions()
         {
             foreach (var invention in inventions)
                 if (invention.Key.isAvailable(this))
@@ -874,16 +879,16 @@ namespace Nashet.EconomicSimulation
 
         private void aiInvent()
         {
-            var invention = getUninvented().ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.cost));
+            var invention = getUninvented().ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.getCost()));
             if (invention.Key != null)
                 invent(invention.Key);
         }
         public bool invent(Invention invention)
         {
-            if (sciencePoints.isBiggerOrEqual(invention.cost))
+            if (sciencePoints.isBiggerOrEqual(invention.getCost()))
             {
                 markInvented(invention);
-                sciencePoints.subtract(invention.cost);
+                sciencePoints.subtract(invention.getCost());
                 return true;
             }
             else return false;

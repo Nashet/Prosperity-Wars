@@ -10,10 +10,10 @@ namespace Nashet.EconomicSimulation
 {
     public class Invention : Name, ICanBeCellInTable
     {
-        internal readonly static List<Invention> allInventions = new List<Invention>();
-        string description;
-        internal Value cost;
-        string inventedPhrase;
+        private readonly static List<Invention> allInventions = new List<Invention>();
+        private string description;
+        private Value cost;
+        private string inventedPhrase;
         public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
             Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
             Manufactures = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(70f)),
@@ -53,8 +53,14 @@ namespace Nashet.EconomicSimulation
             inventedPhrase = "Invented " + name;
             allInventions.Add(this);
         }
-        //internal InventionType()
-        //{ }
+
+        public static IEnumerable<Invention> getAll()
+        {
+            foreach (var item in allInventions)
+            {
+                yield return item;
+            }
+        }
         internal string getInventedPhrase()
         {
             return inventedPhrase;
@@ -80,6 +86,11 @@ namespace Nashet.EconomicSimulation
         internal string getDescription()
         {
             return description;
+        }
+
+        internal Value getCost()
+        {
+            return cost;
         }
     }
 }

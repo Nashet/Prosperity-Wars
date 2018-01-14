@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         }
         public void onInventClick()
         {
-            if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
+            if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.getCost().get())
             {
                 Game.Player.invent(selectedInvention);
                 inventButton.interactable = false;
@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());
 
                 // invention available
-                if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
+                if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.getCost().get())
                 {
                     inventButton.GetComponentInChildren<Text>().text = "Invent " + selectedInvention.ToString();
                     inventButton.interactable = true;

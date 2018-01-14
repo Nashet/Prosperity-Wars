@@ -6,9 +6,6 @@ using System;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-
-    
-
     public class PoliticsPanelTable : UITableNew
     {
         public override void Refresh()
@@ -17,35 +14,33 @@ namespace Nashet.EconomicSimulation
             StartUpdate();
             {
                 base.RemoveButtons();
+                AddHeader();
                 AddButtons();
             }
             EndUpdate();
-        }        
+        }
         private void AddButtons()
         {
-            int counter = 0;
-            AddHeader();
-            if (Game.Player != null)
+            int counter = 0;            
+            //foreach (var next in Game.Player.reforms)
+            var howMuchRowsShow = CalcSize(Game.Player.reforms.Count);            
+            for (int i = 0; i < howMuchRowsShow; i++)
+            // if (next.isAvailable(Game.player))
             {
-                //var factoryList = Game.player;
+                var reform = Game.Player.reforms[i + GetRowOffset()];
+                // Adding reform name
+                AddButton(reform.ToString(), reform);
 
-                foreach (var next in Game.Player.reforms)
-                // if (next.isAvailable(Game.player))
-                {
-                    // Adding reform name
-                    AddButton(next.ToString(), next);
+                ////Adding Status
+                AddButton(reform.getValue().ToString(), reform);
 
-                    ////Adding Status
-                    AddButton(next.getValue().ToString(), next);
+                ////Adding Can change possibility
+                //if (next.canChange())
+                //    AddButton("Yep", next);
+                //else
+                //    AddButton("Nope", next);
 
-                    ////Adding Can change possibility
-                    //if (next.canChange())
-                    //    AddButton("Yep", next);
-                    //else
-                    //    AddButton("Nope", next);
-
-                    counter++;
-                }
+                counter++;
             }
         }
 
