@@ -8,7 +8,7 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PopulationPanelTable : MyTableNew
+    public class PopulationPanelTable : UITableNew
     {
         public override void Refresh()
         {

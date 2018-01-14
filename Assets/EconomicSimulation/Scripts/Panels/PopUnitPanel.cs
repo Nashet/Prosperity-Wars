@@ -186,10 +186,8 @@ namespace Nashet.EconomicSimulation
         //}
         public void show(PopUnit ipopUnit)
         {
-            Show();
             pop = ipopUnit;
-            panelRectTransform.SetAsLastSibling();
-            //Refresh();
+            Show();            
         }
     }
 }

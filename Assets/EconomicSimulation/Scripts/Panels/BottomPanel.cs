@@ -6,7 +6,10 @@ using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class BottomPanel : Hideable, IRefreshable
+    /// <summary>
+    /// Just bottom panel with several buttons
+    /// </summary>
+    public class BottomPanel : Window
     {
         [SerializeField]
         private Text generalText;
@@ -16,14 +19,8 @@ namespace Nashet.EconomicSimulation
             MainCamera.bottomPanel = this;
             Hide();
         }
-
-        public override void Show()
-        {
-            base.Show();
-            //panelRectTransform.SetAsLastSibling();
-            Refresh();
-        }
-        public void Refresh()
+       
+        public override void Refresh()
         {
             generalText.text = "Economic Simulation Demo v0.16.1";
         }
@@ -33,7 +30,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.StatisticPanel.isActiveAndEnabled)
                 MainCamera.StatisticPanel.Hide();
             else
-                MainCamera.StatisticPanel.show(true);
+                MainCamera.StatisticPanel.Show();
         }
         public void onddMapModesChange(int newMapMode)
         {

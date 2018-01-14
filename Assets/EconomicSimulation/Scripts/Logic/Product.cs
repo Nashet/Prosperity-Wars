@@ -6,9 +6,10 @@ using System.Text;
 using UnityEngine;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class Product : Name
+    public class Product : Name, ICanBeCellInTable
     {
         private enum type
         {
@@ -27,14 +28,10 @@ namespace Nashet.EconomicSimulation
         private readonly List<Product> substitutes;
         private readonly Color color;
 
-
-
-
         internal static readonly Product
             //Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetalOre,
             //Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
             //Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
-            Gold = new Product("Gold", 4f, Color.yellow, type.industrial),
             Fish = new Product("Fish", 0.04f, Color.cyan, type.consumerProduct),
             Grain = new Product("Grain", 0.04f, new Color(0.57f, 0.75f, 0.2f), type.industrial),//greenish
             Cattle = new Product("Cattle", 0.04f, type.military),
@@ -69,7 +66,8 @@ namespace Nashet.EconomicSimulation
             Airplanes = new Product("Airplanes", 20f, type.military),
             Coal = new Product("Coal", 1f, Color.black, type.industrial),
             Tobacco = new Product("Tobacco", 1f, Color.green, type.consumerProduct),
-            Electronics = new Product("Electronics", 1f, type.consumerProduct);
+            Electronics = new Product("Electronics", 1f, type.consumerProduct),
+            Gold = new Product("Gold", 4f, Color.yellow, type.industrial);
 
         internal static readonly Product //Food, Sugar, Fibers, Fuel;
             Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit }, type.consumerProduct),
@@ -161,6 +159,12 @@ namespace Nashet.EconomicSimulation
             foreach (var item in allProducts)
                 yield return item;
         }
+        public static IEnumerable<Product> getAll(Predicate<Product> selector)
+        {
+            foreach (var item in allProducts)
+                if (selector(item))
+                    yield return item;
+        }
         public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
         {
             foreach (var item in getAllNonAbstract())
@@ -172,6 +176,14 @@ namespace Nashet.EconomicSimulation
             foreach (var item in getAllNonAbstract())
                 if (selector(item) && item.isTradable())
                     yield return item;
+        }
+        public static int howMuchProductsTotal()
+        {
+            return allProducts.Count;
+        }
+        public static int howMuchProducts(Predicate<Product> selector)
+        {
+            return allProducts.FindAll(x => selector(x)).Count;
         }
         //public static IEnumerable<Product> getAllMilitaryProductsInvented(Country country)
         //{

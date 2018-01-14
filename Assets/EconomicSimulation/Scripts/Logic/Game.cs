@@ -172,7 +172,7 @@ namespace Nashet.EconomicSimulation
         }
         internal static void takePlayerControlOfThatCountry(Country country)
         {
-            if (country != Country.NullCountry)
+            //if (country != Country.NullCountry)
             {
                 surrended = false;
                 Player = country;

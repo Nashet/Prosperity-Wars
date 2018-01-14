@@ -11,8 +11,10 @@ namespace Nashet.EconomicSimulation
     public class PoliticsPanel : DragPanel
     {
         [SerializeField]
+        private UITableNew table;
+
+        [SerializeField]
         private Text descriptionText, movementsText;
-        //public ScrollRect movementsScrollView;
 
         [SerializeField]
         private Button voteButton;
@@ -43,21 +45,13 @@ namespace Nashet.EconomicSimulation
             forceDecisionButton.interactable = false;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
             Hide();
-        }
-
-        public void show(bool bringOnTop)
-        {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-            //refresh(true); - recursion
-        }
+        }        
 
         void changeReformValue()
         {
             if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
-                selectedReform.setValue(selectedReformValue);                
+                selectedReform.setValue(selectedReformValue);
                 MainCamera.refreshAllActive();
             }
         }
@@ -122,7 +116,7 @@ namespace Nashet.EconomicSimulation
             refresh(true);
         }
         public void selectReform(AbstractReform newSelection)
-        {            
+        {
             selectedReform = newSelection;
             if (newSelection == null)
                 dropDown.interactable = false;
@@ -130,7 +124,7 @@ namespace Nashet.EconomicSimulation
         private void refresh(bool callRebuildDropDown)
         {
 
-            Hide();
+            table.Refresh();
             //if (Game.Player.movements != null)
             movementsText.text = Game.Player.movements.getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
@@ -144,7 +138,7 @@ namespace Nashet.EconomicSimulation
                 voteButton.GetComponentInChildren<Text>().text = "Select reform";
                 descriptionText.text = "Select reform from left";
                 forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText("");
-                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");                
+                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");
             } //did selected reform
             else
             {
@@ -210,8 +204,7 @@ namespace Nashet.EconomicSimulation
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                     }
                 }
-            }
-            show(false);
+            }            
         }
     }
 }

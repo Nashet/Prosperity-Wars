@@ -5,9 +5,10 @@ using System;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class Invention : Name
+    public class Invention : Name, ICanBeCellInTable
     {
         internal readonly static List<Invention> allInventions = new List<Invention>();
         string description;

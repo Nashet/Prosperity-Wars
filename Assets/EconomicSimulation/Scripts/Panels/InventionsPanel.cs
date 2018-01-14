@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     public class InventionsPanel : DragPanel
     {
         [SerializeField]
-        private ScrollRect table;
+        private UITableNew table;
 
         [SerializeField]
         private Text descriptionText;
@@ -27,13 +27,6 @@ namespace Nashet.EconomicSimulation
             GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
             Hide();
         }
-        public void show(bool bringOnTop)
-        {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-        }
-
         public void onInventClick()
         {
             if (!Game.Player.isInvented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.cost.get())
@@ -55,8 +48,7 @@ namespace Nashet.EconomicSimulation
         }
         public override void Refresh()
         {
-
-            Hide();
+            table.Refresh();
             var sb = new StringBuilder();
             string scienceModifier;
             var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
@@ -65,8 +57,8 @@ namespace Nashet.EconomicSimulation
             if (selectedInvention == null)
             {
                 inventButton.interactable = false;
-                inventButton.GetComponentInChildren<Text>().text = "Select from left" ;
-                sb.Append("\n\nSelect invention from left panel");                
+                inventButton.GetComponentInChildren<Text>().text = "Select from left";
+                sb.Append("\n\nSelect invention from left panel");
             }
             else
             {
@@ -88,7 +80,6 @@ namespace Nashet.EconomicSimulation
                 }
             }
             descriptionText.text = sb.ToString();
-            show(false);
         }
     }
 }

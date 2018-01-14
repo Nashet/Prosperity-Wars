@@ -110,10 +110,7 @@ namespace Nashet.EconomicSimulation
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
                     Game.simulate();
-                    refreshAllActive();
-                    if (Game.selectedProvince != null)
-                        //provincePanel.Refresh(Game.selectedProvince);
-                        provincePanel.Refresh();
+                    refreshAllActive();                    
                 }
 
 

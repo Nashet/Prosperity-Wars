@@ -8,7 +8,7 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class ProvincePanel : Hideable, IRefreshable
+    public class ProvincePanel : Window
     {
         [SerializeField]
         private Text generaltext;
@@ -23,13 +23,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.provincePanel = this;
             Hide();
         }
-
-        public override void Show()
-        {
-            base.Show();
-            //selectProvince(Game.selectedProvince);
-            Refresh();
-        }
+       
         public void onCloseClick()
         {
             Hide();
@@ -78,7 +72,7 @@ namespace Nashet.EconomicSimulation
                     Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
                     MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                     //MainCamera.populationPanel.showAll = false;
-                    MainCamera.populationPanel.show(true);
+                    MainCamera.populationPanel.Show();
                 }
                 else
                 {
@@ -90,7 +84,7 @@ namespace Nashet.EconomicSimulation
                         Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
                         MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                         //MainCamera.populationPanel.showAll = false;
-                        MainCamera.populationPanel.show(true);
+                        MainCamera.populationPanel.Show();
                     }
                 }
             else
@@ -98,7 +92,7 @@ namespace Nashet.EconomicSimulation
                 Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
                 MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
                 //MainCamera.populationPanel.showAll = false;
-                MainCamera.populationPanel.show(true);
+                MainCamera.populationPanel.Show();
             }
 
         }
@@ -139,7 +133,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    selectedProvince = province;
         //}
-        public void Refresh()
+        public override void Refresh()
         {
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
             sb.Append("\nID: ").Append(Game.selectedProvince.getID());

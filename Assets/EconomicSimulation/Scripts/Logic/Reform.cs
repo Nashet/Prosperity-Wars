@@ -5,6 +5,7 @@ using System;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     public static class ReformExtensions
@@ -84,7 +85,7 @@ namespace Nashet.EconomicSimulation
         private readonly Modifier wantsReform;
         public readonly ModifiersList modVoting;
     }
-    public abstract class AbstractReform : Name
+    public abstract class AbstractReform : Name, ICanBeCellInTable
     {
         readonly string description;
 

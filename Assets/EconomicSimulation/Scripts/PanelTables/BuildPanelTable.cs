@@ -8,7 +8,7 @@ using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
     
-    public class BuildPanelTable : MyTableNew
+    public class BuildPanelTable : UITableNew
     {
         public override void Refresh()
         {
@@ -16,8 +16,7 @@ namespace Nashet.EconomicSimulation
             StartUpdate();
             {
                 base.RemoveButtons();
-                AddButtons();
-                //gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
+                AddButtons();                
             }
             EndUpdate();
         }

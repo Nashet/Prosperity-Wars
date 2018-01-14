@@ -7,21 +7,21 @@ using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
 
-    // represen each opunit record in table
+    
 
-    public class PoliticsPanelTable : MyTable
+    public class PoliticsPanelTable : UITableNew
     {
         public override void Refresh()
         {
             ////if (Game.date != 0)
+            StartUpdate();
             {
                 base.RemoveButtons();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
-        }
-        
-        override protected void AddButtons()
+            EndUpdate();
+        }        
+        private void AddButtons()
         {
             int counter = 0;
             AddHeader();

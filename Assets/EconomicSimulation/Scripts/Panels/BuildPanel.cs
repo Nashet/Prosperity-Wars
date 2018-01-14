@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     public class BuildPanel : DragPanel
     {
         [SerializeField]
-        private MyTableNew table;
+        private UITableNew table;
         [SerializeField]
         private Text descriptionText;
         [SerializeField]
@@ -32,11 +32,8 @@ namespace Nashet.EconomicSimulation
 
         public override void Show()
         {
-            base.Show();
-
-            panelRectTransform.SetAsLastSibling();
-            selectedFactoryType = null; // changed province
-            Refresh();
+            selectedFactoryType = null; // changed province           
+            base.Show();                       
         }
         public void onBuildClick()
         {

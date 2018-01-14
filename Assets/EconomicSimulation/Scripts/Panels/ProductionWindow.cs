@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     public class ProductionWindow : DragPanel
     {
         [SerializeField]
-        private MyTableNew table;
+        private UITableNew table;
         private Province showingProvince;
         void Start()
         {
@@ -24,15 +24,12 @@ namespace Nashet.EconomicSimulation
         }
         public void show(Province inn, bool bringOnTop)
         {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
             showingProvince = inn;
             if (showingProvince != null)
             {
                 Game.factoriesToShowInProductionPanel = showingProvince.allFactories;
             }
-            Refresh();
+            Show();                       
         }
         internal void SetAllFactoriesToShow()
         {

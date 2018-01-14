@@ -72,10 +72,8 @@ namespace Nashet.EconomicSimulation
         }
         public void show(Country count)
         {
-            Show();
-            panelRectTransform.SetAsLastSibling();
             selectedCountry = count;
-            Refresh();
+            Show();                       
         }
         private void setButtonsState()
         {

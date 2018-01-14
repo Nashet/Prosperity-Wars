@@ -7,7 +7,7 @@ using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class ProductionWindowTable : MyTableNew
+    public class ProductionWindowTable : UITableNew
     {
         public override void Refresh()
         {

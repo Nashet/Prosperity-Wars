@@ -4,7 +4,7 @@ using UnityEngine;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class StatisticsPanelTable : MyTableNew
+    public class StatisticsPanelTable : UITableNew
     {
         public override void Refresh()
         {

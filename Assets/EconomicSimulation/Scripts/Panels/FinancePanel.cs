@@ -101,13 +101,6 @@ namespace Nashet.EconomicSimulation
             else
                 ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
         }
-        public override void Show()
-        {
-            base.Show();
-            panelRectTransform.SetAsLastSibling();
-            Refresh();
-        }
-
         public void findNoonesEterprises()
         {
             foreach (var item in Province.allProvinces)

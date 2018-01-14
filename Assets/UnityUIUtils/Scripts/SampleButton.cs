@@ -54,7 +54,7 @@ namespace Nashet.UnityUIUtils
             }
             else if (link is Product)
             {
-                MainCamera.goodsPanel.show((Product)link, true);
+                MainCamera.goodsPanel.show((Product)link);
                 MainCamera.goodsPanel.Refresh();
             }
             else if (link is Storage)

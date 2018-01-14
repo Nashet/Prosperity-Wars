@@ -7,19 +7,20 @@ using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
 
-    public class InventionsPanelTable : MyTable
+    public class InventionsPanelTable : UITableNew
     {
         public override void Refresh()
         {
             ////if (Game.date != 0)
+            StartUpdate();
             {
                 base.RemoveButtons();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
+            EndUpdate();
         }
-        
-        override protected void AddButtons()
+
+        private void AddButtons()
         {
             int counter = 0;
             AddHeader();

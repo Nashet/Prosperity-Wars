@@ -12,7 +12,10 @@ namespace Nashet.UnityUIUtils
     {
 
     }
-    abstract public class MyTable : MonoBehaviour, IRefreshable
+    /// <summary>
+    /// Old version, refreshes entire table. Don't use it
+    /// </summary>    
+    abstract public class UITable : MonoBehaviour, IRefreshable
     {
         [SerializeField]
         private SimpleObjectPool buttonObjectPool;
@@ -159,7 +162,10 @@ namespace Nashet.UnityUIUtils
         //    }
         //}
     }
-    abstract public class MyTableNew : MonoBehaviour, IRefreshable
+    /// <summary>
+    /// Base class for UI tables. You must derive from that class your specific table. Allows only vertical scroll
+    /// </summary>
+    abstract public class UITableNew : MonoBehaviour, IRefreshable
     {
         [SerializeField]
         private SimpleObjectPool buttonObjectPool;
@@ -179,7 +185,6 @@ namespace Nashet.UnityUIUtils
         {
             return rowOffset;
         }
-
         protected void StartUpdate()
         {
             alreadyInUpdate = true;

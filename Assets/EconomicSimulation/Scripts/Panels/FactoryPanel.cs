@@ -133,10 +133,8 @@ namespace Nashet.EconomicSimulation
         }
         public void show(Factory fact)
         {
-            Show();
             shownFactory = fact;
-            panelRectTransform.SetAsLastSibling();
-            //Refresh();
+            Show();            
         }
         public void removeFactory(Factory fact)
         {
