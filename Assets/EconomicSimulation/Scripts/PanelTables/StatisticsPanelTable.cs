@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.UnityUIUtils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : UITableNew
@@ -12,28 +14,30 @@ namespace Nashet.EconomicSimulation
             //lock (gameObject)
             {
                 RemoveButtons();
-                var howMuchRowsShow = CalcSize(Country.howMuchCountriesAlive());
+                var elementsToShow = Country.getAllExisting().ToList();
+
+                var howMuchRowsShow = CalcSize(elementsToShow.Count);// uncolonized lands
                 AddHeader();
 
                 //for (int i = 0; i < howMuchRowsShow; i++)
-                int lookingForAlive = 0;
-                for (int nextRowNumber = 0; nextRowNumber < howMuchRowsShow; nextRowNumber++)
+                //int lookingForAlive = 0;
+                for (int i = 0; i < howMuchRowsShow; i++)
                 {
 
-                    Country country = Country.allCountries[nextRowNumber + GetRowOffset() + lookingForAlive];
+                    Country country = elementsToShow[i + GetRowOffset()];
 
-                    while (!country.isAlive())
-                    {
-                        lookingForAlive++;
-                        country = Country.allCountries[nextRowNumber + GetRowOffset() + lookingForAlive];
-                    }
+                    //while (!country.isAlive())
+                    //{
+                    //    //lookingForAlive++;
+                    //    country = Country.allCountries[i + GetRowOffset() + lookingForAlive];
+                    //}
 
                     //foreach (var country in Country.getAllExisting())
 
 
 
                     // Adding number
-                    AddButton((nextRowNumber + GetRowOffset() + 1).ToString(), country);
+                    AddButton((i + GetRowOffset() + 1).ToString(), country);
 
                     // Adding Country
                     AddButton(country.ToString(), country, () => country.ToString());
