@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         public MultiSeller(Country place) : base(place)
         {
-            foreach (var item in Product.getAllNonAbstract())
+            foreach (var item in Product.getAll(x => !x.isAbstract()))
                 if (item != Product.Gold)
                 {
                     if (item == Product.Grain)

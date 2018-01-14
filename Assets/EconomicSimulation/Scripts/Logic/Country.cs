@@ -896,7 +896,7 @@ namespace Nashet.EconomicSimulation
             //1 day trade
             //TODO add x day buying or split buying somehow
 
-            foreach (var product in Product.getAllNonAbstract())
+            foreach (var product in Product.getAll(x => !x.isAbstract()))
                 //if (product.isInventedBy(this) || product == Product.Cattle)
                 if (product.isTradable())
                 {

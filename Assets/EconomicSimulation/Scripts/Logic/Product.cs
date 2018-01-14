@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
         {
 
             // abstract products
-            foreach (var item in getAllNonAbstract())
+            foreach (var item in getAll(x=>!x.isAbstract()))
                 if (item != Product.Gold)
                 {
                     Game.market.SetDefaultPrice(item, item.defaultPrice.get());
@@ -130,30 +130,6 @@ namespace Nashet.EconomicSimulation
             _isAbstract = true;
             this.substitutes = substitutes;
         }
-        public static IEnumerable<Product> getAllAbstract()
-        {
-            foreach (var item in allProducts)
-                if (item.isAbstract())
-                    yield return item;
-        }
-        public static IEnumerable<Product> getAllNonAbstract()
-        {
-            foreach (var item in allProducts)
-                if (!item.isAbstract())
-                    yield return item;
-        }
-        /// <summary>
-        /// Products go in industrial-military-consumer order
-        /// </summary>    
-        public static IEnumerable<Product> getAllNonAbstractTradableInPEOrder(Country country)
-        {
-            foreach (var item in getAllSpecificProductsTradable(x => x.isIndustrial()))
-                yield return item;
-            foreach (var item in getAllSpecificProductsTradable(x => x.isMilitary()))
-                yield return item;
-            foreach (var item in getAllSpecificProductsTradable(x => x.isConsumerProduct()))
-                yield return item;
-        }
         public static IEnumerable<Product> getAll()
         {
             foreach (var item in allProducts)
@@ -165,15 +141,39 @@ namespace Nashet.EconomicSimulation
                 if (selector(item))
                     yield return item;
         }
+        //public static IEnumerable<Product> getAllAbstract()
+        //{
+        //    foreach (var item in allProducts)
+        //        if (item.isAbstract())
+        //            yield return item;
+        //}
+        //public static IEnumerable<Product> getAllNonAbstract()
+        //{
+        //    foreach (var item in allProducts)
+        //        if (!item.isAbstract())
+        //            yield return item;
+        //}
+        /// <summary>
+        /// Products go in industrial-military-consumer order
+        /// </summary>    
+        public static IEnumerable<Product> getAllNonAbstractTradableInPEOrder(Country country)
+        {
+            foreach (var item in getAllSpecificProductsTradable(x => x.isIndustrial()))
+                yield return item;
+            foreach (var item in getAllSpecificProductsTradable(x => x.isMilitary()))
+                yield return item;
+            foreach (var item in getAllSpecificProductsTradable(x => x.isConsumerProduct()))
+                yield return item;
+        }                
         public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
         {
-            foreach (var item in getAllNonAbstract())
+            foreach (var item in getAll(x => !x.isAbstract()))
                 if (selector(item) && item.isInventedBy(country))
                     yield return item;
         }
         public static IEnumerable<Product> getAllSpecificProductsTradable(Func<Product, bool> selector)
         {
-            foreach (var item in getAllNonAbstract())
+            foreach (var item in getAll(x => !x.isAbstract()))
                 if (selector(item) && item.isTradable())
                     yield return item;
         }
@@ -224,7 +224,7 @@ namespace Nashet.EconomicSimulation
         }
         public static void sortSubstitutes()
         {
-            foreach (var item in getAllAbstract())
+            foreach (var item in getAll(x=>x.isAbstract()))
             //if (item.isTradable()) 
             // Abstract are always invented and not gold
             {
