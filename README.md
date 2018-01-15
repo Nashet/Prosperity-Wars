@@ -22,11 +22,11 @@ So, main principles of that simulation are:
 * governments can compete by wars
 
 ## What it has now (v0.16.0)
- - provinces and countries
+ - provinces and countries (generated randomly)
  - Movements and Rebellions
  - factories and national banks
  - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen, Artisans)
- - basic production\trade\consumption
+ - basic production\free market trade\consumption
  - basic warfare
  - basic inventions
  - basic reforms (population can vote for reforms)
