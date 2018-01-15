@@ -4,7 +4,7 @@ using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
-    {   
+    {
         [SerializeField]
         private Canvas canvas;
 
@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         internal static PoliticsPanel politicsPanel;
         internal static FinancePanel financePanel;
         internal static MilitaryPanel militaryPanel;
-        
+
         internal static LoadingPanel loadingPanel;
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
         private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
-        
+
         void FixedUpdate()
         {
             if (gameIsLoaded)
@@ -110,7 +110,11 @@ namespace Nashet.EconomicSimulation
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
                     Game.simulate();
-                    refreshAllActive();                    
+                    //if (Time.unscaledTime - lastTime > howOften)
+                    //{                    
+                    //    lastTime = Time.unscaledTime;
+                    refreshAllActive();
+                    //}
                 }
 
 
@@ -173,7 +177,7 @@ namespace Nashet.EconomicSimulation
             if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
             if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
             if (provincePanel.isActiveAndEnabled) provincePanel.Refresh();
-            
+
             //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
@@ -190,7 +194,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
                 {
-                    
+
                     var lastSelected = Game.selectedProvince;
                     Game.selectedProvince = null;
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
@@ -205,7 +209,7 @@ namespace Nashet.EconomicSimulation
                     {
                         Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                         Game.selectedProvince.setBorderMaterials(true);
-                    }                    
+                    }
                     Game.selectedProvince = Province.find(number);
                     Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                     provincePanel.Show();
@@ -232,7 +236,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        
+
         // This function is called every fixed framerate frame, if the MonoBehavior is enabled.
         public void focus(Province province)
         {
