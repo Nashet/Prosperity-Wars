@@ -2,7 +2,7 @@
 
 ## Demo
 [There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
-And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster and has bigger map
+And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
 
 ## Description
 Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
