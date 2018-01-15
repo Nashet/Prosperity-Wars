@@ -110,7 +110,11 @@ namespace Nashet.EconomicSimulation
 
         //abstract internal AbstractReformValue getValue(int value);
         //abstract internal void setValue(int value);
-
+        public void OnClicked()
+        {
+            MainCamera.politicsPanel.selectReform(this);
+            MainCamera.politicsPanel.Refresh();
+        }        
     }
     public class Government : AbstractReform, IHasGetCountry
     {

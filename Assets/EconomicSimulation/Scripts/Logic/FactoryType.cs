@@ -341,5 +341,9 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+        public void OnClicked()
+        {
+            MainCamera.buildPanel.selectFactoryType(this);
+        }
     }
 }

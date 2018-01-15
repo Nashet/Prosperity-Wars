@@ -1055,6 +1055,10 @@ namespace Nashet.EconomicSimulation
             else
                 return Procent.HundredProcent;
         }
+        public void OnClicked()
+        {
+            MainCamera.selectProvince(this.getID());
+        }
     }
     public class Mod : Name
     {

@@ -4,6 +4,8 @@ using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System;
+
 namespace Nashet.EconomicSimulation
 {
     public class Factory : SimpleProduction, ICanBeCellInTable
@@ -935,6 +937,11 @@ namespace Nashet.EconomicSimulation
             foreach (var pop in hiredWorkForce)
                 result += pop.Value;
             return result;
+        }
+
+        public void OnClicked()
+        {
+            MainCamera.factoryPanel.show(this);            
         }
     }
 }

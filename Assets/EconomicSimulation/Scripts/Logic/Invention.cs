@@ -92,5 +92,10 @@ namespace Nashet.EconomicSimulation
         {
             return cost;
         }
+        public void OnClicked()
+        {
+            MainCamera.inventionsPanel.selectInvention(this);
+            MainCamera.inventionsPanel.Refresh();
+        }
     }
 }
