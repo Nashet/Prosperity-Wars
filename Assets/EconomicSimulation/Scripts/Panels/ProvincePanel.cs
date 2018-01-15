@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
@@ -66,31 +67,31 @@ namespace Nashet.EconomicSimulation
         public void onPopulationDetailsClick()
         {
             if (MainCamera.populationPanel.isActiveAndEnabled)
-                if (MainCamera.populationPanel.ShowingProvince == null)
+                if (MainCamera.populationPanel.showingProvince == null)
                 {
                     MainCamera.populationPanel.Hide();
-                    Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                    MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
+                    Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                    MainCamera.populationPanel.showingProvince = Game.selectedProvince;
                     //MainCamera.populationPanel.showAll = false;
                     MainCamera.populationPanel.Show();
                 }
                 else
                 {
-                    if (MainCamera.populationPanel.ShowingProvince == Game.selectedProvince)
+                    if (MainCamera.populationPanel.showingProvince == Game.selectedProvince)
                         MainCamera.populationPanel.Hide();
                     else
                     {
                         MainCamera.populationPanel.Hide();
-                        Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                        MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
+                        Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                        MainCamera.populationPanel.showingProvince = Game.selectedProvince;
                         //MainCamera.populationPanel.showAll = false;
                         MainCamera.populationPanel.Show();
                     }
                 }
             else
             {
-                Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
+                Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                MainCamera.populationPanel.showingProvince = Game.selectedProvince;
                 //MainCamera.populationPanel.showAll = false;
                 MainCamera.populationPanel.Show();
             }

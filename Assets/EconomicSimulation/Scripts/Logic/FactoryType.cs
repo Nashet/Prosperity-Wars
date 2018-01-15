@@ -341,7 +341,7 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
-        public void OnClicked()
+        public void OnClickedCell()
         {
             MainCamera.buildPanel.selectFactoryType(this);
         }

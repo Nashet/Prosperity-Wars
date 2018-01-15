@@ -41,7 +41,7 @@ namespace Nashet.UnityUIUtils
             if (objectToClick == null)
                 return;
             else
-                objectToClick.OnClicked();            
+                objectToClick.OnClickedCell();            
         }        
     }
 }

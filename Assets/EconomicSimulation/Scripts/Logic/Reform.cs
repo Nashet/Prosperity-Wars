@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
 
         //abstract internal AbstractReformValue getValue(int value);
         //abstract internal void setValue(int value);
-        public void OnClicked()
+        public void OnClickedCell()
         {
             MainCamera.politicsPanel.selectReform(this);
             MainCamera.politicsPanel.Refresh();

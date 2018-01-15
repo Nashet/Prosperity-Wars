@@ -1371,7 +1371,7 @@ namespace Nashet.EconomicSimulation
             }
             return null;
         }
-        public void OnClicked()
+        public void OnClickedCell()
         {            
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {

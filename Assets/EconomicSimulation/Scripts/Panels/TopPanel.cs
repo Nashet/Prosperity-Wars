@@ -81,7 +81,7 @@ namespace Nashet.EconomicSimulation
         {
 
             if (MainCamera.populationPanel.isActiveAndEnabled)
-                if (MainCamera.populationPanel.ShowingProvince == null)
+                if (MainCamera.populationPanel.showingProvince == null)
                     MainCamera.populationPanel.Hide();
                 else
                     MainCamera.populationPanel.onShowAllClick();

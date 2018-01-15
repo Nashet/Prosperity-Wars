@@ -5,11 +5,19 @@ using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
     public class PopulationPanelTable : UITableNew
     {
+        private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder;
+        private void Start()
+        {
+            needsFulfillmentOrder = new NeedsFulfillmentOrder(this);
+            unemploymentOrder = new UnemploymentOrder(this);
+            loyaltyOrder = new LoyaltyOrder(this);
+        }
         public override void Refresh()
         {
             StartUpdate();
@@ -68,7 +76,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             EndUpdate();
-        }
+        }        
         protected override void AddHeader()
         {
             // Adding number
@@ -95,16 +103,52 @@ namespace Nashet.EconomicSimulation
             //else AddButton("Administration");
 
             ////Adding needs fulfilling
-            AddButton("Needs fulfilled");
+            AddButton("Needs fulfilled " + needsFulfillmentOrder.getSymbol(), needsFulfillmentOrder);
 
             ////Adding loyalty
-            AddButton("Loyalty");
+            AddButton("Loyalty "+loyaltyOrder.getSymbol(), loyaltyOrder);
 
             ////Adding Unemployment
-            AddButton("Unemployment");
+            AddButton("Unemployment " + unemploymentOrder.getSymbol(), unemploymentOrder);
 
             //Adding Movement
             AddButton("Movement");
+        }
+        private class NeedsFulfillmentOrder : SortOrder
+        {
+            public NeedsFulfillmentOrder(UITableNew parent) : base(parent) { }
+            public override void OnClickedCell()
+            {
+                base.OnClickedCell();
+                Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.needsFullfilled.get());
+                //MainCamera.populationPanel.Refresh();
+                getParent().Refresh();
+            }
+            private void makeDefaultList()
+            {
+                if (MainCamera.populationPanel.showingProvince == null)
+                    MainCamera.populationPanel.SetAllPopsToShow();
+            }
+        }
+        private class LoyaltyOrder : SortOrder
+        {
+            public LoyaltyOrder(UITableNew parent) : base(parent) { }
+            public override void OnClickedCell()
+            {
+                base.OnClickedCell();
+                Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.loyalty.get());                
+                getParent().Refresh();
+            }         
+        }
+        private class UnemploymentOrder : SortOrder
+        {
+            public UnemploymentOrder(UITableNew parent) : base(parent) { }
+            public override void OnClickedCell()
+            {
+                base.OnClickedCell();
+                Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.getUnemployedProcent().get());
+                getParent().Refresh();
+            }
         }
     }
 }

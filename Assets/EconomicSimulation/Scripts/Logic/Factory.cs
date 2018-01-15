@@ -939,7 +939,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        public void OnClicked()
+        public void OnClickedCell()
         {
             MainCamera.factoryPanel.show(this);            
         }

@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
         private UITableNew table;
         private Province m_showingProvince;
 
-        public Province ShowingProvince
+        public Province showingProvince
         {
             get { return m_showingProvince; }
             set { m_showingProvince = value; }
@@ -45,15 +45,13 @@ namespace Nashet.EconomicSimulation
             //hide();
             SetAllPopsToShow();
             //showAll = true;
-            ShowingProvince = null;
+            showingProvince = null;
             Show();
         }
         public override void Refresh()
         {
-            if (ShowingProvince == null)
-                SetAllPopsToShow();
-            //foreach (var item in tables)
-            //    item.refreshContent();     
+            if (showingProvince == null)
+                SetAllPopsToShow();               
             table.Refresh();
         }
     }

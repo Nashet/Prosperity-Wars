@@ -1055,7 +1055,7 @@ namespace Nashet.EconomicSimulation
             else
                 return Procent.HundredProcent;
         }
-        public void OnClicked()
+        public void OnClickedCell()
         {
             MainCamera.selectProvince(this.getID());
         }

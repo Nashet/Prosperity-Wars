@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 //using Nashet.EconomicSimulation;
@@ -10,7 +11,7 @@ namespace Nashet.UnityUIUtils
 {
     public interface ICanBeCellInTable
     {
-        void OnClicked();
+        void OnClickedCell();
     }
     /// <summary>
     /// Base class for UI tables. You must derive from that class your specific table. Allows only vertical scroll
@@ -56,8 +57,7 @@ namespace Nashet.UnityUIUtils
         /// </summary>    
         protected int CalcSize(int totalRows)
         {
-            var rect = GetComponent<RectTransform>();
-            //LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+            var rect = GetComponent<RectTransform>();            
 
             int howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header    
 
@@ -108,6 +108,69 @@ namespace Nashet.UnityUIUtils
                 }
             }
         }
+        abstract protected class SortOrder : ICanBeCellInTable
+        {
+            private enum State { none, descending, ascending };
+            //private enum State { descending, ascending };
+
+            private State order = State.none;
+            private readonly UITableNew parent;
+
+            public SortOrder(UITableNew parent)
+            {
+                this.parent = parent;
+            }
+            protected IRefreshable getParent()
+            {
+                return parent;
+            }
+            //protected State getOrder()
+            //{
+            //    return order;
+            //}
+            public virtual void OnClickedCell()
+            {
+                order++;
+                if (order > State.ascending)
+                    order = State.none;
+                    //order = State.descending;
+            }
+            public string getSymbol()
+            {
+                switch (order)
+                {
+                    case State.none:
+                        return " ";
+                    case State.descending:
+                        return "^";
+                    case State.ascending:
+                        return "$";
+                    default:
+                        Debug.Log("Failed enum");
+                        return null;
+                }
+            }
+
+            protected List<T> DoSorting<T>(IEnumerable<T> list, Func<T, float> selector)//, Action defaultList
+            {
+                switch (order)
+                {
+                    case State.none:
+                        //if (defaultList != null)
+                        //    defaultList();
+                        return list.ToList();
+                    case State.descending:
+                        return list.OrderByDescending(x => selector(x)).ToList();
+
+                    case State.ascending:
+                        return list.OrderBy(x => selector(x)).ToList();
+
+                    default:
+                        Debug.Log("Fail..");
+                        return null;
+                }
+            }
+        };
 
     }
     /// <summary>
