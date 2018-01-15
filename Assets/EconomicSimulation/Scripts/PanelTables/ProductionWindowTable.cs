@@ -7,57 +7,57 @@ using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class ProductionWindowTable : MyTableNew
+    public class ProductionWindowTable : UITableNew
     {
         public override void Refresh()
         {
-            startUpdate();
+            StartUpdate();
             base.RemoveButtons();
-            var howMuchRowsShow = calcSize(Game.factoriesToShowInProductionPanel.Count);
+            var howMuchRowsShow = CalcSize(Game.factoriesToShowInProductionPanel.Count);
             //int counter = 0;
-            addHeader();
+            AddHeader();
             for (int i = 0; i < howMuchRowsShow; i++)
             //foreach (Factory next in Game.factoriesToShowInProductionPanel)
             {
-                Factory factory = Game.factoriesToShowInProductionPanel[i + getRowOffset()];
+                Factory factory = Game.factoriesToShowInProductionPanel[i + GetRowOffset()];
                 // Adding shownFactory name 
-                addButton(factory.getType().name + " L" + factory.getLevel(), factory);
+                AddButton(factory.getType().name + " L" + factory.getLevel(), factory);
 
                 // Adding province 
-                addButton(factory.getProvince().ToString(), factory.getProvince());
+                AddButton(factory.getProvince().ToString(), factory.getProvince());
 
                 ////Adding production
-                addButton(factory.getGainGoodsThisTurn().ToString(), factory);
+                AddButton(factory.getGainGoodsThisTurn().ToString(), factory);
 
                 ////Adding effective resource income
-                addButton(factory.getInputFactor().ToString(), factory);
+                AddButton(factory.getInputFactor().ToString(), factory);
 
                 ////Adding workforce
-                addButton(factory.getWorkForce().ToString(), factory);
+                AddButton(factory.getWorkForce().ToString(), factory);
 
                 ////Adding profit
                 if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
-                    addButton("none", factory);
+                    AddButton("none", factory);
                 else
-                    addButton(factory.getProfit().ToString("F3"), factory);
+                    AddButton(factory.getProfit().ToString("F3"), factory);
 
                 ////Adding margin
                 if (factory.isUpgrading())
-                    addButton("Upgrading", factory);
+                    AddButton("Upgrading", factory);
                 else
                 {
                     if (factory.isBuilding())
-                        addButton("Building", factory);
+                        AddButton("Building", factory);
                     else
                     {
                         if (!factory.isWorking())
-                            addButton("Closed", factory);
+                            AddButton("Closed", factory);
                         else
                         {
                             if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
-                                addButton("none", factory);
+                                AddButton("none", factory);
                             else
-                                addButton(factory.getMargin().ToString(), factory);
+                                AddButton(factory.getMargin().ToString(), factory);
                         }
                     }
                 }
@@ -65,48 +65,48 @@ namespace Nashet.EconomicSimulation
                 ////Adding salary
                 //if (Game.player.isInvented(InventionType.capitalism))
                 if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
-                    addButton("centralized", factory);
+                    AddButton("centralized", factory);
                 else
                 {
                     if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
-                        addButton(factory.getSalary().ToString() + " food", factory);
+                        AddButton(factory.getSalary().ToString() + " food", factory);
                     else
-                        addButton(factory.getSalary().ToString() + " coins", factory);
+                        AddButton(factory.getSalary().ToString() + " coins", factory);
                 }
-                addButton(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
+                AddButton(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
                 //counter++;
                 //contentPanel.r
             }
-            endUpdate();
+            EndUpdate();
         }
 
-        protected override void addHeader()
+        protected override void AddHeader()
         {
             // Adding product name 
-            addButton("Type");
+            AddButton("Type");
 
             // Adding province 
-            addButton("Province");
+            AddButton("Province");
 
             ////Adding production
-            addButton("Production");
+            AddButton("Production");
 
             ////Adding effective resource income
-            addButton("Resources");
+            AddButton("Resources");
 
             ////Adding workforce
-            addButton("Workforce");
+            AddButton("Workforce");
 
             ////Adding money income
-            addButton("Profit");
+            AddButton("Profit");
 
             ////Adding profit
-            addButton("Profitability");
+            AddButton("Profitability");
 
             ////Adding salary
-            addButton("Salary");
+            AddButton("Salary");
 
-            addButton("Unemployed", null, () => "Unemployed in province");
+            AddButton("Unemployed", null, () => "Unemployed in province");
         }
     }
 }

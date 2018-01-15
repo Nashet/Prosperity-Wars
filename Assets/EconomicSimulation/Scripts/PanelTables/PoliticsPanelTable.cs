@@ -6,46 +6,41 @@ using System;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-
-    // represen each opunit record in table
-
-    public class PoliticsPanelTable : MyTable
+    public class PoliticsPanelTable : UITableNew
     {
         public override void Refresh()
         {
             ////if (Game.date != 0)
+            StartUpdate();
             {
                 base.RemoveButtons();
+                AddHeader();
                 AddButtons();
-                gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gameObject.transform.childCount / GetColumnsAmount() * rowHeight + 50);
             }
+            EndUpdate();
         }
-        
-        override protected void AddButtons()
+        private void AddButtons()
         {
-            int counter = 0;
-            AddHeader();
-            if (Game.Player != null)
+            int counter = 0;            
+            //foreach (var next in Game.Player.reforms)
+            var howMuchRowsShow = CalcSize(Game.Player.reforms.Count);            
+            for (int i = 0; i < howMuchRowsShow; i++)
+            // if (next.isAvailable(Game.player))
             {
-                //var factoryList = Game.player;
+                var reform = Game.Player.reforms[i + GetRowOffset()];
+                // Adding reform name
+                AddButton(reform.ToString(), reform);
 
-                foreach (var next in Game.Player.reforms)
-                // if (next.isAvailable(Game.player))
-                {
-                    // Adding reform name
-                    AddButton(next.ToString(), next);
+                ////Adding Status
+                AddButton(reform.getValue().ToString(), reform);
 
-                    ////Adding Status
-                    AddButton(next.getValue().ToString(), next);
+                ////Adding Can change possibility
+                //if (next.canChange())
+                //    AddButton("Yep", next);
+                //else
+                //    AddButton("Nope", next);
 
-                    ////Adding Can change possibility
-                    //if (next.canChange())
-                    //    AddButton("Yep", next);
-                    //else
-                    //    AddButton("Nope", next);
-
-                    counter++;
-                }
+                counter++;
             }
         }
 

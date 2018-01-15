@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Nashet.UnityUIUtils.Hideable" Collapsed="true">
+    <Position X="20.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\UnityUIUtils\Scripts\DragPanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Nashet.UnityUIUtils.Window" Collapsed="true">
+    <Position X="20.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\UnityUIUtils\Scripts\DragPanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Nashet.UnityUIUtils.DragPanel" Collapsed="true">
+    <Position X="18.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAIAAAAAABACAAAAAAEAAIAAAAAACAAAEA=</HashCode>
+      <FileName>Assets\UnityUIUtils\Scripts\DragPanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.BottomPanel" Collapsed="true">
+    <Position X="20.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAABAAAAAAIAAAAAAAAAEAAAAAAAAAAAACEA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\BottomPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.TopPanel" Collapsed="true">
+    <Position X="23" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACEAAAABAIAIIAIAAIAAAAIAEQAAEAgAgAABICEA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\TopPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.BuildPanel" Collapsed="true">
+    <Position X="7.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAADBAAABCAAAAAAAAkAAEAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\BuildPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.GoodsPanel" Collapsed="true">
+    <Position X="27.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAIqBAAAAAAAAEAAAAAAAAKAAABAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\GoodsPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.ProvincePanel" Collapsed="true">
+    <Position X="25.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CIACABAAADBQAAAAAIAAAAQAAAAEIABAIAIAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\ProvincePanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.DiplomacyPanel" Collapsed="true">
+    <Position X="9.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAIAAAACBAAAAiAAABCAAAEAAAEAAABCCAAAAACAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\DiplomacyPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.FactoryPanel" Collapsed="true">
+    <Position X="11.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AiwAADAAAGVAAAgUQjAAIAAAAAAAoAACBABEAACAgAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\FactoryPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.FinancePanel" Collapsed="true">
+    <Position X="14" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEQAABMhDBAAAADABAACAAAACUEJAAAEQAACACAJAg=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\FinancePanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.InventionsPanel" Collapsed="true">
+    <Position X="16.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACBAAARAAAAAAAAAAAAEAAEAACAAAAABAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\InventionsPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.LoadingPanel" Collapsed="true">
+    <Position X="18.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\LoadingPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.MilitaryPanel" Collapsed="true">
+    <Position X="18.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwAAEgAgCBIAAACAAIACQAAAIAAAAgABJACAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\MilitaryPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.PoliticsPanel" Collapsed="true">
+    <Position X="20.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABBIAEiCACBAASBAIAAAAQBBACAEAAAAAAAAAAIBAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\PoliticsPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.PopulationPanel" Collapsed="true">
+    <Position X="23" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACBAAABAAAAAAAAQAAAAAAAABAAgAABAAAg=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\PopulationPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.PopUnitPanel" Collapsed="true">
+    <Position X="25.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAUAAAAAACBAAQAAACAAAIAAAAAQIAAABAAAEACJEAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\PopUnitPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.ProductionWindow" Collapsed="true">
+    <Position X="29.75" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ACgAAAAAACBAAABAABAAAAAAAAAAAAAABAAAAABAEAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\ProductionWindow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.StatisticsPanel" Collapsed="true">
+    <Position X="32.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACBAAABAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\StatisticsPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Nashet.EconomicSimulation.TradeWindow" Collapsed="true">
+    <Position X="34.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAQgCBAAARAAAACAJAAAAAACCQABAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Panels\TradeWindow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Nashet.UnityUIUtils.IRefreshable" Collapsed="true">
+    <Position X="24.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\UnityUIUtils\Scripts\DragPanel.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Nashet.UnityUIUtils.IHideable" Collapsed="true">
+    <Position X="23" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\UnityUIUtils\Scripts\DragPanel.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

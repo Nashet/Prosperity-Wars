@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
     public class StatisticsPanel : DragPanel
     {
         [SerializeField]
-        private MyTableNew table;
+        private UITableNew table;
         // Use this for initialization
         void Start()
         {
@@ -17,21 +17,8 @@ namespace Nashet.EconomicSimulation
             //show(false);
             Canvas.ForceUpdateCanvases();
             Hide();
-        }
-
-        public void show(bool bringOnTop)
-        {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-            Refresh();
-        }
-        //override public void onCloseClick()
-        //{
-        //    base.onCloseClick();
-        //    //showAll = false;
-        //}
-
+        }        
+       
         //public void onShowAllClick()
         //{
         //    //hide();

@@ -76,15 +76,12 @@ namespace Nashet.EconomicSimulation
 
         public void show(Province province)
         {
-            Show();
-            panelRectTransform.SetAsLastSibling();
-
-            refresh(true);
             if (province != null)
             {
                 var list = Game.Player.getNeighborProvinces();
                 ddProvinceSelect.value = list.IndexOf(province);
             }
+            Show();                
         }
 
         public void onMobilizationClick()

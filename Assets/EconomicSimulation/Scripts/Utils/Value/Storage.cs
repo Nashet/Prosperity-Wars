@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using Nashet.UnityUIUtils;
 namespace Nashet.ValueSpace
 {
     /// <summary>
@@ -174,7 +175,7 @@ namespace Nashet.ValueSpace
 
     }
 
-    public class Storage : Value
+    public class Storage : Value, ICanBeCellInTable
     {
         static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
 

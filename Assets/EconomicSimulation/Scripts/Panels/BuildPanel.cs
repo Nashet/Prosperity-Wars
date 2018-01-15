@@ -8,11 +8,11 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    
+
     public class BuildPanel : DragPanel
     {
         [SerializeField]
-        private ScrollRect table;
+        private UITableNew table;
         [SerializeField]
         private Text descriptionText;
         [SerializeField]
@@ -30,70 +30,66 @@ namespace Nashet.EconomicSimulation
             Hide();
         }
 
-        public void show(bool bringOnTop)
+        public override void Show()
         {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-
+            selectedFactoryType = null; // changed province           
+            base.Show();                       
         }
         public void onBuildClick()
         {
-            //if (Game.player.economy.allowsFactoryBuildingByGovernment())
+
+            bool buildSomething = false;
+
+            if (Economy.isMarket.checkIftrue(Game.Player))
+            //if (Game.player.economy.status == Economy.StateCapitalism)
+            //have money /resource
             {
-                bool buildSomething = false;
-
-                if (Economy.isMarket.checkIftrue(Game.Player))
-                //if (Game.player.economy.status == Economy.StateCapitalism)
-                //have money /resource
+                //Value cost = Game.market.getCost(resourceToBuild);
+                //cost.add(Options.factoryMoneyReservePerLevel);
+                Value cost = selectedFactoryType.getMinimalMoneyToBuild();
+                if (Game.Player.canPay(cost))
                 {
-                    //Value cost = Game.market.getCost(resourceToBuild);
-                    //cost.add(Options.factoryMoneyReservePerLevel);
-                    Value cost = selectedFactoryType.getMinimalMoneyToBuild();
-                    if (Game.Player.canPay(cost))
-                    {
-                        var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
-                        Game.Player.payWithoutRecord(factory, cost);
-                        buildSomething = true;
-                        MainCamera.factoryPanel.show(factory);
-                    }
-
-                }
-                else // non market
-                {
-                    //todo remove grain connection
-                    var resourceToBuild = selectedFactoryType.getBuildNeeds();
-                    Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
-                    if (Game.Player.countryStorageSet.has(needFood))
-                    {
-                        Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
-                        //wallet.pay(fact.wallet, new Value(100f));
-                        Game.Player.countryStorageSet.subtract(needFood);
-                        buildSomething = true;
-                        MainCamera.factoryPanel.show(fact);
-                    }
+                    var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
+                    Game.Player.payWithoutRecord(factory, cost);
+                    buildSomething = true;
+                    MainCamera.factoryPanel.show(factory);
                 }
 
-                if (buildSomething == true)
+            }
+            else // non market
+            {
+                //todo remove grain connection
+                var resourceToBuild = selectedFactoryType.getBuildNeeds();
+                Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
+                if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    // voteButton.interactable = false;
-                    MainCamera.refreshAllActive();
-                    selectedFactoryType = null;
-
-                    //Hide();
-                    //show();
-                    //refresh();
+                    Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
+                    //wallet.pay(fact.wallet, new Value(100f));
+                    Game.Player.countryStorageSet.subtract(needFood);
+                    buildSomething = true;
+                    MainCamera.factoryPanel.show(fact);
                 }
+            }
+
+            if (buildSomething == true)
+            {
+                // voteButton.interactable = false;
+                MainCamera.refreshAllActive();
+                selectedFactoryType = null;
+                //table.Refresh();
+                Refresh();
             }
         }
         public void selectFactoryType(FactoryType newSelection)
         {
-            if (newSelection != null)
-                selectedFactoryType = newSelection;
+            selectedFactoryType = newSelection;
         }
         public override void Refresh()
-        {        
-            Hide();
+        {
+            if (Game.previoslySelectedProvince != Game.selectedProvince)
+                selectFactoryType(null);
+
+            table.Refresh();
             if (selectedFactoryType != null)
             {
                 sb.Clear();
@@ -108,7 +104,8 @@ namespace Nashet.EconomicSimulation
 
                 descriptionText.text = sb.ToString();
 
-                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, out buildButton.GetComponentInChildren<ToolTipHandler>().text);
+                
+                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponentInChildren<ToolTipHandler>().text);
                 if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince))
                     buildButton.interactable = false;
                 if (buildButton.interactable)
@@ -123,7 +120,6 @@ namespace Nashet.EconomicSimulation
                 }
 
             }
-            show(false);
         }
     }
 }

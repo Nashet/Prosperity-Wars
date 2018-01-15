@@ -10,7 +10,10 @@ namespace Nashet.EconomicSimulation
     public class TradeWindow : DragPanel
     {
         [SerializeField]
-        private ScrollRect table;
+        private CountryStorageTable countryStorageTable;
+
+        [SerializeField]
+        private WorldMarketTable worldMarketTable;
 
         [SerializeField]
         private Text txtBuyIfLessThan, txtSaleIfMoreThan;
@@ -31,30 +34,19 @@ namespace Nashet.EconomicSimulation
             MainCamera.tradeWindow = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
             Hide();
-
         }
-
-
-        public void show(bool bringOnTop)
+        public override void Show()
         {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
             if (selectedProduct == null)
                 selectProduct(Product.Fish);
-            // refresh(); don't do it - recursion
+            base.Show();                
         }
-
-
         public override void Refresh()
         {
-
             tradeSliders.SetActive(!Game.Player.isAI());
-            Hide();
-            show(false);
-
+            worldMarketTable.Refresh();
+            countryStorageTable.Refresh();
         }
-
         public void refreshTradeLimits()
         {
             var sb = new StringBuilder();

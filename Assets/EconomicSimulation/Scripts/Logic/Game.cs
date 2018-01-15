@@ -19,12 +19,12 @@ namespace Nashet.EconomicSimulation
         static public Country Player;
 
         static bool haveToRunSimulation;
-        static bool haveToStepSimulation;
-        
+        static bool haveToStepSimulation;        
 
         static public System.Random Random = new System.Random();
 
         static public Province selectedProvince;
+        static public Province previoslySelectedProvince;
         static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
         static public List<Factory> factoriesToShowInProductionPanel;
 
@@ -172,10 +172,16 @@ namespace Nashet.EconomicSimulation
         }
         internal static void takePlayerControlOfThatCountry(Country country)
         {
-            if (country != Country.NullCountry)
+            //if (country != Country.NullCountry)
             {
                 surrended = false;
                 Player = country;
+                MainCamera.politicsPanel.selectReform(null);
+                MainCamera.inventionsPanel.selectInvention(null);
+                
+                // not necessary since it will change automatically on province selection
+                MainCamera.buildPanel.selectFactoryType(null);
+                
                 MainCamera.refreshAllActive();
             }
         }

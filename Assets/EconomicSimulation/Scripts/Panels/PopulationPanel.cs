@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanel : DragPanel
     {
         [SerializeField]
-        private MyTableNew table;
+        private UITableNew table;
         private Province m_showingProvince;
 
         public Province ShowingProvince
@@ -26,19 +26,6 @@ namespace Nashet.EconomicSimulation
             Canvas.ForceUpdateCanvases();
             Hide();
         }
-
-        public void show(bool bringOnTop)
-        {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-            Refresh();
-        }
-        //override public void onCloseClick()
-        //{
-        //    base.onCloseClick();
-        //    //showAll = false;
-        //}
         internal void SetAllPopsToShow()
         {
             if (Game.Player != null)
@@ -59,7 +46,7 @@ namespace Nashet.EconomicSimulation
             SetAllPopsToShow();
             //showAll = true;
             ShowingProvince = null;
-            show(true);
+            Show();
         }
         public override void Refresh()
         {

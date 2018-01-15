@@ -108,13 +108,10 @@ namespace Nashet.EconomicSimulation
         }
         //internal int getGraphPoint()
         //{ }
-        public void show(Product inn, bool bringOnTop)
+        public void show(Product inn)
         {
-            Show();
             product = inn;
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-            //Refresh();
+            Show();            
         }
     }
 }

@@ -75,15 +75,11 @@ namespace Nashet.UnityUIUtils
 
         public void show(Message mess)
         {
-            Show();
             howMuchPausedWindowsOpen++;
-
-            panelRectTransform.SetAsLastSibling();
-
             caption.text = mess.GetCaption();
             message.text = mess.GetText();
             closeText.text = mess.GetClosetext();
-            Refresh();
+            Show();            
         }
         static public void showMessageBox(Canvas canvas)
         {

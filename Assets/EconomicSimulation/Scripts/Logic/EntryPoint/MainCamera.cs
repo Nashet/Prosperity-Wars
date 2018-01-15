@@ -4,7 +4,7 @@ using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
-    {   
+    {
         [SerializeField]
         private Canvas canvas;
 
@@ -22,21 +22,15 @@ namespace Nashet.EconomicSimulation
         internal static PoliticsPanel politicsPanel;
         internal static FinancePanel financePanel;
         internal static MilitaryPanel militaryPanel;
-        
+
         internal static LoadingPanel loadingPanel;
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
 
-        private Camera camera;
+        private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
-        // Use this for initialization
 
-        void Start()
-        {
-            //topPanel.hide();
-            //Canvas.ForceUpdateCanvases();
-        }
         void FixedUpdate()
         {
             if (gameIsLoaded)
@@ -70,7 +64,7 @@ namespace Nashet.EconomicSimulation
                 Application.runInBackground = true;
                 game = new Game();
 #if UNITY_WEBGL
-                MainCamera.Game.initialize(); // non multi-threading
+                game.initialize(); // non multi-threading
 #else
                 game.Start(); //initialize is here 
 #endif
@@ -116,14 +110,17 @@ namespace Nashet.EconomicSimulation
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
                     Game.simulate();
+                    //if (Time.unscaledTime - lastTime > howOften)
+                    //{                    
+                    //    lastTime = Time.unscaledTime;
                     refreshAllActive();
-                    if (Game.selectedProvince != null)
-                        provincePanel.refresh(Game.selectedProvince);
+                    //}
                 }
 
 
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(canvas);
+                Game.previoslySelectedProvince = Game.selectedProvince;
             }
         }
         int getRayCastMeshNumber()
@@ -179,6 +176,8 @@ namespace Nashet.EconomicSimulation
             if (diplomacyPanel.isActiveAndEnabled) diplomacyPanel.Refresh();
             if (popUnitPanel.isActiveAndEnabled) popUnitPanel.Refresh();
             if (StatisticPanel.isActiveAndEnabled) StatisticPanel.Refresh();
+            if (provincePanel.isActiveAndEnabled) provincePanel.Refresh();
+
             //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
@@ -195,6 +194,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
                 {
+
                     var lastSelected = Game.selectedProvince;
                     Game.selectedProvince = null;
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
@@ -236,7 +236,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        
+
         // This function is called every fixed framerate frame, if the MonoBehavior is enabled.
         public void focus(Province province)
         {

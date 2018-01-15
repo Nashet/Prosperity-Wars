@@ -11,8 +11,10 @@ namespace Nashet.EconomicSimulation
     public class PoliticsPanel : DragPanel
     {
         [SerializeField]
+        private UITableNew table;
+
+        [SerializeField]
         private Text descriptionText, movementsText;
-        //public ScrollRect movementsScrollView;
 
         [SerializeField]
         private Button voteButton;
@@ -43,31 +45,19 @@ namespace Nashet.EconomicSimulation
             forceDecisionButton.interactable = false;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
             Hide();
-        }
+        }        
 
-        public void show(bool bringOnTop)
-        {
-            Show();
-            if (bringOnTop)
-                panelRectTransform.SetAsLastSibling();
-            //refresh(true); - recursion
-        }
-
-        void setNewReform()
+        void changeReformValue()
         {
             if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
                 selectedReform.setValue(selectedReformValue);
-                refresh(true);
-                if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.Refresh();
-                if (MainCamera.populationPanel.isActiveAndEnabled) MainCamera.populationPanel.Refresh();
-                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();
-
+                MainCamera.refreshAllActive();
             }
         }
         public void onVoteClick()
         {
-            setNewReform();
+            changeReformValue();
         }
         public void onForceDecisionClick()
         {
@@ -82,7 +72,7 @@ namespace Nashet.EconomicSimulation
                         pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                     }
                 }
-            setNewReform();
+            changeReformValue();
         }
         //slider.onValueChanged.AddListener(ListenerMethod);
 
@@ -127,13 +117,14 @@ namespace Nashet.EconomicSimulation
         }
         public void selectReform(AbstractReform newSelection)
         {
-            if (newSelection != null)
-                selectedReform = newSelection;
+            selectedReform = newSelection;
+            if (newSelection == null)
+                dropDown.interactable = false;
         }
         private void refresh(bool callRebuildDropDown)
         {
-            
-            Hide();
+
+            table.Refresh();
             //if (Game.Player.movements != null)
             movementsText.text = Game.Player.movements.getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
@@ -141,7 +132,15 @@ namespace Nashet.EconomicSimulation
 
 
             movementsHorizontalScrollBar.value = 0;
-            if (selectedReform != null)
+            if (selectedReform == null)
+            {
+                voteButton.interactable = false;
+                voteButton.GetComponentInChildren<Text>().text = "Select reform";
+                descriptionText.text = "Select reform from left";
+                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText("");
+                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");
+            } //did selected reform
+            else
             {
                 if (callRebuildDropDown) // meaning changed whole reform            
                     rebuildDropDown();
@@ -193,7 +192,7 @@ namespace Nashet.EconomicSimulation
                     if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                     { // has enough voters
                         voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponentInChildren<ToolTipHandler>().text);
-                        forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText( voteButton.GetComponentInChildren<ToolTipHandler>().getText());
+                        forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText(voteButton.GetComponentInChildren<ToolTipHandler>().getText());
                         forceDecisionButton.interactable = false;
                         voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                     }
@@ -201,20 +200,11 @@ namespace Nashet.EconomicSimulation
                     {
                         voteButton.interactable = false;
                         forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().text);
-                        voteButton.GetComponentInChildren<ToolTipHandler>().setText( forceDecisionButton.GetComponentInChildren<ToolTipHandler>().getText());
+                        voteButton.GetComponentInChildren<ToolTipHandler>().setText(forceDecisionButton.GetComponentInChildren<ToolTipHandler>().getText());
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
                     }
                 }
-            } //didn't selected reform
-            else
-            {
-                voteButton.interactable = false;
-                voteButton.GetComponentInChildren<Text>().text = "Select reform";
-                descriptionText.text = "Select reform from left";
-                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText( "");
-                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");
-            }
-            show(false);
+            }            
         }
     }
 }

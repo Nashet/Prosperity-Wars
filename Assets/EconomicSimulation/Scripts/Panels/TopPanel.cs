@@ -5,7 +5,7 @@ using System.Text;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class TopPanel : Hideable, IRefreshable
+    public class TopPanel : Window
     {
         [SerializeField]
         private Button btnPlay, btnStep, btnTrade;
@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
             Hide();
         }
 
-        public void Refresh()
+        public override void Refresh()
         {
             var sb = new StringBuilder();
 
@@ -33,13 +33,13 @@ namespace Nashet.EconomicSimulation
                 .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
                 .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
             generalText.text = sb.ToString();
-        }
+        }       
         public void onTradeClick()
         {
             if (MainCamera.tradeWindow.isActiveAndEnabled)
                 MainCamera.tradeWindow.Hide();
             else
-                MainCamera.tradeWindow.show(true);
+                MainCamera.tradeWindow.Show();
         }
         public void onExitClick()
         {
@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.inventionsPanel.isActiveAndEnabled)
                 MainCamera.inventionsPanel.Hide();
             else
-                MainCamera.inventionsPanel.show(true);
+                MainCamera.inventionsPanel.Show();
         }
         public void onEnterprisesClick()
         {
@@ -93,7 +93,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.politicsPanel.isActiveAndEnabled)
                 MainCamera.politicsPanel.Hide();
             else
-                MainCamera.politicsPanel.show(true);
+                MainCamera.politicsPanel.Show();
         }
         public void onFinanceClick()
         {

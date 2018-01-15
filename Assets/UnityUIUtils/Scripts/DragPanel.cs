@@ -23,14 +23,19 @@ namespace Nashet.UnityUIUtils
         virtual public void Show()
         {
             gameObject.SetActive(true);
-
-            //uncomment it after deleting MyTable class
-            //panelRectTransform.SetAsLastSibling();
         }
     }
+    /// <summary>
+    /// Represent UI object that can be refreshed and hidden
+    /// </summary>
     abstract public class Window : Hideable, IRefreshable
     {
         public abstract void Refresh();
+        override public void Show()
+        {
+            base.Show();
+            Refresh();
+        }
     }
     abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler
     {
@@ -43,8 +48,7 @@ namespace Nashet.UnityUIUtils
             Canvas canvas = GetComponentInParent<Canvas>();
             if (canvas != null)
             {
-                canvasRectTransform = canvas.transform as RectTransform;
-                //panelRectTransform = transform.parent as RectTransform;
+                canvasRectTransform = canvas.transform as RectTransform;                
                 panelRectTransform = transform as RectTransform;
             }
         }
@@ -95,6 +99,11 @@ namespace Nashet.UnityUIUtils
         {
             panelRectTransform.SetAsFirstSibling();
             Hide();
-        }        
+        }
+        override public void Show()
+        {
+            base.Show();
+            panelRectTransform.SetAsLastSibling();
+        }
     }
 }
