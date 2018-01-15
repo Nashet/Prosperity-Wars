@@ -1,7 +1,10 @@
 # Economic simulation
 
 ## Demo
-[There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
+[Project now has patreon page](https://www.patreon.com/economicsimulation) where you can help contributing in this project
+
+[There is early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
+
 And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
 
 ## Description
