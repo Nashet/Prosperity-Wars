@@ -6,11 +6,14 @@ using System;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class ProductionWindow : DragPanel
+    public class ProductionWindow : DragPanel, IFiltrable<Factory>
     {
         [SerializeField]
-        private UITableNew table;
-        private Province showingProvince;
+        private ProductionWindowTable table;
+        [SerializeField]
+        private List<Factory> factoriesToShow;
+
+        //private Province showingProvince;
         void Start()
         {
             MainCamera.productionWindow = this;
@@ -18,54 +21,79 @@ namespace Nashet.EconomicSimulation
             Canvas.ForceUpdateCanvases();
             Hide();
         }
-        public Province getShowingProvince()
-        {
-            return showingProvince;
-        }
-        public void show(Province inn, bool bringOnTop)
-        {
-            showingProvince = inn;
-            if (showingProvince != null)
-            {
-                Game.factoriesToShowInProductionPanel = showingProvince.allFactories;
-            }
-            Show();                       
-        }
-        internal void SetAllFactoriesToShow()
-        {
-            List<Factory> er = new List<Factory>();
-            //Game.popListToShow.Clear();
-            foreach (Province province in Game.Player.ownedProvinces)
-                foreach (Factory factory in province.allFactories)
-                    // Game.popListToShow.Add(popUnit);
-                    er.Add(factory);
-            Game.factoriesToShowInProductionPanel = er;
-        }
+        //public void setFactoriesToShow(List<Factory> list)
+        //{
+        //    factoriesToShow = list;
+        //}
+        //public Province getShowingProvince()
+        //{
+        //    return showingProvince;
+        //}
+        //public void show(Province inn)
+        //{
+        //    showingProvince = inn;
+        //    if (showingProvince != null)
+        //    {
+        //        //MainCamera.productionWindow.setFactoriesToShow(showingProvince.allFactories);
+        //        table.AddFilter(x=>x.getProvince() == showingProvince);
+        //    }
+        //    Show();
+        //}
+        //internal void SetAllFactoriesToShow()
+        //{
+        //    factoriesToShow = new List<Factory>();            
+        //    foreach (Province province in Game.Player.ownedProvinces)
+        //        foreach (Factory factory in province.allFactories)
+        //            factoriesToShow.Add(factory);            
+        //}
         public void onShowAllClick()
         {
-            SetAllFactoriesToShow();
-            show(null, true);
+           // SetAllFactoriesToShow();
+            //show(null, true);
+            table.ClearAllFiltres();
+            table.Refresh();
         }
         public override void Refresh()
         {
-
-            if (showingProvince == null)
-            {
-                SetAllFactoriesToShow();
-            }
-            //foreach (var item in tables)
-            //    item.refreshContent();
+            //if (showingProvince == null)
+            //{
+            //    SetAllFactoriesToShow();
+            //}
+           
             table.Refresh();
         }
 
         public void removeFactory(Factory fact)
         {
-            if (Game.factoriesToShowInProductionPanel != null && Game.factoriesToShowInProductionPanel.Contains(fact))
+            if (factoriesToShow != null && factoriesToShow.Contains(fact))
             {
-                Game.factoriesToShowInProductionPanel.Remove(fact);
-                if (MainCamera.productionWindow.isActiveAndEnabled)
+                factoriesToShow.Remove(fact);
+                if (this.isActiveAndEnabled)
                     Refresh();
             }
+        }
+        public bool IsSetAnyFilter()
+        {
+            return table.IsSetAnyFilter();
+        }
+
+        public bool IsSetThatFilter(Predicate<Factory> filter)
+        {
+            return table.IsSetThatFilter(filter);
+        }
+        public void AddFilter(Predicate<Factory> filter)
+        {
+            table.AddFilter(filter);
+        }
+
+        public void RemoveFilter(Predicate<Factory> filter)
+        {
+            table.RemoveFilter(filter);
+        }
+
+        public void ClearAllFiltres()
+        {
+            table.ClearAllFiltres();
         }
     }
 }

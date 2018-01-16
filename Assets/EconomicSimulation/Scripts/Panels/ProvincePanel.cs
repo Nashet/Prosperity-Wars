@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.provincePanel = this;
             Hide();
         }
-       
+
         public void onCloseClick()
         {
             Hide();
@@ -101,33 +101,35 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.militaryPanel.show(Game.selectedProvince);
         }
+        
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.getShowingProvince() == null)
+                if (MainCamera.productionWindow.IsSetAnyFilter())
                 {
-                    MainCamera.productionWindow.Hide();
-                    Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-                    //MainCamera.productionWindow.getShowingProvince() = Game.selectedProvince;
-                    MainCamera.productionWindow.show(Game.selectedProvince, true);
-                }
-                else
-                {
-                    if (MainCamera.productionWindow.getShowingProvince() == Game.selectedProvince)
+                    if (MainCamera.productionWindow.IsSetThatFilter(Province.filter))
                         MainCamera.productionWindow.Hide();
                     else
                     {
                         MainCamera.productionWindow.Hide();
-                        Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories; ;
-                        //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
-                        MainCamera.productionWindow.show(Game.selectedProvince, true);
+                        //MainCamera.productionWindow.setFactoriesToShow(Game.selectedProvince.allFactories); 
+                        MainCamera.productionWindow.AddFilter(Province.filter);
+                        MainCamera.productionWindow.Show();
                     }
+                }
+                else
+                {
+                    MainCamera.productionWindow.Hide();
+                    //MainCamera.productionWindow.setFactoriesToShow(Game.selectedProvince.allFactories);
+                    MainCamera.productionWindow.AddFilter(Province.filter);
+                    MainCamera.productionWindow.Show();
+
                 }
             else
             {
-                Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-                //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
-                MainCamera.productionWindow.show(Game.selectedProvince, true);
+                //MainCamera.productionWindow.setFactoriesToShow(Game.selectedProvince.allFactories);
+                MainCamera.productionWindow.AddFilter(Province.filter);
+                MainCamera.productionWindow.Show();
             }
         }
         //public void selectProvince(Province province)
@@ -148,7 +150,7 @@ namespace Nashet.EconomicSimulation
             else
                 sb.Append(Game.selectedProvince.getResource());
             sb.Append("\nTerrain: ").Append(Game.selectedProvince.getTerrain());
-            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation()*100).Append("%");
+            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation() * 100).Append("%");
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));

@@ -6,71 +6,35 @@ using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class StatisticsPanelTable : UITableNew
+    public class StatisticsPanelTable : UITableNew<Country>
     {
-        public override void Refresh()
+        protected override List<Country> ContentSelector()
         {
-            StartUpdate();
-            //lock (gameObject)
-            {
-                RemoveButtons();
-                var elementsToShow = Country.getAllExisting().ToList();
+            return Country.getAllExisting().ToList();
+        }
+        protected override void AddRow(Country country)
+        {
+            // Adding number
+            AddButton((0 + GetRowOffset() + 1).ToString(), country);
 
-                var howMuchRowsShow = CalcSize(elementsToShow.Count);// uncolonized lands
-                AddHeader();
+            // Adding Country
+            AddButton(country.ToString(), country, () => country.ToString());
+            ////Adding population
+            AddButton(country.getFamilyPopulation().ToString("N0"), country);
 
-                //for (int i = 0; i < howMuchRowsShow; i++)
-                //int lookingForAlive = 0;
-                for (int i = 0; i < howMuchRowsShow; i++)
-                {
+            AddButton(country.getGDP().get().ToString("N3"), country);
 
-                    Country country = elementsToShow[i + GetRowOffset()];
+            AddButton(country.getGDPPer1000().ToString("F3"), country);
 
-                    //while (!country.isAlive())
-                    //{
-                    //    //lookingForAlive++;
-                    //    country = Country.allCountries[i + GetRowOffset() + lookingForAlive];
-                    //}
+            AddButton(country.getGDPShare().ToString(), country);
 
-                    //foreach (var country in Country.getAllExisting())
+            AddButton(country.getUnemployment().ToString(), country);
 
+            AddButton(country.economy.getValue().ToString(), country);
 
+            AddButton(country.getAverageNeedsFulfilling().ToString(), country);
 
-                    // Adding number
-                    AddButton((i + GetRowOffset() + 1).ToString(), country);
-
-                    // Adding Country
-                    AddButton(country.ToString(), country, () => country.ToString());
-                    ////Adding population
-                    AddButton(country.getFamilyPopulation().ToString("N0"), country);
-
-                    AddButton(country.getGDP().get().ToString("N3"), country);
-
-                    AddButton(country.getGDPPer1000().ToString("F3"), country);
-
-                    AddButton(country.getGDPShare().ToString(), country);
-
-                    AddButton(country.getUnemployment().ToString(), country);
-
-                    AddButton(country.economy.getValue().ToString(), country);
-
-                    AddButton(country.getAverageNeedsFulfilling().ToString(), country);
-
-                    AddButton(country.taxationForRich.getValue().ToString(), country);
-
-                    //AddButton(country.needsFullfilled.ToString(), country,
-                    //    //() => ert.consumedTotal.ToStringWithLines()                        
-                    //    () => "Consumed:\n" + country.getConsumed().getContainer().getString("\n")
-                    //    );
-
-                    ////Adding loyalty
-                    //string accu;
-                    //PopUnit.modifiersLoyaltyChange.getModifier(country, out accu);
-                    //AddButton(country.loyalty.ToString(), country, accu);                
-
-                }
-            }
-            EndUpdate();
+            AddButton(country.taxationForRich.getValue().ToString(), country);
         }
         protected override void AddHeader()
         {

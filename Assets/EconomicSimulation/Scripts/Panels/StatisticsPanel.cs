@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
     public class StatisticsPanel : DragPanel
     {
         [SerializeField]
-        private UITableNew table;
+        private StatisticsPanelTable table;
         // Use this for initialization
         void Start()
         {

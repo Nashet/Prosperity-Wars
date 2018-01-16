@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     public class InventionsPanel : DragPanel
     {
         [SerializeField]
-        private UITableNew table;
+        private InventionsPanelTable table;
 
         [SerializeField]
         private Text descriptionText;

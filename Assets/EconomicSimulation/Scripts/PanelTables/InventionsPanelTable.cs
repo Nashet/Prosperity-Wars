@@ -9,44 +9,25 @@ using System.Linq;
 namespace Nashet.EconomicSimulation
 {
 
-    public class InventionsPanelTable : UITableNew
+    public class InventionsPanelTable : UITableNew<KeyValuePair<Invention, bool>>
     {
-        public override void Refresh()
+        protected override List<KeyValuePair<Invention, bool>> ContentSelector()
         {
-            ////if (Game.date != 0)
-            StartUpdate();
-            {
-                base.RemoveButtons();
-                AddHeader();
-                AddButtons();
-            }
-            EndUpdate();
+            return Game.Player.getAvailableInventions().ToList();
         }
-
-        private void AddButtons()
+        
+        protected override void AddRow(KeyValuePair<Invention, bool> invention)
         {
-            int counter = 0;
-
-            var elementsToShow = Game.Player.getAvailableInventions().ToList();
-            //elementsToShow.AddRange(Game.Player.getUninvented().ToList());
-            //foreach (var next in Game.Player.getAvailable())
-            var howMuchRowsShow = CalcSize(elementsToShow.Count);
-            for (int i = 0; i < howMuchRowsShow; i++)
-            {
-                var invention = elementsToShow[i + GetRowOffset()];
-                // Adding invention name 
-                AddButton(invention.Key.ToString(), invention.Key);
-                ////Adding possibleStatues
-                if (invention.Value)
-                    AddButton("Invented", invention.Key);
-                else
-                    AddButton("Uninvented", invention.Key);
-                ////Adding invention price
-                AddButton(invention.Key.getCost().ToString(), invention.Key);
-                counter++;
-            }
+            // Adding invention name 
+            AddButton(invention.Key.ToString(), invention.Key);
+            ////Adding possibleStatues
+            if (invention.Value)
+                AddButton("Invented", invention.Key);
+            else
+                AddButton("Uninvented", invention.Key);
+            ////Adding invention price
+            AddButton(invention.Key.getCost().ToString(), invention.Key);
         }
-
         protected override void AddHeader()
         {
             // Adding invention name 

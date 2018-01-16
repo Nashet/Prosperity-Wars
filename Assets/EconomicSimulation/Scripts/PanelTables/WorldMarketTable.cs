@@ -8,20 +8,9 @@ using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class WorldMarketTable : UITableNew
+    public class WorldMarketTable : UITableNew<Product>
     {
-        public override void Refresh()
-        {
-            StartUpdate();
-            //lock (gameObject)
-            {
-                RemoveButtons();
-                AddHeader();
-                AddButtons();
-                //AddHeader();
-            }
-            EndUpdate();
-        }
+        
         protected override void AddHeader()
         {
             // Adding product name 
@@ -43,45 +32,38 @@ namespace Nashet.EconomicSimulation
             ////Adding price Change
 
         }
-        private void AddButtons()
+        protected override void AddRow(Product product)
         {
-            int counter = 0;
-            //do NOT rely on elements order!
-            var elementsToShow = Product.getAll(x => x.isTradable() && !x.isAbstract()).ToList();
-            var howMuchRowsShow = CalcSize(elementsToShow.Count);
+            // Adding product name 
+            AddButton(product.getName(), product);
+            ////Adding production
+            AddButton(Game.market.getProductionTotal(product, true).get().ToString(), product);
+            ////Adding abstract Demand
+            //AddButton(Game.market.get(pro).ToString().name, next);
 
-            //foreach (Product product in Product.getAllNonAbstract())
-            for (int i = 0; i < howMuchRowsShow; i++)
-            {
-                var product = elementsToShow[i + GetRowOffset()];
+            ////Adding On market
+            AddButton(Game.market.getMarketSupply(product, true).get().ToString(), product);
 
-                // Adding product name 
-                AddButton(product.getName(), product);
-                ////Adding production
-                AddButton(Game.market.getProductionTotal(product, true).get().ToString(), product);
-                ////Adding abstract Demand
-                //AddButton(Game.market.get(pro).ToString().name, next);
+            ////Adding total consumption
+            AddButton(Game.market.getTotalConsumption(product, true).get().ToString(), product);
 
-                ////Adding On market
-                AddButton(Game.market.getMarketSupply(product, true).get().ToString(), product);
+            ////Adding Bought
+            AddButton(Game.market.getBouthOnMarket(product, true).get().ToString(), product);
 
-                ////Adding total consumption
-                AddButton(Game.market.getTotalConsumption(product, true).get().ToString(), product);
+            ////Adding effective Demand/Supply
+            AddButton(Game.market.getDemandSupplyBalance(product).ToString(), product);
+            //AddButton("-", product);
+            ////Adding price
+            AddButton(Game.market.getPrice(product).get().ToString(), product);
+            ////Adding price Change
+            //AddButton(next.loyalty.ToString(), next);
+            //counter++;
+            //contentPanel.r
+        }
 
-                ////Adding Bought
-                AddButton(Game.market.getBouthOnMarket(product, true).get().ToString(), product);
-
-                ////Adding effective Demand/Supply
-                AddButton(Game.market.getDemandSupplyBalance(product).ToString(), product);
-                //AddButton("-", product);
-                ////Adding price
-                AddButton(Game.market.getPrice(product).get().ToString(), product);
-                ////Adding price Change
-                //AddButton(next.loyalty.ToString(), next);
-                counter++;
-                //contentPanel.r
-
-            }
+        protected override List<Product> ContentSelector()
+        {
+            return Product.getAll(x => x.isTradable() && !x.isAbstract()).ToList();
         }
     }
 }

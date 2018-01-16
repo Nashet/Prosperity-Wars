@@ -50,9 +50,12 @@ namespace Nashet.EconomicSimulation
         private TerrainTypes terrain;
         private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
 
+        public readonly static Predicate<Factory> filter = new Predicate<Factory>(x => x.getProvince() == Game.selectedProvince);
+
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
         {
+            
             setResource(resource);
             colorID = icolorID;
             ID = iID;

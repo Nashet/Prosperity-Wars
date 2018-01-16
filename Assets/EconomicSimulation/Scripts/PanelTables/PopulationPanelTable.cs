@@ -9,74 +9,61 @@ using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PopulationPanelTable : UITableNew
+    public class PopulationPanelTable : UITableNew<PopUnit>
     {
-        private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder;
+        private SortOrder<PopUnit> needsFulfillmentOrder, unemploymentOrder, loyaltyOrder;
         private void Start()
         {
             needsFulfillmentOrder = new NeedsFulfillmentOrder(this);
             unemploymentOrder = new UnemploymentOrder(this);
             loyaltyOrder = new LoyaltyOrder(this);
         }
-        public override void Refresh()
+        protected override List<PopUnit> ContentSelector()
         {
-            StartUpdate();
-            //lock (gameObject)
-            {
-                RemoveButtons();
-                var howMuchRowsShow = CalcSize(Game.popsToShowInPopulationPanel.Count);
-                AddHeader();
-                if (Game.popsToShowInPopulationPanel.Count > 0)
-                {
-                    for (int i = 0; i < howMuchRowsShow; i++)
-                    //foreach (PopUnit record in Game.popsToShowInPopulationPanel)
-                    {
-                        PopUnit pop = Game.popsToShowInPopulationPanel[i + GetRowOffset()];
-
-                        // Adding number
-                        //AddButton(Convert.ToString(i + offset), record);
-
-                        // Adding PopType
-                        AddButton(pop.popType.ToString(), pop);
-                        ////Adding province
-                        AddButton(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
-                        ////Adding population
-                        AddButton(System.Convert.ToString(pop.getPopulation()), pop);
-                        ////Adding culture
-                        AddButton(pop.culture.ToString(), pop);
-
-                        ////Adding education
-                        AddButton(pop.education.ToString(), pop);
-
-                        ////Adding cash
-                        AddButton(pop.cash.ToString(), pop);
-
-                        ////Adding needs fulfilling
-
-                        //PopUnit ert = record;
-                        AddButton(pop.needsFullfilled.ToString(), pop,
-                            //() => ert.consumedTotal.ToStringWithLines()                        
-                            () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
-                            );
-
-                        ////Adding loyalty
-                        string accu;
-                        PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
-                        AddButton(pop.loyalty.ToString(), pop, () => accu);
-
-                        //Adding Unemployment
-                        AddButton(pop.getUnemployedProcent().ToString(), pop);
-
-                        //Adding Movement
-                        if (pop.getMovement() == null)
-                            AddButton("", pop);
-                        else
-                            AddButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
-                    }
-                }
-            }
-            EndUpdate();
+            return Game.popsToShowInPopulationPanel;
         }        
+        protected override void AddRow(PopUnit pop)
+        {
+            // Adding number
+            //AddButton(Convert.ToString(i + offset), record);
+
+            // Adding PopType
+            AddButton(pop.popType.ToString(), pop);
+            ////Adding province
+            AddButton(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
+            ////Adding population
+            AddButton(System.Convert.ToString(pop.getPopulation()), pop);
+            ////Adding culture
+            AddButton(pop.culture.ToString(), pop);
+
+            ////Adding education
+            AddButton(pop.education.ToString(), pop);
+
+            ////Adding cash
+            AddButton(pop.cash.ToString(), pop);
+
+            ////Adding needs fulfilling
+
+            //PopUnit ert = record;
+            AddButton(pop.needsFullfilled.ToString(), pop,
+                //() => ert.consumedTotal.ToStringWithLines()                        
+                () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
+                );
+
+            ////Adding loyalty
+            string accu;
+            PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
+            AddButton(pop.loyalty.ToString(), pop, () => accu);
+
+            //Adding Unemployment
+            AddButton(pop.getUnemployedProcent().ToString(), pop);
+
+            //Adding Movement
+            if (pop.getMovement() == null)
+                AddButton("", pop);
+            else
+                AddButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
+        }
         protected override void AddHeader()
         {
             // Adding number
@@ -114,9 +101,9 @@ namespace Nashet.EconomicSimulation
             //Adding Movement
             AddButton("Movement");
         }
-        private class NeedsFulfillmentOrder : SortOrder
+        private class NeedsFulfillmentOrder : SortOrder<PopUnit>
         {
-            public NeedsFulfillmentOrder(UITableNew parent) : base(parent) { }
+            public NeedsFulfillmentOrder(UITableNew<PopUnit> parent) : base(parent) { }
             public override void OnClickedCell()
             {
                 base.OnClickedCell();
@@ -130,9 +117,9 @@ namespace Nashet.EconomicSimulation
                     MainCamera.populationPanel.SetAllPopsToShow();
             }
         }
-        private class LoyaltyOrder : SortOrder
+        private class LoyaltyOrder : SortOrder<PopUnit>
         {
-            public LoyaltyOrder(UITableNew parent) : base(parent) { }
+            public LoyaltyOrder(UITableNew<PopUnit> parent) : base(parent) { }
             public override void OnClickedCell()
             {
                 base.OnClickedCell();
@@ -140,9 +127,9 @@ namespace Nashet.EconomicSimulation
                 getParent().Refresh();
             }         
         }
-        private class UnemploymentOrder : SortOrder
+        private class UnemploymentOrder : SortOrder<PopUnit>
         {
-            public UnemploymentOrder(UITableNew parent) : base(parent) { }
+            public UnemploymentOrder(UITableNew<PopUnit> parent) : base(parent) { }
             public override void OnClickedCell()
             {
                 base.OnClickedCell();

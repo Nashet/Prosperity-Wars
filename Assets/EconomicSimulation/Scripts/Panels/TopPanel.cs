@@ -64,17 +64,17 @@ namespace Nashet.EconomicSimulation
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.getShowingProvince() == null)
-                    MainCamera.productionWindow.Hide();
-                else
+                if (MainCamera.productionWindow.IsSetAnyFilter())
                 {
-                    MainCamera.productionWindow.show(null, true);
                     MainCamera.productionWindow.onShowAllClick();
+                    MainCamera.productionWindow.Show();
                 }
+                else
+                    MainCamera.productionWindow.Hide();
             else
             {
-                MainCamera.productionWindow.show(null, true);
-                MainCamera.productionWindow.onShowAllClick();
+                MainCamera.productionWindow.onShowAllClick();                
+                MainCamera.productionWindow.Show();
             }
         }
         public void onPopulationClick()

@@ -13,10 +13,20 @@ namespace Nashet.UnityUIUtils
     {
         void OnClickedCell();
     }
+    public interface IFiltrable<T>
+    {
+        void AddFilter(Predicate<T> filter);
+        void RemoveFilter(Predicate<T> filter);
+        void ClearAllFiltres();
+        bool IsSetAnyFilter();
+        bool IsSetThatFilter(Predicate<T> filter);
+    }
+    //public class Filter:Predicate<T>
+    //{ }
     /// <summary>
     /// Base class for UI tables. You must derive from that class your specific table. Allows only vertical scroll
     /// </summary>
-    abstract public class UITableNew : MonoBehaviour, IRefreshable
+    abstract public class UITableNew<T> : MonoBehaviour, IRefreshable, IFiltrable<T>
     {
         [SerializeField]
         private SimpleObjectPool buttonObjectPool;
@@ -24,14 +34,52 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private Scrollbar verticalSlider;
 
+        [SerializeField]
+        private List<T> elementsToShow;
+
         /// <summary>in pixels</summary>
         private readonly int rowHeight = 20;
+        private int howMuchRowsShow;
         private int rowOffset;
         private bool alreadyInUpdate;
 
         abstract protected void AddHeader();
-        abstract public void Refresh();
+        /// <summary>
+        /// That method takes content from child (List<T>) and applies filter
+        /// </summary>        
+        abstract protected List<T> ContentSelector();
+        public void Refresh()
+        {
+            StartUpdate();
+            //lock (gameObject)
+            {
+                RemoveButtons();
+                AddHeader();
+                //int counter = 0;
+                //do NOT rely on elements order!
+                elementsToShow = ContentSelector().FindAll(filters);
+                howMuchRowsShow = ReCalcSize(elementsToShow.Count);
+                FillRows();
 
+            }
+            EndUpdate();
+        }
+
+        //protected void SetElementsToShow(List<T> list)
+        //{
+        //    elementsToShow = list;
+        //    howMuchRowsShow = ReCalcSize(elementsToShow.Count);
+        //}
+        abstract protected void AddRow(T type);
+
+        protected void FillRows()
+        {
+            for (int i = 0; i < howMuchRowsShow; i++)
+            {
+                var product = elementsToShow[i + GetRowOffset()];
+                AddRow(product);
+            }
+        }
         protected int GetRowOffset()
         {
             return rowOffset;
@@ -55,9 +103,9 @@ namespace Nashet.UnityUIUtils
         /// <summary>
         /// Returns how much rows should be shown. It's never bigger than totalRows
         /// </summary>    
-        protected int CalcSize(int totalRows)
+        protected int ReCalcSize(int totalRows)
         {
-            var rect = GetComponent<RectTransform>();            
+            var rect = GetComponent<RectTransform>();
 
             int howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header    
 
@@ -108,15 +156,42 @@ namespace Nashet.UnityUIUtils
                 }
             }
         }
-        abstract protected class SortOrder : ICanBeCellInTable
+        static private readonly Predicate<T> showAll = new Predicate<T>(x => true);
+        private Predicate<T> filters = showAll;//new Predicate<T>(
+        public void AddFilter(Predicate<T> filter)
+        {
+            filters += filter;
+        }
+        public void RemoveFilter(Predicate<T> filter)
+        {
+            filters -= filter;
+        }
+        public void ClearAllFiltres()
+        {
+            filters = showAll;//new Predicate<T>(
+            
+        }
+        public bool IsSetAnyFilter()
+        {
+            return filters != showAll;
+        }
+        public bool IsSetThatFilter(Predicate<T> filter)
+        {
+            //return filters == (filter + showAll);
+            //return filters.GetInvocationList().Contains(filter);
+            return filters.GetInvocationList().Any(x => x.Method == filter.Method);
+            //return filters.Equals(filter + noFilter);
+        }
+
+        abstract protected class SortOrder<F> : ICanBeCellInTable
         {
             private enum State { none, descending, ascending };
             //private enum State { descending, ascending };
 
             private State order = State.none;
-            private readonly UITableNew parent;
+            private readonly UITableNew<F> parent;
 
-            public SortOrder(UITableNew parent)
+            public SortOrder(UITableNew<F> parent)
             {
                 this.parent = parent;
             }
@@ -133,7 +208,7 @@ namespace Nashet.UnityUIUtils
                 order++;
                 if (order > State.ascending)
                     order = State.none;
-                    //order = State.descending;
+                //order = State.descending;
             }
             public string getSymbol()
             {

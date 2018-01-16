@@ -8,7 +8,8 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanel : DragPanel
     {
         [SerializeField]
-        private UITableNew table;
+        private PopulationPanelTable table;
+
         private Province m_showingProvince;
 
         public Province showingProvince

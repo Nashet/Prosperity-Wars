@@ -4,46 +4,31 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
-    public class PoliticsPanelTable : UITableNew
+    public class PoliticsPanelTable : UITableNew<AbstractReform>
     {
-        public override void Refresh()
+        protected override List<AbstractReform> ContentSelector()
         {
-            ////if (Game.date != 0)
-            StartUpdate();
-            {
-                base.RemoveButtons();
-                AddHeader();
-                AddButtons();
-            }
-            EndUpdate();
-        }
-        private void AddButtons()
-        {
-            int counter = 0;            
-            //foreach (var next in Game.Player.reforms)
-            var howMuchRowsShow = CalcSize(Game.Player.reforms.Count);            
-            for (int i = 0; i < howMuchRowsShow; i++)
-            // if (next.isAvailable(Game.player))
-            {
-                var reform = Game.Player.reforms[i + GetRowOffset()];
-                // Adding reform name
-                AddButton(reform.ToString(), reform);
-
-                ////Adding Status
-                AddButton(reform.getValue().ToString(), reform);
-
-                ////Adding Can change possibility
-                //if (next.canChange())
-                //    AddButton("Yep", next);
-                //else
-                //    AddButton("Nope", next);
-
-                counter++;
-            }
+            return Game.Player.reforms.ToList();
         }
 
+        protected override void AddRow(AbstractReform reform)
+        {
+            // Adding reform name
+            AddButton(reform.ToString(), reform);
+
+            ////Adding Status
+            AddButton(reform.getValue().ToString(), reform);
+
+            ////Adding Can change possibility
+            //if (next.canChange())
+            //    AddButton("Yep", next);
+            //else
+            //    AddButton("Nope", next);           
+        }
         protected override void AddHeader()
         {
             // Adding reform name

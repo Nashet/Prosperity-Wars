@@ -12,9 +12,11 @@ namespace Nashet.EconomicSimulation
     public class BuildPanel : DragPanel
     {
         [SerializeField]
-        private UITableNew table;
+        private BuildPanelTable table;
+
         [SerializeField]
         private Text descriptionText;
+
         [SerializeField]
         private Button buildButton;
 
