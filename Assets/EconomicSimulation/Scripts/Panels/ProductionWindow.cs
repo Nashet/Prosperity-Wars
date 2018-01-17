@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private ProductionWindowTable table;
-        public readonly static Predicate<Factory> filterSelectedProvince = new Predicate<Factory>(x => x.getProvince() == Game.selectedProvince);
+        public readonly static Predicate<Factory> filterSelectedProvince = (x => x.getProvince() == Game.selectedProvince);
 
         //[SerializeField]
         //private List<Factory> factoriesToShow;
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
         //        foreach (Factory factory in province.allFactories)
         //            factoriesToShow.Add(factory);            
         //}
-        
+
         public override void Refresh()
         {
             //if (showingProvince == null)
@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
 
             table.Refresh();
         }
-       
+
         //public void removeFactory(Factory fact)
         //{
         //    if (factoriesToShow != null && factoriesToShow.Contains(fact))
@@ -75,17 +75,17 @@ namespace Nashet.EconomicSimulation
         //            Refresh();
         //    }
         //}
-        private Predicate<Factory> filterGovernmentOwned = new Predicate<Factory>(x => x.getOwner() != x.getCountry());
+        private readonly Predicate<Factory> filterGovernmentOwned = (x => x.getOwner() != x.getCountry());
         public void OnGovernmentOwnedFilterChange(bool @checked)
         {
             if (@checked)
                 RemoveFilter(filterGovernmentOwned);
             else
                 AddFilter(filterGovernmentOwned);
-            
+
             Refresh();
         }
-        private  Predicate<Factory> filterPrivateOwned = new Predicate<Factory>(x => x.getOwner() == x.getCountry());
+        private readonly Predicate<Factory> filterPrivateOwned = (x => x.getOwner() == x.getCountry());
         public void OnPrivateOwnedFilterChange(bool @checked)
         {
             if (@checked)
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
-        private Predicate<Factory> filterSubsidized = new Predicate<Factory>(x =>! x.isSubsidized());
+        private readonly Predicate<Factory> filterSubsidized = (x => !x.isSubsidized());
         public void OnFilterSubsidizedChange(bool @checked)
         {
             if (@checked)
@@ -131,7 +131,7 @@ namespace Nashet.EconomicSimulation
         public void AddAllFiltres()// show all button
         {
             table.AddAllFiltres();
-            RemoveFilter(filterSelectedProvince);            
+            RemoveFilter(filterSelectedProvince);
             Refresh();
         }
     }

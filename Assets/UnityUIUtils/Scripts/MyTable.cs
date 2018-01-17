@@ -197,20 +197,20 @@ namespace Nashet.UnityUIUtils
                 }
             }
         }
-        public static Predicate<T> And<T>(params Predicate<T>[] predicates)
-        {
-            return delegate (T item)
-            {
-                foreach (Predicate<T> predicate in predicates)
-                {
-                    if (!predicate(item))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            };
-        }
+        //public static Predicate<T> And<T>(params Predicate<T>[] predicates)
+        //{
+        //    return delegate (T item)
+        //    {
+        //        foreach (Predicate<T> predicate in predicates)
+        //        {
+        //            if (!predicate(item))
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        return true;
+        //    };
+        //}
         //static private readonly Predicate<T> showAll = new Predicate<T>(x => true);
         ///<summary>Empty means no filters applied, showing everything</summary>
         private readonly List<Predicate<T>> filters = new List<Predicate<T>>();

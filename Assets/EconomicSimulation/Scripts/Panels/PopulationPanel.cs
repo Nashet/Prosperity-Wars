@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private PopulationPanelTable table;
 
-        public readonly static Predicate<PopUnit> filterSelectedProvince = new Predicate<PopUnit>(x => x.getProvince() == Game.selectedProvince);
+        public readonly static Predicate<PopUnit> filterSelectedProvince = x => x.getProvince() == Game.selectedProvince;
 
         //private Province m_showingProvince;
 
@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
         //var isAdultMale = Expression.And(isAdult, isMale);
 
 
-        private Predicate<PopUnit> filterWorkers = new Predicate<PopUnit>(x => x.popType != PopType.Workers);
+        private readonly Predicate<PopUnit> filterWorkers = (x => x.popType != PopType.Workers);
         public void OnFilterWorkersChange(bool @checked)
         {            
             if (@checked)
@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterWorkers);
             Refresh();
         }
-        private Predicate<PopUnit> filterFarmers = new Predicate<PopUnit>(x => x.popType != PopType.Farmers);
+        private readonly Predicate<PopUnit> filterFarmers = (x => x.popType != PopType.Farmers);
         public void OnFilterFarmersChange(bool @checked)
         {
             if (@checked)
@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
         //private static bool _filterArtisans(PopUnit x)
         //{ return x.popType != PopType.Artisans; }
         //private Predicate<PopUnit> filterArtisans = _filterArtisans;
-        private Predicate<PopUnit> filterArtisans = new Predicate<PopUnit>(x => x.popType != PopType.Artisans);        
+        private readonly Predicate<PopUnit> filterArtisans = (x => x.popType != PopType.Artisans);        
         public void OnFilterArtisansChange(bool @checked)
         {
             if (@checked)
@@ -92,7 +92,7 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterArtisans);
             Refresh();
         }
-        private Predicate<PopUnit> filterTribesmen = new Predicate<PopUnit>(x => x.popType != PopType.Tribesmen);
+        private readonly Predicate<PopUnit> filterTribesmen = (x => x.popType != PopType.Tribesmen);
         public void OnFilterTribesmenChange(bool @checked)
         {
             if (@checked)
@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
             Refresh();
         }
 
-        private Predicate<PopUnit> filterCapitalists = new Predicate<PopUnit>(x => x.popType != PopType.Capitalists);
+        private readonly Predicate<PopUnit> filterCapitalists = x => x.popType != PopType.Capitalists;
         public void OnFilterCapitalistsChange(bool @checked)
         {
             if (@checked)
@@ -111,7 +111,7 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterCapitalists);
             Refresh();
         }
-        private Predicate<PopUnit> filterAristocrats = new Predicate<PopUnit>(x => x.popType != PopType.Aristocrats);
+        private readonly Predicate<PopUnit> filterAristocrats = x => x.popType != PopType.Aristocrats;
         public void OnFilterAristocratsChange(bool @checked)
         {
             if (@checked)
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterAristocrats);
             Refresh();
         }
-        private Predicate<PopUnit> filterSoldiers = new Predicate<PopUnit>(x => x.popType != PopType.Soldiers);
+        private readonly Predicate<PopUnit> filterSoldiers = x => x.popType != PopType.Soldiers;
         public void OnFilterSoldiersChange(bool @checked)
         {
             if (@checked)
