@@ -17,45 +17,45 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(FactoryType factoryType)
         {
             // Adding shownFactory type
-            AddButton(factoryType.ToString(), factoryType);
+            AddCell(factoryType.ToString(), factoryType);
 
             ////Adding cost
             //if (Game.player.isInvented(InventionType.capitalism))
             if (Economy.isMarket.checkIftrue(Game.Player))
-                AddButton(factoryType.getMinimalMoneyToBuild().ToString(), factoryType);
+                AddCell(factoryType.getMinimalMoneyToBuild().ToString(), factoryType);
             else
-                AddButton(factoryType.getBuildNeeds().ToString(), factoryType);
+                AddCell(factoryType.getBuildNeeds().ToString(), factoryType);
 
 
             ////Adding resource needed
             //AddButton(next.resourceInput.ToString(), next);
 
             ////Adding potential output
-            AddButton(factoryType.basicProduction.ToString(), factoryType);
+            AddCell(factoryType.basicProduction.ToString(), factoryType);
 
             ////Adding potential profit
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
-                AddButton("unknown", factoryType);
+                AddCell("unknown", factoryType);
             else
-                AddButton(factoryType.getPossibleMargin(Game.selectedProvince).ToString(), factoryType);
+                AddCell(factoryType.getPossibleMargin(Game.selectedProvince).ToString(), factoryType);
         }
 
         protected override void AddHeader()
         {
             // Adding shownFactory type
-            AddButton("Name");
+            AddCell("Name");
 
             ////Adding cost
-            AddButton("Cost");
+            AddCell("Cost");
 
             ////Adding resource needed
             //AddButton("Input", null);
 
             ////Adding potential output
-            AddButton("Output");
+            AddCell("Output");
 
             ////Adding potential profit
-            AddButton("Potential margin");
+            AddCell("Potential margin");
         }
     }
 }

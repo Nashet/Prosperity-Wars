@@ -28,43 +28,43 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(Factory factory)
         {
             // Adding shownFactory name 
-            AddButton(factory.getType().name + " L" + factory.getLevel(), factory);
+            AddCell(factory.getType().name + " L" + factory.getLevel(), factory);
 
             // Adding province 
-            AddButton(factory.getProvince().ToString(), factory.getProvince());
+            AddCell(factory.getProvince().ToString(), factory.getProvince());
 
             ////Adding production
-            AddButton(factory.getGainGoodsThisTurn().ToString(), factory);
+            AddCell(factory.getGainGoodsThisTurn().ToString(), factory);
 
             ////Adding effective resource income
-            AddButton(factory.getInputFactor().ToString(), factory);
+            AddCell(factory.getInputFactor().ToString(), factory);
 
             ////Adding workforce
-            AddButton(factory.getWorkForce().ToString(), factory);
+            AddCell(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
             if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
-                AddButton("none", factory);
+                AddCell("none", factory);
             else
-                AddButton(factory.getProfit().ToString("F3"), factory);
+                AddCell(factory.getProfit().ToString("F3"), factory);
 
             ////Adding margin
             if (factory.isUpgrading())
-                AddButton("Upgrading", factory);
+                AddCell("Upgrading", factory);
             else
             {
                 if (factory.isBuilding())
-                    AddButton("Building", factory);
+                    AddCell("Building", factory);
                 else
                 {
                     if (!factory.isWorking())
-                        AddButton("Closed", factory);
+                        AddCell("Closed", factory);
                     else
                     {
                         if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
-                            AddButton("none", factory);
+                            AddCell("none", factory);
                         else
-                            AddButton(factory.getMargin().ToString(), factory);
+                            AddCell(factory.getMargin().ToString(), factory);
                     }
                 }
             }
@@ -72,43 +72,43 @@ namespace Nashet.EconomicSimulation
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
             if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
-                AddButton("centralized", factory);
+                AddCell("centralized", factory);
             else
             {
                 if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
-                    AddButton(factory.getSalary().ToString() + " food", factory);
+                    AddCell(factory.getSalary().ToString() + " food", factory);
                 else
-                    AddButton(factory.getSalary().ToString() + " coins", factory);
+                    AddCell(factory.getSalary().ToString() + " coins", factory);
             }
-            AddButton(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
+            AddCell(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
         }
         protected override void AddHeader()
         {
             // Adding product name 
-            AddButton("Type");
+            AddCell("Type");
 
             // Adding province 
-            AddButton("Province");
+            AddCell("Province");
 
             ////Adding production
-            AddButton("Production");
+            AddCell("Production");
 
             ////Adding effective resource income
-            AddButton("Resources");
+            AddCell("Resources");
 
             ////Adding workforce
-            AddButton("Workforce");
+            AddCell("Workforce");
 
             ////Adding money income
-            AddButton("Profit");
+            AddCell("Profit");
 
             ////Adding profit
-            AddButton("Profitability");
+            AddCell("Profitability");
 
             ////Adding salary
-            AddButton("Salary");
+            AddCell("Salary");
 
-            AddButton("Unemployed", null, () => "Unemployed in province");
+            AddCell("Unemployed", null, () => "Unemployed in province");
         }
     }
 }

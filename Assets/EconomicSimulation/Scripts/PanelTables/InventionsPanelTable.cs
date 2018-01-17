@@ -19,23 +19,23 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(KeyValuePair<Invention, bool> invention)
         {
             // Adding invention name 
-            AddButton(invention.Key.ToString(), invention.Key);
+            AddCell(invention.Key.ToString(), invention.Key);
             ////Adding possibleStatues
             if (invention.Value)
-                AddButton("Invented", invention.Key);
+                AddCell("Invented", invention.Key);
             else
-                AddButton("Uninvented", invention.Key);
+                AddCell("Uninvented", invention.Key);
             ////Adding invention price
-            AddButton(invention.Key.getCost().ToString(), invention.Key);
+            AddCell(invention.Key.getCost().ToString(), invention.Key);
         }
         protected override void AddHeader()
         {
             // Adding invention name 
-            AddButton("Invention");
+            AddCell("Invention");
             ////Adding possibleStatues
-            AddButton("Status");
+            AddCell("Status");
             ////Adding invention price
-            AddButton("Science points");
+            AddCell("Science points");
         }
     }
 }

@@ -15,39 +15,39 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(Country country)
         {
             // Adding number
-            AddButton((0 + GetRowOffset() + 1).ToString(), country);
+            AddCell((0 + GetRowOffset() + 1).ToString(), country);
 
             // Adding Country
-            AddButton(country.ToString(), country, () => country.ToString());
+            AddCell(country.ToString(), country, () => country.ToString());
             ////Adding population
-            AddButton(country.getFamilyPopulation().ToString("N0"), country);
+            AddCell(country.getFamilyPopulation().ToString("N0"), country);
 
-            AddButton(country.getGDP().get().ToString("N3"), country);
+            AddCell(country.getGDP().get().ToString("N3"), country);
 
-            AddButton(country.getGDPPer1000().ToString("F3"), country);
+            AddCell(country.getGDPPer1000().ToString("F3"), country);
 
-            AddButton(country.getGDPShare().ToString(), country);
+            AddCell(country.getGDPShare().ToString(), country);
 
-            AddButton(country.getUnemployment().ToString(), country);
+            AddCell(country.getUnemployment().ToString(), country);
 
-            AddButton(country.economy.getValue().ToString(), country);
+            AddCell(country.economy.getValue().ToString(), country);
 
-            AddButton(country.getAverageNeedsFulfilling().ToString(), country);
+            AddCell(country.getAverageNeedsFulfilling().ToString(), country);
 
-            AddButton(country.taxationForRich.getValue().ToString(), country);
+            AddCell(country.taxationForRich.getValue().ToString(), country);
         }
         protected override void AddHeader()
         {
-            AddButton("Place");
-            AddButton("Country");
-            AddButton("Population");
-            AddButton("GDP");
-            AddButton("GDP per capita", null, () => "GDP per capita per 1000 men");
-            AddButton("GDP share");
-            AddButton("Unemployment");
-            AddButton("Economy");
-            AddButton("Av. needs");
-            AddButton("Rich tax");
+            AddCell("Place");
+            AddCell("Country");
+            AddCell("Population");
+            AddCell("GDP");
+            AddCell("GDP per capita", null, () => "GDP per capita per 1000 men");
+            AddCell("GDP share");
+            AddCell("Unemployment");
+            AddCell("Economy");
+            AddCell("Av. needs");
+            AddCell("Rich tax");
         }
     }
 }

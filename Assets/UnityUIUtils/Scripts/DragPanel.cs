@@ -6,7 +6,7 @@ namespace Nashet.UnityUIUtils
 {
     public interface IRefreshable
     {
-        void Refresh();
+        void Refresh();        
     }
     public interface IHideable
     {

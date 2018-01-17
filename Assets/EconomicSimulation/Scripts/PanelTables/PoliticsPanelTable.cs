@@ -18,10 +18,10 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(AbstractReform reform)
         {
             // Adding reform name
-            AddButton(reform.ToString(), reform);
+            AddCell(reform.ToString(), reform);
 
             ////Adding Status
-            AddButton(reform.getValue().ToString(), reform);
+            AddCell(reform.getValue().ToString(), reform);
 
             ////Adding Can change possibility
             //if (next.canChange())
@@ -32,10 +32,10 @@ namespace Nashet.EconomicSimulation
         protected override void AddHeader()
         {
             // Adding reform name
-            AddButton("Reform");
+            AddCell("Reform");
 
             ////Adding Status
-            AddButton("Status");
+            AddCell("Status");
 
             ////Adding Can change possibility
             // AddButton("Can change", null);

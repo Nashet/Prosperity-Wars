@@ -18,20 +18,20 @@ namespace Nashet.EconomicSimulation
         protected override void AddHeader()
         {
             // Adding product name 
-            AddButton("Product");
+            AddCell("Product");
 
             ////Adding production
-            AddButton("Gov. storage");
+            AddCell("Gov. storage");
 
-            AddButton("Mil. needs");
+            AddCell("Mil. needs");
 
-            AddButton("Production tot.");
+            AddCell("Production tot.");
 
-            AddButton("Used by gov.");
+            AddCell("Used by gov.");
 
-            AddButton("Bought by gov.");
+            AddCell("Bought by gov.");
 
-            AddButton("Sold by gov.");
+            AddCell("Sold by gov.");
 
         }
         protected override void AddRow(Product product)
@@ -40,52 +40,52 @@ namespace Nashet.EconomicSimulation
             // Adding product name 
             if (product.isAbstract())
             {
-                AddButton(product.getName() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
+                AddCell(product.getName() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
 
                 ////Adding total amount
-                AddButton(Game.Player.countryStorageSet.getTotal(product).get().ToString());
+                AddCell(Game.Player.countryStorageSet.getTotal(product).get().ToString());
 
                 ////Adding mil. needs
-                AddButton(needs.getStorage(product).ToStringWithoutSubstitutes(), null, () => "That doesn't include non-abstract needs");
+                AddCell(needs.getStorage(product).ToStringWithoutSubstitutes(), null, () => "That doesn't include non-abstract needs");
                 //AddButton(needs.getStorageIncludingSubstitutes(product).get().ToString());
                 //AddButton("-");
 
                 ////Adding Produced total
-                AddButton(Game.Player.getProducedTotalIncludingSubstitutes(product).get().ToString());
+                AddCell(Game.Player.getProducedTotalIncludingSubstitutes(product).get().ToString());
                 //, null , () => Game.Player.getWorldProductionShare(product) + " of world production");
                 // can't add statistic about share of abstract product due to Market.GetProduction can't in abstract products
 
                 ////Adding used by gov.
-                AddButton(Game.Player.countryStorageSet.used.getTotal(product).get().ToString());
+                AddCell(Game.Player.countryStorageSet.used.getTotal(product).get().ToString());
 
                 ////Adding bought
-                AddButton(Game.Player.getConsumedInMarket().getTotal(product).get().ToString());
+                AddCell(Game.Player.getConsumedInMarket().getTotal(product).get().ToString());
 
                 ////Adding Sold
                 //AddButton(Game.Player.getSentToMarketIncludingSubstituts(product).get().ToString());
-                AddButton("-");
+                AddCell("-");
             }
             else
             {
                 var storage = Game.Player.countryStorageSet.getFirstStorage(product);
 
                 // Adding product name 
-                AddButton(product.getName(), storage);
+                AddCell(product.getName(), storage);
 
                 ////Adding storage amount
-                AddButton(storage.get().ToString(), storage);
+                AddCell(storage.get().ToString(), storage);
 
                 ////Adding mil. needs
-                AddButton(needs.getStorage(product).get().ToString(), storage);
+                AddCell(needs.getStorage(product).get().ToString(), storage);
 
                 ////Adding Produced
-                AddButton(Game.Player.getProducedTotal(product).get().ToString(), storage, () => Game.Player.getWorldProductionShare(product) + " of world production");
+                AddCell(Game.Player.getProducedTotal(product).get().ToString(), storage, () => Game.Player.getWorldProductionShare(product) + " of world production");
 
                 ////Adding used by gov.
-                AddButton(Game.Player.countryStorageSet.used.getFirstStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.countryStorageSet.used.getFirstStorage(product).get().ToString(), storage);
 
                 ////Adding bought
-                AddButton(Game.Player.getConsumedInMarket().getFirstStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.getConsumedInMarket().getFirstStorage(product).get().ToString(), storage);
 
                 ////Adding Sold
                 //// finding actually sold from sentToMarket
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
                 //    str.setZero();
                 //else
                 //    str.multiply(DSB);
-                AddButton(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
+                AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
             }
         }
         private void AddButtons()

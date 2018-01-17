@@ -55,6 +55,8 @@ namespace Nashet.UnityUIUtils
         /// That method takes content from child (List<T>) and applies filter
         /// </summary>        
         abstract protected List<T> ContentSelector();
+        private SortOrder order;
+
         private List<T> Select(List<T> source, List<Predicate<T>> filter)
         {
             var res = source;
@@ -78,16 +80,21 @@ namespace Nashet.UnityUIUtils
                 if (IsSetAnyFilter())
                     //elementsToShow = ContentSelector().FindAll(filters);
                     elementsToShow = Select(ContentSelector(), filters);
-                    //elementsToShow = ContentSelector().Where(filters as Func<T, bool>).ToList();
+                //elementsToShow = ContentSelector().Where(filters as Func<T, bool>).ToList();
                 else
                     elementsToShow = ContentSelector();
+                if (order != null && order.IsOrderSet())
+                    elementsToShow = order.DoSorting(elementsToShow);
                 howMuchRowsShow = ReCalcSize(elementsToShow.Count);
                 FillRows();
 
             }
             EndUpdate();
         }
-        
+        void SetOrder(SortOrder sortOrder)
+        {
+            order = sortOrder;
+        }
         //protected void SetElementsToShow(List<T> list)
         //{
         //    elementsToShow = list;
@@ -152,12 +159,23 @@ namespace Nashet.UnityUIUtils
             return howMuchRowsShow;
         }
 
-        protected void AddButton(string text, ICanBeCellInTable bject = null, Func<string> dynamicTooltip = null)
+        protected void AddCell(string text, ICanBeCellInTable @object = null, Func<string> dynamicTooltip = null)
         {
             GameObject newButton = buttonObjectPool.GetObject();
             newButton.transform.SetParent(gameObject.transform, true);
             SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-            sampleButton.Setup(text, bject);
+            sampleButton.Setup(text, @object);
+            if (dynamicTooltip != null)
+            {
+                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+            }
+        }
+        protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)
+        {
+            GameObject newButton = buttonObjectPool.GetObject();
+            newButton.transform.SetParent(gameObject.transform, true);
+            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            sampleButton.Setup(text, @object);
             if (dynamicTooltip != null)
             {
                 newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
@@ -215,7 +233,7 @@ namespace Nashet.UnityUIUtils
             //        filters -= filter;
             filters.Remove(filter);
         }
-        
+
         public bool IsSetAnyFilter()
         {
             return filters.Count > 0;// != null;
@@ -248,28 +266,34 @@ namespace Nashet.UnityUIUtils
             {
                 item.isOn = false;
             }
-            
+
         }
 
         //private static UITableNew<T> ThatObject;
         //public static UITableNew<T> GetThatObject()
         //{
         //}
-        abstract protected class SortOrder<F> : ICanBeCellInTable
+        protected class SortOrder : ICanBeCellInTable
         {
             private enum State { none, descending, ascending };
             //private enum State { descending, ascending };
 
-            private State order = State.none;
-            private readonly UITableNew<F> parent;
+            private State orderState = State.none;
+            private Func<T, float> sortOrder;
+            private readonly UITableNew<T> parent;
 
-            public SortOrder(UITableNew<F> parent)
+            public SortOrder(UITableNew<T> parent, Func<T, float> sortOrder)
             {
                 this.parent = parent;
+                this.sortOrder = sortOrder;
             }
-            protected IRefreshable getParent()
+            protected UITableNew<T> getParent()
             {
                 return parent;
+            }
+            public bool IsOrderSet()
+            {
+                return orderState != State.none;
             }
             //protected State getOrder()
             //{
@@ -277,40 +301,41 @@ namespace Nashet.UnityUIUtils
             //}
             public virtual void OnClickedCell()
             {
-                order++;
-                if (order > State.ascending)
-                    order = State.none;
-                //order = State.descending;
+                orderState++;
+                if (orderState > State.ascending)
+                    orderState = State.none;
+                getParent().SetOrder(this);
+                getParent().Refresh();
             }
             public string getSymbol()
             {
-                switch (order)
+                switch (orderState)
                 {
                     case State.none:
                         return " ";
                     case State.descending:
-                        return "^";
+                        return "\u25B2";
                     case State.ascending:
-                        return "$";
+                        return "\u25BC";
                     default:
                         Debug.Log("Failed enum");
                         return null;
                 }
             }
 
-            protected List<T> DoSorting<T>(IEnumerable<T> list, Func<T, float> selector)//, Action defaultList
+            public List<T> DoSorting(IEnumerable<T> list)//, Action defaultList
             {
-                switch (order)
+                switch (orderState)
                 {
                     case State.none:
                         //if (defaultList != null)
                         //    defaultList();
                         return list.ToList();
                     case State.descending:
-                        return list.OrderByDescending(x => selector(x)).ToList();
+                        return list.OrderByDescending(sortOrder).ToList();
 
                     case State.ascending:
-                        return list.OrderBy(x => selector(x)).ToList();
+                        return list.OrderBy(sortOrder).ToList();
 
                     default:
                         Debug.Log("Fail..");
