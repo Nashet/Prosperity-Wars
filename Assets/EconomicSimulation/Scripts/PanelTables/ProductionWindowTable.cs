@@ -9,6 +9,21 @@ namespace Nashet.EconomicSimulation
 {
     public class ProductionWindowTable : UITableNew<Factory>
     {
+        private SortOrder typeOrder, provinceOrder, productionOrder, resourcesOrder, workForceOrder, profitOrder,
+            profitabilityOrder, salaryOrder, unemploymentOrder;
+
+        private void Start()
+        {
+            typeOrder = new SortOrder(this, x => x.getType().GetHashCode());
+            provinceOrder = new SortOrder(this, x => x.getProvince().getID());
+            productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
+            resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
+            workForceOrder = new SortOrder(this, x => x.getWorkForce());
+            profitOrder = new SortOrder(this, x => x.getProfit());
+            profitabilityOrder = new SortOrder(this, x => x.getMargin().get());
+            salaryOrder = new SortOrder(this, x => x.getSalary());
+            unemploymentOrder = new SortOrder(this, x => x.getProvince().getUnemployedWorkers());
+        }
         protected override List<Factory> ContentSelector()
         {
             var factoriesToShow = new List<Factory>();
@@ -20,7 +35,7 @@ namespace Nashet.EconomicSimulation
         //public override void onShowAllClick()
         //{
         //    base.onShowAllClick();
-            
+
         //    RemoveFilter(filterSelectedProvince);
         //    //table.ClearAllFiltres();
         //    table.Refresh();
@@ -84,31 +99,33 @@ namespace Nashet.EconomicSimulation
         }
         protected override void AddHeader()
         {
+            if (typeOrder == null)
+                Start();
             // Adding product name 
-            AddCell("Type");
+            AddCell("Type" + typeOrder.getSymbol(), typeOrder);
 
             // Adding province 
-            AddCell("Province");
+            AddCell("Province" + provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding production
-            AddCell("Production");
+            AddCell("Production" + productionOrder.getSymbol(), productionOrder);
 
             ////Adding effective resource income
-            AddCell("Resources");
+            AddCell("Resources" + resourcesOrder.getSymbol(), resourcesOrder);
 
             ////Adding workforce
-            AddCell("Workforce");
+            AddCell("Workforce" + workForceOrder.getSymbol(), workForceOrder);
 
             ////Adding money income
-            AddCell("Profit");
+            AddCell("Profit" + profitOrder.getSymbol(), profitOrder);
 
             ////Adding profit
-            AddCell("Profitability");
+            AddCell("Profitability" + profitabilityOrder.getSymbol(), profitabilityOrder);
 
             ////Adding salary
-            AddCell("Salary");
+            AddCell("Salary" + salaryOrder.getSymbol(), salaryOrder);
 
-            AddCell("Unemployed", null, () => "Unemployed in province");
+            AddCell("Unemployed" + unemploymentOrder.getSymbol(), unemploymentOrder, () => "Unemployed in province");
         }
     }
 }

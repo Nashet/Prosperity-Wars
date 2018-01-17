@@ -11,17 +11,26 @@ namespace Nashet.EconomicSimulation
 {
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
-        private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder;
-        //public Filter<PopUnit> filterTribesmen;
+        private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
+        movementFilter, provinceFilter, cultureFilter;
 
         private void Start()
         {
-            //filterTribesmen = new Filter<PopUnit>(x => x.popType != PopType.Tribesmen, this);
-            //var c = new SortOrder<PopUnit>(this, x => x.popType != PopType.Tribesmen);
-
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFullfilled.get());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
+            populationOrder = new SortOrder(this, x => x.getPopulation());
+            cashOrder = new SortOrder(this, x => x.getCash());
+
+            movementFilter = new SortOrder(this, x =>
+            {
+                if (x.getMovement() == null)
+                    return 0f;
+                else
+                    return x.getMovement().getID();
+            });
+            provinceFilter = new SortOrder(this, x => x.getProvince().getID());
+            cultureFilter = new SortOrder(this, x => x.culture.GetHashCode());
         }
         protected override List<PopUnit> ContentSelector()
         {
@@ -82,33 +91,33 @@ namespace Nashet.EconomicSimulation
             AddCell("Type");
 
             ////Adding province
-            AddCell("Province");
+            AddCell("Province"+ provinceFilter.getSymbol(), provinceFilter);
 
             ////Adding population
-            AddCell("Population");
+            AddCell("Population" + populationOrder.getSymbol(), populationOrder);
 
             ////Adding culture
-            AddCell("Culture");
+            AddCell("Culture"+ cultureFilter.getSymbol(), cultureFilter);
 
             ////Adding education
             AddCell("Education");
 
             ////Adding storage
             //if (null.storage != null)
-            AddCell("Cash");
+            AddCell("Cash" + cashOrder.getSymbol(), cashOrder);
             //else AddButton("Administration");
 
             ////Adding needs fulfilling
-            AddCell("Needs fulfilled " + needsFulfillmentOrder.getSymbol(), needsFulfillmentOrder);
+            AddCell("Needs fulfilled" + needsFulfillmentOrder.getSymbol(), needsFulfillmentOrder);
 
             ////Adding loyalty
-            AddCell("Loyalty " + loyaltyOrder.getSymbol(), loyaltyOrder);
+            AddCell("Loyalty" + loyaltyOrder.getSymbol(), loyaltyOrder);
 
             ////Adding Unemployment
-            AddCell("Unemployment " + unemploymentOrder.getSymbol(), unemploymentOrder);
+            AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
 
             //Adding Movement
-            AddCell("Movement");
-        }        
+            AddCell("Movement" + movementFilter.getSymbol(), movementFilter);
+        }
     }
 }

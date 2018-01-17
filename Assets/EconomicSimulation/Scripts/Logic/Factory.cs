@@ -426,8 +426,13 @@ namespace Nashet.EconomicSimulation
 
         internal Procent getMargin()
         {
-            float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
-            return new Procent(x, false);
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                return Procent.ZeroProcent;
+            else
+            {
+                float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
+                return new Procent(x, false);
+            }
         }
         internal Value getReopenCost()
         {
@@ -770,7 +775,10 @@ namespace Nashet.EconomicSimulation
         }
         override internal float getProfit()
         {
-            return base.getProfit() - getSalaryCost();
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                return 0f;
+            else
+                return base.getProfit() - getSalaryCost();
         }
 
         public override List<Storage> getHowMuchInputProductsReservesWants()

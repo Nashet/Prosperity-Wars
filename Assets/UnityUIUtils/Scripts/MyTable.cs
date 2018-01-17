@@ -56,7 +56,7 @@ namespace Nashet.UnityUIUtils
         /// </summary>        
         abstract protected List<T> ContentSelector();
         private SortOrder order;
-
+        
         private List<T> Select(List<T> source, List<Predicate<T>> filter)
         {
             var res = source;
@@ -314,9 +314,9 @@ namespace Nashet.UnityUIUtils
                     case State.none:
                         return " ";
                     case State.descending:
-                        return "\u25B2";
-                    case State.ascending:
                         return "\u25BC";
+                    case State.ascending:
+                        return "\u25B2";                        
                     default:
                         Debug.Log("Failed enum");
                         return null;
