@@ -12,15 +12,22 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder<PopUnit> needsFulfillmentOrder, unemploymentOrder, loyaltyOrder;
+        //public Filter<PopUnit> filterTribesmen;
+
         private void Start()
         {
+            //filterTribesmen = new Filter<PopUnit>(x => x.popType != PopType.Tribesmen, this);
             needsFulfillmentOrder = new NeedsFulfillmentOrder(this);
             unemploymentOrder = new UnemploymentOrder(this);
             loyaltyOrder = new LoyaltyOrder(this);
         }
         protected override List<PopUnit> ContentSelector()
         {
-            return Game.popsToShowInPopulationPanel;
+            var popsToShow = new List<PopUnit>();
+            foreach (Province province in Game.Player.ownedProvinces)
+                foreach (PopUnit pop in province.allPopUnits)
+                    popsToShow.Add(pop);
+            return popsToShow;
         }        
         protected override void AddRow(PopUnit pop)
         {
@@ -107,15 +114,15 @@ namespace Nashet.EconomicSimulation
             public override void OnClickedCell()
             {
                 base.OnClickedCell();
-                Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.needsFullfilled.get());
+                //Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.needsFullfilled.get());
                 //MainCamera.populationPanel.Refresh();
                 getParent().Refresh();
             }
-            private void makeDefaultList()
-            {
-                if (MainCamera.populationPanel.showingProvince == null)
-                    MainCamera.populationPanel.SetAllPopsToShow();
-            }
+            //private void makeDefaultList()
+            //{
+            //    if (MainCamera.populationPanel.showingProvince == null)
+            //        MainCamera.populationPanel.SetAllPopsToShow();
+            //}
         }
         private class LoyaltyOrder : SortOrder<PopUnit>
         {
@@ -123,7 +130,7 @@ namespace Nashet.EconomicSimulation
             public override void OnClickedCell()
             {
                 base.OnClickedCell();
-                Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.loyalty.get());                
+                //Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.loyalty.get());                
                 getParent().Refresh();
             }         
         }
@@ -133,7 +140,7 @@ namespace Nashet.EconomicSimulation
             public override void OnClickedCell()
             {
                 base.OnClickedCell();
-                Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.getUnemployedProcent().get());
+                //Game.popsToShowInPopulationPanel = DoSorting(Game.popsToShowInPopulationPanel, x => x.getUnemployedProcent().get());
                 getParent().Refresh();
             }
         }

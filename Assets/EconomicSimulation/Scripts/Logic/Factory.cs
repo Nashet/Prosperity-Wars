@@ -628,7 +628,8 @@ namespace Nashet.EconomicSimulation
             //province.allFactories.Remove(this);        
             // + interface 2 places
             MainCamera.factoryPanel.removeFactory(this);
-            MainCamera.productionWindow.removeFactory(this);
+            //MainCamera.productionWindow.removeFactory(this);
+            MainCamera.productionWindow.Refresh();
         }
         internal bool isToRemove()
         {

@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
                 .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
                 .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
             generalText.text = sb.ToString();
-        }       
+        }
         public void onTradeClick()
         {
             if (MainCamera.tradeWindow.isActiveAndEnabled)
@@ -66,14 +66,14 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.productionWindow.isActiveAndEnabled)
                 if (MainCamera.productionWindow.IsSetAnyFilter())
                 {
-                    MainCamera.productionWindow.onShowAllClick();
-                    MainCamera.productionWindow.Show();
+                    MainCamera.productionWindow.ClearAllFiltres();
+                    //MainCamera.productionWindow.Show();
                 }
                 else
                     MainCamera.productionWindow.Hide();
             else
             {
-                MainCamera.productionWindow.onShowAllClick();                
+                MainCamera.productionWindow.ClearAllFiltres();
                 MainCamera.productionWindow.Show();
             }
         }
@@ -81,12 +81,16 @@ namespace Nashet.EconomicSimulation
         {
 
             if (MainCamera.populationPanel.isActiveAndEnabled)
-                if (MainCamera.populationPanel.showingProvince == null)
-                    MainCamera.populationPanel.Hide();
+                if (MainCamera.populationPanel.IsSetAnyFilter())
+                    MainCamera.populationPanel.ClearAllFiltres();
                 else
-                    MainCamera.populationPanel.onShowAllClick();
+                    MainCamera.populationPanel.Hide();
+
             else
-                MainCamera.populationPanel.onShowAllClick();
+            {
+                MainCamera.populationPanel.ClearAllFiltres();
+                MainCamera.populationPanel.Show();
+            }
         }
         public void onPoliticsClick()
         {

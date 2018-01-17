@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
 
         static public Province selectedProvince;
         static public Province previoslySelectedProvince;
-        static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();        
+        //static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();        
 
         static internal List<BattleResult> allBattles = new List<BattleResult>();
         

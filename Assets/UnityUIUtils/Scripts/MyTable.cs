@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.UI;
 //using Nashet.EconomicSimulation;
@@ -18,8 +19,9 @@ namespace Nashet.UnityUIUtils
         void AddFilter(Predicate<T> filter);
         void RemoveFilter(Predicate<T> filter);
         void ClearAllFiltres();
+        void AddAllFiltres();
         bool IsSetAnyFilter();
-        bool IsSetThatFilter(Predicate<T> filter);
+        bool IsAppliedThatFilter(Predicate<T> filter);
     }
     //public class Filter:Predicate<T>
     //{ }
@@ -35,8 +37,13 @@ namespace Nashet.UnityUIUtils
         private Scrollbar verticalSlider;
 
         [SerializeField]
-        private List<T> elementsToShow;
+        protected List<T> elementsToShow;
 
+        [SerializeField]
+        private List<Toggle> filterToggles;
+
+        //
+        //
         /// <summary>in pixels</summary>
         private readonly int rowHeight = 20;
         private int howMuchRowsShow;
@@ -48,6 +55,15 @@ namespace Nashet.UnityUIUtils
         /// That method takes content from child (List<T>) and applies filter
         /// </summary>        
         abstract protected List<T> ContentSelector();
+        private List<T> Select(List<T> source, List<Predicate<T>> filter)
+        {
+            var res = source;
+            foreach (var item in filter)
+            {
+                res = res.FindAll(item as Predicate<T>);
+            }
+            return res;
+        }
         public void Refresh()
         {
             StartUpdate();
@@ -57,14 +73,21 @@ namespace Nashet.UnityUIUtils
                 AddHeader();
                 //int counter = 0;
                 //do NOT rely on elements order!
-                elementsToShow = ContentSelector().FindAll(filters);
+                //Expression<Func<EconomicSimulation.PopUnit, bool>> isAdult = x => x.popType == EconomicSimulation.PopType.Workers;
+                Func<T, bool> sheet = new Func<T, bool>(x => true);
+                if (IsSetAnyFilter())
+                    //elementsToShow = ContentSelector().FindAll(filters);
+                    elementsToShow = Select(ContentSelector(), filters);
+                    //elementsToShow = ContentSelector().Where(filters as Func<T, bool>).ToList();
+                else
+                    elementsToShow = ContentSelector();
                 howMuchRowsShow = ReCalcSize(elementsToShow.Count);
                 FillRows();
 
             }
             EndUpdate();
         }
-
+        
         //protected void SetElementsToShow(List<T> list)
         //{
         //    elementsToShow = list;
@@ -156,33 +179,82 @@ namespace Nashet.UnityUIUtils
                 }
             }
         }
-        static private readonly Predicate<T> showAll = new Predicate<T>(x => true);
-        private Predicate<T> filters = showAll;//new Predicate<T>(
+        public static Predicate<T> And<T>(params Predicate<T>[] predicates)
+        {
+            return delegate (T item)
+            {
+                foreach (Predicate<T> predicate in predicates)
+                {
+                    if (!predicate(item))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        }
+        //static private readonly Predicate<T> showAll = new Predicate<T>(x => true);
+        ///<summary>Empty means no filters applied, showing everything</summary>
+        private readonly List<Predicate<T>> filters = new List<Predicate<T>>();
         public void AddFilter(Predicate<T> filter)
         {
-            filters += filter;
+            //if (!IsAppliedThatFilter(filter))
+            //    if (IsSetAnyFilter())
+            //        filters += filter;
+            //    else
+            //        filters = new Predicate<T>(filter);
+            if (!filters.Contains(filter))
+                filters.Add(filter);
         }
         public void RemoveFilter(Predicate<T> filter)
         {
-            filters -= filter;
+            //if (IsSetAnyFilter())
+            //    if (IsAppliedThatFilter(filter) && filters.GetInvocationList().Length == 1)
+            //        filters = null;
+            //    else
+            //        filters -= filter;
+            filters.Remove(filter);
+        }
+        
+        public bool IsSetAnyFilter()
+        {
+            return filters.Count > 0;// != null;
+        }
+        public bool IsAppliedThatFilter(Predicate<T> filter)
+        {
+            //if (IsSetAnyFilter())
+            //    //return filters == (filter + showAll);
+            //    return filters.GetInvocationList().Contains(filter);
+            ////return filters.Equals(filter + noFilter);
+            ////return filters.GetInvocationList().Any(x => x.Method == filter.Method);
+
+            ////return filters.GetInvocationList().Any(x => x.Equals(filter));
+            //else
+            //    return false;
+            return filters.Contains(filter);
         }
         public void ClearAllFiltres()
         {
-            filters = showAll;//new Predicate<T>(
+            filters.Clear();
+            foreach (var item in filterToggles)
+            {
+                item.isOn = true;
+            }
+        }
+        public void AddAllFiltres()
+        {
+            //filters.Clear();// = null;//new Predicate<T
+            foreach (var item in filterToggles)
+            {
+                item.isOn = false;
+            }
             
         }
-        public bool IsSetAnyFilter()
-        {
-            return filters != showAll;
-        }
-        public bool IsSetThatFilter(Predicate<T> filter)
-        {
-            //return filters == (filter + showAll);
-            //return filters.GetInvocationList().Contains(filter);
-            return filters.GetInvocationList().Any(x => x.Method == filter.Method);
-            //return filters.Equals(filter + noFilter);
-        }
 
+        //private static UITableNew<T> ThatObject;
+        //public static UITableNew<T> GetThatObject()
+        //{
+        //}
         abstract protected class SortOrder<F> : ICanBeCellInTable
         {
             private enum State { none, descending, ascending };
@@ -245,8 +317,27 @@ namespace Nashet.UnityUIUtils
                         return null;
                 }
             }
-        };
+        }
 
+    }
+    [Serializable]
+    public class Filter<T>
+    {
+        private UITableNew<T> parent;
+        private Predicate<T> filter;
+        public Filter(Predicate<T> filter, UITableNew<T> parent)
+        {
+            this.parent = parent;
+            this.filter = filter;
+        }
+        public void OnFilterChange(bool @checked)
+        {
+            if (@checked)
+                parent.RemoveFilter(filter);
+            else
+                parent.AddFilter(filter);
+            parent.Refresh();
+        }
     }
     /// <summary>
     /// Old version, refreshes entire table. Don't use it

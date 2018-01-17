@@ -17,7 +17,14 @@ namespace Nashet.EconomicSimulation
                     factoriesToShow.Add(factory);
             return factoriesToShow;
         }
-
+        //public override void onShowAllClick()
+        //{
+        //    base.onShowAllClick();
+            
+        //    RemoveFilter(filterSelectedProvince);
+        //    //table.ClearAllFiltres();
+        //    table.Refresh();
+        //}
         protected override void AddRow(Factory factory)
         {
             // Adding shownFactory name 

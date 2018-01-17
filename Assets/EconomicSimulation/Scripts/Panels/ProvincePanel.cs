@@ -64,35 +64,66 @@ namespace Nashet.EconomicSimulation
             Game.selectedProvince.mobilize();
             MainCamera.militaryPanel.show(null);
         }
-        public void onPopulationDetailsClick()
+        public void onEnterprisesClick()
         {
-            if (MainCamera.populationPanel.isActiveAndEnabled)
-                if (MainCamera.populationPanel.showingProvince == null)
+            if (MainCamera.productionWindow.isActiveAndEnabled)
+                if (MainCamera.productionWindow.IsSetAnyFilter())
                 {
-                    MainCamera.populationPanel.Hide();
-                    Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
-                    MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                    //MainCamera.populationPanel.showAll = false;
-                    MainCamera.populationPanel.Show();
+                    if (MainCamera.productionWindow.IsAppliedThatFilter(ProductionWindow.filterSelectedProvince))
+                        MainCamera.productionWindow.Hide();
+                    else
+                    {
+                        MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                        MainCamera.productionWindow.Refresh();
+                    }
                 }
                 else
                 {
-                    if (MainCamera.populationPanel.showingProvince == Game.selectedProvince)
-                        MainCamera.populationPanel.Hide();
-                    else
-                    {
-                        MainCamera.populationPanel.Hide();
-                        Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
-                        MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                        //MainCamera.populationPanel.showAll = false;
-                        MainCamera.populationPanel.Show();
-                    }
+                    MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                    MainCamera.productionWindow.Refresh();
                 }
             else
             {
-                Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
-                MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                //MainCamera.populationPanel.showAll = false;
+                MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                MainCamera.productionWindow.Show();
+            }
+        }
+        public void onPopulationDetailsClick()
+        {
+            if (MainCamera.populationPanel.isActiveAndEnabled)
+                if (MainCamera.populationPanel.IsSetAnyFilter())
+                {                    
+                    if (MainCamera.populationPanel.IsAppliedThatFilter(PopulationPanel.filterSelectedProvince))
+                        MainCamera.populationPanel.Hide();
+                    else
+                    {
+                        MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                        MainCamera.populationPanel.Refresh();
+                        //MainCamera.populationPanel.Hide();
+                        //Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                        //MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                        ////MainCamera.populationPanel.showAll = false;
+                        //MainCamera.populationPanel.Show();
+                    }
+                }
+                else
+                {
+                    ////MainCamera.populationPanel.Hide();
+                    ////Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                    //MainCamera.populationPanel.Hide();
+                    ////MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                    ////MainCamera.populationPanel.showAll = false;
+                    ////MainCamera.populationPanel.Show();
+                    MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                    MainCamera.populationPanel.Refresh();
+                }
+            else
+            {
+                //Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                //MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                ////MainCamera.populationPanel.showAll = false;
+                //MainCamera.populationPanel.Show();
+                MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
                 MainCamera.populationPanel.Show();
             }
 
@@ -102,40 +133,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.militaryPanel.show(Game.selectedProvince);
         }
         
-        public void onEnterprisesClick()
-        {
-            if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsSetAnyFilter())
-                {
-                    if (MainCamera.productionWindow.IsSetThatFilter(Province.filter))
-                        MainCamera.productionWindow.Hide();
-                    else
-                    {
-                        MainCamera.productionWindow.Hide();
-                        //MainCamera.productionWindow.setFactoriesToShow(Game.selectedProvince.allFactories); 
-                        MainCamera.productionWindow.AddFilter(Province.filter);
-                        MainCamera.productionWindow.Show();
-                    }
-                }
-                else
-                {
-                    MainCamera.productionWindow.Hide();
-                    //MainCamera.productionWindow.setFactoriesToShow(Game.selectedProvince.allFactories);
-                    MainCamera.productionWindow.AddFilter(Province.filter);
-                    MainCamera.productionWindow.Show();
-
-                }
-            else
-            {
-                //MainCamera.productionWindow.setFactoriesToShow(Game.selectedProvince.allFactories);
-                MainCamera.productionWindow.AddFilter(Province.filter);
-                MainCamera.productionWindow.Show();
-            }
-        }
-        //public void selectProvince(Province province)
-        //{
-        //    selectedProvince = province;
-        //}
+        
         public override void Refresh()
         {
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
