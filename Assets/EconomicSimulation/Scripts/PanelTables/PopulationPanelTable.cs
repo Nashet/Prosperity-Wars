@@ -25,9 +25,9 @@ namespace Nashet.EconomicSimulation
             movementFilter = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
-                    return 0f;
+                    return float.MinValue;
                 else
-                    return x.getMovement().getID();
+                    return x.getMovement().GetHashCode();
             });
             provinceFilter = new SortOrder(this, x => x.getProvince().getID());
             cultureFilter = new SortOrder(this, x => x.culture.GetHashCode());
