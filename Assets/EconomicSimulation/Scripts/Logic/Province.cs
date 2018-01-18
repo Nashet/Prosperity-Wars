@@ -321,7 +321,7 @@ namespace Nashet.EconomicSimulation
             }
 
             // transfer government owned factories
-            allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
+            allFactories.PerformAction(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
 
             oldCountry.demobilize(x => x.getPopUnit().getProvince() == this);
 

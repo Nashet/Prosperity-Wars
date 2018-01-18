@@ -212,9 +212,15 @@ namespace Nashet.Utils
         {
             return source.MinBy(selector, null);
         }
-        public static void FindAndDo<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, Action<TSource> action)
+        public static void PerformAction<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, Action<TSource> action)
         {
-            foreach (var item in source.Where(predicate))
+            foreach (var item in source)
+                if (predicate(item))
+                action(item);
+        }
+        public static void PerformAction<TSource>(this IEnumerable<TSource> source,  Action<TSource> action)
+        {
+            foreach (var item in source)
                 action(item);
         }
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
