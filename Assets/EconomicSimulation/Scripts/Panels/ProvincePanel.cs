@@ -24,11 +24,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.provincePanel = this;
             Hide();
         }
-
-        public void onCloseClick()
-        {
-            Hide();
-        }
+       
         public void onBuildClick()
         {
             //MainCamera.buildPanel.show(true);
@@ -162,7 +158,7 @@ namespace Nashet.EconomicSimulation
 
             btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponentInChildren<ToolTipHandler>().text);
 
-            btMobilize.GetComponentInChildren<ToolTipHandler>().setText(btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+            btMobilize.GetComponentInChildren<ToolTipHandler>().SetText(btnBuild.GetComponentInChildren<ToolTipHandler>().text);
             btMobilize.interactable = btnBuild.interactable;
 
 

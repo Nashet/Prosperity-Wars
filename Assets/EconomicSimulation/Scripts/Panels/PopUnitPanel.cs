@@ -87,28 +87,28 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
-                lifeNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
-                everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
-                luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Cash: ").Append(pop.cash.ToString());
                 money.text = sb.ToString();
-                money.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
+                money.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
                 + "\nIncome tax: " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
                 efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().text);
-                issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(
+                issues.GetComponentInChildren<ToolTipHandler>().SetDynamicString(
                     delegate ()
                     {
                     //var list = pop.getIssues().Values.ToList().Sort();
