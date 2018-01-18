@@ -562,7 +562,7 @@ namespace Nashet.EconomicSimulation
                 if (getCountry().taxationForRich.getTypedValue().tax.get() > 0.5f)
                     getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
                 if (getCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
-                    getCountry().taxationForPoor.setValue(TaxationForRich.PossibleStatuses[5]);
+                    getCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
                 getCountry().getAllFactories().PerformAction( x => x.setSubsidized(false));
             }
             else
