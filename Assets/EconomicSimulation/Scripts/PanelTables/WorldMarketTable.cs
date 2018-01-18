@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
             ////Adding price Change
 
         }
-        protected override void AddRow(Product product)
+        protected override void AddRow(Product product, int number)
         {
             // Adding product name 
             AddCell(product.getName(), product);

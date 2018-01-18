@@ -100,14 +100,14 @@ namespace Nashet.UnityUIUtils
         //    elementsToShow = list;
         //    howMuchRowsShow = ReCalcSize(elementsToShow.Count);
         //}
-        abstract protected void AddRow(T type);
+        abstract protected void AddRow(T type, int number);
 
         protected void FillRows()
         {
             for (int i = 0; i < howMuchRowsShow; i++)
             {
                 var product = elementsToShow[i + GetRowOffset()];
-                AddRow(product);
+                AddRow(product, i);
             }
         }
         protected int GetRowOffset()
@@ -170,17 +170,17 @@ namespace Nashet.UnityUIUtils
                 newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
             }
         }
-        protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)
-        {
-            GameObject newButton = buttonObjectPool.GetObject();
-            newButton.transform.SetParent(gameObject.transform, true);
-            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
-            sampleButton.Setup(text, @object);
-            if (dynamicTooltip != null)
-            {
-                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
-            }
-        }
+        //protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)
+        //{
+        //    GameObject newButton = buttonObjectPool.GetObject();
+        //    newButton.transform.SetParent(gameObject.transform, true);
+        //    SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+        //    sampleButton.Setup(text, @object);
+        //    if (dynamicTooltip != null)
+        //    {
+        //        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+        //    }
+        //}
 
         //newButton.transform.SetParent(contentPanel);
         //newButton.transform.localScale = Vector3.one;

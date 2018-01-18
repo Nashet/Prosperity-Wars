@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         {
             return Game.selectedProvince.whatFactoriesCouldBeBuild();
         }      
-        protected override void AddRow(FactoryType factoryType)
+        protected override void AddRow(FactoryType factoryType, int number)
         {
             // Adding shownFactory type
             AddCell(factoryType.ToString(), factoryType);

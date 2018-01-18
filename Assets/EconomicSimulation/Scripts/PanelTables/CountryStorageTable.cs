@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Sold by gov.");
 
         }
-        protected override void AddRow(Product product)
+        protected override void AddRow(Product product, int number)
         {
             var needs = Game.Player.getRealAllNeeds();
             // Adding product name 

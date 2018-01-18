@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
                     popsToShow.Add(pop);
             return popsToShow;
         }
-        protected override void AddRow(PopUnit pop)
+        protected override void AddRow(PopUnit pop, int number)
         {
             // Adding number
             //AddButton(Convert.ToString(i + offset), record);

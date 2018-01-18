@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
             return Game.Player.getAvailableInventions().ToList();
         }
         
-        protected override void AddRow(KeyValuePair<Invention, bool> invention)
+        protected override void AddRow(KeyValuePair<Invention, bool> invention, int number)
         {
             // Adding invention name 
             AddCell(invention.Key.ToString(), invention.Key);

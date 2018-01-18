@@ -12,10 +12,10 @@ namespace Nashet.EconomicSimulation
         {
             return Country.getAllExisting().ToList();
         }
-        protected override void AddRow(Country country)
+        protected override void AddRow(Country country, int number)
         {
             // Adding number
-            AddCell((0 + GetRowOffset() + 1).ToString(), country);
+            AddCell((number + GetRowOffset() + 1).ToString(), country);
 
             // Adding Country
             AddCell(country.ToString(), country, () => country.ToString());

@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         //    //table.ClearAllFiltres();
         //    table.Refresh();
         //}
-        protected override void AddRow(Factory factory)
+        protected override void AddRow(Factory factory, int number)
         {
             // Adding shownFactory name 
             AddCell(factory.getType().name + " L" + factory.getLevel(), factory);

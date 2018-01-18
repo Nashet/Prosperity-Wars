@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
             return Game.Player.reforms.ToList();
         }
 
-        protected override void AddRow(AbstractReform reform)
+        protected override void AddRow(AbstractReform reform, int number)
         {
             // Adding reform name
             AddCell(reform.ToString(), reform);
