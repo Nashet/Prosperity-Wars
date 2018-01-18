@@ -13,6 +13,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private ProductionWindowTable table;
         public readonly static Predicate<Factory> filterSelectedProvince = (x => x.getProvince() == Game.selectedProvince);
+        private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
 
         //[SerializeField]
         //private List<Factory> factoriesToShow;
@@ -124,7 +125,7 @@ namespace Nashet.EconomicSimulation
         public void ClearAllFiltres()
         {
             table.ClearAllFiltres();
-            table.AddFilter(x => !x.isToRemove());
+            table.AddFilter(filterOnlyExisting);
             Refresh();
         }
 

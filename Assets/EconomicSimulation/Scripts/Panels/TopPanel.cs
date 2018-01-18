@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsSetAnyFilter())
+                if (MainCamera.productionWindow.IsAppliedThatFilter(ProductionWindow.filterSelectedProvince))
                 {
                     MainCamera.productionWindow.ClearAllFiltres();
                     //MainCamera.productionWindow.Show();

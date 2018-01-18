@@ -137,7 +137,7 @@ namespace Nashet.EconomicSimulation
         public override void Refresh()
         {
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
-            sb.Append("\nID: ").Append(Game.selectedProvince.getID());
+           // sb.Append("\nID: ").Append(Game.selectedProvince.getID());
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.getAverageLoyalty());
             sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
