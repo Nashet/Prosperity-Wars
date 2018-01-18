@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
@@ -23,7 +24,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.provincePanel = this;
             Hide();
         }
-       
+
         public void onCloseClick()
         {
             Hide();
@@ -63,35 +64,66 @@ namespace Nashet.EconomicSimulation
             Game.selectedProvince.mobilize();
             MainCamera.militaryPanel.show(null);
         }
-        public void onPopulationDetailsClick()
+        public void onEnterprisesClick()
         {
-            if (MainCamera.populationPanel.isActiveAndEnabled)
-                if (MainCamera.populationPanel.ShowingProvince == null)
+            if (MainCamera.productionWindow.isActiveAndEnabled)
+                if (MainCamera.productionWindow.IsSetAnyFilter())
                 {
-                    MainCamera.populationPanel.Hide();
-                    Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                    MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
-                    //MainCamera.populationPanel.showAll = false;
-                    MainCamera.populationPanel.Show();
+                    if (MainCamera.productionWindow.IsAppliedThatFilter(ProductionWindow.filterSelectedProvince))
+                        MainCamera.productionWindow.Hide();
+                    else
+                    {
+                        MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                        MainCamera.productionWindow.Refresh();
+                    }
                 }
                 else
                 {
-                    if (MainCamera.populationPanel.ShowingProvince == Game.selectedProvince)
-                        MainCamera.populationPanel.Hide();
-                    else
-                    {
-                        MainCamera.populationPanel.Hide();
-                        Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                        MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
-                        //MainCamera.populationPanel.showAll = false;
-                        MainCamera.populationPanel.Show();
-                    }
+                    MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                    MainCamera.productionWindow.Refresh();
                 }
             else
             {
-                Game.popsToShowInPopulationPanel = Game.selectedProvince.allPopUnits;
-                MainCamera.populationPanel.ShowingProvince = Game.selectedProvince;
-                //MainCamera.populationPanel.showAll = false;
+                MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                MainCamera.productionWindow.Show();
+            }
+        }
+        public void onPopulationDetailsClick()
+        {
+            if (MainCamera.populationPanel.isActiveAndEnabled)
+                if (MainCamera.populationPanel.IsSetAnyFilter())
+                {                    
+                    if (MainCamera.populationPanel.IsAppliedThatFilter(PopulationPanel.filterSelectedProvince))
+                        MainCamera.populationPanel.Hide();
+                    else
+                    {
+                        MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                        MainCamera.populationPanel.Refresh();
+                        //MainCamera.populationPanel.Hide();
+                        //Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                        //MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                        ////MainCamera.populationPanel.showAll = false;
+                        //MainCamera.populationPanel.Show();
+                    }
+                }
+                else
+                {
+                    ////MainCamera.populationPanel.Hide();
+                    ////Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                    //MainCamera.populationPanel.Hide();
+                    ////MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                    ////MainCamera.populationPanel.showAll = false;
+                    ////MainCamera.populationPanel.Show();
+                    MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                    MainCamera.populationPanel.Refresh();
+                }
+            else
+            {
+                //Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
+                //MainCamera.populationPanel.showingProvince = Game.selectedProvince;
+                ////MainCamera.populationPanel.showAll = false;
+                //MainCamera.populationPanel.Show();
+                MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
                 MainCamera.populationPanel.Show();
             }
 
@@ -100,43 +132,12 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.militaryPanel.show(Game.selectedProvince);
         }
-        public void onEnterprisesClick()
-        {
-            if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.getShowingProvince() == null)
-                {
-                    MainCamera.productionWindow.Hide();
-                    Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-                    //MainCamera.productionWindow.getShowingProvince() = Game.selectedProvince;
-                    MainCamera.productionWindow.show(Game.selectedProvince, true);
-                }
-                else
-                {
-                    if (MainCamera.productionWindow.getShowingProvince() == Game.selectedProvince)
-                        MainCamera.productionWindow.Hide();
-                    else
-                    {
-                        MainCamera.productionWindow.Hide();
-                        Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories; ;
-                        //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
-                        MainCamera.productionWindow.show(Game.selectedProvince, true);
-                    }
-                }
-            else
-            {
-                Game.factoriesToShowInProductionPanel = Game.selectedProvince.allFactories;
-                //MainCamera.productionWindow.showingProvince = Game.selectedProvince;
-                MainCamera.productionWindow.show(Game.selectedProvince, true);
-            }
-        }
-        //public void selectProvince(Province province)
-        //{
-        //    selectedProvince = province;
-        //}
+        
+        
         public override void Refresh()
         {
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
-            sb.Append("\nID: ").Append(Game.selectedProvince.getID());
+           // sb.Append("\nID: ").Append(Game.selectedProvince.getID());
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.getAverageLoyalty());
             sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
@@ -147,7 +148,7 @@ namespace Nashet.EconomicSimulation
             else
                 sb.Append(Game.selectedProvince.getResource());
             sb.Append("\nTerrain: ").Append(Game.selectedProvince.getTerrain());
-            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation()*100).Append("%");
+            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation() * 100).Append("%");
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));

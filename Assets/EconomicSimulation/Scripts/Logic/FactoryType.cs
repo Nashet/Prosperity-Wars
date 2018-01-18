@@ -341,5 +341,10 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+        public void OnClickedCell()
+        {
+            MainCamera.buildPanel.selectFactoryType(this);
+            MainCamera.buildPanel.Refresh();
+        }
     }
 }

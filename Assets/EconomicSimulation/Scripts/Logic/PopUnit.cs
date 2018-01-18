@@ -1236,6 +1236,10 @@ namespace Nashet.EconomicSimulation
             //return popType + " from " + province;
             return sb.ToString();
         }
+        public void OnClickedCell()
+        {
+            MainCamera.popUnitPanel.show(this);
+        }
     }
     public class KeyVal<Key, Val>
     {

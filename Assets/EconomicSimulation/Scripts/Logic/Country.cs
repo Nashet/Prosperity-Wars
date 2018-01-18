@@ -1371,5 +1371,17 @@ namespace Nashet.EconomicSimulation
             }
             return null;
         }
+        public void OnClickedCell()
+        {            
+            if (MainCamera.diplomacyPanel.isActiveAndEnabled)
+            {
+                if (MainCamera.diplomacyPanel.getSelectedCountry() == this)
+                    MainCamera.diplomacyPanel.Hide();
+                else
+                    MainCamera.diplomacyPanel.show(this);
+            }
+            else
+                MainCamera.diplomacyPanel.show(this);
+        }
     }
 }

@@ -380,5 +380,9 @@ namespace Nashet.EconomicSimulation
         {
             return color;
         }
+        public void OnClickedCell()
+        {
+            MainCamera.goodsPanel.show(this);
+        }
     }
 }

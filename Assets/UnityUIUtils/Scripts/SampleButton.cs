@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
-using Nashet.EconomicSimulation;
-using Nashet.ValueSpace;
+
 namespace Nashet.UnityUIUtils
 {
     public class SampleButton : MonoBehaviour, IPointerDownHandler
@@ -17,7 +16,7 @@ namespace Nashet.UnityUIUtils
 
         [SerializeField]
         private Image iconImage;
-        private object link;
+        private ICanBeCellInTable objectToClick;
         private DragPanel parent;
 
 
@@ -26,11 +25,10 @@ namespace Nashet.UnityUIUtils
         {
             buttonComponent.onClick.AddListener(HandleClick);
         }
-
-        //public void Setup(string text, PopUnit ipopUnit, MyTable currentScrollList)
-        public void Setup(string text, object link)
+        
+        public void Setup(string text, ICanBeCellInTable link)
         {
-            this.link = link;
+            this.objectToClick = link;
             nameLabel.text = text;
             parent = GetComponentInParent<DragPanel>();
         }
@@ -40,66 +38,10 @@ namespace Nashet.UnityUIUtils
         }
         private void HandleClick()
         {
-            if (link == null)
+            if (objectToClick == null)
                 return;
-            if (link is Factory)
-            {
-                MainCamera.factoryPanel.show((Factory)link);
-                MainCamera.factoryPanel.Refresh();
-            }
-            else if (link is PopUnit)
-            {
-                MainCamera.popUnitPanel.show((PopUnit)link);
-                MainCamera.popUnitPanel.Refresh();
-            }
-            else if (link is Product)
-            {
-                MainCamera.goodsPanel.show((Product)link);
-                MainCamera.goodsPanel.Refresh();
-            }
-            else if (link is Storage)
-            {
-                var storage = link as Storage;
-                if (!storage.isAbstractProduct())
-                    MainCamera.tradeWindow.selectProduct((storage).getProduct());
-            }
-            else if (link is Invention)
-            {                
-                MainCamera.inventionsPanel.selectInvention((Invention)link);
-                MainCamera.inventionsPanel.Refresh();
-            }
-            else if (link is FactoryType)
-            {
-                MainCamera.buildPanel.selectFactoryType((FactoryType)link);
-                MainCamera.buildPanel.Refresh();
-            }
-            else if (link is AbstractReform)
-            {
-                MainCamera.politicsPanel.selectReform((AbstractReform)link);
-                MainCamera.politicsPanel.Refresh();                
-            }
-            else if (link is Province)
-            {
-                //MainCamera.politicsPanel.selectedReform = (AbstractReform)obj;
-                //MainCamera.politicsPanel.refresh(true);
-                //MainCamera.politicsPanel.selectedReformValue = null;
-                Province temp = (Province)(link);
-                MainCamera.selectProvince(temp.getID());
-            }
-            else if (link is Country)
-            {
-                var country = link as Country;
-                if (MainCamera.diplomacyPanel.isActiveAndEnabled)
-                {
-                    if (MainCamera.diplomacyPanel.getSelectedCountry() == country)
-
-                        MainCamera.diplomacyPanel.Hide();
-                    else
-                        MainCamera.diplomacyPanel.show(country);
-                }
-                else
-                    MainCamera.diplomacyPanel.show(country);
-            }
+            else
+                objectToClick.OnClickedCell();            
         }        
     }
 }

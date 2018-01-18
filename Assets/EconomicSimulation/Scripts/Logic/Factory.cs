@@ -4,6 +4,8 @@ using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System;
+
 namespace Nashet.EconomicSimulation
 {
     public class Factory : SimpleProduction, ICanBeCellInTable
@@ -48,8 +50,8 @@ namespace Nashet.EconomicSimulation
             modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).getCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
 
-            modifierBelongsToCountry = new Modifier(x => (x as Factory).getOwner() is Country, "Belongs to government", -0.20f, false),
-            modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.10f, false);
+            modifierBelongsToCountry = new Modifier(x => (x as Factory).getOwner() is Country, "Belongs to government", -0.35f, false),
+            modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.20f, false);
 
         internal static readonly Condition
             conNotBelongsToCountry = new Condition(x => !((x as Factory).getOwner() is Country), "Doesn't belongs to government", false),
@@ -424,8 +426,13 @@ namespace Nashet.EconomicSimulation
 
         internal Procent getMargin()
         {
-            float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
-            return new Procent(x, false);
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                return Procent.ZeroProcent;
+            else
+            {
+                float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
+                return new Procent(x, false);
+            }
         }
         internal Value getReopenCost()
         {
@@ -626,7 +633,8 @@ namespace Nashet.EconomicSimulation
             //province.allFactories.Remove(this);        
             // + interface 2 places
             MainCamera.factoryPanel.removeFactory(this);
-            MainCamera.productionWindow.removeFactory(this);
+            //MainCamera.productionWindow.removeFactory(this);
+            MainCamera.productionWindow.Refresh();
         }
         internal bool isToRemove()
         {
@@ -767,7 +775,10 @@ namespace Nashet.EconomicSimulation
         }
         override internal float getProfit()
         {
-            return base.getProfit() - getSalaryCost();
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                return 0f;
+            else
+                return base.getProfit() - getSalaryCost();
         }
 
         public override List<Storage> getHowMuchInputProductsReservesWants()
@@ -935,6 +946,11 @@ namespace Nashet.EconomicSimulation
             foreach (var pop in hiredWorkForce)
                 result += pop.Value;
             return result;
+        }
+
+        public void OnClickedCell()
+        {
+            MainCamera.factoryPanel.show(this);            
         }
     }
 }

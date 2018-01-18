@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
     public class PoliticsPanel : DragPanel
     {
         [SerializeField]
-        private UITableNew table;
+        private PoliticsPanelTable table;
 
         [SerializeField]
         private Text descriptionText, movementsText;

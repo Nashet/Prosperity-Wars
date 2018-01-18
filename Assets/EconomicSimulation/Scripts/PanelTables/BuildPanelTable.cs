@@ -8,78 +8,54 @@ using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
 
-    public class BuildPanelTable : UITableNew
+    public class BuildPanelTable : UITableNew<FactoryType>
     {
-        public override void Refresh()
+        protected override List<FactoryType> ContentSelector()
         {
-            ////if (Game.date != 0)
-            StartUpdate();
-            {
-                base.RemoveButtons();
-                AddHeader();
-                AddButtons();
-            }
-            EndUpdate();
-        }
-
-        private void AddButtons()
+            return Game.selectedProvince.whatFactoriesCouldBeBuild();
+        }      
+        protected override void AddRow(FactoryType factoryType, int number)
         {
-            int counter = 0;
-            if (Game.selectedProvince != null)
-            {
-                var factoryList = Game.selectedProvince.whatFactoriesCouldBeBuild();
-                var howMuchRowsShow = CalcSize(factoryList.Count);
+            // Adding shownFactory type
+            AddCell(factoryType.ToString(), factoryType);
 
-                //foreach (var next in factoryList)
-                for (int i = 0; i < howMuchRowsShow; i++)
-                {
-                    var factoryType = factoryList[i + GetRowOffset()];
-                    // Adding shownFactory type
-                    AddButton(factoryType.ToString(), factoryType);
-
-                    ////Adding cost
-                    //if (Game.player.isInvented(InventionType.capitalism))
-                    if (Economy.isMarket.checkIftrue(Game.Player))
-                        AddButton(factoryType.getMinimalMoneyToBuild().ToString(), factoryType);
-                    else
-                        AddButton(factoryType.getBuildNeeds().ToString(), factoryType);
+            ////Adding cost
+            //if (Game.player.isInvented(InventionType.capitalism))
+            if (Economy.isMarket.checkIftrue(Game.Player))
+                AddCell(factoryType.getMinimalMoneyToBuild().ToString(), factoryType);
+            else
+                AddCell(factoryType.getBuildNeeds().ToString(), factoryType);
 
 
-                    ////Adding resource needed
-                    //AddButton(next.resourceInput.ToString(), next);
+            ////Adding resource needed
+            //AddButton(next.resourceInput.ToString(), next);
 
-                    ////Adding potential output
-                    AddButton(factoryType.basicProduction.ToString(), factoryType);
+            ////Adding potential output
+            AddCell(factoryType.basicProduction.ToString(), factoryType);
 
-                    ////Adding potential profit
-                    if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
-                        AddButton("unknown", factoryType);
-                    else
-                        AddButton(factoryType.getPossibleMargin(Game.selectedProvince).ToString(), factoryType);
-
-                    counter++;
-                }
-            }
+            ////Adding potential profit
+            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+                AddCell("unknown", factoryType);
+            else
+                AddCell(factoryType.getPossibleMargin(Game.selectedProvince).ToString(), factoryType);
         }
-
-
 
         protected override void AddHeader()
         {
             // Adding shownFactory type
-            AddButton("Name");
+            AddCell("Name");
 
             ////Adding cost
-            AddButton("Cost");
+            AddCell("Cost");
 
             ////Adding resource needed
             //AddButton("Input", null);
 
             ////Adding potential output
-            AddButton("Output");
+            AddCell("Output");
 
             ////Adding potential profit
-            AddButton("Potential margin");
+            AddCell("Potential margin");
         }
     }
 }

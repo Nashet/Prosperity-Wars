@@ -38,3 +38,4 @@ dev.log
 *.dat
 Assets/ClassDiagram.cd
 /MyTemp/
+/.vs/

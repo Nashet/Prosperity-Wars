@@ -25,8 +25,7 @@ namespace Nashet.EconomicSimulation
 
         static public Province selectedProvince;
         static public Province previoslySelectedProvince;
-        static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();
-        static public List<Factory> factoriesToShowInProductionPanel;
+        //static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();        
 
         static internal List<BattleResult> allBattles = new List<BattleResult>();
         
@@ -35,7 +34,7 @@ namespace Nashet.EconomicSimulation
         //static internal StringBuilder threadDangerSB = new StringBuilder();
 
         static public MyDate date = new MyDate(0);
-        static internal bool devMode = false;
+        static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,

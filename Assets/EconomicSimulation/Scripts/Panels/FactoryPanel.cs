@@ -27,17 +27,9 @@ namespace Nashet.EconomicSimulation
             GetComponent<RectTransform>().anchoredPosition = new Vector2(295f, -50f);
             Hide();
         }
-        //void OnGUI()
-        //{
-        //    GUI.Button(new Rect(10, 10, 100, 20), new GUIContent("Click me", "This is the tooltip"));
-        //    GUI.Label(new Rect(10, 40, 100, 40), GUI.tooltip);
-        //}
+        
         enum reopenButtonStatus { reopen, close };
-        // Update is called once per frame
-        void Update()
-        {
-            //refresh();
-        }
+        
 
         void setGUIElementsAccesability()
         {

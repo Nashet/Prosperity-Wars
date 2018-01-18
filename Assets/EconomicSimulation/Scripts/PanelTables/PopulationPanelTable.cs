@@ -5,69 +5,82 @@ using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PopulationPanelTable : UITableNew
+    public class PopulationPanelTable : UITableNew<PopUnit>
     {
-        public override void Refresh()
+        private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
+        movementFilter, provinceFilter, cultureFilter;
+
+        private void Start()
         {
-            StartUpdate();
-            //lock (gameObject)
+            needsFulfillmentOrder = new SortOrder(this, x => x.needsFullfilled.get());
+            unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
+            loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
+            populationOrder = new SortOrder(this, x => x.getPopulation());
+            cashOrder = new SortOrder(this, x => x.getCash());
+
+            movementFilter = new SortOrder(this, x =>
             {
-                RemoveButtons();
-                var howMuchRowsShow = CalcSize(Game.popsToShowInPopulationPanel.Count);
-                AddHeader();
-                if (Game.popsToShowInPopulationPanel.Count > 0)
-                {
-                    for (int i = 0; i < howMuchRowsShow; i++)
-                    //foreach (PopUnit record in Game.popsToShowInPopulationPanel)
-                    {
-                        PopUnit pop = Game.popsToShowInPopulationPanel[i + GetRowOffset()];
+                if (x.getMovement() == null)
+                    return float.MinValue;
+                else
+                    return x.getMovement().GetHashCode();
+            });
+            provinceFilter = new SortOrder(this, x => x.getProvince().getID());
+            cultureFilter = new SortOrder(this, x => x.culture.GetHashCode());
+        }
+        protected override List<PopUnit> ContentSelector()
+        {
+            var popsToShow = new List<PopUnit>();
+            foreach (Province province in Game.Player.ownedProvinces)
+                foreach (PopUnit pop in province.allPopUnits)
+                    popsToShow.Add(pop);
+            return popsToShow;
+        }
+        protected override void AddRow(PopUnit pop, int number)
+        {
+            // Adding number
+            //AddButton(Convert.ToString(i + offset), record);
 
-                        // Adding number
-                        //AddButton(Convert.ToString(i + offset), record);
+            // Adding PopType
+            AddCell(pop.popType.ToString(), pop);
+            ////Adding province
+            AddCell(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
+            ////Adding population
+            AddCell(System.Convert.ToString(pop.getPopulation()), pop);
+            ////Adding culture
+            AddCell(pop.culture.ToString(), pop);
 
-                        // Adding PopType
-                        AddButton(pop.popType.ToString(), pop);
-                        ////Adding province
-                        AddButton(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
-                        ////Adding population
-                        AddButton(System.Convert.ToString(pop.getPopulation()), pop);
-                        ////Adding culture
-                        AddButton(pop.culture.ToString(), pop);
+            ////Adding education
+            AddCell(pop.education.ToString(), pop);
 
-                        ////Adding education
-                        AddButton(pop.education.ToString(), pop);
+            ////Adding cash
+            AddCell(pop.cash.ToString(), pop);
 
-                        ////Adding cash
-                        AddButton(pop.cash.ToString(), pop);
+            ////Adding needs fulfilling
 
-                        ////Adding needs fulfilling
+            //PopUnit ert = record;
+            AddCell(pop.needsFullfilled.ToString(), pop,
+                //() => ert.consumedTotal.ToStringWithLines()                        
+                () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
+                );
 
-                        //PopUnit ert = record;
-                        AddButton(pop.needsFullfilled.ToString(), pop,
-                            //() => ert.consumedTotal.ToStringWithLines()                        
-                            () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
-                            );
+            ////Adding loyalty
+            string accu;
+            PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
+            AddCell(pop.loyalty.ToString(), pop, () => accu);
 
-                        ////Adding loyalty
-                        string accu;
-                        PopUnit.modifiersLoyaltyChange.getModifier(pop, out accu);
-                        AddButton(pop.loyalty.ToString(), pop, () => accu);
+            //Adding Unemployment
+            AddCell(pop.getUnemployedProcent().ToString(), pop);
 
-                        //Adding Unemployment
-                        AddButton(pop.getUnemployedProcent().ToString(), pop);
-
-                        //Adding Movement
-                        if (pop.getMovement() == null)
-                            AddButton("", pop);
-                        else
-                            AddButton(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
-                    }
-                }
-            }
-            EndUpdate();
+            //Adding Movement
+            if (pop.getMovement() == null)
+                AddCell("", pop);
+            else
+                AddCell(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
         }
         protected override void AddHeader()
         {
@@ -75,36 +88,36 @@ namespace Nashet.EconomicSimulation
             // AddButton("Number");
 
             // Adding PopType
-            AddButton("Type");
+            AddCell("Type");
 
             ////Adding province
-            AddButton("Province");
+            AddCell("Province"+ provinceFilter.getSymbol(), provinceFilter);
 
             ////Adding population
-            AddButton("Population");
+            AddCell("Population" + populationOrder.getSymbol(), populationOrder);
 
             ////Adding culture
-            AddButton("Culture");
+            AddCell("Culture"+ cultureFilter.getSymbol(), cultureFilter);
 
             ////Adding education
-            AddButton("Education");
+            AddCell("Education");
 
             ////Adding storage
             //if (null.storage != null)
-            AddButton("Cash");
+            AddCell("Cash" + cashOrder.getSymbol(), cashOrder);
             //else AddButton("Administration");
 
             ////Adding needs fulfilling
-            AddButton("Needs fulfilled");
+            AddCell("Needs fulfilled" + needsFulfillmentOrder.getSymbol(), needsFulfillmentOrder);
 
             ////Adding loyalty
-            AddButton("Loyalty");
+            AddCell("Loyalty" + loyaltyOrder.getSymbol(), loyaltyOrder);
 
             ////Adding Unemployment
-            AddButton("Unemployment");
+            AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
 
             //Adding Movement
-            AddButton("Movement");
+            AddCell("Movement" + movementFilter.getSymbol(), movementFilter);
         }
     }
 }

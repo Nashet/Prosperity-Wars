@@ -432,5 +432,10 @@ namespace Nashet.ValueSpace
             else
                 return new Storage(getProduct(), this.get() - storage.get());
         }
+        public void OnClickedCell()
+        {            
+            if (!this.isAbstractProduct())
+                MainCamera.tradeWindow.selectProduct((this).getProduct());
+        }
     }
 }

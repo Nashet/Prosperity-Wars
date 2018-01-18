@@ -49,10 +49,10 @@ namespace Nashet.EconomicSimulation
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
         private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
-
+        
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
-        {
+        {            
             setResource(resource);
             colorID = icolorID;
             ID = iID;
@@ -1054,6 +1054,10 @@ namespace Nashet.EconomicSimulation
                 return result.divideOutside(allPopulation);
             else
                 return Procent.HundredProcent;
+        }
+        public void OnClickedCell()
+        {
+            MainCamera.selectProvince(this.getID());
         }
     }
     public class Mod : Name

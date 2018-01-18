@@ -18,6 +18,7 @@ namespace Nashet.EconomicSimulation
         //private readonly Country separatism;
         private readonly List<PopUnit> members = new List<PopUnit>();
         private bool _isInRevolt;
+        
 
         private Movement(PopUnit firstPop, Country place) : base(place)
         {
@@ -69,6 +70,17 @@ namespace Nashet.EconomicSimulation
                 }
                 pop.setMovement(null);
             }
+        }
+        /// <summary>Need it for sorting</summary>
+        public int getID()
+        {
+            if (getGoal() == null)//separatists
+            {
+                var separatists = targetReformValue as Separatism;
+                return separatists.ID;
+            }
+            else
+                return getGoal().ID;
         }
         void add(PopUnit pop)
         {
@@ -165,10 +177,10 @@ namespace Nashet.EconomicSimulation
             //_isInRevolt = false;
             if (targetReform == null) // meaning separatism
             {
-                var rebels = targetReformValue as Separatism;
-                rebels.getCountry().onSeparatismWon(getPlaceDejure());
-                if (!rebels.getCountry().isAI())
-                    new Message("", "Separatists won revolution - " + rebels.getCountry().getDescription(), "hmm");
+                var separatists = targetReformValue as Separatism;
+                separatists.getCountry().onSeparatismWon(getPlaceDejure());
+                if (!separatists.getCountry().isAI())
+                    new Message("", "Separatists won revolution - " + separatists.getCountry().getDescription(), "hmm");
             }
             else
                 targetReform.setValue(targetReformValue);
