@@ -54,7 +54,7 @@ namespace Nashet.UnityUIUtils
         /// <summary>
         /// That method takes content from child (List<T>) and applies filter
         /// </summary>        
-        abstract protected List<T> ContentSelector();
+        abstract protected IEnumerable<T> ContentSelector();
         private SortOrder order;
 
         private List<T> Select(List<T> source, List<Predicate<T>> filter)
@@ -79,10 +79,10 @@ namespace Nashet.UnityUIUtils
                 Func<T, bool> sheet = new Func<T, bool>(x => true);
                 if (IsSetAnyFilter())
                     //elementsToShow = ContentSelector().FindAll(filters);
-                    elementsToShow = Select(ContentSelector(), filters);
+                    elementsToShow = Select(ContentSelector().ToList(), filters);
                 //elementsToShow = ContentSelector().Where(filters as Func<T, bool>).ToList();
                 else
-                    elementsToShow = ContentSelector();
+                    elementsToShow = ContentSelector().ToList();
                 if (order != null && order.IsOrderSet())
                     elementsToShow = order.DoSorting(elementsToShow);
                 howMuchRowsShow = ReCalcSize(elementsToShow.Count);

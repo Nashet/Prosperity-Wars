@@ -10,9 +10,9 @@ namespace Nashet.EconomicSimulation
 {
     public class PoliticsPanelTable : UITableNew<AbstractReform>
     {
-        protected override List<AbstractReform> ContentSelector()
+        protected override IEnumerable<AbstractReform> ContentSelector()
         {
-            return Game.Player.reforms.ToList();
+            return Game.Player.reforms;
         }
 
         protected override void AddRow(AbstractReform reform, int number)

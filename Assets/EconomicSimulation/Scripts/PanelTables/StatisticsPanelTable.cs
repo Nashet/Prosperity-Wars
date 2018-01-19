@@ -8,9 +8,9 @@ namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : UITableNew<Country>
     {
-        protected override List<Country> ContentSelector()
+        protected override IEnumerable<Country> ContentSelector()
         {
-            return Country.getAllExisting().ToList();
+            return Country.getAllExisting();
         }
         protected override void AddRow(Country country, int number)
         {

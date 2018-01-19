@@ -43,10 +43,10 @@ namespace Nashet.EconomicSimulation
         internal static readonly float goldToCoinsConvert = 10f;
         internal static readonly Procent minWorkforceFullfillingToUpgradeFactory = new Procent(0.75f);
         internal static readonly Procent BuyInTimeFactoryUpgradeNeeds = new Procent(0.1f);
-        internal static readonly int minUnemploymentToBuldFactory = 10;
+        internal static readonly int minUnemploymentToInvestInFactory = 10;
         internal static readonly int maximumFactoriesInUpgradeToBuildNew = 2;
         internal static readonly byte maxFactoryLevel = 255;
-        internal static readonly float minMarginToUpgrade = 0.005f;
+        internal static readonly float minMarginToInvest = 0.005f;
 
         internal static readonly int maxDaysUnprofitableBeforeFactoryClosing = 180;
         internal static readonly int maxDaysBuildingBeforeRemoving = 180; // 180;
@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
         internal static readonly int maxFactoryFireHireSpeed = 50;
-        internal static readonly float minFactoryWorkforceFullfillingToBuildNew = 0.75f;
+        internal static readonly float minFactoryWorkforceFulfillingToBuildNew = 0.75f;
 
         internal static readonly int fabricConstructionTimeWithoutCapitalism = 20;
         internal static readonly byte FactoryInputReservInDays = 5;

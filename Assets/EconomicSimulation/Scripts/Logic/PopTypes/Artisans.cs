@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
 
                 // take loan if don't have enough money to buy inputs            
                 if (getCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
-                    if (artisansProduction.getType().getPossibleProfit(getProvince()).isNotZero())
+                    if (artisansProduction.getType().getPossibleProfit().isNotZero())
                     {
                         var needs = artisansProduction.getRealAllNeeds();
                         if (!artisansProduction.canAfford(needs))
@@ -150,9 +150,9 @@ namespace Nashet.EconomicSimulation
         private void changeProductionType()
         {
             KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-            foreach (FactoryType factoryType in FactoryType.getNonResourceTypes(getCountry()))
+            foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(getCountry()))
             {
-                float possibleProfit = factoryType.getPossibleProfit(getProvince()).get();
+                float possibleProfit = factoryType.getPossibleProfit().get();
                 if (possibleProfit > result.Value)
                     result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
             }

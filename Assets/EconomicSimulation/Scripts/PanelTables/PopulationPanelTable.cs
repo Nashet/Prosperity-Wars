@@ -32,13 +32,14 @@ namespace Nashet.EconomicSimulation
             provinceFilter = new SortOrder(this, x => x.getProvince().getID());
             cultureFilter = new SortOrder(this, x => x.culture.GetHashCode());
         }
-        protected override List<PopUnit> ContentSelector()
+        protected override IEnumerable<PopUnit> ContentSelector()
         {
-            var popsToShow = new List<PopUnit>();
-            foreach (Province province in Game.Player.ownedProvinces)
-                foreach (PopUnit pop in province.allPopUnits)
-                    popsToShow.Add(pop);
-            return popsToShow;
+            return Game.Player.getAllPopUnits();
+            //var popsToShow = new List<PopUnit>();
+            //foreach (Province province in Game.Player.ownedProvinces)
+            //    foreach (PopUnit pop in province.allPopUnits)
+            //        popsToShow.Add(pop);
+            //return popsToShow;
         }
         protected override void AddRow(PopUnit pop, int number)
         {

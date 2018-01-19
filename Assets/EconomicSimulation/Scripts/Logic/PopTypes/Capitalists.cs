@@ -1,9 +1,19 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using Nashet.ValueSpace;
+using System.Linq;
+using Nashet.Utils;
+using System.Collections.Generic;
+using System;
 
 namespace Nashet.EconomicSimulation
 {
+    public interface IInvestable
+    {
+        Procent getMargin();
+        Value getInvestmentsCost();
+        bool canProduce(Product product);
+    }
     public class Capitalists : GrainGetter
     {
         public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture)
@@ -58,52 +68,43 @@ namespace Nashet.EconomicSimulation
             else
                 return 0;
         }
+        
         internal override void invest()
         {
+            //should I invest?                
             if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
-            {
-                //should I build?
-                //province.getUnemployed() > Game.minUnemploymentToBuldFactory && 
-                if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew))
+                if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+                && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToBuildNew)
+                )
                 {
-                    FactoryType proposition = FactoryType.getMostTeoreticalProfitable(getProvince());
-                    if (proposition != null && proposition.canBuildNewFactory(getProvince()) &&
-                        (getProvince().getUnemployedWorkers() > Options.minUnemploymentToBuldFactory || getProvince().getAverageFactoryWorkforceFullfilling() > Options.minFactoryWorkforceFullfillingToBuildNew))
+                    // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
+
+                    var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest );
+                    var project = projects.MaxBy(x => x.getMargin().get());
+
+                    if (project != null)
                     {
-                        //Value buildCost = Game.market.getCost(proposition.getBuildNeeds());
-                        //buildCost.add(Options.factoryMoneyReservePerLevel);
-                        Value buildCost = proposition.getMinimalMoneyToBuild();
-                        if (canPay(buildCost))
+                        Value investmentCost = project.getInvestmentsCost();
+                        if (!canPay(investmentCost))
+                            getBank().giveLackingMoney(this, investmentCost);
+                        if (canPay(investmentCost))
                         {
-                            Factory found = new Factory(getProvince(), this, proposition);
-                            payWithoutRecord(found, buildCost);
-                        }
-                        else
-                            if (getBank().giveLackingMoney(this, buildCost))
-                        {
-                            Factory found = new Factory(getProvince(), this, proposition);
-                            payWithoutRecord(found, buildCost);
-                        }
-                    }
-                    else
-                    {
-                        //upgrade section
-                        Factory factory = FactoryType.getMostPracticlyProfitable(getProvince());
-                        if (factory != null
-                            && factory.canUpgrade() // don't change it to Modifier  - it would prevent loan takes
-                            && factory.getMargin().get() >= Options.minMarginToUpgrade
-                            && factory.getWorkForceFulFilling().isBiggerThan(Options.minWorkforceFullfillingToUpgradeFactory))
-                        {
-                            Value upgradeCost = Game.market.getCost(factory.getUpgradeNeeds());
-                            if (canPay(upgradeCost))
-                                factory.upgrade(this);
-                            else if (getBank().giveLackingMoney(this, upgradeCost))
-                                factory.upgrade(this);
+                            Factory factory;
+                            var factoryToBuild = project as FactoryType;
+                            if (factoryToBuild != null)
+                                factory = new Factory(getProvince(), this, factoryToBuild);
+                            else
+                            {
+                                factory = project as Factory;
+                                if (factory != null)
+                                    factory.upgrade(this);
+                                else
+                                    Debug.Log("Unknown investment type");
+                            }
+                            payWithoutRecord(factory, investmentCost);
                         }
                     }
                 }
-
-            }
             base.invest();
         }
     }

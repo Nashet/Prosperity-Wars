@@ -10,9 +10,9 @@ namespace Nashet.EconomicSimulation
 
     public class BuildPanelTable : UITableNew<FactoryType>
     {
-        protected override List<FactoryType> ContentSelector()
-        {
-            return Game.selectedProvince.whatFactoriesCouldBeBuild();
+        protected override IEnumerable<FactoryType> ContentSelector()
+        {            
+            return FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince));
         }      
         protected override void AddRow(FactoryType factoryType, int number)
         {
@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
             ////Adding cost
             //if (Game.player.isInvented(InventionType.capitalism))
             if (Economy.isMarket.checkIftrue(Game.Player))
-                AddCell(factoryType.getMinimalMoneyToBuild().ToString(), factoryType);
+                AddCell(factoryType.getInvestmentsCost().ToString(), factoryType);
             else
                 AddCell(factoryType.getBuildNeeds().ToString(), factoryType);
 
@@ -37,7 +37,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
-                AddCell(factoryType.getPossibleMargin(Game.selectedProvince).ToString(), factoryType);
+                AddCell(factoryType.getMargin().ToString(), factoryType);
         }
 
         protected override void AddHeader()

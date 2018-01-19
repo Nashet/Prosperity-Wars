@@ -49,10 +49,10 @@ namespace Nashet.EconomicSimulation
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
         private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
-        
+
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
-        {            
+        {
             setResource(resource);
             colorID = icolorID;
             ID = iID;
@@ -77,6 +77,11 @@ namespace Nashet.EconomicSimulation
                     currentProvinceColor = image.GetPixel(i, j);
                     //game.updateStatus("Reading provinces.. x = " + i + " y = " + j);
                 }
+        }
+
+        internal int howMuchFactories()
+        {
+            return allFactories.Count;
         }
 
         internal static void generateUnityData(VoxelGrid grid)
@@ -427,6 +432,12 @@ namespace Nashet.EconomicSimulation
             foreach (Factory factory in allFactories)
                 yield return factory;
         }
+        public IEnumerable<Factory> getAllFactories(Predicate<Factory> predicate)
+        {
+            foreach (Factory factory in allFactories)
+                if (predicate(factory))
+                    yield return factory;
+        }
         public static Vector3 setProvinceCenter(MeshStructure meshStructure)
         {
             Vector3 accu = new Vector3(0, 0, 0);
@@ -702,14 +713,14 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        internal List<FactoryType> whatFactoriesCouldBeBuild()
-        {
-            List<FactoryType> result = new List<FactoryType>();
-            foreach (FactoryType type in FactoryType.allTypes)
-                if (type.canBuildNewFactory(this))
-                    result.Add(type);
-            return result;
-        }
+        //internal IEnumerable<FactoryType> getAllBuildableFactories()
+        //{
+        //    List<FactoryType> result = new List<FactoryType>();
+        //    foreach (FactoryType type in FactoryType.allTypes)
+        //        if (type.canBuildNewFactory(this))
+        //            result.Add(type);
+        //    return result;
+        //}
 
         /// <summary>
         /// check type for null outside
@@ -897,7 +908,7 @@ namespace Nashet.EconomicSimulation
                 return maxSalary;
             }
         }
-        internal float getAverageFactoryWorkforceFullfilling()
+        internal float getAverageFactoryWorkforceFulfilling()
         {
             int workForce = 0;
             int capacity = 0;
@@ -1058,6 +1069,26 @@ namespace Nashet.EconomicSimulation
         public void OnClickedCell()
         {
             MainCamera.selectProvince(this.getID());
+        }
+        
+        public List<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
+        {
+            //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
+            //FactoryType.conditionsBuild.isAllTrue
+            List<IInvestable> res = new List<IInvestable>();
+            getAllFactories(x => canUpgradeFactory(x.getType()) && predicate(x)).PerformAction(x => res.Add(x));
+            FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
+            return res;
+        }
+        internal bool canUpgradeFactory(FactoryType type)
+        {
+            if (!hasFactory(type))
+                return false;
+            var factory = findFactory(type);
+            if (factory.canUpgrade())
+                return true;
+            else
+                return false;
         }
     }
     public class Mod : Name

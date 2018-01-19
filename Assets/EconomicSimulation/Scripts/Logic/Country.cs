@@ -712,7 +712,7 @@ namespace Nashet.EconomicSimulation
 
                     var proposition = FactoryType.whoCanProduce(item);
                     if (proposition != null)
-                        if (proposition.canBuildNewFactory(province) || proposition.canUpgradeFactory(province))
+                        if (proposition.canBuildNewFactory(province) || province.canUpgradeFactory(proposition))
                         {
                             var found = countryStorageSet.getFirstStorage(item);
                             if (minFound == null || found.isSmallerThan(minFound))
@@ -1372,7 +1372,7 @@ namespace Nashet.EconomicSimulation
             return null;
         }
         public void OnClickedCell()
-        {            
+        {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {
                 if (MainCamera.diplomacyPanel.getSelectedCountry() == this)

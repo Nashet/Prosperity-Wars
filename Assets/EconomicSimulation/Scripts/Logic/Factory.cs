@@ -8,7 +8,7 @@ using System;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Factory : SimpleProduction, ICanBeCellInTable
+    public class Factory : SimpleProduction, ICanBeCellInTable, IInvestable
     {
         public enum Priority { none, low, medium, high }
         private static readonly int workForcePerLevel = 1000;
@@ -171,10 +171,10 @@ namespace Nashet.EconomicSimulation
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 setPriorityAutoWithPlannedEconomy();
         }
-        //internal Value getMinimalMoneyForUpgrade()
-        //{
-        //    return Game.market.getCost(getUpgradeNeeds());
-        //}
+        public Value getInvestmentsCost()
+        {
+            return Game.market.getCost(getUpgradeNeeds());
+        }
         internal StorageSet getUpgradeNeeds()
         {
             if (getLevel() < Options.FactoryMediumTierLevels)
@@ -424,7 +424,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal Procent getMargin()
+        public Procent getMargin()
         {
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 return Procent.ZeroProcent;
@@ -675,7 +675,7 @@ namespace Nashet.EconomicSimulation
                         else
                         {
                             //take loan for reopen
-                            if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit(getProvince()).get() > 10f)
+                            if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit().get() > 10f)
                             {
                                 float leftOver = cash.get() - wantsMinMoneyReserv();
                                 if (leftOver < 0)
@@ -752,6 +752,7 @@ namespace Nashet.EconomicSimulation
         {
             return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && isWorking();
         }
+        
         internal void upgrade(Agent byWhom)
         {
             upgrading = true;
@@ -947,11 +948,11 @@ namespace Nashet.EconomicSimulation
                 result += pop.Value;
             return result;
         }
-
         public void OnClickedCell()
         {
             MainCamera.factoryPanel.show(this);            
         }
+        
     }
 }
 

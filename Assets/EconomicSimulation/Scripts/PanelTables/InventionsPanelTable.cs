@@ -11,9 +11,9 @@ namespace Nashet.EconomicSimulation
 
     public class InventionsPanelTable : UITableNew<KeyValuePair<Invention, bool>>
     {
-        protected override List<KeyValuePair<Invention, bool>> ContentSelector()
+        protected override IEnumerable<KeyValuePair<Invention, bool>> ContentSelector()
         {
-            return Game.Player.getAvailableInventions().ToList();
+            return Game.Player.getAvailableInventions();
         }
         
         protected override void AddRow(KeyValuePair<Invention, bool> invention, int number)
