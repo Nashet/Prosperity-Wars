@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
         internal static readonly int maxFactoryFireHireSpeed = 50;
-        internal static readonly float minFactoryWorkforceFulfillingToBuildNew = 0.75f;
+        internal static readonly float minFactoryWorkforceFulfillingToInvest = 0.60f;
 
         internal static readonly int fabricConstructionTimeWithoutCapitalism = 20;
         internal static readonly byte FactoryInputReservInDays = 5;

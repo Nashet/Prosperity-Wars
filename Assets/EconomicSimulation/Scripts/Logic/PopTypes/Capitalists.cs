@@ -74,11 +74,10 @@ namespace Nashet.EconomicSimulation
             //should I invest?                
             if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
                 if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
-                && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToBuildNew)
+                && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
                 )
                 {
                     // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-
                     var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest );
                     var project = projects.MaxBy(x => x.getMargin().get());
 

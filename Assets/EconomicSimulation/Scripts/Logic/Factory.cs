@@ -952,7 +952,11 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.factoryPanel.show(this);            
         }
-        
+
+        public bool canProduce(Product product)
+        {
+            return getType().canProduce(product);
+        }
     }
 }
 
