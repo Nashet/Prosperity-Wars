@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
+using Nashet.ValueSpace;
+
 namespace Nashet.EconomicSimulation
 {
     public class Workers : GrainGetter
@@ -51,5 +54,6 @@ namespace Nashet.EconomicSimulation
             else
                 return 0;
         }
+        
     }
 }

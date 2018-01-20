@@ -632,8 +632,8 @@ namespace Nashet.EconomicSimulation
                         {
                             pop.calcGrowth();
                             pop.calcPromotions();
-                            if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
-                                pop.findBetterLife();
+                            if (pop.needsFulfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
+                                pop.EscapeForBetterLife(x => x.HasJobsFor(pop.popType, province));                                
                             pop.calcAssimilations();
                         }
                         if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)

@@ -15,6 +15,7 @@ namespace Nashet.EconomicSimulation
     {
         ///<summary>buffer popList. To avoid iteration breaks</summary>
         public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
+        public static readonly Predicate<PopUnit> All = x => true;
 
         public readonly Procent loyalty;
         private int population;
@@ -23,7 +24,7 @@ namespace Nashet.EconomicSimulation
         public readonly PopType popType;
         public readonly Culture culture;
         public readonly Procent education;
-        public readonly Procent needsFullfilled;
+        public readonly Procent needsFulfilled;
 
         private int daysUpsetByForcedReform;
         private bool didntGetPromisedUnemloymentSubsidy;
@@ -47,7 +48,7 @@ namespace Nashet.EconomicSimulation
         static PopUnit()
         {
             //makeModifiers();
-            modifierStarvation = new Modifier(x => (x as PopUnit).needsFullfilled.get() < 0.20f, "Starvation", -0.3f, false);
+            modifierStarvation = new Modifier(x => (x as PopUnit).needsFulfilled.get() < 0.20f, "Starvation", -0.3f, false);
             modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", -0.2f, false);
             modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", 0.1f, false);
             modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", 0.15f, false);
@@ -117,7 +118,7 @@ namespace Nashet.EconomicSimulation
 
             education = new Procent(0.00f);
             loyalty = new Procent(0.50f);
-            needsFullfilled = new Procent(0.50f);
+            needsFulfilled = new Procent(0.50f);
             //province = where;
         }
         /// <summary> Creates new PopUnit basing on part of other PopUnit.
@@ -146,7 +147,7 @@ namespace Nashet.EconomicSimulation
             popType = newPopType;
             this.culture = culture;
             education = new Procent(source.education.get());
-            needsFullfilled = new Procent(source.needsFullfilled.get());
+            needsFulfilled = new Procent(source.needsFulfilled.get());
             daysUpsetByForcedReform = 0;
             didntGetPromisedUnemloymentSubsidy = false;
             //incomeTaxPayed = newPopShare.sendProcentToNew(source.incomeTaxPayed);
@@ -222,7 +223,7 @@ namespace Nashet.EconomicSimulation
             //type = newPopType; don't change that
             //culture = source.culture; don't change that
             education.addPoportionally(this.getPopulation(), source.getPopulation(), source.education);
-            needsFullfilled.addPoportionally(this.getPopulation(), source.getPopulation(), source.needsFullfilled);
+            needsFulfilled.addPoportionally(this.getPopulation(), source.getPopulation(), source.needsFulfilled);
             //daysUpsetByForcedReform = 0; don't change that
             //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
@@ -294,7 +295,7 @@ namespace Nashet.EconomicSimulation
         {
             base.setStatisticToZero();
             incomeTaxPayed.setZero(); // need it because pop could stop paying taxes due to reforms for example
-            needsFullfilled.setZero();
+            needsFulfilled.setZero();
             didntGetPromisedUnemloymentSubsidy = false;
             lastEscaped.value = 0;
             // if (popType != PopType.Aristocrats)
@@ -566,20 +567,20 @@ namespace Nashet.EconomicSimulation
 
         public Procent getLifeNeedsFullfilling()
         {
-            float need = needsFullfilled.get();
+            float need = needsFulfilled.get();
             if (need < Options.PopOneThird)
-                return new Procent(needsFullfilled.get() * Options.PopStrataWeight.get());
+                return new Procent(needsFulfilled.get() * Options.PopStrataWeight.get());
             //return needsFullfilled;
             else
                 return Procent.HundredProcent;
         }
         public Procent getEveryDayNeedsFullfilling()
         {
-            float need = needsFullfilled.get();
+            float need = needsFulfilled.get();
             if (need <= Options.PopOneThird)
                 return Procent.ZeroProcent;
             if (need < Options.PopTwoThird)
-                return new Procent((needsFullfilled.get() - Options.PopOneThird) * Options.PopStrataWeight.get());
+                return new Procent((needsFulfilled.get() - Options.PopOneThird) * Options.PopStrataWeight.get());
             //return needsFullfilled;
             else
                 return Procent.HundredProcent;
@@ -587,7 +588,7 @@ namespace Nashet.EconomicSimulation
 
         public Procent getLuxuryNeedsFullfilling()
         {
-            float need = needsFullfilled.get();
+            float need = needsFulfilled.get();
             if (need <= Options.PopTwoThird)
                 return Procent.ZeroProcent;
             //if (need == 0.999f)
@@ -595,7 +596,7 @@ namespace Nashet.EconomicSimulation
             //else
             //    return new Procent((needsFullfilled.get() - Options.PopTwoThird) * Options.PopStrataWeight.get());
             //if (needsFullfilled.isSmallerThan(Procent.HundredProcent))
-            return new Procent((needsFullfilled.get() - Options.PopTwoThird) * Options.PopStrataWeight.get());
+            return new Procent((needsFulfilled.get() - Options.PopTwoThird) * Options.PopStrataWeight.get());
             //else 
             //    return new 
 
@@ -613,7 +614,7 @@ namespace Nashet.EconomicSimulation
                     //storage.subtract(need);
                     //consumedTotal.add(need);
                     consumeFromItself(need); // todo fails if is abstract
-                    needsFullfilled.set(2f / 3f);
+                    needsFulfilled.set(2f / 3f);
                     if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
                 }
                 else
@@ -622,7 +623,7 @@ namespace Nashet.EconomicSimulation
                     //consumedTotal.add(storage);
                     //storage.set(0);
                     consumeFromItself(storage); // todo fails if is abstract
-                    needsFullfilled.add(canConsume / need.get() / 3f);
+                    needsFulfilled.add(canConsume / need.get() / 3f);
                 }
         }
 
@@ -644,10 +645,10 @@ namespace Nashet.EconomicSimulation
                     //storage.subtract(need); // danger moment - may subtracts different type of product
                     //consumedTotal.set(storage.getProduct(), need);
                     consumeFromItself(realConsumption);
-                    needsFullfilled.set(Options.PopOneThird);
+                    needsFulfilled.set(Options.PopOneThird);
                 }
                 else
-                    needsFullfilled.set(Game.market.buy(this, need, null).get() / need.get() / Options.PopStrataWeight.get());
+                    needsFulfilled.set(Game.market.buy(this, need, null).get() / need.get() / Options.PopStrataWeight.get());
                 //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
                 //{
                 //    needsFullfilled.set(Game.market.buy(this, need, null), need);
@@ -676,7 +677,7 @@ namespace Nashet.EconomicSimulation
                 //    needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
                 var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
                 everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
-                needsFullfilled.add(everyDayNeedsFulfilled);
+                needsFulfilled.add(everyDayNeedsFulfilled);
 
                 // buy luxury needs
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
@@ -724,7 +725,7 @@ namespace Nashet.EconomicSimulation
                     }
                     var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
                     luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
-                    needsFullfilled.add(luxuryNeedsFulfilled);
+                    needsFulfilled.add(luxuryNeedsFulfilled);
                     //Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
                     //if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
                     //    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
@@ -747,7 +748,7 @@ namespace Nashet.EconomicSimulation
                         realConsumption = need;
 
                     consumeFromItself(realConsumption);
-                    needsFullfilled.set(1f / 3f);
+                    needsFulfilled.set(1f / 3f);
                     consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
                 }
                 else
@@ -755,7 +756,7 @@ namespace Nashet.EconomicSimulation
                     //its about lifeneeds only
                     float canConsume = storage.get();
                     consumeFromItself(storage); // todo fails if is abstract
-                    needsFullfilled.set(canConsume / need.get() / 3f);
+                    needsFulfilled.set(canConsume / need.get() / 3f);
                 }
         }
         /// <summary>
@@ -803,14 +804,14 @@ namespace Nashet.EconomicSimulation
                     //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
                     var lifeNeedsFulfilled = Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds());
                     lifeNeedsFulfilled.divide(Options.PopStrataWeight);
-                    needsFullfilled.set(lifeNeedsFulfilled);
+                    needsFulfilled.set(lifeNeedsFulfilled);
 
                     var everyDayNeedsConsumed = consumeWithPlannedEconomy(getRealEveryDayNeeds());
                     if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                     {
                         var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
                         everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
-                        needsFullfilled.add(everyDayNeedsFulfilled);
+                        needsFulfilled.add(everyDayNeedsFulfilled);
                     }
 
                     var luxuryNeedsConsumed = consumeWithPlannedEconomy(getRealLuxuryNeeds());
@@ -818,7 +819,7 @@ namespace Nashet.EconomicSimulation
                     {
                         var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
                         luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
-                        needsFullfilled.add(luxuryNeedsFulfilled);
+                        needsFulfilled.add(luxuryNeedsFulfilled);
                     }
                     //var consumed = Procent.makeProcent(getConsumed().getContainer(), getRealAllNeeds());
                     //consumed.multiply(Options.PopStrataWeight);
@@ -900,6 +901,9 @@ namespace Nashet.EconomicSimulation
             }
             return null;
         }
+
+        
+
         public void calcLoyalty()
         {
             float newRes = loyalty.get() + modifiersLoyaltyChange.getModifier(this) / 100f;
@@ -958,7 +962,7 @@ namespace Nashet.EconomicSimulation
 
         public bool wantsToPromote()
         {
-            if (this.needsFullfilled.isBiggerThan(Options.PopNeedsPromotionLimit))
+            if (this.needsFulfilled.isBiggerThan(Options.PopNeedsPromotionLimit))
                 return true;
             else
                 return false;
@@ -971,7 +975,7 @@ namespace Nashet.EconomicSimulation
                 if (canThisPromoteInto(nextType))
                     list.Add(nextType, getProvince().getAverageNeedsFulfilling(nextType));
             var result = list.MaxBy(x => x.Value.get());
-            if (result.Value != null && result.Value.get() > this.needsFullfilled.get())
+            if (result.Value != null && result.Value.get() > this.needsFulfilled.get())
                 return result.Key;
             else
                 return null;
@@ -1035,10 +1039,10 @@ namespace Nashet.EconomicSimulation
         public int getGrowthSize()
         {
             int result = 0;
-            if (this.needsFullfilled.get() >= 0.33f) // positive growth
+            if (this.needsFulfilled.get() >= 0.33f) // positive growth
                 result = Mathf.RoundToInt(Options.PopGrowthSpeed.get() * getPopulation());
             else
-                if (this.needsFullfilled.get() >= 0.20f) // zero growth
+                if (this.needsFulfilled.get() >= 0.20f) // zero growth
                 result = 0;
             else if (popType != PopType.Farmers) //starvation  
             {
@@ -1050,37 +1054,44 @@ namespace Nashet.EconomicSimulation
             return result;
             //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
         }
+        private IEscapeTarget findEscapeTarget(Predicate<IEscapeTarget> predicate)
+        {
+            var list = new List<KeyValuePair<IEscapeTarget, Value>>();
+            list.AddIfNotNull(getRichestDemotionTarget(predicate));
+            list.AddIfNotNull(getRichestMigrationTarget(predicate));
+            list.AddIfNotNull(getRichestImmigrationTarget(predicate));
+            return list.MaxBy(x => x.Value.get()).Key;
+        }
+
+        //virtual public void findBetterLife()
+        //{
+        //    findBetterLife2();
+        //}
         /// <summary>
-        /// Changes pops life in richest way - by demotion, migration or immigration
-        /// </summary>
-        /// <returns></returns>
-        public void findBetterLife()
+        /// Splits pops. New pops changes life in richest way - by demotion, migration or immigration
+        /// </summary>        
+        public void EscapeForBetterLife(Predicate<IEscapeTarget> predicate)
         {
             int escapeSize = getEscapeSize();
             if (escapeSize > 0 && this.getPopulation() >= escapeSize)
             {
-                var list = new List<KeyValuePair<IEscapeTarget, Value>>();
-                list.AddIfNotNull(getRichestDemotionTarget());
-                list.AddIfNotNull(getRichestMigrationTarget());
-                list.AddIfNotNull(getRichestImmigrationTarget());
-                var bestChoice = list.MaxBy(x => x.Value.get());
-
-                if (!bestChoice.Equals(default(KeyValuePair<IEscapeTarget, Value>)))
+                var escapeTarget = findEscapeTarget(predicate);
+                if (escapeTarget != null)
                 {
-                    var targetIsPopType = bestChoice.Key as PopType;
-                    if (targetIsPopType == null)
-                    {
-                        // assuming its province
-                        var targetIsProvince = bestChoice.Key as Province;
-                        // its both migration and immigration
-                        PopUnit.makeVirtualPop(popType, this, escapeSize, targetIsProvince, this.culture);
-                        lastEscaped.key = targetIsProvince;
-                    }
-                    else
+                    var targetIsPopType = escapeTarget as PopType;
+                    if (targetIsPopType != null)
                     {
                         // assuming its PopType
                         PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.getProvince(), this.culture);
                         lastEscaped.key = targetIsPopType;
+                    }
+                    else
+                    {
+                        // assuming its province
+                        var targetIsProvince = escapeTarget as Province;
+                        // its both migration and immigration
+                        PopUnit.makeVirtualPop(popType, this, escapeSize, targetIsProvince, this.culture);
+                        lastEscaped.key = targetIsProvince;
                     }
                     lastEscaped.value = escapeSize;
                 }
@@ -1117,15 +1128,15 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// return popType to demote
         /// </summary>   
-        public KeyValuePair<IEscapeTarget, Value> getRichestDemotionTarget()
+        public KeyValuePair<IEscapeTarget, Value> getRichestDemotionTarget(Predicate<IEscapeTarget> predicate)
         {
             Dictionary<IEscapeTarget, Value> list = new Dictionary<IEscapeTarget, Value>();
 
-            foreach (PopType nextType in PopType.getAllPopTypes())
-                if (canThisDemoteInto(nextType))
-                    list.Add(nextType, getProvince().getAverageNeedsFulfilling(nextType));
+            foreach (PopType type in PopType.getAllPopTypes())
+                if (canThisDemoteInto(type) && predicate(type))
+                    list.Add(type, getProvince().getAverageNeedsFulfilling(type));
             var result = list.MaxBy(x => x.Value.get());
-            if (result.Value != null && result.Value.isBiggerThan(this.needsFullfilled, Options.PopNeedsEscapingBarrier))
+            if (result.Value != null && result.Value.isBiggerThan(this.needsFulfilled, Options.PopNeedsEscapingBarrier))
                 return result;
             else
                 return default(KeyValuePair<IEscapeTarget, Value>);
@@ -1133,7 +1144,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// return province to immigrate or null if there is no better place to live
         /// </summary>    
-        public KeyValuePair<IEscapeTarget, Value> getRichestImmigrationTarget()
+        public KeyValuePair<IEscapeTarget, Value> getRichestImmigrationTarget(Predicate<IEscapeTarget> predicate)
         {
             Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
             //where to g0?
@@ -1141,27 +1152,29 @@ namespace Nashet.EconomicSimulation
             foreach (var country in Country.getAllExisting())
                 if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     if (country != this.getCountry())
-                        foreach (var pro in country.ownedProvinces)
-                        {
-                            var needsInTargetProvince = pro.getAverageNeedsFulfilling(this.popType);
-                            if (needsInTargetProvince.isBiggerThan(this.needsFullfilled, Options.PopNeedsEscapingBarrier))
-                                provinces.Add(pro, needsInTargetProvince);
-                        }
+                        foreach (var province in country.ownedProvinces)
+                            if (predicate(province))
+                            {
+                                var needsInTargetProvince = province.getAverageNeedsFulfilling(this.popType);
+                                if (needsInTargetProvince.isBiggerThan(this.needsFulfilled, Options.PopNeedsEscapingBarrier))
+                                    provinces.Add(province, needsInTargetProvince);
+                            }
             return provinces.MaxBy(x => x.Value.get());
         }
         /// <summary>
         /// return province to migrate or null if there is no better place to live
         /// </summary>  
-        public KeyValuePair<IEscapeTarget, Value> getRichestMigrationTarget()
+        public KeyValuePair<IEscapeTarget, Value> getRichestMigrationTarget(Predicate<IEscapeTarget> predicate)
         {
             Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
             //foreach (var pro in getCountry().ownedProvinces)            
-            foreach (var pro in getProvince().getNeigbors(x => x.getCountry() == getCountry()))
             //if (pro != this.province)
+
+            foreach (var province in getProvince().getNeigbors(x => x.getCountry() == this.getCountry() && predicate(x)))
             {
-                var needsInProvince = pro.getAverageNeedsFulfilling(this.popType);
-                if (needsInProvince.isBiggerThan(needsFullfilled, Options.PopNeedsEscapingBarrier))
-                    provinces.Add(pro, needsInProvince);
+                var needsInProvince = province.getAverageNeedsFulfilling(this.popType);
+                if (needsInProvince.isBiggerThan(needsFulfilled, Options.PopNeedsEscapingBarrier))
+                    provinces.Add(province, needsInProvince);
             }
             return provinces.MaxBy(x => x.Value.get());
         }

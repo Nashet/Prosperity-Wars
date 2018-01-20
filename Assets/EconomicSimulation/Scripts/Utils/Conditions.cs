@@ -94,7 +94,7 @@ namespace Nashet.Conditions
             //= new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
             = new Condition(delegate { return 2 * 2 == 5; }, "Feature is implemented", true);
         internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
-
+        
         protected readonly Func<object, bool> checkingFunction;
         /// <summary>to hide junk info /// </summary>
         protected readonly bool showAchievedConditionDescribtion;

@@ -347,7 +347,7 @@ namespace Nashet.EconomicSimulation
             foreach (var province in ownedProvinces)
                 foreach (var pop in province.allPopUnits)
                 {
-                    result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.needsFullfilled);
+                    result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.needsFulfilled);
                     calculatedPopulation += pop.getPopulation();
                 }
             return result;
@@ -1073,7 +1073,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in ownedProvinces)
             {
                 int population = item.getMenPopulationEmployable();
-                result.addPoportionally(calculatedBase, population, item.getUnemployment());
+                result.addPoportionally(calculatedBase, population, item.getUnemployment(PopType.All));
                 calculatedBase += population;
             }
             return result;

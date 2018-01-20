@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
 
         private void Start()
         {
-            needsFulfillmentOrder = new SortOrder(this, x => x.needsFullfilled.get());
+            needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
             ////Adding needs fulfilling
 
             //PopUnit ert = record;
-            AddCell(pop.needsFullfilled.ToString(), pop,
+            AddCell(pop.needsFulfilled.ToString(), pop,
                 //() => ert.consumedTotal.ToStringWithLines()                        
                 () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
                 );

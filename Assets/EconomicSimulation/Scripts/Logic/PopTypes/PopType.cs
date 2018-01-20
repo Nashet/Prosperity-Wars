@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
         private readonly static List<PopType> allPopTypes = new List<PopType>();
         public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
 
-
+        public static Predicate<PopType> All = x => true;
         ///<summary> per 1000 men </summary>    
         private readonly StorageSet lifeNeeds = new StorageSet();
         private readonly StorageSet everyDayNeeds = new StorageSet();
@@ -165,7 +165,7 @@ namespace Nashet.EconomicSimulation
         {
             if (byWhom is Country)
             {
-                if (this == PopType.Capitalists)
+                if (this == Capitalists)
                     return false;
                 else
                     return true;
@@ -228,12 +228,12 @@ namespace Nashet.EconomicSimulation
 
         internal bool isPoorStrata()
         {
-            return this == PopType.Farmers || this == PopType.Workers || this == PopType.Tribesmen || this == PopType.Soldiers;
+            return this == Farmers || this == Workers || this == Tribesmen || this == Soldiers;
         }
 
         internal bool isRichStrata()
         {
-            return this == PopType.Aristocrats || this == PopType.Capitalists || this == PopType.Artisans;
+            return this == Aristocrats || this == Capitalists || this == Artisans;
         }
 
         internal float getStrenght()
@@ -242,14 +242,14 @@ namespace Nashet.EconomicSimulation
         }
         public bool canBeUnemployed()
         {
-            return this == PopType.Farmers || this == PopType.Workers || this == PopType.Tribesmen;
+            return this == Farmers || this == Workers || this == Tribesmen;
         }
         /// <summary>
         /// Returns true if can produce something by himself
         /// </summary>    
         internal bool isProducer()
         {
-            return this == PopType.Farmers || this == PopType.Tribesmen || this == PopType.Artisans;
+            return this == Farmers || this == Tribesmen || this == Artisans;
         }
         /// <summary>
         /// Makes sure that pops consume product in cheap-first order
@@ -261,6 +261,19 @@ namespace Nashet.EconomicSimulation
                 item.everyDayNeeds.sort(Storage.CostOrder);
                 item.luxuryNeeds.sort(Storage.CostOrder);
             }
+        }
+        //internal bool HasJobsForThatPopTypeIn(Province province)
+        //{
+        //    return true;
+        //}
+        private static Procent MigrationUnemploymentLimit = new Procent(0.2f);
+
+        public bool HasJobsFor(PopType type, Province province)
+        {
+            if (this == Workers || this== Farmers || this == Tribesmen)
+                return province.getUnemployment(x => x == Workers).isSmallerThan(MigrationUnemploymentLimit);
+            else
+                return true;
         }
     }
 }

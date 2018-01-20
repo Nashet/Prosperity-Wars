@@ -25,7 +25,11 @@ namespace Nashet.EconomicSimulation
         public static readonly ConditionForDoubleObjects doesCountryOwn =
         new ConditionForDoubleObjects((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
         public readonly static List<Province> allProvinces = new List<Province>();
+        public static readonly Predicate<Province> All = x => true;
 
+
+        private Province here
+        { get { return this; } }
         private readonly int ID;
         private readonly Color colorID;
 
@@ -425,7 +429,7 @@ namespace Nashet.EconomicSimulation
             foreach (Factory factory in allFactories)
                 yield return factory;
             foreach (PopUnit pop in allPopUnits)
-                yield return pop;
+                yield return pop;            
         }
         public IEnumerable<Factory> getAllFactories()
         {
@@ -735,18 +739,28 @@ namespace Nashet.EconomicSimulation
                     return true;
             return false;
         }
-        public Procent getUnemployment()
+        /// <summary>
+        /// Gets average unemployment from all pop units
+        /// </summary>
+        /// <returns></returns>
+        public Procent getUnemployment(Predicate<PopType> predicate)
         {
             Procent result = new Procent(0f);
             int calculatedBase = 0;
             foreach (var item in allPopUnits)
             {
-                if (item.popType.canBeUnemployed())
-                    result.addPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
-                calculatedBase += item.getPopulation();
+                if (predicate(item.popType))
+                {
+                    if (item.popType.canBeUnemployed())
+                        result.addPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
+                    calculatedBase += item.getPopulation();
+                }
             }
             return result;
         }
+        /// <summary>
+        /// Very heavy method
+        /// </summary>        
         internal int getUnemployedWorkers()
         {
             //int result = 0;
@@ -1059,7 +1073,7 @@ namespace Nashet.EconomicSimulation
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
+                result.add(pop.needsFulfilled.multiplyOutside(pop.getPopulation()));
             }
             if (allPopulation > 0)
                 return result.divideOutside(allPopulation);
@@ -1070,7 +1084,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.selectProvince(this.getID());
         }
-        
+
         public List<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
         {
             //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
@@ -1090,10 +1104,14 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
-
         public float getSortRank()
         {
             return GetHashCode();
+        }
+
+        public bool HasJobsFor(PopType popType, Province province)
+        {
+            return popType.HasJobsFor(popType, here);
         }
     }
     public class Mod : Name
@@ -1113,12 +1131,5 @@ namespace Nashet.EconomicSimulation
 
     }
 
-    public interface IHasGetCountry
-    {
-        Country getCountry();
-    }
-    public interface IEscapeTarget
-    {
 
-    }
 }

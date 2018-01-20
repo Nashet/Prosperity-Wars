@@ -27,8 +27,9 @@ namespace Nashet.UnityUIUtils
         public virtual void Hide()
         {
             gameObject.SetActive(false);
-            if (Hidden != null)// check for subscribers
-                Hidden(this); //fires event for all subscribers 
+            var @event = Hidden;
+            if (@event != null)// check for subscribers
+                @event(this); //fires event for all subscribers 
         }
        
         virtual public void Show()
