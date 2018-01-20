@@ -85,7 +85,7 @@ namespace Nashet.EconomicSimulation
         private readonly Modifier wantsReform;
         public readonly ModifiersList modVoting;
     }
-    public abstract class AbstractReform : Name, IClickable
+    public abstract class AbstractReform : Name, IClickable, ISortable
     {
         readonly string description;
 
@@ -114,7 +114,12 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.politicsPanel.selectReform(this);
             MainCamera.politicsPanel.Refresh();
-        }        
+        }
+
+        public float getSortRank()
+        {
+            return GetHashCode();
+        }
     }
     public class Government : AbstractReform, IHasGetCountry
     {

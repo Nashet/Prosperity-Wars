@@ -11,7 +11,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable
+    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable, ISortable
     {
         public enum TerrainTypes
         {
@@ -1089,6 +1089,11 @@ namespace Nashet.EconomicSimulation
                 return true;
             else
                 return false;
+        }
+
+        public float getSortRank()
+        {
+            return GetHashCode();
         }
     }
     public class Mod : Name

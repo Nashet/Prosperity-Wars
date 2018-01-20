@@ -8,6 +8,20 @@ namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : UITableNew<Country>
     {
+        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder            ,
+            richTaxOrder, economyTypeOrder, GDPShareOrder;
+        public void Start()
+        {
+            countryOrder = new SortOrder(this, x => x.getSortRank());
+            populationOrder = new SortOrder(this, x => x.getMenPopulation());
+            GDPOrder = new SortOrder(this, x => x.getGDP().get());
+            GDPPerCapitaOrder = new SortOrder(this, x => x.getGDPPer1000());
+            unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
+            averageNeedsOrder = new SortOrder(this, x => x.getAverageNeedsFulfilling().get());
+            richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
+            economyTypeOrder = new SortOrder(this, x => x.economy.getSortRank());
+            GDPShareOrder = new SortOrder(this, x => x.getGDP().get());
+        }
         protected override IEnumerable<Country> ContentSelector()
         {
             return Country.getAllExisting();
@@ -34,20 +48,22 @@ namespace Nashet.EconomicSimulation
 
             AddCell(country.getAverageNeedsFulfilling().ToString(), country);
 
-            AddCell(country.taxationForRich.getValue().ToString(), country);
+            AddCell((country.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.ToString(), country);
         }
         protected override void AddHeader()
         {
+            if (countryOrder == null)
+                Start(); //fixes Start call
             AddCell("Place");
-            AddCell("Country");
-            AddCell("Population");
-            AddCell("GDP");
-            AddCell("GDP per capita", null, () => "GDP per capita per 1000 men");
-            AddCell("GDP share");
-            AddCell("Unemployment");
-            AddCell("Economy");
-            AddCell("Av. needs");
-            AddCell("Rich tax");
+            AddCell("Country" + countryOrder.getSymbol(), countryOrder);
+            AddCell("Population" + populationOrder.getSymbol(), populationOrder);
+            AddCell("GDP" + GDPOrder.getSymbol(), GDPOrder);
+            AddCell("GDP per capita" + GDPPerCapitaOrder.getSymbol(), GDPPerCapitaOrder, () => "GDP per capita per 1000 men");
+            AddCell("GDP share" + GDPShareOrder.getSymbol(), GDPShareOrder);
+            AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
+            AddCell("Economy" + economyTypeOrder.getSymbol(), economyTypeOrder);
+            AddCell("Av. needs" + averageNeedsOrder.getSymbol(), averageNeedsOrder);
+            AddCell("Rich tax" + richTaxOrder.getSymbol(), richTaxOrder);
         }
     }
 }

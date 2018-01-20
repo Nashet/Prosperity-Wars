@@ -15,10 +15,7 @@ namespace Nashet.EconomicSimulation
         public readonly static Predicate<Factory> filterSelectedProvince = (x => x.getProvince() == Game.selectedProvince);
         private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
 
-        //[SerializeField]
-        //private List<Factory> factoriesToShow;
-
-
+       
 
         //private Province showingProvince;
         void Start()

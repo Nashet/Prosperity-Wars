@@ -10,7 +10,11 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, IClickable
+    public interface ISortable
+    {
+        float getSortRank();
+    }
+    public class Country : MultiSeller, IClickable, ISortable
     {
         public readonly static List<Country> allCountries = new List<Country>();
         internal static readonly Country NullCountry;
@@ -1382,6 +1386,11 @@ namespace Nashet.EconomicSimulation
             }
             else
                 MainCamera.diplomacyPanel.show(this);
+        }
+
+        public float getSortRank()
+        {
+            return GetHashCode();
         }
     }
 }

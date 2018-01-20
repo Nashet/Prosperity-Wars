@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
-        movementFilter, provinceFilter, cultureFilter;
+        movementOrder, provinceOrder, cultureOrder;
 
         private void Start()
         {
@@ -22,15 +22,16 @@ namespace Nashet.EconomicSimulation
             populationOrder = new SortOrder(this, x => x.getPopulation());
             cashOrder = new SortOrder(this, x => x.getCash());
 
-            movementFilter = new SortOrder(this, x =>
+            
+            provinceOrder = new SortOrder(this, x => x.getProvince().getSortRank());
+            cultureOrder = new SortOrder(this, x => x.culture.getSortRank());
+            movementOrder = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
                     return float.MinValue;
                 else
                     return x.getMovement().GetHashCode();
             });
-            provinceFilter = new SortOrder(this, x => x.getProvince().getID());
-            cultureFilter = new SortOrder(this, x => x.culture.GetHashCode());
         }
         protected override IEnumerable<PopUnit> ContentSelector()
         {
@@ -92,13 +93,13 @@ namespace Nashet.EconomicSimulation
             AddCell("Type");
 
             ////Adding province
-            AddCell("Province"+ provinceFilter.getSymbol(), provinceFilter);
+            AddCell("Province"+ provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding population
             AddCell("Population" + populationOrder.getSymbol(), populationOrder);
 
             ////Adding culture
-            AddCell("Culture"+ cultureFilter.getSymbol(), cultureFilter);
+            AddCell("Culture"+ cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
             AddCell("Education");
@@ -118,7 +119,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
 
             //Adding Movement
-            AddCell("Movement" + movementFilter.getSymbol(), movementFilter);
+            AddCell("Movement" + movementOrder.getSymbol(), movementOrder);
         }
     }
 }
