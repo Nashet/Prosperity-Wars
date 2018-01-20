@@ -9,7 +9,7 @@ using Nashet.Utils;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class Product : Name, ICanBeCellInTable
+    public class Product : Name, IClickable
     {
         private enum type
         {
@@ -380,7 +380,7 @@ namespace Nashet.EconomicSimulation
         {
             return color;
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.goodsPanel.show(this);
         }

@@ -85,7 +85,7 @@ namespace Nashet.EconomicSimulation
         private readonly Modifier wantsReform;
         public readonly ModifiersList modVoting;
     }
-    public abstract class AbstractReform : Name, ICanBeCellInTable
+    public abstract class AbstractReform : Name, IClickable
     {
         readonly string description;
 
@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
 
         //abstract internal AbstractReformValue getValue(int value);
         //abstract internal void setValue(int value);
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.politicsPanel.selectReform(this);
             MainCamera.politicsPanel.Refresh();

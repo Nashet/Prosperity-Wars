@@ -11,7 +11,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    abstract public class PopUnit : Producer, ICanBeCellInTable
+    abstract public class PopUnit : Producer, IClickable
     {
         ///<summary>buffer popList. To avoid iteration breaks</summary>
         public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
@@ -1236,7 +1236,7 @@ namespace Nashet.EconomicSimulation
             //return popType + " from " + province;
             return sb.ToString();
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.popUnitPanel.show(this);
         }

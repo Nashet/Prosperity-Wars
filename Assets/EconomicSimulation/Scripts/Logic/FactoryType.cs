@@ -8,7 +8,7 @@ using Nashet.ValueSpace;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : ICanBeCellInTable, IInvestable
+    public class FactoryType : IClickable, IInvestable
     {
         static private readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
@@ -344,7 +344,7 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.buildPanel.selectFactoryType(this);
             MainCamera.buildPanel.Refresh();

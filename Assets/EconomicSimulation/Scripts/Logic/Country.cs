@@ -10,7 +10,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, ICanBeCellInTable
+    public class Country : MultiSeller, IClickable
     {
         public readonly static List<Country> allCountries = new List<Country>();
         internal static readonly Country NullCountry;
@@ -1371,7 +1371,7 @@ namespace Nashet.EconomicSimulation
             }
             return null;
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {

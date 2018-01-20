@@ -10,9 +10,9 @@ using UnityEngine.UI;
 //using Nashet.Utils;
 namespace Nashet.UnityUIUtils
 {
-    public interface ICanBeCellInTable
+    public interface IClickable
     {
-        void OnClickedCell();
+        void OnClicked();
     }
     public interface IFiltrable<T>
     {
@@ -159,11 +159,11 @@ namespace Nashet.UnityUIUtils
             return howMuchRowsShow;
         }
 
-        protected void AddCell(string text, ICanBeCellInTable @object = null, Func<string> dynamicTooltip = null)
+        protected void AddCell(string text, IClickable @object = null, Func<string> dynamicTooltip = null)
         {
             GameObject newButton = buttonObjectPool.GetObject();
             newButton.transform.SetParent(gameObject.transform, true);
-            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            SimpleCell sampleButton = newButton.GetComponent<SimpleCell>();
             sampleButton.Setup(text, @object);
             if (dynamicTooltip != null)
             {
@@ -273,7 +273,7 @@ namespace Nashet.UnityUIUtils
         //public static UITableNew<T> GetThatObject()
         //{
         //}
-        protected class SortOrder : ICanBeCellInTable
+        protected class SortOrder : IClickable
         {
             private enum State { none, descending, ascending };
             //private enum State { descending, ascending };
@@ -299,7 +299,7 @@ namespace Nashet.UnityUIUtils
             //{
             //    return order;
             //}
-            public virtual void OnClickedCell()
+            public virtual void OnClicked()
             {
                 orderState++;
                 if (orderState > State.ascending)

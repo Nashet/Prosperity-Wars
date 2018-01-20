@@ -8,7 +8,7 @@ using System;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Factory : SimpleProduction, ICanBeCellInTable, IInvestable
+    public class Factory : SimpleProduction, IClickable, IInvestable
     {
         public enum Priority { none, low, medium, high }
         private static readonly int workForcePerLevel = 1000;
@@ -948,7 +948,7 @@ namespace Nashet.EconomicSimulation
                 result += pop.Value;
             return result;
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.factoryPanel.show(this);            
         }

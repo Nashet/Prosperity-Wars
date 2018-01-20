@@ -11,7 +11,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable
+    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable
     {
         public enum TerrainTypes
         {
@@ -1066,7 +1066,7 @@ namespace Nashet.EconomicSimulation
             else
                 return Procent.HundredProcent;
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.selectProvince(this.getID());
         }

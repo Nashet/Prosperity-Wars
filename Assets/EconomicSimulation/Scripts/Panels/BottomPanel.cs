@@ -18,11 +18,10 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.bottomPanel = this;
             Hide();
-        }
-       
+        }       
         public override void Refresh()
         {
-            generalText.text = "Economic Simulation Demo v0.16.1";
+            generalText.text = "Economic Simulation Demo v0.16.2";
         }
 
         public void onStatisticsClick()

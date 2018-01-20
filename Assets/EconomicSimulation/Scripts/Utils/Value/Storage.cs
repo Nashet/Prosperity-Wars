@@ -175,7 +175,7 @@ namespace Nashet.ValueSpace
 
     }
 
-    public class Storage : Value, ICanBeCellInTable
+    public class Storage : Value, IClickable
     {
         static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
 
@@ -432,7 +432,7 @@ namespace Nashet.ValueSpace
             else
                 return new Storage(getProduct(), this.get() - storage.get());
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {            
             if (!this.isAbstractProduct())
                 MainCamera.tradeWindow.selectProduct((this).getProduct());

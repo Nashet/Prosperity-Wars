@@ -8,7 +8,7 @@ using Nashet.Utils;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class Invention : Name, ICanBeCellInTable
+    public class Invention : Name, IClickable
     {
         private readonly static List<Invention> allInventions = new List<Invention>();
         private string description;
@@ -92,7 +92,7 @@ namespace Nashet.EconomicSimulation
         {
             return cost;
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.inventionsPanel.selectInvention(this);
             MainCamera.inventionsPanel.Refresh();
