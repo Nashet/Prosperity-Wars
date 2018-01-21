@@ -859,27 +859,30 @@ namespace Nashet.EconomicSimulation
 
             return usedLand / fertileSoil;
         }
-        /// <summary>Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
-        /// \nCould auto-drop salary on minSalary of there is problems with inputs</summary>
+        /// <summary> call it BEFORE opening enterprise
+        /// Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
+        /// \nCould auto-drop salary on minSalary of there is problems with inputs        </summary>
+        
         internal float getLocalMinSalary()
         {
             float res;
-            if (allFactories.Count <= 1)
+            if (allFactories.Count <= 1) // first enterprise in province
                 res = getCountry().getMinSalary();
             else
             {
                 float minSalary;
                 minSalary = getLocalMaxSalary();
 
-                foreach (Factory fact in allFactories)
-                    if (fact.isWorking() && !fact.isJustHiredPeople())
+                foreach (Factory factory in allFactories)
+                    if (factory.isWorking() && factory.HasAnyWorforce() )//&& !factory.isJustHiredPeople()
                     {
-                        if (fact.getSalary() < minSalary)
-                            minSalary = fact.getSalary();
+                        if (factory.getSalary() < minSalary)
+                            minSalary = factory.getSalary();
                     }
-                res = minSalary;
+                res = minSalary + 0.012f;//connected to ChangeSalary()
             }
-            if (res == 0f) res = Options.FactoryMinPossibleSallary;
+            //if (res == 0f)
+            //    res = Options.FactoryMinPossibleSalary;
             return res;
         }
 
@@ -902,7 +905,7 @@ namespace Nashet.EconomicSimulation
         //        sb.Append("\n").Append(t.Key.ToString());
         //    return sb.ToString();
         //}
-        /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minsalary
+        /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
         ///</summary>
         internal float getLocalMaxSalary()
         {

@@ -76,61 +76,63 @@ namespace Nashet.EconomicSimulation
         {
             // Aristocrats invests only in resource factories (and banks)
             if (getProvince().getResource() != null)
-                //universalInvest(x=>canProduce(getProvince().getResource()));
-                if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
-                    && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
-                    )
+            //universalInvest(x=>canProduce(getProvince().getResource()));
+            //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+            //    && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
+            //    )
+            {
+                // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
+                var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest
+                && x.canProduce(getProvince().getResource())
+                && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
+                );
+
+                var project = projects.MaxBy(x => x.getMargin().get());
+                if (project != null)
                 {
-                    // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                    var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest
-                    && x.canProduce(getProvince().getResource()));
-
-                    var project = projects.MaxBy(x => x.getMargin().get());
-                    if (project != null)
                     {
+                        var factoryToBuild = project as FactoryType; // build new one
+                        if (factoryToBuild != null)
                         {
-                            var factoryToBuild = project as FactoryType; // build new one
-                            if (factoryToBuild != null)
-                            {
-                                // todo remove connection to grain
-                                Storage resourceToBuild = factoryToBuild.getBuildNeeds().getFirstStorage(Product.Grain);
+                            // todo remove connection to grain
+                            Storage resourceToBuild = factoryToBuild.getBuildNeeds().getFirstStorage(Product.Grain);
 
-                                // try to build for grain
-                                if (storage.has(resourceToBuild))
-                                {
-                                    var factory = new Factory(getProvince(), this, factoryToBuild);
-                                    storage.send(factory.getInputProductsReserve(), resourceToBuild);
-                                    factory.constructionNeeds.setZero();
-                                }
-                                else // build for money
-                                {
-                                    Value investmentCost = Game.market.getCost(resourceToBuild);
-                                    if (!canPay(investmentCost))
-                                        getBank().giveLackingMoney(this, investmentCost);
-                                    if (canPay(investmentCost))
-                                    {
-                                        var factory = new Factory(getProvince(), this, factoryToBuild);  // build new one              
-                                        payWithoutRecord(factory, investmentCost);
-                                    }
-                                }
-                            }
-                            else
+                            // try to build for grain
+                            if (storage.has(resourceToBuild))
                             {
-                                var factory = project as Factory;// existing one                               
-                                if (factory != null)
+                                var factory = new Factory(getProvince(), this, factoryToBuild);
+                                storage.send(factory.getInputProductsReserve(), resourceToBuild);
+                                factory.constructionNeeds.setZero();
+                            }
+                            else // build for money
+                            {
+                                Value investmentCost = Game.market.getCost(resourceToBuild);
+                                if (!canPay(investmentCost))
+                                    getBank().giveLackingMoney(this, investmentCost);
+                                if (canPay(investmentCost))
                                 {
-                                    Value investmentCost = factory.getInvestmentsCost();
-                                    if (!canPay(investmentCost))
-                                        getBank().giveLackingMoney(this, investmentCost);
-                                    factory.upgrade(this);
+                                    var factory = new Factory(getProvince(), this, factoryToBuild);  // build new one              
                                     payWithoutRecord(factory, investmentCost);
                                 }
-                                else
-                                    Debug.Log("Unknown investment type");
                             }
                         }
+                        else
+                        {
+                            var factory = project as Factory;// existing one                               
+                            if (factory != null)
+                            {
+                                Value investmentCost = factory.getInvestmentsCost();
+                                if (!canPay(investmentCost))
+                                    getBank().giveLackingMoney(this, investmentCost);
+                                factory.upgrade(this);
+                                payWithoutRecord(factory, investmentCost);
+                            }
+                            else
+                                Debug.Log("Unknown investment type");
+                        }
                     }
-                }            
+                }
+            }
             base.invest();
         }
     }

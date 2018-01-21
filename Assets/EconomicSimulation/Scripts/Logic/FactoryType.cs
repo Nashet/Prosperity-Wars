@@ -358,5 +358,9 @@ namespace Nashet.EconomicSimulation
         {
             return GetHashCode();
         }
+        public Procent GetWorkForceFulFilling()
+        {
+            return Procent.HundredProcent;
+        }
     }
 }

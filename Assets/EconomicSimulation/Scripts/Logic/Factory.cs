@@ -22,7 +22,15 @@ namespace Nashet.EconomicSimulation
 
         private bool dontHireOnSubsidies, subsidized;
         private int priority = 0;
-        private readonly Value salary = new Value(0);
+        private Value salary = new Value(0);
+        //{
+        //    get { return Salary; }
+        //    set
+        //    {
+        //        if (value.get() > getCountry().getMinSalary())
+        //            Salary.set(value);
+        //    }
+        //}
 
         /// <summary>
         /// How much need to finish building/upgrading
@@ -45,7 +53,7 @@ namespace Nashet.EconomicSimulation
             ),
                   "Has input resource in this province", 0.20f, false),
 
-            modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 1f, false),
+            modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 5f, false),
 
             modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).getCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
@@ -171,9 +179,18 @@ namespace Nashet.EconomicSimulation
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 setPriorityAutoWithPlannedEconomy();
         }
+        //internal Value getUpgradeCost()
+        //{
+        //    Value result = Game.market.getCost(getUpgradeNeeds());
+        //    result.add(Options.factoryMoneyReservPerLevel);
+        //    return result;
+        //    //return Game.market.getCost(type.getUpgradeNeeds());
+        //}
         public Value getInvestmentsCost()
         {
-            return Game.market.getCost(getUpgradeNeeds());
+            var res = Game.market.getCost(getUpgradeNeeds());
+            res.add(Options.factoryMoneyReservePerLevel);
+            return res;
         }
         internal StorageSet getUpgradeNeeds()
         {
@@ -328,7 +345,21 @@ namespace Nashet.EconomicSimulation
             }
 
         }
+        public Procent getMargin()
+        {
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                return Procent.ZeroProcent;
+            else
+            {
+                float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
+                return new Procent(x, false);
+            }
+        }
+        internal Value getReopenCost()
+        {
+            return new Value(Options.factoryMoneyReservePerLevel);
 
+        }
         internal int howManyEmployed(PopUnit pop)
         {
             int result = 0;
@@ -338,25 +369,24 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        internal bool isThereMoreWorkersToHire()
-        {
-            int totalAmountWorkers = getProvince().getPopulationAmountByType(PopType.Workers);
-            int result = totalAmountWorkers - getWorkForce();
-            return (result > 0);
-        }
-        internal int getFreeJobSpace()
+        //internal bool isThereMoreWorkersToHire()
+        //{
+        //    int totalAmountWorkers = getProvince().getPopulationAmountByType(PopType.Workers);
+        //    int result = totalAmountWorkers - getWorkForce();
+        //    return (result > 0);
+        //}
+        internal int GetVacancies()
         {
             return getMaxWorkforceCapacity() - getWorkForce();
         }
-        internal bool ThereIsPossibilityToHireMore()
-        {
-            //if there is other pops && there is space on factory     
-
-            if (getFreeJobSpace() > 0 && isThereMoreWorkersToHire())
-                return true;
-            else
-                return false;
-        }
+        //internal bool IsTherePossibilityToHireMore()
+        //{
+        //    //if there is other pops && there is space on factory
+        //    if (GetVacancies() > 0 && isThereMoreWorkersToHire())
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
         internal void paySalary()
         {
@@ -367,22 +397,32 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (var link in hiredWorkForce)
                     {
-                        Value howMuchPay = new Value(0);
-                        howMuchPay.set(salary.get() * link.Value / (float)workForcePerLevel);
+                        Value howMuchPay = new Value(salary.get() * link.Value / (float)workForcePerLevel);
                         if (canPay(howMuchPay))
                             pay(link.Key, howMuchPay);
                         else
-                            if (isSubsidized()) //take money and try again
                         {
-                            getCountry().takeFactorySubsidies(this, howMuchMoneyCanNotPay(howMuchPay));
-                            if (canPay(howMuchPay))
-                                pay(link.Key, howMuchPay);
+                            if (isSubsidized()) //take money and try again
+                            {
+                                getCountry().takeFactorySubsidies(this, howMuchMoneyCanNotPay(howMuchPay));
+                                if (canPay(howMuchPay))
+                                    pay(link.Key, howMuchPay);
+                                else
+                                {
+                                    //todo else don't pay if there is nothing to pay
+                                    close();
+                                    return;
+                                    //salary.set(getCountry().getMinSalary());
+                                }
+                            }
                             else
-                                salary.set(getCountry().getMinSalary());
+                            {
+                                close();
+                                return;
+                                //salary.set(getCountry().getMinSalary());
+                            }
                         }
-                        else
-                            salary.set(getCountry().getMinSalary());
-                        //todo else don't pay if there is nothing to pay
+
                     }
                 }
                 // don't pay nothing if where is planned economy
@@ -424,29 +464,6 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public Procent getMargin()
-        {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-                return Procent.ZeroProcent;
-            else
-            {
-                float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
-                return new Procent(x, false);
-            }
-        }
-        internal Value getReopenCost()
-        {
-            return new Value(Options.factoryMoneyReservePerLevel);
-
-        }
-        //internal Value getUpgradeCost()
-        //{
-        //    Value result = Game.market.getCost(getUpgradeNeeds());
-        //    result.add(Options.factoryMoneyReservPerLevel);
-        //    return result;
-        //    //return Game.market.getCost(type.getUpgradeNeeds());
-        //}
-
 
         /// <summary> only make sense if called before HireWorkforce()
         ///  PEr 1000 men!!!
@@ -461,46 +478,70 @@ namespace Nashet.EconomicSimulation
             int cantakeMax = level * workForcePerLevel;
             return cantakeMax;
         }
+        /// <summary>
+        /// Enterprise rises salary if labor demand is bigger than labor supply (assuming enterprise is profitable). And vice versa - enterprise lowers salary if labor demand is lower than labor supply.
+        ///More profitable enterprise rises salary faster.
+        /// </summary>
+        public void ChangeSalary()
+        {
+            //Should be rise salary if: small unemployment, has profit, need has other resources
+
+            if (isWorking() && Economy.isMarket.checkIftrue(getCountry()))
+            {
+                var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
+                var margin = getMargin();
+
+                // rise salary to attract  workforce, including workforce from other factories
+                if (margin.isBiggerThan(Options.minMarginToRiseSalary)
+                    && unemployment.isSmallerThan(Options.ProvinceLackWorkforce) //demand >= supply
+                    && GetVacancies() > 10)// && getInputFactor() == 1)
+                {
+                    // cant catch up salaries like that. Check for zero workforce?
+                    float salaryRaise = 0.001f; //1%
+                    if (margin.get() > 0.1f) //10%
+                        salaryRaise = 0.002f;
+                    if (margin.get() > 0.3f) //30%
+                        salaryRaise = 0.003f;
+                    else if (margin.get() > 1f) //100%
+                        salaryRaise = 0.006f;
+                    else if (margin.get() > 10f) //1000%
+                        salaryRaise = 0.012f;
+                    salary.add(salaryRaise);
+                }
+
+                // Reduce salary on non-profit
+                if (margin.isZero()
+                    && daysUnprofitable >= Options.minDaysBeforeSalaryCut
+                    && !isJustHiredPeople() && !isSubsidized())
+                    salary.subtract(0.01f);
+
+                // if supply > demand
+                if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
+                    salary.subtract(0.001f);
+
+                if ( getWorkForce() == 0)// && getInputFactor() == 1)
+                    salary.set(getProvince().getLocalMinSalary());
+                // to help factories catch up other factories salaries
+                //    salary.set(province.getLocalMinSalary());
+                // freshly built factories should rise salary to concurrency with old ones
+                //if (getWorkForce() < 100 && getProvince().getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
+                //    //salary.set(province.getLocalMinSalary());
+                //    salary.add(0.09f);
+
+
+                // limit salary country's min wage
+                var minSalary = getCountry().getMinSalary();
+                if (salary.get() < minSalary)
+                    salary.set(minSalary);
+            }
+        }
+        /// <summary>
+        /// Use it for PE only!
+        /// </summary>
         public void setZeroSalary()
         {
             salary.setZero();
         }
-        internal void changeSalary()
-        {
-            //if (getLevel() > 0)
-            if (isWorking() && Economy.isMarket.checkIftrue(getCountry()))
-            {
-                // rise salary to attract  workforce, including workforce from other factories
-                if (ThereIsPossibilityToHireMore() && getMargin().get() > Options.minMarginToRiseSalary)// && getInputFactor() == 1)
-                    salary.add(0.03f);
-
-                //too allocate workers form other popTypes
-                //if (getFreeJobSpace() > 100 && province.getPopulationAmountByType(PopType.Workers) < 600
-                //    && getMargin().get() > Options.minMarginToRiseSalary && getInputFactor() == 1)// in that case float can store 1 exactly
-                //    salary.add(0.01f);
-
-                // to help factories catch up other factories salaries
-                //if (getWorkForce() <= 100 && province.getUnemployed() == 0 && this.wallet.haveMoney.get() > 10f)
-                //    salary.set(province.getLocalMinSalary());
-                // freshly built factories should rise salary to concurrency with old ones
-                if (getWorkForce() < 100 && getProvince().getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
-                    salary.add(0.09f);
-
-                float minSalary = getCountry().getMinSalary();
-                // reduce salary on non-profit
-                if (getProfit() < 0f && daysUnprofitable >= Options.minDaysBeforeSalaryCut && !isJustHiredPeople() && !isSubsidized())
-                    if (salary.get() - 0.3f >= minSalary)
-                        salary.subtract(0.3f);
-                    else
-                        salary.set(minSalary);
-
-                // check if country's min wage changed
-                if (salary.get() < minSalary)
-                    salary.set(minSalary);
-
-            }
-        }
-
         int getMaxHiringSpeed()
         {
             return Options.maxFactoryFireHireSpeed * getLevel();
@@ -554,14 +595,9 @@ namespace Nashet.EconomicSimulation
             return hiredLastTurn;
         }
 
-        /// <summary>
-        /// per 1000 men    
-        /// </summary>
-        /// <returns></returns>
-        internal Procent getWorkForceFulFilling()
+        public Procent GetWorkForceFulFilling()
         {
             return Procent.makeProcent(getWorkForce(), workForcePerLevel * level, false);
-            //return getWorkForce() / (float)(workForcePerLevel * level);
         }
         override public List<Storage> getRealAllNeeds()
         {
@@ -580,7 +616,7 @@ namespace Nashet.EconomicSimulation
         {
             //limit production by smallest factor
             Procent efficencyFactor;
-            Procent workforceProcent = getWorkForceFulFilling();
+            Procent workforceProcent = GetWorkForceFulFilling();
             Procent inputFactor = getInputFactor();
             if (inputFactor.isZero() & isJustHiredPeople())
                 inputFactor = Procent.HundredProcent;
@@ -710,11 +746,7 @@ namespace Nashet.EconomicSimulation
 
 
             }
-        }
-        //public bool isClosed()
-        //{
-        //    return !working;
-        //}
+        }        
 
         internal void close()
         {
@@ -725,17 +757,15 @@ namespace Nashet.EconomicSimulation
         }
         internal void open(Agent byWhom)
         {
-            working = true;
-            daysUnprofitable = 0;
-            daysClosed = 0;
             if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
             {
-                if (daysUnprofitable > 20)
-                    salary.set(getProvince().getLocalMinSalary());
-
+                salary.set(getProvince().getLocalMinSalary());
                 if (byWhom != this)
                     byWhom.payWithoutRecord(this, getReopenCost());
             }
+            working = true;
+            daysUnprofitable = 0;
+            daysClosed = 0;
         }
 
         internal bool isWorking()
@@ -752,7 +782,7 @@ namespace Nashet.EconomicSimulation
         {
             return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && isWorking();
         }
-        
+
         internal void upgrade(Agent byWhom)
         {
             upgrading = true;
@@ -787,12 +817,12 @@ namespace Nashet.EconomicSimulation
             //if (getCountry().economy.getValue() == Economy.PlannedEconomy)
             //    return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel())); // only 1 day reserves with PE
             //else
-            return getHowMuchInputProductsReservesWants(new Value(getWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
+            return getHowMuchInputProductsReservesWants(new Value(GetWorkForceFulFilling().get() * getLevel() * Options.FactoryInputReservInDays));
         }
 
         internal override Procent getInputFactor()
         {
-            return getInputFactor(getWorkForceFulFilling());
+            return getInputFactor(GetWorkForceFulFilling());
         }
         /// <summary>
         /// Fills storageNow and gainGoodsThisTurn
@@ -842,14 +872,18 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        private void onConstructionComplete()
+        private void onConstructionComplete(bool freshlyBuild)
         {
             level++;
             building = false;
             upgrading = false;
             constructionNeeds.setZero();
             daysInConstruction = 0;
-            open(this);
+            if (freshlyBuild)
+            {
+                //salary.set(getProvince().getLocalMinSalary());
+                open(this);
+            }
         }
         /// <summary>
         /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
@@ -886,18 +920,9 @@ namespace Nashet.EconomicSimulation
 
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
-                        //if (isBuilding())
-                        //{
-                        //    var buildingNeeds = getType().getBuildNeeds();
-                        //    if (getCountry().countryStorageSet.has(buildingNeeds))
-                        //        isBuyingComplete = getCountry().countryStorageSet.send(this, buildingNeeds);
-                        //}
-                        //else if (isUpgrading())
-                        //{                               
+                    if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)                                                  
                         if (getCountry().countryStorageSet.has(constructionNeeds))
-                            isBuyingComplete = getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
-                    //}
+                            isBuyingComplete = getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);                    
                 }
                 else
                 {
@@ -906,7 +931,7 @@ namespace Nashet.EconomicSimulation
                     else if (isUpgrading())
                         isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
-                    // what if there is no enough money to complete buildinG?
+                    // what if there is no enough money to complete building?
                     float minimalFond = cash.get() - 50f;
 
                     if (minimalFond < 0 && getOwner().canPay(new Value(minimalFond * -1f)))
@@ -916,12 +941,17 @@ namespace Nashet.EconomicSimulation
                    || (getCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
 
                 {
-                    onConstructionComplete();
                     //todo avoid extra subtraction and redo whole method
                     if (isBuilding())
+                    {
+                        onConstructionComplete(true);
                         getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
+                    }
                     else // assuming isUpgrading()
+                    {
+                        onConstructionComplete(false);
                         getInputProductsReserve().subtract(getUpgradeNeeds(), false);
+                    }
                 }
                 else
                 {
@@ -948,9 +978,13 @@ namespace Nashet.EconomicSimulation
                 result += pop.Value;
             return result;
         }
+        public bool HasAnyWorforce()
+        {
+            return hiredWorkForce.Count > 0;
+        }
         public void OnClicked()
         {
-            MainCamera.factoryPanel.show(this);            
+            MainCamera.factoryPanel.show(this);
         }
 
         public bool canProduce(Product product)

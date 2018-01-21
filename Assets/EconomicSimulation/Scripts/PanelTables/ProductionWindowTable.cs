@@ -94,8 +94,10 @@ namespace Nashet.EconomicSimulation
                 if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
                     AddCell(factory.getSalary().ToString() + " food", factory);
                 else
-                    AddCell(factory.getSalary().ToString() + " coins", factory);
+                    AddCell(factory.getSalary().ToString("F3") + " coins", factory);
             }
+
+            //Adding unemployment
             AddCell(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
         }
         protected override void AddHeader()

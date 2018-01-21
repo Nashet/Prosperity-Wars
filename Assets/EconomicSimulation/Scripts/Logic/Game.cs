@@ -609,7 +609,7 @@ namespace Nashet.EconomicSimulation
                         if (country.economy.getValue() != Economy.PlannedEconomy)
                         {
                             factory.getMoneyForSoldProduct();
-                            factory.changeSalary();
+                            factory.ChangeSalary();
                             factory.payDividend();
                             factory.simulateClosing(); // that too
                         }

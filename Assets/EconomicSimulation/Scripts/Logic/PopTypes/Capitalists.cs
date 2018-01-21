@@ -13,6 +13,7 @@ namespace Nashet.EconomicSimulation
         Procent getMargin();
         Value getInvestmentsCost();
         bool canProduce(Product product);
+        Procent GetWorkForceFulFilling();
     }
     public class Capitalists : GrainGetter
     {
@@ -73,12 +74,14 @@ namespace Nashet.EconomicSimulation
         {
             //should I invest?                
             if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
-                if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
-                && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
-                )
+                //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+                //&& (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
+                //)
                 {
                     // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                    var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest );
+                    var projects = getProvince().getAllInvestmentsProjects(
+                        x => x.getMargin().get() >= Options.minMarginToInvest
+                        && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest));
                     var project = projects.MaxBy(x => x.getMargin().get());
 
                     if (project != null)

@@ -270,9 +270,9 @@ namespace Nashet.EconomicSimulation
 
         public bool HasJobsFor(PopType type, Province province)
         {
-            if (this == Workers || this== Farmers || this == Tribesmen)
+            if (this == Workers || this == Farmers || this == Tribesmen)
                 return province.getUnemployment(x => x == Workers).isSmallerThan(MigrationUnemploymentLimit);
-            else
+            else                
                 return true;
         }
     }
