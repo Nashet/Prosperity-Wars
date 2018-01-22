@@ -516,11 +516,11 @@ namespace Nashet.EconomicSimulation
                 if (margin.isZero()
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
                     && !isJustHiredPeople() && !isSubsidized())
-                    salary.subtract(0.01f);
+                    salary.subtract(0.01f, false);
 
                 // if supply > demand
                 if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
-                    salary.subtract(0.001f);
+                    salary.subtract(0.001f, false);
 
                 if ( getWorkForce() == 0)// && getInputFactor() == 1)
                     salary.set(getProvince().getLocalMinSalary());

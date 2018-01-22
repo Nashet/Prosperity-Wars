@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
                                 if (!canPay(investmentCost))
                                     getBank().giveLackingMoney(this, investmentCost);
                                 factory.upgrade(this);
-                                payWithoutRecord(factory, investmentCost);
+                                //payWithoutRecord(factory, investmentCost);
                             }
                             else
                                 Debug.Log("Unknown investment type");

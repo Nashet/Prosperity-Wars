@@ -69,44 +69,46 @@ namespace Nashet.EconomicSimulation
             else
                 return 0;
         }
-        
+
         internal override void invest()
         {
             //should I invest?                
             if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
-                //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
-                //&& (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
-                //)
-                {
-                    // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                    var projects = getProvince().getAllInvestmentsProjects(
-                        x => x.getMargin().get() >= Options.minMarginToInvest
-                        && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest));
-                    var project = projects.MaxBy(x => x.getMargin().get());
+            //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+            //&& (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
+            //)
+            {
+                // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
+                var projects = getProvince().getAllInvestmentsProjects(
+                    x => x.getMargin().get() >= Options.minMarginToInvest
+                    && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest));
+                var project = projects.MaxBy(x => x.getMargin().get());
 
-                    if (project != null)
+                if (project != null)
+                {
+                    Value investmentCost = project.getInvestmentsCost();
+                    if (!canPay(investmentCost))
+                        getBank().giveLackingMoney(this, investmentCost);
+                    if (canPay(investmentCost))
                     {
-                        Value investmentCost = project.getInvestmentsCost();
-                        if (!canPay(investmentCost))
-                            getBank().giveLackingMoney(this, investmentCost);
-                        if (canPay(investmentCost))
+                        Factory factory;
+                        var factoryToBuild = project as FactoryType;
+                        if (factoryToBuild != null)
                         {
-                            Factory factory;
-                            var factoryToBuild = project as FactoryType;
-                            if (factoryToBuild != null)
-                                factory = new Factory(getProvince(), this, factoryToBuild);
-                            else
-                            {
-                                factory = project as Factory;
-                                if (factory != null)
-                                    factory.upgrade(this);
-                                else
-                                    Debug.Log("Unknown investment type");
-                            }
+                            factory = new Factory(getProvince(), this, factoryToBuild);
                             payWithoutRecord(factory, investmentCost);
                         }
+                        else
+                        {
+                            factory = project as Factory;
+                            if (factory != null)
+                                factory.upgrade(this);
+                            else
+                                Debug.Log("Unknown investment type");
+                        }                        
                     }
                 }
+            }
             base.invest();
         }
     }
