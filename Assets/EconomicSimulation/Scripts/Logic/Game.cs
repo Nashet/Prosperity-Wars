@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         //static internal StringBuilder threadDangerSB = new StringBuilder();
 
         static public MyDate date = new MyDate(0);
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -474,6 +474,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
+                + "\n\n\nAlso I have now Patreon page where I post about that game development. Try red button below!"
                 , "Ok");
         }
 

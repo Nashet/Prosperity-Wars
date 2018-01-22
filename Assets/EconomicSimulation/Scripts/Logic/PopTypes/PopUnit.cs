@@ -738,7 +738,7 @@ namespace Nashet.EconomicSimulation
         protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
         {
             if (hasToPayGovernmentTaxes())
-                payTaxes(); // that is here because pop shoul pay taxes from all income
+                payTaxes(); // that is here because pop should pay taxes from all income
             foreach (Storage need in lifeNeeds)
                 if (storage.has(need))// don't need to buy on market
                 {

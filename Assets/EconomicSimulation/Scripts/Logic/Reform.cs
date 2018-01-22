@@ -195,7 +195,7 @@ namespace Nashet.EconomicSimulation
             new ConditionsListForDoubleObjects(), "empire", 40, 0.25f);
 
         readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- Only Clerics have power", 5,
-            new ConditionsListForDoubleObjects(), "", 40, 0f);
+            new ConditionsListForDoubleObjects(Condition.IsNotImplemented), "", 40, 0f);
 
         readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9,
             new ConditionsListForDoubleObjects(Condition.IsNotImplemented), "states", 40, 1f);

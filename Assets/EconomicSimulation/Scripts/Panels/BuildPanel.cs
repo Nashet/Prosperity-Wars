@@ -107,7 +107,7 @@ namespace Nashet.EconomicSimulation
                 descriptionText.text = sb.ToString();
 
                 
-                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponentInChildren<ToolTipHandler>().text);
+                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
                 if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince))
                     buildButton.interactable = false;
                 if (buildButton.interactable)

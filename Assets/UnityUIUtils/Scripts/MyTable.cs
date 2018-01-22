@@ -167,7 +167,7 @@ namespace Nashet.UnityUIUtils
             sampleButton.Setup(text, @object);
             if (dynamicTooltip != null)
             {
-                newButton.GetComponentInChildren<ToolTipHandler>().SetDynamicString(dynamicTooltip);
+                newButton.GetComponent<ToolTipHandler>().SetDynamicString(dynamicTooltip);
             }
         }
         //protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)
@@ -178,7 +178,7 @@ namespace Nashet.UnityUIUtils
         //    sampleButton.Setup(text, @object);
         //    if (dynamicTooltip != null)
         //    {
-        //        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+        //        newButton.GetComponent<ToolTipHandler>().setDynamicString(dynamicTooltip);
         //    }
         //}
 
@@ -412,7 +412,7 @@ namespace Nashet.UnityUIUtils
     //        newButton.transform.SetParent(gameObject.transform, true);
     //        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
     //        sampleButton.Setup(text, prov);
-    //        newButton.GetComponentInChildren<ToolTipHandler>().setText(tooltipText);
+    //        newButton.GetComponent<ToolTipHandler>().setText(tooltipText);
 
     //    }
     //    protected void AddButton(string text)
@@ -442,7 +442,7 @@ namespace Nashet.UnityUIUtils
     //        newButton.transform.SetParent(gameObject.transform, true);
     //        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
     //        sampleButton.Setup(text, storage);
-    //        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+    //        newButton.GetComponent<ToolTipHandler>().setDynamicString(dynamicTooltip);
     //    }
     //    protected void AddButton(string text, FactoryType type)
     //    {

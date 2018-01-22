@@ -145,16 +145,16 @@ namespace Nashet.EconomicSimulation
             text.text = "Owner: " + Game.selectedProvince.getCountry();
 
 
-            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
 
-            btMobilize.GetComponentInChildren<ToolTipHandler>().SetText(btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+            btMobilize.GetComponent<ToolTipHandler>().SetText(btnBuild.GetComponent<ToolTipHandler>().text);
             btMobilize.interactable = btnBuild.interactable;
 
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
-            btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().text);
-            btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().text);
+            btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
+            btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
         }
     }

@@ -84,23 +84,23 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
-                lifeNeedsText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
-                everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
-                luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Cash: ").Append(pop.cash.ToString());
                 money.text = sb.ToString();
-                money.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
+                money.GetComponent<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
                 + "\nIncome tax: " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
@@ -108,16 +108,16 @@ namespace Nashet.EconomicSimulation
                 {
                     efficiencyText.enabled = true;
                     efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop);
-                    efficiencyText.GetComponentInChildren<ToolTipHandler>().SetDynamicString(() => PopUnit.modEfficiency.GetDescription(pop));
+                    efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(() => PopUnit.modEfficiency.GetDescription(pop));
                 }
                 else
                 {
                     efficiencyText.enabled = false;
-                    //efficiencyText.GetComponentInChildren<ToolTipHandler>().SetText("");//it's disabled anyway
+                    //efficiencyText.GetComponent<ToolTipHandler>().SetText("");//it's disabled anyway
                 }
 
 
-                issues.GetComponentInChildren<ToolTipHandler>().SetDynamicString(
+                issues.GetComponent<ToolTipHandler>().SetDynamicString(
                     delegate ()
                     {
                         var items = from pair in pop.getIssues()
