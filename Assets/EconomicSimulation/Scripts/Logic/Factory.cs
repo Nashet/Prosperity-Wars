@@ -501,14 +501,17 @@ namespace Nashet.EconomicSimulation
                 {
                     // cant catch up salaries like that. Check for zero workforce?
                     float salaryRaise = 0.001f; //1%
-                    if (margin.get() > 0.1f) //10%
-                        salaryRaise = 0.002f;
-                    if (margin.get() > 0.3f) //30%
-                        salaryRaise = 0.003f;
+                    if (margin.get() > 10f) //1000%
+                        salaryRaise = 0.012f;
                     else if (margin.get() > 1f) //100%
                         salaryRaise = 0.006f;
-                    else if (margin.get() > 10f) //1000%
-                        salaryRaise = 0.012f;
+                    else if (margin.get() > 0.3f) //30%
+                        salaryRaise = 0.003f;
+                    else if (margin.get() > 0.1f) //10%
+                        salaryRaise = 0.002f;
+                    
+                    
+                    
                     salary.add(salaryRaise);
                 }
 

@@ -111,5 +111,9 @@ namespace Nashet.EconomicSimulation
             }
             base.invest();
         }
+        //override internal bool CanGainDividents()
+        //{
+        //    return true;
+        //}
     }
 }

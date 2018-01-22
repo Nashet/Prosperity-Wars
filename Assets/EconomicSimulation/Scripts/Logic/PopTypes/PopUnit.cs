@@ -566,6 +566,11 @@ namespace Nashet.EconomicSimulation
             return this.culture == this.getCountry().getCulture();
         }
 
+        //virtual internal bool CanGainDividents()
+        //{
+        //    return false;
+        //}
+
         public Procent getLifeNeedsFullfilling()
         {
             float need = needsFulfilled.get();
