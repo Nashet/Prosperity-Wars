@@ -228,7 +228,7 @@ namespace Nashet.EconomicSimulation
             var lastChild = canvas.transform.GetChild(canvas.transform.childCount - 1);
             var panel = lastChild.GetComponent<DragPanel>();
             if (panel != null)
-                panel.onCloseClick();
+                panel.Hide();
             else
             {
                 lastChild.SetAsFirstSibling();

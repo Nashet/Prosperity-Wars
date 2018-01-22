@@ -11,7 +11,8 @@ namespace Nashet.EconomicSimulation
     public class PopUnitPanel : DragPanel
     {
         [SerializeField]
-        private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText, issues, money;
+        private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
+            issues, money, caption;
         private PopUnit pop;
         // Use this for initialization
         void Start()
@@ -24,19 +25,15 @@ namespace Nashet.EconomicSimulation
         {
             return pop;
         }
-        // Update is called once per frame
-        void Update()
-        {
-            //refresh();
-        }
+
         public override void Refresh()
         {
             if (pop != null)
             {
                 var sb = new StringBuilder();
-
-                sb.Append(pop);
-                sb.Append("\nPopulation: ").Append(pop.getPopulation());
+                caption.text = pop.ToString();
+                //sb.Append(pop);
+                sb.Append("Population: ").Append(pop.getPopulation());
                 //if (Game.devMode)
                 sb.Append("\nStorage: ").Append(pop.storage.ToString());
                 Artisans isArtisan = pop as Artisans;
@@ -87,38 +84,47 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
-                lifeNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
-                everyDayNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
-                luxuryNeedsText.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Cash: ").Append(pop.cash.ToString());
                 money.text = sb.ToString();
-                money.GetComponentInChildren<ToolTipHandler>().setDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
+                money.GetComponent<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
                 + "\nIncome tax: " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
-                efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop, out efficiencyText.GetComponentInChildren<ToolTipHandler>().text);
-                issues.GetComponentInChildren<ToolTipHandler>().setDynamicString(
+                if (pop.popType.isProducer())
+                {
+                    efficiencyText.enabled = true;
+                    efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop);
+                    efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(() => PopUnit.modEfficiency.GetDescription(pop));
+                }
+                else
+                {
+                    efficiencyText.enabled = false;
+                    //efficiencyText.GetComponent<ToolTipHandler>().SetText("");//it's disabled anyway
+                }
+
+
+                issues.GetComponent<ToolTipHandler>().SetDynamicString(
                     delegate ()
                     {
-                    //var list = pop.getIssues().Values.ToList().Sort();
-                    var items = from pair in pop.getIssues()
+                        var items = from pair in pop.getIssues()
                                     orderby pair.Value descending
                                     select pair;
                         return items.getString(" willing ", "\n");
                     }
-                    //() => pop.getIssues().ToList().getString(" willing ", "\n")
-
                     );
             }
         }
@@ -166,28 +172,11 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        //static private void makeLine(StringBuilder sb, Province target, int size, string header, bool boolCheck)
-        //{
-        //    //sb.Clear();
-        //    sb.Append("\n").Append(header);
-        //    if (boolCheck && target != null && size > 0)
-        //        sb.Append(target).Append(" ").Append(size);
-        //    else
-        //        sb.Append("none");
-        //}
-        //static private void makeLineWithCountry(StringBuilder sb, Province target, int size, string header, bool boolCheck)
-        //{
-        //    //sb.Clear();
-        //    sb.Append("\n").Append(header);
-        //    if (boolCheck && target != null && size > 0)
-        //        sb.Append(target.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
-        //    else
-        //        sb.Append("none");
-        //}
+
         public void show(PopUnit ipopUnit)
         {
             pop = ipopUnit;
-            Show();            
+            Show();
         }
     }
 }

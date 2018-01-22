@@ -14,8 +14,8 @@ namespace Nashet.EconomicSimulation
 
         private void Start()
         {
-            typeOrder = new SortOrder(this, x => x.getType().GetHashCode());
-            provinceOrder = new SortOrder(this, x => x.getProvince().getID());
+            typeOrder = new SortOrder(this, x => x.getType().getSortRank());
+            provinceOrder = new SortOrder(this, x => x.getProvince().getSortRank());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
@@ -24,13 +24,14 @@ namespace Nashet.EconomicSimulation
             salaryOrder = new SortOrder(this, x => x.getSalary());
             unemploymentOrder = new SortOrder(this, x => x.getProvince().getUnemployedWorkers());
         }
-        protected override List<Factory> ContentSelector()
+        protected override IEnumerable<Factory> ContentSelector()
         {
-            var factoriesToShow = new List<Factory>();
-            foreach (Province province in Game.Player.ownedProvinces)
-                foreach (Factory factory in province.allFactories)
-                    factoriesToShow.Add(factory);
-            return factoriesToShow;
+            return Game.Player.getAllFactories();
+            //var factoriesToShow = new List<Factory>();
+            //foreach (Province province in Game.Player.ownedProvinces)
+            //    foreach (Factory factory in province.allFactories)
+            //        factoriesToShow.Add(factory);
+            //return factoriesToShow;
         }
         //public override void onShowAllClick()
         //{
@@ -93,8 +94,10 @@ namespace Nashet.EconomicSimulation
                 if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
                     AddCell(factory.getSalary().ToString() + " food", factory);
                 else
-                    AddCell(factory.getSalary().ToString() + " coins", factory);
+                    AddCell(factory.getSalary().ToString("F3") + " coins", factory);
             }
+
+            //Adding unemployment
             AddCell(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
         }
         protected override void AddHeader()

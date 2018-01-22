@@ -10,9 +10,9 @@ using UnityEngine.UI;
 //using Nashet.Utils;
 namespace Nashet.UnityUIUtils
 {
-    public interface ICanBeCellInTable
+    public interface IClickable
     {
-        void OnClickedCell();
+        void OnClicked();
     }
     public interface IFiltrable<T>
     {
@@ -54,7 +54,7 @@ namespace Nashet.UnityUIUtils
         /// <summary>
         /// That method takes content from child (List<T>) and applies filter
         /// </summary>        
-        abstract protected List<T> ContentSelector();
+        abstract protected IEnumerable<T> ContentSelector();
         private SortOrder order;
 
         private List<T> Select(List<T> source, List<Predicate<T>> filter)
@@ -79,10 +79,10 @@ namespace Nashet.UnityUIUtils
                 Func<T, bool> sheet = new Func<T, bool>(x => true);
                 if (IsSetAnyFilter())
                     //elementsToShow = ContentSelector().FindAll(filters);
-                    elementsToShow = Select(ContentSelector(), filters);
+                    elementsToShow = Select(ContentSelector().ToList(), filters);
                 //elementsToShow = ContentSelector().Where(filters as Func<T, bool>).ToList();
                 else
-                    elementsToShow = ContentSelector();
+                    elementsToShow = ContentSelector().ToList();
                 if (order != null && order.IsOrderSet())
                     elementsToShow = order.DoSorting(elementsToShow);
                 howMuchRowsShow = ReCalcSize(elementsToShow.Count);
@@ -159,15 +159,15 @@ namespace Nashet.UnityUIUtils
             return howMuchRowsShow;
         }
 
-        protected void AddCell(string text, ICanBeCellInTable @object = null, Func<string> dynamicTooltip = null)
+        protected void AddCell(string text, IClickable @object = null, Func<string> dynamicTooltip = null)
         {
             GameObject newButton = buttonObjectPool.GetObject();
             newButton.transform.SetParent(gameObject.transform, true);
-            SampleButton sampleButton = newButton.GetComponent<SampleButton>();
+            SimpleCell sampleButton = newButton.GetComponent<SimpleCell>();
             sampleButton.Setup(text, @object);
             if (dynamicTooltip != null)
             {
-                newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+                newButton.GetComponent<ToolTipHandler>().SetDynamicString(dynamicTooltip);
             }
         }
         //protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)
@@ -178,7 +178,7 @@ namespace Nashet.UnityUIUtils
         //    sampleButton.Setup(text, @object);
         //    if (dynamicTooltip != null)
         //    {
-        //        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+        //        newButton.GetComponent<ToolTipHandler>().setDynamicString(dynamicTooltip);
         //    }
         //}
 
@@ -273,7 +273,7 @@ namespace Nashet.UnityUIUtils
         //public static UITableNew<T> GetThatObject()
         //{
         //}
-        protected class SortOrder : ICanBeCellInTable
+        protected class SortOrder : IClickable
         {
             private enum State { none, descending, ascending };
             //private enum State { descending, ascending };
@@ -299,7 +299,7 @@ namespace Nashet.UnityUIUtils
             //{
             //    return order;
             //}
-            public virtual void OnClickedCell()
+            public virtual void OnClicked()
             {
                 orderState++;
                 if (orderState > State.ascending)
@@ -412,7 +412,7 @@ namespace Nashet.UnityUIUtils
     //        newButton.transform.SetParent(gameObject.transform, true);
     //        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
     //        sampleButton.Setup(text, prov);
-    //        newButton.GetComponentInChildren<ToolTipHandler>().setText(tooltipText);
+    //        newButton.GetComponent<ToolTipHandler>().setText(tooltipText);
 
     //    }
     //    protected void AddButton(string text)
@@ -442,7 +442,7 @@ namespace Nashet.UnityUIUtils
     //        newButton.transform.SetParent(gameObject.transform, true);
     //        SampleButton sampleButton = newButton.GetComponent<SampleButton>();
     //        sampleButton.Setup(text, storage);
-    //        newButton.GetComponentInChildren<ToolTipHandler>().setDynamicString(dynamicTooltip);
+    //        newButton.GetComponent<ToolTipHandler>().setDynamicString(dynamicTooltip);
     //    }
     //    protected void AddButton(string text, FactoryType type)
     //    {

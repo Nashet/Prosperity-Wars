@@ -10,7 +10,11 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, ICanBeCellInTable
+    public interface ISortable
+    {
+        float getSortRank();
+    }
+    public class Country : MultiSeller, IClickable, ISortable
     {
         public readonly static List<Country> allCountries = new List<Country>();
         internal static readonly Country NullCountry;
@@ -343,7 +347,7 @@ namespace Nashet.EconomicSimulation
             foreach (var province in ownedProvinces)
                 foreach (var pop in province.allPopUnits)
                 {
-                    result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.needsFullfilled);
+                    result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.needsFulfilled);
                     calculatedPopulation += pop.getPopulation();
                 }
             return result;
@@ -712,7 +716,7 @@ namespace Nashet.EconomicSimulation
 
                     var proposition = FactoryType.whoCanProduce(item);
                     if (proposition != null)
-                        if (proposition.canBuildNewFactory(province) || proposition.canUpgradeFactory(province))
+                        if (proposition.canBuildNewFactory(province) || province.canUpgradeFactory(proposition))
                         {
                             var found = countryStorageSet.getFirstStorage(item);
                             if (minFound == null || found.isSmallerThan(minFound))
@@ -1069,7 +1073,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in ownedProvinces)
             {
                 int population = item.getMenPopulationEmployable();
-                result.addPoportionally(calculatedBase, population, item.getUnemployment());
+                result.addPoportionally(calculatedBase, population, item.getUnemployment(PopType.All));
                 calculatedBase += population;
             }
             return result;
@@ -1371,8 +1375,8 @@ namespace Nashet.EconomicSimulation
             }
             return null;
         }
-        public void OnClickedCell()
-        {            
+        public void OnClicked()
+        {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {
                 if (MainCamera.diplomacyPanel.getSelectedCountry() == this)
@@ -1382,6 +1386,11 @@ namespace Nashet.EconomicSimulation
             }
             else
                 MainCamera.diplomacyPanel.show(this);
+        }
+
+        public float getSortRank()
+        {
+            return GetHashCode();
         }
     }
 }

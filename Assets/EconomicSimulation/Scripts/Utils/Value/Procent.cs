@@ -147,7 +147,8 @@ namespace Nashet.ValueSpace
         {
             if (get() > 0)
                 return (get() * 100f).ToString("0.00") + "%";
-            else return "0%";
+            else
+                return "0%";
         }
 
         internal int getProcent(int value)

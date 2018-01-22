@@ -8,9 +8,9 @@ using Nashet.ValueSpace;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : ICanBeCellInTable
+    public class FactoryType : IClickable, IInvestable, ISortable
     {
-        static internal readonly List<FactoryType> allTypes = new List<FactoryType>();
+        static private readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
 
         internal readonly string name;
@@ -160,7 +160,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //Value cost = Game.market.getCost(this.getBuildNeeds());
                         //cost.add(Options.factoryMoneyReservPerLevel);
-                        Value cost = getMinimalMoneyToBuild();
+                        Value cost = getInvestmentsCost();
                         return agent.canPay(cost);
                     }
                 },
@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
                     var sb = new StringBuilder();
                     //Value cost = Game.market.getCost(this.getBuildNeeds());
                     //cost.add(Options.factoryMoneyReservPerLevel);
-                    Value cost = getMinimalMoneyToBuild();
+                    Value cost = getInvestmentsCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
                     return sb.ToString();
@@ -189,26 +189,32 @@ namespace Nashet.EconomicSimulation
             //else
             this.resourceInput = resourceInput;
         }
-        public static IEnumerable<FactoryType> getInventedTypes(Country country)
+        public static IEnumerable<FactoryType> getAllInventedTypes(Country country)
         {
             foreach (var next in allTypes)
                 if (next.basicProduction.getProduct().isInventedBy(country))
                     yield return next;
         }
-        public static IEnumerable<FactoryType> getResourceTypes(Country country)
+        public static IEnumerable<FactoryType> getAllInventedTypes(Country country, Predicate<FactoryType> predicate)
         {
-            foreach (var next in getInventedTypes(country))
+            foreach (var next in allTypes)
+                if (next.basicProduction.getProduct().isInventedBy(country) && predicate(next))
+                    yield return next;
+        }
+        public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
+        {
+            foreach (var next in getAllInventedTypes(country))
                 if (next.isResourceGathering())
                     yield return next;
         }
-        public static IEnumerable<FactoryType> getNonResourceTypes(Country country)
+        public static IEnumerable<FactoryType> getAllNonResourceTypes(Country country)
         {
-            foreach (var next in getInventedTypes(country))
+            foreach (var next in getAllInventedTypes(country))
                 if (!next.isResourceGathering())
                     yield return next;
         }
 
-        internal Value getMinimalMoneyToBuild()
+        public Value getInvestmentsCost()
         {
             Value result = Game.market.getCost(getBuildNeeds());
             result.add(Options.factoryMoneyReservePerLevel);
@@ -253,40 +259,41 @@ namespace Nashet.EconomicSimulation
         {
             return shaft;
         }
-        internal static FactoryType getMostTeoreticalProfitable(Province province)
-        {
-            KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-            foreach (FactoryType factoryType in province.whatFactoriesCouldBeBuild())
-            {
-                float possibleProfit = factoryType.getPossibleProfit(province).get();
-                if (possibleProfit > result.Value)
-                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
-            }
-            return result.Key;
-        }
 
-        internal static Factory getMostPracticlyProfitable(Province province)
-        {
-            KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
-            foreach (Factory factory in province.allFactories)
-            {
-                if (factory.getType().canUpgradeFactory(province))
-                {
-                    float profit = factory.getProfit();
-                    if (profit > result.Value)
-                        result = new KeyValuePair<Factory, float>(factory, profit);
-                }
-            }
-            return result.Key;
-        }
+        //internal static FactoryType getMostTheoreticalProfitable(Province province)
+        //{
+        //    KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
+        //    foreach (FactoryType factoryType in province.getAllBuildableFactories())
+        //    {
+        //        float possibleProfit = factoryType.getPossibleProfit().get();
+        //        if (possibleProfit > result.Value)
+        //            result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
+        //    }
+        //    return result.Key;
+        //}
+
+        //internal static Factory getMostPracticallyProfitable(Province province)
+        //{
+        //    KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
+        //    foreach (Factory factory in province.allFactories)
+        //    {
+        //        if (province.canUpgradeFactory(factory.getType()))
+        //        {
+        //            float profit = factory.getProfit();
+        //            if (profit > result.Value)
+        //                result = new KeyValuePair<Factory, float>(factory, profit);
+        //        }
+        //    }
+        //    return result.Key;
+        //}
 
         internal bool hasInput()
         {
             return resourceInput != null;
         }
 
-        //todo improve getPossibleProfit
-        internal Value getPossibleProfit(Province province)
+        
+        internal Value getPossibleProfit()
         {
             Value income = Game.market.getCost(basicProduction);
             if (hasInput())
@@ -303,10 +310,14 @@ namespace Nashet.EconomicSimulation
             else
                 return income;
         }
-        internal Procent getPossibleMargin(Province province)
+        /// <summary>
+        /// That is possible margin in that case
+        /// </summary>        
+        public Procent getMargin()
         {
-            return Procent.makeProcent(getPossibleProfit(province), getMinimalMoneyToBuild());
+            return Procent.makeProcent(getPossibleProfit(), getInvestmentsCost());
         }
+
         //internal bool canBuildNewFactory(FactoryType type)
         //{
         //    if (HaveFactory(type))
@@ -331,20 +342,24 @@ namespace Nashet.EconomicSimulation
                 return false;
             return true;
         }
-        internal bool canUpgradeFactory(Province where)
-        {
-            if (!where.hasFactory(this))
-                return false;
-            var factory = where.findFactory(this);
-            if (factory.canUpgrade())
-                return true;
-            else
-                return false;
-        }
-        public void OnClickedCell()
+
+        public void OnClicked()
         {
             MainCamera.buildPanel.selectFactoryType(this);
             MainCamera.buildPanel.Refresh();
+        }
+        public bool canProduce(Product product)
+        {
+            return basicProduction.getProduct() == product;
+        }
+
+        public float getSortRank()
+        {
+            return GetHashCode();
+        }
+        public Procent GetWorkForceFulFilling()
+        {
+            return Procent.HundredProcent;
         }
     }
 }

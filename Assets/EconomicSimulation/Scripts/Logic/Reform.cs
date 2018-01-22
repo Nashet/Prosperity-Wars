@@ -85,7 +85,7 @@ namespace Nashet.EconomicSimulation
         private readonly Modifier wantsReform;
         public readonly ModifiersList modVoting;
     }
-    public abstract class AbstractReform : Name, ICanBeCellInTable
+    public abstract class AbstractReform : Name, IClickable, ISortable
     {
         readonly string description;
 
@@ -110,11 +110,16 @@ namespace Nashet.EconomicSimulation
 
         //abstract internal AbstractReformValue getValue(int value);
         //abstract internal void setValue(int value);
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.politicsPanel.selectReform(this);
             MainCamera.politicsPanel.Refresh();
-        }        
+        }
+
+        public float getSortRank()
+        {
+            return GetHashCode();
+        }
     }
     public class Government : AbstractReform, IHasGetCountry
     {
@@ -190,7 +195,7 @@ namespace Nashet.EconomicSimulation
             new ConditionsListForDoubleObjects(), "empire", 40, 0.25f);
 
         readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- Only Clerics have power", 5,
-            new ConditionsListForDoubleObjects(), "", 40, 0f);
+            new ConditionsListForDoubleObjects(Condition.IsNotImplemented), "", 40, 0f);
 
         readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9,
             new ConditionsListForDoubleObjects(Condition.IsNotImplemented), "states", 40, 1f);
@@ -562,7 +567,8 @@ namespace Nashet.EconomicSimulation
                 if (getCountry().taxationForRich.getTypedValue().tax.get() > 0.5f)
                     getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
                 if (getCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
-                    getCountry().taxationForPoor.setValue(TaxationForRich.PossibleStatuses[5]);
+                    getCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+                getCountry().getAllFactories().PerformAction( x => x.setSubsidized(false));
             }
             else
                 if (status == StateCapitalism)
@@ -1180,7 +1186,6 @@ namespace Nashet.EconomicSimulation
         internal override void setValue(AbstractReformValue selectedReform)
         {
             status = (ReformValue)selectedReform;
-
         }
         internal override bool isAvailable(Country country)
         {

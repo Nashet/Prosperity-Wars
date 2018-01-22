@@ -11,7 +11,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasGetCountry, ICanBeCellInTable
+    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable, ISortable
     {
         public enum TerrainTypes
         {
@@ -25,7 +25,11 @@ namespace Nashet.EconomicSimulation
         public static readonly ConditionForDoubleObjects doesCountryOwn =
         new ConditionForDoubleObjects((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
         public readonly static List<Province> allProvinces = new List<Province>();
+        public static readonly Predicate<Province> All = x => true;
 
+
+        private Province here
+        { get { return this; } }
         private readonly int ID;
         private readonly Color colorID;
 
@@ -49,10 +53,10 @@ namespace Nashet.EconomicSimulation
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
         private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
-        
+
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
-        {            
+        {
             setResource(resource);
             colorID = icolorID;
             ID = iID;
@@ -77,6 +81,11 @@ namespace Nashet.EconomicSimulation
                     currentProvinceColor = image.GetPixel(i, j);
                     //game.updateStatus("Reading provinces.. x = " + i + " y = " + j);
                 }
+        }
+
+        internal int howMuchFactories()
+        {
+            return allFactories.Count;
         }
 
         internal static void generateUnityData(VoxelGrid grid)
@@ -321,7 +330,7 @@ namespace Nashet.EconomicSimulation
             }
 
             // transfer government owned factories
-            allFactories.FindAndDo(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
+            allFactories.PerformAction(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
 
             oldCountry.demobilize(x => x.getPopUnit().getProvince() == this);
 
@@ -420,12 +429,18 @@ namespace Nashet.EconomicSimulation
             foreach (Factory factory in allFactories)
                 yield return factory;
             foreach (PopUnit pop in allPopUnits)
-                yield return pop;
+                yield return pop;            
         }
         public IEnumerable<Factory> getAllFactories()
         {
             foreach (Factory factory in allFactories)
                 yield return factory;
+        }
+        public IEnumerable<Factory> getAllFactories(Predicate<Factory> predicate)
+        {
+            foreach (Factory factory in allFactories)
+                if (predicate(factory))
+                    yield return factory;
         }
         public static Vector3 setProvinceCenter(MeshStructure meshStructure)
         {
@@ -702,14 +717,14 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        internal List<FactoryType> whatFactoriesCouldBeBuild()
-        {
-            List<FactoryType> result = new List<FactoryType>();
-            foreach (FactoryType type in FactoryType.allTypes)
-                if (type.canBuildNewFactory(this))
-                    result.Add(type);
-            return result;
-        }
+        //internal IEnumerable<FactoryType> getAllBuildableFactories()
+        //{
+        //    List<FactoryType> result = new List<FactoryType>();
+        //    foreach (FactoryType type in FactoryType.allTypes)
+        //        if (type.canBuildNewFactory(this))
+        //            result.Add(type);
+        //    return result;
+        //}
 
         /// <summary>
         /// check type for null outside
@@ -724,18 +739,28 @@ namespace Nashet.EconomicSimulation
                     return true;
             return false;
         }
-        public Procent getUnemployment()
+        /// <summary>
+        /// Gets average unemployment from all pop units
+        /// </summary>
+        /// <returns></returns>
+        public Procent getUnemployment(Predicate<PopType> predicate)
         {
             Procent result = new Procent(0f);
             int calculatedBase = 0;
             foreach (var item in allPopUnits)
             {
-                if (item.popType.canBeUnemployed())
-                    result.addPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
-                calculatedBase += item.getPopulation();
+                if (predicate(item.popType))
+                {
+                    if (item.popType.canBeUnemployed())
+                        result.addPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
+                    calculatedBase += item.getPopulation();
+                }
             }
             return result;
         }
+        /// <summary>
+        /// Very heavy method
+        /// </summary>        
         internal int getUnemployedWorkers()
         {
             //int result = 0;
@@ -834,27 +859,30 @@ namespace Nashet.EconomicSimulation
 
             return usedLand / fertileSoil;
         }
-        /// <summary>Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
-        /// \nCould auto-drop salary on minSalary of there is problems with inputs</summary>
+        /// <summary> call it BEFORE opening enterprise
+        /// Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
+        /// \nCould auto-drop salary on minSalary of there is problems with inputs        </summary>
+        
         internal float getLocalMinSalary()
         {
             float res;
-            if (allFactories.Count <= 1)
+            if (allFactories.Count <= 1) // first enterprise in province
                 res = getCountry().getMinSalary();
             else
             {
                 float minSalary;
                 minSalary = getLocalMaxSalary();
 
-                foreach (Factory fact in allFactories)
-                    if (fact.isWorking() && !fact.isJustHiredPeople())
+                foreach (Factory factory in allFactories)
+                    if (factory.isWorking() && factory.HasAnyWorforce() )//&& !factory.isJustHiredPeople()
                     {
-                        if (fact.getSalary() < minSalary)
-                            minSalary = fact.getSalary();
+                        if (factory.getSalary() < minSalary)
+                            minSalary = factory.getSalary();
                     }
-                res = minSalary;
+                res = minSalary + 0.012f;//connected to ChangeSalary()
             }
-            if (res == 0f) res = Options.FactoryMinPossibleSallary;
+            //if (res == 0f)
+            //    res = Options.FactoryMinPossibleSalary;
             return res;
         }
 
@@ -877,7 +905,7 @@ namespace Nashet.EconomicSimulation
         //        sb.Append("\n").Append(t.Key.ToString());
         //    return sb.ToString();
         //}
-        /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minsalary
+        /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
         ///</summary>
         internal float getLocalMaxSalary()
         {
@@ -897,7 +925,7 @@ namespace Nashet.EconomicSimulation
                 return maxSalary;
             }
         }
-        internal float getAverageFactoryWorkforceFullfilling()
+        internal float getAverageFactoryWorkforceFulfilling()
         {
             int workForce = 0;
             int capacity = 0;
@@ -1048,16 +1076,45 @@ namespace Nashet.EconomicSimulation
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFullfilled.multiplyOutside(pop.getPopulation()));
+                result.add(pop.needsFulfilled.multiplyOutside(pop.getPopulation()));
             }
             if (allPopulation > 0)
                 return result.divideOutside(allPopulation);
             else
                 return Procent.HundredProcent;
         }
-        public void OnClickedCell()
+        public void OnClicked()
         {
             MainCamera.selectProvince(this.getID());
+        }
+
+        public List<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
+        {
+            //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
+            //FactoryType.conditionsBuild.isAllTrue
+            List<IInvestable> res = new List<IInvestable>();
+            getAllFactories(x => canUpgradeFactory(x.getType()) && predicate(x)).PerformAction(x => res.Add(x));
+            FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
+            return res;
+        }
+        internal bool canUpgradeFactory(FactoryType type)
+        {
+            if (!hasFactory(type))
+                return false;
+            var factory = findFactory(type);
+            if (factory.canUpgrade())
+                return true;
+            else
+                return false;
+        }
+        public float getSortRank()
+        {
+            return GetHashCode();
+        }
+
+        public bool HasJobsFor(PopType popType, Province province)
+        {
+            return popType.HasJobsFor(popType, here);
         }
     }
     public class Mod : Name
@@ -1077,12 +1134,5 @@ namespace Nashet.EconomicSimulation
 
     }
 
-    public interface IHasGetCountry
-    {
-        Country getCountry();
-    }
-    public interface IEscapeTarget
-    {
 
-    }
 }

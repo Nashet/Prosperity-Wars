@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation
         static public Country Player;
 
         static bool haveToRunSimulation;
-        static bool haveToStepSimulation;        
+        static bool haveToStepSimulation;
 
         static public System.Random Random = new System.Random();
 
@@ -28,13 +28,13 @@ namespace Nashet.EconomicSimulation
         //static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();        
 
         static internal List<BattleResult> allBattles = new List<BattleResult>();
-        
+
         static public readonly Market market = new Market();
 
         //static internal StringBuilder threadDangerSB = new StringBuilder();
 
         static public MyDate date = new MyDate(0);
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -177,10 +177,10 @@ namespace Nashet.EconomicSimulation
                 Player = country;
                 MainCamera.politicsPanel.selectReform(null);
                 MainCamera.inventionsPanel.selectInvention(null);
-                
+
                 // not necessary since it will change automatically on province selection
                 MainCamera.buildPanel.selectFactoryType(null);
-                
+
                 MainCamera.refreshAllActive();
             }
         }
@@ -474,6 +474,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
+                + "\n\n\nAlso I have now Patreon page where I post about that game development. Try red button below!"
                 , "Ok");
         }
 
@@ -530,26 +531,12 @@ namespace Nashet.EconomicSimulation
                     foreach (Factory factory in province.allFactories)
                     {
                         factory.produce();
-                        factory.payTaxes(); // empty for now
-                        factory.paySalary(); // workers get gold or food here                   
+                        factory.payTaxes(); // empty for now                        
                     }
-                    foreach (PopUnit pop in province.allPopUnits)
-                    //That placed here to avoid issues with Aristocrats and Clerics
-                    //Otherwise Aristocrats starts to consume BEFORE they get all what they should
-                    {
-                        //if (pop.popType.isProducer())// only Farmers and Tribesmen and Artisans
+                    foreach (PopUnit pop in province.allPopUnits)                    
                         pop.produce();
-                        pop.takeUnemploymentSubsidies();
-                        if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
-                        // don't need salary with PE
-                        {
-                            var soldier = pop as Soldiers;
-                            if (soldier != null)
-                                soldier.takePayCheck();
-                        }
-                    }
                 }
-            //Game.market.ForceDSBRecalculation();
+            
             // big CONCUME circle   
             foreach (Country country in Country.getAllExisting())
             {
@@ -558,26 +545,20 @@ namespace Nashet.EconomicSimulation
                 {
                     //consume in PE order
                     foreach (Factory factory in country.getAllFactories())
-                    {
                         factory.consumeNeeds();
-                    }
+
                     if (country.isInvented(Invention.ProfessionalArmy))
                         foreach (var item in country.getAllPopUnits(PopType.Soldiers))
-                        {
                             item.consumeNeeds();
-                        }
+
                     foreach (var item in country.getAllPopUnits(PopType.Workers))
-                    {
                         item.consumeNeeds();
-                    }
+
                     foreach (var item in country.getAllPopUnits(PopType.Farmers))
-                    {
                         item.consumeNeeds();
-                    }
+
                     foreach (var item in country.getAllPopUnits(PopType.Tribesmen))
-                    {
                         item.consumeNeeds();
-                    }
                 }
                 else  //consume in regular order
                     foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
@@ -588,12 +569,14 @@ namespace Nashet.EconomicSimulation
                         }
                         foreach (PopUnit pop in province.allPopUnits)
                         {
+                            //That placed here to avoid issues with Aristocrats and Clerics
+                            //Otherwise Aristocrats starts to consume BEFORE they get all what they should
                             if (country.serfdom.getValue() == Serfdom.Allowed || country.serfdom.getValue() == Serfdom.Brutal)
                                 if (pop.shouldPayAristocratTax())
                                     pop.payTaxToAllAristocrats();
                         }
                         foreach (PopUnit pop in province.allPopUnits)
-                        {
+                        {                            
                             pop.consumeNeeds();
                         }
                     }
@@ -609,7 +592,8 @@ namespace Nashet.EconomicSimulation
                         if (country.economy.getValue() != Economy.PlannedEconomy)
                         {
                             factory.getMoneyForSoldProduct();
-                            factory.changeSalary();
+                            factory.ChangeSalary();
+                            factory.paySalary(); // workers get gold or food here                   
                             factory.payDividend();
                             factory.simulateClosing(); // that too
                         }
@@ -622,8 +606,16 @@ namespace Nashet.EconomicSimulation
                     {
                         if (pop.canSellProducts())
                             pop.getMoneyForSoldProduct();
+                        pop.takeUnemploymentSubsidies();
+                        if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        // don't need salary with PE
+                        {
+                            var soldier = pop as Soldiers;
+                            if (soldier != null)
+                                soldier.takePayCheck();
+                        }
                         //because income come only after consuming, and only after FULL consumption
-                        if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                        if ( pop.canTrade() && pop.hasToPayGovernmentTaxes())
                             // POps who can't trade will pay tax BEFORE consumption, not after
                             // Otherwise pops who can't trade avoid tax
                             pop.payTaxes();
@@ -632,8 +624,8 @@ namespace Nashet.EconomicSimulation
                         {
                             pop.calcGrowth();
                             pop.calcPromotions();
-                            if (pop.needsFullfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
-                                pop.findBetterLife();
+                            if (pop.needsFulfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
+                                pop.EscapeForBetterLife(x => x.HasJobsFor(pop.popType, province));
                             pop.calcAssimilations();
                         }
                         if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)

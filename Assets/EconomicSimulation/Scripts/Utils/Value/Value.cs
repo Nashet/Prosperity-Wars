@@ -103,7 +103,7 @@ namespace Nashet.ValueSpace
         }
         public void subtract(float invalue, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue > value)
+            if (invalue  > get())
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract failed");

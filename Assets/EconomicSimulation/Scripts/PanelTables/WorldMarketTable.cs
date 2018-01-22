@@ -61,9 +61,9 @@ namespace Nashet.EconomicSimulation
             //contentPanel.r
         }
 
-        protected override List<Product> ContentSelector()
+        protected override IEnumerable<Product> ContentSelector()
         {
-            return Product.getAll(x => x.isTradable() && !x.isAbstract()).ToList();
+            return Product.getAll(x => x.isTradable() && !x.isAbstract());
         }
     }
 }

@@ -2,24 +2,36 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
+using System;
+
 namespace Nashet.UnityUIUtils
 {
     public interface IRefreshable
     {
-        void Refresh();        
+        void Refresh();
     }
     public interface IHideable
     {
         void Hide();
-        void Show();
+        void Show();        
     }
+   
     abstract public class Hideable : MonoBehaviour, IHideable
-    {
-        public void Hide()
+    { 
+        // declare delegate (type)
+        public delegate void HideEventHandler(Hideable eventData);
+
+        //declare event of type delegate
+        public event HideEventHandler Hidden;
+
+        public virtual void Hide()
         {
             gameObject.SetActive(false);
+            var @event = Hidden;
+            if (@event != null)// check for subscribers
+                @event(this); //fires event for all subscribers 
         }
-
+       
         virtual public void Show()
         {
             gameObject.SetActive(true);
@@ -37,18 +49,21 @@ namespace Nashet.UnityUIUtils
             Refresh();
         }
     }
+    /// <summary>
+    /// Represents movable and hideable window
+    /// </summary>
     abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler
     {
         private Vector2 pointerOffset;
         private RectTransform canvasRectTransform;
-        protected RectTransform panelRectTransform;
+        private RectTransform panelRectTransform;
 
         public void Awake()
         {
             Canvas canvas = GetComponentInParent<Canvas>();
             if (canvas != null)
             {
-                canvasRectTransform = canvas.transform as RectTransform;                
+                canvasRectTransform = canvas.transform as RectTransform;
                 panelRectTransform = transform as RectTransform;
             }
         }
@@ -95,10 +110,10 @@ namespace Nashet.UnityUIUtils
 
         }
 
-        virtual public void onCloseClick()
+        public override void Hide()
         {
             panelRectTransform.SetAsFirstSibling();
-            Hide();
+            base.Hide();
         }
         override public void Show()
         {

@@ -93,9 +93,9 @@ namespace Nashet.UnityUIUtils
             mesPanel.Awake();
             mesPanel.show(mes);
         }
-        override public void onCloseClick()
+        override public void Hide()
         {
-            base.onCloseClick();
+            base.Hide();
             howMuchPausedWindowsOpen--;
             Destroy(gameObject);
         }

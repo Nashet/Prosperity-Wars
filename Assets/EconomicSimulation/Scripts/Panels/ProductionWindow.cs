@@ -12,17 +12,14 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private ProductionWindowTable table;
-        public readonly static Predicate<Factory> filterSelectedProvince = (x => x.getProvince() == Game.selectedProvince);
+        //public readonly static Predicate<PopUnit> filterSelectedProvince = x => x.getProvince() == Game.selectedProvince;
+        private Predicate<Factory> filterSelectedProvince;
         private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
+        private Province showingProvince;
 
-        //[SerializeField]
-        //private List<Factory> factoriesToShow;
-
-
-
-        //private Province showingProvince;
         void Start()
         {
+            filterSelectedProvince = x => x.getProvince() == showingProvince;
             MainCamera.productionWindow = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.bottomPanel.GetComponent<RectTransform>().rect.height - 2f);
             Canvas.ForceUpdateCanvases();
@@ -31,51 +28,28 @@ namespace Nashet.EconomicSimulation
             Hide();
 
         }
-        //public void setFactoriesToShow(List<Factory> list)
-        //{
-        //    factoriesToShow = list;
-        //}
-        //public Province getShowingProvince()
-        //{
-        //    return showingProvince;
-        //}
-        //public void show(Province inn)
-        //{
-        //    showingProvince = inn;
-        //    if (showingProvince != null)
-        //    {
-        //        //MainCamera.productionWindow.setFactoriesToShow(showingProvince.allFactories);
-        //        table.AddFilter(x=>x.getProvince() == showingProvince);
-        //    }
-        //    Show();
-        //}
-        //internal void SetAllFactoriesToShow()
-        //{
-        //    factoriesToShow = new List<Factory>();            
-        //    foreach (Province province in Game.Player.ownedProvinces)
-        //        foreach (Factory factory in province.allFactories)
-        //            factoriesToShow.Add(factory);            
-        //}
-
-        public override void Refresh()
+       
+        public bool IsSelectedAnyProvince()
         {
-            //if (showingProvince == null)
-            //{
-            //    SetAllFactoriesToShow();
-            //}
-
+            return showingProvince != null;
+        }
+        public bool IsSelectedProvince(Province province)
+        {
+            return showingProvince == province;
+        }
+        public void SelectProvince(Province province)
+        {
+            showingProvince = province;
+            if (showingProvince == null)
+                RemoveFilter(filterSelectedProvince);
+            else
+                AddFilter(filterSelectedProvince);
+        }
+        public override void Refresh()
+        {           
             table.Refresh();
         }
-
-        //public void removeFactory(Factory fact)
-        //{
-        //    if (factoriesToShow != null && factoriesToShow.Contains(fact))
-        //    {
-        //        factoriesToShow.Remove(fact);
-        //        if (this.isActiveAndEnabled)
-        //            Refresh();
-        //    }
-        //}
+       
         private readonly Predicate<Factory> filterGovernmentOwned = (x => x.getOwner() != x.getCountry());
         public void OnGovernmentOwnedFilterChange(bool @checked)
         {
@@ -122,15 +96,17 @@ namespace Nashet.EconomicSimulation
         {
             table.RemoveFilter(filter);
         }
-        public void ClearAllFiltres()
+        public void ClearAllFiltres()// show all button
         {
+            showingProvince = null;
             table.ClearAllFiltres();
             table.AddFilter(filterOnlyExisting);
             Refresh();
         }
 
-        public void AddAllFiltres()// show all button
+        public void AddAllFiltres()// hide all button
         {
+            //showingProvince = null;
             table.AddAllFiltres();
             RemoveFilter(filterSelectedProvince);
             Refresh();

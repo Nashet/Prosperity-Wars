@@ -137,8 +137,8 @@ namespace Nashet.EconomicSimulation
                 voteButton.interactable = false;
                 voteButton.GetComponentInChildren<Text>().text = "Select reform";
                 descriptionText.text = "Select reform from left";
-                forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText("");
-                voteButton.GetComponentInChildren<ToolTipHandler>().setText("");
+                forceDecisionButton.GetComponent<ToolTipHandler>().SetText("");
+                voteButton.GetComponent<ToolTipHandler>().SetText("");
             } //did selected reform
             else
             {
@@ -191,17 +191,18 @@ namespace Nashet.EconomicSimulation
                 {
                     if (procentVotersSayedYes.get() >= Options.votingPassBillLimit || Game.Player.government.getValue() == Government.Despotism)
                     { // has enough voters
-                        voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponentInChildren<ToolTipHandler>().text);
-                        forceDecisionButton.GetComponentInChildren<ToolTipHandler>().setText(voteButton.GetComponentInChildren<ToolTipHandler>().getText());
+                        voteButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out voteButton.GetComponent<ToolTipHandler>().text);
+                        forceDecisionButton.GetComponent<ToolTipHandler>().SetText(voteButton.GetComponent<ToolTipHandler>().GetText());
                         forceDecisionButton.interactable = false;
                         voteButton.GetComponentInChildren<Text>().text = "Vote for " + selectedReformValue;
                     }
                     else // not enough voters
                     {
                         voteButton.interactable = false;
-                        forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out forceDecisionButton.GetComponentInChildren<ToolTipHandler>().text);
-                        voteButton.GetComponentInChildren<ToolTipHandler>().setText(forceDecisionButton.GetComponentInChildren<ToolTipHandler>().getText());
+                        forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out forceDecisionButton.GetComponent<ToolTipHandler>().text);
+                        voteButton.GetComponent<ToolTipHandler>().SetText(forceDecisionButton.GetComponent<ToolTipHandler>().GetText());
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
+                        forceDecisionButton.GetComponent<ToolTipHandler>().text += "\nForcing decision against people's desires will drop loyalty!";
                     }
                 }
             }            

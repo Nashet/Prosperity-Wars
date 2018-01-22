@@ -64,11 +64,8 @@ namespace Nashet.EconomicSimulation
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsAppliedThatFilter(ProductionWindow.filterSelectedProvince))
-                {
-                    MainCamera.productionWindow.ClearAllFiltres();
-                    //MainCamera.productionWindow.Show();
-                }
+                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))               
+                    MainCamera.productionWindow.ClearAllFiltres();                   
                 else
                     MainCamera.productionWindow.Hide();
             else
@@ -85,7 +82,6 @@ namespace Nashet.EconomicSimulation
                     MainCamera.populationPanel.ClearAllFiltres();
                 else
                     MainCamera.populationPanel.Hide();
-
             else
             {
                 MainCamera.populationPanel.ClearAllFiltres();

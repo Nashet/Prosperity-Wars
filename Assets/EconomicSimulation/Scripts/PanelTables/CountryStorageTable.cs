@@ -10,9 +10,9 @@ namespace Nashet.EconomicSimulation
 {
     public class CountryStorageTable : UITableNew<Product>
     {
-        protected override List<Product> ContentSelector()
+        protected override IEnumerable<Product> ContentSelector()
         {
-            return Product.getAll(x => x.isTradable()).ToList();
+            return Product.getAll(x => x.isTradable());
         }
 
         protected override void AddHeader()

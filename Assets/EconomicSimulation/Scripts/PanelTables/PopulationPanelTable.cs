@@ -12,33 +12,35 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
-        movementFilter, provinceFilter, cultureFilter;
+        movementOrder, provinceOrder, cultureOrder;
 
         private void Start()
         {
-            needsFulfillmentOrder = new SortOrder(this, x => x.needsFullfilled.get());
+            needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
             cashOrder = new SortOrder(this, x => x.getCash());
 
-            movementFilter = new SortOrder(this, x =>
+            
+            provinceOrder = new SortOrder(this, x => x.getProvince().getSortRank());
+            cultureOrder = new SortOrder(this, x => x.culture.getSortRank());
+            movementOrder = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
                     return float.MinValue;
                 else
                     return x.getMovement().GetHashCode();
             });
-            provinceFilter = new SortOrder(this, x => x.getProvince().getID());
-            cultureFilter = new SortOrder(this, x => x.culture.GetHashCode());
         }
-        protected override List<PopUnit> ContentSelector()
+        protected override IEnumerable<PopUnit> ContentSelector()
         {
-            var popsToShow = new List<PopUnit>();
-            foreach (Province province in Game.Player.ownedProvinces)
-                foreach (PopUnit pop in province.allPopUnits)
-                    popsToShow.Add(pop);
-            return popsToShow;
+            return Game.Player.getAllPopUnits();
+            //var popsToShow = new List<PopUnit>();
+            //foreach (Province province in Game.Player.ownedProvinces)
+            //    foreach (PopUnit pop in province.allPopUnits)
+            //        popsToShow.Add(pop);
+            //return popsToShow;
         }
         protected override void AddRow(PopUnit pop, int number)
         {
@@ -63,7 +65,7 @@ namespace Nashet.EconomicSimulation
             ////Adding needs fulfilling
 
             //PopUnit ert = record;
-            AddCell(pop.needsFullfilled.ToString(), pop,
+            AddCell(pop.needsFulfilled.ToString(), pop,
                 //() => ert.consumedTotal.ToStringWithLines()                        
                 () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
                 );
@@ -91,13 +93,13 @@ namespace Nashet.EconomicSimulation
             AddCell("Type");
 
             ////Adding province
-            AddCell("Province"+ provinceFilter.getSymbol(), provinceFilter);
+            AddCell("Province"+ provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding population
             AddCell("Population" + populationOrder.getSymbol(), populationOrder);
 
             ////Adding culture
-            AddCell("Culture"+ cultureFilter.getSymbol(), cultureFilter);
+            AddCell("Culture"+ cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
             AddCell("Education");
@@ -117,7 +119,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
 
             //Adding Movement
-            AddCell("Movement" + movementFilter.getSymbol(), movementFilter);
+            AddCell("Movement" + movementOrder.getSymbol(), movementOrder);
         }
     }
 }

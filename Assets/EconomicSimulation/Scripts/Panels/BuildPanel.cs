@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
             {
                 //Value cost = Game.market.getCost(resourceToBuild);
                 //cost.add(Options.factoryMoneyReservePerLevel);
-                Value cost = selectedFactoryType.getMinimalMoneyToBuild();
+                Value cost = selectedFactoryType.getInvestmentsCost();
                 if (Game.Player.canPay(cost))
                 {
                     var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
@@ -99,7 +99,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds());
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
-                    var cost = selectedFactoryType.getMinimalMoneyToBuild();
+                    var cost = selectedFactoryType.getInvestmentsCost();
                     sb.Append(" cost: ").Append(cost);
                 }
                 sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
@@ -107,7 +107,7 @@ namespace Nashet.EconomicSimulation
                 descriptionText.text = sb.ToString();
 
                 
-                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponentInChildren<ToolTipHandler>().text);
+                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
                 if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince))
                     buildButton.interactable = false;
                 if (buildButton.interactable)

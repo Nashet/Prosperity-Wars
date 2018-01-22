@@ -9,65 +9,72 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private Func<string> dynamicText;
 
-        //[SerializeField]
+        /// <summary>Has to be public to allow direct write in Condition.isAllTRue()</summary>
         public string text;
-        //public string Text
-        //{
-        //    get { return m_text; }
-        //    set { m_text = value; }
-        //}
+
         [SerializeField]
         private bool isDynamic;
 
-        // now auto update all dynamic tooltips
-        //[SerializeField]
-        //private bool updateEachTick;
+        [SerializeField]
+        private Hideable ownerWindow;
 
-        protected TooltipBase tooltipHolder;
+        //private TooltipBase tooltipHolder;
         private bool inside;
 
+        /// <summary>
+        /// Need that to use in descendant
+        /// </summary>
         protected void Start()
         {
-            tooltipHolder = TooltipBase.get();
+            if (ownerWindow != null)
+                ownerWindow.Hidden += OnHiddenOwner;
         }
-        public void setDynamicString(Func<string> dynamicString)
+        
+        void OnHiddenOwner(Hideable eventData)
+        {
+            // forces tooltip to hide
+            OnPointerExit(null);
+        }
+
+        public void SetDynamicString(Func<string> dynamicString)
         {
             this.dynamicText = dynamicString;
             isDynamic = true;
         }
-        public void setText(string data)
+        public void SetText(string data)
         {
             text = data;
             isDynamic = false;
         }
+
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (text != "" || dynamicText != null)
             {
                 if (dynamicText == null)
-                    tooltipHolder.SetTooltip(text);
+                    TooltipBase.get().SetTooltip(text);
                 else
-                    tooltipHolder.SetTooltip(dynamicText());
+                    TooltipBase.get().SetTooltip(dynamicText());
                 inside = true;
             }
         }
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (tooltipHolder != null)
-                tooltipHolder.HideTooltip();
+            if (TooltipBase.get() != null)
+                TooltipBase.get().HideTooltip();
             inside = false;
         }
-        public bool isInside()
+        public bool IsInside()
         {
             return inside;
         }
         private void Update()
         {
-            if (isInside() && isDynamic)
-                OnPointerEnter(null);
+            if (IsInside() && isDynamic)
+                OnPointerEnter(null); // forces tooltip to update
         }
 
-        internal string getText()
+        internal string GetText()
         {
             return text;
         }

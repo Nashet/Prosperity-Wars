@@ -24,11 +24,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.provincePanel = this;
             Hide();
         }
-
-        public void onCloseClick()
-        {
-            Hide();
-        }
+       
         public void onBuildClick()
         {
             //MainCamera.buildPanel.show(true);
@@ -67,63 +63,52 @@ namespace Nashet.EconomicSimulation
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsSetAnyFilter())
+                if (MainCamera.productionWindow.IsSelectedAnyProvince())
                 {
-                    if (MainCamera.productionWindow.IsAppliedThatFilter(ProductionWindow.filterSelectedProvince))
+                    if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))
                         MainCamera.productionWindow.Hide();
                     else
                     {
-                        MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                        MainCamera.productionWindow.SelectProvince(Game.selectedProvince);
                         MainCamera.productionWindow.Refresh();
                     }
                 }
                 else
                 {
-                    MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                    MainCamera.productionWindow.SelectProvince(Game.selectedProvince);
                     MainCamera.productionWindow.Refresh();
                 }
             else
             {
-                MainCamera.productionWindow.AddFilter(ProductionWindow.filterSelectedProvince);
+                MainCamera.productionWindow.SelectProvince(Game.selectedProvince);
                 MainCamera.productionWindow.Show();
             }
         }
         public void onPopulationDetailsClick()
         {
             if (MainCamera.populationPanel.isActiveAndEnabled)
-                if (MainCamera.populationPanel.IsSetAnyFilter())
+                if (MainCamera.populationPanel.IsSelectedAnyProvince())
                 {                    
-                    if (MainCamera.populationPanel.IsAppliedThatFilter(PopulationPanel.filterSelectedProvince))
+                    //if (MainCamera.populationPanel.IsAppliedThatFilter(PopulationPanel.filterSelectedProvince))
+                    if (MainCamera.populationPanel.IsSelectedProvince(Game.selectedProvince))
                         MainCamera.populationPanel.Hide();
                     else
                     {
-                        MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
-                        MainCamera.populationPanel.Refresh();
-                        //MainCamera.populationPanel.Hide();
-                        //Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
-                        //MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                        ////MainCamera.populationPanel.showAll = false;
-                        //MainCamera.populationPanel.Show();
+                        //MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                        MainCamera.populationPanel.SelectProvince(Game.selectedProvince);
+                        MainCamera.populationPanel.Refresh();                        
                     }
                 }
                 else
                 {
-                    ////MainCamera.populationPanel.Hide();
-                    ////Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
-                    //MainCamera.populationPanel.Hide();
-                    ////MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                    ////MainCamera.populationPanel.showAll = false;
-                    ////MainCamera.populationPanel.Show();
-                    MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                    //MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                    MainCamera.populationPanel.SelectProvince(Game.selectedProvince);
                     MainCamera.populationPanel.Refresh();
                 }
             else
             {
-                //Game.popsToShowInPopulationPanel = new List<PopUnit>(Game.selectedProvince.allPopUnits);
-                //MainCamera.populationPanel.showingProvince = Game.selectedProvince;
-                ////MainCamera.populationPanel.showAll = false;
-                //MainCamera.populationPanel.Show();
-                MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                //MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
+                MainCamera.populationPanel.SelectProvince(Game.selectedProvince);
                 MainCamera.populationPanel.Show();
             }
 
@@ -160,16 +145,16 @@ namespace Nashet.EconomicSimulation
             text.text = "Owner: " + Game.selectedProvince.getCountry();
 
 
-            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
 
-            btMobilize.GetComponentInChildren<ToolTipHandler>().setText(btnBuild.GetComponentInChildren<ToolTipHandler>().text);
+            btMobilize.GetComponent<ToolTipHandler>().SetText(btnBuild.GetComponent<ToolTipHandler>().text);
             btMobilize.interactable = btnBuild.interactable;
 
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
-            btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponentInChildren<ToolTipHandler>().text);
-            btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponentInChildren<ToolTipHandler>().text);
+            btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
+            btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
         }
     }

@@ -72,7 +72,14 @@ namespace Nashet.EconomicSimulation
             // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
             //if (need.isAbstractProduct())
             //    Debug.Log("Can't determinate price of abstract product " + need.getProduct());
-            return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
+            if (need.getProduct() == Product.Gold)
+            {
+                var res = need.multiplyOutside(Options.goldToCoinsConvert);
+                res.multiply(Options.GovernmentTakesShareOfGoldOutput);
+                return res;
+            }
+            else
+                return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
         }
 
 

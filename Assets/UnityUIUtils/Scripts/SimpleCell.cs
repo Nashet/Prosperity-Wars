@@ -6,7 +6,10 @@ using UnityEngine.EventSystems;
 
 namespace Nashet.UnityUIUtils
 {
-    public class SampleButton : MonoBehaviour, IPointerDownHandler
+    /// <summary>
+    /// Used as cell in UITableNew
+    /// </summary>
+    public class SimpleCell : MonoBehaviour, IPointerDownHandler
     {
         [SerializeField]
         private Button buttonComponent;
@@ -16,7 +19,7 @@ namespace Nashet.UnityUIUtils
 
         [SerializeField]
         private Image iconImage;
-        private ICanBeCellInTable objectToClick;
+        private IClickable objectToClick;
         private DragPanel parent;
 
 
@@ -26,7 +29,7 @@ namespace Nashet.UnityUIUtils
             buttonComponent.onClick.AddListener(HandleClick);
         }
         
-        public void Setup(string text, ICanBeCellInTable link)
+        public void Setup(string text, IClickable link)
         {
             this.objectToClick = link;
             nameLabel.text = text;
@@ -41,7 +44,7 @@ namespace Nashet.UnityUIUtils
             if (objectToClick == null)
                 return;
             else
-                objectToClick.OnClickedCell();            
+                objectToClick.OnClicked();            
         }        
     }
 }
