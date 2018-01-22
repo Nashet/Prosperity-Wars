@@ -13,58 +13,57 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private PopulationPanelTable table;
 
-        public readonly static Predicate<PopUnit> filterSelectedProvince = x => x.getProvince() == Game.selectedProvince;
+        //public readonly static Predicate<PopUnit> filterSelectedProvince = x => x.getProvince() == Game.selectedProvince;
+        private Predicate<PopUnit> filterSelectedProvince;
 
         //private Province m_showingProvince;
 
-        //public Province showingProvince
-        //{
-        //    get { return m_showingProvince; }
-        //    set { m_showingProvince = value; }
-        //}
-
+        private Province showingProvince;
+       
         // Use this for initialization
-
         void Start()
-        {            
+        {
+            filterSelectedProvince = x => x.getProvince() == showingProvince;
             MainCamera.populationPanel = this;
             //show(false);
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
             Canvas.ForceUpdateCanvases();
             Hide();
         }
-        //internal void SetAllPopsToShow()
-        //{
-        //    if (Game.Player != null)
-        //    {
-        //        List<PopUnit> er = new List<PopUnit>();
-        //        //Game.popListToShow.Clear();
-        //        foreach (Province province in Game.Player.ownedProvinces)
-        //            foreach (PopUnit popUnit in province.allPopUnits)
-        //                // Game.popListToShow.Add(popUnit);
-        //                er.Add(popUnit);
-        //        Game.popsToShowInPopulationPanel = er;
-        //    }
-        //}
-
-       
+        
         public override void Refresh()
         {
             //if (showingProvince == null)
             //    SetAllPopsToShow();               
             table.Refresh();
-            
+        }
+
+        public bool IsSelectedAnyProvince()
+        {
+            return showingProvince != null;
+        }
+        public bool IsSelectedProvince(Province province)
+        {
+            return showingProvince == province;
+        }
+        public void SelectProvince(Province province)
+        {
+            showingProvince = province;
+            if (showingProvince == null)
+                RemoveFilter(filterSelectedProvince);
+            else
+                AddFilter(filterSelectedProvince);
         }
         //Expression<Func<PopUnit, bool>> isAdult = x => x.popType == PopType.Workers;
 
-        
+
         //Expression<Func<PopUnit, bool>> isMale = x => x.popType == PopType.Farmers;
         //var isAdultMale = Expression.And(isAdult, isMale);
 
 
         private readonly Predicate<PopUnit> filterWorkers = (x => x.popType != PopType.Workers);
         public void OnFilterWorkersChange(bool @checked)
-        {            
+        {
             if (@checked)
                 RemoveFilter(filterWorkers);
             else
@@ -79,11 +78,8 @@ namespace Nashet.EconomicSimulation
             else
                 AddFilter(filterFarmers);
             Refresh();
-        }
-        //private static bool _filterArtisans(PopUnit x)
-        //{ return x.popType != PopType.Artisans; }
-        //private Predicate<PopUnit> filterArtisans = _filterArtisans;
-        private readonly Predicate<PopUnit> filterArtisans = (x => x.popType != PopType.Artisans);        
+        }        
+        private readonly Predicate<PopUnit> filterArtisans = (x => x.popType != PopType.Artisans);
         public void OnFilterArtisansChange(bool @checked)
         {
             if (@checked)
@@ -130,7 +126,7 @@ namespace Nashet.EconomicSimulation
             Refresh();
         }
         public void AddFilter(Predicate<PopUnit> filter)
-        {
+        {            
             (table).AddFilter(filter);
         }
 
@@ -139,15 +135,17 @@ namespace Nashet.EconomicSimulation
             (table).RemoveFilter(filter);
         }
 
-        public void ClearAllFiltres()
+        public void ClearAllFiltres() // show all button
         {
-            table.ClearAllFiltres();            
+            showingProvince = null;
+            table.ClearAllFiltres();
             Refresh();
         }
-        public void AddAllFiltres()// show all button
+        public void AddAllFiltres()// hide all button
         {
+            //showingProvince = null;
             table.AddAllFiltres();
-            RemoveFilter(filterSelectedProvince);            
+            RemoveFilter(filterSelectedProvince);
             Refresh();
         }
         public bool IsSetAnyFilter()
@@ -159,7 +157,5 @@ namespace Nashet.EconomicSimulation
         {
             return ((IFiltrable<PopUnit>)table).IsAppliedThatFilter(filter);
         }
-
-       
     }
 }
