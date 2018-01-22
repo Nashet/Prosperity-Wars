@@ -609,5 +609,12 @@ namespace Nashet.Conditions
             else
                 return foundModifier.getValue();
         }
+
+        internal string GetDescription(object forWhom)
+        {
+            string res;
+            getModifier(forWhom, out res);
+            return res;
+        }
     }
 }

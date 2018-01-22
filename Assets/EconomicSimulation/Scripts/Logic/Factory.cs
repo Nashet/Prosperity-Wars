@@ -5,6 +5,7 @@ using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
 using System;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
@@ -351,8 +352,10 @@ namespace Nashet.EconomicSimulation
                 return Procent.ZeroProcent;
             else
             {
-                float x = getProfit() / (Game.market.getCost(getUpgradeNeeds()).get() * level);
-                return new Procent(x, false);
+                var divider = Game.market.getCost(getUpgradeNeeds()).get() * level;
+                if (divider == 0f)
+                    Debug.Log("Division by zero in getMargin()");                 
+                return new Procent(getProfit() / (divider), false);
             }
         }
         internal Value getReopenCost()

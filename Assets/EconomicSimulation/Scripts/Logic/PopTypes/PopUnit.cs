@@ -105,6 +105,9 @@ namespace Nashet.EconomicSimulation
              new Modifier(Government.isDespotism, x=>(x as PopUnit).getCountry(), -0.30f, false) // remove this?
         });
         }
+
+        
+
         /// <summary>
         ///  Constructor for population created on game startup
         /// </summary>    
@@ -472,8 +475,7 @@ namespace Nashet.EconomicSimulation
 
         internal Procent getUnemployedProcent()
         {
-            if (popType == PopType.Workers)
-            //return new Procent(0);
+            if (popType == PopType.Workers)            
             {
                 int employed = 0;
                 foreach (Factory factory in getProvince().allFactories)
@@ -482,8 +484,7 @@ namespace Nashet.EconomicSimulation
                     return new Procent(0);
                 return new Procent((getPopulation() - employed) / (float)getPopulation());
             }
-            else
-                if (popType == PopType.Farmers || popType == PopType.Tribesmen)
+            else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
             {
                 float overPopulation = getProvince().getOverpopulation();
                 if (overPopulation <= 1f)
@@ -902,7 +903,7 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        
+
 
         public void calcLoyalty()
         {

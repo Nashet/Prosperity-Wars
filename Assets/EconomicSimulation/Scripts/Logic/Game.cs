@@ -557,27 +557,21 @@ namespace Nashet.EconomicSimulation
                 if (country.economy.getValue() == Economy.PlannedEconomy)
                 {
                     //consume in PE order
-                    foreach (Factory factory in country.getAllFactories())
-                    {
+                    foreach (Factory factory in country.getAllFactories())                    
                         factory.consumeNeeds();
-                    }
+                    
                     if (country.isInvented(Invention.ProfessionalArmy))
-                        foreach (var item in country.getAllPopUnits(PopType.Soldiers))
-                        {
+                        foreach (var item in country.getAllPopUnits(PopType.Soldiers))                        
                             item.consumeNeeds();
-                        }
-                    foreach (var item in country.getAllPopUnits(PopType.Workers))
-                    {
+                       
+                    foreach (var item in country.getAllPopUnits(PopType.Workers))                   
                         item.consumeNeeds();
-                    }
-                    foreach (var item in country.getAllPopUnits(PopType.Farmers))
-                    {
+                    
+                    foreach (var item in country.getAllPopUnits(PopType.Farmers))                    
                         item.consumeNeeds();
-                    }
-                    foreach (var item in country.getAllPopUnits(PopType.Tribesmen))
-                    {
-                        item.consumeNeeds();
-                    }
+                    
+                    foreach (var item in country.getAllPopUnits(PopType.Tribesmen))                   
+                        item.consumeNeeds();                   
                 }
                 else  //consume in regular order
                     foreach (Province province in country.ownedProvinces)//Province.allProvinces)            

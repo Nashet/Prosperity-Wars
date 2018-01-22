@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Slider priority;
         [SerializeField]
-        private Text generaltext, efficiencyText;
+        private Text generaltext, efficiencyText, caption;
 
         private Factory shownFactory;
         private reopenButtonStatus reopenButtonflag;
@@ -72,11 +72,15 @@ namespace Nashet.EconomicSimulation
             {
                 setGUIElementsAccesability();
                 Factory.modifierEfficiency.getModifier(shownFactory, out efficiencyText.GetComponentInChildren<ToolTipHandler>().text);
-                var sb = new StringBuilder();
 
+                var sb = new StringBuilder();                
+                //sb.Append()
                 sb.Append(shownFactory.getType().name).Append(" level: ").Append(shownFactory.getLevel());
-                sb.Append("\n").Append("Workforce: ").Append(shownFactory.getWorkForce());
-                sb.Append("\nGain goods: ").Append(shownFactory.getGainGoodsThisTurn().ToString());
+                caption.text = sb.ToString();
+
+                sb = new StringBuilder();
+                sb.Append("Workforce: ").Append(shownFactory.getWorkForce());
+                sb.Append("\nProduced: ").Append(shownFactory.getGainGoodsThisTurn().ToString());
                 sb.Append("\nUnsold: ").Append(shownFactory.storage.ToString());
                 sb.Append("\nBasic production: ").Append(shownFactory.getType().basicProduction);
                 sb.Append("\nSent to market: ").Append(shownFactory.getSentToMarket());
@@ -98,7 +102,7 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nConsumed LT: ").Append(shownFactory.getConsumedLastTurn());
                 sb.Append("\nInput reserves: ").Append(shownFactory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(shownFactory.getInputFactor());
-                sb.Append("\nSalary (per 1000 men):").Append(shownFactory.getSalary()).Append(" Salary(total):").Append(shownFactory.getSalaryCost());
+                sb.Append("\nSalary (per 1000 men): ").Append(shownFactory.getSalary()).Append(" Salary(total): ").Append(shownFactory.getSalaryCost());
                 sb.Append("\nOwner: ").Append(shownFactory.getOwner());
 
                 if (shownFactory.constructionNeeds.Count() > 0)

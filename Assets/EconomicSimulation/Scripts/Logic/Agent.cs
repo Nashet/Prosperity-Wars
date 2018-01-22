@@ -260,7 +260,6 @@ namespace Nashet.EconomicSimulation
             this.cash.add(coins);
             this.moneyIncomethisTurn.add(coins);
             gold.set(0);
-
         }
 
         override public string ToString()

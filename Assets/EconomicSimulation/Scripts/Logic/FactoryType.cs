@@ -292,7 +292,7 @@ namespace Nashet.EconomicSimulation
             return resourceInput != null;
         }
 
-        //todo improve getPossibleProfit
+        
         internal Value getPossibleProfit()
         {
             Value income = Game.market.getCost(basicProduction);
@@ -312,8 +312,7 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// That is possible margin in that case
-        /// </summary>
-        /// <returns></returns>
+        /// </summary>        
         public Procent getMargin()
         {
             return Procent.makeProcent(getPossibleProfit(), getInvestmentsCost());

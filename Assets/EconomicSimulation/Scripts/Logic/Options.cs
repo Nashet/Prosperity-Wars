@@ -49,9 +49,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly float minMarginToInvest = 0.005f;
         
 
-        internal static readonly int maxDaysUnprofitableBeforeFactoryClosing = 180;
-        internal static readonly int maxDaysBuildingBeforeRemoving = 180; // 180;
-        internal static readonly int maxDaysClosedBeforeRemovingFactory = 180;
+        internal static readonly int maxDaysUnprofitableBeforeFactoryClosing = 90;
+        internal static readonly int maxDaysBuildingBeforeRemoving = 90; // 180;
+        internal static readonly int maxDaysClosedBeforeRemovingFactory = 90;
         internal static readonly int minDaysBeforeSalaryCut = 2;
         internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
