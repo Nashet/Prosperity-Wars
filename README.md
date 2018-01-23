@@ -3,16 +3,15 @@
 ## Demo
 [Project now has patreon page](https://www.patreon.com/economicsimulation) where you can help contributing in this project
 
-[There is early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some devices are not supported)
+[There is early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (about 6MB download, some devices are not supported)
 
 And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
 
 ## Description
-Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
-
-Making that tool made me disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation,  I decided to try to make my own.
-So, main principles of that simulation are:
-* free market agent based economy simulation (currently with one currency - gold)
+I'm a huge fan of Victoria 2 game but I was disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation, I decided to try to make my own.
+Main principles of that simulation are:
+* agent based simulation with real population units, fabrics, countries
+* prices determined by supply / demand balance (currently with one market and one currency - gold)
 * no price limits (except 0.001 and 999), allowing realistic inflation
 * population consume goods not in fixed order but - at first cheap goods, then expensive
 * factories can compete for workforce by changeable salary
@@ -21,9 +20,9 @@ So, main principles of that simulation are:
 * governments can put extra money in bank
 * governments can compete by wars
 
-## What it has now (v0.16.0)
+## What it has now (v0.16.2)
  - provinces and countries (generated randomly)
- - Movements and Rebellions
+ - movements and Rebellions
  - factories and national banks
  - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen, Artisans)
  - basic production\free market trade\consumption
@@ -32,18 +31,13 @@ So, main principles of that simulation are:
  - basic reforms (population can vote for reforms)
  - population demotion\promotion to other classes
  - migration\immigration\assimilation
- - political\culture\core\resorce map mode
+ - political\culture\core\resource map mode
  - basic diplomacy (only relations for now)
  - [substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
  - [planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
  - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.svg?columns=all)](https://waffle.io/Nashet/EconomicSimulation) 
 
-Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           
-
-## Current targets
- - more gameplay
- - diplomacy
- - perfomance
+Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.
 
 ## Screenshots
 ![map](http://i.imgrpost.com/imgr/2017/08/14/VYAaererrerdsdVA.png)
