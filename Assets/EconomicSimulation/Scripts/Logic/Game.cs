@@ -321,14 +321,25 @@ namespace Nashet.EconomicSimulation
 
         static void generateMapImage()
         {
+            int mapSize;
+            int width;
             //#if UNITY_WEBGL
-            int mapSize = 20000;//30000;
-            int width = 150 + Random.Next(60);   // 140 is sqrt of 20000
-                                                 //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
-                                                 //#else
-                                                 //        int mapSize = 40000;
-                                                 //        int width = 200 + Random.Next(80);
-                                                 //#endif          
+            if (devMode)
+            {
+                mapSize = 20000;
+                width = 150 + Random.Next(60);
+            }
+            else
+            {
+                mapSize = 25000;
+                width = 170 + Random.Next(65);
+            }
+            // 140 is sqrt of 20000
+            //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
+            //#else
+            //        int mapSize = 40000;
+            //        int width = 200 + Random.Next(80);
+            //#endif          
             Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
 
 
@@ -533,10 +544,10 @@ namespace Nashet.EconomicSimulation
                         factory.produce();
                         factory.payTaxes(); // empty for now                        
                     }
-                    foreach (PopUnit pop in province.allPopUnits)                    
+                    foreach (PopUnit pop in province.allPopUnits)
                         pop.produce();
                 }
-            
+
             // big CONCUME circle   
             foreach (Country country in Country.getAllExisting())
             {
@@ -576,7 +587,7 @@ namespace Nashet.EconomicSimulation
                                     pop.payTaxToAllAristocrats();
                         }
                         foreach (PopUnit pop in province.allPopUnits)
-                        {                            
+                        {
                             pop.consumeNeeds();
                         }
                     }
@@ -615,7 +626,7 @@ namespace Nashet.EconomicSimulation
                                 soldier.takePayCheck();
                         }
                         //because income come only after consuming, and only after FULL consumption
-                        if ( pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                        if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                             // POps who can't trade will pay tax BEFORE consumption, not after
                             // Otherwise pops who can't trade avoid tax
                             pop.payTaxes();
