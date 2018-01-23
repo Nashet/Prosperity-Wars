@@ -348,14 +348,14 @@ namespace Nashet.EconomicSimulation
         }
         public Procent getMargin()
         {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy || !isWorking())
                 return Procent.ZeroProcent;
             else
             {
                 var divider = Game.market.getCost(getUpgradeNeeds()).get() * level;
                 if (divider == 0f)
-                    Debug.Log("Division by zero in getMargin()");                 
-                return new Procent(getProfit() / (divider), false);
+                    Debug.Log("Division by zero in getMargin()");
+                return Procent.makeProcent(getProfit(), divider, false);                
             }
         }
         internal Value getReopenCost()
@@ -509,9 +509,9 @@ namespace Nashet.EconomicSimulation
                         salaryRaise = 0.003f;
                     else if (margin.get() > 0.1f) //10%
                         salaryRaise = 0.002f;
-                    
-                    
-                    
+
+
+
                     salary.add(salaryRaise);
                 }
 
@@ -525,7 +525,7 @@ namespace Nashet.EconomicSimulation
                 if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
                     salary.subtract(0.001f, false);
 
-                if ( getWorkForce() == 0)// && getInputFactor() == 1)
+                if (getWorkForce() == 0)// && getInputFactor() == 1)
                     salary.set(getProvince().getLocalMinSalary());
                 // to help factories catch up other factories salaries
                 //    salary.set(province.getLocalMinSalary());
@@ -752,7 +752,7 @@ namespace Nashet.EconomicSimulation
 
 
             }
-        }        
+        }
 
         internal void close()
         {
@@ -926,9 +926,9 @@ namespace Nashet.EconomicSimulation
 
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)                                                  
+                    if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
                         if (getCountry().countryStorageSet.has(constructionNeeds))
-                            isBuyingComplete = getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);                    
+                            isBuyingComplete = getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
                 }
                 else
                 {

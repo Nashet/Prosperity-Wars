@@ -34,6 +34,7 @@ namespace Nashet.EconomicSimulation
         void setGUIElementsAccesability()
         {
             upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(shownFactory, Game.Player, out upgradeButton.GetComponent<ToolTipHandler>().text);
+            upgradeButton.GetComponent<ToolTipHandler>().text += "\n\nUpgrade makes enterprise bigger";
 
             subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponent<ToolTipHandler>().text);
 
@@ -59,6 +60,8 @@ namespace Nashet.EconomicSimulation
             nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(shownFactory, Game.Player, out nationalizeButton.GetComponent<ToolTipHandler>().text);
 
             this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(shownFactory, Game.Player, out priority.GetComponent<ToolTipHandler>().text);
+            priority.GetComponent<ToolTipHandler>().text += "\n\nHighest priority enterprises get workforce first";
+
             this.subidize.interactable = Factory.conditionsSubsidize.isAllTrue(shownFactory, Game.Player, out subidize.GetComponent<ToolTipHandler>().text);
             this.dontHireOnSubsidies.interactable = Factory.conditionsDontHireOnSubsidies.isAllTrue(shownFactory, Game.Player, out dontHireOnSubsidies.GetComponent<ToolTipHandler>().text);
 
