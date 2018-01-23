@@ -973,10 +973,7 @@ namespace Nashet.EconomicSimulation
         {
             return base.getExpences() + getSalaryCost();
         }
-        /// <summary>
-        /// Should optimize? Seek for changes..
-        /// </summary>
-        /// <returns></returns>
+        //Not necessary ti optimize -  cost 0.1% of tick
         public int getWorkForce()
         {
             int result = 0;

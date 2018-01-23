@@ -485,7 +485,8 @@ namespace Nashet.EconomicSimulation
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
-                + "\n\n\nAlso I have now Patreon page where I post about that game development. Try red button below!"
+                + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
+                + "\nAlso I would be thankful if you will share info about this project"
                 , "Ok");
         }
 

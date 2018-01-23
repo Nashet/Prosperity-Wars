@@ -6,9 +6,10 @@ using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
-
     public class BuildPanel : DragPanel
     {
         [SerializeField]
@@ -35,7 +36,7 @@ namespace Nashet.EconomicSimulation
         public override void Show()
         {
             selectedFactoryType = null; // changed province           
-            base.Show();                       
+            base.Show();
         }
         public void onBuildClick()
         {
@@ -106,7 +107,7 @@ namespace Nashet.EconomicSimulation
 
                 descriptionText.text = sb.ToString();
 
-                
+
                 buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
                 if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince))
                     buildButton.interactable = false;
@@ -116,11 +117,13 @@ namespace Nashet.EconomicSimulation
             else
             {
                 buildButton.interactable = false;
-                {
-                    buildButton.GetComponentInChildren<Text>().text = "Select building";
+                buildButton.GetComponentInChildren<Text>().text = "Select building";
+                if (Game.selectedProvince == null)
+                    descriptionText.text = "Select province where to build";
+                else if (FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince)).Count() == 0)
+                    descriptionText.text = "Nothing to build now";
+                else
                     descriptionText.text = "Select building from left";
-                }
-
             }
         }
     }
