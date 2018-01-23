@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+
 using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation

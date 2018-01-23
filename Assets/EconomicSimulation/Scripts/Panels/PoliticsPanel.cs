@@ -202,7 +202,7 @@ namespace Nashet.EconomicSimulation
                         forceDecisionButton.interactable = selectedReformValue.allowed.isAllTrue(Game.Player, selectedReformValue, out forceDecisionButton.GetComponent<ToolTipHandler>().text);
                         voteButton.GetComponent<ToolTipHandler>().SetText(forceDecisionButton.GetComponent<ToolTipHandler>().GetText());
                         voteButton.GetComponentInChildren<Text>().text = "Not enough votes";
-                        forceDecisionButton.GetComponent<ToolTipHandler>().text += "\nForcing decision against people's desires will drop loyalty!";
+                        forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nForcing decision against people's desires will drop loyalty!";
                     }
                 }
             }            

@@ -315,7 +315,7 @@ namespace Nashet.UnityUIUtils
                         return " ";
                     case State.descending:
 #if UNITY_WEBGL
-                        return " ˅";
+                        return " v";
 #else
                         return " \u25BC";
 #endif

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -11,9 +12,13 @@ namespace Nashet.EconomicSimulation
     public class BuildPanelTable : UITableNew<FactoryType>
     {
         protected override IEnumerable<FactoryType> ContentSelector()
-        {            
-            return FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince));
-        }      
+        {
+            
+            if (Game.selectedProvince == null)
+                return Enumerable.Empty<FactoryType>();
+            else
+                return FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince));
+        }
         protected override void AddRow(FactoryType factoryType, int number)
         {
             // Adding shownFactory type

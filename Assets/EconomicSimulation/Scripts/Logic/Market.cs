@@ -101,8 +101,8 @@ namespace Nashet.EconomicSimulation
                 foreach (Province province in country.ownedProvinces)
                     foreach (Consumer consumer in province.getAllAgents())
                     {
-                        Storage re = selector(consumer).getFirstStorage(product);
-                        result.add(re);
+                        Storage found = selector(consumer).getFirstStorage(product);
+                        result.add(found);
                     }
                 Storage countryStor = selector(country).getFirstStorage(product);
                 result.add(countryStor);

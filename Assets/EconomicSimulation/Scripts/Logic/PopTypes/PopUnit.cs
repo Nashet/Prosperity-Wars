@@ -445,7 +445,7 @@ namespace Nashet.EconomicSimulation
             Value multiplier = new Value(this.getPopulation() / 1000f);
             List<Storage> result = new List<Storage>();
             foreach (Storage next in needs)
-                if (next.getProduct().isInventedByAnyOne())
+                if (next.getProduct().IsInventedByAnyOne())
                 {
                     Storage nStor = new Storage(next.getProduct(), next.get());
                     nStor.multiply(multiplier);

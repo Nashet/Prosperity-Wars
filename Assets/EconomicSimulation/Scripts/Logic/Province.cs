@@ -704,7 +704,7 @@ namespace Nashet.EconomicSimulation
         internal Product getResource()
         {
             //if (getOwner().isInvented(resource))
-            if (resource.isInventedByAnyOne())
+            if (resource.IsInventedByAnyOne())
                 return resource;
             else
                 return null;

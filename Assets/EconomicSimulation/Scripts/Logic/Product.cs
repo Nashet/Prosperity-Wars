@@ -243,7 +243,7 @@ namespace Nashet.EconomicSimulation
 
         public bool isTradable()
         {
-            return this != Product.Gold && isInventedByAnyOne();
+            return this != Product.Gold && IsInventedByAnyOne();
         }
 
         public bool isAbstract()
@@ -287,7 +287,7 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        public bool isInventedByAnyOne()
+        public bool IsInventedByAnyOne()
         {
             // including dead countries. Because dead country could organize production
             //of some freshly invented product
@@ -361,7 +361,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append(" (");
                 bool firstLine = true;
                 foreach (var item in getSubstitutes())
-                    if (item.isInventedByAnyOne())
+                    if (item.IsInventedByAnyOne())
                     {
                         if (!firstLine)
                             sb.Append(" or ");
