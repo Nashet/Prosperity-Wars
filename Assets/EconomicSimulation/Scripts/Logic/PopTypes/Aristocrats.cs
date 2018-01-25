@@ -124,7 +124,8 @@ namespace Nashet.EconomicSimulation
                                 Value investmentCost = factory.getInvestmentsCost();
                                 if (!canPay(investmentCost))
                                     getBank().giveLackingMoney(this, investmentCost);
-                                factory.upgrade(this);
+                                if (canPay(investmentCost))
+                                    factory.upgrade(this);
                                 //payWithoutRecord(factory, investmentCost);
                             }
                             else

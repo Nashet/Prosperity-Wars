@@ -11,7 +11,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    abstract public class PopUnit : Producer, IClickable, IShareOwner
+    abstract public class PopUnit : Producer, IClickable
     {
         ///<summary>buffer popList. To avoid iteration breaks</summary>
         public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
@@ -140,12 +140,21 @@ namespace Nashet.EconomicSimulation
             //Own PopUnit fields:
             loyalty = new Procent(source.loyalty.get());
             population = sizeOfNewPop;
-            if (source.population - sizeOfNewPop <= 0 && this.popType == PopType.Aristocrats || this.popType == PopType.Capitalists)
-                // if source pop is gonna be dead..
-                //secede property... to new pop.. 
-                //todo - can optimize it, double run on List
-                source.getOwnedFactories().ForEach(x => x.ownership.TransferAll(source, this));
-
+            // if source pop is gonna be dead..
+            if (source.population - sizeOfNewPop <= 0 && this.popType == PopType.Aristocrats || this.popType == PopType.Capitalists)            
+            //secede property... to new pop.. 
+            //todo - can optimize it, double run on List
+            {
+                var isSourceInvestor = source as Investor;
+                var isThisInvestor = this as Investor;
+                if (isSourceInvestor != null)
+                {
+                    if (isThisInvestor != null)
+                        isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, isThisInvestor));
+                    else
+                        isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, getCountry()));
+                }
+            }
             mobilized = 0;
             popType = newPopType;
             this.culture = culture;
@@ -260,7 +269,15 @@ namespace Nashet.EconomicSimulation
             //todo - can optimize it, double run on List. Also have point only in Consolidation, not for PopUnit.PopListToAddToGeneralList
             //that check in not really needed as it this pop supposed to be same type as source
             //if (this.type == PopType.aristocrats || this.type == PopType.capitalists)
-            source.getOwnedFactories().ForEach(x => x.ownership.TransferAll(source, this));
+            var isSourceInvestor = source as Investor;
+            var isThisInvestor = this as Investor;
+            if (isSourceInvestor != null)
+            {
+                if (isThisInvestor != null)
+                    isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, isThisInvestor));
+                else
+                    isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, getCountry()));
+            }
 
             // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
             source.deleteData();
@@ -276,8 +293,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.popUnitPanel.whomShowing() == this)
                 MainCamera.popUnitPanel.Hide();
             //remove from population panel.. Would do it automatically        
-            //secede property... to government
-            getOwnedFactories().ForEach(x => x.ownership.TransferAll(this, getCountry()));
+            
             sendAllAvailableMoney(getBank()); // just in case if there is something
             getBank().defaultLoaner(this);
             Movement.leave(this);
@@ -310,22 +326,7 @@ namespace Nashet.EconomicSimulation
             return mobilized;
         }
         //abstract public Procent howIsItGoodForMe(AbstractReformValue reform);
-        /// <summary>
-        /// Should be reworked to multiple province support
-        /// </summary>        
-        public List<Factory> getOwnedFactories()
-        {
-            List<Factory> result = new List<Factory>();
-            if (popType == PopType.Aristocrats || popType == PopType.Capitalists)
-            {
-                foreach (var item in getProvince().allFactories)
-                    if (item.ownership.HasOwner(this) )
-                        result.Add(item);
-                return result;
-            }
-            else //return empty list
-                return result;
-        }
+        
         public int getAge()
         {
             //return Game.date - born;

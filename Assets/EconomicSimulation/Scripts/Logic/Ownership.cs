@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using System;
-
+using System.Linq;
+/// <summary>
+/// Represents ability to own enterprise shares
+/// </summary>
 public interface IShareOwner { }
 namespace Nashet.EconomicSimulation
 {
@@ -38,6 +41,9 @@ namespace Nashet.EconomicSimulation
             }
             Debug.Log("No such owner");
         }
+        /// <summary>
+        /// Test it!!
+        /// </summary>        
         public bool Transfer(IShareOwner oldOwner, IShareOwner newOwner, int valueToTransfer)
         {
             if (IsCorrectData(valueToTransfer))
@@ -80,19 +86,20 @@ namespace Nashet.EconomicSimulation
         }
         internal void Nationilize(Country byWhom)
         {
-            foreach (var owner in GetAll())
-            {
-                TransferAll(owner.Key, Game.Player);
-                var isPop = owner.Key as PopUnit;
-                if (isPop != null)
-                    isPop.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
-                else
+            foreach (var owner in GetAll().ToList())
+                if (owner.Key != byWhom)
                 {
-                    //var isCountry = owner.Key as Country;
-                    //if (isCountry != null)
-                    //todo drop relations
+                    TransferAll(owner.Key, Game.Player);
+                    var isPop = owner.Key as PopUnit;
+                    if (isPop != null)
+                        isPop.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
+                    else
+                    {
+                        //var isCountry = owner.Key as Country;
+                        //if (isCountry != null)
+                        //todo drop relations
+                    }
                 }
-            }
         }
         public IEnumerable<KeyValuePair<IShareOwner, int>> GetAll()
         {

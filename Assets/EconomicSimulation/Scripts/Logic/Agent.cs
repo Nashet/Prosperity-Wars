@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
             if (bank == null)
                 return new Value(cash);
             else
-                return cash.addOutside(bank.howMuchDepositCanReturn(this));
+                return cash.addOutside(bank.howMuchDepositCanReturn(this));//that's new Value
         }
         //new internal bool canPay(Value howMuchPay)
         //{
@@ -141,10 +141,8 @@ namespace Nashet.EconomicSimulation
         //    return new Value(need - this.cash.get());
         //}
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-        internal Value howMuchMoneyCanNotPay(Value need)
-        {
-            //return new Value(need - this.cash.get());
-            //return need.subtractOutside(cash);
+        internal Value GetLackingMoney(Value need)
+        {            
             return need.subtractOutside(getMoneyAvailable());
         }
         //internal Value HowMuchMoneyCanNotPay(Value value)
@@ -202,7 +200,7 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
-        /// checks inside. Wouldn't pay if can't
+        /// checks inside. Wouldn't pay if can't. Takes credits from bank
         /// </summary>    
         public bool payWithoutRecord(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
         {
@@ -226,11 +224,11 @@ namespace Nashet.EconomicSimulation
 
         }
         /// <summary>
-        /// checks inside. Wouldn't pay if can't
+        /// checks inside. Wouldn't pay if can't. Takes credits from bank
         /// </summary>    
-        public bool pay(Agent whom, Value howMuch)
+        public bool pay(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (payWithoutRecord(whom, howMuch))
+            if (payWithoutRecord(whom, howMuch, showMessageAboutNegativeValue))
             {
                 whom.moneyIncomethisTurn.add(howMuch);
                 return true;

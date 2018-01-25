@@ -47,6 +47,7 @@ namespace Nashet.EconomicSimulation
         private bool justHiredPeople = true;
         private int hiredLastTurn;
         public readonly Ownership ownership = new Ownership();
+        private IShareOwner currentInvestor;
 
         internal static readonly Modifier
             modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() &&
@@ -113,6 +114,8 @@ namespace Nashet.EconomicSimulation
             conNotLForNotCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
+
+
         internal static readonly ConditionsListForDoubleObjects
             conditionsUpgrade = new ConditionsListForDoubleObjects(new List<Condition>
             {
@@ -172,12 +175,13 @@ namespace Nashet.EconomicSimulation
              && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
             });
 
-        internal Factory(Province province, IShareOwner factoryOwner, FactoryType type) : base(type, province)
+        internal Factory(Province province, IShareOwner investor, FactoryType type) : base(type, province)
         {
+            currentInvestor = investor;
             //assuming this is level 0 building        
             constructionNeeds = getType().getBuildNeeds();
             province.allFactories.Add(this);
-            ownership.Add(factoryOwner, 1);
+            ownership.Add(investor, 1);
 
             salary.set(province.getLocalMinSalary());
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
@@ -410,7 +414,7 @@ namespace Nashet.EconomicSimulation
                         {
                             if (isSubsidized()) //take money and try again
                             {
-                                getCountry().takeFactorySubsidies(this, howMuchMoneyCanNotPay(howMuchPay));
+                                getCountry().takeFactorySubsidies(this, GetLackingMoney(howMuchPay));
                                 if (canPay(howMuchPay))
                                     pay(link.Key, howMuchPay);
                                 else
@@ -647,6 +651,7 @@ namespace Nashet.EconomicSimulation
 
         private void stopUpgrading()
         {
+            currentInvestor = null;
             building = false;
             upgrading = false;
             constructionNeeds.setZero();
@@ -670,9 +675,10 @@ namespace Nashet.EconomicSimulation
                 }
             }
             // send remaining money to owners
+
             foreach (var item in ownership.GetAllWithProcents())
             {
-                pay(item.Key as Agent, item.Value.getProcentOf(cash));
+                pay(item.Key as Agent, item.Value.getProcentOf(cash), false);
             }
 
             MainCamera.factoryPanel.removeFactory(this);
@@ -707,6 +713,9 @@ namespace Nashet.EconomicSimulation
             else
                 daysUnprofitable = 0;
         }
+        /// <summary>
+        /// In feature should be done by investor
+        /// </summary>
         public void simulateOpening()
         {
             if (!isWorking())
@@ -716,8 +725,7 @@ namespace Nashet.EconomicSimulation
                     daysClosed++;
                     if (daysClosed == Options.maxDaysClosedBeforeRemovingFactory)
                         markToDestroy();
-                    else
-                    if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
+                    else if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
                     {
                         if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                         {
@@ -743,19 +751,24 @@ namespace Nashet.EconomicSimulation
                     }
                 }
         }
+
+        private readonly Value payedDividends = new Value(0f);
+        public float GetDividendsSize()
+        {
+            return payedDividends.get();
+        }
         internal void payDividend()
         {
             if (isWorking())
             {
-                float saveForYourSelf = wantsMinMoneyReserv();
-                Value divident = new Value(cash.get() - saveForYourSelf, false);
+                Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);
+                payedDividends.set(dividends);
 
-                if (divident.isNotZero())
+                if (dividends.isNotZero())
                 {
                     foreach (var item in ownership.GetAllWithProcents())
                     {
-                        //Add dividents in panel
-                        Value sentToOwner = divident.multiplyOutside(item.Value);
+                        Value sentToOwner = dividends.multiplyOutside(item.Value);
                         pay(item.Key as Agent, sentToOwner);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)
@@ -777,8 +790,9 @@ namespace Nashet.EconomicSimulation
             if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
             {
                 salary.set(getProvince().getLocalMinSalary());
-                if (byWhom != this)
-                    byWhom.payWithoutRecord(this, getReopenCost());
+                // should be done by investors
+                //if (byWhom != this)
+                //    byWhom.payWithoutRecord(this, getReopenCost());
             }
             working = true;
             daysUnprofitable = 0;
@@ -802,6 +816,7 @@ namespace Nashet.EconomicSimulation
 
         internal void upgrade(IShareOwner byWhom)
         {
+            currentInvestor = byWhom;
             upgrading = true;
             constructionNeeds.add(getUpgradeNeeds().getCopy());
             if ((byWhom as Agent).getCountry().economy.getValue() != Economy.PlannedEconomy)
@@ -885,16 +900,14 @@ namespace Nashet.EconomicSimulation
         }
         private void onConstructionComplete(bool freshlyBuild)
         {
+            currentInvestor = null;
             level++;
             building = false;
             upgrading = false;
             constructionNeeds.setZero();
             daysInConstruction = 0;
             if (freshlyBuild)
-            {
-                //salary.set(getProvince().getLocalMinSalary());
                 open(this);
-            }
         }
         /// <summary>
         /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
@@ -942,10 +955,20 @@ namespace Nashet.EconomicSimulation
                     else if (isUpgrading())
                         isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
-                    // take credit in bank if not enough money to end construction !!
-                    Value minimalFond = new Value(cash.get() + 50f);
-                    if (!canPay(minimalFond))
-                        getBank().giveLackingMoney(this, minimalFond);
+                    // get money from current investor, not owner
+                    Value needExtraFonds = new Value(wantsMinMoneyReserv() - cash.get(), false);
+                    if (needExtraFonds.isNotZero())
+                    {
+                        var investor = currentInvestor as Agent;
+                        if (investor.canPay(needExtraFonds))
+                            investor.pay(this, needExtraFonds);
+                        else
+                        {
+                            investor.getBank().giveLackingMoney(investor, needExtraFonds);
+                            if (investor.canPay(needExtraFonds))
+                                investor.pay(this, needExtraFonds);
+                        }
+                    }
                 }
                 if (isBuyingComplete
                    || (getCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
@@ -967,7 +990,10 @@ namespace Nashet.EconomicSimulation
                 {
                     if (daysInConstruction == Options.maxDaysBuildingBeforeRemoving)
                         if (isBuilding())
+                        {
+                            currentInvestor = null;
                             markToDestroy();
+                        }
                         else // upgrading
                             stopUpgrading();
                 }

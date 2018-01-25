@@ -3,6 +3,7 @@
 using System;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,6 +15,29 @@ namespace Nashet.EconomicSimulation
 
         protected Investor(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
         {
+        }
+        protected override void deleteData()
+        {
+            base.deleteData();
+            //secede property... to government
+            getOwnedFactories().ForEach(x => x.ownership.TransferAll(this, getCountry()));
+        }
+        
+        /// <summary>
+        /// Should be reworked to multiple province support
+        /// </summary>        
+        public List<Factory> getOwnedFactories()
+        {
+            List<Factory> result = new List<Factory>();
+            if (popType == PopType.Aristocrats || popType == PopType.Capitalists)
+            {
+                foreach (var item in getProvince().allFactories)
+                    if (item.ownership.HasOwner(this))
+                        result.Add(item);
+                return result;
+            }
+            else //return empty list
+                return result;
         }
         //internal void universalInvest(Predicate<IInvestable> predicate)
         //{

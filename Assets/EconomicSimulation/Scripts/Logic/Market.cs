@@ -377,7 +377,7 @@ namespace Nashet.EconomicSimulation
                 return buy(forWhom, need);
             else
             {
-                subsidizer.takeFactorySubsidies(forWhom, forWhom.howMuchMoneyCanNotPay(need));
+                subsidizer.takeFactorySubsidies(forWhom, forWhom.GetLackingMoney(need));
                 return buy(forWhom, need);
             }
         }
