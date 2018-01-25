@@ -8,24 +8,14 @@ namespace Nashet.EconomicSimulation
 {
     public class ArtisanProduction : SimpleProduction
     {
-        //private readonly Artisans owner;
+        private readonly Artisans artisan;
         public ArtisanProduction(FactoryType type, Province province, Artisans artisan) : base(type, province)
         {
-            base.setOwner(artisan);
-        }
-        internal Artisans getOwner()
-        {
-            //todo would it add lags ??
-            return base.getOwner() as Artisans;
-        }
-        [Obsolete("Shouldn't be changed", false)]
-        public void setOwner(Agent agent)
-        {
-            throw new DontUseThatMethod();
-        }
+            this.artisan = artisan;
+        }       
         override public List<Storage> getRealAllNeeds()
         {
-            return getRealNeeds(new Value(getOwner().getPopulation() / 1000f));
+            return getRealNeeds(new Value(artisan.getPopulation() / 1000f));
         }
         /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
         //override public float getLocalEffectiveDemand(Product product)
@@ -34,25 +24,25 @@ namespace Nashet.EconomicSimulation
         //}
         public override List<Storage> getHowMuchInputProductsReservesWants()
         {
-            return getHowMuchInputProductsReservesWants(new Value(getOwner().getPopulation() / 1000f * Options.FactoryInputReservInDays));
+            return getHowMuchInputProductsReservesWants(new Value(artisan.getPopulation() / 1000f * Options.FactoryInputReservInDays));
         }
         internal override Procent getInputFactor()
         {
-            return getInputFactor(new Procent(getOwner().getPopulation() / 1000f));
+            return getInputFactor(new Procent(artisan.getPopulation() / 1000f));
         }
         /// <summary>
         /// Fills storageNow and gainGoodsThisTurn
         /// </summary>
         public override void produce()
         {
-            base.produce(new Value(getOwner().getPopulation() * PopUnit.modEfficiency.getModifier(getOwner()) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
+            base.produce(new Value(artisan.getPopulation() * PopUnit.modEfficiency.getModifier(artisan) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
             if (this.getGainGoodsThisTurn().isNotZero())
             {
-                getOwner().addProduct(this.getGainGoodsThisTurn());
-                if (getOwner().storage.isExactlySameProduct(this.storage))
-                    getOwner().storage.add(this.storage);
+                artisan.addProduct(this.getGainGoodsThisTurn());
+                if (artisan.storage.isExactlySameProduct(this.storage))
+                    artisan.storage.add(this.storage);
                 else
-                    getOwner().storage.set(this.storage);
+                    artisan.storage.set(this.storage);
             }
         }
         /// <summary>

@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
     /// <summary>
     /// represent ability to take loans/deposits
     /// </summary>
-    abstract public class Agent : IHasGetCountry, IHasStatistics
+    abstract public class Agent : IHasGetCountry, IHasStatistics 
     {
         /// <summary> Must be filled together with wallet </summary>
         public Value moneyIncomethisTurn = new Value(0);

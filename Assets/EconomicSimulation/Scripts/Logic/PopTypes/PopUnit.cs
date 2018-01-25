@@ -11,7 +11,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    abstract public class PopUnit : Producer, IClickable
+    abstract public class PopUnit : Producer, IClickable, IShareOwner
     {
         ///<summary>buffer popList. To avoid iteration breaks</summary>
         public readonly static List<PopUnit> PopListToAddToGeneralList = new List<PopUnit>();
@@ -106,7 +106,7 @@ namespace Nashet.EconomicSimulation
         });
         }
 
-        
+
 
         /// <summary>
         ///  Constructor for population created on game startup
@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
                 // if source pop is gonna be dead..
                 //secede property... to new pop.. 
                 //todo - can optimize it, double run on List
-                source.getOwnedFactories().ForEach(x => x.setOwner(this));
+                source.getOwnedFactories().ForEach(x => x.ownership.TransferAll(source, this));
 
             mobilized = 0;
             popType = newPopType;
@@ -260,7 +260,7 @@ namespace Nashet.EconomicSimulation
             //todo - can optimize it, double run on List. Also have point only in Consolidation, not for PopUnit.PopListToAddToGeneralList
             //that check in not really needed as it this pop supposed to be same type as source
             //if (this.type == PopType.aristocrats || this.type == PopType.capitalists)
-            source.getOwnedFactories().ForEach(x => x.setOwner(this));
+            source.getOwnedFactories().ForEach(x => x.ownership.TransferAll(source, this));
 
             // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
             source.deleteData();
@@ -277,7 +277,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.popUnitPanel.Hide();
             //remove from population panel.. Would do it automatically        
             //secede property... to government
-            getOwnedFactories().ForEach(x => x.setOwner(getCountry()));
+            getOwnedFactories().ForEach(x => x.ownership.TransferAll(this, getCountry()));
             sendAllAvailableMoney(getBank()); // just in case if there is something
             getBank().defaultLoaner(this);
             Movement.leave(this);
@@ -310,13 +310,16 @@ namespace Nashet.EconomicSimulation
             return mobilized;
         }
         //abstract public Procent howIsItGoodForMe(AbstractReformValue reform);
+        /// <summary>
+        /// Should be reworked to multiple province support
+        /// </summary>        
         public List<Factory> getOwnedFactories()
         {
             List<Factory> result = new List<Factory>();
             if (popType == PopType.Aristocrats || popType == PopType.Capitalists)
             {
                 foreach (var item in getProvince().allFactories)
-                    if (item.getOwner() == this)
+                    if (item.ownership.HasOwner(this) )
                         result.Add(item);
                 return result;
             }
@@ -475,7 +478,7 @@ namespace Nashet.EconomicSimulation
 
         internal Procent getUnemployedProcent()
         {
-            if (popType == PopType.Workers)            
+            if (popType == PopType.Workers)
             {
                 int employed = 0;
                 foreach (Factory factory in getProvince().allFactories)

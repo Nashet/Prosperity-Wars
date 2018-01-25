@@ -8,14 +8,8 @@ using System;
 
 namespace Nashet.EconomicSimulation
 {
-    public interface IInvestable
-    {
-        Procent getMargin();
-        Value getInvestmentsCost();
-        bool canProduce(Product product);
-        Procent GetWorkForceFulFilling();
-    }
-    public class Capitalists : GrainGetter
+    
+    public class Capitalists : Investor
     {
         public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture)
         { }

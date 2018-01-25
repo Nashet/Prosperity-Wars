@@ -5,7 +5,7 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Aristocrats : GrainGetter
+    public class Aristocrats : Investor
     {
         public Aristocrats(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Aristocrats, where, culture)
         { }

@@ -101,31 +101,31 @@ namespace Nashet.EconomicSimulation
             else
                 ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
         }
-        public void findNoonesEterprises()
-        {
-            foreach (var item in Province.allProvinces)
-            {
-                foreach (var fact in item.allFactories)
-                {
-                    if (fact.getOwner() == null)
-                        new Message("", "Null owner in " + item + " " + fact, "Got it");
-                    else
-                    if (fact.getOwner() is PopUnit)
-                    {
-                        var owner = fact.getOwner() as PopUnit;
-                        if (!owner.isAlive())
-                            new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
-                    }
-                    else
-                    if (fact.getOwner() is Country)
-                    {
-                        var c = fact.getOwner() as Country;
-                        if (!c.isAlive())
-                            new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
-                    }
-                }
-            }
-        }
+        //public void findNoonesEterprises()
+        //{
+        //    foreach (var item in Province.allProvinces)
+        //    {
+        //        foreach (var fact in item.allFactories)
+        //        {
+        //            if (fact.getOwner() == null)
+        //                new Message("", "Null owner in " + item + " " + fact, "Got it");
+        //            else
+        //            if (fact.getOwner() is PopUnit)
+        //            {
+        //                var owner = fact.getOwner() as PopUnit;
+        //                if (!owner.isAlive())
+        //                    new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
+        //            }
+        //            else
+        //            if (fact.getOwner() is Country)
+        //            {
+        //                var c = fact.getOwner() as Country;
+        //                if (!c.isAlive())
+        //                    new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
+        //            }
+        //        }
+        //    }
+        //}
         public void onTakeLoan()
         {
             Value loan = Game.Player.getBank().howMuchCanGive(Game.Player);

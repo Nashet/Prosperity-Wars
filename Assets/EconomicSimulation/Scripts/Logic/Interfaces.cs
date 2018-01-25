@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Nashet.ValueSpace;
+using UnityEngine;
 
 
 namespace Nashet.EconomicSimulation
@@ -11,6 +12,12 @@ namespace Nashet.EconomicSimulation
     {
          bool HasJobsFor(PopType popType, Province province);
     }
-
+    public interface IInvestable
+    {
+        Procent getMargin();
+        Value getInvestmentsCost();
+        bool canProduce(Product product);
+        Procent GetWorkForceFulFilling();
+    }
 
 }

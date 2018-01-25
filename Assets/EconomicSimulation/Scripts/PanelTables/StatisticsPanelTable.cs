@@ -12,14 +12,14 @@ namespace Nashet.EconomicSimulation
             richTaxOrder, economyTypeOrder, GDPShareOrder;
         public void Start()
         {
-            countryOrder = new SortOrder(this, x => x.getSortRank());
+            countryOrder = new SortOrder(this, x => x.GetHashCode());
             populationOrder = new SortOrder(this, x => x.getMenPopulation());
             GDPOrder = new SortOrder(this, x => x.getGDP().get());
             GDPPerCapitaOrder = new SortOrder(this, x => x.getGDPPer1000());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             averageNeedsOrder = new SortOrder(this, x => x.getAverageNeedsFulfilling().get());
             richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
-            economyTypeOrder = new SortOrder(this, x => x.economy.getSortRank());
+            economyTypeOrder = new SortOrder(this, x => x.economy.GetHashCode());
             GDPShareOrder = new SortOrder(this, x => x.getGDP().get());
         }
         protected override IEnumerable<Country> ContentSelector()

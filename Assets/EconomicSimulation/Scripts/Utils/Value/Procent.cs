@@ -118,19 +118,7 @@ namespace Nashet.ValueSpace
             return get() - 0.5f;
         }
 
-        public Value sendProcentToNew(Value source)
-        {
-
-            Value result = new Value(0f);
-            source.send(result, source.multiplyOutside(this));
-            return result;
-        }
-        public Storage sendProcentToNew(Storage source)
-        {
-            Storage result = new Storage(source.getProduct(), 0f);
-            source.send(result, source.multiplyOutside(this));
-            return result;
-        }
+        
 
         public void add(Procent pro, bool showMessageAboutNegativeValue = true)
         {
@@ -151,9 +139,21 @@ namespace Nashet.ValueSpace
                 return "0%";
         }
 
-        internal int getProcent(int value)
+        internal int getProcentOf(int value)
         {
             return Mathf.RoundToInt(get() * value);
+        }
+        public Value getProcentOf(Value source)
+        {
+            Value result = new Value(0f);
+            source.send(result, source.multiplyOutside(this));
+            return result;
+        }
+        public Storage getProcentOf(Storage source)
+        {
+            Storage result = new Storage(source.getProduct(), 0f);
+            source.send(result, source.multiplyOutside(this));
+            return result;
         }
         //override public void set(float invalue)
         //{

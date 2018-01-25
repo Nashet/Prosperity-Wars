@@ -136,8 +136,10 @@ namespace Nashet.EconomicSimulation
         /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
         internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
         internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;
+        /// <summary>For every nationalized enterprise</summary>
+        internal static readonly Procent PopLoyaltyDropOnNationalization = new Procent(0.1f);
 
-        
+
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

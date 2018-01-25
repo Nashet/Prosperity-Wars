@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class FactoryPanel : DragPanel//for dragging
@@ -106,7 +108,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nInput reserves: ").Append(shownFactory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(shownFactory.getInputFactor());
                 sb.Append("\nSalary (per 1000 men): ").Append(shownFactory.getSalary()).Append(" Salary(total): ").Append(shownFactory.getSalaryCost());
-                sb.Append("\nOwner: ").Append(shownFactory.getOwner());
+                sb.Append("\nOwners: ").Append(shownFactory.ownership.GetAllWithProcents().getString(" ","\n"));
 
                 if (shownFactory.constructionNeeds.Count() > 0)
                     sb.Append("\nUpgrade needs: ").Append(shownFactory.constructionNeeds);
@@ -197,7 +199,7 @@ namespace Nashet.EconomicSimulation
         }
         public void onNationalizeClick()
         {
-            shownFactory.setOwner(Game.Player);
+            shownFactory.ownership.Nationilize(Game.Player);            
             MainCamera.refreshAllActive();
         }
     }

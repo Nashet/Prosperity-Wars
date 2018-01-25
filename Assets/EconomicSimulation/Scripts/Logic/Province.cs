@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -11,7 +10,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable, ISortable
+    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable
     {
         public enum TerrainTypes
         {
@@ -330,7 +329,10 @@ namespace Nashet.EconomicSimulation
             }
 
             // transfer government owned factories
-            allFactories.PerformAction(x => x.getOwner() == oldCountry, x => x.setOwner(taker));
+            // don't do government property revoking for now            
+
+            allFactories.PerformAction(x => x.ownership.TransferAll(oldCountry, taker, false));
+
 
             oldCountry.demobilize(x => x.getPopUnit().getProvince() == this);
 
@@ -429,19 +431,23 @@ namespace Nashet.EconomicSimulation
             foreach (Factory factory in allFactories)
                 yield return factory;
             foreach (PopUnit pop in allPopUnits)
-                yield return pop;            
+                yield return pop;
         }
         public IEnumerable<Factory> getAllFactories()
         {
-            foreach (Factory factory in allFactories)
-                yield return factory;
+            for (int i = 0; i < allFactories.Count; i++)
+            {
+                yield return allFactories[i];
+            }
+            //foreach (Factory factory in allFactories)
+            //    yield return factory;
         }
-        public IEnumerable<Factory> getAllFactories(Predicate<Factory> predicate)
-        {
-            foreach (Factory factory in allFactories)
-                if (predicate(factory))
-                    yield return factory;
-        }
+        //public IEnumerable<Factory> getAllFactories(Predicate<Factory> predicate)
+        //{
+        //    foreach (Factory factory in allFactories)
+        //        if (predicate(factory))
+        //            yield return factory;
+        //}
         public static Vector3 setProvinceCenter(MeshStructure meshStructure)
         {
             Vector3 accu = new Vector3(0, 0, 0);
@@ -461,7 +467,7 @@ namespace Nashet.EconomicSimulation
                 //    cultures[pop.culture] += pop.getPopulation();
                 //else
                 //    cultures.Add(pop.culture, pop.getPopulation());
-                cultures.addMy(pop.culture, pop.getPopulation());
+                cultures.AddMy(pop.culture, pop.getPopulation());
             ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.getPopulation()));
             return cultures.MaxBy(y => y.Value).Key as Culture;
         }
@@ -809,7 +815,7 @@ namespace Nashet.EconomicSimulation
 #if UNITY_WEBGL
             group.size = 20; //was 30 for webgl
 #else
-        group.size = 20; // for others
+            group.size = 20; // for others
 #endif
             //group.RecalculateBounds();
         }
@@ -862,7 +868,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> call it BEFORE opening enterprise
         /// Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
         /// \nCould auto-drop salary on minSalary of there is problems with inputs        </summary>
-        
+
         internal float getLocalMinSalary()
         {
             float res;
@@ -874,7 +880,7 @@ namespace Nashet.EconomicSimulation
                 minSalary = getLocalMaxSalary();
 
                 foreach (Factory factory in allFactories)
-                    if (factory.isWorking() && factory.HasAnyWorforce() )//&& !factory.isJustHiredPeople()
+                    if (factory.isWorking() && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
                     {
                         if (factory.getSalary() < minSalary)
                             minSalary = factory.getSalary();
@@ -1088,15 +1094,47 @@ namespace Nashet.EconomicSimulation
             MainCamera.selectProvince(this.getID());
         }
 
-        public List<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
+        public IEnumerable<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
         {
-            //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
-            //FactoryType.conditionsBuild.isAllTrue
-            List<IInvestable> res = new List<IInvestable>();
-            getAllFactories(x => canUpgradeFactory(x.getType()) && predicate(x)).PerformAction(x => res.Add(x));
-            FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
-            return res;
+            //var listA = Enumerable.Range(0, 10).Select(i => new TestClassA());
+            //var listB = Enumerable.Range(0, 10).Select(i => new TestClassB());
+
+            //var combinedEnumerable = listA.Cast<ITestInterface>().Concat(listB.Cast<ITestInterface>());
+            //Debug.Log("\n\n Testing:");
+            //foreach (var item in combinedEnumerable)
+            //{
+            //    Debug.Log(item.GetText());
+            //}
+            /////////////////////////////////////////
+            //if (owner == Game.Player)
+            //    Debug.Log("\nnew Testing: " + this);
+
+            var first = getAllFactories().Where(x => canUpgradeFactory(x.getType()) && predicate(x)).Cast<IInvestable>();
+            //if (owner == Game.Player)
+            //    first.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
+
+            var second = FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).Cast<IInvestable>();
+            //if (owner == Game.Player)
+            //    second.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
+
+            var combined = first.Concat(second);
+            //if (owner == Game.Player)
+            //{
+            //    Debug.Log("Combined:");
+            //    combined.PerformAction(x => Debug.Log(x.ToString() + " " + x.GetType()));
+            //}
+            return combined;
         }
+
+        //    //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
+        //    //FactoryType.conditionsBuild.isAllTrue
+        //public List<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
+        //{
+        //    List<IInvestable> res = new List<IInvestable>();
+        //    getAllFactories(x => canUpgradeFactory(x.getType()) && predicate(x)).PerformAction(x => res.Add(x));
+        //    FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
+        //    return res;
+        //}
         internal bool canUpgradeFactory(FactoryType type)
         {
             if (!hasFactory(type))
@@ -1106,11 +1144,7 @@ namespace Nashet.EconomicSimulation
                 return true;
             else
                 return false;
-        }
-        public float getSortRank()
-        {
-            return GetHashCode();
-        }
+        }        
 
         public bool HasJobsFor(PopType popType, Province province)
         {
@@ -1135,4 +1169,18 @@ namespace Nashet.EconomicSimulation
     }
 
 
+    public interface ITestInterface
+    {
+        string GetText();
+    }
+
+    public class TestClassA : ITestInterface
+    {
+        public string GetText() { return "TestClassA"; }
+    }
+
+    public class TestClassB : ITestInterface
+    {
+        public string GetText() { return "TestClassB"; }
+    }
 }

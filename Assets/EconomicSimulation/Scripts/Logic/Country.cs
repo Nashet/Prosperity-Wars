@@ -9,12 +9,8 @@ using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
-{
-    public interface ISortable
-    {
-        float getSortRank();
-    }
-    public class Country : MultiSeller, IClickable, ISortable
+{    
+    public class Country : MultiSeller, IClickable, IShareOwner
     {
         public readonly static List<Country> allCountries = new List<Country>();
         internal static readonly Country NullCountry;
@@ -1225,7 +1221,7 @@ namespace Nashet.EconomicSimulation
             var totalPopulation = this.getMenPopulation();
             foreach (var item in getAllPopUnits())
             {
-                cultures.addMy(item.culture, item.getPopulation());
+                cultures.AddMy(item.culture, item.getPopulation());
             }
             var result = new List<KeyValuePair<Culture, Procent>>();
             foreach (var item in cultures)
@@ -1386,11 +1382,6 @@ namespace Nashet.EconomicSimulation
             }
             else
                 MainCamera.diplomacyPanel.show(this);
-        }
-
-        public float getSortRank()
-        {
-            return GetHashCode();
-        }
+        }        
     }
 }

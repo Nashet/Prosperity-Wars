@@ -175,7 +175,7 @@ namespace Nashet.Utils
         //    else
         //        dictionary.Add(what, size);
         //}
-        public static void addMy<T>(this Dictionary<T, int> dictionary, T what, int size)
+        public static void AddMy<T>(this Dictionary<T, int> dictionary, T what, int size)
         {
             if (dictionary.ContainsKey(what))
                 dictionary[what] += size;
@@ -452,7 +452,7 @@ namespace Nashet.Utils
             return sb.ToString();
         }
 
-        public static string getString(this IList<KeyValuePair<Culture, Procent>> list, string lineBreaker, int howMuchStringsToShow)
+        public static string getString<TValue>(this IList<KeyValuePair<TValue, Procent>> list, string lineBreaker, int howMuchStringsToShow)
         {
             if (list.Count() > 0)
             {

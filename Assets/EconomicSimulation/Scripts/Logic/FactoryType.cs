@@ -8,7 +8,7 @@ using Nashet.ValueSpace;
 using Nashet.UnityUIUtils;
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : IClickable, IInvestable, ISortable
+    public class FactoryType : IClickable, IInvestable
     {
         static private readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
@@ -353,10 +353,7 @@ namespace Nashet.EconomicSimulation
             return basicProduction.getProduct() == product;
         }
 
-        public float getSortRank()
-        {
-            return GetHashCode();
-        }
+        
         public Procent GetWorkForceFulFilling()
         {
             return Procent.HundredProcent;

@@ -46,6 +46,7 @@ namespace Nashet.EconomicSimulation
         private int daysClosed;
         private bool justHiredPeople = true;
         private int hiredLastTurn;
+        public readonly Ownership ownership = new Ownership();
 
         internal static readonly Modifier
             modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() &&
@@ -59,11 +60,12 @@ namespace Nashet.EconomicSimulation
             modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).getCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
 
-            modifierBelongsToCountry = new Modifier(x => (x as Factory).getOwner() is Country, "Belongs to government", -0.35f, false),
+            modifierBelongsToCountry = new Modifier(x => (x as Factory).ownership.IsCountryOwnsControlPacket(), "Control packet belongs to government", -0.35f, false),
             modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.20f, false);
 
         internal static readonly Condition
-            conNotBelongsToCountry = new Condition(x => !((x as Factory).getOwner() is Country), "Doesn't belongs to government", false),
+            conNotFullyBelongsToCountry = new ConditionForDoubleObjects((factory, agent) => !(factory as Factory).ownership.IsOnlyOwner(agent as IShareOwner), x => "Doesn't fully belongs to government", false),
+
             conNotUpgrading = new Condition(x => !(x as Factory).isUpgrading(), "Not upgrading", false),
             conNotBuilding = new Condition(x => !(x as Factory).isBuilding(), "Not building", false),
             conOpen = new Condition(x => (x as Factory).isWorking(), "Open", false),
@@ -124,7 +126,7 @@ namespace Nashet.EconomicSimulation
              conPlacedInOurCountry }).addForSecondObject(new List<Condition> { Economy.isNotLF }),
 
             // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-            conditionsNatinalize = new ConditionsListForDoubleObjects(new List<Condition> { conNotBelongsToCountry, conPlacedInOurCountry })
+            conditionsNatinalize = new ConditionsListForDoubleObjects(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry })
             .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotInterventionism }),
 
             conditionsSubsidize = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
@@ -170,12 +172,13 @@ namespace Nashet.EconomicSimulation
              && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
             });
 
-        internal Factory(Province province, Agent factoryOwner, FactoryType type) : base(type, province)
+        internal Factory(Province province, IShareOwner factoryOwner, FactoryType type) : base(type, province)
         {
             //assuming this is level 0 building        
             constructionNeeds = getType().getBuildNeeds();
             province.allFactories.Add(this);
-            setOwner(factoryOwner);
+            ownership.Add(factoryOwner, 1);
+
             salary.set(province.getLocalMinSalary());
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 setPriorityAutoWithPlannedEconomy();
@@ -355,7 +358,7 @@ namespace Nashet.EconomicSimulation
                 var divider = Game.market.getCost(getUpgradeNeeds()).get() * level;
                 if (divider == 0f)
                     Debug.Log("Division by zero in getMargin()");
-                return Procent.makeProcent(getProfit(), divider, false);                
+                return Procent.makeProcent(getProfit(), divider, false);
             }
         }
         internal Value getReopenCost()
@@ -431,38 +434,39 @@ namespace Nashet.EconomicSimulation
                 // don't pay nothing if where is planned economy
                 else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                 {
+                    //todo natural e.
                     // non market!!
-                    Storage foodSalary = new Storage(Product.Grain, 1f);
-                    foreach (var link in hiredWorkForce)
-                    {
-                        Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / (float)workForcePerLevel);
-                        Country countryPayer = getOwner() as Country;
-                        if (countryPayer != null)
-                        {
-                            if (countryPayer.countryStorageSet.has(howMuchPay))
-                            {
-                                countryPayer.countryStorageSet.send(link.Key, howMuchPay);
-                                link.Key.addProduct(howMuchPay); // todo fails if is abstract
-                                salary.set(foodSalary);
-                            }
-                            //todo no salary cuts yet
-                            //else salary.set(0);
-                        }
-                        else // assuming - PopUnit
-                        {
-                            PopUnit popPayer = getOwner() as PopUnit;
+                    //Storage foodSalary = new Storage(Product.Grain, 1f);
+                    //foreach (var link in hiredWorkForce)
+                    //{
+                    //    Storage howMuchPay = new Storage(foodSalary.getProduct(), foodSalary.get() * link.Value / (float)workForcePerLevel);
+                    //    Country countryPayer = getOwner() as Country;
+                    //    if (countryPayer != null)
+                    //    {
+                    //        if (countryPayer.countryStorageSet.has(howMuchPay))
+                    //        {
+                    //            countryPayer.countryStorageSet.send(link.Key, howMuchPay);
+                    //            link.Key.addProduct(howMuchPay); // todo fails if is abstract
+                    //            salary.set(foodSalary);
+                    //        }
+                    //        //todo no salary cuts yet
+                    //        //else salary.set(0);
+                    //    }
+                    //    else // assuming - PopUnit
+                    //    {
+                    //        PopUnit popPayer = getOwner() as PopUnit;
 
-                            if (popPayer.storage.has(howMuchPay))
-                            {
-                                popPayer.storage.send(link.Key.storage, howMuchPay);
-                                link.Key.addProduct(howMuchPay);
-                                salary.set(foodSalary);
-                            }
-                            //todo no resources to pay salary
-                            //else salary.set(0);
-                        }
-                        //else dont pay if there is nothing to pay
-                    }
+                    //        if (popPayer.storage.has(howMuchPay))
+                    //        {
+                    //            popPayer.storage.send(link.Key.storage, howMuchPay);
+                    //            link.Key.addProduct(howMuchPay);
+                    //            salary.set(foodSalary);
+                    //        }
+                    //        //todo no resources to pay salary
+                    //        //else salary.set(0);
+                    //    }
+                    //    //else dont pay if there is nothing to pay
+                    //}
                 }
             }
         }
@@ -655,17 +659,22 @@ namespace Nashet.EconomicSimulation
             //return loans only if banking invented
             if (getCountry().isInvented(Invention.Banking))
             {
-                if (loans.get() > 0f)
+                if (loans.isNotZero())
                 {
                     Value howMuchToReturn = new Value(loans);
-                    if (howMuchToReturn.get() <= cash.get())
+                    if (howMuchToReturn.isSmallerOrEqual(cash))
                         howMuchToReturn.set(cash);
                     getBank().takeMoney(this, howMuchToReturn);
-                    if (loans.get() > 0f)
+                    if (loans.isNotZero())
                         getBank().defaultLoaner(this);
                 }
             }
-            sendAllAvailableMoney(getOwner());
+            // send remaining money to owners
+            foreach (var item in ownership.GetAllWithProcents())
+            {
+                pay(item.Key as Agent, item.Value.getProcentOf(cash));
+            }
+
             MainCamera.factoryPanel.removeFactory(this);
         }
         internal void destroyImmediately()
@@ -739,18 +748,20 @@ namespace Nashet.EconomicSimulation
             if (isWorking())
             {
                 float saveForYourSelf = wantsMinMoneyReserv();
-                float divident = cash.get() - saveForYourSelf;
+                Value divident = new Value(cash.get() - saveForYourSelf, false);
 
-                if (divident > 0)
+                if (divident.isNotZero())
                 {
-                    Value sentToOwner = new Value(divident);
-                    pay(getOwner(), sentToOwner);
-                    var owner = getOwner() as Country;
-                    if (owner != null)
-                        owner.ownedFactoriesIncomeAdd(sentToOwner);
+                    foreach (var item in ownership.GetAllWithProcents())
+                    {
+                        //Add dividents in panel
+                        Value sentToOwner = divident.multiplyOutside(item.Value);
+                        pay(item.Key as Agent, sentToOwner);
+                        var isCountry = item.Key as Country;
+                        if (isCountry != null)
+                            isCountry.ownedFactoriesIncomeAdd(sentToOwner);
+                    }
                 }
-
-
             }
         }
 
@@ -789,12 +800,13 @@ namespace Nashet.EconomicSimulation
             return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && isWorking();
         }
 
-        internal void upgrade(Agent byWhom)
+        internal void upgrade(IShareOwner byWhom)
         {
             upgrading = true;
             constructionNeeds.add(getUpgradeNeeds().getCopy());
-            if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
-                byWhom.payWithoutRecord(this, Game.market.getCost(getUpgradeNeeds()));
+            if ((byWhom as Agent).getCountry().economy.getValue() != Economy.PlannedEconomy)
+                (byWhom as Agent).payWithoutRecord(this, Game.market.getCost(getUpgradeNeeds()));
+            ownership.Add(byWhom, 1);
         }
 
         internal int getDaysInConstruction()
@@ -852,23 +864,16 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (Economy.isMarket.checkIftrue(getCountry()))
-                    {
-                        //sentToMarket.set(gainGoodsThisTurn);
-                        //storage.setZero();
-                        //Game.market.sentToMarket.add(gainGoodsThisTurn);
                         sell(getGainGoodsThisTurn());
-                    }
                     else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
                     {
-                        Country countryOwner = getOwner() as Country;
-                        if (countryOwner != null)
-                            storage.sendAll(countryOwner.countryStorageSet);
-                        else // assuming owner is aristocrat/capitalist
+                        // todo Send product proportionally to all owners? with NE?
+                        //Country countryOwner = getOwner() as Country;
+                        //if (countryOwner != null)
+                        //    storage.sendAll(countryOwner.countryStorageSet);
+                        //else // assuming owner is aristocrat/capitalist
                         {
                             sell(getGainGoodsThisTurn());
-                            //sentToMarket.set(gainGoodsThisTurn);
-                            //storage.setZero();
-                            //Game.market.sentToMarket.add(gainGoodsThisTurn);
                         }
                     }
                     else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
@@ -937,11 +942,10 @@ namespace Nashet.EconomicSimulation
                     else if (isUpgrading())
                         isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
-                    // what if there is no enough money to complete building?
-                    float minimalFond = cash.get() - 50f;
-
-                    if (minimalFond < 0 && getOwner().canPay(new Value(minimalFond * -1f)))
-                        getOwner().payWithoutRecord(this, new Value(minimalFond * -1f));
+                    // take credit in bank if not enough money to end construction !!
+                    Value minimalFond = new Value(cash.get() + 50f);
+                    if (!canPay(minimalFond))
+                        getBank().giveLackingMoney(this, minimalFond);
                 }
                 if (isBuyingComplete
                    || (getCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))

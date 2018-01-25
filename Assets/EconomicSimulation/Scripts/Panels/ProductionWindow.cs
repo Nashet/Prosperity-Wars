@@ -50,7 +50,7 @@ namespace Nashet.EconomicSimulation
             table.Refresh();
         }
        
-        private readonly Predicate<Factory> filterGovernmentOwned = (x => x.getOwner() != x.getCountry());
+        private readonly Predicate<Factory> filterGovernmentOwned = (x => !x.ownership.IsCountryOwnsControlPacket());
         public void OnGovernmentOwnedFilterChange(bool @checked)
         {
             if (@checked)
@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
-        private readonly Predicate<Factory> filterPrivateOwned = (x => x.getOwner() == x.getCountry());
+        private readonly Predicate<Factory> filterPrivateOwned = (x => x.ownership.IsCountryOwnsControlPacket());
         public void OnPrivateOwnedFilterChange(bool @checked)
         {
             if (@checked)

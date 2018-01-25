@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     abstract public class SimpleProduction : Producer
     {
-        private Agent owner;
+        //private Agent owner;
         private readonly FactoryType type;
         private readonly StorageSet inputProductsReserve = new StorageSet();
 
@@ -22,14 +22,14 @@ namespace Nashet.EconomicSimulation
             //sentToMarket = new Storage(this.getType().basicProduction.getProduct());
             changeProductionType(this.getType().basicProduction.getProduct());
         }
-        internal Agent getOwner()
-        {
-            return owner;
-        }
-        public void setOwner(Agent agent)
-        {
-            owner = agent;
-        }
+        //internal Agent getOwner()
+        //{
+        //    return owner;
+        //}
+        //public void setOwner(Agent agent)
+        //{
+        //    owner = agent;
+        //}
         public StorageSet getInputProductsReserve()
         {
             return inputProductsReserve;

@@ -415,7 +415,7 @@ namespace Nashet.EconomicSimulation
                 //Army sumArmy = new Army();
                 //sumArmy.add(this);
                 this.joinin(secondArmy);
-                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(this.getSize());
 
                 //secondArmy.clear();
 
@@ -447,7 +447,7 @@ namespace Nashet.EconomicSimulation
                 //Army sumArmy = new Army();
                 //sumArmy.add(this);
                 //this.joinin(secondArmy);
-                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(this.getSize());
 
                 //secondArmy.clear();
 

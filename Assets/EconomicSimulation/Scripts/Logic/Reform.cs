@@ -85,7 +85,7 @@ namespace Nashet.EconomicSimulation
         private readonly Modifier wantsReform;
         public readonly ModifiersList modVoting;
     }
-    public abstract class AbstractReform : Name, IClickable, ISortable
+    public abstract class AbstractReform : Name, IClickable
     {
         readonly string description;
 
@@ -114,11 +114,6 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.politicsPanel.selectReform(this);
             MainCamera.politicsPanel.Refresh();
-        }
-
-        public float getSortRank()
-        {
-            return GetHashCode();
         }
     }
     public class Government : AbstractReform, IHasGetCountry
@@ -264,7 +259,7 @@ namespace Nashet.EconomicSimulation
                 //nationalization
                 foreach (var factory in province.getAllFactories())
                 {
-                    factory.setOwner(country);
+                    factory.ownership.Nationilize(country);
                     factory.sendAllAvailableMoney(country);
                     factory.loans.setZero();
                     factory.deposits.setZero();

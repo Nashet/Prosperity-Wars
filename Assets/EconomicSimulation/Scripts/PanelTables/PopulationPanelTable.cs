@@ -23,8 +23,8 @@ namespace Nashet.EconomicSimulation
             cashOrder = new SortOrder(this, x => x.getCash());
 
             
-            provinceOrder = new SortOrder(this, x => x.getProvince().getSortRank());
-            cultureOrder = new SortOrder(this, x => x.culture.getSortRank());
+            provinceOrder = new SortOrder(this, x => x.getProvince().GetHashCode());
+            cultureOrder = new SortOrder(this, x => x.culture.GetHashCode());
             movementOrder = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
