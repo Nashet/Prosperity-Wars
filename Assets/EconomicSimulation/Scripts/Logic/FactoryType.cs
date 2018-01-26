@@ -315,7 +315,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Procent getMargin()
         {
-            return Procent.makeProcent(getPossibleProfit(), getCost());
+            return Procent.makeProcent(getPossibleProfit(), getCost(), false);
         }
 
         //internal bool canBuildNewFactory(FactoryType type)
@@ -354,9 +354,9 @@ namespace Nashet.EconomicSimulation
         }
 
         
-        public Procent GetWorkForceFulFilling()
-        {
-            return Procent.HundredProcent;
-        }
+        //public Procent GetWorkForceFulFilling()
+        //{
+        //    return Procent.HundredProcent;
+        //}
     }
 }

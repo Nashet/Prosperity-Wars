@@ -138,6 +138,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;
         /// <summary>For every nationalized enterprise</summary>
         internal static readonly Procent PopLoyaltyDropOnNationalization = new Procent(0.1f);
+        internal static readonly Procent PopBuyAssetsAtTime = new Procent(0.05f);
 
 
 

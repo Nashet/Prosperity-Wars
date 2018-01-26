@@ -28,87 +28,86 @@ namespace Nashet.EconomicSimulation
     {
         //Properties GetOwnership();
     }
-    public class Record
+    public class Share
     {
-        int howMuchOwns = 1;//default value
-        int howMuchWantsToSellOrBuy;
-        public int Has
+        private readonly Value howMuchOwns;//default value
+        private readonly Value howMuchWantsToSell = new Value(0f);
+        public Share(Value initialSumm)
         {
-            get { return howMuchOwns; }
-            set { howMuchOwns = value; }
+            howMuchOwns = new Value(initialSumm);
         }
-        public int ToSell
+        public void Increase(Value sum)
         {
-            get
-            {
-                if (howMuchWantsToSellOrBuy < 0)
-                    return howMuchWantsToSellOrBuy * -1;
-                else
-                    return 0;
-            }
+            howMuchOwns.add(sum);
         }
-        public int ToBuy
+        public void Decrease(Value sum)
         {
-            get
-            {
-                if (howMuchWantsToSellOrBuy > 0)
-                    return howMuchWantsToSellOrBuy;
-                else
-                    return 0;
-            }
+            howMuchOwns.subtract(sum);
         }
-        public void SetToSell(int add)
+        internal void CancelBuyOrder(Value sum)
         {
-            if (howMuchOwns + howMuchWantsToSellOrBuy - add < 0)
-                Debug.Log("I don't have that much");
+            howMuchWantsToSell.subtract(sum, false);
+        }
+        /// <summary>
+        /// Only for read!
+        /// </summary>        
+        public Value GetShare()
+        {
+            return new Value(howMuchOwns);
+        }
+        /// <summary>
+        /// Only for read!
+        /// </summary>        
+        public Value GetShareForSale()
+        {
+            return new Value(howMuchWantsToSell);
+        }
+        public void SetToSell(Value sum)
+        {
+            if (howMuchOwns.get() - howMuchWantsToSell.get() - sum.get() < 0f)
+                howMuchWantsToSell.set(howMuchOwns);
             else
-                howMuchWantsToSellOrBuy -= add;
+                howMuchWantsToSell.add(sum);
         }
-        public void SetToBuy(int add)
+        public override string ToString()
         {
-            howMuchWantsToSellOrBuy += add;
+            return howMuchOwns.ToString();
         }
     }
 
-    public class Owners : IOwnerShip<IShareOwner, Record>, IInvestable
+    public class Owners : IInvestable
+    // IOwnerShip<IShareOwner, Record>,
     {
-        private readonly IShareable parent;
-        // getPrice Modifier
-        private readonly Dictionary<IShareOwner, Record> ownership = new Dictionary<IShareOwner, Record>();
+        private readonly Factory parent;
+        private readonly Procent marketPriceModifier = new Procent(Procent.HundredProcent);
+        private readonly Dictionary<IShareOwner, Share> ownership = new Dictionary<IShareOwner, Share>();
+        private Value totallyInvested = new Value(0f);
         public Owners(IShareable parent)
         {
-            this.parent = parent;
+            this.parent = parent as Factory;
         }
-        private bool IsCorrectData(int value)
+
+        public void Add(IShareOwner owner, Value value)
         {
-            if (value <= 0)
+            //if (IsCorrectData(value.))
             {
-                Debug.Log("Attempt to transfer negative amount");
-                return false;
-            }
-            else
-                return true;
-        }
-        public void Add(IShareOwner owner, int value)
-        {
-            if (IsCorrectData(value))
-            {
-                Record record;
+                Share record;
                 if (ownership.TryGetValue(owner, out record))
-                    record.Has += value;
+                    record.Increase(value);
                 else
-                    ownership.Add(owner, new Record());
+                    ownership.Add(owner, new Share(value));
+                totallyInvested.add(value);
                 //owner.GetOwnership().Add(parent, value);
             }
         }
-        private void Remove(IShareOwner fromWho, int howMuchRemove)
+        private void Remove(IShareOwner fromWho, Value howMuchRemove)
         {
-            Record found;
-            if (ownership.TryGetValue(fromWho, out found))
+            Share record;
+            if (ownership.TryGetValue(fromWho, out record))
             {
-                if (found.Has > howMuchRemove)
-                    found.Has -= howMuchRemove;
-                else if (found.Has == howMuchRemove)
+                if (record.GetShare().isBiggerThan(howMuchRemove))
+                    record.Decrease(howMuchRemove);
+                else if (record.GetShare().IsEqual(howMuchRemove))
                     ownership.Remove(fromWho);
                 else
                     Debug.Log("Doesn't have that much");
@@ -118,41 +117,50 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Test it!!
         /// </summary>        
-        public bool Transfer(IShareOwner oldOwner, IShareOwner newOwner, int valueToTransfer)
+        public bool Transfer(IShareOwner oldOwner, IShareOwner newOwner, Value money)
         {
-            if (IsCorrectData(valueToTransfer))
+            //if (IsCorrectData(share.get()))
+            //{
+            Share oldOwnerAsset;
+            if (ownership.TryGetValue(oldOwner, out oldOwnerAsset))
             {
-                Record record;
-                if (ownership.TryGetValue(oldOwner, out record))
+                if (oldOwnerAsset.GetShare().isBiggerOrEqual(money))
                 {
-                    if (record.Has >= valueToTransfer)
-                    {
-                        Add(newOwner, valueToTransfer);
-                        Remove(oldOwner, valueToTransfer);
-                        //oldOwner.GetOwnership().Transfer(oldOwner.GetOwnership().parent, newOwner, valueToTransfer);
-                        return true;
-                    }
+                    Share newOwnerAsset;
+                    if (ownership.TryGetValue(newOwner, out newOwnerAsset))
+                        newOwnerAsset.Increase(money);
                     else
-                    {
-                        TransferAll(oldOwner, newOwner);
-                        Debug.Log("Not enough property to transfer");
-                        return false;
-                    }
+                        ownership.Add(newOwner, new Share(money));
+
+                    Remove(oldOwner, money);
+                    return true;
                 }
                 else
                 {
-                    Debug.Log("No such owner");
+                    TransferAll(oldOwner, newOwner);
+                    Debug.Log("Not enough property to transfer");
                     return false;
                 }
             }
-            else return false;
+            else
+            {
+                Debug.Log("No such owner");
+                return false;
+            }
+            //}
+            //else return false;
         }
         internal void TransferAll(IShareOwner oldOwner, IShareOwner newOwner, bool showMessageAboutOperationFails = true)
         {
-            Record record;
-            if (ownership.TryGetValue(oldOwner, out record))
+            Share oldOwnerAsset;
+            if (ownership.TryGetValue(oldOwner, out oldOwnerAsset))
             {
-                Add(newOwner, record.Has);
+                Share newOwnerAsset;
+                if (ownership.TryGetValue(newOwner, out newOwnerAsset))
+                    newOwnerAsset.Increase(oldOwnerAsset.GetShare());
+                else
+                    ownership.Add(newOwner, new Share(oldOwnerAsset.GetShare()));
+
                 ownership.Remove(oldOwner);
             }
             else
@@ -175,45 +183,40 @@ namespace Nashet.EconomicSimulation
                     }
                 }
         }
-        public IEnumerable<KeyValuePair<IShareOwner, Record>> GetAll()
+        public IEnumerable<KeyValuePair<IShareOwner, Share>> GetAll()
         {
             foreach (var item in ownership)
             {
                 yield return item;
             }
         }
-        public IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllWithProcents()
+        public IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
-            var total = GetAllOwnership();
+            var total = GetAllAssetsValue();
             foreach (var item in ownership)
             {
-                yield return new KeyValuePair<IShareOwner, Procent>(item.Key, Procent.makeProcent(item.Value.Has, total));
+                yield return new KeyValuePair<IShareOwner, Procent>(item.Key, Procent.makeProcent(item.Value.GetShare(), total));
             }
         }
-        private int GetAllOwnership()
-        {
-            int res = 0;
-            foreach (var item in ownership)
-            {
-                res += item.Value.Has;
-            }
-            return res;
-        }
+
         internal bool HasOwner(IShareOwner pop)
         {
             return ownership.ContainsKey(pop);
         }
         internal bool IsCountryOwnsControlPacket()
         {
-            int ownedByAnyCountry = 0;
-            int total = 0;
+            Value ownedByAnyCountry = new Value(0f);
+            Value total = new Value(0f);
             foreach (var item in GetAll())
             {
+                var value = item.Value.GetShare();
                 if (item.Key is Country)
-                    ownedByAnyCountry += item.Value.Has;
-                total += item.Value.Has;
+                    ownedByAnyCountry.add(value);
+                total.add(value);
             }
-            if ((float)ownedByAnyCountry / total >= 0.5f)
+
+            var res = Procent.makeProcent(ownedByAnyCountry, total);
+            if (res.isBiggerOrEqual(Procent._50Procent))
                 return true;
             else
                 return false;
@@ -225,62 +228,137 @@ namespace Nashet.EconomicSimulation
 
         internal bool IsOnSale()
         {
-            return ownership.Any(x => x.Value.ToSell > 0);
+            return ownership.Any(x => x.Value.GetShareForSale().isNotZero());
         }
-        internal int HowMuchSelling(IShareOwner owner)
+        /// <summary>
+        /// Readonly !!
+        /// </summary>        
+        internal Procent HowMuchSelling(IShareOwner owner)
         {
-            Record record;
+            Share record;
             if (ownership.TryGetValue(owner, out record))
-                return record.ToSell;
+                return Procent.makeProcent(record.GetShareForSale(), GetAllAssetsValue());
             else
-                return 0;
-        }
-        internal int HowMuchBuying(IShareOwner owner)
-        {
-            Record record;
-            if (ownership.TryGetValue(owner, out record))
-                return record.ToBuy;
-            else
-                return 0;
+                return new Procent(Procent.ZeroProcent);
         }
 
-        public void SetToSell(IShareOwner owner, int howMuchSell)
+        public void SetToSell(IShareOwner owner, Procent share)
         {
-            Record record;
+
+            Share record;
             if (ownership.TryGetValue(owner, out record))
-                record.SetToSell(howMuchSell);
+            {
+                var value = GetShareAssetsValue(share);
+                record.SetToSell(value);
+            }
             else
                 Debug.Log("No such owner");
         }
-        public void SetToBuy(IShareOwner owner, int howMuchBuy)
+        public void CancelBuyOrder(IShareOwner owner, Procent share)
         {
-            Record record;
+            Share record;
             if (ownership.TryGetValue(owner, out record))
             {
-                record.SetToBuy(howMuchBuy);
+                var value = GetShareAssetsValue(share);
+                record.CancelBuyOrder(value);
             }
-            else Debug.Log("No such owner");
+            else
+                Debug.Log("No such owner");
         }
 
-        internal KeyValuePair<IShareOwner, Record> GetRandomSale()
+        //internal KeyValuePair<IShareOwner, Record> GetRandomSaleBiggerThan(Value desireableValue)
+        //{
+        //    return ownership.Where(x => x.Value.GetAssetForSale().isBiggerOrEqual(desireableValue)).Random();
+        //}
+        internal Value GetAllAssetsValue()
         {
-            return ownership.Where(x => x.Value.ToSell > 0).Random();
+            return new Value(totallyInvested);
         }
-        internal Value GetPrice()
-        { }
-        internal void Buy(IShareOwner buyer, int howMuch)
+        internal Value GetMarketValue()
         {
-            var agent = buyer as Agent;
-            var purhase = GetRandomSale();
-            var cost = GetPrice();
-            cost.multiply(howMuch);
-            if (agent.pay(purhase.Key as Agent, cost))
+            return marketPriceModifier.multiplyOutside(totallyInvested);
+        }
+        internal Value GetShareMarketValue(Procent share)
+        {
+            return share.getProcentOf(GetMarketValue());
+        }
+        internal Value GetShareAssetsValue(Procent share)
+        {
+            return share.getProcentOf(GetAllAssetsValue());
+        }
+        internal void CalcMarketPrice()
+        {
+            if (IsOnSale())
             {
-                Transfer(purhase.Key, buyer, howMuch);
-                Debug.Log(buyer + " bough " + howMuch + " of " + parent);
+                marketPriceModifier.subtract(0.01f, false);
+                if (marketPriceModifier.isZero())
+                    marketPriceModifier.set(0.01f);
             }
-            
+            else
+                marketPriceModifier.add(0.01f);
         }
+        /// <summary>
+        /// Buy that share (or less). Assumes that there is something on sale. Assumes that buyer has enough money
+        /// </summary>        
+        internal void BuyStandardShare(IShareOwner buyer)
+        {
+
+            var purchaseValue = GetShareAssetsValue(Options.PopBuyAssetsAtTime);
+            var sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().IsEqual(purchaseValue));
+
+            if (sharesToBuy.Count() == 0)
+            {
+                //if no equal sharesToBuy find smaller one
+                sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().isSmallerThan(purchaseValue)
+                && x.Value.GetShareForSale().isNotZero());
+            }
+            if (sharesToBuy.Count() == 0)
+            {
+                //if no smaller sharesToBuy find bigger one
+                sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().isBiggerThan(purchaseValue)
+                && x.Value.GetShareForSale().isNotZero());
+            }
+            if (sharesToBuy.Count() != 0)
+            {
+                var shareToBuy = sharesToBuy.Random();
+                var cost = shareToBuy.Value.GetShareForSale();
+                if (cost.isBiggerThan(purchaseValue))
+                    cost.set(purchaseValue);
+                var agent = buyer as Agent;
+
+                if (agent.pay(shareToBuy.Key as Agent, cost))
+                {
+                    Transfer(shareToBuy.Key, buyer, cost);
+                    Debug.Log(buyer + " bough " + shareToBuy.Value + " of " + parent + " from " + shareToBuy.Key);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Margin per market value
+        /// </summary>        
+        public Procent getMargin()
+        {
+            return Procent.makeProcent(getCost(), GetMarketValue(), false);
+        }
+        /// <summary>
+        /// Cost of standard share
+        /// </summary>        
+        public Value getCost()
+        {
+            return Options.PopBuyAssetsAtTime.getProcentOf(GetMarketValue());
+        }
+
+        public bool canProduce(Product product)
+        {
+            return parent.getType().canProduce(product);
+        }
+
+        //public Procent GetWorkForceFulFilling()
+        //{
+        //    return new Procent(Procent.HundredProcent);
+        //    //return parent.GetWorkForceFulFilling();
+        //}
     }
 
 }

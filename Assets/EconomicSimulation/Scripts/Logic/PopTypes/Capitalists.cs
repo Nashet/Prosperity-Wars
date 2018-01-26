@@ -8,7 +8,7 @@ using System;
 
 namespace Nashet.EconomicSimulation
 {
-    
+
     public class Capitalists : Investor
     {
         public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture)
@@ -73,9 +73,7 @@ namespace Nashet.EconomicSimulation
             //)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects(
-                    x => x.getMargin().get() >= Options.minMarginToInvest
-                    && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest));
+                var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest);
                 var project = projects.MaxBy(x => x.getMargin().get());
 
                 if (project != null)
@@ -85,14 +83,14 @@ namespace Nashet.EconomicSimulation
                         getBank().giveLackingMoney(this, investmentCost);
                     if (canPay(investmentCost))
                     {
-                        
+
                         var factoryToBuild = project as FactoryType;
                         if (factoryToBuild != null) // build new factory
                         {
-                            Factory factory = new Factory(getProvince(), this, factoryToBuild);
+                            Factory factory = new Factory(getProvince(), this, factoryToBuild, investmentCost);
                             payWithoutRecord(factory, investmentCost);
                         }
-                        else 
+                        else
                         {
                             Factory factory = project as Factory;
                             if (factory != null) // upgrade existing factory
@@ -101,12 +99,12 @@ namespace Nashet.EconomicSimulation
                             {
                                 Owners buyShare = project as Owners;
                                 if (buyShare != null) // buy part of existing factory
-                                    buyShare.Buy(this, 1);
+                                    buyShare.BuyStandardShare(this);
                                 else
                                     Debug.Log("Unknown investment type");
                             }
-                            
-                        }                        
+
+                        }
                     }
                 }
             }

@@ -83,8 +83,7 @@ namespace Nashet.EconomicSimulation
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
                 var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest
-                && x.canProduce(getProvince().getResource())
-                && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
+                && x.canProduce(getProvince().getResource())                
                 );
 
                 var project = projects.MaxBy(x => x.getMargin().get());
@@ -100,7 +99,7 @@ namespace Nashet.EconomicSimulation
                             // try to build for grain
                             if (storage.has(resourceToBuild))
                             {
-                                var factory = new Factory(getProvince(), this, factoryToBuild);
+                                var factory = new Factory(getProvince(), this, factoryToBuild, Game.market.getCost(resourceToBuild));
                                 storage.send(factory.getInputProductsReserve(), resourceToBuild);
                                 factory.constructionNeeds.setZero();
                             }
@@ -111,7 +110,7 @@ namespace Nashet.EconomicSimulation
                                     getBank().giveLackingMoney(this, investmentCost);
                                 if (canPay(investmentCost))
                                 {
-                                    var factory = new Factory(getProvince(), this, factoryToBuild);  // build new one              
+                                    var factory = new Factory(getProvince(), this, factoryToBuild, investmentCost);  // build new one              
                                     payWithoutRecord(factory, investmentCost);
                                 }
                             }
@@ -129,7 +128,19 @@ namespace Nashet.EconomicSimulation
                                 //payWithoutRecord(factory, investmentCost);
                             }
                             else
-                                Debug.Log("Unknown investment type");
+                            {
+                                Owners buyShare = project as Owners;
+                                if (buyShare != null) // buy part of existing factory
+                                {
+                                    Value investmentCost = buyShare.getCost();
+                                    if (!canPay(investmentCost))
+                                        getBank().GetLackingMoney(investmentCost);
+                                    if (canPay(investmentCost))
+                                        buyShare.BuyStandardShare(this);
+                                }
+                                else
+                                    Debug.Log("Unknown investment type");
+                            }
                         }
                     }
                 }

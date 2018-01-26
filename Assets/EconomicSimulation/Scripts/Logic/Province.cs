@@ -1117,7 +1117,10 @@ namespace Nashet.EconomicSimulation
             //if (owner == Game.Player)
             //    Debug.Log("\nnew Testing: " + this);
 
-            var upgradeInvetments = getAllFactories().Where(x => canUpgradeFactory(x.getType()) && predicate(x)).Cast<IInvestable>();
+            var upgradeInvetments = getAllFactories().Where(x => canUpgradeFactory(x.getType()) 
+            && predicate(x)
+            && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
+            ).Cast<IInvestable>();
             //if (owner == Game.Player)
             //    upgradeInvetments.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
 

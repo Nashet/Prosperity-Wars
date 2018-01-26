@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         Procent getMargin();
         Value getCost();
         bool canProduce(Product product);
-        Procent GetWorkForceFulFilling();
+        //Procent GetWorkForceFulFilling();
     }
 
 }

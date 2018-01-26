@@ -9,6 +9,7 @@ namespace Nashet.ValueSpace
     public class Procent : Value
     {
         internal static readonly Procent HundredProcent = new Procent(1f);
+        internal static readonly Procent _50Procent = new Procent(0.5f);
         internal static readonly Procent ZeroProcent = new Procent(0f);
         internal static readonly Procent Max999 = new Procent(999.99f);
         internal static readonly Procent Max = new Procent(int.MaxValue / 1000f);

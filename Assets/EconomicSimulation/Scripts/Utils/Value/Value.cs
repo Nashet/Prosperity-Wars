@@ -36,6 +36,10 @@ namespace Nashet.ValueSpace
         {
             return this.value > invalue.value;
         }
+        public bool IsEqual(Value invalue)
+        {
+            return this.value == invalue.value;
+        }
         /// <summary>
         /// Returns true if bigger than argument + barrier
         /// </summary>

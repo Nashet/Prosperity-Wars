@@ -58,8 +58,7 @@ namespace Nashet.EconomicSimulation
 
             destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(factory, Game.Player, out destroyButton.GetComponent<ToolTipHandler>().text);
 
-            sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponent<ToolTipHandler>().text);
-            buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponent<ToolTipHandler>().text);
+            
             nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(factory, Game.Player, out nationalizeButton.GetComponent<ToolTipHandler>().text);
 
             this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(factory, Game.Player, out priority.GetComponent<ToolTipHandler>().text);
@@ -80,8 +79,8 @@ namespace Nashet.EconomicSimulation
                 Factory.modifierEfficiency.getModifier(factory, out efficiencyText.GetComponent<ToolTipHandler>().text);
 
                 var sb = new StringBuilder();
-                //sb.Append()
-                sb.Append(factory.getType().name).Append(" level: ").Append(factory.getLevel()).Append(" in ").Append(factory.getProvince());
+                
+                sb.Append(factory.getType().name).Append(" in ").Append(factory.getProvince()).Append(" level ").Append(factory.getLevel());
                 caption.text = sb.ToString();
 
                 sb = new StringBuilder();
@@ -111,7 +110,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(factory.getInputFactor());
                 sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(" Salary(total): ").Append(factory.getSalaryCost());
-                sb.Append("\nOwners: ").Append(factory.ownership.GetAllWithProcents().getString(" ", "\n"));
+                sb.Append("\nOwners: ").Append(factory.ownership.GetAllShares().getString(" ", "\n"));
 
                 if (factory.constructionNeeds.Count() > 0)
                     sb.Append("\nUpgrade needs: ").Append(factory.constructionNeeds);
@@ -127,6 +126,8 @@ namespace Nashet.EconomicSimulation
 
                 if (factory.loans.get() > 0f)
                     sb.Append("\nLoan: ").Append(factory.loans.ToString());
+                sb.Append("\nAssets value: ").Append(factory.ownership.GetAllAssetsValue());
+                sb.Append(" Market value: ").Append(factory.ownership.GetMarketValue());
 
                 //if (Game.devMode)
                 //    sb.Append("\nHowMuchHiredLastTurn ").Append(shownFactory.getHowMuchHiredLastTurn());
@@ -176,21 +177,24 @@ namespace Nashet.EconomicSimulation
         }
         private void RefreshBuySellButtons()
         {
-            var buying = factory.ownership.HowMuchBuying(Game.Player);
+            sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponent<ToolTipHandler>().text);
+            buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponent<ToolTipHandler>().text);
+
+            //var buying = factory.ownership.HowMuchBuying(Game.Player);
             //if (buying > 1)
-            buyButton.GetComponentInChildren<Text>().text = "Buying "+ buying;
+            //buyButton.GetComponentInChildren<Text>().text = "Buying "+ buying;
             var selling = factory.ownership.HowMuchSelling(Game.Player);
-            sellButton.GetComponentInChildren<Text>().text = "Selling " + selling;
+            sellButton.GetComponentInChildren<Text>().text = "I'm Selling " + selling;
         }
         public void OnBuyClick()
         {
-            factory.ownership.SetToBuy(Game.Player, 1);
+            factory.ownership.CancelBuyOrder(Game.Player, Options.PopBuyAssetsAtTime);
             RefreshBuySellButtons();
 
         }
         public void OnSellClick()
         {
-            factory.ownership.SetToSell(Game.Player, 1);
+            factory.ownership.SetToSell(Game.Player, Options.PopBuyAssetsAtTime);
             RefreshBuySellButtons();
         }
         public void onUpgradeClick()

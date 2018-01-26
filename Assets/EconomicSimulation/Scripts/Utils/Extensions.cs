@@ -396,8 +396,13 @@ namespace Nashet.Utils
 
         public static T Random<T>(this IEnumerable<T> enumerable, System.Random rand)
         {
-            int index = rand.Next(0, enumerable.Count());
-            return enumerable.ElementAt(index);
+            if (enumerable == Enumerable.Empty<T>() || enumerable.Count() == 0)
+                return default(T);
+            else
+            {
+                int index = rand.Next(enumerable.Count());
+                return enumerable.ElementAt(index);
+            }
         }
         /// <summary>
         ///returns an empty List<T> if didn't find anything

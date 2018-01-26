@@ -692,7 +692,7 @@ namespace Nashet.EconomicSimulation
                 var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.getBuildNeeds().getContainer());
                 if (buildNeeds != null)
                 {
-                    var newFactory = new Factory(province, this, propositionFactory);
+                    var newFactory = new Factory(province, this, propositionFactory, null);
                     consumeFromCountryStorage(buildNeeds, this);
                     return true;
                     //newFactory.constructionNeeds.setZero();

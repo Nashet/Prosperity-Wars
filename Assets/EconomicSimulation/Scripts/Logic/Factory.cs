@@ -175,14 +175,14 @@ namespace Nashet.EconomicSimulation
              && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
             });
 
-        internal Factory(Province province, IShareOwner investor, FactoryType type) : base(type, province)
+        internal Factory(Province province, IShareOwner investor, FactoryType type, Value cost) : base(type, province)
         {
             ownership = new Owners(this);
             currentInvestor = investor;
             //assuming this is level 0 building        
             constructionNeeds = getType().getBuildNeeds();
             province.allFactories.Add(this);
-            ownership.Add(investor, 1);
+            ownership.Add(investor, cost);
 
             salary.set(province.getLocalMinSalary());
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
@@ -360,10 +360,9 @@ namespace Nashet.EconomicSimulation
                 return Procent.ZeroProcent;
             else
             {
-                var divider = Game.market.getCost(getUpgradeNeeds()).get() * level;
-                if (divider == 0f)
-                    Debug.Log("Division by zero in getMargin()");
-                return Procent.makeProcent(getProfit(), divider, false);
+                //var divider = Game.market.getCost(getUpgradeNeeds()).get() * level;
+                //return Procent.makeProcent(getProfit(), divider, true);
+                return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
             }
         }
         internal Value getReopenCost()
@@ -677,7 +676,7 @@ namespace Nashet.EconomicSimulation
             }
             // send remaining money to owners
 
-            foreach (var item in ownership.GetAllWithProcents())
+            foreach (var item in ownership.GetAllShares())
             {
                 pay(item.Key as Agent, item.Value.getProcentOf(cash), false);
             }
@@ -767,7 +766,7 @@ namespace Nashet.EconomicSimulation
 
                 if (dividends.isNotZero())
                 {
-                    foreach (var item in ownership.GetAllWithProcents())
+                    foreach (var item in ownership.GetAllShares())
                     {
                         Value sentToOwner = dividends.multiplyOutside(item.Value);
                         pay(item.Key as Agent, sentToOwner);
@@ -821,8 +820,12 @@ namespace Nashet.EconomicSimulation
             upgrading = true;
             constructionNeeds.add(getUpgradeNeeds().getCopy());
             if ((byWhom as Agent).getCountry().economy.getValue() != Economy.PlannedEconomy)
-                (byWhom as Agent).payWithoutRecord(this, Game.market.getCost(getUpgradeNeeds()));
-            ownership.Add(byWhom, 1);
+            {
+                var cost = Game.market.getCost(getUpgradeNeeds());
+                (byWhom as Agent).payWithoutRecord(this, cost);
+                ownership.Add(byWhom, cost);
+            }
+            
         }
 
         internal int getDaysInConstruction()
@@ -962,12 +965,19 @@ namespace Nashet.EconomicSimulation
                     {
                         var investor = currentInvestor as Agent;
                         if (investor.canPay(needExtraFonds))
+                        {
                             investor.pay(this, needExtraFonds);
+                            ownership.Add(currentInvestor, needExtraFonds);
+                        }
+
                         else
                         {
                             investor.getBank().giveLackingMoney(investor, needExtraFonds);
                             if (investor.canPay(needExtraFonds))
+                            {
                                 investor.pay(this, needExtraFonds);
+                                ownership.Add(currentInvestor, needExtraFonds);
+                            }
                         }
                     }
                 }

@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
                 Value cost = selectedFactoryType.getCost();
                 if (Game.Player.canPay(cost))
                 {
-                    var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
+                    var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType, cost);
                     Game.Player.payWithoutRecord(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
                 Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
+                    Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType, Game.market.getCost(resourceToBuild));
                     //wallet.pay(fact.wallet, new Value(100f));
                     Game.Player.countryStorageSet.subtract(needFood);
                     buildSomething = true;

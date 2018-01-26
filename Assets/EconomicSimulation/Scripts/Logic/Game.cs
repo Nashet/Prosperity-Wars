@@ -607,7 +607,8 @@ namespace Nashet.EconomicSimulation
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here                   
                             factory.payDividend();
-                            factory.simulateClosing(); // that too
+                            factory.simulateClosing(); // that too by owners
+                            factory.ownership.CalcMarketPrice();
                         }
                         //todo that should be done by owners, like capitalists or bureaucrats 
                         factory.simulateOpening();
