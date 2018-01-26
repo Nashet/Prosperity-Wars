@@ -5,15 +5,80 @@ using Nashet.Utils;
 using Nashet.ValueSpace;
 using System;
 using System.Linq;
-/// <summary>
-/// Represents ability to own enterprise shares
-/// </summary>
-public interface IShareOwner { }
+
 namespace Nashet.EconomicSimulation
 {
-    public class Ownership
+
+    /// <summary>
+    /// 
+    /// </summary>
+    //public struct StockShare
+    //{
+    //    private int amount;
+    //    private int wantToSell;
+    //}
+    /// <summary>
+    /// Represent entity which can be owned by several owners as joint stock company
+    /// </summary>
+    public interface IShareable { }
+    /// <summary>
+    /// Represents ability to own enterprise shares
+    /// </summary>
+    public interface IShareOwner
     {
-        private readonly Dictionary<IShareOwner, int> ownership = new Dictionary<IShareOwner, int>();
+        //Properties GetOwnership();
+    }
+    public class Record
+    {
+        int howMuchOwns = 1;//default value
+        int howMuchWantsToSellOrBuy;
+        public int Has
+        {
+            get { return howMuchOwns; }
+            set { howMuchOwns = value; }
+        }
+        public int ToSell
+        {
+            get
+            {
+                if (howMuchWantsToSellOrBuy < 0)
+                    return howMuchWantsToSellOrBuy * -1;
+                else
+                    return 0;
+            }
+        }
+        public int ToBuy
+        {
+            get
+            {
+                if (howMuchWantsToSellOrBuy > 0)
+                    return howMuchWantsToSellOrBuy;
+                else
+                    return 0;
+            }
+        }
+        public void SetToSell(int add)
+        {
+            if (howMuchOwns + howMuchWantsToSellOrBuy - add < 0)
+                Debug.Log("I don't have that much");
+            else
+                howMuchWantsToSellOrBuy -= add;
+        }
+        public void SetToBuy(int add)
+        {
+            howMuchWantsToSellOrBuy += add;
+        }
+    }
+
+    public class Owners : IOwnerShip<IShareOwner, Record>, IInvestable
+    {
+        private readonly IShareable parent;
+        // getPrice Modifier
+        private readonly Dictionary<IShareOwner, Record> ownership = new Dictionary<IShareOwner, Record>();
+        public Owners(IShareable parent)
+        {
+            this.parent = parent;
+        }
         private bool IsCorrectData(int value)
         {
             if (value <= 0)
@@ -27,17 +92,26 @@ namespace Nashet.EconomicSimulation
         public void Add(IShareOwner owner, int value)
         {
             if (IsCorrectData(value))
-                ownership.AddMy(owner, value);
+            {
+                Record record;
+                if (ownership.TryGetValue(owner, out record))
+                    record.Has += value;
+                else
+                    ownership.Add(owner, new Record());
+                //owner.GetOwnership().Add(parent, value);
+            }
         }
-        private void Remove(IShareOwner fromWho, int howMuch)
+        private void Remove(IShareOwner fromWho, int howMuchRemove)
         {
-            int found;
+            Record found;
             if (ownership.TryGetValue(fromWho, out found))
             {
-                if (found > howMuch)
-                    found -= howMuch;
-                else
+                if (found.Has > howMuchRemove)
+                    found.Has -= howMuchRemove;
+                else if (found.Has == howMuchRemove)
                     ownership.Remove(fromWho);
+                else
+                    Debug.Log("Doesn't have that much");
             }
             Debug.Log("No such owner");
         }
@@ -48,14 +122,14 @@ namespace Nashet.EconomicSimulation
         {
             if (IsCorrectData(valueToTransfer))
             {
-                int found;
-                if (ownership.TryGetValue(oldOwner, out found))
+                Record record;
+                if (ownership.TryGetValue(oldOwner, out record))
                 {
-                    if (found >= valueToTransfer)
+                    if (record.Has >= valueToTransfer)
                     {
-                        //ownership.AddMy(newOwner, valueToTransfer);
-                        found += valueToTransfer;
+                        Add(newOwner, valueToTransfer);
                         Remove(oldOwner, valueToTransfer);
+                        //oldOwner.GetOwnership().Transfer(oldOwner.GetOwnership().parent, newOwner, valueToTransfer);
                         return true;
                     }
                     else
@@ -75,10 +149,10 @@ namespace Nashet.EconomicSimulation
         }
         internal void TransferAll(IShareOwner oldOwner, IShareOwner newOwner, bool showMessageAboutOperationFails = true)
         {
-            int found;
-            if (ownership.TryGetValue(oldOwner, out found))
+            Record record;
+            if (ownership.TryGetValue(oldOwner, out record))
             {
-                ownership.AddMy(newOwner, found);
+                Add(newOwner, record.Has);
                 ownership.Remove(oldOwner);
             }
             else
@@ -101,7 +175,7 @@ namespace Nashet.EconomicSimulation
                     }
                 }
         }
-        public IEnumerable<KeyValuePair<IShareOwner, int>> GetAll()
+        public IEnumerable<KeyValuePair<IShareOwner, Record>> GetAll()
         {
             foreach (var item in ownership)
             {
@@ -113,7 +187,7 @@ namespace Nashet.EconomicSimulation
             var total = GetAllOwnership();
             foreach (var item in ownership)
             {
-                yield return new KeyValuePair<IShareOwner, Procent>(item.Key, Procent.makeProcent(item.Value, total));
+                yield return new KeyValuePair<IShareOwner, Procent>(item.Key, Procent.makeProcent(item.Value.Has, total));
             }
         }
         private int GetAllOwnership()
@@ -121,7 +195,7 @@ namespace Nashet.EconomicSimulation
             int res = 0;
             foreach (var item in ownership)
             {
-                res += item.Value;
+                res += item.Value.Has;
             }
             return res;
         }
@@ -136,8 +210,8 @@ namespace Nashet.EconomicSimulation
             foreach (var item in GetAll())
             {
                 if (item.Key is Country)
-                    ownedByAnyCountry += item.Value;
-                total += item.Value;
+                    ownedByAnyCountry += item.Value.Has;
+                total += item.Value.Has;
             }
             if ((float)ownedByAnyCountry / total >= 0.5f)
                 return true;
@@ -148,5 +222,65 @@ namespace Nashet.EconomicSimulation
         {
             return ownership.ContainsKey(owner) && ownership.Count == 1;
         }
+
+        internal bool IsOnSale()
+        {
+            return ownership.Any(x => x.Value.ToSell > 0);
+        }
+        internal int HowMuchSelling(IShareOwner owner)
+        {
+            Record record;
+            if (ownership.TryGetValue(owner, out record))
+                return record.ToSell;
+            else
+                return 0;
+        }
+        internal int HowMuchBuying(IShareOwner owner)
+        {
+            Record record;
+            if (ownership.TryGetValue(owner, out record))
+                return record.ToBuy;
+            else
+                return 0;
+        }
+
+        public void SetToSell(IShareOwner owner, int howMuchSell)
+        {
+            Record record;
+            if (ownership.TryGetValue(owner, out record))
+                record.SetToSell(howMuchSell);
+            else
+                Debug.Log("No such owner");
+        }
+        public void SetToBuy(IShareOwner owner, int howMuchBuy)
+        {
+            Record record;
+            if (ownership.TryGetValue(owner, out record))
+            {
+                record.SetToBuy(howMuchBuy);
+            }
+            else Debug.Log("No such owner");
+        }
+
+        internal KeyValuePair<IShareOwner, Record> GetRandomSale()
+        {
+            return ownership.Where(x => x.Value.ToSell > 0).Random();
+        }
+        internal Value GetPrice()
+        { }
+        internal void Buy(IShareOwner buyer, int howMuch)
+        {
+            var agent = buyer as Agent;
+            var purhase = GetRandomSale();
+            var cost = GetPrice();
+            cost.multiply(howMuch);
+            if (agent.pay(purhase.Key as Agent, cost))
+            {
+                Transfer(purhase.Key, buyer, howMuch);
+                Debug.Log(buyer + " bough " + howMuch + " of " + parent);
+            }
+            
+        }
     }
+
 }

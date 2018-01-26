@@ -493,7 +493,7 @@ namespace Nashet.EconomicSimulation
             if (isOnlyCountry())
                 return null;
             else
-                return getNeighborProvinces().PickRandom();
+                return getNeighborProvinces().Random();
         }
         private bool isOnlyCountry()
         {
@@ -505,11 +505,11 @@ namespace Nashet.EconomicSimulation
 
         internal Province getRandomOwnedProvince()
         {
-            return ownedProvinces.PickRandom();
+            return ownedProvinces.Random();
         }
         internal Province getRandomOwnedProvince(Predicate<Province> predicate)
         {
-            return ownedProvinces.PickRandom(predicate);
+            return ownedProvinces.Random(predicate);
         }
 
         internal void setCapitalTextMesh(Province province)
@@ -879,7 +879,7 @@ namespace Nashet.EconomicSimulation
 
         private void aiInvent()
         {
-            var invention = getUninvented().ToList().PickRandom(x => this.sciencePoints.isBiggerOrEqual(x.Key.getCost()));
+            var invention = getUninvented().ToList().Random(x => this.sciencePoints.isBiggerOrEqual(x.Key.getCost()));
             if (invention.Key != null)
                 invent(invention.Key);
         }
@@ -1382,6 +1382,11 @@ namespace Nashet.EconomicSimulation
             }
             else
                 MainCamera.diplomacyPanel.show(this);
-        }        
+        }
+        //private readonly Properties stock = new Properties();
+        //public Properties GetOwnership()
+        //{
+        //    return stock;
+        //}
     }
 }

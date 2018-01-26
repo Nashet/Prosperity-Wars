@@ -306,11 +306,11 @@ namespace Nashet.EconomicSimulation
         }
         internal Country getRandomCore()
         {
-            return cores.PickRandom();
+            return cores.Random();
         }
         internal Country getRandomCore(Predicate<Country> predicate)
         {
-            return cores.FindAll(predicate).PickRandom();
+            return cores.FindAll(predicate).Random();
         }
         /// <summary>
         /// Secedes province to Taker. Also kills old province owner if it was last province
@@ -392,7 +392,7 @@ namespace Nashet.EconomicSimulation
 
         internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
         {
-            return allProvinces.PickRandom(predicate);
+            return allProvinces.Random(predicate);
         }
         internal List<Province> getNeigbors(Predicate<Province> predicate)
         {
@@ -975,11 +975,11 @@ namespace Nashet.EconomicSimulation
 
         private PopUnit getRandomPop(Predicate<PopUnit> predicate)
         {
-            return allPopUnits.PickRandom(predicate);
+            return allPopUnits.Random(predicate);
         }
         private PopUnit getRandomPop()
         {
-            return allPopUnits.PickRandom();
+            return allPopUnits.Random();
         }
 
         internal bool hasAnotherPop(PopType type)
@@ -1093,7 +1093,15 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.selectProvince(this.getID());
         }
-
+        IEnumerable<Owners> GetSales()
+        {
+            foreach (var item in allFactories)
+            {
+                // sales go on only on owner's permission
+                if (item.ownership.IsOnSale())
+                    yield return item.ownership;
+            }
+        }
         public IEnumerable<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
         {
             //var listA = Enumerable.Range(0, 10).Select(i => new TestClassA());
@@ -1109,15 +1117,22 @@ namespace Nashet.EconomicSimulation
             //if (owner == Game.Player)
             //    Debug.Log("\nnew Testing: " + this);
 
-            var first = getAllFactories().Where(x => canUpgradeFactory(x.getType()) && predicate(x)).Cast<IInvestable>();
+            var upgradeInvetments = getAllFactories().Where(x => canUpgradeFactory(x.getType()) && predicate(x)).Cast<IInvestable>();
             //if (owner == Game.Player)
-            //    first.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
+            //    upgradeInvetments.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
 
-            var second = FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).Cast<IInvestable>();
+            var buildInvestments = FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).Cast<IInvestable>();
             //if (owner == Game.Player)
-            //    second.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
+            //    buildInvestments.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
 
-            var combined = first.Concat(second);
+            var buyInvestments = GetSales().Cast<IInvestable>();
+
+
+            var combined = upgradeInvetments.Concat(buildInvestments).Concat(buyInvestments);
+
+
+
+
             //if (owner == Game.Player)
             //{
             //    Debug.Log("Combined:");
@@ -1128,9 +1143,9 @@ namespace Nashet.EconomicSimulation
 
         //    //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
         //    //FactoryType.conditionsBuild.isAllTrue
-        //public List<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
+        //public List<Factory> getAllInvestmentsProjects(Predicate<Factory> predicate)
         //{
-        //    List<IInvestable> res = new List<IInvestable>();
+        //    List<Factory> res = new List<Factory>();
         //    getAllFactories(x => canUpgradeFactory(x.getType()) && predicate(x)).PerformAction(x => res.Add(x));
         //    FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
         //    return res;

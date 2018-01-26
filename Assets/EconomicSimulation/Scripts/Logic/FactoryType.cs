@@ -160,7 +160,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //Value cost = Game.market.getCost(this.getBuildNeeds());
                         //cost.add(Options.factoryMoneyReservPerLevel);
-                        Value cost = getInvestmentsCost();
+                        Value cost = getCost();
                         return agent.canPay(cost);
                     }
                 },
@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
                     var sb = new StringBuilder();
                     //Value cost = Game.market.getCost(this.getBuildNeeds());
                     //cost.add(Options.factoryMoneyReservPerLevel);
-                    Value cost = getInvestmentsCost();
+                    Value cost = getCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
                     return sb.ToString();
@@ -214,7 +214,7 @@ namespace Nashet.EconomicSimulation
                     yield return next;
         }
 
-        public Value getInvestmentsCost()
+        public Value getCost()
         {
             Value result = Game.market.getCost(getBuildNeeds());
             result.add(Options.factoryMoneyReservePerLevel);
@@ -315,7 +315,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Procent getMargin()
         {
-            return Procent.makeProcent(getPossibleProfit(), getInvestmentsCost());
+            return Procent.makeProcent(getPossibleProfit(), getCost());
         }
 
         //internal bool canBuildNewFactory(FactoryType type)

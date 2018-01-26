@@ -39,7 +39,13 @@ namespace Nashet.EconomicSimulation
             else //return empty list
                 return result;
         }
-        //internal void universalInvest(Predicate<IInvestable> predicate)
+
+        //private readonly Properties stock = new Properties();
+        //public Properties GetOwnership()
+        //{
+        //    return stock;
+        //}
+        //internal void universalInvest(Predicate<Factory> predicate)
         //{
         //    if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
         //        && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToBuildNew)

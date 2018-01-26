@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
         {
             if (ignoreGold)
                 return Product.Wood;
-            return Product.allProducts.PickRandom(x => x.isResource());
+            return Product.allProducts.Random(x => x.isResource());
         }
         public static void sortSubstitutes()
         {

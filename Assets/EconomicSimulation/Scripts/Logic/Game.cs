@@ -203,7 +203,7 @@ namespace Nashet.EconomicSimulation
             {
                 int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
                 for (int i = 0; i < howMuchLakes; i++)
-                    Province.allProvinces.Remove(Province.allProvinces.PickRandom());
+                    Province.allProvinces.Remove(Province.allProvinces.Random());
             }
         }
 

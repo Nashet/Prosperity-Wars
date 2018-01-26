@@ -133,6 +133,7 @@ namespace Nashet.EconomicSimulation
                 generaltext.text = sb.ToString();
                 //+"\nExpenses:"
                 efficiencyText.text = "Efficiency: " + Factory.modifierEfficiency.getModifier(factory);
+                RefreshBuySellButtons();
             }
         }
         public void show(Factory fact)
@@ -173,6 +174,25 @@ namespace Nashet.EconomicSimulation
             MainCamera.topPanel.Refresh();
             if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.Refresh();
         }
+        private void RefreshBuySellButtons()
+        {
+            var buying = factory.ownership.HowMuchBuying(Game.Player);
+            //if (buying > 1)
+            buyButton.GetComponentInChildren<Text>().text = "Buying "+ buying;
+            var selling = factory.ownership.HowMuchSelling(Game.Player);
+            sellButton.GetComponentInChildren<Text>().text = "Selling " + selling;
+        }
+        public void OnBuyClick()
+        {
+            factory.ownership.SetToBuy(Game.Player, 1);
+            RefreshBuySellButtons();
+
+        }
+        public void OnSellClick()
+        {
+            factory.ownership.SetToSell(Game.Player, 1);
+            RefreshBuySellButtons();
+        }
         public void onUpgradeClick()
         {
             //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
@@ -192,14 +212,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
             }
         }
-        public void onBuyClick()
-        {
-
-        }
-        public void onSellClick()
-        {
-
-        }
+       
         public void onNationalizeClick()
         {
             factory.ownership.Nationilize(Game.Player);

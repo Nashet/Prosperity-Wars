@@ -353,7 +353,7 @@ namespace Nashet.Utils
                 }
                 while (sourceIterator.MoveNext());
             }
-            return reslist.PickRandom();
+            return reslist.Random();
         }
         private static System.Random rng = new System.Random();
 
@@ -382,20 +382,29 @@ namespace Nashet.Utils
         /// <summary>
         /// returns default(T) if fails
         /// </summary>    
-        public static T PickRandom<T>(this List<T> source)
-        {
-            //return source.ElementAt(Game.random.Next(source.Count));
+        public static T Random<T>(this List<T> source)
+        {            
             if (source == null || source.Count == 0)
                 return default(T);
             return source[Game.Random.Next(source.Count)];
 
         }
+        public static T Random<T>(this IEnumerable<T> enumerable)
+        {
+            return enumerable.Random<T>(new System.Random());
+        }
+
+        public static T Random<T>(this IEnumerable<T> enumerable, System.Random rand)
+        {
+            int index = rand.Next(0, enumerable.Count());
+            return enumerable.ElementAt(index);
+        }
         /// <summary>
         ///returns an empty List<T> if didn't find anything
         /// </summary>    
-        public static T PickRandom<T>(this List<T> source, Predicate<T> predicate)
+        public static T Random<T>(this List<T> source, Predicate<T> predicate)
         {
-            return source.FindAll(predicate).PickRandom();
+            return source.FindAll(predicate).Random();
             //return source.ElementAt(Game.random.Next(source.Count));    
         }
 

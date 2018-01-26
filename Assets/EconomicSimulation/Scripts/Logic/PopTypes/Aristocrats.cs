@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
                             var factory = project as Factory;// existing one                               
                             if (factory != null)
                             {
-                                Value investmentCost = factory.getInvestmentsCost();
+                                Value investmentCost = factory.getCost();
                                 if (!canPay(investmentCost))
                                     getBank().giveLackingMoney(this, investmentCost);
                                 if (canPay(investmentCost))

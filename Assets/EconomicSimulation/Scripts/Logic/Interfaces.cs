@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
     public interface IInvestable
     {
         Procent getMargin();
-        Value getInvestmentsCost();
+        Value getCost();
         bool canProduce(Product product);
         Procent GetWorkForceFulFilling();
     }

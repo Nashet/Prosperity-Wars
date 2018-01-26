@@ -80,25 +80,32 @@ namespace Nashet.EconomicSimulation
 
                 if (project != null)
                 {
-                    Value investmentCost = project.getInvestmentsCost();
+                    Value investmentCost = project.getCost();
                     if (!canPay(investmentCost))
                         getBank().giveLackingMoney(this, investmentCost);
                     if (canPay(investmentCost))
                     {
-                        Factory factory;
+                        
                         var factoryToBuild = project as FactoryType;
-                        if (factoryToBuild != null)
+                        if (factoryToBuild != null) // build new factory
                         {
-                            factory = new Factory(getProvince(), this, factoryToBuild);
+                            Factory factory = new Factory(getProvince(), this, factoryToBuild);
                             payWithoutRecord(factory, investmentCost);
                         }
-                        else
+                        else 
                         {
-                            factory = project as Factory;
-                            if (factory != null)
+                            Factory factory = project as Factory;
+                            if (factory != null) // upgrade existing factory
                                 factory.upgrade(this);
                             else
-                                Debug.Log("Unknown investment type");
+                            {
+                                Owners buyShare = project as Owners;
+                                if (buyShare != null) // buy part of existing factory
+                                    buyShare.Buy(this, 1);
+                                else
+                                    Debug.Log("Unknown investment type");
+                            }
+                            
                         }                        
                     }
                 }

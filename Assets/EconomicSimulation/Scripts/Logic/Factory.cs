@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Factory : SimpleProduction, IClickable, IInvestable
+    public class Factory : SimpleProduction, IClickable, IInvestable, IShareable
     {
         public enum Priority { none, low, medium, high }
         private static readonly int workForcePerLevel = 1000;
@@ -46,7 +46,7 @@ namespace Nashet.EconomicSimulation
         private int daysClosed;
         private bool justHiredPeople = true;
         private int hiredLastTurn;
-        public readonly Ownership ownership = new Ownership();
+        public readonly Owners ownership;
         private IShareOwner currentInvestor;
 
         internal static readonly Modifier
@@ -143,11 +143,11 @@ namespace Nashet.EconomicSimulation
         internal static readonly ConditionsList
 
             //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
-            conditionsSell = new ConditionsList(Condition.IsNotImplemented),
+            conditionsSell = new ConditionsList(),
 
             // !Planned and ! State fabricIsOur
             //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-            conditionsBuy = new ConditionsList(Condition.IsNotImplemented) // ! LF and !Planned fabricIsOur
+            conditionsBuy = new ConditionsList() // ! LF and !Planned fabricIsOur
             ;
 
         internal static readonly ModifiersList
@@ -177,6 +177,7 @@ namespace Nashet.EconomicSimulation
 
         internal Factory(Province province, IShareOwner investor, FactoryType type) : base(type, province)
         {
+            ownership = new Owners(this);
             currentInvestor = investor;
             //assuming this is level 0 building        
             constructionNeeds = getType().getBuildNeeds();
@@ -194,7 +195,7 @@ namespace Nashet.EconomicSimulation
         //    return result;
         //    //return Game.market.getCost(type.getUpgradeNeeds());
         //}
-        public Value getInvestmentsCost()
+        public Value getCost()
         {
             var res = Game.market.getCost(getUpgradeNeeds());
             res.add(Options.factoryMoneyReservePerLevel);
@@ -627,7 +628,7 @@ namespace Nashet.EconomicSimulation
         /// per level
         /// </summary>    
         internal Procent getEfficiency(bool useBonuses)
-        {
+        {            
             //limit production by smallest factor
             Procent efficencyFactor;
             Procent workforceProcent = GetWorkForceFulFilling();

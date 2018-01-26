@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
             {
                 //Value cost = Game.market.getCost(resourceToBuild);
                 //cost.add(Options.factoryMoneyReservePerLevel);
-                Value cost = selectedFactoryType.getInvestmentsCost();
+                Value cost = selectedFactoryType.getCost();
                 if (Game.Player.canPay(cost))
                 {
                     var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds());
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
-                    var cost = selectedFactoryType.getInvestmentsCost();
+                    var cost = selectedFactoryType.getCost();
                     sb.Append(" cost: ").Append(cost);
                 }
                 sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
