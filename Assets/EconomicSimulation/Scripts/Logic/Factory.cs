@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
             modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.20f, false);
 
         internal static readonly Condition
-            conNotFullyBelongsToCountry = new ConditionForDoubleObjects((factory, agent) => !(factory as Factory).ownership.IsOnlyOwner(agent as IShareOwner), x => "Doesn't fully belongs to government", false),
+            conNotFullyBelongsToCountry = new DoubleCondition((factory, agent) => !(factory as Factory).ownership.IsOnlyOwner(agent as IShareOwner), x => "Doesn't fully belongs to government", false),
 
             conNotUpgrading = new Condition(x => !(x as Factory).isUpgrading(), "Not upgrading", false),
             conNotBuilding = new Condition(x => !(x as Factory).isBuilding(), "Not building", false),
@@ -79,8 +79,8 @@ namespace Nashet.EconomicSimulation
                 sb.Append("Have ").Append((x as Factory).getReopenCost()).Append(" coins");
                 return sb.ToString();
             }, true);
-        internal static readonly ConditionForDoubleObjects
-            conHaveMoneyOrResourcesToUpgrade = new ConditionForDoubleObjects(
+        internal static readonly DoubleCondition
+            conHaveMoneyOrResourcesToUpgrade = new DoubleCondition(
                 //(factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),
 
                 delegate (object factory, object upgrader)
@@ -109,45 +109,49 @@ namespace Nashet.EconomicSimulation
                     return sb.ToString();
                 }
                 , true),
-            conPlacedInOurCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
+            conPlacedInOurCountry = new DoubleCondition((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
             (factory) => "Enterprise placed in our country", true),
-            conNotLForNotCountry = new ConditionForDoubleObjects((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
+            conNotLForNotCountry = new DoubleCondition((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
 
 
-        internal static readonly ConditionsListForDoubleObjects
-            conditionsUpgrade = new ConditionsListForDoubleObjects(new List<Condition>
+        internal static readonly DoubleConditionsList
+            conditionsUpgrade = new DoubleConditionsList(new List<Condition>
             {
             conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved, conNotLForNotCountry,
             conHaveMoneyOrResourcesToUpgrade, conPlacedInOurCountry
             }),
-            conditionsClose = new ConditionsListForDoubleObjects(new List<Condition> { conNotBuilding, conOpen, conPlacedInOurCountry, conNotLForNotCountry }),
-            conditionsReopen = new ConditionsListForDoubleObjects(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conPlacedInOurCountry, conNotLForNotCountry }),
-            conditionsDestroy = new ConditionsListForDoubleObjects(new List<Condition> {
+            conditionsClose = new DoubleConditionsList(new List<Condition> { conNotBuilding, conOpen, conPlacedInOurCountry, conNotLForNotCountry }),
+            conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conPlacedInOurCountry, conNotLForNotCountry }),
+            conditionsDestroy = new DoubleConditionsList(new List<Condition> {
             //new Condition(Economy.isNotLF, x=>(x as Producer).getCountry()),
              conPlacedInOurCountry }).addForSecondObject(new List<Condition> { Economy.isNotLF }),
 
             // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-            conditionsNatinalize = new ConditionsListForDoubleObjects(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry })
+            conditionsNatinalize = new DoubleConditionsList(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry })
             .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotInterventionism }),
 
-            conditionsSubsidize = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
+            conditionsSubsidize = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
             .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Economy.isNotPlanned }),
 
-            conditionsDontHireOnSubsidies = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
+            conditionsDontHireOnSubsidies = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
             .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented }),
 
-            conditionsChangePriority = new ConditionsListForDoubleObjects(new List<Condition> { conPlacedInOurCountry })
-            .addForSecondObject(new List<Condition> { Economy.isPlanned });//.isNotLF
-        internal static readonly ConditionsList
+            conditionsChangePriority = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
+            .addForSecondObject(new List<Condition> { Economy.isPlanned });
+        internal static readonly DoubleConditionsList
 
             //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
-            conditionsSell = new ConditionsList(),
+            conditionsSell = new DoubleConditionsList(),
 
-            // !Planned and ! State fabricIsOur
-            //(status == Economy.StateCapitalism || status == Economy.Interventionism || status == Economy.NaturalEconomy)
-            conditionsBuy = new ConditionsList() // ! LF and !Planned fabricIsOur
+
+
+            conditionsBuy = new DoubleConditionsList(new List<Condition> {Economy.isNotLF, Economy.isNotPlanned,
+                new DoubleCondition ((agent, factory)=>(factory as Factory).ownership.IsOnSale(), x=>"Is on sale", true),
+                new DoubleCondition ((agent, factory)=> (agent as Agent).canPay( (factory as Factory).ownership.GetShareMarketValue(Options.PopBuyAssetsAtTime) ),
+                    x=> "Has money to buy share", false)
+            })
             ;
 
         internal static readonly ModifiersList
@@ -627,7 +631,7 @@ namespace Nashet.EconomicSimulation
         /// per level
         /// </summary>    
         internal Procent getEfficiency(bool useBonuses)
-        {            
+        {
             //limit production by smallest factor
             Procent efficencyFactor;
             Procent workforceProcent = GetWorkForceFulFilling();
@@ -825,7 +829,7 @@ namespace Nashet.EconomicSimulation
                 (byWhom as Agent).payWithoutRecord(this, cost);
                 ownership.Add(byWhom, cost);
             }
-            
+
         }
 
         internal int getDaysInConstruction()

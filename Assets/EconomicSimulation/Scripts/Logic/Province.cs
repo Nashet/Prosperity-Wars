@@ -16,13 +16,13 @@ namespace Nashet.EconomicSimulation
         {
             Plains, Mountains
         };
-        public static readonly ConditionsListForDoubleObjects canGetIndependence = new ConditionsListForDoubleObjects(new List<Condition>
+        public static readonly DoubleConditionsList canGetIndependence = new DoubleConditionsList(new List<Condition>
     {
-        new ConditionForDoubleObjects((province, country)=>(province as Province).hasCore(x=>x!=country), x=>"Has another core", true),
-        new ConditionForDoubleObjects((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),
+        new DoubleCondition((province, country)=>(province as Province).hasCore(x=>x!=country), x=>"Has another core", true),
+        new DoubleCondition((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),
     });
-        public static readonly ConditionForDoubleObjects doesCountryOwn =
-        new ConditionForDoubleObjects((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
+        public static readonly DoubleCondition doesCountryOwn =
+        new DoubleCondition((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
         public readonly static List<Province> allProvinces = new List<Province>();
         public static readonly Predicate<Province> All = x => true;
 
@@ -1102,7 +1102,7 @@ namespace Nashet.EconomicSimulation
                     yield return item.ownership;
             }
         }
-        public IEnumerable<IInvestable> getAllInvestmentsProjects(Predicate<IInvestable> predicate)
+        public IEnumerable<IInvestable> getAllInvestmentsProjects()
         {
             //var listA = Enumerable.Range(0, 10).Select(i => new TestClassA());
             //var listB = Enumerable.Range(0, 10).Select(i => new TestClassB());
@@ -1117,14 +1117,14 @@ namespace Nashet.EconomicSimulation
             //if (owner == Game.Player)
             //    Debug.Log("\nnew Testing: " + this);
 
-            var upgradeInvetments = getAllFactories().Where(x => canUpgradeFactory(x.getType()) 
-            && predicate(x)
+            var upgradeInvetments = getAllFactories().Where(x => 
+            canUpgradeFactory(x.getType())             
             && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
             ).Cast<IInvestable>();
             //if (owner == Game.Player)
             //    upgradeInvetments.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
 
-            var buildInvestments = FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this) && predicate(x)).Cast<IInvestable>();
+            var buildInvestments = FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this)).Cast<IInvestable>();
             //if (owner == Game.Player)
             //    buildInvestments.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
 

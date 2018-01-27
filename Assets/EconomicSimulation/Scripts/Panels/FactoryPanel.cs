@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(factory.getInputFactor());
                 sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(" Salary(total): ").Append(factory.getSalaryCost());
-                sb.Append("\nOwners: ").Append(factory.ownership.GetAllShares().getString(" ", "\n"));
+                
 
                 if (factory.constructionNeeds.Count() > 0)
                     sb.Append("\nUpgrade needs: ").Append(factory.constructionNeeds);
@@ -128,7 +128,9 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nLoan: ").Append(factory.loans.ToString());
                 sb.Append("\nAssets value: ").Append(factory.ownership.GetAllAssetsValue());
                 sb.Append(" Market value: ").Append(factory.ownership.GetMarketValue());
+                sb.Append("\nOwners: ").Append(factory.ownership.GetAllShares().getString(" ", "\n"));
 
+                // on sale
                 //if (Game.devMode)
                 //    sb.Append("\nHowMuchHiredLastTurn ").Append(shownFactory.getHowMuchHiredLastTurn());
                 generaltext.text = sb.ToString();
@@ -177,8 +179,8 @@ namespace Nashet.EconomicSimulation
         }
         private void RefreshBuySellButtons()
         {
-            sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, out sellButton.GetComponent<ToolTipHandler>().text);
-            buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, out buyButton.GetComponent<ToolTipHandler>().text);
+            sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, factory, out sellButton.GetComponent<ToolTipHandler>().text);
+            buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, factory, out buyButton.GetComponent<ToolTipHandler>().text);
 
             //var buying = factory.ownership.HowMuchBuying(Game.Player);
             //if (buying > 1)

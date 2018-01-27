@@ -2,6 +2,7 @@
 
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -82,7 +83,7 @@ namespace Nashet.EconomicSimulation
             //    )
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects(x => x.getMargin().get() >= Options.minMarginToInvest
+                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.getMargin().get() >= Options.minMarginToInvest
                 && x.canProduce(getProvince().getResource())                
                 );
 

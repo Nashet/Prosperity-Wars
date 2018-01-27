@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         //internal ConditionsList conditionsBuild;
         internal Condition enoughMoneyOrResourcesToBuild;
-        internal ConditionsListForDoubleObjects conditionsBuild;
+        internal DoubleConditionsList conditionsBuild;
         private readonly bool shaft;
 
         static FactoryType()
@@ -175,7 +175,7 @@ namespace Nashet.EconomicSimulation
                     return sb.ToString();
                 }, true);
 
-            conditionsBuild = new ConditionsListForDoubleObjects(new List<Condition>() {
+            conditionsBuild = new DoubleConditionsList(new List<Condition>() {
                 Economy.isNotLF, enoughMoneyOrResourcesToBuild, Province.doesCountryOwn }); // can build
             this.shaft = shaft;
         }

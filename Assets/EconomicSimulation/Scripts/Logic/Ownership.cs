@@ -325,7 +325,7 @@ namespace Nashet.EconomicSimulation
                 if (cost.isBiggerThan(purchaseValue))
                     cost.set(purchaseValue);
                 var agent = buyer as Agent;
-
+                 //reduce sellable on succesfull deal
                 if (agent.pay(shareToBuy.Key as Agent, cost))
                 {
                     Transfer(shareToBuy.Key, buyer, cost);
