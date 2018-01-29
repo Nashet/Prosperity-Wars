@@ -73,6 +73,7 @@ namespace Nashet.EconomicSimulation
         public static Procent ProvinceExcessWorkforce = new Procent(0.15f);
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceLackWorkforce = new Procent(0.05f);
+        
 
         //POPS
 
@@ -139,7 +140,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>For every nationalized enterprise</summary>
         internal static readonly Procent PopLoyaltyDropOnNationalization = new Procent(0.1f);
         internal static readonly Procent PopBuyAssetsAtTime = new Procent(0.05f);
-
+        internal static readonly Procent PopMarginToSellShares = new Procent(0.005f);
 
 
 

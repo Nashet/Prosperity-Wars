@@ -601,7 +601,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (Factory factory in province.allFactories)
                     {
-                        if (country.economy.getValue() == Economy.PlannedEconomy)                        
+                        if (country.economy.getValue() == Economy.PlannedEconomy)
                             factory.OpenFactoriesPE();
                         else
                         {
@@ -611,10 +611,9 @@ namespace Nashet.EconomicSimulation
                             factory.payDividend();
                             factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
+                            factory.ownership.SellLowMarginShares();
                         }
-                        
                     }
-
                     province.allFactories.RemoveAll(item => item.isToRemove());
                     foreach (PopUnit pop in province.allPopUnits)
                     {
@@ -642,8 +641,8 @@ namespace Nashet.EconomicSimulation
                                 pop.EscapeForBetterLife(x => x.HasJobsFor(pop.popType, province));
                             pop.calcAssimilations();
                         }
-                        if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)
-                            pop.invest();
+                        if (country.economy.getValue() != Economy.PlannedEconomy)
+                            Rand.Call(() => pop.invest(), 15);
                     }
                     if (country.isAI())
                         country.invest(province);

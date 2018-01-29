@@ -193,9 +193,9 @@ namespace Nashet.EconomicSimulation
                 sellButton.GetComponentInChildren<Text>().text = "Selling " + selling + " shares";
         }
         public void OnBuyClick()
-        {
-            factory.ownership.CancelBuyOrder(Game.Player, Options.PopBuyAssetsAtTime);
-            Refresh();
+        {   
+            factory.ownership.BuyStandardShare(Game.Player);
+            MainCamera.refreshAllActive();
         }
         public void OnSellClick()
         {

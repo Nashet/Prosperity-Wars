@@ -836,6 +836,11 @@ namespace Nashet.EconomicSimulation
                     newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
                     setSoldierWage(newWage);
                 }
+            if (economy.getValue() == Economy.Interventionism)
+                Rand.Call(() => getAllFactories().PerformAction(
+                    x => x.ownership.HowMuchOwns(this).subtractOutside(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
+                    x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
+                    3);
         }
         internal void simulate()
         {
@@ -871,13 +876,7 @@ namespace Nashet.EconomicSimulation
 
 
             if (economy.getValue() == Economy.LaissezFaire)
-                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 3);
-            if (economy.getValue() == Economy.Interventionism)
-                Rand.Call(() => getAllFactories().PerformAction(
-                    x => x.ownership.HowMuchOwns(this).subtractOutside(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
-                    x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
-                    3);
-
+                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 3);            
         }
         public void PutAllPropertyOnSale()
         { }

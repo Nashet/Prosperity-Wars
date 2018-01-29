@@ -320,19 +320,7 @@ namespace Nashet.EconomicSimulation
         {
             return Procent.makeProcent(getPossibleProfit(), getInvestmentCost(), false);
         }
-
-        //internal bool canBuildNewFactory(FactoryType type)
-        //{
-        //    if (HaveFactory(type))
-        //        return false;
-        //    if (type.isResourceGathering() && type.basicProduction.getProduct() != this.resource
-        //        || !type.basicProduction.getProduct().isInventedBy(getCountry())
-        //        || type.isManufacture() && !getCountry().isInvented(Invention.Manufactories)
-        //        || (type.basicProduction.getProduct() == Product.Cattle && !getCountry().isInvented(Invention.Domestication))
-        //        )
-        //        return false;
-        //    return true;
-        //}
+       
         internal bool canBuildNewFactory(Province where)
         {
             if (where.hasFactory(this))

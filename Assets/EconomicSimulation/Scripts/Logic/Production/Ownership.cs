@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
         private readonly Factory parent;
         private readonly Procent marketPriceModifier = new Procent(Procent.HundredProcent);
         private readonly Dictionary<IShareOwner, Share> ownership = new Dictionary<IShareOwner, Share>();
-        private Value totallyInvested = new Value(0f);
+        private readonly Value totallyInvested = new Value(0f);
         public Owners(IShareable parent)
         {
             this.parent = parent as Factory;
@@ -229,8 +229,7 @@ namespace Nashet.EconomicSimulation
                 var value = GetShareAssetsValue(share);
                 record.SetToSell(value);
             }
-            else
-               if (showMessageAboutOperationFails)
+            else if (showMessageAboutOperationFails)
                 Debug.Log("No such owner");
         }
         public void CancelBuyOrder(IShareOwner owner, Procent share)
@@ -271,9 +270,9 @@ namespace Nashet.EconomicSimulation
             if (isOnsale || parent.IsClosed)
             {
                 // reduce price
-                marketPriceModifier.subtract(0.01f, false);
+                marketPriceModifier.subtract(0.001f, false);
                 if (marketPriceModifier.isZero())
-                    marketPriceModifier.set(0.01f);
+                    marketPriceModifier.set(0.001f);
             }
             if (!isOnsale && parent.IsOpen) //rise price
                 marketPriceModifier.add(0.01f);
@@ -283,38 +282,45 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         internal void BuyStandardShare(IShareOwner buyer)
         {
-            var purchaseValue = GetShareAssetsValue(Options.PopBuyAssetsAtTime);
-            var sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().IsEqual(purchaseValue));
+            // what if buys from itself?
+            if (HowMuchSelling(buyer).isNotZero())
+                CancelBuyOrder(buyer, Options.PopBuyAssetsAtTime);
+            else
+            {
 
-            if (sharesToBuy.Count() == 0)
-            {
-                //if no equal sharesToBuy find smaller one
-                sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().isSmallerThan(purchaseValue)
-                && x.Value.GetShareForSale().isNotZero());
-            }
-            if (sharesToBuy.Count() == 0)
-            {
-                //if no smaller sharesToBuy find bigger one
-                sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().isBiggerThan(purchaseValue)
-                && x.Value.GetShareForSale().isNotZero());
-            }
-            if (sharesToBuy.Count() != 0)
-            {
-                var shareToBuy = sharesToBuy.Random();
-                var cost = shareToBuy.Value.GetShareForSale();
-                if (cost.isBiggerThan(purchaseValue))
-                    cost.set(purchaseValue);
-                var agent = buyer as Agent;
+                var purchaseValue = GetShareAssetsValue(Options.PopBuyAssetsAtTime);
+                var sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().IsEqual(purchaseValue));
 
-                if (agent.pay(shareToBuy.Key as Agent, cost))
+                if (sharesToBuy.Count() == 0)
                 {
-                    Transfer(shareToBuy.Key, buyer, cost);
-                    //reduce onSale amount on successful deal
+                    //if no equal sharesToBuy find smaller one
+                    sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().isSmallerThan(purchaseValue)
+                    && x.Value.GetShareForSale().isNotZero());
+                }
+                if (sharesToBuy.Count() == 0)
+                {
+                    //if no smaller sharesToBuy find bigger one
+                    sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().isBiggerThan(purchaseValue)
+                    && x.Value.GetShareForSale().isNotZero());
+                }
+                if (sharesToBuy.Count() != 0)
+                {
+                    var shareToBuy = sharesToBuy.Random();
+                    var cost = shareToBuy.Value.GetShareForSale();
+                    if (cost.isBiggerThan(purchaseValue))
+                        cost.set(purchaseValue);
+                    var agent = buyer as Agent;
 
-                    shareToBuy.Value.ReduceSale(cost);
+                    if (agent.pay(shareToBuy.Key as Agent, cost))
+                    {
+                        Transfer(shareToBuy.Key, buyer, cost);
+                        //reduce onSale amount on successful deal
 
-                    var boughtProcent = Procent.makeProcent(cost, parent.ownership.totallyInvested);
-                    Debug.Log(buyer + " bough " + cost + " (" + boughtProcent + ") of " + parent + " from " + shareToBuy.Key);
+                        shareToBuy.Value.ReduceSale(cost);
+
+                        var boughtProcent = Procent.makeProcent(cost, parent.ownership.totallyInvested);
+                        Debug.Log(buyer + " bough " + cost + " (" + boughtProcent + ") of " + parent + " from " + shareToBuy.Key);
+                    }
                 }
             }
         }
@@ -333,17 +339,37 @@ namespace Nashet.EconomicSimulation
         {
             return Options.PopBuyAssetsAtTime.getProcentOf(GetMarketValue());
         }
-
         public bool canProduce(Product product)
         {
             return parent.getType().canProduce(product);
         }
-
-        //public Procent GetWorkForceFulFilling()
-        //{
-        //    return new Procent(Procent.HundredProcent);
-        //    //return parent.GetWorkForceFulFilling();
-        //}
+        /// <summary>
+        /// Should be in Investor class
+        /// </summary>
+        public void SellLowMarginShares()
+        {
+            if (parent.getMargin().isSmallerThan(Options.PopMarginToSellShares))
+                foreach (var item in ownership)
+                {
+                    var country = item.Key as Country;
+                    if (country != null)
+                    {
+                        if (country.isAI())                            
+                            Rand.Call(() =>
+                            {
+                                SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
+                                Debug.Log(item.Key + " put on sale shares of " + parent);
+                            }, 10);
+                    }
+                    else
+                        //var agent = item.Key as Agent;
+                        Rand.Call(() =>
+                        {
+                            SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
+                            Debug.Log(item.Key + " put on sale shares of " + parent);
+                        }, 10);
+                }
+        }
     }
 
 }
