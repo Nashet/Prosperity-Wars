@@ -12,19 +12,20 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
-        movementOrder, provinceOrder, cultureOrder;
+        movementOrder, provinceOrder, cultureOrder, popTypeOrder;
 
         private void Start()
         {
+            popTypeOrder = new SortOrder(this, x => x.popType.GetNameWeight());
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
             cashOrder = new SortOrder(this, x => x.getCash());
 
-            
-            provinceOrder = new SortOrder(this, x => x.getProvince().ToString().GetWeight());
-            cultureOrder = new SortOrder(this, x => x.culture.GetHashCode());
+
+            provinceOrder = new SortOrder(this, x => x.getProvince().GetNameWeight());
+            cultureOrder = new SortOrder(this, x => x.culture.GetNameWeight());
             movementOrder = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
@@ -50,7 +51,7 @@ namespace Nashet.EconomicSimulation
             // Adding PopType
             AddCell(pop.popType.ToString(), pop);
             ////Adding province
-            AddCell(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province" +" "+ pop.getProvince().ToString().GetWeight());
+            AddCell(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province" + " " + pop.getProvince().ToString().GetWeight());
             ////Adding population
             AddCell(System.Convert.ToString(pop.getPopulation()), pop);
             ////Adding culture
@@ -90,16 +91,16 @@ namespace Nashet.EconomicSimulation
             // AddButton("Number");
 
             // Adding PopType
-            AddCell("Type");
+            AddCell("Type" + popTypeOrder.getSymbol(), popTypeOrder);
 
             ////Adding province
-            AddCell("Province"+ provinceOrder.getSymbol(), provinceOrder);
+            AddCell("Province" + provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding population
             AddCell("Population" + populationOrder.getSymbol(), populationOrder);
 
             ////Adding culture
-            AddCell("Culture"+ cultureOrder.getSymbol(), cultureOrder);
+            AddCell("Culture" + cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
             AddCell("Education");

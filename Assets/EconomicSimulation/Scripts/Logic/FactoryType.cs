@@ -6,9 +6,11 @@ using System.Text;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : IClickable, IInvestable
+    public class FactoryType : IClickable, IInvestable, ISortableName
     {
         static private readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
@@ -31,7 +33,7 @@ namespace Nashet.EconomicSimulation
         internal Condition enoughMoneyOrResourcesToBuild;
         internal DoubleConditionsList conditionsBuild;
         private readonly bool shaft;
-
+        private readonly float nameWeight;
         static FactoryType()
         {
             new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
@@ -135,6 +137,7 @@ namespace Nashet.EconomicSimulation
         internal FactoryType(string name, Storage basicProduction, bool shaft)
         {
             this.name = name;
+            nameWeight = name.GetWeight();
             if (name == "Gold pit") GoldMine = this;
             if (name == "Furniture factory") Furniture = this;
             if (name == "Metal pit") MetalDigging = this;
@@ -292,7 +295,7 @@ namespace Nashet.EconomicSimulation
             return resourceInput != null;
         }
 
-        
+
         internal Value getPossibleProfit()
         {
             Value income = Game.market.getCost(basicProduction);
@@ -353,7 +356,12 @@ namespace Nashet.EconomicSimulation
             return basicProduction.getProduct() == product;
         }
 
-        
+        public float GetNameWeight()
+        {
+            return nameWeight;
+        }
+
+
         //public Procent GetWorkForceFulFilling()
         //{
         //    return Procent.HundredProcent;

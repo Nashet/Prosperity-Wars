@@ -10,7 +10,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Country : MultiSeller, IClickable, IShareOwner
+    public class Country : MultiSeller, IClickable, IShareOwner, ISortableName
     {
         public readonly static List<Country> allCountries = new List<Country>();
         internal static readonly Country NullCountry;
@@ -66,9 +66,12 @@ namespace Nashet.EconomicSimulation
         private readonly Value factorySubsidiesExpense = new Value(0f);
         private readonly Value storageBuyingExpense = new Value(0f);
 
+        private readonly float nameWeight;
+
 
         private TextMesh meshCapitalText;
         private Material borderMaterial;
+
 
         private readonly Modifier modXHasMyCores;
         public readonly ModifiersList modMyOpinionOfXCountry;
@@ -81,13 +84,7 @@ namespace Nashet.EconomicSimulation
     });
 
 
-        internal void annexTo(Country country)
-        {
-            foreach (var item in ownedProvinces.ToList())
-            {
-                item.secedeTo(country, false);
-            }
-        }
+        
 
         public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
@@ -106,10 +103,11 @@ namespace Nashet.EconomicSimulation
         static Country()
         {
             NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
-            NullCountry.government.setValue(Government.Tribal);
+            NullCountry.government.setValue(Government.Tribal);            
         }
-        public Country(string iname, Culture iculture, Color color, Province capital) : base(null)
+        public Country(string name, Culture culture, Color color, Province capital) : base(null)
         {
+            nameWeight = name.GetWeight();
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
             place = this;
@@ -140,10 +138,10 @@ namespace Nashet.EconomicSimulation
             taxationForPoor = new TaxationForPoor(this);
             taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
-            name = iname;
+            this.name = name;
             allCountries.Add(this);
 
-            culture = iculture;
+            this.culture = culture;
             nationalColor = color;
             this.capital = capital;
             //if (!Game.devMode)
@@ -1396,10 +1394,22 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.diplomacyPanel.show(this);
         }
+
+        public float GetNameWeight()
+        {
+            return nameWeight;
+        }
         //private readonly Properties stock = new Properties();
         //public Properties GetOwnership()
         //{
         //    return stock;
         //}
+        internal void annexTo(Country country)
+        {
+            foreach (var item in ownedProvinces.ToList())
+            {
+                item.secedeTo(country, false);
+            }
+        }
     }
 }

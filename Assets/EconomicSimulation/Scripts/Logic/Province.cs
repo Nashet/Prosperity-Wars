@@ -10,7 +10,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable
+    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable, ISortableName
     {
         public enum TerrainTypes
         {
@@ -52,10 +52,11 @@ namespace Nashet.EconomicSimulation
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
         private readonly Dictionary<Mod, MyDate> modifiers = new Dictionary<Mod, MyDate>();
-
+        private readonly float nameWeight;
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
         {
+            nameWeight = name.GetWeight();
             setResource(resource);
             colorID = icolorID;
             ID = iID;
@@ -1117,8 +1118,8 @@ namespace Nashet.EconomicSimulation
             //if (owner == Game.Player)
             //    Debug.Log("\nnew Testing: " + this);
 
-            var upgradeInvetments = getAllFactories().Where(x => 
-            canUpgradeFactory(x.getType())             
+            var upgradeInvetments = getAllFactories().Where(x =>
+            canUpgradeFactory(x.getType())
             && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
             ).Cast<IInvestable>();
             //if (owner == Game.Player)
@@ -1130,7 +1131,7 @@ namespace Nashet.EconomicSimulation
 
             var buyInvestments = GetSales().Cast<IInvestable>();
 
-            var reopenEnterprises = getAllFactories().Where(x=>x.IsClosed && !x.isBuilding()).Cast<IInvestable>();
+            var reopenEnterprises = getAllFactories().Where(x => x.IsClosed && !x.isBuilding()).Cast<IInvestable>();
 
             var combined = upgradeInvetments.Concat(buildInvestments).Concat(buyInvestments).Concat(reopenEnterprises);
 
@@ -1163,11 +1164,16 @@ namespace Nashet.EconomicSimulation
                 return true;
             else
                 return false;
-        }        
+        }
 
         public bool HasJobsFor(PopType popType, Province province)
         {
             return popType.HasJobsFor(popType, here);
+        }
+
+        public float GetNameWeight()
+        {
+            return nameWeight;
         }
     }
     public class Mod : Name

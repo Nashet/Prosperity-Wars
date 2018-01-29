@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using Nashet.ValueSpace;
+using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PopType : IEscapeTarget
+    public class PopType : IEscapeTarget, ISortableName
     {
         private readonly static List<PopType> allPopTypes = new List<PopType>();
         public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
@@ -25,6 +26,7 @@ namespace Nashet.EconomicSimulation
         /// SHOULD not be zero!
         /// </summary>
         private readonly float strenght;
+        private readonly float nameWeight;
         static PopType() // can't be private
         {
             var militaryNeeds = new StorageSet(new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.Cattle, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.MotorFuel, 0.6f) });
@@ -141,6 +143,7 @@ namespace Nashet.EconomicSimulation
         private PopType(string name, Storage produces, float strenght, StorageSet militaryNeeds,
             StorageSet lifeNeeds, StorageSet everyDayNeeds, StorageSet luxuryNeeds)
         {
+            nameWeight = name.GetWeight();
             this.militaryNeeds = militaryNeeds;
             this.strenght = strenght;
 
@@ -274,6 +277,10 @@ namespace Nashet.EconomicSimulation
                 return province.getUnemployment(x => x == Workers).isSmallerThan(MigrationUnemploymentLimit);
             else                
                 return true;
+        }
+        public float GetNameWeight()
+        {
+            return nameWeight;
         }
     }
 }

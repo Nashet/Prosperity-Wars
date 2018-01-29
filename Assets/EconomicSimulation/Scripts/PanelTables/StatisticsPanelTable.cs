@@ -9,10 +9,10 @@ namespace Nashet.EconomicSimulation
     public class StatisticsPanelTable : UITableNew<Country>
     {
         private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder            ,
-            richTaxOrder, economyTypeOrder, GDPShareOrder;
-        public void Start()
+            richTaxOrder, economyTypeOrder, GDPShareOrder;        
+        public void Awake()// start doesn't work somehow
         {
-            countryOrder = new SortOrder(this, x => x.GetHashCode());
+            countryOrder = new SortOrder(this, x => x.GetNameWeight());
             populationOrder = new SortOrder(this, x => x.getMenPopulation());
             GDPOrder = new SortOrder(this, x => x.getGDP().get());
             GDPPerCapitaOrder = new SortOrder(this, x => x.getGDPPer1000());
@@ -52,8 +52,6 @@ namespace Nashet.EconomicSimulation
         }
         protected override void AddHeader()
         {
-            if (countryOrder == null)
-                Start(); //fixes Start call
             AddCell("Place");
             AddCell("Country" + countryOrder.getSymbol(), countryOrder);
             AddCell("Population" + populationOrder.getSymbol(), populationOrder);

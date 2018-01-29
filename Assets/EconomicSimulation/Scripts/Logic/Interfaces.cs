@@ -21,5 +21,8 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         bool canProduce(Product product);        
     }
-
+    public interface ISortableName
+    {
+        float GetNameWeight();
+    }
 }
