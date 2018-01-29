@@ -121,11 +121,10 @@ namespace Nashet.ValueSpace
 
         
 
-        public void add(Procent pro, bool showMessageAboutNegativeValue = true)
+        public Procent add(Procent pro, bool showMessageAboutNegativeValue = true)
         {
             base.add(pro, showMessageAboutNegativeValue);
-            //if (base.get() > 1f)
-            //    set(1f);
+            return this;
         }
         public void addPoportionally(int baseValue, int secondValue, Procent secondProcent)
         {

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,8 +15,9 @@ namespace Nashet.EconomicSimulation
 
         private void Start()
         {
+            
             typeOrder = new SortOrder(this, x => x.getType().GetHashCode());
-            provinceOrder = new SortOrder(this, x => x.getProvince().GetHashCode());
+            provinceOrder = new SortOrder(this, x => x.getProvince().ToString().GetWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
@@ -73,7 +75,7 @@ namespace Nashet.EconomicSimulation
                     AddCell("Building", factory);
                 else
                 {
-                    if (!factory.isWorking())
+                    if (factory.IsClosed)
                         AddCell("Closed", factory);
                     else
                     {

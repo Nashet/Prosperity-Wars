@@ -84,7 +84,7 @@ namespace Nashet.EconomicSimulation
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
                 var projects = getProvince().getAllInvestmentsProjects().Where(x => x.getMargin().get() >= Options.minMarginToInvest
-                && x.canProduce(getProvince().getResource())                
+                && x.canProduce(getProvince().getResource())
                 );
 
                 var project = projects.MaxBy(x => x.getMargin().get());
@@ -121,19 +121,26 @@ namespace Nashet.EconomicSimulation
                             var factory = project as Factory;// existing one                               
                             if (factory != null)
                             {
-                                Value investmentCost = factory.getCost();
+                                Value investmentCost = factory.getInvestmentCost();
                                 if (!canPay(investmentCost))
                                     getBank().giveLackingMoney(this, investmentCost);
                                 if (canPay(investmentCost))
-                                    factory.upgrade(this);
-                                //payWithoutRecord(factory, investmentCost);
+                                {
+                                    if (factory.IsOpen)
+                                        factory.upgrade(this);
+                                    else
+                                    {
+                                        factory.open(this, true);
+                                        Debug.Log(this + " invested " + investmentCost + " in opening " + factory);
+                                    }
+                                }
                             }
                             else
                             {
                                 Owners buyShare = project as Owners;
                                 if (buyShare != null) // buy part of existing factory
                                 {
-                                    Value investmentCost = buyShare.getCost();
+                                    Value investmentCost = buyShare.getInvestmentCost();
                                     if (!canPay(investmentCost))
                                         getBank().GetLackingMoney(investmentCost);
                                     if (canPay(investmentCost))

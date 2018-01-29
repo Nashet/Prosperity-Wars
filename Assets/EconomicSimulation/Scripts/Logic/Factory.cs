@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         private int level = 0;
         private bool building = true;
         private bool upgrading = false;
-        private bool working = false;
+        private bool _isOpen = false;
         private bool toRemove = false;
 
         private bool dontHireOnSubsidies, subsidized;
@@ -69,8 +69,8 @@ namespace Nashet.EconomicSimulation
 
             conNotUpgrading = new Condition(x => !(x as Factory).isUpgrading(), "Not upgrading", false),
             conNotBuilding = new Condition(x => !(x as Factory).isBuilding(), "Not building", false),
-            conOpen = new Condition(x => (x as Factory).isWorking(), "Open", false),
-            conClosed = new Condition(x => !(x as Factory).isWorking(), "Closed", false),
+            conOpen = new Condition(x => (x as Factory).IsOpen, "Open", false),
+            conClosed = new Condition(x => !(x as Factory).IsOpen, "Closed", false),
             conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
 
             conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)
@@ -141,11 +141,9 @@ namespace Nashet.EconomicSimulation
             conditionsChangePriority = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
             .addForSecondObject(new List<Condition> { Economy.isPlanned });
         internal static readonly DoubleConditionsList
-
-            //status == Economy.LaissezFaire || status == Economy.Interventionism || status == Economy.NaturalEconomy
-            conditionsSell = new DoubleConditionsList(),
-
-
+            conditionsSell = new DoubleConditionsList(new List<Condition> {Economy.isNotPlanned, //todo temporally removed , Economy.isNotState
+            new DoubleCondition((agent, factory)=>(factory as Factory).ownership.HasOwner(agent as IShareOwner), x=>"Has something to sale", false)
+            }),
 
             conditionsBuy = new DoubleConditionsList(new List<Condition> {Economy.isNotLF, Economy.isNotPlanned,
                 new DoubleCondition ((agent, factory)=>(factory as Factory).ownership.IsOnSale(), x=>"Is on sale", true),
@@ -199,11 +197,16 @@ namespace Nashet.EconomicSimulation
         //    return result;
         //    //return Game.market.getCost(type.getUpgradeNeeds());
         //}
-        public Value getCost()
+        public Value getInvestmentCost()
         {
-            var res = Game.market.getCost(getUpgradeNeeds());
-            res.add(Options.factoryMoneyReservePerLevel);
-            return res;
+            if (IsOpen)
+            {
+                var res = Game.market.getCost(getUpgradeNeeds());
+                res.add(Options.factoryMoneyReservePerLevel);
+                return res;
+            }
+            else
+                return getReopenCost();
         }
         internal StorageSet getUpgradeNeeds()
         {
@@ -360,13 +363,14 @@ namespace Nashet.EconomicSimulation
         }
         public Procent getMargin()
         {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy || !isWorking())
+            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 return Procent.ZeroProcent;
             else
             {
-                //var divider = Game.market.getCost(getUpgradeNeeds()).get() * level;
-                //return Procent.makeProcent(getProfit(), divider, true);
-                return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
+                if (IsClosed)
+                    return getType().getMargin();//potential margin
+                else
+                    return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
             }
         }
         internal Value getReopenCost()
@@ -404,7 +408,7 @@ namespace Nashet.EconomicSimulation
 
         internal void paySalary()
         {
-            if (isWorking() && getCountry().economy.getValue() != Economy.PlannedEconomy)
+            if (IsOpen && getCountry().economy.getValue() != Economy.PlannedEconomy)
             {
                 // per 1000 men            
                 if (Economy.isMarket.checkIftrue(getCountry()))
@@ -501,7 +505,7 @@ namespace Nashet.EconomicSimulation
         {
             //Should be rise salary if: small unemployment, has profit, need has other resources
 
-            if (isWorking() && Economy.isMarket.checkIftrue(getCountry()))
+            if (IsOpen && Economy.isMarket.checkIftrue(getCountry()))
             {
                 var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
                 var margin = getMargin();
@@ -569,7 +573,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public int howMuchWorkForceWants()
         {
-            if (!isWorking())
+            if (IsClosed)
                 return 0;
             int wants = getMaxWorkforceCapacity();// * getInputFactor());
 
@@ -706,54 +710,30 @@ namespace Nashet.EconomicSimulation
         {
             return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
         }
-        public void simulateClosing()
+        public void CloseUnprofitable()
         {
             if (getProfit() <= 0)
             {
                 daysUnprofitable++;
                 if (daysUnprofitable == Options.maxDaysUnprofitableBeforeFactoryClosing && !isSubsidized())
                     this.close();
-            }
-            else
-                daysUnprofitable = 0;
-        }
-        /// <summary>
-        /// In feature should be done by investor
-        /// </summary>
-        public void simulateOpening()
-        {
-            if (!isWorking())
-                //closed
-                if (!isBuilding())
+                if (IsClosed)
                 {
                     daysClosed++;
                     if (daysClosed == Options.maxDaysClosedBeforeRemovingFactory)
                         markToDestroy();
-                    else if (Game.Random.Next(Options.howOftenCheckForFactoryReopenning) == 1)
-                    {
-                        if (getCountry().economy.getValue() == Economy.PlannedEconomy)
-                        {
-                            open(this);
-                        }
-                        else
-                        {
-                            //take loan for reopen
-                            if (getCountry().isInvented(Invention.Banking) && this.getType().getPossibleProfit().get() > 10f)
-                            {
-                                float leftOver = cash.get() - wantsMinMoneyReserv();
-                                if (leftOver < 0)
-                                {
-                                    Value loanSize = new Value(leftOver * -1f);
-                                    if (getBank().canGiveMoney(this, loanSize))
-                                        getBank().giveMoney(this, loanSize);
-                                }
-                                leftOver = cash.get() - wantsMinMoneyReserv();
-                                if (leftOver >= 0f)
-                                    open(this);
-                            }
-                        }
-                    }
                 }
+            }
+            else
+                daysUnprofitable = 0;
+        }
+
+        public void OpenFactoriesPE()
+        {
+            if (IsClosed && !isBuilding() && getCountry().economy.getValue() == Economy.PlannedEconomy)
+            {
+                Rand.Call(() => open(getCountry(), false), Options.howOftenCheckForFactoryReopenning);
+            }
         }
 
         private readonly Value payedDividends = new Value(0f);
@@ -763,7 +743,7 @@ namespace Nashet.EconomicSimulation
         }
         internal void payDividend()
         {
-            if (isWorking())
+            if (IsOpen)
             {
                 Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);
                 payedDividends.set(dividends);
@@ -784,29 +764,40 @@ namespace Nashet.EconomicSimulation
 
         internal void close()
         {
-            working = false;
+            _isOpen = false;
             upgrading = false;
             constructionNeeds.setZero();
             daysInConstruction = 0;
         }
-        internal void open(Agent byWhom)
+        internal void open(IShareOwner byWhom, bool payMoney)
         {
-            if (byWhom.getCountry().economy.getValue() != Economy.PlannedEconomy)
-            {
+            var agent = byWhom as Agent;
+            if (agent.getCountry().economy.getValue() != Economy.PlannedEconomy)
                 salary.set(getProvince().getLocalMinSalary());
-                // should be done by investors
-                //if (byWhom != this)
-                //    byWhom.payWithoutRecord(this, getReopenCost());
+            if (payMoney)
+            {
+                agent.payWithoutRecord(this, getReopenCost());
+                ownership.Add(byWhom, getReopenCost());
             }
-            working = true;
+            _isOpen = true;
             daysUnprofitable = 0;
             daysClosed = 0;
         }
-
-        internal bool isWorking()
+        /// <summary>
+        /// Enterprise finished building and makes business
+        /// </summary>        
+        internal bool IsOpen
         {
-            return working && !building; // todo WTF?
+            get { return _isOpen; }
         }
+        internal bool IsClosed
+        {
+            get { return !_isOpen; }
+        }
+        //internal bool IsClosed()
+        //{
+        //    return !_isOpen;
+        //}
 
         internal float getSalaryCost()
         {
@@ -815,7 +806,7 @@ namespace Nashet.EconomicSimulation
 
         internal bool canUpgrade()
         {
-            return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && isWorking();
+            return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && IsOpen;
         }
 
         internal void upgrade(IShareOwner byWhom)
@@ -870,7 +861,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public override void produce()
         {
-            if (isWorking())
+            if (IsOpen)
             {
                 int workers = getWorkForce();
                 if (workers > 0)
@@ -908,14 +899,14 @@ namespace Nashet.EconomicSimulation
         }
         private void onConstructionComplete(bool freshlyBuild)
         {
-            currentInvestor = null;
             level++;
             building = false;
             upgrading = false;
             constructionNeeds.setZero();
             daysInConstruction = 0;
             if (freshlyBuild)
-                open(this);
+                open(currentInvestor, false);
+            currentInvestor = null;
         }
         /// <summary>
         /// Now includes workforce/efficiency. Also buying for upgrading\building are happening here 
@@ -923,7 +914,7 @@ namespace Nashet.EconomicSimulation
         override public void consumeNeeds()
         {
             // consume resource needs
-            if (isWorking() && !getType().isResourceGathering())
+            if (IsOpen && !getType().isResourceGathering())
             {
                 List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
                 if (shoppingList.Count > 0)

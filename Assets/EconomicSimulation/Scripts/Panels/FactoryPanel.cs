@@ -18,7 +18,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Slider priority;
         [SerializeField]
-        private Text generaltext, efficiencyText, caption;
+        private Text generaltext, efficiencyText, caption, onSaleText;
+
 
         private Factory factory;
         private reopenButtonStatus reopenButtonflag;
@@ -41,7 +42,7 @@ namespace Nashet.EconomicSimulation
 
             subidize.interactable = Factory.conditionsSubsidize.isAllTrue(factory, Game.Player, out subidize.GetComponent<ToolTipHandler>().text);
 
-            if (factory.isWorking())
+            if (factory.IsOpen)
                 reopenButtonflag = reopenButtonStatus.close;
             else
                 reopenButtonflag = reopenButtonStatus.reopen;
@@ -58,7 +59,7 @@ namespace Nashet.EconomicSimulation
 
             destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(factory, Game.Player, out destroyButton.GetComponent<ToolTipHandler>().text);
 
-            
+
             nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(factory, Game.Player, out nationalizeButton.GetComponent<ToolTipHandler>().text);
 
             this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(factory, Game.Player, out priority.GetComponent<ToolTipHandler>().text);
@@ -79,7 +80,7 @@ namespace Nashet.EconomicSimulation
                 Factory.modifierEfficiency.getModifier(factory, out efficiencyText.GetComponent<ToolTipHandler>().text);
 
                 var sb = new StringBuilder();
-                
+
                 sb.Append(factory.getType().name).Append(" in ").Append(factory.getProvince()).Append(" level ").Append(factory.getLevel());
                 caption.text = sb.ToString();
 
@@ -110,7 +111,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(factory.getInputFactor());
                 sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(" Salary(total): ").Append(factory.getSalaryCost());
-                
+
 
                 if (factory.constructionNeeds.Count() > 0)
                     sb.Append("\nUpgrade needs: ").Append(factory.constructionNeeds);
@@ -130,7 +131,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append(" Market value: ").Append(factory.ownership.GetMarketValue());
                 sb.Append("\nOwners: ").Append(factory.ownership.GetAllShares().getString(" ", "\n"));
 
-                // on sale
+                sb.Append("\nTotal on sale: ").Append(factory.ownership.GetTotalOnSale());
                 //if (Game.devMode)
                 //    sb.Append("\nHowMuchHiredLastTurn ").Append(shownFactory.getHowMuchHiredLastTurn());
                 generaltext.text = sb.ToString();
@@ -171,7 +172,7 @@ namespace Nashet.EconomicSimulation
             if (reopenButtonflag == reopenButtonStatus.close)
                 factory.close();
             else
-                factory.open(Game.Player);
+                factory.open(Game.Player, true);
             Refresh();
             if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.Refresh();
             MainCamera.topPanel.Refresh();
@@ -182,22 +183,24 @@ namespace Nashet.EconomicSimulation
             sellButton.interactable = Factory.conditionsSell.isAllTrue(Game.Player, factory, out sellButton.GetComponent<ToolTipHandler>().text);
             buyButton.interactable = Factory.conditionsBuy.isAllTrue(Game.Player, factory, out buyButton.GetComponent<ToolTipHandler>().text);
 
-            //var buying = factory.ownership.HowMuchBuying(Game.Player);
-            //if (buying > 1)
-            //buyButton.GetComponentInChildren<Text>().text = "Buying "+ buying;
+
+            buyButton.GetComponentInChildren<Text>().text = "Buy " + Options.PopBuyAssetsAtTime + " shares";
+
             var selling = factory.ownership.HowMuchSelling(Game.Player);
-            sellButton.GetComponentInChildren<Text>().text = "I'm Selling " + selling;
+            if (selling.isZero())
+                sellButton.GetComponentInChildren<Text>().text = "Sell shares";
+            else
+                sellButton.GetComponentInChildren<Text>().text = "Selling " + selling + " shares";
         }
         public void OnBuyClick()
         {
             factory.ownership.CancelBuyOrder(Game.Player, Options.PopBuyAssetsAtTime);
-            RefreshBuySellButtons();
-
+            Refresh();
         }
         public void OnSellClick()
         {
             factory.ownership.SetToSell(Game.Player, Options.PopBuyAssetsAtTime);
-            RefreshBuySellButtons();
+            Refresh();
         }
         public void onUpgradeClick()
         {
@@ -218,7 +221,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
             }
         }
-       
+
         public void onNationalizeClick()
         {
             factory.ownership.Nationilize(Game.Player);

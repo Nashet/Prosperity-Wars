@@ -601,17 +601,18 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (Factory factory in province.allFactories)
                     {
-                        if (country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.economy.getValue() == Economy.PlannedEconomy)                        
+                            factory.OpenFactoriesPE();
+                        else
                         {
                             factory.getMoneyForSoldProduct();
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here                   
                             factory.payDividend();
-                            factory.simulateClosing(); // that too by owners
+                            factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
                         }
-                        //todo that should be done by owners, like capitalists or bureaucrats 
-                        factory.simulateOpening();
+                        
                     }
 
                     province.allFactories.RemoveAll(item => item.isToRemove());

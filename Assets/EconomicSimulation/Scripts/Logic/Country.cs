@@ -9,7 +9,7 @@ using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
-{    
+{
     public class Country : MultiSeller, IClickable, IShareOwner
     {
         public readonly static List<Country> allCountries = new List<Country>();
@@ -844,7 +844,7 @@ namespace Nashet.EconomicSimulation
             // military staff
             base.simulate();
 
-            // get sciense points
+            // get science points
             var spBase = getSciencePointsBase();
             spBase.multiply(modSciencePoints.getModifier(this));
             sciencePoints.add(spBase);
@@ -869,7 +869,20 @@ namespace Nashet.EconomicSimulation
             movements.RemoveAll(x => x.isEmpty());
             foreach (var item in movements.ToArray())
                 item.simulate();
+
+
+
+            if (economy.getValue() == Economy.LaissezFaire)
+                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 3);
+            if (economy.getValue() == Economy.Interventionism)
+                Rand.Call(() => getAllFactories().PerformAction(
+                    x => x.ownership.HowMuchOwns(this).subtractOutside(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
+                    x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
+                    3);
+
         }
+        public void PutAllPropertyOnSale()
+        { }
         public IEnumerable<PopUnit> getAllPopUnits()
         {
             foreach (var province in ownedProvinces)

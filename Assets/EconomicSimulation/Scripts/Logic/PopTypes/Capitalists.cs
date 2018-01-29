@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
 
                 if (project != null)
                 {
-                    Value investmentCost = project.getCost();
+                    Value investmentCost = project.getInvestmentCost();
                     if (!canPay(investmentCost))
                         getBank().giveLackingMoney(this, investmentCost);
                     if (canPay(investmentCost))
@@ -93,8 +93,16 @@ namespace Nashet.EconomicSimulation
                         else
                         {
                             Factory factory = project as Factory;
-                            if (factory != null) // upgrade existing factory
-                                factory.upgrade(this);
+                            if (factory != null)
+                            {
+                                if (factory.IsOpen)// upgrade existing factory
+                                    factory.upgrade(this);
+                                else
+                                {
+                                    factory.open(this, true);
+                                    Debug.Log(this + " invested " + investmentCost + " in opening " + factory);
+                                }
+                            }
                             else
                             {
                                 Owners buyShare = project as Owners;

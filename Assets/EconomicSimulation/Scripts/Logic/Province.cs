@@ -880,7 +880,7 @@ namespace Nashet.EconomicSimulation
                 minSalary = getLocalMaxSalary();
 
                 foreach (Factory factory in allFactories)
-                    if (factory.isWorking() && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
+                    if (factory.IsOpen && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
                     {
                         if (factory.getSalary() < minSalary)
                             minSalary = factory.getSalary();
@@ -923,7 +923,7 @@ namespace Nashet.EconomicSimulation
                 maxSalary = allFactories.First().getSalary();
 
                 foreach (Factory fact in allFactories)
-                    if (fact.isWorking())
+                    if (fact.IsOpen)
                     {
                         if (fact.getSalary() > maxSalary)
                             maxSalary = fact.getSalary();
@@ -936,7 +936,7 @@ namespace Nashet.EconomicSimulation
             int workForce = 0;
             int capacity = 0;
             foreach (Factory fact in allFactories)
-                if (fact.isWorking())
+                if (fact.IsOpen)
                 {
                     workForce += fact.getWorkForce();
                     capacity += fact.getMaxWorkforceCapacity();
@@ -1130,8 +1130,9 @@ namespace Nashet.EconomicSimulation
 
             var buyInvestments = GetSales().Cast<IInvestable>();
 
+            var reopenEnterprises = getAllFactories().Where(x=>x.IsClosed && !x.isBuilding()).Cast<IInvestable>();
 
-            var combined = upgradeInvetments.Concat(buildInvestments).Concat(buyInvestments);
+            var combined = upgradeInvetments.Concat(buildInvestments).Concat(buyInvestments).Concat(reopenEnterprises);
 
 
 

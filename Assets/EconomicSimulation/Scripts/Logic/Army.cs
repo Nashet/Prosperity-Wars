@@ -111,7 +111,7 @@ namespace Nashet.EconomicSimulation
         static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
         static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
 
-
+        
         private readonly Dictionary<PopUnit, Corps> personal;
         Province destination;
         private readonly Staff owner;
