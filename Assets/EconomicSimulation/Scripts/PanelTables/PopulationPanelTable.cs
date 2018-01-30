@@ -65,10 +65,10 @@ namespace Nashet.EconomicSimulation
 
             ////Adding needs fulfilling
 
-            //PopUnit ert = record;
+            
             AddCell(pop.needsFulfilled.ToString(), pop,
                 //() => ert.consumedTotal.ToStringWithLines()                        
-                () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
+                () => "Consumed:\n" + pop.getConsumed().GetString("\n")
                 );
 
             ////Adding loyalty

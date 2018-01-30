@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
         private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
-
+        private float deltaTime;
         void FixedUpdate()
         {
             if (gameIsLoaded)
@@ -109,7 +109,12 @@ namespace Nashet.EconomicSimulation
 
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
-                    Game.simulate();
+                    //if (Time.time > deltaTime)
+                    {
+                        deltaTime = Time.time + 1f;
+                        Game.simulate();
+                    }
+                    
                     //if (Time.unscaledTime - lastTime > howOften)
                     //{                    
                     //    lastTime = Time.unscaledTime;

@@ -26,36 +26,31 @@ namespace Nashet.ValueSpace
             //result should be  amount of numerator / amount of denominator
             Value numeratorSum = new Value(0f);
             foreach (var item in numerator)
-            {
                 numeratorSum.add(item);
-            }
+
+            Value denominatorSum = new Value(0f);
+            foreach (var item in denominator)
+                denominatorSum.add(item);
+
+
+            return Procent.makeProcent(numeratorSum, denominatorSum, showMessageAboutOperationFails);
+        }
+        public static Procent makeProcent(StorageSet numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
+        {
+            //result should be  amount of numerator / amount of denominator
+            Value numeratorSum = numerator.GetTotalQuantity();
+
             Value denominatorSum = new Value(0f);
             foreach (var item in denominator)
             {
                 denominatorSum.add(item);
             }
 
-            if (denominatorSum.isZero())
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Division by zero in Procent.makeProcent(Value)");
-
-
-                return Procent.Max999;
-            }
-            else
-                return new Procent(numeratorSum.get() / denominatorSum.get());
+            return makeProcent(numeratorSum, denominatorSum, showMessageAboutOperationFails);
         }
         public static Procent makeProcent(Value numerator, Value denominator, bool showMessageAboutOperationFails = true)
         {
-            if (denominator.isZero())
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Division by zero in Procent.makeProcent(Value)");
-                return Procent.Max999;
-            }
-            else
-                return new Procent(numerator.get() / denominator.get());
+            return makeProcent(numerator.get(), denominator.get(), showMessageAboutOperationFails);
         }
         public static Procent makeProcent(float numerator, float denominator, bool showMessageAboutOperationFails = true)
         {
@@ -119,7 +114,7 @@ namespace Nashet.ValueSpace
             return get() - 0.5f;
         }
 
-        
+
 
         public Procent add(Procent pro, bool showMessageAboutNegativeValue = true)
         {

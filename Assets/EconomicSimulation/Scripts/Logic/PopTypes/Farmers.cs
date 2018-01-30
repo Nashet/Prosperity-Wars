@@ -50,7 +50,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
-                    getCountry().countryStorageSet.add(getGainGoodsThisTurn());
+                    getCountry().countryStorageSet.Add(getGainGoodsThisTurn());
                 }
             }
 

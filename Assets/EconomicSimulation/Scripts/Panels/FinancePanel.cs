@@ -93,7 +93,7 @@ namespace Nashet.EconomicSimulation
             }
             if (Game.Player.isInvented(Invention.ProfessionalArmy))
             {
-                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get() * 2f);
+                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).get() * 2f);
                 ssSoldiersWage.exponentialValue = Game.Player.getSoldierWage(); // could be changed by AI
                 refreshSoldierWageText();
                 ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;

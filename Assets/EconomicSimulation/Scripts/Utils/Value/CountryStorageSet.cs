@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using Nashet.Utils;
+using Nashet.EconomicSimulation;
+using System.Collections.Generic;
+
 namespace Nashet.ValueSpace
 {
     /// <summary>
@@ -32,7 +36,7 @@ namespace Nashet.ValueSpace
 
         public void set(Storage inn)
         {
-            base.set(inn);
+            base.Set(inn);
             throw new DontUseThatMethod();
         }
         ///// <summary>
@@ -58,7 +62,7 @@ namespace Nashet.ValueSpace
         {
             if (base.send(whom, what))
             {
-                used.add(what);
+                used.Add(what);
                 return true;
             }
             else
@@ -80,30 +84,32 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// Do checks outside
         /// Supports takenAway
+        /// Don't need it for now
         /// </summary>   
-        public bool send(StorageSet whom, StorageSet what)
-        {
-            return send(whom, what.getContainer());
-        }
+        //public bool send(StorageSet whom, StorageSet what)
+        //{
+        //    return send(whom, what.getContainer());
+        //}
         /// <summary>
         /// Do checks outside
         /// Supports takenAway
+        /// /// Don't need it for now
         /// </summary>   
-        public bool send(StorageSet whom, List<Storage> what)
-        {
-            used.add(what);
-            return base.send(whom, what);
-        }
+        //public bool send(StorageSet whom, List<Storage> what)
+        //{
+        //    used.Add(what);
+        //    return base.send(whom, what);
+        //}
         /// <summary>
         /// 
         /// /// Supports takenAway
         /// </summary>
 
-        override public bool subtract(Storage stor, bool showMessageAboutNegativeValue = true)
+        override public bool Subtract(Storage stor, bool showMessageAboutNegativeValue = true)
         {
-            if (base.subtract(stor, showMessageAboutNegativeValue))
+            if (base.Subtract(stor, showMessageAboutNegativeValue))
             {
-                used.add(stor);
+                used.Add(stor);
                 return true;
             }
             else
@@ -118,7 +124,7 @@ namespace Nashet.ValueSpace
         //}
         public bool subtractNoStatistic(Storage stor, bool showMessageAboutNegativeValue = true)
         {
-            return base.subtract(stor, showMessageAboutNegativeValue);
+            return base.Subtract(stor, showMessageAboutNegativeValue);
         }
         /// <summary>
         /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
@@ -156,14 +162,16 @@ namespace Nashet.ValueSpace
         //    base.subtract(set, showMessageAboutNegativeValue);
         //    throw new DontUseThatMethod();
         //}
-        internal void copyDataFrom(StorageSet consumed)
-        {
-            base.copyDataFrom(consumed);
-            throw new DontUseThatMethod();
-        }
+
+        // removed form ancestor
+        //internal void copyDataFrom(StorageSet consumed)
+        //{
+        //    base.copyDataFrom(consumed);
+        //    throw new DontUseThatMethod();
+        //}
         internal void sendAll(StorageSet toWhom)
         {
-            used.add(this);
+            used.Add(this);
             base.sendAll(toWhom);
         }
 

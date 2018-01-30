@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
             if (Economy.isMarket.checkIftrue(Game.Player))
                 AddCell(factoryType.getInvestmentCost().ToString(), factoryType);
             else
-                AddCell(factoryType.getBuildNeeds().ToString(), factoryType);
+                AddCell(factoryType.GetBuildNeeds().ToString(), factoryType);
 
 
             ////Adding resource needed

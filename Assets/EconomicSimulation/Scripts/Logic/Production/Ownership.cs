@@ -358,7 +358,7 @@ namespace Nashet.EconomicSimulation
                             Rand.Call(() =>
                             {
                                 SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
-                                Debug.Log(item.Key + " put on sale shares of " + parent);
+                                //Debug.Log(item.Key + " put on sale shares of " + parent);
                             }, 10);
                     }
                     else
@@ -366,7 +366,7 @@ namespace Nashet.EconomicSimulation
                         Rand.Call(() =>
                         {
                             SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
-                            Debug.Log(item.Key + " put on sale shares of " + parent);
+                            //Debug.Log(item.Key + " put on sale shares of " + parent);
                         }, 10);
                 }
         }

@@ -107,9 +107,9 @@ namespace Nashet.EconomicSimulation
                 // consuming made in artisansProduction.consumeNeeds()
                 // here is data transfering
                 // todo rework data transfering from artisans?
-                this.getConsumedInMarket().add(artisansProduction.getConsumedInMarket());
-                this.getConsumed().add(artisansProduction.getConsumed());
-                this.getConsumedLastTurn().add(artisansProduction.getConsumedLastTurn());
+                this.getConsumedInMarket().Add(artisansProduction.getConsumedInMarket());
+                this.getConsumed().Add(artisansProduction.getConsumed());
+                this.getConsumedLastTurn().Add(artisansProduction.getConsumedLastTurn());
             }
         }
         internal override bool canTrade()

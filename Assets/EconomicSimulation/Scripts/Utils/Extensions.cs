@@ -158,6 +158,37 @@ namespace Nashet.Utils
                     return stor;
             return new Storage(product, 0f);
         }
+        public static Storage GetFirstSubstituteStorage(this List<Storage> list, Product product)
+        {
+            if (product.isAbstract())
+            {
+                foreach (Storage stor in list)
+                    if (stor.isSameProductType(product))
+                        return stor;
+            }
+            else
+                return list.Find(x => x.getProduct() == product);
+            return new Storage(product, 0f);
+        }
+        public static List<Storage> Multiply(this List<Storage> list, Value value)
+        {
+            foreach (var item in list)
+            {
+                item.multiply(value);
+            }
+            return list;
+        }
+        /// <summary>
+        /// Does dip copy
+        /// </summary>
+        
+        public static List<Storage> Copy(this List<Storage> list)
+        {
+            var res = new List<Storage>();
+            foreach (var item in list)
+                res.Add(item.Copy());
+            return res;
+        }
     }
     public static class CollectionExtensions
     {
@@ -201,6 +232,7 @@ namespace Nashet.Utils
             if (!what.Equals(default(T)))
                 list.Add(what);
         }
+
         public static void move<T>(this List<T> source, T item, List<T> destination)
         {
             if (source.Remove(item)) // don't remove this
@@ -216,9 +248,9 @@ namespace Nashet.Utils
         {
             foreach (var item in source)
                 if (predicate(item))
-                action(item);
+                    action(item);
         }
-        public static void PerformAction<TSource>(this IEnumerable<TSource> source,  Action<TSource> action)
+        public static void PerformAction<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
             foreach (var item in source)
                 action(item);
@@ -383,7 +415,7 @@ namespace Nashet.Utils
         /// returns default(T) if fails
         /// </summary>    
         public static T Random<T>(this List<T> source)
-        {            
+        {
             if (source == null || source.Count == 0)
                 return default(T);
             return source[Game.Random.Next(source.Count)];
@@ -427,6 +459,25 @@ namespace Nashet.Utils
     }
     public static class GetStringExtensions
     {
+        public static string GetString(this Dictionary<Product, Storage> collection, String lineBreaker)
+        {
+            if (collection.Count > 0)
+            {
+                var sb = new StringBuilder();
+                bool isFirstRow = true;
+                foreach (var item in collection)
+                    if (item.Value.isNotZero())
+                    {
+                        if (!isFirstRow)
+                            sb.Append(lineBreaker);
+                        isFirstRow = false;
+                        sb.Append(item.Key).Append(" ").Append(item.Value.get());
+                    }
+                return sb.ToString();
+            }
+            else
+                return "none";
+        }
         public static string getString(this IEnumerable<Storage> list, string lineBreaker)
         {
             if (list.Count() > 0)

@@ -78,10 +78,10 @@ namespace Nashet.EconomicSimulation
                     {
                         var substitute = getInputProductsReserve().convertToBiggestStorage(next);
                         if (substitute.isNotZero())
-                            getInputProductsReserve().subtract(substitute, false); // could be zero reserves if isJustHiredPeople() 
+                            getInputProductsReserve().Subtract(substitute, false); // could be zero reserves if isJustHiredPeople() 
                     }
                     else
-                        getInputProductsReserve().subtract(next, false);
+                        getInputProductsReserve().Subtract(next, false);
         }
         abstract internal Procent getInputFactor();
         protected Procent getInputFactor(Procent multiplier)
@@ -90,7 +90,7 @@ namespace Nashet.EconomicSimulation
                 return Procent.ZeroProcent;
             if (getType().isResourceGathering())
                 return Procent.HundredProcent;
-            float inputFactor = 1;
+
             List<Storage> reallyNeedResources = new List<Storage>();
             //Storage available;
 
@@ -141,20 +141,21 @@ namespace Nashet.EconomicSimulation
             //    Storage howMuchCan = wallet.HowMuchCanAfford(input);
             //    input.set(howMuchCan.get());
             //}
+            var inputFactor = new Procent(Procent.HundredProcent);
             // searching lowest factor
-            foreach (Storage need in reallyNeedResources)//todo optimize - convert into for i
+            foreach (Storage need in reallyNeedResources)
             {
-                float denominator = getType().resourceInput.getFirstStorage(need.getProduct()).get() * multiplier.get();
-                if (denominator != 0f)
+                Value denominator = getType().resourceInput.GetFirstSubstituteStorage(need.getProduct()).Copy().multiply( multiplier);
+                if (denominator.isNotZero()) 
                 {
-                    float newFactor = need.get() / denominator;
-                    if (newFactor < inputFactor)
-                        inputFactor = newFactor;
+                    var newfactor = Procent.makeProcent(need, denominator);
+                    if (newfactor.isSmallerThan(inputFactor))
+                        inputFactor = newfactor;
                 }
                 else // no resources
-                    inputFactor = 0f;
+                    inputFactor.set(0f);
             }
-            return new Procent(inputFactor);
+            return inputFactor;
         }
         abstract public List<Storage> getHowMuchInputProductsReservesWants();
         protected List<Storage> getHowMuchInputProductsReservesWants(Value multiplier)
@@ -213,7 +214,7 @@ namespace Nashet.EconomicSimulation
         protected float getLocalEffectiveDemand(Product product, Procent multiplier)
         {
             // need to know how much i Consumed inside my needs
-            Storage need = getType().resourceInput.getFirstStorage(product);
+            Storage need = getType().resourceInput.GetFirstSubstituteStorage(product);
             if (need.isZero())
                 return 0f;
             else

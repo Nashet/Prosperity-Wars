@@ -355,7 +355,7 @@ namespace Nashet.EconomicSimulation
         {
             var consumption = new StorageSet();
             foreach (var item in personal)
-                consumption.add(item.Value.getConsumption());
+                consumption.Add(item.Value.getConsumption());
 
 
             //    Procent res = new Procent(0f);
@@ -368,12 +368,13 @@ namespace Nashet.EconomicSimulation
             //return res;
             return consumption;
         }
-        public StorageSet getNeeds()
+        public List<Storage> getNeeds()
         {
+            // StorageSet used for faster calculation
             StorageSet res = new StorageSet();
             foreach (var item in personal)
-                res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
-            return res;
+                res.Add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
+            return res.ToList();
         }
         Value getNeeds(Product product)
         {

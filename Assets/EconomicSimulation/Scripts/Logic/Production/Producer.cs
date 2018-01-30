@@ -83,9 +83,9 @@ namespace Nashet.EconomicSimulation
                         Game.market.pay(this, cost);
                         //Game.market.sentToMarket.subtract(realSold);
                     }
-                    else if (Game.market.GetLackingMoney(cost).get() > 10f && Game.devMode)
-                        Debug.Log("Failed market - can't pay " + Game.market.GetLackingMoney(cost)
-                                + " for " + realSold); // money in market ended... Only first lucky get money
+                    //else if (Game.market.GetLackingMoney(cost).get() > 10f && Game.devMode)
+                    //    Debug.Log("Failed market - can't pay " + Game.market.GetLackingMoney(cost)
+                    //            + " for " + realSold); // money in market ended... Only first lucky get money
                 }
             }
         }
@@ -96,12 +96,12 @@ namespace Nashet.EconomicSimulation
         {
             sentToMarket.set(what);
             storage.subtract(what);
-            Game.market.sentToMarket.add(what);
+            Game.market.sentToMarket.Add(what);
         }
         /// <summary> Do checks outside</summary>
         public void consumeFromItself(Storage what)
         {
-            getConsumed().add(what);
+            getConsumed().Add(what);
             storage.subtract(what);
         }
 

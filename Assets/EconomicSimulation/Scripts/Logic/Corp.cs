@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     //todo inherit from consumer?
@@ -73,7 +75,7 @@ namespace Nashet.EconomicSimulation
                     {
                         owner.consumeFromCountryStorage(realConsumption, owner);
                         //owner.countryStorageSet.subtract(realConsumption);
-                        consumption.add(realConsumption);
+                        consumption.Add(realConsumption);
                     }
                 }
                 else
@@ -107,27 +109,22 @@ namespace Nashet.EconomicSimulation
         }
         internal Value getConsumption(Product prod)
         {
-            return consumption.getFirstStorage(prod);
+            return consumption.GetFirstSubstituteStorage(prod);
         }
-        public StorageSet getRealNeeds(Country country)
+        public List<Storage> getRealNeeds(Country country)
         {
             Value multiplier = new Value(this.getSize() / 1000f);
 
-            List<Storage> result = new List<Storage>();
-            foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
-                if (next.getProduct().isInventedBy(country) && (next.getProduct() != Product.Cattle || country.isInvented(Invention.Domestication)))
-                {
-                    Storage nStor = new Storage(next.getProduct(), next.get());
-                    nStor.multiply(multiplier);
-                    result.Add(nStor);
-                }
-            return new StorageSet(result);
+            List<Storage> result = origin.popType.getMilitaryNeedsPer1000Men(country);
+            foreach (Storage next in result)
+                next.multiply(multiplier);
+            return result;
         }
         public Storage getRealNeeds(Country country, Product product)
         {
             if (product.isInventedBy(country))
             {
-                Storage found = origin.popType.getMilitaryNeedsPer1000().getFirstStorage(product);
+                Storage found = origin.popType.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product);
                 if (found.isZero())
                     return found;
                 else

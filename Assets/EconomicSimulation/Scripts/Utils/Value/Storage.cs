@@ -7,7 +7,7 @@ using Nashet.Utils;
 using Nashet.UnityUIUtils;
 namespace Nashet.ValueSpace
 {    
-    public class Storage : Value, IClickable
+    public class Storage : Value, IClickable, ICopyable<Storage>
     {
         static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
 
@@ -88,6 +88,7 @@ namespace Nashet.ValueSpace
                     Debug.Log("Attempt to add wrong product to Storage");
             }
         }
+
         public Product getProduct()
         {
             return product;
@@ -123,7 +124,7 @@ namespace Nashet.ValueSpace
             if (has(howMuch))
             {
                 Storage targetStorage = new Storage(howMuch);
-                whom.add(targetStorage);
+                whom.Add(targetStorage);
                 this.subtract(howMuch);
             }
         }
@@ -268,6 +269,11 @@ namespace Nashet.ValueSpace
         {            
             if (!this.isAbstractProduct())
                 MainCamera.tradeWindow.selectProduct((this).getProduct());
+        }
+
+        public Storage Copy()
+        {
+            return new Storage(this);
         }
     }
 }

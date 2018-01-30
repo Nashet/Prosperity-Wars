@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     }
     public interface IEscapeTarget
     {
-         bool HasJobsFor(PopType popType, Province province);
+        bool HasJobsFor(PopType popType, Province province);
     }
     public interface IInvestable
     {
@@ -19,10 +19,14 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Only for Aristocrats: allows type sampling
         /// </summary>        
-        bool canProduce(Product product);        
+        bool canProduce(Product product);
     }
     public interface ISortableName
     {
         float GetNameWeight();
+    }
+    public interface ICopyable<T>
+    {
+        T Copy();
     }
 }

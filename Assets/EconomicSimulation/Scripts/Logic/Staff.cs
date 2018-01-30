@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
@@ -152,10 +154,15 @@ namespace Nashet.EconomicSimulation
 
         override public List<Storage> getRealAllNeeds()
         {
-            StorageSet res = new StorageSet();
-            foreach (var item in allArmies)
-                res.add(item.getNeeds());
-            return res.getContainer();
+            //StorageSet res = new StorageSet();
+            //foreach (var item in allArmies)
+            //    res.Add(item.getNeeds());
+
+            // assuming all corps has same needs
+            var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(getPlaceDejure());
+            var multiplier = new Value(getAllArmiesSize() / 1000f);
+            res.Multiply(multiplier);
+            return res;            
         }
 
         virtual internal void sendArmy(Province possibleTarget, Procent procent)

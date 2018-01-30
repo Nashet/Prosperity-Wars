@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
             ownership = new Owners(this);
             currentInvestor = investor;
             //assuming this is level 0 building        
-            constructionNeeds = getType().getBuildNeeds();
+            constructionNeeds = new StorageSet(getType().GetBuildNeeds());
             province.allFactories.Add(this);
             ownership.Add(investor, cost);
 
@@ -208,15 +208,18 @@ namespace Nashet.EconomicSimulation
             else
                 return getReopenCost();
         }
-        internal StorageSet getUpgradeNeeds()
+        /// <summary>
+        /// Returns copy
+        /// </summary>        
+        internal List<Storage> getUpgradeNeeds()
         {
             if (getLevel() < Options.FactoryMediumTierLevels)
-                return getType().upgradeResourceLowTier;
+                return getType().GetUpgradeNeeds(1);
             else
                 if (getLevel() < Options.FactoryMediumHighLevels)
-                return getType().upgradeResourceMediumTier;
+                return getType().GetUpgradeNeeds(2);
             else
-                return getType().upgradeResourceHighTier;
+                return getType().GetUpgradeNeeds(3);
         }
         internal float getPriority()
         {
@@ -813,7 +816,7 @@ namespace Nashet.EconomicSimulation
         {
             currentInvestor = byWhom;
             upgrading = true;
-            constructionNeeds.add(getUpgradeNeeds().getCopy());
+            constructionNeeds.Add(getUpgradeNeeds());
             if ((byWhom as Agent).getCountry().economy.getValue() != Economy.PlannedEconomy)
             {
                 var cost = Game.market.getCost(getUpgradeNeeds());
@@ -925,7 +928,7 @@ namespace Nashet.EconomicSimulation
                         {
                             //getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
                             consumeFromCountryStorage(realNeed, getCountry());
-                            getInputProductsReserve().add(realNeed);
+                            getInputProductsReserve().Add(realNeed);
                         }
                     }
                     else
@@ -945,12 +948,15 @@ namespace Nashet.EconomicSimulation
                 {
                     if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
                         if (getCountry().countryStorageSet.has(constructionNeeds))
-                            isBuyingComplete = getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
+                        {
+                            isBuyingComplete = true; //getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
+                            //getCountry().countryStorageSet.send(this, )
+                        }
                 }
                 else
                 {
                     if (isBuilding())
-                        isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getType().getBuildNeeds());
+                        isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getType().GetBuildNeeds());
                     else if (isUpgrading())
                         isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
@@ -984,7 +990,7 @@ namespace Nashet.EconomicSimulation
                     if (isBuilding())
                     {
                         onConstructionComplete(true);
-                        getInputProductsReserve().subtract(getType().getBuildNeeds(), false);
+                        getInputProductsReserve().subtract(getType().GetBuildNeeds(), false);
                     }
                     else // assuming isUpgrading()
                     {

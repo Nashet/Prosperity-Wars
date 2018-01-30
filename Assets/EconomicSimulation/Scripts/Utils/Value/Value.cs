@@ -121,7 +121,7 @@ namespace Nashet.ValueSpace
             if (invalue.value > value)
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Value subtrackOutside failed");
+                    Debug.Log("Value subtractOutside failed");
                 return new Value(0);
             }
             else
@@ -129,7 +129,7 @@ namespace Nashet.ValueSpace
         }
 
         /// <summary>Keeps result inside</summary>    
-        public void multiply(Value invalue, bool showMessageAboutNegativeValue = true)
+        public Value multiply(Value invalue, bool showMessageAboutNegativeValue = true)
         {
             if (invalue.get() < 0)
             {
@@ -139,6 +139,7 @@ namespace Nashet.ValueSpace
             }
             else
                 set(invalue.get() * this.get());
+            return this;
         }
         /// <summary>Keeps result inside</summary>    
         public void multiply(float invalue, bool showMessageAboutNegativeValue = true)

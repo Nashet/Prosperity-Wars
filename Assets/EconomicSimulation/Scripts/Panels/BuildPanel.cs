@@ -62,13 +62,13 @@ namespace Nashet.EconomicSimulation
             else // non market
             {
                 //todo remove grain connection
-                var resourceToBuild = selectedFactoryType.getBuildNeeds();
-                Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
+                var resourceToBuild = selectedFactoryType.GetBuildNeeds();
+                Storage needFood = resourceToBuild.GetFirstSubstituteStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
                     Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType, Game.market.getCost(resourceToBuild));
                     //wallet.pay(fact.wallet, new Value(100f));
-                    Game.Player.countryStorageSet.subtract(needFood);
+                    Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(fact);
                 }
@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
             {
                 sb.Clear();
                 sb.Append("Build ").Append(selectedFactoryType);
-                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds());
+                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds());
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
                     var cost = selectedFactoryType.getInvestmentCost();

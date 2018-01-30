@@ -776,40 +776,40 @@ namespace Nashet.EconomicSimulation
                     return 0f;
                 else if (this == Scanty)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result.get();
                 }
                 else if (this == Minimal)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.02f);
                     result.add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Trinket)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.04f);
                     result.add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Middle)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.06f);
                     result.add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Big)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.08f);
-                    //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
+                    //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.add(everyDayCost);
                     //result.add(luxuryCost);
                     return result.get();
@@ -955,40 +955,40 @@ namespace Nashet.EconomicSimulation
                     return 0f;
                 else if (this == Scanty)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result.get();
                 }
                 else if (this == Minimal)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.02f);
                     result.add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Trinket)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.04f);
                     result.add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Middle)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.06f);
                     result.add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Big)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000());
+                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
                     everyDayCost.multiply(0.08f);
-                    //Value luxuryCost = Game.market.getCost(PopType.workers.getLuxuryNeedsPer1000());
+                    //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.add(everyDayCost);
                     //result.add(luxuryCost);
                     return result.get();

@@ -24,10 +24,13 @@ namespace Nashet.EconomicSimulation
         /// per 1000 workers & per 1 unit outcome</summary>
         internal StorageSet resourceInput;
 
-        /// <summary>Per 1 level upgrade</summary>
-        public readonly StorageSet upgradeResourceLowTier;
-        public readonly StorageSet upgradeResourceMediumTier;
-        public readonly StorageSet upgradeResourceHighTier;
+        private readonly List<Storage> buildingNeeds = new List<Storage> { new Storage(Product.Grain, 40f) };
+
+        /// <summary>Per 1 level upgrade</summary>        
+        private readonly List<Storage> upgradeResourceLowTier = new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) };
+        private readonly List<Storage> upgradeResourceMediumTier = new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) };
+        private readonly List<Storage> upgradeResourceHighTier = new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) };
+
 
         //internal ConditionsList conditionsBuild;
         internal Condition enoughMoneyOrResourcesToBuild;
@@ -50,85 +53,85 @@ namespace Nashet.EconomicSimulation
             new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
 
             StorageSet resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Grain, 1f));
+            resourceInput.Set(new Storage(Product.Grain, 1f));
             new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Lumber, 1f));
+            resourceInput.Set(new Storage(Product.Lumber, 1f));
             new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Wood, 1f));
+            resourceInput.Set(new Storage(Product.Wood, 1f));
             new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Fuel, 0.5f));
-            resourceInput.set(new Storage(Product.MetalOre, 2f));
+            resourceInput.Set(new Storage(Product.Fuel, 0.5f));
+            resourceInput.Set(new Storage(Product.MetalOre, 2f));
             new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Fibers, 1f));
+            resourceInput.Set(new Storage(Product.Fibers, 1f));
             new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Fuel, 0.5f));
-            resourceInput.set(new Storage(Product.Stone, 2f));
+            resourceInput.Set(new Storage(Product.Fuel, 0.5f));
+            resourceInput.Set(new Storage(Product.Stone, 2f));
             new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Sugar, 1f));
+            resourceInput.Set(new Storage(Product.Sugar, 1f));
             new FactoryType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
             new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Stone, 1f));
-            resourceInput.set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Stone, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
             new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Lumber, 1f));
-            resourceInput.set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Lumber, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
             new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Lumber, 1f));
-            resourceInput.set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Lumber, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
             new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Oil, 1f));
+            resourceInput.Set(new Storage(Product.Oil, 1f));
             new FactoryType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
 
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
             new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Machinery, 1f));
-            resourceInput.set(new Storage(Product.Metal, 1f));
-            resourceInput.set(new Storage(Product.Rubber, 1f));
+            resourceInput.Set(new Storage(Product.Machinery, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Rubber, 1f));
             new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Machinery, 1f));
-            resourceInput.set(new Storage(Product.Metal, 1f));
-            resourceInput.set(new Storage(Product.Artillery, 1f));
+            resourceInput.Set(new Storage(Product.Machinery, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Artillery, 1f));
             new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Lumber, 1f));
-            resourceInput.set(new Storage(Product.Metal, 1f));
-            resourceInput.set(new Storage(Product.Machinery, 1f));
+            resourceInput.Set(new Storage(Product.Lumber, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Machinery, 1f));
             new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
 
             resourceInput = new StorageSet();
-            resourceInput.set(new Storage(Product.Metal, 1f));
-            resourceInput.set(new Storage(Product.Oil, 1f));
-            resourceInput.set(new Storage(Product.Rubber, 1f));
+            resourceInput.Set(new Storage(Product.Metal, 1f));
+            resourceInput.Set(new Storage(Product.Oil, 1f));
+            resourceInput.Set(new Storage(Product.Rubber, 1f));
             new FactoryType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
         }
         /// <summary>
@@ -146,10 +149,8 @@ namespace Nashet.EconomicSimulation
             allTypes.Add(this);
             this.basicProduction = basicProduction;
 
-            //upgradeResource.Set(new Storage(Product.Wood, 10f));
-            upgradeResourceLowTier = new StorageSet(new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) });
-            upgradeResourceMediumTier = new StorageSet(new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) });
-            upgradeResourceHighTier = new StorageSet(new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) });
+
+
 
             enoughMoneyOrResourcesToBuild = new Condition(
                 delegate (object forWhom)
@@ -157,7 +158,7 @@ namespace Nashet.EconomicSimulation
                     var agent = forWhom as Agent;
                     if (agent.getCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        return agent.getCountry().countryStorageSet.has(this.getBuildNeeds());
+                        return agent.getCountry().countryStorageSet.has(this.GetBuildNeeds());
                     }
                     else
                     {
@@ -174,7 +175,7 @@ namespace Nashet.EconomicSimulation
                     //cost.add(Options.factoryMoneyReservPerLevel);
                     Value cost = getInvestmentCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.getBuildNeeds());
+                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds());
                     return sb.ToString();
                 }, true);
 
@@ -219,20 +220,21 @@ namespace Nashet.EconomicSimulation
 
         public Value getInvestmentCost()
         {
-            Value result = Game.market.getCost(getBuildNeeds());
+            Value result = Game.market.getCost(GetBuildNeeds());
             result.add(Options.factoryMoneyReservePerLevel);
             return result;
         }
-        internal StorageSet getBuildNeeds()
+        /// <summary>
+        /// Gives a copy of needs
+        /// </summary>        
+        internal List<Storage> GetBuildNeeds()
+        //internal StorageSet GetBuildNeeds()
         {
-            //return new Storage(Product.Food, 40f);
-            // thats weird place
-            StorageSet result = new StorageSet();
-            result.set(new Storage(Product.Grain, 40f));
+            return buildingNeeds.Copy();//.Copy();
             //TODO!has connection in pop.invest!!
-            //if (whoCanProduce(Product.Gold) == this)
-            //        result.Set(new Storage(Product.Wood, 40f));
-            return result;
+            ////if (whoCanProduce(Product.Gold) == this)
+            ////        result.Set(new Storage(Product.Wood, 40f));
+            //return result;
         }
         /// <summary>
         /// Returns first correct value
@@ -245,6 +247,23 @@ namespace Nashet.EconomicSimulation
                     return ft;
             return null;
         }
+
+        /// <summary>
+        /// Returns copy
+        /// </summary>        
+        internal List<Storage> GetUpgradeNeeds(int tier)
+        {
+            switch (tier)
+            {
+                case 1: return upgradeResourceLowTier.Copy();
+                case 2: return upgradeResourceMediumTier.Copy();
+                case 3: return upgradeResourceHighTier.Copy();
+                default:
+                    Debug.Log("Unknown tier");
+                    return null;
+            }
+        }
+
         override public string ToString() { return name; }
         internal bool isResourceGathering()
         {
@@ -320,7 +339,7 @@ namespace Nashet.EconomicSimulation
         {
             return Procent.makeProcent(getPossibleProfit(), getInvestmentCost(), false);
         }
-       
+
         internal bool canBuildNewFactory(Province where)
         {
             if (where.hasFactory(this))

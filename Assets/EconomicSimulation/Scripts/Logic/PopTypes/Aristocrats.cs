@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
                 Storage howMuchSend = new Storage(storage.getProduct(), storage.get() - Options.aristocratsFoodReserv);
                 storage.send(getSentToMarket(), howMuchSend);
                 //sentToMarket.set(howMuchSend);
-                Game.market.sentToMarket.add(howMuchSend);
+                Game.market.sentToMarket.Add(howMuchSend);
             }
         }
         public override void produce()
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
                         if (factoryToBuild != null)
                         {
                             // todo remove connection to grain
-                            Storage resourceToBuild = factoryToBuild.getBuildNeeds().getFirstStorage(Product.Grain);
+                            Storage resourceToBuild = factoryToBuild.GetBuildNeeds().GetFirstSubstituteStorage(Product.Grain);
 
                             // try to build for grain
                             if (storage.has(resourceToBuild))

@@ -87,7 +87,7 @@ namespace Nashet.EconomicSimulation
 
         public Storage getSentToMarket(Product product)
         {
-            return sentToMarket.getFirstStorage(product);
+            return sentToMarket.GetFirstSubstituteStorage(product);
         }
         /// <summary> Assuming product is abstract product</summary>
         public Storage getSentToMarketIncludingSubstituts(Product product)
@@ -96,7 +96,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in product.getSubstitutes())
                 if (item.isTradable())
                 {
-                    res.add(sentToMarket.getFirstStorage(item));
+                    res.add(sentToMarket.GetFirstSubstituteStorage(item));
                 }
             return new Storage(product, res);
         }
@@ -106,10 +106,10 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public void sell(Storage what)
         {
-            sentToMarket.add(what);
+            sentToMarket.Add(what);
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
-            Game.market.sentToMarket.add(what);
+            Game.market.sentToMarket.Add(what);
         }
         public void getMoneyForSoldProduct()
         {

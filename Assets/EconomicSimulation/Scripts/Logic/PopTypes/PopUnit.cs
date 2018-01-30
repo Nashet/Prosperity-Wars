@@ -9,6 +9,7 @@ using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     abstract public class PopUnit : Producer, IClickable
@@ -141,7 +142,7 @@ namespace Nashet.EconomicSimulation
             loyalty = new Procent(source.loyalty.get());
             population = sizeOfNewPop;
             // if source pop is gonna be dead..
-            if (source.population - sizeOfNewPop <= 0 && this.popType == PopType.Aristocrats || this.popType == PopType.Capitalists)            
+            if (source.population - sizeOfNewPop <= 0 && this.popType == PopType.Aristocrats || this.popType == PopType.Capitalists)
             //secede property... to new pop.. 
             //todo - can optimize it, double run on List
             {
@@ -258,9 +259,9 @@ namespace Nashet.EconomicSimulation
 
             //consumer's fields
             //isn't that important. That is fucking important
-            getConsumed().add(source.getConsumed());
-            getConsumedLastTurn().add(source.getConsumedLastTurn());
-            getConsumedInMarket().add(source.getConsumedInMarket());
+            getConsumed().Add(source.getConsumed());
+            getConsumedLastTurn().Add(source.getConsumedLastTurn());
+            getConsumedInMarket().Add(source.getConsumedInMarket());
 
             //province = source.province; don't change that
 
@@ -293,7 +294,7 @@ namespace Nashet.EconomicSimulation
             if (MainCamera.popUnitPanel.whomShowing() == this)
                 MainCamera.popUnitPanel.Hide();
             //remove from population panel.. Would do it automatically        
-            
+
             sendAllAvailableMoney(getBank()); // just in case if there is something
             getBank().defaultLoaner(this);
             Movement.leave(this);
@@ -326,7 +327,7 @@ namespace Nashet.EconomicSimulation
             return mobilized;
         }
         //abstract public Procent howIsItGoodForMe(AbstractReformValue reform);
-        
+
         public int getAge()
         {
             //return Game.date - born;
@@ -444,37 +445,34 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// makes new list of new elements
         /// </summary>
-        private List<Storage> getNeedsInCommon(List<Storage> needs)
-        {
-            Value multiplier = new Value(this.getPopulation() / 1000f);
-            List<Storage> result = new List<Storage>();
-            foreach (Storage next in needs)
-                if (next.getProduct().IsInventedByAnyOne())
-                {
-                    Storage nStor = new Storage(next.getProduct(), next.get());
-                    nStor.multiply(multiplier);
-                    result.Add(nStor);
-                }
-            return result;
-        }
+        //private List<Storage> getNeedsInCommon(List<Storage> needs)
+        //{
+        //    Value multiplier = new Value(this.getPopulation() / 1000f);            
+        //    foreach (Storage next in needs)
+        //    {
+        //        Storage nStor = new Storage(next.getProduct(), next.get());
+        //        nStor.multiply(multiplier);                
+        //    }
+        //    return needs;
+        //}
 
         public List<Storage> getRealLifeNeeds()
-        {
-            return getNeedsInCommon(popType.getLifeNeedsPer1000());
+        {            
+            return popType.getLifeNeedsPer1000Men().Multiply(new Value(this.getPopulation() / 1000f));
         }
 
         public List<Storage> getRealEveryDayNeeds()
         {
-            return getNeedsInCommon(popType.getEveryDayNeedsPer1000());
+            return popType.getEveryDayNeedsPer1000Men().Multiply(new Value(this.getPopulation() / 1000f));
         }
 
         public List<Storage> getRealLuxuryNeeds()
         {
-            return getNeedsInCommon(this.popType.getLuxuryNeedsPer1000());
+            return popType.getLuxuryNeedsPer1000Men().Multiply(new Value(this.getPopulation() / 1000f));
         }
         override public List<Storage> getRealAllNeeds()
         {
-            return getNeedsInCommon(this.popType.getAllNeedsPer1000());
+            return popType.getAllNeedsPer1000Men().Multiply(new Value(this.getPopulation() / 1000f));
         }
 
         internal Procent getUnemployedProcent()
@@ -812,7 +810,7 @@ namespace Nashet.EconomicSimulation
                 {
                     consumeWithPlannedEconomy(getRealLifeNeeds());
                     //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
-                    var lifeNeedsFulfilled = Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds());
+                    var lifeNeedsFulfilled = Procent.makeProcent(getConsumed(), getRealLifeNeeds());
                     lifeNeedsFulfilled.divide(Options.PopStrataWeight);
                     needsFulfilled.set(lifeNeedsFulfilled);
 
