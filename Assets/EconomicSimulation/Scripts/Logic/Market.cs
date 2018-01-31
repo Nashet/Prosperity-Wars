@@ -57,9 +57,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns new Value
         /// </summary>
-        internal Value getCost(List<Storage> need)
+        internal Money getCost(List<Storage> need)
         {
-            Value cost = new Value(0f);
+            Money cost = new Money(0f);
             foreach (Storage stor in need)
                 cost.Add(getCost(stor));
             return cost;
@@ -75,7 +75,7 @@ namespace Nashet.EconomicSimulation
             if (need.getProduct() == Product.Gold)
             {
                 var res = need.multiplyOutside(Options.goldToCoinsConvert);
-                res.Multiply(Options.GovernmentTakesShareOfGoldOutput);
+                res.multiply(Options.GovernmentTakesShareOfGoldOutput);
                 return res;
             }
             else
@@ -478,6 +478,8 @@ namespace Nashet.EconomicSimulation
         ///</summary>
         internal float getDemandSupplyBalance(Product product)
         {
+            if (product == Product.Gold)
+                return Options.MarketInfiniteDSB;
             //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
             float balance;
 

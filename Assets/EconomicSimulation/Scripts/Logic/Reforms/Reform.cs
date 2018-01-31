@@ -447,8 +447,8 @@ namespace Nashet.EconomicSimulation
         internal readonly static DoubleCondition taxesInsideLFLimit = new DoubleCondition(
         delegate (object x, object y)
         {
-        //if it's poor taxes
-        var taxesForPoor = y as TaxationForPoor.ReformValue;
+            //if it's poor taxes
+            var taxesForPoor = y as TaxationForPoor.ReformValue;
             if (taxesForPoor != null)
                 return (x as Country).economy.status != Economy.LaissezFaire || taxesForPoor.tax.get() <= 0.5f;
             else
@@ -461,8 +461,8 @@ namespace Nashet.EconomicSimulation
         internal readonly static DoubleCondition taxesInsideSCLimit = new DoubleCondition(
         delegate (object x, object y)
         {
-        //if it's poor taxes
-        var taxesForPoor = y as TaxationForPoor.ReformValue;
+            //if it's poor taxes
+            var taxesForPoor = y as TaxationForPoor.ReformValue;
             if (taxesForPoor != null)
                 return (x as Country).economy.status != Economy.StateCapitalism || taxesForPoor.tax.get() >= 0.2f;
             else
@@ -563,7 +563,7 @@ namespace Nashet.EconomicSimulation
                     getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
                 if (getCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
                     getCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-                getCountry().getAllFactories().PerformAction( x => x.setSubsidized(false));
+                getCountry().getAllFactories().PerformAction(x => x.setSubsidized(false));
             }
             else
                 if (status == StateCapitalism)
@@ -769,53 +769,54 @@ namespace Nashet.EconomicSimulation
 
             /// <summary>
             /// Calculates wage basing on consumption cost for 1000 workers
+            /// Returns new value
             /// </summary>        
-            internal float getWage()
+            internal Money getWage()
             {
                 if (this == None)
-                    return 0f;
+                    return new Money(0f);
                 else if (this == Scanty)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Minimal)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.02f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
+                    everyDayCost.multiply(0.02f);
                     result.Add(everyDayCost);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Trinket)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.04f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
+                    everyDayCost.multiply(0.04f);
                     result.Add(everyDayCost);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Middle)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.06f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
+                    everyDayCost.multiply(0.06f);
                     result.Add(everyDayCost);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Big)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.08f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
+                    everyDayCost.multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
-                    return result.get();
+                    return result;
                 }
                 else
-                    return 0f;
+                    return new Money(0f);
             }
             override public string ToString()
             {
@@ -963,7 +964,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.02f);
+                    everyDayCost.multiply(0.02f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -971,7 +972,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.04f);
+                    everyDayCost.multiply(0.04f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -979,7 +980,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.06f);
+                    everyDayCost.multiply(0.06f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -987,7 +988,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.08f);
+                    everyDayCost.multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
@@ -1402,5 +1403,5 @@ namespace Nashet.EconomicSimulation
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
     }
-    
+
 }

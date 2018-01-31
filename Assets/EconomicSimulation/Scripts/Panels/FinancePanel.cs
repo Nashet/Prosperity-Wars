@@ -130,7 +130,7 @@ namespace Nashet.EconomicSimulation
         {
             Value loan = Game.Player.getBank().howMuchCanGive(Game.Player);
             if (loanLimit.value != 1f)
-                loan.Multiply(loanLimit.value);
+                loan.multiply(loanLimit.value);
             if (Game.Player.getBank().canGiveMoney(Game.Player, loan))
                 Game.Player.getBank().giveMoney(Game.Player, loan);
             MainCamera.refreshAllActive();
@@ -140,17 +140,17 @@ namespace Nashet.EconomicSimulation
             if (loanLimit.value == 1f)
                 Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.Copy());// Copye some how related to bug with self paying
             else
-                Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.Copy().Multiply(depositLimit.value));
+                Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.Copy().multiply(depositLimit.value));
             MainCamera.refreshAllActive();
         }
         public void onLoanLimitChange()
         {
-            loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).Multiply(loanLimit.value).ToString();
+            loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).multiply(loanLimit.value).ToString();
         }
 
         public void onDepositLimitChange()
         {
-            depositLimitText.text = Game.Player.cash.Copy().Multiply(depositLimit.value).ToString();
+            depositLimitText.text = Game.Player.cash.Copy().multiply(depositLimit.value).ToString();
         }
         private void refreshSoldierWageText()
         {

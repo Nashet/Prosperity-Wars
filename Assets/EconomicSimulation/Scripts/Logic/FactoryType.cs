@@ -175,7 +175,7 @@ namespace Nashet.EconomicSimulation
                     //cost.add(Options.factoryMoneyReservPerLevel);
                     Value cost = getInvestmentCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds());
+                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
                     return sb.ToString();
                 }, true);
 
@@ -217,7 +217,9 @@ namespace Nashet.EconomicSimulation
                 if (!next.isResourceGathering())
                     yield return next;
         }
-
+        /// <summary>
+        ///Returns new value
+        /// </summary>        
         public Value getInvestmentCost()
         {
             Value result = Game.market.getCost(GetBuildNeeds());
@@ -314,30 +316,52 @@ namespace Nashet.EconomicSimulation
             return resourceInput != null;
         }
 
-
-        internal Value getPossibleProfit()
+        /// <summary>
+        /// For 1 level / 1000 workers
+        /// </summary>        
+        internal Value getPossibleProfit(Province province)
         {
+
+            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+                return new Value(0); // no demand for result product
             Value income = Game.market.getCost(basicProduction);
+            var outCome = province.getLocalMinSalary();//salary
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
                     if (!Game.market.isAvailable(inputProduct.getProduct()))
-                        return new Value(0);// inputs are unavailable
-                                            //if (Game.market.getBouthOnMarket(basicProduction.getProduct(), false) == 0f)
-                if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
-                    return new Value(0); // no demand for result product
-                Value outCome = Game.market.getCost(resourceInput);
-                return income.subtract(outCome, false);
+                        return new Value(0);// inputs are unavailable                                            
+
+                outCome.Add(Game.market.getCost(resourceInput));
             }
-            else
-                return income;
+            return income.subtract(outCome, false);
+        }
+        /// <summary>
+        /// Not including salary
+        /// </summary>
+        /// <returns></returns>
+        internal Value getPossibleProfit()
+        {
+            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+                return new Value(0); // no demand for result product
+            Value income = Game.market.getCost(basicProduction);
+
+            if (hasInput())
+            {
+                foreach (Storage inputProduct in resourceInput)
+                    if (!Game.market.isAvailable(inputProduct.getProduct()))
+                        return new Value(0);// inputs are unavailable                                            
+
+                return income.subtract(Game.market.getCost(resourceInput), false);
+            }
+            return income;
         }
         /// <summary>
         /// That is possible margin in that case
         /// </summary>        
-        public Procent getMargin()
+        public Procent getMargin(Province province)
         {
-            return Procent.makeProcent(getPossibleProfit(), getInvestmentCost(), false);
+            return Procent.makeProcent(getPossibleProfit(province), getInvestmentCost(), false);
         }
 
         internal bool canBuildNewFactory(Province where)

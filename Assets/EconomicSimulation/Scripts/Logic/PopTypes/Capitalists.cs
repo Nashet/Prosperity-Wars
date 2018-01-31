@@ -73,8 +73,8 @@ namespace Nashet.EconomicSimulation
             //)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.getMargin().get() >= Options.minMarginToInvest);
-                var project = projects.MaxBy(x => x.getMargin().get());
+                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.getMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
+                var project = projects.MaxBy(x => x.getMargin(getProvince()).get());
 
                 if (project != null)
                 {
@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
                                 else
                                 {
                                     factory.open(this, true);
-                                    Debug.Log(this + " invested " + investmentCost + " in opening " + factory);
+                                    Debug.Log(this + " invested " + investmentCost + " in reopening " + factory);
                                 }
                             }
                             else

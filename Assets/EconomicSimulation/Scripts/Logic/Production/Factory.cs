@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
 
         private bool dontHireOnSubsidies, subsidized;
         private int priority = 0;
-        private Value salary = new Value(0);
+        private Money salary = new Money(0);
         //{
         //    get { return Salary; }
         //    set
@@ -364,14 +364,14 @@ namespace Nashet.EconomicSimulation
             }
 
         }
-        public Procent getMargin()
+        public Procent getMargin(Province province)
         {
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 return Procent.ZeroProcent;
             else
             {
                 if (IsClosed)
-                    return getType().getMargin();//potential margin
+                    return getType().getMargin(getProvince());//potential margin
                 else
                     return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
             }
@@ -418,7 +418,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (var link in hiredWorkForce)
                     {
-                        Value howMuchPay = new Value(salary.get() * link.Value / (float)workForcePerLevel);
+                        Value howMuchPay = salary.Copy().multiply((float)link.Value).divide(workForcePerLevel);
                         if (canPay(howMuchPay))
                             pay(link.Key, howMuchPay);
                         else
@@ -490,10 +490,11 @@ namespace Nashet.EconomicSimulation
         /// <summary> only make sense if called before HireWorkforce()
         ///  PEr 1000 men!!!
         /// !!! Mirroring PaySalary
+        /// Returns new value
         /// </summary>    
-        public float getSalary()
+        public Money getSalary()
         {
-            return salary.get();
+            return salary.Copy();
         }
         public int getMaxWorkforceCapacity()
         {
@@ -511,7 +512,7 @@ namespace Nashet.EconomicSimulation
             if (IsOpen && Economy.isMarket.checkIftrue(getCountry()))
             {
                 var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
-                var margin = getMargin();
+                var margin = getMargin(null);
 
                 // rise salary to attract  workforce, including workforce from other factories
                 if (margin.isBiggerThan(Options.minMarginToRiseSalary)
@@ -556,7 +557,7 @@ namespace Nashet.EconomicSimulation
 
                 // limit salary country's min wage
                 var minSalary = getCountry().getMinSalary();
-                if (salary.get() < minSalary)
+                if (salary.isSmallerThan(minSalary))
                     salary.set(minSalary);
             }
         }
@@ -801,10 +802,13 @@ namespace Nashet.EconomicSimulation
         //{
         //    return !_isOpen;
         //}
-
-        internal float getSalaryCost()
-        {
-            return getWorkForce() * getSalary() / workForcePerLevel;
+        /// <summary>
+        /// New value
+        /// </summary>
+        /// <returns></returns>
+        internal Money getSalaryCost()
+        {            
+            return getSalary().Multiply(getWorkForce()).Divide(workForcePerLevel);
         }
 
         internal bool canUpgrade()
@@ -844,7 +848,7 @@ namespace Nashet.EconomicSimulation
             if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                 return 0f;
             else
-                return base.getProfit() - getSalaryCost();
+                return base.getProfit() - getSalaryCost().get();
         }
 
         public override List<Storage> getHowMuchInputProductsReservesWants()
@@ -1013,7 +1017,7 @@ namespace Nashet.EconomicSimulation
         }
         override internal float getExpences()
         {
-            return base.getExpences() + getSalaryCost();
+            return base.getExpences() + getSalaryCost().get();
         }
         //Not necessary ti optimize -  cost 0.1% of tick
         public int getWorkForce()

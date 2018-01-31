@@ -661,7 +661,7 @@ namespace Nashet.EconomicSimulation
                 if (getCountry().economy.getValue() == Economy.PlannedEconomy)
                     order = (x => x.getPriority());
                 else
-                    order = (x => x.getSalary());
+                    order = (x => x.getSalary().get());
 
                 foreach (List<Factory> factoryGroup in getFactoriesDescendingOrder(order))
                 {
@@ -676,7 +676,7 @@ namespace Nashet.EconomicSimulation
 
                     int hiredInThatGroup = 0;
                     foreach (var factory in factoryGroup)
-                        if (factory.getSalary() > 0f || getCountry().economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.getSalary().isNotZero() || getCountry().economy.getValue() == Economy.PlannedEconomy)
                         {
                             int factoryWants = factory.howMuchWorkForceWants();
 
@@ -868,25 +868,26 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary> call it BEFORE opening enterprise
         /// Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
-        /// \nCould auto-drop salary on minSalary of there is problems with inputs        </summary>
+        /// \nCould auto-drop salary on minSalary of there is problems with inputs 
+        /// Returns new value</summary>
 
-        internal float getLocalMinSalary()
+        internal Money getLocalMinSalary()
         {
-            float res;
+            Money res;
             if (allFactories.Count <= 1) // first enterprise in province
                 res = getCountry().getMinSalary();
             else
             {
-                float minSalary;
+                Money minSalary;
                 minSalary = getLocalMaxSalary();
 
                 foreach (Factory factory in allFactories)
                     if (factory.IsOpen && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
                     {
-                        if (factory.getSalary() < minSalary)
+                        if (factory.getSalary().isSmallerThan(minSalary))
                             minSalary = factory.getSalary();
                     }
-                res = minSalary + 0.012f;//connected to ChangeSalary()
+                res = minSalary.Add(0.012f);//connected to ChangeSalary()
             }
             //if (res == 0f)
             //    res = Options.FactoryMinPossibleSalary;
@@ -913,20 +914,21 @@ namespace Nashet.EconomicSimulation
         //    return sb.ToString();
         //}
         /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
+        /// New value
         ///</summary>
-        internal float getLocalMaxSalary()
+        internal Money getLocalMaxSalary()
         {
             if (allFactories.Count <= 1)
                 return getCountry().getMinSalary();
             else
             {
-                float maxSalary;
+                Money maxSalary;
                 maxSalary = allFactories.First().getSalary();
 
                 foreach (Factory fact in allFactories)
                     if (fact.IsOpen)
                     {
-                        if (fact.getSalary() > maxSalary)
+                        if (fact.getSalary().isBiggerThan(maxSalary))
                             maxSalary = fact.getSalary();
                     }
                 return maxSalary;
@@ -1083,7 +1085,7 @@ namespace Nashet.EconomicSimulation
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.Add(pop.needsFulfilled.Copy().Multiply(pop.getPopulation()));
+                result.Add(pop.needsFulfilled.Copy().multiply(pop.getPopulation()));
             }
             if (allPopulation > 0)
                 return result.divideOutside(allPopulation);

@@ -205,7 +205,7 @@ namespace Nashet.EconomicSimulation
                 if (!canPayCashOnly(howMuch) && bank != null)// checked for bank inv
                 {
                     bank.giveLackingMoney(this, howMuch);
-                    bank.giveLackingMoney(this, howMuch.Copy().Multiply(5));
+                    bank.giveLackingMoney(this, howMuch.Copy().multiply(5));
                 }
                 whom.cash.Add(howMuch); // rise warning if have enough money to pay (with deposits) but didn't get enough from bank
                 this.cash.subtract(howMuch);

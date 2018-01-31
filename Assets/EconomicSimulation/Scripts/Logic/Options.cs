@@ -46,8 +46,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly int minUnemploymentToInvestInFactory = 10;
         internal static readonly int maximumFactoriesInUpgradeToBuildNew = 2;
         internal static readonly byte maxFactoryLevel = 255;
-        internal static readonly float minMarginToInvest = 0.005f;
-        
+        internal static readonly Procent minMarginToInvest = new Procent(0.005f);
+
 
         internal static readonly int maxDaysUnprofitableBeforeFactoryClosing = 90;
         internal static readonly int maxDaysBuildingBeforeRemoving = 90; // 180;
@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
         internal static readonly float factoryMoneyReservePerLevel = 20f;
-        internal static readonly Procent minMarginToRiseSalary =  new Procent(0.01f);
+        internal static readonly Procent minMarginToRiseSalary = new Procent(0.01f);
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
         internal static readonly int maxFactoryFireHireSpeed = 50;
@@ -66,14 +66,14 @@ namespace Nashet.EconomicSimulation
         internal static readonly byte FactoryInputReservInDays = 5;
         internal static readonly int FactoryMediumTierLevels = 8 + 1;
         internal static readonly int FactoryMediumHighLevels = 15 + 1;
-        internal static readonly float FactoryMinPossibleSallary = 0.001f;
+        internal static readonly Money FactoryMinPossibleSallary = new Money( 0.001f);
 
         //Province
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceExcessWorkforce = new Procent(0.15f);
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceLackWorkforce = new Procent(0.05f);
-        
+
 
         //POPS
 

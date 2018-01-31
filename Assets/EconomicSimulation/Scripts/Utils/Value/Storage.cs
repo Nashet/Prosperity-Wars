@@ -73,10 +73,11 @@ namespace Nashet.ValueSpace
         //    throw new DontUseThatMethod();
         //}
         [System.Obsolete("Method is deprecated, need product specified")]
-        override public void add(float invalue, bool showMessageAboutNegativeValue = true)
+        public Storage add(float invalue, bool showMessageAboutNegativeValue = true)
         {
             base.add(invalue, showMessageAboutNegativeValue);
             //throw new DontUseThatMethod(); temporally
+            return this;
         }
         public void add(Storage storage, bool showMessageAboutNegativeValue = true)
         {

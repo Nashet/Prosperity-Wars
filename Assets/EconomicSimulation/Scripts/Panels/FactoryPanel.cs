@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
                 sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(factory.getInputFactor());
-                sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(" Salary(total): ").Append(factory.getSalaryCost());
+                sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(", Salary(total): ").Append(factory.getSalaryCost());
 
 
                 if (factory.constructionNeeds.Count() > 0)

@@ -1028,7 +1028,7 @@ namespace Nashet.EconomicSimulation
                 if (getUnemployedProcent().isNotZero() && reform != UnemploymentSubsidies.None)
                 {
                     Value subsidy = getUnemployedProcent();
-                    subsidy.Multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
+                    subsidy.multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (getCountry().canPay(subsidy))
                     {

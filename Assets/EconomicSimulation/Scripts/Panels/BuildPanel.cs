@@ -97,13 +97,17 @@ namespace Nashet.EconomicSimulation
             {
                 sb.Clear();
                 sb.Append("Build ").Append(selectedFactoryType);
-                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds());
+                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
                     var cost = selectedFactoryType.getInvestmentCost();
                     sb.Append(" cost: ").Append(cost);
                 }
-                sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
+                sb.Append("\nEveryday resource input: ");
+                if (selectedFactoryType.resourceInput == null)
+                    sb.Append("none");
+                else
+                    sb.Append(selectedFactoryType.resourceInput);
 
                 descriptionText.text = sb.ToString();
 

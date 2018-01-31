@@ -76,7 +76,7 @@ namespace Nashet.ValueSpace
             return this;
         }
 
-        virtual public void add(float invalue, bool showMessageAboutNegativeValue = true)
+        virtual public Value add(float invalue, bool showMessageAboutNegativeValue = true)
         {
             if (invalue + get() < 0f)
             {
@@ -86,6 +86,7 @@ namespace Nashet.ValueSpace
             }
             else
                 value += (uint)Mathf.RoundToInt(invalue * precision);
+            return this;
         }
         //internal Value addOutside(Value deposits)
         //{
@@ -144,8 +145,8 @@ namespace Nashet.ValueSpace
                 set(invalue.get() * this.get());
             return this;
         }
-        /// <summary>Keeps result inside</summary>    
-        public Value Multiply(float invalue, bool showMessageAboutNegativeValue = true)
+        
+        public Value multiply(float invalue, bool showMessageAboutNegativeValue = true)
         {
             if (invalue < 0f)
             {
@@ -209,8 +210,8 @@ namespace Nashet.ValueSpace
                 set(this.value / (float)invalue.value);
             return this;
         }
-        /// <summary>Keeps result inside</summary>    
-        internal void divide(int v, bool showMessageAboutNegativeValue = true)
+        
+        internal Value divide(int v, bool showMessageAboutNegativeValue = true)
         {
             if (v <= 0)
             {
@@ -220,6 +221,7 @@ namespace Nashet.ValueSpace
             }
             else
                 set(this.get() / (float)v);
+            return this;
         }
 
 

@@ -84,7 +84,7 @@ namespace Nashet.EconomicSimulation
     });
 
 
-        
+
 
         public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
@@ -103,7 +103,7 @@ namespace Nashet.EconomicSimulation
         static Country()
         {
             NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
-            NullCountry.government.setValue(Government.Tribal);            
+            NullCountry.government.setValue(Government.Tribal);
         }
         public Country(string name, Culture culture, Color color, Province capital) : base(null)
         {
@@ -648,10 +648,14 @@ namespace Nashet.EconomicSimulation
         //    return inventions.isInvented(type);
         //}
 
-        internal float getMinSalary()
+        /// <summary>
+        /// returns new value
+        /// </summary>        
+        internal Money getMinSalary()
         {
             var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
-            if (res == 0f) res = Options.FactoryMinPossibleSallary;
+            if (res.isZero())
+                res.set(Options.FactoryMinPossibleSallary);
             return res;
             //return minSalary.get();
         }
@@ -849,7 +853,7 @@ namespace Nashet.EconomicSimulation
 
             // get science points
             var spBase = getSciencePointsBase();
-            spBase.Multiply(modSciencePoints.getModifier(this));
+            spBase.multiply(modSciencePoints.getModifier(this));
             sciencePoints.Add(spBase);
 
             // put extra money in bank
@@ -876,7 +880,7 @@ namespace Nashet.EconomicSimulation
 
 
             if (economy.getValue() == Economy.LaissezFaire)
-                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 3);            
+                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 3);
         }
         public void PutAllPropertyOnSale()
         { }

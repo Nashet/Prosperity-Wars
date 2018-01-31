@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
     }
     public interface IInvestable
     {
-        Procent getMargin();
+        Procent getMargin(Province province);
         Value getInvestmentCost();
         /// <summary>
         /// Only for Aristocrats: allows type sampling

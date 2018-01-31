@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
-                AddCell(factoryType.getMargin().ToString(), factoryType);
+                AddCell(factoryType.getMargin(Game.selectedProvince).ToString(), factoryType);
         }
 
         protected override void AddHeader()

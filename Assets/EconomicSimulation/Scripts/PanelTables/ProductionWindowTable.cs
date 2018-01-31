@@ -22,8 +22,8 @@ namespace Nashet.EconomicSimulation
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
             profitOrder = new SortOrder(this, x => x.getProfit());
-            profitabilityOrder = new SortOrder(this, x => x.getMargin().get());
-            salaryOrder = new SortOrder(this, x => x.getSalary());
+            profitabilityOrder = new SortOrder(this, x => x.getMargin(null).get());
+            salaryOrder = new SortOrder(this, x => x.getSalary().get());
             unemploymentOrder = new SortOrder(this, x => x.getProvince().getUnemployedWorkers());
         }
         protected override IEnumerable<Factory> ContentSelector()
@@ -82,7 +82,7 @@ namespace Nashet.EconomicSimulation
                         if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
-                            AddCell(factory.getMargin().ToString(), factory);
+                            AddCell(factory.getMargin(null).ToString(), factory);
                     }
                 }
             }
@@ -96,7 +96,7 @@ namespace Nashet.EconomicSimulation
                 if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
                     AddCell(factory.getSalary().ToString() + " food", factory);
                 else
-                    AddCell(factory.getSalary().ToString("F3") + " coins", factory);
+                    AddCell(factory.getSalary().ToString(), factory);
             }
 
             //Adding unemployment

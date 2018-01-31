@@ -57,7 +57,8 @@ namespace Nashet.EconomicSimulation
                 else
                     Debug.Log("Doesn't have that much");
             }
-            Debug.Log("No such owner");
+            else
+                Debug.Log("No such owner");
         }
         /// <summary>
         /// Test it!!
@@ -251,7 +252,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns copy
         /// </summary>
-        
+
         internal Value GetAllAssetsValue()
         {
             return totallyInvested.Copy();
@@ -323,7 +324,7 @@ namespace Nashet.EconomicSimulation
                         shareToBuy.Value.ReduceSale(cost);
 
                         var boughtProcent = Procent.makeProcent(cost, parent.ownership.totallyInvested);
-                        Debug.Log(buyer + " bough " + cost + " (" + boughtProcent + ") of " + parent + " from " + shareToBuy.Key);
+                        Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key);
                     }
                 }
             }
@@ -332,7 +333,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Margin per market value
         /// </summary>        
-        public Procent getMargin()
+        public Procent getMargin(Province province)
         {
             return Procent.makeProcent(getInvestmentCost(), GetMarketValue(), false);
         }
@@ -352,13 +353,13 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void SellLowMarginShares()
         {
-            if (parent.getMargin().isSmallerThan(Options.PopMarginToSellShares))
+            if (parent.getMargin(null).isSmallerThan(Options.PopMarginToSellShares))
                 foreach (var item in ownership)
                 {
                     var country = item.Key as Country;
                     if (country != null)
                     {
-                        if (country.isAI())                            
+                        if (country.isAI())
                             Rand.Call(() =>
                             {
                                 SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
