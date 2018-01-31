@@ -844,7 +844,7 @@ namespace Nashet.EconomicSimulation
         {
             if (pop.popType == PopType.Tribesmen || pop.popType == PopType.Farmers)
             {
-                float res = getOverpopulation();
+                float res = GetOverpopulation().get();
                 res -= 1f;
                 if (res <= 0f)
                     res = 0f;
@@ -853,7 +853,10 @@ namespace Nashet.EconomicSimulation
             else
                 return 0f;
         }
-        internal float getOverpopulation()
+        /// <summary>
+        /// New value
+        /// </summary>        
+        internal Procent GetOverpopulation()
         {
             float usedLand = 0f;
             foreach (PopUnit pop in allPopUnits)
@@ -864,7 +867,7 @@ namespace Nashet.EconomicSimulation
                 else
                     usedLand += pop.getPopulation() * Options.PopMinLandForTownspeople;
 
-            return usedLand / fertileSoil;
+            return Procent.makeProcent(usedLand, fertileSoil);
         }
         /// <summary> call it BEFORE opening enterprise
         /// Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
@@ -1088,7 +1091,7 @@ namespace Nashet.EconomicSimulation
                 result.Add(pop.needsFulfilled.Copy().multiply(pop.getPopulation()));
             }
             if (allPopulation > 0)
-                return result.divideOutside(allPopulation);
+                return result.divide(allPopulation);
             else
                 return Procent.HundredProcent;
         }

@@ -86,7 +86,7 @@ namespace Nashet.EconomicSimulation
             // can increase performance by making separate modifiers for different popTypes
             modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).getProvince().getOverpopulationAdjusted(x as PopUnit),"Overpopulation", -1f, false),
+            new Modifier(x=>(x as PopUnit).getProvince().getOverpopulationAdjusted(x as PopUnit), "Overpopulation", -1f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).getCountry(), 0.25f, false),
 
@@ -457,7 +457,7 @@ namespace Nashet.EconomicSimulation
         //}
 
         public List<Storage> getRealLifeNeeds()
-        {            
+        {
             return popType.getLifeNeedsPer1000Men().Multiply(new Value(this.getPopulation() / 1000f));
         }
 
@@ -488,13 +488,13 @@ namespace Nashet.EconomicSimulation
             }
             else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
             {
-                float overPopulation = getProvince().getOverpopulation();
-                if (overPopulation <= 1f)
-                    return new Procent(0);
+                var overPopulation = getProvince().GetOverpopulation();
+                if (overPopulation.isSmallerOrEqual(Procent.HundredProcent))
+                    return new Procent(0f);
                 else
-                    return new Procent(1f - (1f / overPopulation));
+                    return new Procent(1f - (1f / overPopulation.get()));
             }
-            else return new Procent(0);
+            else return new Procent(0f);
         }
 
         internal bool hasToPayGovernmentTaxes()

@@ -226,17 +226,17 @@ namespace Nashet.ValueSpace
 
 
         /// <summary>returns new value </summary>
-        internal Value divideOutside(int invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue == 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value divide by zero");
-                return Max999;
-            }
-            else
-                return new Value(get() / invalue);
-        }
+        //internal Value divideOutside(int invalue, bool showMessageAboutNegativeValue = true)
+        //{
+        //    if (invalue == 0)
+        //    {
+        //        if (showMessageAboutNegativeValue)
+        //            Debug.Log("Value divide by zero");
+        //        return Max999;
+        //    }
+        //    else
+        //        return new Value(get() / invalue);
+        //}
         /// <summary>returns new value </summary>
         //internal Value divideOutside(Value invalue, bool showMessageAboutNegativeValue = true)
         //{

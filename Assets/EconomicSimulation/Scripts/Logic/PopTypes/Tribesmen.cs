@@ -34,11 +34,11 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             Storage producedAmount;
-            float overpopulation = getProvince().getOverpopulation();
-            if (overpopulation <= 1f) // all is OK
-                producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
+            var overpopulation = getProvince().GetOverpopulation();
+            if (overpopulation.isSmallerOrEqual(Procent.HundredProcent)) // all is OK
+                producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().multiply(getPopulation()).divide(1000));
             else
-                producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f / overpopulation);
+                producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().multiply(getPopulation()).divide(1000).divide(overpopulation));
 
 
             if (producedAmount.isNotZero())

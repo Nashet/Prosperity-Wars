@@ -128,10 +128,10 @@ namespace Nashet.ValueSpace
         }
         public override string ToString()
         {
-            if (get() > 0)
-                return (get() * 100f).ToString("0.00") + "%";
-            else
-                return "0%";
+            //if (get() > 0)
+                return (get() * 100f).ToString("0.0") + "%";
+            //else
+            //    return "0%";
         }
 
         internal int getProcentOf(int value)

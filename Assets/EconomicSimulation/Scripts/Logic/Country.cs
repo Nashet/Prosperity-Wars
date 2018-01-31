@@ -844,7 +844,7 @@ namespace Nashet.EconomicSimulation
                 Rand.Call(() => getAllFactories().PerformAction(
                     x => x.ownership.HowMuchOwns(this).Copy().subtract(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
-                    3);
+                    20);
         }
         internal void simulate()
         {
@@ -880,7 +880,7 @@ namespace Nashet.EconomicSimulation
 
 
             if (economy.getValue() == Economy.LaissezFaire)
-                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 3);
+                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 20);
         }
         public void PutAllPropertyOnSale()
         { }
