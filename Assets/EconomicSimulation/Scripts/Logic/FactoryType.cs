@@ -327,7 +327,7 @@ namespace Nashet.EconomicSimulation
                 if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                     return new Value(0); // no demand for result product
                 Value outCome = Game.market.getCost(resourceInput);
-                return income.subtractOutside(outCome, false);
+                return income.subtract(outCome, false);
             }
             else
                 return income;

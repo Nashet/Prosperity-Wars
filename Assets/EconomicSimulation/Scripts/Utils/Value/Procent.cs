@@ -26,11 +26,11 @@ namespace Nashet.ValueSpace
             //result should be  amount of numerator / amount of denominator
             Value numeratorSum = new Value(0f);
             foreach (var item in numerator)
-                numeratorSum.add(item);
+                numeratorSum.Add(item);
 
             Value denominatorSum = new Value(0f);
             foreach (var item in denominator)
-                denominatorSum.add(item);
+                denominatorSum.Add(item);
 
 
             return Procent.makeProcent(numeratorSum, denominatorSum, showMessageAboutOperationFails);
@@ -43,7 +43,7 @@ namespace Nashet.ValueSpace
             Value denominatorSum = new Value(0f);
             foreach (var item in denominator)
             {
-                denominatorSum.add(item);
+                denominatorSum.Add(item);
             }
 
             return makeProcent(numeratorSum, denominatorSum, showMessageAboutOperationFails);
@@ -118,7 +118,7 @@ namespace Nashet.ValueSpace
 
         public Procent add(Procent pro, bool showMessageAboutNegativeValue = true)
         {
-            base.add(pro, showMessageAboutNegativeValue);
+            base.Add(pro, showMessageAboutNegativeValue);
             return this;
         }
         public void addPoportionally(int baseValue, int secondValue, Procent secondProcent)
@@ -141,7 +141,7 @@ namespace Nashet.ValueSpace
         public Value getProcentOf(Value source)
         {
             Value result = new Value(0f);
-            source.send(result, source.multiplyOutside(this));
+            source.send(result, source.Copy().multiply(this));
             return result;
         }
         public Storage getProcentOf(Storage source)

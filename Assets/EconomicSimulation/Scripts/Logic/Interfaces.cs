@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
+    interface IHasStatistics
+    {
+        void setStatisticToZero();
+    }
     public interface IHasGetCountry
     {
         Country getCountry();
@@ -25,8 +29,5 @@ namespace Nashet.EconomicSimulation
     {
         float GetNameWeight();
     }
-    public interface ICopyable<T>
-    {
-        T Copy();
-    }
+    
 }

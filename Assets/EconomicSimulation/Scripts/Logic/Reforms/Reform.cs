@@ -784,33 +784,33 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.02f);
-                    result.add(everyDayCost);
+                    everyDayCost.Multiply(0.02f);
+                    result.Add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Trinket)
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.04f);
-                    result.add(everyDayCost);
+                    everyDayCost.Multiply(0.04f);
+                    result.Add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Middle)
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.06f);
-                    result.add(everyDayCost);
+                    everyDayCost.Multiply(0.06f);
+                    result.Add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Big)
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.08f);
+                    everyDayCost.Multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
-                    result.add(everyDayCost);
+                    result.Add(everyDayCost);
                     //result.add(luxuryCost);
                     return result.get();
                 }
@@ -963,33 +963,33 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.02f);
-                    result.add(everyDayCost);
+                    everyDayCost.Multiply(0.02f);
+                    result.Add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Trinket)
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.04f);
-                    result.add(everyDayCost);
+                    everyDayCost.Multiply(0.04f);
+                    result.Add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Middle)
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.06f);
-                    result.add(everyDayCost);
+                    everyDayCost.Multiply(0.06f);
+                    result.Add(everyDayCost);
                     return result.get();
                 }
                 else if (this == Big)
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.08f);
+                    everyDayCost.Multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
-                    result.add(everyDayCost);
+                    result.Add(everyDayCost);
                     //result.add(luxuryCost);
                     return result.get();
                 }

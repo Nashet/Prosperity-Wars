@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
             foreach (Storage stor in need)
             {
                 //price = Game.market.findPrice(stor.getProduct()).get();
-                cost.add(getCost(stor));
+                cost.Add(getCost(stor));
             }
             return cost;
         }
@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
         {
             Value cost = new Value(0f);
             foreach (Storage stor in need)
-                cost.add(getCost(stor));
+                cost.Add(getCost(stor));
             return cost;
         }
         /// <summary>
@@ -75,7 +75,7 @@ namespace Nashet.EconomicSimulation
             if (need.getProduct() == Product.Gold)
             {
                 var res = need.multiplyOutside(Options.goldToCoinsConvert);
-                res.multiply(Options.GovernmentTakesShareOfGoldOutput);
+                res.Multiply(Options.GovernmentTakesShareOfGoldOutput);
                 return res;
             }
             else

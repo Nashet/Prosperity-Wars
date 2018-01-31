@@ -6,7 +6,7 @@ using Nashet.EconomicSimulation;
 using Nashet.Utils;
 using Nashet.UnityUIUtils;
 namespace Nashet.ValueSpace
-{    
+{
     public class Storage : Value, IClickable, ICopyable<Storage>
     {
         static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
@@ -81,7 +81,7 @@ namespace Nashet.ValueSpace
         public void add(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             if (this.isExactlySameProduct(storage))
-                base.add(storage, showMessageAboutNegativeValue);
+                base.Add(storage, showMessageAboutNegativeValue);
             else
             {
                 if (showMessageAboutNegativeValue)
@@ -248,25 +248,26 @@ namespace Nashet.ValueSpace
         //{     
         //    throw new DontUseThatMethod();        
         //}
-        public Storage subtractOutside(Storage storage, bool showMessageAboutNegativeValue = true)
+        public Storage subtract(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             //if (!this.isSameProductType(storage.getProduct()))
             if (!storage.isSameProductType(this.getProduct()))
             {
                 Debug.Log("Storage subtract Outside failed - wrong product");
-                return new Storage(getProduct(), 0f);
+                set(0f);
             }
-            if (storage.isBiggerThan(this))
+            else if (storage.isBiggerThan(this))
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Storage subtract Outside failed");
-                return new Storage(getProduct(), 0f);
+                set(0f);
             }
             else
-                return new Storage(getProduct(), this.get() - storage.get());
+                set(this.get() - storage.get());
+            return this;
         }
         public void OnClicked()
-        {            
+        {
             if (!this.isAbstractProduct())
                 MainCamera.tradeWindow.selectProduct((this).getProduct());
         }

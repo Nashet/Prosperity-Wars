@@ -172,14 +172,14 @@ namespace Nashet.EconomicSimulation
             //take deposit share?
             if (source.deposits.isNotZero())
             {
-                Value takeDeposit = source.deposits.multiplyOutside(newPopShare);
+                Value takeDeposit = source.deposits.Copy().multiply(newPopShare);
                 if (source.getBank().canGiveMoney(this, takeDeposit))
                 {
                     source.getBank().giveMoney(source, takeDeposit);
                     source.payWithoutRecord(this, takeDeposit);
                 }
             }
-            source.payWithoutRecord(this, source.cash.multiplyOutside(newPopShare));
+            source.payWithoutRecord(this, source.cash.Copy().multiply(newPopShare));
 
 
             //Producer's fields:
@@ -242,7 +242,7 @@ namespace Nashet.EconomicSimulation
 
             //Agent's fields:        
             source.sendAllAvailableMoneyWithoutRecord(this); // includes deposits
-            loans.add(source.loans);
+            loans.Add(source.loans);
             // Bank - stays same
 
             //Producer's fields:
@@ -511,7 +511,7 @@ namespace Nashet.EconomicSimulation
                 Value taxSize;
                 if (this.popType.isPoorStrata())
                 {
-                    taxSize = moneyIncomethisTurn.multiplyOutside((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+                    taxSize = moneyIncomethisTurn.Copy().multiply((getCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
                     if (canPay(taxSize))
                     {
                         incomeTaxPayed = taxSize;
@@ -529,7 +529,7 @@ namespace Nashet.EconomicSimulation
                 else
                 if (this.popType.isRichStrata())
                 {
-                    taxSize = moneyIncomethisTurn.multiplyOutside((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+                    taxSize = moneyIncomethisTurn.Copy().multiply((getCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
                     if (canPay(taxSize))
                     {
                         incomeTaxPayed.set(taxSize);
@@ -711,8 +711,8 @@ namespace Nashet.EconomicSimulation
                     if (!someLuxuryProductUnavailable
                         && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
-                        Value spentOnUnlimitedConsumption = new Value(cash);
-                        Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                        Value spentOnUnlimitedConsumption = cash.Copy();
+                        Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().subtract(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
                         Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by income - already spent money
 
                         if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
@@ -721,7 +721,7 @@ namespace Nashet.EconomicSimulation
                         if (spentOnUnlimitedConsumption.get() > 5f)// to avoid zero values
                         {
                             // how much pop wants to spent on unlimited consumption. Pop should spent cash only..
-                            Value buyExtraGoodsMultiplier = spentOnUnlimitedConsumption.divideOutside(luxuryNeedsCost);
+                            Value buyExtraGoodsMultiplier = spentOnUnlimitedConsumption.Copy().divide(luxuryNeedsCost);
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.multiply(buyExtraGoodsMultiplier);
@@ -1028,7 +1028,7 @@ namespace Nashet.EconomicSimulation
                 if (getUnemployedProcent().isNotZero() && reform != UnemploymentSubsidies.None)
                 {
                     Value subsidy = getUnemployedProcent();
-                    subsidy.multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
+                    subsidy.Multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (getCountry().canPay(subsidy))
                     {

@@ -333,13 +333,13 @@ namespace Nashet.EconomicSimulation
         {
             if (isResource())
             {
-                return defaultPrice.multiplyOutside(Options.defaultPriceLimitMultiplier);
+                return defaultPrice.Copy().multiply(Options.defaultPriceLimitMultiplier);
             }
             else
             {
                 var type = FactoryType.whoCanProduce(this);
                 if (type == null)
-                    return defaultPrice.multiplyOutside(Options.defaultPriceLimitMultiplier);
+                    return defaultPrice.Copy().multiply(Options.defaultPriceLimitMultiplier);
                 else
                 {
                     Value res = Game.market.getCost(type.resourceInput);

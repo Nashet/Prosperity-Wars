@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
         internal void takePayCheck()
         {
             Value payCheck = new Value(getCountry().getSoldierWage());
-            payCheck.multiply(getPopulation() / 1000f);
+            payCheck.Multiply(getPopulation() / 1000f);
             if (getCountry().canPay(payCheck))
             {
                 getCountry().pay(this, payCheck);

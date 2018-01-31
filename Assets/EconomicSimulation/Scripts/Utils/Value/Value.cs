@@ -1,8 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using Nashet.Utils;
 namespace Nashet.ValueSpace
 {
-    public class Value
+    
+    public class Value : ICopyable<Value>
     {
         ///<summary> storing as value as number * precision </summary>
         private uint value;
@@ -23,7 +25,7 @@ namespace Nashet.ValueSpace
             }
 
         }
-        public Value(Value number)
+        protected Value(Value number)
         {
             set(number); // set already have multiplier
         }
@@ -61,7 +63,7 @@ namespace Nashet.ValueSpace
             return this.value <= invalue.value;
         }
         //TODO overflow checks?
-        virtual public void add(Value invalue, bool showMessageAboutNegativeValue = true)
+        virtual public Value Add(Value invalue, bool showMessageAboutNegativeValue = true)
         {
             if (value + invalue.value < 0f)
             {
@@ -71,6 +73,7 @@ namespace Nashet.ValueSpace
             }
             else
                 value += invalue.value;
+            return this;
         }
 
         virtual public void add(float invalue, bool showMessageAboutNegativeValue = true)
@@ -84,25 +87,25 @@ namespace Nashet.ValueSpace
             else
                 value += (uint)Mathf.RoundToInt(invalue * precision);
         }
-        internal Value addOutside(Value deposits)
-        {
-            var result = new Value(this);
-            result.add(deposits);
-            return result;
-        }
-        public bool subtract(Value invalue, bool showMessageAboutNegativeValue = true)
+        //internal Value addOutside(Value deposits)
+        //{
+        //    var result = new Value(this);
+        //    result.add(deposits);
+        //    return result;
+        //}
+        public Value subtract(Value invalue, bool showMessageAboutNegativeValue = true)
         {
             if (invalue.value > value)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract gave negative result");
                 set(0);
-                return false;
+                return this;
             }
             else
             {
                 value -= invalue.value;
-                return true;
+                return this;
             }
         }
         public void subtract(float invalue, bool showMessageAboutNegativeValue = true)
@@ -116,17 +119,17 @@ namespace Nashet.ValueSpace
             else
                 value -= (uint)Mathf.RoundToInt(invalue * precision);
         }
-        public Value subtractOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.value > value)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value subtractOutside failed");
-                return new Value(0);
-            }
-            else
-                return new Value((this.value - invalue.value) / (float)precision);
-        }
+        //public Value subtractOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+        //{
+        //    if (invalue.value > value)
+        //    {
+        //        if (showMessageAboutNegativeValue)
+        //            Debug.Log("Value subtractOutside failed");
+        //        return new Value(0);
+        //    }
+        //    else
+        //        return new Value((this.value - invalue.value) / (float)precision);
+        //}
 
         /// <summary>Keeps result inside</summary>    
         public Value multiply(Value invalue, bool showMessageAboutNegativeValue = true)
@@ -142,7 +145,7 @@ namespace Nashet.ValueSpace
             return this;
         }
         /// <summary>Keeps result inside</summary>    
-        public void multiply(float invalue, bool showMessageAboutNegativeValue = true)
+        public Value Multiply(float invalue, bool showMessageAboutNegativeValue = true)
         {
             if (invalue < 0f)
             {
@@ -152,48 +155,49 @@ namespace Nashet.ValueSpace
             }
             else
                 set(invalue * this.get());
+            return this;
         }
         /// <summary>
         /// returns new value
         /// </summary>
-        internal Value multiplyOutside(int invalue, bool showMessageAboutOperationFails = true)
-        {
-            if (invalue < 0)
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Value multiply failed");
-                return new Value(0f);
-            }
-            else
-                return new Value(get() * invalue);
-        }
-        virtual public Value multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
-        {
-            if (invalue < 0f)
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Value multiply failed");
-                return new Value(0f);
-            }
-            else
-                return new Value(get() * invalue);
-        }
+        //internal Value multiplyOutside(int invalue, bool showMessageAboutOperationFails = true)
+        //{
+        //    if (invalue < 0)
+        //    {
+        //        if (showMessageAboutOperationFails)
+        //            Debug.Log("Value multiply failed");
+        //        return new Value(0f);
+        //    }
+        //    else
+        //        return new Value(get() * invalue);
+        //}
+        //virtual public Value multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
+        //{
+        //    if (invalue < 0f)
+        //    {
+        //        if (showMessageAboutOperationFails)
+        //            Debug.Log("Value multiply failed");
+        //        return new Value(0f);
+        //    }
+        //    else
+        //        return new Value(get() * invalue);
+        //}
         /// <summary>
         /// returns new value
         /// </summary>    
-        virtual public Value multiplyOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.get() < 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value multiply failed");
-                return new Value(0);
-            }
-            else
-                return new Value(get() * invalue.get());
-        }
+        //virtual public Value multiplyOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+        //{
+        //    if (invalue.get() < 0)
+        //    {
+        //        if (showMessageAboutNegativeValue)
+        //            Debug.Log("Value multiply failed");
+        //        return new Value(0);
+        //    }
+        //    else
+        //        return new Value(get() * invalue.get());
+        //}
         /// <summary>Keeps result inside</summary>    
-        public void divide(Value invalue, bool showMessageAboutNegativeValue = true)
+        public Value divide(Value invalue, bool showMessageAboutNegativeValue = true)
         {
             if (invalue.get() <= 0)
             {
@@ -203,6 +207,7 @@ namespace Nashet.ValueSpace
             }
             else
                 set(this.value / (float)invalue.value);
+            return this;
         }
         /// <summary>Keeps result inside</summary>    
         internal void divide(int v, bool showMessageAboutNegativeValue = true)
@@ -231,17 +236,17 @@ namespace Nashet.ValueSpace
                 return new Value(get() / invalue);
         }
         /// <summary>returns new value </summary>
-        internal Value divideOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.get() == 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value divide by zero");
-                return Max999;
-            }
-            else
-                return new Value(get() / invalue.get());
-        }
+        //internal Value divideOutside(Value invalue, bool showMessageAboutNegativeValue = true)
+        //{
+        //    if (invalue.get() == 0)
+        //    {
+        //        if (showMessageAboutNegativeValue)
+        //            Debug.Log("Value divide by zero");
+        //        return Max999;
+        //    }
+        //    else
+        //        return new Value(get() / invalue.get());
+        //}
         /// <summary>
         /// Bigger than 0
         /// </summary>
@@ -281,7 +286,7 @@ namespace Nashet.ValueSpace
             if (this.get() >= amount.get())
             {
                 subtract(amount);
-                another.add(amount);
+                another.Add(amount);
                 return true;
             }
             else
@@ -300,7 +305,7 @@ namespace Nashet.ValueSpace
         //}
         public void sendAll(Value another)
         {
-            another.add(this);
+            another.Add(this);
             this.setZero();
         }
         // toDO test that file properly
@@ -335,6 +340,11 @@ namespace Nashet.ValueSpace
             if (value > 0)
                 return System.Convert.ToString(get());
             else return "0";
+        }
+
+        public Value Copy()
+        {
+            return new Value(this);
         }
         //public int Compare(Value x, Value y)
         //{

@@ -348,7 +348,7 @@ namespace Nashet.EconomicSimulation
         {
             Value res = new Value(0f);
             foreach (var item in personal)
-                res.add(item.Value.getConsumption(prod));
+                res.Add(item.Value.getConsumption(prod));
             return res;
         }
         private StorageSet getConsumption()
@@ -380,7 +380,7 @@ namespace Nashet.EconomicSimulation
         {
             Value res = new Value(0f);
             foreach (var item in personal)
-                res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure(), product));
+                res.Add(item.Value.getRealNeeds(getOwner().getPlaceDejure(), product));
             return res;
         }
 

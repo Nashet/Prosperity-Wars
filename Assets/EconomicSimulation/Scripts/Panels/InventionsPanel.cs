@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             string scienceModifier;
             var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
             sb.Append("Science points: ").Append(Game.Player.sciencePoints).Append(" + ");
-            sb.Append(Game.Player.getSciencePointsBase().multiplyOutside(spModifier)).Append(" Modifiers: ").Append(scienceModifier);
+            sb.Append(Game.Player.getSciencePointsBase().Copy().Multiply(spModifier)).Append(" Modifiers: ").Append(scienceModifier);
             if (selectedInvention == null)
             {
                 inventButton.interactable = false;

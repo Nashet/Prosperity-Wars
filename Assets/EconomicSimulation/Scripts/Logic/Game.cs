@@ -256,15 +256,15 @@ namespace Nashet.EconomicSimulation
             Value allMoney = new Value(0f);
             foreach (Country country in Country.allCountries)
             {
-                allMoney.add(country.cash);
-                allMoney.add(country.getBank().getReservs());
+                allMoney.Add(country.cash);
+                allMoney.Add(country.getBank().getReservs());
                 foreach (Province province in country.ownedProvinces)
                 {
                     foreach (var factory in province.getAllAgents())
-                        allMoney.add(factory.cash);
+                        allMoney.Add(factory.cash);
                 }
             }
-            allMoney.add(Game.market.cash);
+            allMoney.Add(Game.market.cash);
             return allMoney;
         }
         static void сreateRandomPopulation()

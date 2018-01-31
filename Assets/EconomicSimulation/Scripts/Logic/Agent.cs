@@ -4,14 +4,11 @@ using UnityEngine;
 using Nashet.ValueSpace;
 namespace Nashet.EconomicSimulation
 {
-    interface IHasStatistics
-    {
-        void setStatisticToZero();
-    }
+
     /// <summary>
     /// represent ability to take loans/deposits
     /// </summary>
-    abstract public class Agent : IHasGetCountry, IHasStatistics 
+    abstract public class Agent : IHasGetCountry, IHasStatistics
     {
         /// <summary> Must be filled together with wallet </summary>
         public Value moneyIncomethisTurn = new Value(0);
@@ -39,7 +36,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
         protected Value getSpendingLimit(Value value)
         {
-            return moneyIncomeLastTurn.subtractOutside(value, false);
+            return moneyIncomeLastTurn.Copy().subtract(value, false);
         }
         public Province getProvince()
         {
@@ -57,13 +54,13 @@ namespace Nashet.EconomicSimulation
         {
             this.bank = bank;
         }
-        /// <summary> Includes deposits </summary>    
+        /// <summary> Includes deposits. Is copy </summary>    
         public Value getMoneyAvailable()
         {
             if (bank == null)
-                return new Value(cash);
+                return cash.Copy();
             else
-                return cash.addOutside(bank.howMuchDepositCanReturn(this));//that's new Value
+                return cash.Copy().Add(bank.howMuchDepositCanReturn(this));//that's new Value
         }
         //new internal bool canPay(Value howMuchPay)
         //{
@@ -140,10 +137,11 @@ namespace Nashet.EconomicSimulation
         //{
         //    return new Value(need - this.cash.get());
         //}
-        /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
+        /// <summary> Returns how much you lack. Doesn't change data
+        /// WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         internal Value GetLackingMoney(Value need)
-        {            
-            return need.subtractOutside(getMoneyAvailable());
+        {
+            return need.Copy().subtract(getMoneyAvailable());
         }
         //internal Value HowMuchMoneyCanNotPay(Value value)
         //{
@@ -161,9 +159,7 @@ namespace Nashet.EconomicSimulation
             if (canPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.getProduct(), getMoneyAvailable().divideOutside(
-                    Game.market.getPrice(need.getProduct())
-                    ));
+                return new Storage(need.getProduct(), getMoneyAvailable().divide(Game.market.getPrice(need.getProduct())));
         }
 
         //private float get()
@@ -209,9 +205,9 @@ namespace Nashet.EconomicSimulation
                 if (!canPayCashOnly(howMuch) && bank != null)// checked for bank inv
                 {
                     bank.giveLackingMoney(this, howMuch);
-                    bank.giveLackingMoney(this, howMuch.multiplyOutside(5));
+                    bank.giveLackingMoney(this, howMuch.Copy().Multiply(5));
                 }
-                whom.cash.add(howMuch); // rise warning if have enough money to pay (with deposits) but didn't get enough from bank
+                whom.cash.Add(howMuch); // rise warning if have enough money to pay (with deposits) but didn't get enough from bank
                 this.cash.subtract(howMuch);
                 return true;
             }
@@ -230,7 +226,7 @@ namespace Nashet.EconomicSimulation
         {
             if (payWithoutRecord(whom, howMuch, showMessageAboutNegativeValue))
             {
-                whom.moneyIncomethisTurn.add(howMuch);
+                whom.moneyIncomethisTurn.Add(howMuch);
                 return true;
             }
             else
@@ -240,15 +236,15 @@ namespace Nashet.EconomicSimulation
         {
             if (bank != null)
                 bank.returnAllMoney(this);
-            whom.cash.add(this.cash);
-            whom.moneyIncomethisTurn.add(this.cash);
+            whom.cash.Add(this.cash);
+            whom.moneyIncomethisTurn.Add(this.cash);
             this.cash.set(0);
         }
         internal void sendAllAvailableMoneyWithoutRecord(Agent whom)
         {
             if (bank != null)
                 bank.returnAllMoney(this);
-            whom.cash.add(this.cash);
+            whom.cash.Add(this.cash);
             //whom.moneyIncomethisTurn.add(this.cash);
             this.cash.set(0);
         }

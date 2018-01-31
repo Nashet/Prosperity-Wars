@@ -838,7 +838,7 @@ namespace Nashet.EconomicSimulation
                 }
             if (economy.getValue() == Economy.Interventionism)
                 Rand.Call(() => getAllFactories().PerformAction(
-                    x => x.ownership.HowMuchOwns(this).subtractOutside(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
+                    x => x.ownership.HowMuchOwns(this).Copy().subtract(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     3);
         }
@@ -849,8 +849,8 @@ namespace Nashet.EconomicSimulation
 
             // get science points
             var spBase = getSciencePointsBase();
-            spBase.multiply(modSciencePoints.getModifier(this));
-            sciencePoints.add(spBase);
+            spBase.Multiply(modSciencePoints.getModifier(this));
+            sciencePoints.Add(spBase);
 
             // put extra money in bank
             if (economy.getValue() != Economy.PlannedEconomy)
@@ -943,14 +943,14 @@ namespace Nashet.EconomicSimulation
                     var howMuchHave = countryStorageSet.GetFirstSubstituteStorage(product);
                     if (howMuchHave.isBiggerThan(maxLimit))
                     {
-                        var howMuchToSell = howMuchHave.subtractOutside(maxLimit);
+                        var howMuchToSell = howMuchHave.Copy().subtract(maxLimit);
                         sell(howMuchToSell);
                     }
                     else
                     {
                         if (howMuchHave.isSmallerThan(minLimit))
                         {
-                            var howMuchToBuy = minLimit.subtractOutside(howMuchHave);
+                            var howMuchToBuy = minLimit.Copy().subtract(howMuchHave);
                             buyNeeds(howMuchToBuy);
                         }
                     }
@@ -973,9 +973,9 @@ namespace Nashet.EconomicSimulation
                 {
                     desiredMinimum = new Storage(countryStorageSet.used.GetFirstSubstituteStorage(product));
                     if (desiredMinimum.isZero())
-                        desiredMinimum.add(Options.CountryMinStorage);
+                        desiredMinimum.Add(Options.CountryMinStorage);
                 }
-                var toBuy = desiredMinimum.subtractOutside(countryStorageSet.GetFirstSubstituteStorage(product), false);
+                var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetFirstSubstituteStorage(product), false);
                 if (toBuy.isBiggerThan(Value.Zero))
                     buyNeeds(toBuy);//go buying
             }
@@ -994,7 +994,7 @@ namespace Nashet.EconomicSimulation
                     else
                         desiredMinimum = takenFromStorage.multiplyOutside(Options.CountryBuyProductsForXDays);
                 }
-                var toBuy = desiredMinimum.subtractOutside(countryStorageSet.GetFirstSubstituteStorage(product), false);
+                var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetFirstSubstituteStorage(product), false);
                 if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
                     buyNeeds(toBuy);//go buying
                 else    // no need to buy anything
@@ -1009,7 +1009,7 @@ namespace Nashet.EconomicSimulation
                         else
                             desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
                     }
-                    var toSell = countryStorageSet.GetFirstSubstituteStorage(product).subtractOutside(desiredMaximum, false);
+                    var toSell = countryStorageSet.GetFirstSubstituteStorage(product).Copy().subtract(desiredMaximum, false);
                     if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                     {
                         sell(toSell);//go sell
@@ -1069,7 +1069,7 @@ namespace Nashet.EconomicSimulation
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);
-                storageBuyingExpenseAdd(new Value(Game.market.getCost(realyBougth)));
+                storageBuyingExpenseAdd(Game.market.getCost(realyBougth));
             }
         }
         public Procent getUnemployment()
@@ -1127,7 +1127,7 @@ namespace Nashet.EconomicSimulation
             Value result = new Value(0);
             foreach (var province in ownedProvinces)
             {
-                result.add(province.getGDP());
+                result.Add(province.getGDP());
             }
             return result;
         }
@@ -1195,7 +1195,7 @@ namespace Nashet.EconomicSimulation
             Value worldGDP = new Value(0f);
             foreach (var item in Country.getAllExisting())
             {
-                worldGDP.add(item.getGDP());
+                worldGDP.Add(item.getGDP());
             }
             return Procent.makeProcent(this.getGDP(), worldGDP);
         }
@@ -1265,20 +1265,20 @@ namespace Nashet.EconomicSimulation
         internal Value getAllExpenses()
         {
             Value result = new Value(0f);
-            result.add(unemploymentSubsidiesExpense);
-            result.add(factorySubsidiesExpense);
-            result.add(storageBuyingExpense);
-            result.add(soldiersWageExpense);
+            result.Add(unemploymentSubsidiesExpense);
+            result.Add(factorySubsidiesExpense);
+            result.Add(storageBuyingExpense);
+            result.Add(soldiersWageExpense);
             return result;
         }
         internal Value getAllIncome()
         {
             Value result = new Value(0f);
-            result.add(poorTaxIncome);
-            result.add(richTaxIncome);
-            result.add(goldMinesIncome);
-            result.add(ownedFactoriesIncome);
-            result.add(getCostOfAllSellsByGovernment());
+            result.Add(poorTaxIncome);
+            result.Add(richTaxIncome);
+            result.Add(goldMinesIncome);
+            result.Add(ownedFactoriesIncome);
+            result.Add(getCostOfAllSellsByGovernment());
             return result;
         }
 
@@ -1287,19 +1287,19 @@ namespace Nashet.EconomicSimulation
             if (canPay(howMuch))
             {
                 payWithoutRecord(byWhom, howMuch);
-                factorySubsidiesExpense.add(howMuch);
+                factorySubsidiesExpense.Add(howMuch);
             }
             else
             {
                 //sendAll(byWhom.wallet);
                 payWithoutRecord(byWhom, byWhom.cash);
-                factorySubsidiesExpense.add(byWhom.cash);
+                factorySubsidiesExpense.Add(byWhom.cash);
             }
 
         }
         internal void soldiersWageExpenseAdd(Value payCheck)
         {
-            soldiersWageExpense.add(payCheck);
+            soldiersWageExpense.Add(payCheck);
         }
         internal float getSoldiersWageExpense()
         {
@@ -1343,27 +1343,27 @@ namespace Nashet.EconomicSimulation
 
         internal void poorTaxIncomeAdd(Value toAdd)
         {
-            poorTaxIncome.add(toAdd);
+            poorTaxIncome.Add(toAdd);
         }
         internal void richTaxIncomeAdd(Value toAdd)
         {
-            richTaxIncome.add(toAdd);
+            richTaxIncome.Add(toAdd);
         }
         internal void goldMinesIncomeAdd(Value toAdd)
         {
-            goldMinesIncome.add(toAdd);
+            goldMinesIncome.Add(toAdd);
         }
         internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
         {
-            unemploymentSubsidiesExpense.add(toAdd);
+            unemploymentSubsidiesExpense.Add(toAdd);
         }
         internal void storageBuyingExpenseAdd(Value toAdd)
         {
-            storageBuyingExpense.add(toAdd);
+            storageBuyingExpense.Add(toAdd);
         }
         internal void ownedFactoriesIncomeAdd(Value toAdd)
         {
-            ownedFactoriesIncome.add(toAdd);
+            ownedFactoriesIncome.Add(toAdd);
         }
         override public Country getCountry()
         {

@@ -216,7 +216,7 @@ namespace Nashet.Utils
         public static void addMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))
-                dictionary[what].add(value);
+                dictionary[what].Add(value);
             else
                 dictionary.Add(what, value);
         }

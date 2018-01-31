@@ -13,11 +13,11 @@ namespace Nashet.EconomicSimulation
         private readonly Value howMuchWantsToSell = new Value(0f);
         public Share(Value initialSumm)
         {
-            howMuchOwns = new Value(initialSumm);
+            howMuchOwns = initialSumm.Copy();
         }
         public void Increase(Value sum)
         {
-            howMuchOwns.add(sum);
+            howMuchOwns.Add(sum);
         }
         public void Decrease(Value sum)
         {
@@ -28,25 +28,25 @@ namespace Nashet.EconomicSimulation
             howMuchWantsToSell.subtract(sum, false);
         }
         /// <summary>
-        /// Only for read!
+        /// Only for read! Returns copy
         /// </summary>        
         public Value GetShare()
         {
-            return new Value(howMuchOwns);
+            return howMuchOwns.Copy();
         }
         /// <summary>
-        /// Only for read!
+        /// Only for read! Returns copy
         /// </summary>        
         public Value GetShareForSale()
         {
-            return new Value(howMuchWantsToSell);
+            return howMuchWantsToSell.Copy();
         }
         public void SetToSell(Value sum)
         {
             if (howMuchOwns.get() - howMuchWantsToSell.get() - sum.get() < 0f)
                 howMuchWantsToSell.set(howMuchOwns);
             else
-                howMuchWantsToSell.add(sum);            
+                howMuchWantsToSell.Add(sum);            
         }
         public void ReduceSale(Value sum)
         {

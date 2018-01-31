@@ -374,7 +374,7 @@ namespace Nashet.ValueSpace
             foreach (var item in this)
                 if (item.getProduct().isSubstituteFor(product))
                 {
-                    res.add(item);
+                    res.Add(item);
                 }
             return new Storage(product, res);
         }
@@ -420,7 +420,7 @@ namespace Nashet.ValueSpace
         {
             return collection.GetString(lineBreaker);
         }
-        
+
         //public string GetString(String lineBreaker)
         //{
         //    if (collection.Count > 0)
@@ -488,11 +488,15 @@ namespace Nashet.ValueSpace
         {
             Storage found;
             if (collection.TryGetValue(storage.getProduct(), out found))
-                return found.subtract(storage, showMessageAboutNegativeValue);
+            {
+                var res = found.has(storage);                
+                found.subtract(storage, showMessageAboutNegativeValue);
+                return res;
+            }
             else
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Someone tried to subtract from StorageSet more than it has - " + storage);
+                    Debug.Log("This StorageSet don't have - " + storage + " " + storage);
                 return false;//container.Add(value); }
 
                 //    Storage found = GetStorageNullable(storage.getProduct());
@@ -523,7 +527,7 @@ namespace Nashet.ValueSpace
             foreach (Storage stor in set)
                 this.Subtract(stor, showMessageAboutNegativeValue);
         }
-           
+
         //internal void copyDataFrom(StorageSet consumed)
         //{
         //    foreach (Storage stor in consumed)                
@@ -535,7 +539,7 @@ namespace Nashet.ValueSpace
         {
             var result = new Value(0f);
             foreach (var item in collection)
-                result.add(item.Value);
+                result.Add(item.Value);
             return result;
         }
 

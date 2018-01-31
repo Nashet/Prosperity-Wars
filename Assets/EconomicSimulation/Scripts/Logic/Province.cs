@@ -1083,7 +1083,7 @@ namespace Nashet.EconomicSimulation
             // get middle needs fulfilling according to pop weight            
             {
                 allPopulation += pop.getPopulation();
-                result.add(pop.needsFulfilled.multiplyOutside(pop.getPopulation()));
+                result.Add(pop.needsFulfilled.Copy().Multiply(pop.getPopulation()));
             }
             if (allPopulation > 0)
                 return result.divideOutside(allPopulation);

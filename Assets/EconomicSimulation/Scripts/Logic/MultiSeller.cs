@@ -96,7 +96,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in product.getSubstitutes())
                 if (item.isTradable())
                 {
-                    res.add(sentToMarket.GetFirstSubstituteStorage(item));
+                    res.Add(sentToMarket.GetFirstSubstituteStorage(item));
                 }
             return new Storage(product, res);
         }
@@ -165,7 +165,7 @@ namespace Nashet.EconomicSimulation
             var res = new Value(0f);
             foreach (var item in soldByGovernment)
             {
-                res.add(Game.market.getCost(new Storage(item.Key, item.Value)));
+                res.Add(Game.market.getCost(new Storage(item.Key, item.Value)));
             }
             return res;
         }
@@ -176,7 +176,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in product.getSubstitutes())
                 if (item.isTradable())
                 {
-                    res.add(producedTotal[item]);
+                    res.Add(producedTotal[item]);
                 }
             return new Storage(product, res);
         }

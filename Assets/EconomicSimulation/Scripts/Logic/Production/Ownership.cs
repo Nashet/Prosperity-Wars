@@ -41,7 +41,7 @@ namespace Nashet.EconomicSimulation
                     record.Increase(value);
                 else
                     ownership.Add(owner, new Share(value));
-                totallyInvested.add(value);
+                totallyInvested.Add(value);
                 //owner.GetOwnership().Add(parent, value);
             }
         }
@@ -169,8 +169,8 @@ namespace Nashet.EconomicSimulation
             {
                 var value = item.Value.GetShare();
                 if (item.Key is Country)
-                    ownedByAnyCountry.add(value);
-                total.add(value);
+                    ownedByAnyCountry.Add(value);
+                total.Add(value);
             }
 
             var res = Procent.makeProcent(ownedByAnyCountry, total);
@@ -184,7 +184,7 @@ namespace Nashet.EconomicSimulation
         {
             var onSale = new Value(0f);
             foreach (var item in ownership)
-                onSale.add(item.Value.GetShareForSale());
+                onSale.Add(item.Value.GetShareForSale());
             return Procent.makeProcent(onSale, totallyInvested);
         }
 
@@ -248,13 +248,17 @@ namespace Nashet.EconomicSimulation
         //{
         //    return ownership.Where(x => x.Value.GetAssetForSale().isBiggerOrEqual(desireableValue)).Random();
         //}
+        /// <summary>
+        /// Returns copy
+        /// </summary>
+        
         internal Value GetAllAssetsValue()
         {
-            return new Value(totallyInvested);
+            return totallyInvested.Copy();
         }
         internal Value GetMarketValue()
         {
-            return marketPriceModifier.multiplyOutside(totallyInvested);
+            return marketPriceModifier.Copy().multiply(totallyInvested);
         }
         internal Value GetShareMarketValue(Procent share)
         {

@@ -677,7 +677,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (loans.isNotZero())
                 {
-                    Value howMuchToReturn = new Value(loans);
+                    Value howMuchToReturn = loans.Copy();
                     if (howMuchToReturn.isSmallerOrEqual(cash))
                         howMuchToReturn.set(cash);
                     getBank().takeMoney(this, howMuchToReturn);
@@ -755,7 +755,7 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (var item in ownership.GetAllShares())
                     {
-                        Value sentToOwner = dividends.multiplyOutside(item.Value);
+                        Value sentToOwner = dividends.Copy().multiply(item.Value);
                         pay(item.Key as Agent, sentToOwner);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)

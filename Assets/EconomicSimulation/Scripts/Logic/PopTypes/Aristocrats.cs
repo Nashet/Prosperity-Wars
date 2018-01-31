@@ -142,7 +142,7 @@ namespace Nashet.EconomicSimulation
                                 {
                                     Value investmentCost = buyShare.getInvestmentCost();
                                     if (!canPay(investmentCost))
-                                        getBank().GetLackingMoney(investmentCost);
+                                        getBank().giveLackingMoney(this, investmentCost);
                                     if (canPay(investmentCost))
                                         buyShare.BuyStandardShare(this);
                                 }
