@@ -540,7 +540,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in Country.getAllExisting())
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                 {
-                    foreach (Factory factory in province.allFactories)
+                    foreach (Factory factory in province.getAllFactories())
                     {
                         factory.produce();
                         factory.payTaxes(); // empty for now                        
@@ -575,7 +575,7 @@ namespace Nashet.EconomicSimulation
                 else  //consume in regular order
                     foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
                     {
-                        foreach (Factory factory in province.allFactories)
+                        foreach (Factory factory in province.getAllFactories())
                         {
                             factory.consumeNeeds();
                         }
@@ -599,7 +599,7 @@ namespace Nashet.EconomicSimulation
                 country.getMoneyForSoldProduct();
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                 {
-                    foreach (Factory factory in province.allFactories)
+                    foreach (Factory factory in province.getAllFactories())
                     {
                         if (country.economy.getValue() == Economy.PlannedEconomy)
                             factory.OpenFactoriesPE();
@@ -614,7 +614,7 @@ namespace Nashet.EconomicSimulation
                             factory.ownership.SellLowMarginShares();
                         }
                     }
-                    province.allFactories.RemoveAll(item => item.isToRemove());
+                    province.DestroyAllMarkedfactories();
                     foreach (PopUnit pop in province.allPopUnits)
                     {
                         if (pop.canSellProducts())

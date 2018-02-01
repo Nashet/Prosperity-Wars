@@ -10,7 +10,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable, ISortableName
+    public class Province : Name, IEscapeTarget, IHasGetCountry, IClickable, ISortableName, IDescribable
     {
         public enum TerrainTypes
         {
@@ -28,7 +28,9 @@ namespace Nashet.EconomicSimulation
 
 
         private Province here
-        { get { return this; } }
+        {
+            get { return this; }
+        }
         private readonly int ID;
         private readonly Color colorID;
 
@@ -45,7 +47,7 @@ namespace Nashet.EconomicSimulation
 
         private Country owner;
 
-        public List<Factory> allFactories = new List<Factory>();
+        private readonly List<Factory> allFactories = new List<Factory>();
 
         private readonly int fertileSoil;
         private readonly List<Country> cores = new List<Country>();
@@ -700,6 +702,12 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
+
+        internal void DestroyAllMarkedfactories()
+        {
+            allFactories.RemoveAll(x => x.isToRemove());
+        }
+
         internal void setResource(Product inres)
         {
             resource = inres;
@@ -765,6 +773,12 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
+        internal void DestroyFactory(Factory factory)
+        {
+            allFactories.Remove(factory);
+        }
+
         /// <summary>
         /// Very heavy method
         /// </summary>        
@@ -1099,7 +1113,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.selectProvince(this.getID());
         }
-        IEnumerable<Owners> GetSales()
+        public IEnumerable<Owners> GetSales()
         {
             foreach (var item in allFactories)
             {
@@ -1108,48 +1122,73 @@ namespace Nashet.EconomicSimulation
                     yield return item.ownership;
             }
         }
-        public IEnumerable<IInvestable> getAllInvestmentsProjects()
+        /// <summary>
+        /// Don't use it for aristocrats
+        /// Shouldn't exist
+        /// </summary>
+        public IEnumerable<IInvestable> getAllInvestmentProjects()
         {
-            //var listA = Enumerable.Range(0, 10).Select(i => new TestClassA());
-            //var listB = Enumerable.Range(0, 10).Select(i => new TestClassB());
+            var upgradeInvestments = getAllFactories().Where(x =>
+                    canUpgradeFactory(x.getType())
+                    && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
+                    );
+            foreach (var item in upgradeInvestments)
+                yield return item;
 
-            //var combinedEnumerable = listA.Cast<ITestInterface>().Concat(listB.Cast<ITestInterface>());
-            //Debug.Log("\n\n Testing:");
-            //foreach (var item in combinedEnumerable)
-            //{
-            //    Debug.Log(item.GetText());
-            //}
-            /////////////////////////////////////////
-            //if (owner == Game.Player)
-            //    Debug.Log("\nnew Testing: " + this);
+            var buildInvestments = FactoryType.getAllInventedTypes(GetCountry()).Where(x => x.canBuildNewFactory(this));
+            foreach (var item in buildInvestments)
+                yield return new FactoryProject(this, item);
 
-            var upgradeInvetments = getAllFactories().Where(x =>
-            canUpgradeFactory(x.getType())
-            && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
-            ).Cast<IInvestable>();
-            //if (owner == Game.Player)
-            //    upgradeInvetments.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
+            foreach (var item in GetSales())
+                yield return item;
 
-            var buildInvestments = FactoryType.getAllInventedTypes(GetCountry(), x => x.canBuildNewFactory(this)).Cast<IInvestable>();
-            //if (owner == Game.Player)
-            //    buildInvestments.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
-
-            var buyInvestments = GetSales().Cast<IInvestable>();
-
-            var reopenEnterprises = getAllFactories().Where(x => x.IsClosed && !x.isBuilding()).Cast<IInvestable>();
-
-            var combined = upgradeInvetments.Concat(buildInvestments).Concat(buyInvestments).Concat(reopenEnterprises);
-
-
-
-
-            //if (owner == Game.Player)
-            //{
-            //    Debug.Log("Combined:");
-            //    combined.PerformAction(x => Debug.Log(x.ToString() + " " + x.GetType()));
-            //}
-            return combined;
+            var reopenEnterprises = getAllFactories().Where(x => x.IsClosed && !x.isBuilding());
+            foreach (var item in reopenEnterprises)
+                yield return item;
         }
+
+        //public IEnumerable<IInvestable> getAllInvestmentsProjects()
+        //{
+        //    //var listA = Enumerable.Range(0, 10).Select(i => new TestClassA());
+        //    //var listB = Enumerable.Range(0, 10).Select(i => new TestClassB());
+
+        //    //var combinedEnumerable = listA.Cast<ITestInterface>().Concat(listB.Cast<ITestInterface>());
+        //    //Debug.Log("\n\n Testing:");
+        //    //foreach (var item in combinedEnumerable)
+        //    //{
+        //    //    Debug.Log(item.GetText());
+        //    //}
+        //    /////////////////////////////////////////
+        //    //if (owner == Game.Player)
+        //    //    Debug.Log("\nnew Testing: " + this);
+
+        //    var upgradeInvetments = getAllFactories().Where(x =>
+        //    canUpgradeFactory(x.getType())
+        //    && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
+        //    ).Cast<IInvestable>();
+        //    //if (owner == Game.Player)
+        //    //    upgradeInvetments.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
+
+        //    var buildInvestments = FactoryType.getAllInventedTypes(GetCountry(), x => x.canBuildNewFactory(this)).Cast<IInvestable>();
+        //    //if (owner == Game.Player)
+        //    //    buildInvestments.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
+
+        //    var buyInvestments = GetSales().Cast<IInvestable>();
+
+        //    var reopenEnterprises = getAllFactories().Where(x => x.IsClosed && !x.isBuilding()).Cast<IInvestable>();
+
+        //    var combined = upgradeInvetments.Concat(buildInvestments).Concat(buyInvestments).Concat(reopenEnterprises);
+
+
+
+
+        //    //if (owner == Game.Player)
+        //    //{
+        //    //    Debug.Log("Combined:");
+        //    //    combined.PerformAction(x => Debug.Log(x.ToString() + " " + x.GetType()));
+        //    //}
+        //    return combined;
+        //}
 
         //    //Factory.conditionsUpgrade.isAllTrue // don't change it to Modifier  - it would prevent loan takes
         //    //FactoryType.conditionsBuild.isAllTrue
@@ -1180,6 +1219,25 @@ namespace Nashet.EconomicSimulation
         {
             return nameWeight;
         }
+        public Factory BuildFactory(IShareOwner investor, FactoryType type, Value cost)
+        {
+            if (getAllFactories().Any(x => x.getType() == type))
+            {
+                throw new Exception("Can't have 2 same factory types");
+            }
+            else
+            {
+                var res = new Factory(this, investor, type, cost);
+                allFactories.Add(res);
+                return res;
+            }
+
+        }
+
+        public string GetDescription()
+        {
+            return this + ", " + GetCountry();
+        }
     }
     public class Mod : Name
     {
@@ -1199,18 +1257,5 @@ namespace Nashet.EconomicSimulation
     }
 
 
-    public interface ITestInterface
-    {
-        string GetText();
-    }
 
-    public class TestClassA : ITestInterface
-    {
-        public string GetText() { return "TestClassA"; }
-    }
-
-    public class TestClassB : ITestInterface
-    {
-        public string GetText() { return "TestClassB"; }
-    }
 }

@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
             {
                 //Value cost = Game.market.getCost(resourceToBuild);
                 //cost.add(Options.factoryMoneyReservePerLevel);
-                Value cost = selectedFactoryType.GetInvestmentCost();
+                Value cost = selectedFactoryType.GetBuildCost();
                 if (Game.Player.canPay(cost))
                 {
                     var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType, cost);
@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
-                    var cost = selectedFactoryType.GetInvestmentCost();
+                    var cost = selectedFactoryType.GetBuildCost();
                     sb.Append(" cost: ").Append(cost);
                 }
                 sb.Append("\nEveryday resource input: ");
@@ -124,7 +124,7 @@ namespace Nashet.EconomicSimulation
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
                 if (Game.selectedProvince == null)
                     descriptionText.text = "Select province where to build";
-                else if (FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince)).Count() == 0)
+                else if (FactoryType.getAllInventedTypes(Game.Player).Where( x => x.canBuildNewFactory(Game.selectedProvince)).Count() == 0)
                     descriptionText.text = "Nothing to build now";
                 else
                     descriptionText.text = "Select building from left";

@@ -5,6 +5,7 @@ using UnityEngine;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
 using System.Text;
+using System.Linq;
 
 namespace Nashet.ValueSpace
 {
@@ -448,7 +449,7 @@ namespace Nashet.ValueSpace
 
         internal int Count()
         {
-            return collection.Count;
+            return collection.Count(x=>x.Value.isNotZero());
         }
 
         internal StorageSet Multiply(Value value)

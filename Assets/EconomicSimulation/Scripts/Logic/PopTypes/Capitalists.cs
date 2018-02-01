@@ -68,13 +68,14 @@ namespace Nashet.EconomicSimulation
         {
             //should I invest?                
             if (Economy.isMarket.checkIftrue(GetCountry()) && GetCountry().isInvented(Invention.Manufactures))
-            //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
-            //&& (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
-            //)
+
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxBy(x => x.GetMargin(getProvince()).get());
+
+
+                //var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
+                var projects = World.GetAllAllowedInvestments(this.GetCountry()).Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
+                var project = projects.MaxBy(x => x.GetMargin().get());
 
                 if (project != null)
                 {
@@ -87,8 +88,8 @@ namespace Nashet.EconomicSimulation
                         var factoryToBuild = project as FactoryType;
                         if (factoryToBuild != null) // build new factory
                         {
-                            Factory factory = new Factory(getProvince(), this, factoryToBuild, investmentCost);
-                            payWithoutRecord(factory, investmentCost);                            
+                            Factory factory = getProvince().BuildFactory(this, factoryToBuild, investmentCost);
+                            payWithoutRecord(factory, investmentCost);
                         }
                         else
                         {
@@ -97,8 +98,8 @@ namespace Nashet.EconomicSimulation
                             {
                                 if (factory.IsOpen)// upgrade existing factory
                                     factory.upgrade(this);
-                                else                                
-                                    factory.open(this, true);                                    
+                                else
+                                    factory.open(this, true);
                             }
                             else
                             {
@@ -106,7 +107,16 @@ namespace Nashet.EconomicSimulation
                                 if (buyShare != null) // buy part of existing factory
                                     buyShare.BuyStandardShare(this);
                                 else
-                                    Debug.Log("Unknown investment type");
+                                {
+                                    var factoryProject = project as FactoryProject;
+                                    if (factoryProject != null)
+                                    {
+                                        Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
+                                        payWithoutRecord(factory2, investmentCost);
+                                    }
+                                    else
+                                        Debug.Log("Unknown investment type");
+                                }
                             }
 
                         }

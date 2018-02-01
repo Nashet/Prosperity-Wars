@@ -425,10 +425,8 @@ namespace Nashet.EconomicSimulation
     public class Economy : AbstractReform, IHasGetCountry
     {
         private readonly Country country;
-        public Country GetCountry()
-        {
-            return country;
-        }
+        
+
         internal readonly static Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
         internal readonly static Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status == Economy.LaissezFaire; }, "Economy policy is Laissez Faire", true);
 
@@ -480,9 +478,15 @@ namespace Nashet.EconomicSimulation
             , "Economy is market economy", true);
         public class ReformValue : AbstractReformValue
         {
-            public ReformValue(string inname, string indescription, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition)
+            private readonly bool _allowForeighnIvestments;
+            public bool AllowForeighnIvestments
+            {
+                get { return _allowForeighnIvestments; }
+            }
+            public ReformValue(string name, string description, int id, bool _allowForeighnIvestments, DoubleConditionsList condition) : base(name, description, id, condition)
             {
                 PossibleStatuses.Add(this);
+                this._allowForeighnIvestments = _allowForeighnIvestments;
             }
 
             internal override bool isAvailable(Country country)
@@ -533,17 +537,18 @@ namespace Nashet.EconomicSimulation
             Invention.BankingInvented,
             Serfdom.IsAbolishedInAnyWay
         });
+
+
         private ReformValue status;
+        
         internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
-        internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0,
+        internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0, false,
             new DoubleConditionsList(new List<Condition> {
             Invention.CollectivismInvented, Government.isProletarianDictatorship }));
-        internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, new DoubleConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes)); 
-        internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, new DoubleConditionsList(capitalism));
-        internal static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, new DoubleConditionsList(capitalism));
-        internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, new DoubleConditionsList(capitalism));
-
-
+        internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, false, new DoubleConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes)); 
+        internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, true, new DoubleConditionsList(capitalism));
+        internal static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, true, new DoubleConditionsList(capitalism));
+        internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, true, new DoubleConditionsList(capitalism));
         /// ////////////
         public Economy(Country country) : base("Economy", "Your economy policy", country)
         {
@@ -553,6 +558,10 @@ namespace Nashet.EconomicSimulation
         internal override AbstractReformValue getValue()
         {
             return status;
+        }
+        public Country GetCountry()
+        {
+            return country;
         }
         internal override void setValue(AbstractReformValue selectedReform)
         {
@@ -573,7 +582,10 @@ namespace Nashet.EconomicSimulation
                 if (GetCountry().taxationForPoor.getTypedValue().tax.get() < 0.2f)
                     GetCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
             }
-
+        }
+        internal Economy.ReformValue getTypedValue()
+        {
+            return status;
         }
         //internal override AbstractReformValue getValue(int value)
         //{

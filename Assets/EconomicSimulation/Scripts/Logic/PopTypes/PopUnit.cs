@@ -151,9 +151,9 @@ namespace Nashet.EconomicSimulation
                 if (isSourceInvestor != null)
                 {
                     if (isThisInvestor != null)
-                        isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, isThisInvestor));
+                        isSourceInvestor.getOwnedFactories().PerformAction(x => x.ownership.TransferAll(isSourceInvestor, isThisInvestor));
                     else
-                        isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, GetCountry()));
+                        isSourceInvestor.getOwnedFactories().PerformAction(x => x.ownership.TransferAll(isSourceInvestor, GetCountry()));
                 }
             }
             mobilized = 0;
@@ -275,9 +275,9 @@ namespace Nashet.EconomicSimulation
             if (isSourceInvestor != null)
             {
                 if (isThisInvestor != null)
-                    isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, isThisInvestor));
+                    isSourceInvestor.getOwnedFactories().PerformAction(x => x.ownership.TransferAll(isSourceInvestor, isThisInvestor));
                 else
-                    isSourceInvestor.getOwnedFactories().ForEach(x => x.ownership.TransferAll(isSourceInvestor, GetCountry()));
+                    isSourceInvestor.getOwnedFactories().PerformAction(x => x.ownership.TransferAll(isSourceInvestor, GetCountry()));
             }
 
             // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
@@ -480,7 +480,7 @@ namespace Nashet.EconomicSimulation
             if (popType == PopType.Workers)
             {
                 int employed = 0;
-                foreach (Factory factory in getProvince().allFactories)
+                foreach (Factory factory in getProvince().getAllFactories())
                     employed += factory.howManyEmployed(this);
                 if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
                     return new Procent(0);
@@ -1249,7 +1249,7 @@ namespace Nashet.EconomicSimulation
         override public string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(getProvince());
+            sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(getProvince().GetDescription());
             //return popType + " from " + province;
             return sb.ToString();
         }

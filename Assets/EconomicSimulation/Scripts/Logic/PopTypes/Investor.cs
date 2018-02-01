@@ -20,24 +20,21 @@ namespace Nashet.EconomicSimulation
         {
             base.deleteData();
             //secede property... to government
-            getOwnedFactories().ForEach(x => x.ownership.TransferAll(this, GetCountry()));
+            getOwnedFactories().PerformAction(x => x.ownership.TransferAll(this, GetCountry()));
         }
         
         /// <summary>
         /// Should be reworked to multiple province support
         /// </summary>        
-        public List<Factory> getOwnedFactories()
+        public IEnumerable<Factory> getOwnedFactories()
         {
-            List<Factory> result = new List<Factory>();
+            //List<Factory> result = new List<Factory>();
             if (popType == PopType.Aristocrats || popType == PopType.Capitalists)
             {
-                foreach (var item in getProvince().allFactories)
+                foreach (var item in getProvince().getAllFactories())
                     if (item.ownership.HasOwner(this))
-                        result.Add(item);
-                return result;
-            }
-            else //return empty list
-                return result;
+                        yield return item;            
+            }            
         }
 
         //private readonly Properties stock = new Properties();

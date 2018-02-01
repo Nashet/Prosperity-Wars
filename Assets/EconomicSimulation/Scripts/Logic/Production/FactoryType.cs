@@ -10,7 +10,7 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : IClickable, IInvestable, ISortableName
+    public class FactoryType : IClickable,  ISortableName
     {
         static private readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
@@ -164,7 +164,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //Value cost = Game.market.getCost(this.getBuildNeeds());
                         //cost.add(Options.factoryMoneyReservPerLevel);
-                        Value cost = GetInvestmentCost();
+                        Value cost = GetBuildCost();
                         return agent.canPay(cost);
                     }
                 },
@@ -173,7 +173,7 @@ namespace Nashet.EconomicSimulation
                     var sb = new StringBuilder();
                     //Value cost = Game.market.getCost(this.getBuildNeeds());
                     //cost.add(Options.factoryMoneyReservPerLevel);
-                    Value cost = GetInvestmentCost();
+                    Value cost = GetBuildCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
                     return sb.ToString();
@@ -198,13 +198,7 @@ namespace Nashet.EconomicSimulation
             foreach (var next in allTypes)
                 if (next.basicProduction.getProduct().isInventedBy(country))
                     yield return next;
-        }
-        public static IEnumerable<FactoryType> getAllInventedTypes(Country country, Predicate<FactoryType> predicate)
-        {
-            foreach (var next in allTypes)
-                if (next.basicProduction.getProduct().isInventedBy(country) && predicate(next))
-                    yield return next;
-        }
+        }        
         public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
         {
             foreach (var next in getAllInventedTypes(country))
@@ -220,7 +214,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///Returns new value
         /// </summary>        
-        public Value GetInvestmentCost()
+        public Value GetBuildCost()
         {
             Value result = Game.market.getCost(GetBuildNeeds());
             result.add(Options.factoryMoneyReservePerLevel);
@@ -325,7 +319,7 @@ namespace Nashet.EconomicSimulation
             if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
             Value income = Game.market.getCost(basicProduction);
-            var outCome = province.getLocalMinSalary();//salary
+            var outCome = new Value(0f);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
@@ -359,9 +353,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// That is possible margin in that case
         /// </summary>        
-        public Procent GetMargin(Province province)
+        public Procent GetPossibleMargin(Province province)
         {
-            return Procent.makeProcent(getPossibleProfit(province), GetInvestmentCost(), false);
+            return Procent.makeProcent(getPossibleProfit(province), GetBuildCost(), false);
         }
 
         internal bool canBuildNewFactory(Province where)

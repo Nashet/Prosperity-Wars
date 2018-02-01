@@ -79,11 +79,9 @@ namespace Nashet.EconomicSimulation
                 setGUIElementsAccesability();
                 Factory.modifierEfficiency.getModifier(factory, out efficiencyText.GetComponent<ToolTipHandler>().text);
 
+                
+                caption.text = factory.ToString();
                 var sb = new StringBuilder();
-
-                sb.Append(factory.getType().name).Append(" in ").Append(factory.getProvince()).Append(" level ").Append(factory.getLevel());
-                caption.text = sb.ToString();
-
                 sb = new StringBuilder();
                 sb.Append("Workforce: ").Append(factory.getWorkForce());
                 sb.Append("\nProduced: ").Append(factory.getGainGoodsThisTurn().ToString());
@@ -106,8 +104,8 @@ namespace Nashet.EconomicSimulation
                         sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
                 }
                 sb.Append("\nConsumed: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
-                if (Game.devMode)
-                    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
+                //if (Game.devMode)
+                //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
                 sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(factory.getInputFactor());
                 sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(", Salary(total): ").Append(factory.getSalaryCost());

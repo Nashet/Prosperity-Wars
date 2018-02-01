@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
     }
     public interface IInvestable
     {
-        Procent GetMargin(Province province);
+        Procent GetMargin();
         Value GetInvestmentCost();
         /// <summary>
         /// Nit Only for Aristocrats: allows type sampling
@@ -29,5 +29,8 @@ namespace Nashet.EconomicSimulation
     {
         float GetNameWeight();
     }
-    
+    public interface IDescribable
+    {
+        string GetDescription();
+    }
 }

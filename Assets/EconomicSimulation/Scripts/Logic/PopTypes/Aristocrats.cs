@@ -73,88 +73,84 @@ namespace Nashet.EconomicSimulation
             else
                 return 0;
         }
-        internal override void invest()
-        {
-            // Aristocrats invests only in resource factories (and banks)
-            if (getProvince().getResource() != null)
-            //universalInvest(x=>canProduce(getProvince().getResource()));
-            //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
-            //    && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
-            //    )
-            {
-                // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest)
-                && x.CanProduce(getProvince().getResource())
-                );
-
-                var project = projects.MaxBy(x => x.GetMargin(getProvince()).get());
-                if (project != null)
-                {
-                    {
-                        var factoryToBuild = project as FactoryType; // build new one
-                        if (factoryToBuild != null)
-                        {
-                            // todo remove connection to grain
-                            Storage resourceToBuild = factoryToBuild.GetBuildNeeds().GetFirstSubstituteStorage(Product.Grain);
-
-                            // try to build for grain
-                            if (storage.has(resourceToBuild))
-                            {
-                                var factory = new Factory(getProvince(), this, factoryToBuild, Game.market.getCost(resourceToBuild));
-                                storage.send(factory.getInputProductsReserve(), resourceToBuild);
-                                factory.constructionNeeds.setZero();
-                            }
-                            else // build for money
-                            {
-                                Value investmentCost = Game.market.getCost(resourceToBuild);
-                                if (!canPay(investmentCost))
-                                    getBank().giveLackingMoney(this, investmentCost);
-                                if (canPay(investmentCost))
-                                {
-                                    var factory = new Factory(getProvince(), this, factoryToBuild, investmentCost);  // build new one              
-                                    payWithoutRecord(factory, investmentCost);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var factory = project as Factory;// existing one                               
-                            if (factory != null)
-                            {
-                                Value investmentCost = factory.GetInvestmentCost();
-                                if (!canPay(investmentCost))
-                                    getBank().giveLackingMoney(this, investmentCost);
-                                if (canPay(investmentCost))
-                                {
-                                    if (factory.IsOpen)
-                                        factory.upgrade(this);
-                                    else
-                                        factory.open(this, true);
-                                }
-                            }
-                            else
-                            {
-                                Owners buyShare = project as Owners;
-                                if (buyShare != null) // buy part of existing factory
-                                {
-                                    Value investmentCost = buyShare.GetInvestmentCost();
-                                    if (!canPay(investmentCost))
-                                        getBank().giveLackingMoney(this, investmentCost);
-                                    if (canPay(investmentCost))
-                                        buyShare.BuyStandardShare(this);
-                                }
-                                else
-                                    Debug.Log("Unknown investment type");
-                            }
-                        }
-                    }
-                }
-            }
-            base.invest();
-        }
-        //override internal bool CanGainDividents()
+        //internal override void invest()
         //{
-        //    return true;
-        //}
+        //    // Aristocrats invests only in resource factories (and banks)
+        //    if (getProvince().getResource() != null)
+        //    //universalInvest(x=>canProduce(getProvince().getResource()));
+        //    //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
+        //    //    && (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
+        //    //    )
+        //    {
+        //        // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
+        //        var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)
+        //        && x.CanProduce(getProvince().getResource())
+        //        );
+
+        //        var project = projects.MaxBy(x => x.GetMargin().get());
+        //        if (project != null)
+        //        {
+        //            {
+        //                var factoryToBuild = project as FactoryType; // build new one
+        //                if (factoryToBuild != null)
+        //                {
+        //                    // todo remove connection to grain
+        //                    Storage resourceToBuild = factoryToBuild.GetBuildNeeds().GetFirstSubstituteStorage(Product.Grain);
+
+        //                    // try to build for grain
+        //                    if (storage.has(resourceToBuild))
+        //                    {
+        //                        var factory = getProvince().BuildFactory( this, factoryToBuild, Game.market.getCost(resourceToBuild));
+        //                        storage.send(factory.getInputProductsReserve(), resourceToBuild);
+        //                        factory.constructionNeeds.setZero();
+        //                    }
+        //                    else // build for money
+        //                    {
+        //                        Value investmentCost = Game.market.getCost(resourceToBuild);
+        //                        if (!canPay(investmentCost))
+        //                            getBank().giveLackingMoney(this, investmentCost);
+        //                        if (canPay(investmentCost))
+        //                        {
+        //                            var factory = getProvince().BuildFactory( this, factoryToBuild, investmentCost);  // build new one              
+        //                            payWithoutRecord(factory, investmentCost);
+        //                        }
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    var factory = project as Factory;// existing one                               
+        //                    if (factory != null)
+        //                    {
+        //                        Value investmentCost = factory.GetInvestmentCost();
+        //                        if (!canPay(investmentCost))
+        //                            getBank().giveLackingMoney(this, investmentCost);
+        //                        if (canPay(investmentCost))
+        //                        {
+        //                            if (factory.IsOpen)
+        //                                factory.upgrade(this);
+        //                            else
+        //                                factory.open(this, true);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        Owners buyShare = project as Owners;
+        //                        if (buyShare != null) // buy part of existing factory
+        //                        {
+        //                            Value investmentCost = buyShare.GetInvestmentCost();
+        //                            if (!canPay(investmentCost))
+        //                                getBank().giveLackingMoney(this, investmentCost);
+        //                            if (canPay(investmentCost))
+        //                                buyShare.BuyStandardShare(this);
+        //                        }
+        //                        else
+        //                            Debug.Log("Unknown investment type");
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    base.invest();
+        //}        
     }
 }

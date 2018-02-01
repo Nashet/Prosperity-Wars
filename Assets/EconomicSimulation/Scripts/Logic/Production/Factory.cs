@@ -6,10 +6,11 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 using System;
 using UnityEngine;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Factory : SimpleProduction, IClickable, IInvestable, IShareable
+    public class Factory : SimpleProduction, IClickable, IInvestable, IShareable, IDescribable
     {
         public enum Priority { none, low, medium, high }
         private static readonly int workForcePerLevel = 1000;
@@ -177,13 +178,18 @@ namespace Nashet.EconomicSimulation
              && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
             });
 
-        internal Factory(Province province, IShareOwner investor, FactoryType type, Value cost) : base(type, province)
+        /// <summary>
+        /// Don't call it directly
+        /// </summary>
+        
+        public Factory(Province province, IShareOwner investor, FactoryType type, Value cost) : base(type, province)
         {
+            
             ownership = new Owners(this);
             currentInvestor = investor;
             //assuming this is level 0 building        
             constructionNeeds = new StorageSet(getType().GetBuildNeeds());
-            province.allFactories.Add(this);
+
             ownership.Add(investor, cost);
 
             salary.set(province.getLocalMinSalary());
@@ -191,7 +197,7 @@ namespace Nashet.EconomicSimulation
                 setPriorityAutoWithPlannedEconomy();
             Debug.Log(investor + " invested " + cost + " in building new " + this);
         }
-        
+
         public Value GetInvestmentCost()
         {
             if (IsOpen)
@@ -249,9 +255,15 @@ namespace Nashet.EconomicSimulation
         }
         override public string ToString()
         {
-            return getType().name + " L" + getLevel();
+            var sb = new StringBuilder();
+            sb.Append(GetDescription()).Append(" in ").Append(getProvince().GetDescription());
+            return sb.ToString();
         }
-
+        public string GetDescription()
+        {
+            return getType().name + " L" + getLevel();
+            
+        }
         //abstract internal string getName();
         public override void simulate()
         {
@@ -359,14 +371,14 @@ namespace Nashet.EconomicSimulation
             }
 
         }
-        public Procent GetMargin(Province province)
+        public Procent GetMargin()
         {
             if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 return Procent.ZeroProcent;
             else
             {
                 if (IsClosed)
-                    return getType().GetMargin(getProvince());//potential margin
+                    return getType().GetPossibleMargin(getProvince());//potential margin
                 else
                     return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
             }
@@ -507,7 +519,7 @@ namespace Nashet.EconomicSimulation
             if (IsOpen && Economy.isMarket.checkIftrue(GetCountry()))
             {
                 var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
-                var margin = GetMargin(null);
+                var margin = GetMargin();
 
                 // rise salary to attract  workforce, including workforce from other factories
                 if (margin.isBiggerThan(Options.minMarginToRiseSalary)
@@ -693,9 +705,8 @@ namespace Nashet.EconomicSimulation
         internal void destroyImmediately()
         {
             markToDestroy();
-            getProvince().allFactories.Remove(this);
-            //province.allFactories.Remove(this);        
-            // + interface 2 places
+            getProvince().DestroyFactory(this);            
+            // + GUI 2 places
             MainCamera.factoryPanel.removeFactory(this);
             //MainCamera.productionWindow.removeFactory(this);
             MainCamera.productionWindow.Refresh();
@@ -782,7 +793,7 @@ namespace Nashet.EconomicSimulation
             _isOpen = true;
             daysUnprofitable = 0;
             daysClosed = 0;
-            
+
         }
         /// <summary>
         /// Enterprise finished building and makes business
@@ -1040,6 +1051,8 @@ namespace Nashet.EconomicSimulation
         {
             return getType().CanProduce(product);
         }
+
+        
     }
 }
 

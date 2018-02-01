@@ -333,7 +333,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Margin per market value
         /// </summary>        
-        public Procent GetMargin(Province province)
+        public Procent GetMargin()
         {
             return Procent.makeProcent(GetInvestmentCost(), GetMarketValue(), false);
         }
@@ -353,7 +353,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void SellLowMarginShares()
         {
-            if (parent.GetMargin(null).isSmallerThan(Options.PopMarginToSellShares))
+            if (parent.GetMargin().isSmallerThan(Options.PopMarginToSellShares))
                 foreach (var item in ownership)
                 {
                     var country = item.Key as Country;

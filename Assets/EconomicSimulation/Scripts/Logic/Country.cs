@@ -694,7 +694,7 @@ namespace Nashet.EconomicSimulation
                 var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.GetBuildNeeds());
                 if (buildNeeds != null)
                 {
-                    var newFactory = new Factory(province, this, propositionFactory, null);
+                    var newFactory = province.BuildFactory(this, propositionFactory, null);
                     consumeFromCountryStorage(buildNeeds, this);
                     return true;
                     //newFactory.constructionNeeds.setZero();
@@ -1413,6 +1413,15 @@ namespace Nashet.EconomicSimulation
             {
                 item.secedeTo(country, false);
             }
+        }
+        public IEnumerable<IInvestable> GetAllInvestmentProjects()
+        {
+            foreach (var province in ownedProvinces)
+                foreach (var item in province.getAllInvestmentProjects())
+                {
+                    yield return item;
+                }            
+
         }
     }
 }
