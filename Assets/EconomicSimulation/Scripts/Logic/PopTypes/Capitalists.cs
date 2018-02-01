@@ -17,8 +17,8 @@ namespace Nashet.EconomicSimulation
         { }
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
-                || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
+            if (targetType == PopType.Farmers && GetCountry().isInvented(Invention.Farming)
+                || targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy)
                 || targetType == PopType.Artisans
                 )
                 return true;
@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool canTrade()
         {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
-                && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -67,18 +67,18 @@ namespace Nashet.EconomicSimulation
         internal override void invest()
         {
             //should I invest?                
-            if (Economy.isMarket.checkIftrue(getCountry()) && getCountry().isInvented(Invention.Manufactures))
+            if (Economy.isMarket.checkIftrue(GetCountry()) && GetCountry().isInvented(Invention.Manufactures))
             //if (!getProvince().isThereFactoriesInUpgradeMoreThan(Options.maximumFactoriesInUpgradeToBuildNew)
             //&& (getProvince().howMuchFactories() == 0 || getProvince().getAverageFactoryWorkforceFulfilling() > Options.minFactoryWorkforceFulfillingToInvest)
             //)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.getMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxBy(x => x.getMargin(getProvince()).get());
+                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
+                var project = projects.MaxBy(x => x.GetMargin(getProvince()).get());
 
                 if (project != null)
                 {
-                    Value investmentCost = project.getInvestmentCost();
+                    Value investmentCost = project.GetInvestmentCost();
                     if (!canPay(investmentCost))
                         getBank().giveLackingMoney(this, investmentCost);
                     if (canPay(investmentCost))
@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
                         if (factoryToBuild != null) // build new factory
                         {
                             Factory factory = new Factory(getProvince(), this, factoryToBuild, investmentCost);
-                            payWithoutRecord(factory, investmentCost);
+                            payWithoutRecord(factory, investmentCost);                            
                         }
                         else
                         {
@@ -97,11 +97,8 @@ namespace Nashet.EconomicSimulation
                             {
                                 if (factory.IsOpen)// upgrade existing factory
                                     factory.upgrade(this);
-                                else
-                                {
-                                    factory.open(this, true);
-                                    Debug.Log(this + " invested " + investmentCost + " in reopening " + factory);
-                                }
+                                else                                
+                                    factory.open(this, true);                                    
                             }
                             else
                             {

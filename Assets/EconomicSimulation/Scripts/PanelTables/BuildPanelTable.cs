@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
             ////Adding cost
             //if (Game.player.isInvented(InventionType.capitalism))
             if (Economy.isMarket.checkIftrue(Game.Player))
-                AddCell(factoryType.getInvestmentCost().ToString(), factoryType);
+                AddCell(factoryType.GetInvestmentCost().ToString(), factoryType);
             else
                 AddCell(factoryType.GetBuildNeeds().ToString(), factoryType);
 
@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
-                AddCell(factoryType.getMargin(Game.selectedProvince).ToString(), factoryType);
+                AddCell(factoryType.GetMargin(Game.selectedProvince).ToString(), factoryType);
         }
 
         protected override void AddHeader()

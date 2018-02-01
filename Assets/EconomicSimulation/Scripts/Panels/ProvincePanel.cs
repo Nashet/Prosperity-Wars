@@ -46,14 +46,14 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {
-                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.getCountry())
+                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.GetCountry())
 
                     MainCamera.diplomacyPanel.Hide();
                 else
-                    MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
+                    MainCamera.diplomacyPanel.show(Game.selectedProvince.GetCountry());
             }
             else
-                MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
+                MainCamera.diplomacyPanel.show(Game.selectedProvince.GetCountry());
         }
         public void onMobilizeClick()
         {
@@ -142,7 +142,7 @@ namespace Nashet.EconomicSimulation
             // "\nNeighbors " + province.getNeigborsList()
             ;
             Text text = btnOwner.GetComponentInChildren<Text>();
-            text.text = "Owner: " + Game.selectedProvince.getCountry();
+            text.text = "Owner: " + Game.selectedProvince.GetCountry();
 
 
             btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);

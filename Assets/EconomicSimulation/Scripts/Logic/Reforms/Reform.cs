@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
         readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
         private ReformValue reform;
         private readonly Country country;
-        public Country getCountry()
+        public Country GetCountry()
         {
             return country;
         }
@@ -152,7 +152,7 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                if (pop.getVotingPower(this) > pop.getVotingPower(pop.getCountry().government.getTypedValue()))
+                if (pop.getVotingPower(this) > pop.getVotingPower(pop.GetCountry().government.getTypedValue()))
                     result = new Procent(1f);
                 else
                     result = new Procent(0f);
@@ -253,7 +253,7 @@ namespace Nashet.EconomicSimulation
         }
         public void onReformEnacted(Province province)
         {
-            var government = province.getCountry().government.getValue();
+            var government = province.GetCountry().government.getValue();
             if (government == Government.ProletarianDictatorship)
             {
                 //nationalization
@@ -425,7 +425,7 @@ namespace Nashet.EconomicSimulation
     public class Economy : AbstractReform, IHasGetCountry
     {
         private readonly Country country;
-        public Country getCountry()
+        public Country GetCountry()
         {
             return country;
         }
@@ -509,7 +509,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.popType == PopType.Capitalists)
                 {
                     //positive - more liberal
-                    int change = ID - pop.getCountry().economy.status.ID;
+                    int change = ID - pop.GetCountry().economy.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);
@@ -559,19 +559,19 @@ namespace Nashet.EconomicSimulation
             status = (ReformValue)selectedReform;
             if (status == LaissezFaire)
             {
-                if (getCountry().taxationForRich.getTypedValue().tax.get() > 0.5f)
-                    getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
-                if (getCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
-                    getCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-                getCountry().getAllFactories().PerformAction(x => x.setSubsidized(false));
+                if (GetCountry().taxationForRich.getTypedValue().tax.get() > 0.5f)
+                    GetCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
+                if (GetCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
+                    GetCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+                GetCountry().getAllFactories().PerformAction(x => x.setSubsidized(false));
             }
             else
                 if (status == StateCapitalism)
             {
-                if (getCountry().taxationForRich.getTypedValue().tax.get() < 0.2f)
-                    getCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
-                if (getCountry().taxationForPoor.getTypedValue().tax.get() < 0.2f)
-                    getCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
+                if (GetCountry().taxationForRich.getTypedValue().tax.get() < 0.2f)
+                    GetCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
+                if (GetCountry().taxationForPoor.getTypedValue().tax.get() < 0.2f)
+                    GetCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
             }
 
         }
@@ -647,7 +647,7 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = ID - pop.getCountry().serfdom.status.ID; //positive - more liberal
+                int change = ID - pop.GetCountry().serfdom.status.ID; //positive - more liberal
                 if (pop.popType == PopType.Aristocrats)
                 {
                     if (change > 0)
@@ -828,7 +828,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.popType == PopType.Workers)
                 {
                     //positive - reform will be better for worker, [-5..+5]
-                    int change = ID - pop.getCountry().minimalWage.status.ID;
+                    int change = ID - pop.GetCountry().minimalWage.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);
@@ -841,7 +841,7 @@ namespace Nashet.EconomicSimulation
                 else // rich strata
                 {
                     //positive - reform will be better for rich strata, [-5..+5]
-                    int change = pop.getCountry().minimalWage.status.ID - ID;
+                    int change = pop.GetCountry().minimalWage.status.ID - ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);
@@ -1005,7 +1005,7 @@ namespace Nashet.EconomicSimulation
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = ID - pop.getCountry().unemploymentSubsidies.status.ID;
+                int change = ID - pop.GetCountry().unemploymentSubsidies.status.ID;
                 if (pop.popType.isPoorStrata())
                 {
                     if (change > 0)
@@ -1132,7 +1132,7 @@ namespace Nashet.EconomicSimulation
             {
                 Procent result;
                 //positive mean higher tax
-                int change = ID - pop.getCountry().taxationForPoor.status.ID;
+                int change = ID - pop.GetCountry().taxationForPoor.status.ID;
                 if (pop.popType.isPoorStrata())
                 {
                     if (change > 0)
@@ -1229,7 +1229,7 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = ID - pop.getCountry().taxationForRich.status.ID;//positive mean higher tax
+                int change = ID - pop.GetCountry().taxationForRich.status.ID;//positive mean higher tax
                 if (pop.popType.isRichStrata())
                 {
                     if (change > 0)
@@ -1335,7 +1335,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     //positive - more rights for minorities
-                    int change = ID - pop.getCountry().minorityPolicy.status.ID;
+                    int change = ID - pop.GetCountry().minorityPolicy.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);

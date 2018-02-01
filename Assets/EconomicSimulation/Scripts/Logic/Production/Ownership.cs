@@ -333,27 +333,27 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Margin per market value
         /// </summary>        
-        public Procent getMargin(Province province)
+        public Procent GetMargin(Province province)
         {
-            return Procent.makeProcent(getInvestmentCost(), GetMarketValue(), false);
+            return Procent.makeProcent(GetInvestmentCost(), GetMarketValue(), false);
         }
         /// <summary>
         /// Cost of standard share
         /// </summary>        
-        public Value getInvestmentCost()
+        public Value GetInvestmentCost()
         {
             return Options.PopBuyAssetsAtTime.getProcentOf(GetMarketValue());
         }
-        public bool canProduce(Product product)
+        public bool CanProduce(Product product)
         {
-            return parent.getType().canProduce(product);
+            return parent.getType().CanProduce(product);
         }
         /// <summary>
         /// Should be in Investor class
         /// </summary>
         public void SellLowMarginShares()
         {
-            if (parent.getMargin(null).isSmallerThan(Options.PopMarginToSellShares))
+            if (parent.GetMargin(null).isSmallerThan(Options.PopMarginToSellShares))
                 foreach (var item in ownership)
                 {
                     var country = item.Key as Country;

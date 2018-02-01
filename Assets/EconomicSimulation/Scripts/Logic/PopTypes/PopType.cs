@@ -159,10 +159,13 @@ namespace Nashet.EconomicSimulation
             foreach (var item in allPopTypes)
                 yield return item;
         }
-
+        /// <summary>
+        /// returns new value
+        /// </summary>
+        /// <returns></returns>
         public Storage getBasicProduction()
         {
-            return basicProduction;
+            return basicProduction.Copy();
         }
         public bool canMobilize(Staff byWhom)
         {
@@ -287,8 +290,11 @@ namespace Nashet.EconomicSimulation
 
         public bool HasJobsFor(PopType type, Province province)
         {
-            if (this == Workers || this == Farmers || this == Tribesmen)
+            //if (this == Workers || this == Farmers || this == Tribesmen)
+            if (this == Workers)
                 return province.getUnemployment(x => x == Workers).isSmallerThan(MigrationUnemploymentLimit);
+            else if (this == Farmers || this == Tribesmen)
+                return province.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
             else
                 return true;
         }

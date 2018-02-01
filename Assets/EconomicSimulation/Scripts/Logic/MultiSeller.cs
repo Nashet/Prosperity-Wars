@@ -75,9 +75,9 @@ namespace Nashet.EconomicSimulation
         {
             buyIfLessLimits[product].set(value);
         }
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
+            base.SetStatisticToZero();
             sentToMarket.setZero();
             foreach (var item in producedTotal)
                 item.Value.set(Value.Zero);

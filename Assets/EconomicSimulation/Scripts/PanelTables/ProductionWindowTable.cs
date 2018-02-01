@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
             profitOrder = new SortOrder(this, x => x.getProfit());
-            profitabilityOrder = new SortOrder(this, x => x.getMargin(null).get());
+            profitabilityOrder = new SortOrder(this, x => x.GetMargin(null).get());
             salaryOrder = new SortOrder(this, x => x.getSalary().get());
             unemploymentOrder = new SortOrder(this, x => x.getProvince().getUnemployedWorkers());
         }
@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
             AddCell(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
-            if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 AddCell("none", factory);
             else
                 AddCell(factory.getProfit().ToString("F3"), factory);
@@ -79,21 +79,21 @@ namespace Nashet.EconomicSimulation
                         AddCell("Closed", factory);
                     else
                     {
-                        if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
-                            AddCell(factory.getMargin(null).ToString(), factory);
+                            AddCell(factory.GetMargin(null).ToString(), factory);
                     }
                 }
             }
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 AddCell("centralized", factory);
             else
             {
-                if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
+                if (factory.GetCountry().economy.getValue() == Economy.NaturalEconomy)
                     AddCell(factory.getSalary().ToString() + " food", factory);
                 else
                     AddCell(factory.getSalary().ToString(), factory);

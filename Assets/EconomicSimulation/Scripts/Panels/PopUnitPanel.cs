@@ -56,8 +56,8 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nNo demotions\\migrations\\immigrations");
 
                 sb.Append("\nAssimilation: ");
-                if (pop.culture != pop.getCountry().getCulture() && pop.getAssimilationSize() > 0)
-                    sb.Append(pop.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
+                if (pop.culture != pop.GetCountry().getCulture() && pop.getAssimilationSize() > 0)
+                    sb.Append(pop.GetCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
                 else
                     sb.Append("none");
 
@@ -139,10 +139,10 @@ namespace Nashet.EconomicSimulation
                     sb.Append(target).Append(" ").Append(size);
                 else
                 {
-                    if (pop.getCountry() == targetIsProvince.getCountry())
+                    if (pop.GetCountry() == targetIsProvince.GetCountry())
                         sb.Append(targetIsProvince).Append(" ").Append(size);
                     else// immigration
-                        sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+                        sb.Append(targetIsProvince.GetCountry()).Append(" (").Append(target).Append(") ").Append(size);
 
                 }
             }
@@ -160,7 +160,7 @@ namespace Nashet.EconomicSimulation
             }
             else // Assuming target is Province
             {
-                if (pop.getCountry() == targetIsProvince.getCountry())
+                if (pop.GetCountry() == targetIsProvince.GetCountry())
                 {
                     sb.Append("\n").Append("Migration: ");
                     sb.Append(targetIsProvince).Append(" ").Append(size);
@@ -168,7 +168,7 @@ namespace Nashet.EconomicSimulation
                 else// immigration
                 {
                     sb.Append("\n").Append("Immigration: ");
-                    sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+                    sb.Append(targetIsProvince.GetCountry()).Append(" (").Append(target).Append(") ").Append(size);
                 }
             }
         }

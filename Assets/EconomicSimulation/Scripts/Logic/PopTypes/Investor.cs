@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
         {
             base.deleteData();
             //secede property... to government
-            getOwnedFactories().ForEach(x => x.ownership.TransferAll(this, getCountry()));
+            getOwnedFactories().ForEach(x => x.ownership.TransferAll(this, GetCountry()));
         }
         
         /// <summary>

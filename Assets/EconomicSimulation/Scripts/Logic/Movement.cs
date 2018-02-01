@@ -39,9 +39,9 @@ namespace Nashet.EconomicSimulation
                 if (!goal.Equals(default(KeyValuePair<AbstractReform, AbstractReformValue>)))
                 {
                     //find reasonable goal and join
-                    var found = pop.getCountry().movements.Find(x => x.getGoal() == goal.Value);
+                    var found = pop.GetCountry().movements.Find(x => x.getGoal() == goal.Value);
                     if (found == null)
-                        pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.getCountry()));
+                        pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.GetCountry()));
                     else
                     {
                         found.add(pop);
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.getMovement().members.Count == 0)
                 {
                     pop.getMovement().demobilize();
-                    pop.getCountry().movements.Remove(pop.getMovement());
+                    pop.GetCountry().movements.Remove(pop.getMovement());
                 }
                 pop.setMovement(null);
             }

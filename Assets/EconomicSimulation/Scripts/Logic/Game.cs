@@ -272,9 +272,9 @@ namespace Nashet.EconomicSimulation
 
             foreach (Province province in Province.allProvinces)
             {
-                if (province.getCountry() == Country.NullCountry)
+                if (province.GetCountry() == Country.NullCountry)
                 {
-                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);
+                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.GetCountry().getCulture(), province);
                 }
                 else
                 {
@@ -282,10 +282,10 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
                     //else
-                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
+                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.GetCountry().getCulture(), province);
 
 
-                    if (province.getCountry() == Game.Player)
+                    if (province.GetCountry() == Game.Player)
                     {
                         //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                         //province.allPopUnits.Add(pop);
@@ -293,7 +293,7 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Aristocrats(1000, province.getCountry().getCulture(), province);
                     //else
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.getCountry().getCulture(), province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.GetCountry().getCulture(), province);
 
 
                     pop.cash.set(9000);
@@ -303,10 +303,10 @@ namespace Nashet.EconomicSimulation
                     //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
                     //pop.cash.set(9000);
 
-                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.GetCountry().getCulture(), province);
                     pop.cash.set(900);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.GetCountry().getCulture(), province);
                     pop.cash.set(20);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
@@ -458,13 +458,13 @@ namespace Nashet.EconomicSimulation
             Game.market.sentToMarket.setZero();
             foreach (Country country in Country.getAllExisting())
             {
-                country.setStatisticToZero();
+                country.SetStatisticToZero();
                 foreach (Province province in country.ownedProvinces)
                 {
                     province.BalanceEmployableWorkForce();
                     {
                         foreach (var item in province.getAllAgents())
-                            item.setStatisticToZero();
+                            item.SetStatisticToZero();
                     }
                 }
             }

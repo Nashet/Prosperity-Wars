@@ -66,9 +66,9 @@ namespace Nashet.EconomicSimulation
             consumed.Add(what);
             country.countryStorageSet.Subtract(what);
         }
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();            
+            base.SetStatisticToZero();            
             consumed.setZero();
             consumedInMarket.setZero();
         }

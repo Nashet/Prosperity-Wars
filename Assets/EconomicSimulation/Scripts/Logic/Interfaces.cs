@@ -6,11 +6,11 @@ namespace Nashet.EconomicSimulation
 {
     interface IHasStatistics
     {
-        void setStatisticToZero();
+        void SetStatisticToZero();
     }
     public interface IHasGetCountry
     {
-        Country getCountry();
+        Country GetCountry();
     }
     public interface IEscapeTarget
     {
@@ -18,12 +18,12 @@ namespace Nashet.EconomicSimulation
     }
     public interface IInvestable
     {
-        Procent getMargin(Province province);
-        Value getInvestmentCost();
+        Procent GetMargin(Province province);
+        Value GetInvestmentCost();
         /// <summary>
-        /// Only for Aristocrats: allows type sampling
+        /// Nit Only for Aristocrats: allows type sampling
         /// </summary>        
-        bool canProduce(Product product);
+        bool CanProduce(Product product);
     }
     public interface ISortableName
     {

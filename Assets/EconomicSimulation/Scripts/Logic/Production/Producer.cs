@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
         abstract public void produce();
 
 
-        protected Producer(Province province) : base(province.getCountry().getBank(), province)
+        protected Producer(Province province) : base(province.GetCountry().getBank(), province)
         {
         }
         //protected Producer() : base(null, null)
@@ -40,11 +40,11 @@ namespace Nashet.EconomicSimulation
         //}
         public void calcStatistics()
         {
-            getCountry().producedTotalAdd(gainGoodsThisTurn);
+            GetCountry().producedTotalAdd(gainGoodsThisTurn);
         }
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
+            base.SetStatisticToZero();
             if (gainGoodsThisTurn != null)
                 gainGoodsThisTurn.setZero();
             if (sentToMarket != null)

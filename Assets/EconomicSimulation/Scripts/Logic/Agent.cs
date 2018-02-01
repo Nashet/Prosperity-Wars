@@ -28,7 +28,7 @@ namespace Nashet.EconomicSimulation
             this.bank = bank;
             this.province = province;
         }
-        public virtual void setStatisticToZero()
+        public virtual void SetStatisticToZero()
         {
             moneyIncomeLastTurn.set(moneyIncomethisTurn);
             moneyIncomethisTurn.set(0f);
@@ -42,9 +42,9 @@ namespace Nashet.EconomicSimulation
         {
             return province;
         }
-        virtual public Country getCountry()
+        virtual public Country GetCountry()
         {
-            return province.getCountry();
+            return province.GetCountry();
         }
         public Bank getBank()
         {

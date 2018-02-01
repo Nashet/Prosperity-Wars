@@ -499,7 +499,7 @@ namespace Nashet.EconomicSimulation
         //}
         internal BattleResult attack(Province prov)
         {
-            var enemy = prov.getCountry();
+            var enemy = prov.GetCountry();
             if (enemy == Country.NullCountry)
                 prov.mobilize();
             else

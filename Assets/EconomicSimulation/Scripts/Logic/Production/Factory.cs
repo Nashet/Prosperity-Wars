@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
 
             modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 5f, false),
 
-            modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).getCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
+            modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).GetCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
 
             modifierBelongsToCountry = new Modifier(x => (x as Factory).ownership.IsCountryOwnsControlPacket(), "Control packet belongs to government", -0.35f, false),
@@ -87,9 +87,9 @@ namespace Nashet.EconomicSimulation
                 {
                     var agent = upgrader as Agent;
                     var typedfactory = factory as Factory;
-                    if (agent.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                    if (agent.GetCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        return agent.getCountry().countryStorageSet.has(typedfactory.getUpgradeNeeds());
+                        return agent.GetCountry().countryStorageSet.has(typedfactory.getUpgradeNeeds());
                     }
                     else
                     {
@@ -109,9 +109,9 @@ namespace Nashet.EconomicSimulation
                     return sb.ToString();
                 }
                 , true),
-            conPlacedInOurCountry = new DoubleCondition((factory, agent) => (factory as Factory).getCountry() == (agent as Consumer).getCountry(),
+            conPlacedInOurCountry = new DoubleCondition((factory, agent) => (factory as Factory).GetCountry() == (agent as Consumer).GetCountry(),
             (factory) => "Enterprise placed in our country", true),
-            conNotLForNotCountry = new DoubleCondition((factory, agent) => (factory as Factory).getCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
+            conNotLForNotCountry = new DoubleCondition((factory, agent) => (factory as Factory).GetCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
 
@@ -156,24 +156,24 @@ namespace Nashet.EconomicSimulation
             modifierEfficiency = new ModifiersList(new List<Condition>
             {
            Modifier.modifierDefault1,
-            new Modifier(Invention.SteamPowerInvented, x => (x as Factory).getCountry(), 0.25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).getCountry(), 0.25f, false),
+            new Modifier(Invention.SteamPowerInvented, x => (x as Factory).GetCountry(), 0.25f, false),
+            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).GetCountry(), 0.25f, false),
 
-            new Modifier(Economy.isStateCapitlism, x => (x as Factory).getCountry(),  0.10f, false),
-            new Modifier(Economy.isInterventionism, x => (x as Factory).getCountry(),  0.30f, false),
-            new Modifier(Economy.isLF, x => (x as Factory).getCountry(), 0.50f, false),
-            new Modifier(Economy.isPlanned, x => (x as Factory).getCountry(), -0.10f, false),
+            new Modifier(Economy.isStateCapitlism, x => (x as Factory).GetCountry(),  0.10f, false),
+            new Modifier(Economy.isInterventionism, x => (x as Factory).GetCountry(),  0.30f, false),
+            new Modifier(Economy.isLF, x => (x as Factory).GetCountry(), 0.50f, false),
+            new Modifier(Economy.isPlanned, x => (x as Factory).GetCountry(), -0.10f, false),
 
             modifierInventedMiningAndIsShaft,
             modifierHasResourceInProvince,
             modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
-             new Modifier(x => Government.isPolis.checkIftrue((x as Factory).getCountry())
+             new Modifier(x => Government.isPolis.checkIftrue((x as Factory).GetCountry())
              && (x as Factory).getProvince().isCapital(), "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(Government.isTribal, x=>(x as Factory).getCountry(), -1.0f, false),
-             new Modifier(Government.isDespotism, x=>(x as Factory).getCountry(), -0.30f, false), // remove this?
-             new Modifier(x=>!(x as Factory).getCountry().isInvented(Invention.Manufactures)
+             new Modifier(Government.isTribal, x=>(x as Factory).GetCountry(), -1.0f, false),
+             new Modifier(Government.isDespotism, x=>(x as Factory).GetCountry(), -0.30f, false), // remove this?
+             new Modifier(x=>!(x as Factory).GetCountry().isInvented(Invention.Manufactures)
              && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
             });
 
@@ -187,17 +187,12 @@ namespace Nashet.EconomicSimulation
             ownership.Add(investor, cost);
 
             salary.set(province.getLocalMinSalary());
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 setPriorityAutoWithPlannedEconomy();
+            Debug.Log(investor + " invested " + cost + " in building new " + this);
         }
-        //internal Value getUpgradeCost()
-        //{
-        //    Value result = Game.market.getCost(getUpgradeNeeds());
-        //    result.add(Options.factoryMoneyReservPerLevel);
-        //    return result;
-        //    //return Game.market.getCost(type.getUpgradeNeeds());
-        //}
-        public Value getInvestmentCost()
+        
+        public Value GetInvestmentCost()
         {
             if (IsOpen)
             {
@@ -364,14 +359,14 @@ namespace Nashet.EconomicSimulation
             }
 
         }
-        public Procent getMargin(Province province)
+        public Procent GetMargin(Province province)
         {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 return Procent.ZeroProcent;
             else
             {
                 if (IsClosed)
-                    return getType().getMargin(getProvince());//potential margin
+                    return getType().GetMargin(getProvince());//potential margin
                 else
                     return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
             }
@@ -411,10 +406,10 @@ namespace Nashet.EconomicSimulation
 
         internal void paySalary()
         {
-            if (IsOpen && getCountry().economy.getValue() != Economy.PlannedEconomy)
+            if (IsOpen && GetCountry().economy.getValue() != Economy.PlannedEconomy)
             {
                 // per 1000 men            
-                if (Economy.isMarket.checkIftrue(getCountry()))
+                if (Economy.isMarket.checkIftrue(GetCountry()))
                 {
                     foreach (var link in hiredWorkForce)
                     {
@@ -425,7 +420,7 @@ namespace Nashet.EconomicSimulation
                         {
                             if (isSubsidized()) //take money and try again
                             {
-                                getCountry().takeFactorySubsidies(this, GetLackingMoney(howMuchPay));
+                                GetCountry().takeFactorySubsidies(this, GetLackingMoney(howMuchPay));
                                 if (canPay(howMuchPay))
                                     pay(link.Key, howMuchPay);
                                 else
@@ -447,7 +442,7 @@ namespace Nashet.EconomicSimulation
                     }
                 }
                 // don't pay nothing if where is planned economy
-                else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+                else if (GetCountry().economy.getValue() == Economy.NaturalEconomy)
                 {
                     //todo natural e.
                     // non market!!
@@ -509,10 +504,10 @@ namespace Nashet.EconomicSimulation
         {
             //Should be rise salary if: small unemployment, has profit, need has other resources
 
-            if (IsOpen && Economy.isMarket.checkIftrue(getCountry()))
+            if (IsOpen && Economy.isMarket.checkIftrue(GetCountry()))
             {
                 var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
-                var margin = getMargin(null);
+                var margin = GetMargin(null);
 
                 // rise salary to attract  workforce, including workforce from other factories
                 if (margin.isBiggerThan(Options.minMarginToRiseSalary)
@@ -556,7 +551,7 @@ namespace Nashet.EconomicSimulation
 
 
                 // limit salary country's min wage
-                var minSalary = getCountry().getMinSalary();
+                var minSalary = GetCountry().getMinSalary();
                 if (salary.isSmallerThan(minSalary))
                     salary.set(minSalary);
             }
@@ -598,7 +593,7 @@ namespace Nashet.EconomicSimulation
                 if (inputFactor < 0.95f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                     difference = -1 * maxHiringSpeed;
 
-                if (getCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
+                if (GetCountry().economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
                 {
                     //fire people if unprofitable. 
                     if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
@@ -674,7 +669,7 @@ namespace Nashet.EconomicSimulation
             toRemove = true;
 
             //return loans only if banking invented
-            if (getCountry().isInvented(Invention.Banking))
+            if (GetCountry().isInvented(Invention.Banking))
             {
                 if (loans.isNotZero())
                 {
@@ -734,9 +729,9 @@ namespace Nashet.EconomicSimulation
 
         public void OpenFactoriesPE()
         {
-            if (IsClosed && !isBuilding() && getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (IsClosed && !isBuilding() && GetCountry().economy.getValue() == Economy.PlannedEconomy)
             {
-                Rand.Call(() => open(getCountry(), false), Options.howOftenCheckForFactoryReopenning);
+                Rand.Call(() => open(GetCountry(), false), Options.howOftenCheckForFactoryReopenning);
             }
         }
 
@@ -776,16 +771,18 @@ namespace Nashet.EconomicSimulation
         internal void open(IShareOwner byWhom, bool payMoney)
         {
             var agent = byWhom as Agent;
-            if (agent.getCountry().economy.getValue() != Economy.PlannedEconomy)
+            if (agent.GetCountry().economy.getValue() != Economy.PlannedEconomy)
                 salary.set(getProvince().getLocalMinSalary());
             if (payMoney)
             {
                 agent.payWithoutRecord(this, getReopenCost());
                 ownership.Add(byWhom, getReopenCost());
+                Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this);
             }
             _isOpen = true;
             daysUnprofitable = 0;
             daysClosed = 0;
+            
         }
         /// <summary>
         /// Enterprise finished building and makes business
@@ -807,7 +804,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         /// <returns></returns>
         internal Money getSalaryCost()
-        {            
+        {
             return getSalary().Multiply(getWorkForce()).Divide(workForcePerLevel);
         }
 
@@ -821,12 +818,15 @@ namespace Nashet.EconomicSimulation
             currentInvestor = byWhom;
             upgrading = true;
             constructionNeeds.Add(getUpgradeNeeds());
-            if ((byWhom as Agent).getCountry().economy.getValue() != Economy.PlannedEconomy)
+            if ((byWhom as Agent).GetCountry().economy.getValue() != Economy.PlannedEconomy)
             {
                 var cost = Game.market.getCost(getUpgradeNeeds());
                 (byWhom as Agent).payWithoutRecord(this, cost);
                 ownership.Add(byWhom, cost);
+                Debug.Log(byWhom + " invested " + cost + " in upgrading " + this);
             }
+            else
+                Debug.Log(byWhom + " invested in upgrading " + this);
 
         }
 
@@ -845,7 +845,7 @@ namespace Nashet.EconomicSimulation
         }
         override internal float getProfit()
         {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 return 0f;
             else
                 return base.getProfit() - getSalaryCost().get();
@@ -879,14 +879,14 @@ namespace Nashet.EconomicSimulation
                     this.ConvertFromGoldAndAdd(storage);
                     //send 50% to government
                     Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
-                    pay(getCountry(), sentToGovernment);
-                    getCountry().goldMinesIncomeAdd(sentToGovernment);
+                    pay(GetCountry(), sentToGovernment);
+                    GetCountry().goldMinesIncomeAdd(sentToGovernment);
                 }
                 else
                 {
-                    if (Economy.isMarket.checkIftrue(getCountry()))
+                    if (Economy.isMarket.checkIftrue(GetCountry()))
                         sell(getGainGoodsThisTurn());
-                    else if (getCountry().economy.getValue() == Economy.NaturalEconomy)
+                    else if (GetCountry().economy.getValue() == Economy.NaturalEconomy)
                     {
                         // todo Send product proportionally to all owners? with NE?
                         //Country countryOwner = getOwner() as Country;
@@ -897,9 +897,9 @@ namespace Nashet.EconomicSimulation
                             sell(getGainGoodsThisTurn());
                         }
                     }
-                    else if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                    else if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        storage.sendAll(getCountry().countryStorageSet);
+                        storage.sendAll(GetCountry().countryStorageSet);
                     }
                 }
             }
@@ -925,20 +925,20 @@ namespace Nashet.EconomicSimulation
             {
                 List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
                 if (shoppingList.Count > 0)
-                    if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                    if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        var realNeed = getCountry().countryStorageSet.hasAllOfConvertToBiggest(shoppingList);
+                        var realNeed = GetCountry().countryStorageSet.hasAllOfConvertToBiggest(shoppingList);
                         if (realNeed != null)
                         {
                             //getCountry().countryStorageSet.send(this.getInputProductsReserve(), shoppingList);
-                            consumeFromCountryStorage(realNeed, getCountry());
+                            consumeFromCountryStorage(realNeed, GetCountry());
                             getInputProductsReserve().Add(realNeed);
                         }
                     }
                     else
                     {
                         if (isSubsidized())
-                            Game.market.buy(this, new StorageSet(shoppingList), getCountry());
+                            Game.market.buy(this, new StorageSet(shoppingList), GetCountry());
                         else
                             Game.market.buy(this, new StorageSet(shoppingList), null);
                     }
@@ -948,10 +948,10 @@ namespace Nashet.EconomicSimulation
                 daysInConstruction++;
                 bool isBuyingComplete = false;
 
-                if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
                     if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
-                        if (getCountry().countryStorageSet.has(constructionNeeds))
+                        if (GetCountry().countryStorageSet.has(constructionNeeds))
                         {
                             isBuyingComplete = true; //getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
                             //getCountry().countryStorageSet.send(this, )
@@ -987,7 +987,7 @@ namespace Nashet.EconomicSimulation
                     }
                 }
                 if (isBuyingComplete
-                   || (getCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
+                   || (GetCountry().economy.getValue() == Economy.NaturalEconomy && daysInConstruction == Options.fabricConstructionTimeWithoutCapitalism))
 
                 {
                     //todo avoid extra subtraction and redo whole method
@@ -1036,9 +1036,9 @@ namespace Nashet.EconomicSimulation
             MainCamera.factoryPanel.show(this);
         }
 
-        public bool canProduce(Product product)
+        public bool CanProduce(Product product)
         {
-            return getType().canProduce(product);
+            return getType().CanProduce(product);
         }
     }
 }

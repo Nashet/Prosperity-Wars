@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType == PopType.Aristocrats // should be officers
              || targetType == PopType.Artisans
-             || targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+             || targetType == PopType.Farmers && GetCountry().isInvented(Invention.Farming)
              )
                 return true;
             else
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Junta)
-                && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -60,18 +60,18 @@ namespace Nashet.EconomicSimulation
 
         internal void takePayCheck()
         {
-            Value payCheck = new Value(getCountry().getSoldierWage());
+            Value payCheck = new Value(GetCountry().getSoldierWage());
             payCheck.multiply(getPopulation() / 1000f);
-            if (getCountry().canPay(payCheck))
+            if (GetCountry().canPay(payCheck))
             {
-                getCountry().pay(this, payCheck);
-                getCountry().soldiersWageExpenseAdd(payCheck);
+                GetCountry().pay(this, payCheck);
+                GetCountry().soldiersWageExpenseAdd(payCheck);
                 this.didntGetPromisedSalary = false;
             }
             else
             {
                 this.didntGetPromisedSalary = true;
-                getCountry().failedToPaySoldiers = true;
+                GetCountry().failedToPaySoldiers = true;
             }
         }
     }

@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType == PopType.Workers
                 //|| targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
-                || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy))
+                || targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy))
                 return true;
             else
                 return false;
@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Tribal || reform == Government.Democracy)
-                && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;

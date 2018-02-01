@@ -170,9 +170,9 @@ namespace Nashet.EconomicSimulation
             consolidateArmies().balance(procent).sendTo(possibleTarget);
         }
 
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
+            base.SetStatisticToZero();
             allArmies.ForEach(x => x.setStatisticToZero());
         }
         internal IEnumerable<Army> getAllArmies()
@@ -190,7 +190,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var army in allArmies)
                 if (army.getDestination() != null)
-                    if (army.getDestination().getCountry() != army.getOwner())
+                    if (army.getDestination().GetCountry() != army.getOwner())
                         yield return army;
                     else
                         army.sendTo(null); // go home

@@ -50,9 +50,9 @@ namespace Nashet.EconomicSimulation
         {
             throw new NotImplementedException();
         }
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
+            base.SetStatisticToZero();
             storage.set(0f);
         }
         virtual internal float getProfit()

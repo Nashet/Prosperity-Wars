@@ -14,8 +14,8 @@ namespace Nashet.EconomicSimulation
         { }
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
-                || targetType == PopType.Soldiers && getCountry().isInvented(Invention.ProfessionalArmy)
+            if (targetType == PopType.Farmers && GetCountry().isInvented(Invention.Farming)
+                || targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy)
                 || targetType == PopType.Tribesmen)
                 return true;
             else
@@ -41,7 +41,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool canTrade()
         {
-            if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.Aristocracy || reform == Government.Tribal)
-                && (isStateCulture() || getCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -83,11 +83,11 @@ namespace Nashet.EconomicSimulation
             //    )
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.getMargin(getProvince()).isBiggerThan(Options.minMarginToInvest)
-                && x.canProduce(getProvince().getResource())
+                var projects = getProvince().getAllInvestmentsProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest)
+                && x.CanProduce(getProvince().getResource())
                 );
 
-                var project = projects.MaxBy(x => x.getMargin(getProvince()).get());
+                var project = projects.MaxBy(x => x.GetMargin(getProvince()).get());
                 if (project != null)
                 {
                     {
@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
                             var factory = project as Factory;// existing one                               
                             if (factory != null)
                             {
-                                Value investmentCost = factory.getInvestmentCost();
+                                Value investmentCost = factory.GetInvestmentCost();
                                 if (!canPay(investmentCost))
                                     getBank().giveLackingMoney(this, investmentCost);
                                 if (canPay(investmentCost))
@@ -129,10 +129,7 @@ namespace Nashet.EconomicSimulation
                                     if (factory.IsOpen)
                                         factory.upgrade(this);
                                     else
-                                    {
                                         factory.open(this, true);
-                                        Debug.Log(this + " invested " + investmentCost + " in reopening " + factory);
-                                    }
                                 }
                             }
                             else
@@ -140,7 +137,7 @@ namespace Nashet.EconomicSimulation
                                 Owners buyShare = project as Owners;
                                 if (buyShare != null) // buy part of existing factory
                                 {
-                                    Value investmentCost = buyShare.getInvestmentCost();
+                                    Value investmentCost = buyShare.GetInvestmentCost();
                                     if (!canPay(investmentCost))
                                         getBank().giveLackingMoney(this, investmentCost);
                                     if (canPay(investmentCost))

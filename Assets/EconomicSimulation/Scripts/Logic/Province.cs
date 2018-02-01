@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation
         public static readonly DoubleConditionsList canGetIndependence = new DoubleConditionsList(new List<Condition>
     {
         new DoubleCondition((province, country)=>(province as Province).hasCore(x=>x!=country), x=>"Has another core", true),
-        new DoubleCondition((province, country)=>(province as Province).getCountry()==country, x=>"That's your province", true),
+        new DoubleCondition((province, country)=>(province as Province).GetCountry()==country, x=>"That's your province", true),
     });
         public static readonly DoubleCondition doesCountryOwn =
         new DoubleCondition((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
@@ -181,7 +181,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (border.Key.isNeighbor(this))
                 {
-                    if (getCountry() == border.Key.getCountry())
+                    if (GetCountry() == border.Key.GetCountry())
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
                             border.Value.material = Game.defaultProvinceBorderMaterial;
@@ -191,15 +191,15 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
-                            if (getCountry() == Country.NullCountry)
+                            if (GetCountry() == Country.NullCountry)
                                 border.Value.material = Game.defaultProvinceBorderMaterial;
                             else
-                                border.Value.material = getCountry().getBorderMaterial();
-                        if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.getCountry() != null)
-                            if (border.Key.getCountry() == Country.NullCountry)
+                                border.Value.material = GetCountry().getBorderMaterial();
+                        if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.GetCountry() != null)
+                            if (border.Key.GetCountry() == Country.NullCountry)
                                 border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
                             else
-                                border.Key.bordersMeshes[this].material = border.Key.getCountry().getBorderMaterial();
+                                border.Key.bordersMeshes[this].material = border.Key.GetCountry().getBorderMaterial();
                     }
                 }
                 else
@@ -230,7 +230,7 @@ namespace Nashet.EconomicSimulation
         /// returns 
         /// </summary>
 
-        public Country getCountry()
+        public Country GetCountry()
         {
             //if (owner == null)
             //    return Country.NullCountry;
@@ -261,8 +261,8 @@ namespace Nashet.EconomicSimulation
         public void simulate()
         {
             if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
-                if (neighbors.Any(x => x.isCoreFor(getCountry())) && !cores.Contains(getCountry()) && getMajorCulture() == getCountry().getCulture())
-                    cores.Add(getCountry());
+                if (neighbors.Any(x => x.isCoreFor(GetCountry())) && !cores.Contains(GetCountry()) && getMajorCulture() == GetCountry().getCulture())
+                    cores.Add(GetCountry());
             // modifiers.LastOrDefault()
             //foreach (var item in modifiers)
             //{
@@ -318,7 +318,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public void secedeTo(Country taker, bool addModifier)
         {
-            Country oldCountry = getCountry();
+            Country oldCountry = GetCountry();
             //refuse pay back loans to old country bank
             foreach (var agent in getAllAgents())
             {
@@ -388,7 +388,7 @@ namespace Nashet.EconomicSimulation
         }
         internal bool isCapital()
         {
-            return getCountry().getCapital() == this;
+            return GetCountry().getCapital() == this;
         }
 
         internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
@@ -491,11 +491,11 @@ namespace Nashet.EconomicSimulation
 
         internal bool isBelongsTo(Country country)
         {
-            return this.getCountry() == country;
+            return this.GetCountry() == country;
         }
         internal bool isNeighborButNotOwn(Country country)
         {
-            return neighbors.Any(x => x.getCountry() == country && this.getCountry() != country);
+            return neighbors.Any(x => x.GetCountry() == country && this.GetCountry() != country);
         }
         internal bool isNeighbor(Province province)
         {
@@ -528,7 +528,7 @@ namespace Nashet.EconomicSimulation
 
         internal void mobilize()
         {
-            getCountry().mobilize(new List<Province> { this });
+            GetCountry().mobilize(new List<Province> { this });
         }
 
         public static bool isProvinceCreated(Color color)
@@ -658,7 +658,7 @@ namespace Nashet.EconomicSimulation
             {
                 // workforceList = workforceList.OrderByDescending(o => o.population).ToList();            
                 Func<Factory, float> order;
-                if (getCountry().economy.getValue() == Economy.PlannedEconomy)
+                if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                     order = (x => x.getPriority());
                 else
                     order = (x => x.getSalary().get());
@@ -676,7 +676,7 @@ namespace Nashet.EconomicSimulation
 
                     int hiredInThatGroup = 0;
                     foreach (var factory in factoryGroup)
-                        if (factory.getSalary().isNotZero() || getCountry().economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.getSalary().isNotZero() || GetCountry().economy.getValue() == Economy.PlannedEconomy)
                         {
                             int factoryWants = factory.howMuchWorkForceWants();
 
@@ -878,7 +878,7 @@ namespace Nashet.EconomicSimulation
         {
             Money res;
             if (allFactories.Count <= 1) // first enterprise in province
-                res = getCountry().getMinSalary();
+                res = GetCountry().getMinSalary();
             else
             {
                 Money minSalary;
@@ -922,7 +922,7 @@ namespace Nashet.EconomicSimulation
         internal Money getLocalMaxSalary()
         {
             if (allFactories.Count <= 1)
-                return getCountry().getMinSalary();
+                return GetCountry().getMinSalary();
             else
             {
                 Money maxSalary;
@@ -1024,8 +1024,8 @@ namespace Nashet.EconomicSimulation
                 case 2: //cores mode
                     if (Game.selectedProvince == null)
                     {
-                        if (isCoreFor(getCountry()))
-                            return getCountry().getColor();
+                        if (isCoreFor(GetCountry()))
+                            return GetCountry().getColor();
                         else
                         {
                             var c = getRandomCore();
@@ -1037,12 +1037,12 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        if (isCoreFor(Game.selectedProvince.getCountry()))
-                            return Game.selectedProvince.getCountry().getColor();
+                        if (isCoreFor(Game.selectedProvince.GetCountry()))
+                            return Game.selectedProvince.GetCountry().getColor();
                         else
                         {
-                            if (isCoreFor(getCountry()))
-                                return getCountry().getColor();
+                            if (isCoreFor(GetCountry()))
+                                return GetCountry().getColor();
                             else
                             {
                                 var so = getRandomCore(x => x.isAlive());
@@ -1130,7 +1130,7 @@ namespace Nashet.EconomicSimulation
             //if (owner == Game.Player)
             //    upgradeInvetments.PerformAction(x => Debug.Log("upgrade old: " + x.ToString() + " " + x.GetType()));
 
-            var buildInvestments = FactoryType.getAllInventedTypes(getCountry(), x => x.canBuildNewFactory(this)).Cast<IInvestable>();
+            var buildInvestments = FactoryType.getAllInventedTypes(GetCountry(), x => x.canBuildNewFactory(this)).Cast<IInvestable>();
             //if (owner == Game.Player)
             //    buildInvestments.PerformAction(x => Debug.Log("new project: " + x.ToString() + " " + x.GetType()));
 

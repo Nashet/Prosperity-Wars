@@ -156,15 +156,15 @@ namespace Nashet.EconomicSimulation
                 delegate (object forWhom)
                 {
                     var agent = forWhom as Agent;
-                    if (agent.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                    if (agent.GetCountry().economy.getValue() == Economy.PlannedEconomy)
                     {
-                        return agent.getCountry().countryStorageSet.has(this.GetBuildNeeds());
+                        return agent.GetCountry().countryStorageSet.has(this.GetBuildNeeds());
                     }
                     else
                     {
                         //Value cost = Game.market.getCost(this.getBuildNeeds());
                         //cost.add(Options.factoryMoneyReservPerLevel);
-                        Value cost = getInvestmentCost();
+                        Value cost = GetInvestmentCost();
                         return agent.canPay(cost);
                     }
                 },
@@ -173,7 +173,7 @@ namespace Nashet.EconomicSimulation
                     var sb = new StringBuilder();
                     //Value cost = Game.market.getCost(this.getBuildNeeds());
                     //cost.add(Options.factoryMoneyReservPerLevel);
-                    Value cost = getInvestmentCost();
+                    Value cost = GetInvestmentCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
                     return sb.ToString();
@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///Returns new value
         /// </summary>        
-        public Value getInvestmentCost()
+        public Value GetInvestmentCost()
         {
             Value result = Game.market.getCost(GetBuildNeeds());
             result.add(Options.factoryMoneyReservePerLevel);
@@ -359,9 +359,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// That is possible margin in that case
         /// </summary>        
-        public Procent getMargin(Province province)
+        public Procent GetMargin(Province province)
         {
-            return Procent.makeProcent(getPossibleProfit(province), getInvestmentCost(), false);
+            return Procent.makeProcent(getPossibleProfit(province), GetInvestmentCost(), false);
         }
 
         internal bool canBuildNewFactory(Province where)
@@ -369,9 +369,9 @@ namespace Nashet.EconomicSimulation
             if (where.hasFactory(this))
                 return false;
             if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
-                || !basicProduction.getProduct().isInventedBy(where.getCountry())
-                || isManufacture() && !where.getCountry().isInvented(Invention.Manufactures)
-                || (basicProduction.getProduct() == Product.Cattle && !where.getCountry().isInvented(Invention.Domestication))
+                || !basicProduction.getProduct().isInventedBy(where.GetCountry())
+                || isManufacture() && !where.GetCountry().isInvented(Invention.Manufactures)
+                || (basicProduction.getProduct() == Product.Cattle && !where.GetCountry().isInvented(Invention.Domestication))
                 )
                 return false;
             return true;
@@ -382,7 +382,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.buildPanel.selectFactoryType(this);
             MainCamera.buildPanel.Refresh();
         }
-        public bool canProduce(Product product)
+        public bool CanProduce(Product product)
         {
             return basicProduction.getProduct() == product;
         }

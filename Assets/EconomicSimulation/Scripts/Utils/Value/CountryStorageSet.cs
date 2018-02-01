@@ -26,7 +26,7 @@ namespace Nashet.ValueSpace
         //            return stor;
         //    return new Value(0f);
         //}
-        public void setStatisticToZero()
+        public void SetStatisticToZero()
         {
             used.setZero();
         }
