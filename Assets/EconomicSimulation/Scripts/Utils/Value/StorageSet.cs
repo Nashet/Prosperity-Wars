@@ -417,6 +417,9 @@ namespace Nashet.ValueSpace
         {
             return GetString(", ");
         }
+        /// <summary>
+        /// Provides access to dictionary.GetString()
+        /// </summary>        
         public string GetString(String lineBreaker)
         {
             return collection.GetString(lineBreaker);

@@ -26,6 +26,11 @@ namespace Nashet.ValueSpace
             else
                 return this.Multiply(1f / divider, showMessageAboutNegativeValue);
         }
+        public Money Multiply(Procent multiplier, bool showMessageAboutNegativeValue = true)
+        {
+            Multiply(multiplier.get());
+            return this;
+        }
         public Money Multiply(int multiplier, bool showMessageAboutNegativeValue = true)
         {
             return Multiply((float)multiplier, showMessageAboutNegativeValue);

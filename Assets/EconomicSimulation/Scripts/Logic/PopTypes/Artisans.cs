@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
                     if (artisansProduction.isAllInputProductsCollected())
                     {
                         artisansProduction.produce();
-                        if (Economy.isMarket.checkIftrue(GetCountry()))
+                        if (Economy.isMarket.checkIfTrue(GetCountry()))
                         {
                             sell(getGainGoodsThisTurn());
                             //sentToMarket.set(gainGoodsThisTurn);

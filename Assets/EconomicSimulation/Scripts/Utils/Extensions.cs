@@ -461,7 +461,7 @@ namespace Nashet.Utils
     {
         public static string GetString(this Dictionary<Product, Storage> collection, String lineBreaker)
         {
-            if (collection.Count > 0)
+            if (collection.Any(x=>x.Value.isNotZero()))
             {
                 var sb = new StringBuilder();
                 bool isFirstRow = true;
@@ -480,7 +480,7 @@ namespace Nashet.Utils
         }
         public static string getString(this IEnumerable<Storage> list, string lineBreaker)
         {
-            if (list.Count() > 0)
+            if (list.Any(x=>x.isNotZero()))
             {
                 var sb = new StringBuilder();
                 bool isFirstRow = true;

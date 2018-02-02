@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 //using System;
 using Nashet.EconomicSimulation;
+using Nashet.Utils;
+
 namespace Nashet.ValueSpace
 {
-    public class Procent : Value
+    public class Procent : Value, ICopyable<Procent>
     {
         internal static readonly Procent HundredProcent = new Procent(1f);
         internal static readonly Procent _50Procent = new Procent(0.5f);
@@ -17,7 +19,7 @@ namespace Nashet.ValueSpace
         public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
         {
         }
-        public Procent(Procent number) : base(number.get())
+        protected Procent(Procent number) : base(number.get())
         {
 
         }
@@ -133,23 +135,44 @@ namespace Nashet.ValueSpace
             //else
             //    return "0%";
         }
-
+        /// <summary>
+        /// new value
+        /// </summary>
         internal int getProcentOf(int value)
         {
             return Mathf.RoundToInt(get() * value);
         }
-        public Value getProcentOf(Value source)
+        /// <summary>
+        /// new value + changes argument!!
+        /// </summary>        
+        public Value SendProcentOf(Value source)
         {
             Value result = new Value(0f);
             source.send(result, source.Copy().multiply(this));
             return result;
         }
-        public Storage getProcentOf(Storage source)
+
+        /// <summary>
+        /// new value + changes argument!!
+        /// </summary>
+        public Storage SendProcentOf(Storage source)
         {
             Storage result = new Storage(source.getProduct(), 0f);
             source.send(result, source.multiplyOutside(this));
             return result;
         }
+
+        /// <summary>
+        /// new value + changes argument!!
+        /// </summary>        
+        public Money SendProcentOf(Money source)
+        {
+            Money result = new Money(0f);
+            source.send(result, source.Copy().multiply(this));
+            return result;
+        }
+
+        
         //override public void set(float invalue)
         //{
         //    if (invalue < 0f)
@@ -175,6 +198,11 @@ namespace Nashet.ValueSpace
             }
             else
                 set(numerator.get() / denominator.get());
+        }
+
+        public Procent Copy()
+        {
+            return new Procent(this);
         }
     }
 }

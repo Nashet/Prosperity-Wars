@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
 
         private void Start()
         {
-            
+
             typeOrder = new SortOrder(this, x => x.getType().GetNameWeight());
             provinceOrder = new SortOrder(this, x => x.getProvince().GetNameWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
@@ -68,21 +68,21 @@ namespace Nashet.EconomicSimulation
 
             ////Adding margin
             if (factory.isUpgrading())
-                AddCell("Upgrading", factory);
+                AddCell("Upgrading", factory, () => "Margin (tax included) is " + factory.GetMargin());
             else
             {
                 if (factory.isBuilding())
-                    AddCell("Building", factory);
+                    AddCell("Building", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                 else
                 {
                     if (factory.IsClosed)
-                        AddCell("Closed", factory);
+                        AddCell("Closed", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                     else
                     {
                         if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
-                            AddCell(factory.GetMargin().ToString(), factory);
+                            AddCell(factory.GetMargin().ToString(), factory, () => "Tax included");
                     }
                 }
             }

@@ -351,7 +351,7 @@ namespace Nashet.EconomicSimulation
                                 howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
                             if (howMuchCanConsume.isNotZero())
                             {
-                                buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
+                                buyer.PayAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
                                 buyer.consumeFromMarket(howMuchCanConsume);
                                 if (buyer is SimpleProduction)
                                     (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);

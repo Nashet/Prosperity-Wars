@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
 
             bool buildSomething = false;
 
-            if (Economy.isMarket.checkIftrue(Game.Player))
+            if (Economy.isMarket.checkIfTrue(Game.Player))
             //if (Game.player.economy.status == Economy.StateCapitalism)
             //have money /resource
             {

@@ -98,7 +98,7 @@ namespace Nashet.EconomicSimulation
             //new Modifier(Serfdom.Allowed,  -20f, false)
 
             // copied in Factory
-             new Modifier(x => Government.isPolis.checkIftrue((x as PopUnit).GetCountry())
+             new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).GetCountry())
              && (x as PopUnit).getProvince().isCapital(), "Capital of Polis", 1f, false),
              new Modifier(x=>(x as PopUnit).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).GetCountry().government.getValue() == Government.Tribal
@@ -241,7 +241,7 @@ namespace Nashet.EconomicSimulation
             //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
             //Agent's fields:        
-            source.sendAllAvailableMoneyWithoutRecord(this); // includes deposits
+            source.PayAllAvailableMoneyWithoutRecord(this); // includes deposits
             loans.Add(source.loans);
             // Bank - stays same
 
@@ -295,7 +295,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.popUnitPanel.Hide();
             //remove from population panel.. Would do it automatically        
 
-            sendAllAvailableMoney(getBank()); // just in case if there is something
+            PayAllAvailableMoney(getBank()); // just in case if there is something
             getBank().defaultLoaner(this);
             Movement.leave(this);
         }
@@ -497,71 +497,65 @@ namespace Nashet.EconomicSimulation
             else return new Procent(0f);
         }
 
-        internal bool hasToPayGovernmentTaxes()
-        {
-            if (this.popType == PopType.Aristocrats && Serfdom.IsNotAbolishedInAnyWay.checkIftrue((GetCountry())))
-                return false;
-            else
-                return true;
-        }
-        public override void payTaxes() // should be abstract 
-        {
-            if (Economy.isMarket.checkIftrue(GetCountry()) && popType != PopType.Tribesmen)
-            {
-                Value taxSize;
-                if (this.popType.isPoorStrata())
-                {
-                    taxSize = moneyIncomethisTurn.Copy().multiply((GetCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
-                    if (canPay(taxSize))
-                    {
-                        incomeTaxPayed = taxSize;
-                        GetCountry().poorTaxIncomeAdd(taxSize);
-                        pay(GetCountry(), taxSize);
-                    }
-                    else
-                    {
-                        incomeTaxPayed.set(cash);
-                        GetCountry().poorTaxIncomeAdd(cash);
-                        sendAllAvailableMoney(GetCountry());
 
-                    }
-                }
-                else
-                if (this.popType.isRichStrata())
-                {
-                    taxSize = moneyIncomethisTurn.Copy().multiply((GetCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
-                    if (canPay(taxSize))
-                    {
-                        incomeTaxPayed.set(taxSize);
-                        GetCountry().richTaxIncomeAdd(taxSize);
-                        pay(GetCountry(), taxSize);
-                    }
-                    else
-                    {
-                        incomeTaxPayed.set(cash);
-                        GetCountry().richTaxIncomeAdd(cash);
-                        sendAllAvailableMoney(GetCountry());
-                    }
-                }
+        //public void payTaxes() // should be abstract 
+        //{
+        //    if (Economy.isMarket.checkIftrue(GetCountry()) && popType != PopType.Tribesmen)
+        //    {
+        //        Value taxSize;
+        //        if (this.popType.isPoorStrata())
+        //        {
+        //            taxSize = moneyIncomethisTurn.Copy().multiply((GetCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+        //            if (canPay(taxSize))
+        //            {
+        //                incomeTaxPayed = taxSize;
+        //                GetCountry().poorTaxIncomeAdd(taxSize);
+        //                pay(GetCountry(), taxSize);
+        //            }
+        //            else
+        //            {
+        //                incomeTaxPayed.set(cash);
+        //                GetCountry().poorTaxIncomeAdd(cash);
+        //                sendAllAvailableMoney(GetCountry());
 
-            }
-            else// non market
-                //if (this.popType != PopType.Aristocrats)
-            {
-                Storage howMuchSend;
-                if (this.popType.isPoorStrata())
-                    howMuchSend = getGainGoodsThisTurn().multiplyOutside((GetCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
-                else
-                {
-                    //if (this.popType.isRichStrata())
-                    howMuchSend = getGainGoodsThisTurn().multiplyOutside((GetCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
-                }
-                if (storage.isBiggerOrEqual(howMuchSend))
-                    storage.send(GetCountry().countryStorageSet, howMuchSend);
-                else
-                    storage.sendAll(GetCountry().countryStorageSet);
-            }
-        }
+        //            }
+        //        }
+        //        else
+        //        if (this.popType.isRichStrata())
+        //        {
+        //            taxSize = moneyIncomethisTurn.Copy().multiply((GetCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+        //            if (canPay(taxSize))
+        //            {
+        //                incomeTaxPayed.set(taxSize);
+        //                GetCountry().richTaxIncomeAdd(taxSize);
+        //                pay(GetCountry(), taxSize);
+        //            }
+        //            else
+        //            {
+        //                incomeTaxPayed.set(cash);
+        //                GetCountry().richTaxIncomeAdd(cash);
+        //                sendAllAvailableMoney(GetCountry());
+        //            }
+        //        }
+
+        //    }
+        //    else// non market
+        //        //if (this.popType != PopType.Aristocrats)
+        //    {
+        //        Storage howMuchSend;
+        //        if (this.popType.isPoorStrata())
+        //            howMuchSend = getGainGoodsThisTurn().multiplyOutside((GetCountry().taxationForPoor.getValue() as TaxationForPoor.ReformValue).tax);
+        //        else
+        //        {
+        //            //if (this.popType.isRichStrata())
+        //            howMuchSend = getGainGoodsThisTurn().multiplyOutside((GetCountry().taxationForRich.getValue() as TaxationForRich.ReformValue).tax);
+        //        }
+        //        if (storage.isBiggerOrEqual(howMuchSend))
+        //            storage.send(GetCountry().countryStorageSet, howMuchSend);
+        //        else
+        //            storage.sendAll(GetCountry().countryStorageSet);
+        //    }
+        //}
 
         internal bool isStateCulture()
         {
@@ -744,8 +738,7 @@ namespace Nashet.EconomicSimulation
         }
         protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
         {
-            if (hasToPayGovernmentTaxes())
-                payTaxes(); // that is here because pop should pay taxes from all income
+            GetCountry().TakeIncomeTax(this, null, popType.isPoorStrata()); //payTaxes(); // that is here because pop should pay taxes from all income
             foreach (Storage need in lifeNeeds)
                 if (storage.has(need))// don't need to buy on market
                 {
@@ -802,47 +795,43 @@ namespace Nashet.EconomicSimulation
             {
                 consumeNeedsWithMarket(lifeNeeds, false);
             }
-            else
+            else if (GetCountry().economy.getValue() == Economy.PlannedEconomy)//non - market consumption
             {
-                //non - market consumption
                 // todo - !! - check for substitutes
-                if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                consumeWithPlannedEconomy(getRealLifeNeeds());
+                //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
+                var lifeNeedsFulfilled = Procent.makeProcent(getConsumed(), getRealLifeNeeds());
+                lifeNeedsFulfilled.divide(Options.PopStrataWeight);
+                needsFulfilled.set(lifeNeedsFulfilled);
+
+                var everyDayNeedsConsumed = consumeWithPlannedEconomy(getRealEveryDayNeeds());
+                if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    consumeWithPlannedEconomy(getRealLifeNeeds());
-                    //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
-                    var lifeNeedsFulfilled = Procent.makeProcent(getConsumed(), getRealLifeNeeds());
-                    lifeNeedsFulfilled.divide(Options.PopStrataWeight);
-                    needsFulfilled.set(lifeNeedsFulfilled);
-
-                    var everyDayNeedsConsumed = consumeWithPlannedEconomy(getRealEveryDayNeeds());
-                    if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
-                    {
-                        var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
-                        everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
-                        needsFulfilled.add(everyDayNeedsFulfilled);
-                    }
-
-                    var luxuryNeedsConsumed = consumeWithPlannedEconomy(getRealLuxuryNeeds());
-                    if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
-                    {
-                        var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
-                        luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
-                        needsFulfilled.add(luxuryNeedsFulfilled);
-                    }
-                    //var consumed = Procent.makeProcent(getConsumed().getContainer(), getRealAllNeeds());
-                    //consumed.multiply(Options.PopStrataWeight);
-                    //needsFullfilled.set(consumed);
+                    var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+                    everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
+                    needsFulfilled.add(everyDayNeedsFulfilled);
                 }
-                else
-                    consumeWithNaturalEconomy(lifeNeeds);
+
+                var luxuryNeedsConsumed = consumeWithPlannedEconomy(getRealLuxuryNeeds());
+                if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
+                {
+                    var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
+                    needsFulfilled.add(luxuryNeedsFulfilled);
+                }
+                //var consumed = Procent.makeProcent(getConsumed().getContainer(), getRealAllNeeds());
+                //consumed.multiply(Options.PopStrataWeight);
+                //needsFullfilled.set(consumed);
             }
+            else
+                consumeWithNaturalEconomy(lifeNeeds);
         }
         /// <summary>
         /// Overrode for some pop types
         /// </summary>      
         virtual internal bool canTrade()
         {
-            if (Economy.isMarket.checkIftrue(GetCountry()))
+            if (Economy.isMarket.checkIfTrue(GetCountry()))
                 return true;
             else
                 return false;
@@ -1070,7 +1059,7 @@ namespace Nashet.EconomicSimulation
             list.AddIfNotNull(getRichestImmigrationTarget(predicate));
             return list.MaxBy(x => x.Value.get()).Key;
         }
-      
+
         /// <summary>
         /// Splits pops. New pops changes life in richest way - by demotion, migration or immigration
         /// </summary>        

@@ -106,7 +106,7 @@ namespace Nashet.EconomicSimulation
                     var factory = x as Factory;
                     Value cost = Game.market.getCost(factory.getUpgradeNeeds());
                     sb.Append("Have ").Append(cost).Append(" coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds());
+                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds().getString(", "));
                     return sb.ToString();
                 }
                 , true),
@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
             modifierHasResourceInProvince,
             modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
-             new Modifier(x => Government.isPolis.checkIftrue((x as Factory).GetCountry())
+             new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).GetCountry())
              && (x as Factory).getProvince().isCapital(), "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).GetCountry(), -1.0f, false),
@@ -181,10 +181,10 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Don't call it directly
         /// </summary>
-        
+
         public Factory(Province province, IShareOwner investor, FactoryType type, Value cost) : base(type, province)
         {
-            
+
             ownership = new Owners(this);
             currentInvestor = investor;
             //assuming this is level 0 building        
@@ -262,14 +262,14 @@ namespace Nashet.EconomicSimulation
         public string GetDescription()
         {
             return getType().name + " L" + getLevel();
-            
+
         }
         //abstract internal string getName();
         public override void simulate()
         {
             //hireWorkForce();
             //produce();
-            //payTaxes();
+
             //paySalary();
             //consume();
 
@@ -369,18 +369,25 @@ namespace Nashet.EconomicSimulation
                 default:
                     break;
             }
-
         }
+        /// <summary>
+        /// Returns new value. Includes tax
+        /// </summary>
+        /// <returns></returns>
         public Procent GetMargin()
         {
             if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
-                return Procent.ZeroProcent;
+                return Procent.ZeroProcent.Copy();
             else
             {
                 if (IsClosed)
                     return getType().GetPossibleMargin(getProvince());//potential margin
                 else
-                    return Procent.makeProcent(payedDividends, ownership.GetMarketValue(), false);
+                {
+                    var dividendsCopy = payedDividends.Copy();
+                    var payToGovernment = GetCountry().taxationForRich.getTypedValue().tax.SendProcentOf(dividendsCopy);
+                    return Procent.makeProcent(dividendsCopy, ownership.GetMarketValue(), false);
+                }
             }
         }
         internal Value getReopenCost()
@@ -421,7 +428,7 @@ namespace Nashet.EconomicSimulation
             if (IsOpen && GetCountry().economy.getValue() != Economy.PlannedEconomy)
             {
                 // per 1000 men            
-                if (Economy.isMarket.checkIftrue(GetCountry()))
+                if (Economy.isMarket.checkIfTrue(GetCountry()))
                 {
                     foreach (var link in hiredWorkForce)
                     {
@@ -516,7 +523,7 @@ namespace Nashet.EconomicSimulation
         {
             //Should be rise salary if: small unemployment, has profit, need has other resources
 
-            if (IsOpen && Economy.isMarket.checkIftrue(GetCountry()))
+            if (IsOpen && Economy.isMarket.checkIfTrue(GetCountry()))
             {
                 var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
                 var margin = GetMargin();
@@ -694,10 +701,10 @@ namespace Nashet.EconomicSimulation
                 }
             }
             // send remaining money to owners
-
             foreach (var item in ownership.GetAllShares())
             {
-                pay(item.Key as Agent, item.Value.getProcentOf(cash), false);
+                pay(item.Key as Agent, cash.Copy().multiply(item.Value), false);
+                //pay(item.Key as Agent, item.Value.SendProcentOf(cash), false);
             }
 
             MainCamera.factoryPanel.removeFactory(this);
@@ -705,7 +712,7 @@ namespace Nashet.EconomicSimulation
         internal void destroyImmediately()
         {
             markToDestroy();
-            getProvince().DestroyFactory(this);            
+            getProvince().DestroyFactory(this);
             // + GUI 2 places
             MainCamera.factoryPanel.removeFactory(this);
             //MainCamera.productionWindow.removeFactory(this);
@@ -746,24 +753,31 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private readonly Value payedDividends = new Value(0f);
-        public float GetDividendsSize()
+        private readonly Money payedDividends = new Money(0f);
+        /// <summary>
+        /// New value, readonly
+        /// </summary>        
+        public Money GetDividends()
         {
-            return payedDividends.get();
+            return payedDividends.Copy();
         }
         internal void payDividend()
         {
             if (IsOpen)
             {
-                Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);
+                Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);                
                 payedDividends.set(dividends);
 
                 if (dividends.isNotZero())
                 {
+                    // pay to each owner
                     foreach (var item in ownership.GetAllShares())
                     {
+                        var owner = item.Key as Agent;
                         Value sentToOwner = dividends.Copy().multiply(item.Value);
-                        pay(item.Key as Agent, sentToOwner);
+                        //Value sentToOwner = item.Value.SendProcentOf(dividends);                        
+                        pay(owner, sentToOwner);
+                        //GetCountry().TakeIncomeTax(owner, sentToOwner, false);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)
                             isCountry.ownedFactoriesIncomeAdd(sentToOwner);
@@ -895,7 +909,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else
                 {
-                    if (Economy.isMarket.checkIftrue(GetCountry()))
+                    if (Economy.isMarket.checkIfTrue(GetCountry()))
                         sell(getGainGoodsThisTurn());
                     else if (GetCountry().economy.getValue() == Economy.NaturalEconomy)
                     {
@@ -982,7 +996,7 @@ namespace Nashet.EconomicSimulation
                         var investor = currentInvestor as Agent;
                         if (investor.canPay(needExtraFonds))
                         {
-                            investor.pay(this, needExtraFonds);
+                            investor.payWithoutRecord(this, needExtraFonds);
                             ownership.Add(currentInvestor, needExtraFonds);
                         }
 
@@ -991,7 +1005,7 @@ namespace Nashet.EconomicSimulation
                             investor.getBank().giveLackingMoney(investor, needExtraFonds);
                             if (investor.canPay(needExtraFonds))
                             {
-                                investor.pay(this, needExtraFonds);
+                                investor.payWithoutRecord(this, needExtraFonds);
                                 ownership.Add(currentInvestor, needExtraFonds);
                             }
                         }
@@ -1052,7 +1066,7 @@ namespace Nashet.EconomicSimulation
             return getType().CanProduce(product);
         }
 
-        
+
     }
 }
 

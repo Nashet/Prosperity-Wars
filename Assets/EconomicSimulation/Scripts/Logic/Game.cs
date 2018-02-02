@@ -538,16 +538,9 @@ namespace Nashet.EconomicSimulation
 
             // big PRODUCE circle
             foreach (Country country in Country.getAllExisting())
-                foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-                {
-                    foreach (Factory factory in province.getAllFactories())
-                    {
-                        factory.produce();
-                        factory.payTaxes(); // empty for now                        
-                    }
-                    foreach (PopUnit pop in province.allPopUnits)
-                        pop.produce();
-                }
+                foreach (Province province in country.ownedProvinces)
+                    foreach (var producer in province.getAllProducers())                    
+                        producer.produce();                                            
 
             // big CONCUME circle   
             foreach (Country country in Country.getAllExisting())
@@ -608,13 +601,14 @@ namespace Nashet.EconomicSimulation
                             factory.getMoneyForSoldProduct();
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here                   
-                            factory.payDividend();
+                            factory.payDividend(); // also pays taxes inside
                             factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
                             factory.ownership.SellLowMarginShares();
                         }
                     }
                     province.DestroyAllMarkedfactories();
+                    // get pop's income section:
                     foreach (PopUnit pop in province.allPopUnits)
                     {
                         if (pop.canSellProducts())
@@ -628,10 +622,10 @@ namespace Nashet.EconomicSimulation
                                 soldier.takePayCheck();
                         }
                         //because income come only after consuming, and only after FULL consumption
-                        if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                        //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                             // POps who can't trade will pay tax BEFORE consumption, not after
                             // Otherwise pops who can't trade avoid tax
-                            pop.payTaxes();
+                           // pop.GetCountry().TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.popType.isPoorStrata());//pop.payTaxes();
                         pop.calcLoyalty();
                         //if (Game.Random.Next(10) == 1)
                         {

@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
                 storage.add(getGainGoodsThisTurn());
                 calcStatistics();
             }
-            if (Economy.isMarket.checkIftrue(GetCountry()))
+            if (Economy.isMarket.checkIfTrue(GetCountry()))
             {
                 //sentToMarket.set(gainGoodsThisTurn);
                 //Game.market.sentToMarket.add(gainGoodsThisTurn);
@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
         }
         override internal bool canSellProducts()
         {
-            if (Economy.isMarket.checkIftrue(GetCountry()))
+            if (Economy.isMarket.checkIfTrue(GetCountry()))
                 return true;
             else
                 return false;

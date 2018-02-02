@@ -197,6 +197,7 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// checks inside. Wouldn't pay if can't. Takes credits from bank
+        /// Doesn't pay tax, doesn't register transaction
         /// </summary>    
         public bool payWithoutRecord(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
         {
@@ -221,32 +222,41 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// checks inside. Wouldn't pay if can't. Takes credits from bank
+        /// Register moneyIncomethisTurn, pays tax
         /// </summary>    
         public bool pay(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (payWithoutRecord(whom, howMuch, showMessageAboutNegativeValue))
             {
                 whom.moneyIncomethisTurn.Add(howMuch);
+                var pop = whom as PopUnit;
+                if (pop != null)
+                    if (this is Market)
+                        pop.GetCountry().TakeIncomeTax(pop, howMuch, pop.popType.isPoorStrata());
+                    else
+                        this.GetCountry().TakeIncomeTax(pop, howMuch, pop.popType.isPoorStrata());
                 return true;
             }
             else
                 return false;
         }
-        internal void sendAllAvailableMoney(Agent whom)
+        internal void PayAllAvailableMoney(Agent whom)
         {
             if (bank != null)
                 bank.returnAllMoney(this);
-            whom.cash.Add(this.cash);
-            whom.moneyIncomethisTurn.Add(this.cash);
-            this.cash.set(0);
+            pay(whom, this.cash.Copy());
+            //whom.cash.Add(this.cash);
+            //whom.moneyIncomethisTurn.Add(this.cash);
+            //this.cash.set(0);
         }
-        internal void sendAllAvailableMoneyWithoutRecord(Agent whom)
+        internal void PayAllAvailableMoneyWithoutRecord(Agent whom)
         {
             if (bank != null)
                 bank.returnAllMoney(this);
-            whom.cash.Add(this.cash);
-            //whom.moneyIncomethisTurn.add(this.cash);
-            this.cash.set(0);
+            payWithoutRecord(whom, this.cash.Copy());
+            //whom.cash.Add(this.cash);
+            ////whom.moneyIncomethisTurn.add(this.cash);
+            //this.cash.set(0);
         }
         public void ConvertFromGoldAndAdd(Value gold)
         {

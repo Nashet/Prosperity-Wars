@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
         internal override void invest()
         {
             //should I invest?                
-            if (Economy.isMarket.checkIftrue(GetCountry()) && GetCountry().isInvented(Invention.Manufactures))
+            if (Economy.isMarket.checkIfTrue(GetCountry()) && GetCountry().isInvented(Invention.Manufactures))
 
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)

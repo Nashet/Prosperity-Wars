@@ -24,9 +24,9 @@ namespace Nashet.EconomicSimulation
     // IOwnerShip<IShareOwner, Record>,
     {
         private readonly Factory parent;
-        private readonly Procent marketPriceModifier = new Procent(Procent.HundredProcent);
+        private readonly Procent marketPriceModifier = Procent.HundredProcent.Copy();
         private readonly Dictionary<IShareOwner, Share> ownership = new Dictionary<IShareOwner, Share>();
-        private readonly Value totallyInvested = new Value(0f);
+        private readonly Money totallyInvested = new Money(0f);
         public Owners(IShareable parent)
         {
             this.parent = parent as Factory;
@@ -207,7 +207,7 @@ namespace Nashet.EconomicSimulation
             if (ownership.TryGetValue(owner, out record))
                 return Procent.makeProcent(record.GetShareForSale(), GetAllAssetsValue());
             else
-                return new Procent(Procent.ZeroProcent);
+                return Procent.ZeroProcent.Copy();
         }
         /// <summary>
         /// Readonly !!
@@ -218,7 +218,7 @@ namespace Nashet.EconomicSimulation
             if (ownership.TryGetValue(owner, out record))
                 return Procent.makeProcent(record.GetShare(), GetAllAssetsValue());
             else
-                return new Procent(Procent.ZeroProcent);
+                return Procent.ZeroProcent.Copy();
         }
 
         public void SetToSell(IShareOwner owner, Procent share, bool showMessageAboutOperationFails = true)
@@ -257,17 +257,22 @@ namespace Nashet.EconomicSimulation
         {
             return totallyInvested.Copy();
         }
-        internal Value GetMarketValue()
+        /// <summary>
+        /// New value
+        /// </summary>        
+        internal Money GetMarketValue()
         {
-            return marketPriceModifier.Copy().multiply(totallyInvested);
+            return totallyInvested.Copy().Multiply(marketPriceModifier);            
         }
         internal Value GetShareMarketValue(Procent share)
         {
-            return share.getProcentOf(GetMarketValue());
+            return GetMarketValue().Multiply(share);            
+            //return share.SendProcentOf(GetMarketValue());
         }
         internal Value GetShareAssetsValue(Procent share)
         {
-            return share.getProcentOf(GetAllAssetsValue());
+            return GetAllAssetsValue().multiply(share);
+            //return share.SendProcentOf(GetAllAssetsValue());
         }
         internal void CalcMarketPrice()
         {
@@ -314,9 +319,9 @@ namespace Nashet.EconomicSimulation
                     var cost = shareToBuy.Value.GetShareForSale();
                     if (cost.isBiggerThan(purchaseValue))
                         cost.set(purchaseValue);
-                    var agent = buyer as Agent;
+                    var buyingAgent = buyer as Agent;
 
-                    if (agent.pay(shareToBuy.Key as Agent, cost))
+                    if (buyingAgent.pay(shareToBuy.Key as Agent, cost))
                     {
                         Transfer(shareToBuy.Key, buyer, cost);
                         //reduce onSale amount on successful deal
@@ -331,18 +336,24 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
-        /// Margin per market value
+        /// Margin per market value. New value, includes tax.
         /// </summary>        
         public Procent GetMargin()
         {
-            return Procent.makeProcent(GetInvestmentCost(), GetMarketValue(), false);
+            if (parent.IsClosed)
+                return Procent.ZeroProcent.Copy();
+            else
+                return parent.GetMargin();
+            //var payToGovernment = parent.GetCountry().taxationForRich.getTypedValue().tax.getProcentOf(GetDividends());
+            //return Procent.makeProcent(payedDividends.Copy().subtract(payToGovernment), ownership.GetMarketValue(), false);
+            //return Procent.makeProcent(parent.GetDividends(), GetMarketValue(), false); 
         }
         /// <summary>
         /// Cost of standard share
         /// </summary>        
         public Value GetInvestmentCost()
         {
-            return Options.PopBuyAssetsAtTime.getProcentOf(GetMarketValue());
+            return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);            
         }
         public bool CanProduce(Product product)
         {

@@ -7,10 +7,10 @@ namespace Nashet.EconomicSimulation
     public class Bank : Agent
     {
         Value givenLoans = new Value(0);
-
-        public Bank() : base(0f, null, null)
+        private readonly Country country;
+        public Bank(Country country) : base(0f, null, null)
         {
-            //setBank(this);
+            this.country = country;
         }
         /// <summary>
         /// Returns money to bank. checks inside.
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
         //    return false;
         //}
         /// <summary>
-        /// checks inside. Just wouldn't give money if can't
+        /// Gives credit. Checks inside. Just wouldn't give money if can't
         /// </summary>    
         internal bool giveLackingMoney(Agent taker, Value sum)
         {
@@ -187,6 +187,10 @@ namespace Nashet.EconomicSimulation
         public override void simulate()
         {
             throw new NotImplementedException();
+        }
+        public override Country GetCountry()
+        {
+            return country;
         }
     }
 }

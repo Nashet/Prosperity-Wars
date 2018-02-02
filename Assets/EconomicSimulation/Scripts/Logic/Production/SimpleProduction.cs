@@ -42,10 +42,7 @@ namespace Nashet.EconomicSimulation
         {
             return "crafting " + getType().basicProduction;
         }
-        public override void payTaxes() // currently no taxes for factories
-        {
-            // there is no corporate taxes yet
-        }
+       
         public override void simulate()
         {
             throw new NotImplementedException();
@@ -141,7 +138,7 @@ namespace Nashet.EconomicSimulation
             //    Storage howMuchCan = wallet.HowMuchCanAfford(input);
             //    input.set(howMuchCan.get());
             //}
-            var inputFactor = new Procent(Procent.HundredProcent);
+            var inputFactor = Procent.HundredProcent.Copy();
             // searching lowest factor
             foreach (Storage need in reallyNeedResources)
             {

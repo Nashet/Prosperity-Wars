@@ -311,7 +311,7 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
-        /// For 1 level / 1000 workers
+        /// For 1 level / 1000 workers. Not includes tax. New value
         /// </summary>        
         internal Value getPossibleProfit(Province province)
         {
@@ -351,11 +351,13 @@ namespace Nashet.EconomicSimulation
             return income;
         }
         /// <summary>
-        /// That is possible margin in that case
+        /// That is possible margin in that case. Includes tax. New value
         /// </summary>        
         public Procent GetPossibleMargin(Province province)
         {
-            return Procent.makeProcent(getPossibleProfit(province), GetBuildCost(), false);
+            var profit = getPossibleProfit(province);
+            var payToGovernment = province.GetCountry().taxationForRich.getTypedValue().tax.SendProcentOf(profit);            
+            return Procent.makeProcent(profit, GetBuildCost());
         }
 
         internal bool canBuildNewFactory(Province where)

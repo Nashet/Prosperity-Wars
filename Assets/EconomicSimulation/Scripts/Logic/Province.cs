@@ -407,8 +407,7 @@ namespace Nashet.EconomicSimulation
             foreach (Factory factory in allFactories)
                 yield return factory;
             foreach (PopUnit pop in allPopUnits)
-                if (pop.popType.isProducer())
-                    //if (f.type == PopType.farmers || f.type == PopType.aristocrats)
+                if (pop.popType.isProducer())                    
                     yield return pop;
         }
         public IEnumerable<Producer> getAllBuyers()

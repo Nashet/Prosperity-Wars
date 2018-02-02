@@ -78,7 +78,7 @@ namespace Nashet.Conditions
         public bool isAllTrue(object forWhom)
         {
             foreach (var item in list)
-                if (!item.checkIftrue(forWhom))
+                if (!item.checkIfTrue(forWhom))
                     return false;
             return true;
         }
@@ -211,7 +211,7 @@ namespace Nashet.Conditions
             return answer;
         }
         /// <summary>Returns bool result, fast version, without description</summary>    
-        internal bool checkIftrue(object forWhom)
+        internal bool checkIfTrue(object forWhom)
         {
             if (changeTargetObject != null)
                 forWhom = changeTargetObject(forWhom); ;
@@ -311,7 +311,7 @@ namespace Nashet.Conditions
                 var doubleCondition = item as DoubleCondition;
                 if (doubleCondition == null)
                 {
-                    if (!item.checkIftrue(firstObject))
+                    if (!item.checkIfTrue(firstObject))
                         return false;
                 }
                 else
@@ -323,7 +323,7 @@ namespace Nashet.Conditions
             if (listForSecondObject != null)
                 foreach (var item in listForSecondObject)
                 {
-                    if (!item.checkIftrue(secondObject))
+                    if (!item.checkIfTrue(secondObject))
                         return false;
                 }
             return true;

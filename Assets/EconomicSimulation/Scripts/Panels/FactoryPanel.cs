@@ -6,6 +6,7 @@ using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -18,7 +19,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Slider priority;
         [SerializeField]
-        private Text generaltext, efficiencyText, caption, onSaleText;
+        private Text generaltext, efficiencyText, caption, onSaleText, ownership;
 
 
         private Factory factory;
@@ -48,7 +49,7 @@ namespace Nashet.EconomicSimulation
                 reopenButtonflag = reopenButtonStatus.reopen;
             if (reopenButtonflag == reopenButtonStatus.close)
             {
-                reopenButton.GetComponentInChildren<Text>().text = "Close";
+                reopenButton.GetComponentInChildren<Text>().text = "Close enterprise";
                 reopenButton.interactable = Factory.conditionsClose.isAllTrue(factory, Game.Player, out reopenButton.GetComponent<ToolTipHandler>().text);
             }
             else
@@ -79,7 +80,7 @@ namespace Nashet.EconomicSimulation
                 setGUIElementsAccesability();
                 Factory.modifierEfficiency.getModifier(factory, out efficiencyText.GetComponent<ToolTipHandler>().text);
 
-                
+
                 caption.text = factory.ToString();
                 var sb = new StringBuilder();
                 sb = new StringBuilder();
@@ -96,19 +97,22 @@ namespace Nashet.EconomicSimulation
                     sb.Append(factory.getProfit());
                 else
                     sb.Append("unknown");
-                sb.Append(" Dividends: ").Append(factory.GetDividendsSize());
+                sb.Append(" Dividends: ").Append(factory.GetDividends());
                 if (factory.getType().hasInput())
                 {
                     sb.Append("\nInput required: ");
                     foreach (Storage next in factory.getType().resourceInput)
                         sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
                 }
-                sb.Append("\nConsumed: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
+                if (factory.getConsumed().Count() > 0)
+                    sb.Append("\nConsumed: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
                 //if (Game.devMode)
                 //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
-                sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
+
+                if (factory.getInputProductsReserve().Count() > 0)
+                    sb.Append("\nInput reserves: ").Append(factory.getInputProductsReserve());
                 sb.Append("\nInput factor: ").Append(factory.getInputFactor());
-                sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(", Salary(total): ").Append(factory.getSalaryCost());
+                sb.Append("\nSalary (per 1000 men): ").Append(factory.getSalary()).Append(", Salary (total): ").Append(factory.getSalaryCost());
 
 
                 if (factory.constructionNeeds.Count() > 0)
@@ -126,8 +130,8 @@ namespace Nashet.EconomicSimulation
                 if (factory.loans.get() > 0f)
                     sb.Append("\nLoan: ").Append(factory.loans.ToString());
                 sb.Append("\nAssets value: ").Append(factory.ownership.GetAllAssetsValue());
-                sb.Append(" Market value: ").Append(factory.ownership.GetMarketValue());
-                sb.Append("\nOwners: ").Append(factory.ownership.GetAllShares().getString(" ", "\n"));
+                sb.Append(", Market value: ").Append(factory.ownership.GetMarketValue());
+
 
                 sb.Append("\nTotal on sale: ").Append(factory.ownership.GetTotalOnSale());
                 //if (Game.devMode)
@@ -135,6 +139,10 @@ namespace Nashet.EconomicSimulation
                 generaltext.text = sb.ToString();
                 //+"\nExpenses:"
                 efficiencyText.text = "Efficiency: " + Factory.modifierEfficiency.getModifier(factory);
+
+                var owners = factory.ownership.GetAllShares().OrderByDescending(x => x.Value.get()).ToList();//.getString(" ", "\n");
+                ownership.text = "Biggest owner: " + owners[0].Key + " " + owners[0].Value + " (hover mouse for rest)";
+                ownership.GetComponent<ToolTipHandler>().SetDynamicString(() => owners.getString(" ", "\n"));
                 RefreshBuySellButtons();
             }
         }
@@ -191,7 +199,7 @@ namespace Nashet.EconomicSimulation
                 sellButton.GetComponentInChildren<Text>().text = "Selling " + selling + " shares";
         }
         public void OnBuyClick()
-        {   
+        {
             factory.ownership.BuyStandardShare(Game.Player);
             MainCamera.refreshAllActive();
         }

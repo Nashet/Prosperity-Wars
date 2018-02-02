@@ -260,7 +260,7 @@ namespace Nashet.EconomicSimulation
                 foreach (var factory in province.getAllFactories())
                 {
                     factory.ownership.Nationilize(country);
-                    factory.sendAllAvailableMoney(country);
+                    factory.PayAllAvailableMoney(country);
                     factory.loans.setZero();
                     factory.deposits.setZero();
                     factory.setSubsidized(false);
@@ -271,7 +271,7 @@ namespace Nashet.EconomicSimulation
                 //nationalize banks
                 foreach (var item in province.getAllPopUnits())
                 {
-                    item.sendAllAvailableMoney(country);
+                    item.PayAllAvailableMoney(country);
                     item.loans.setZero();
                     item.deposits.setZero();
                 }
@@ -393,7 +393,7 @@ namespace Nashet.EconomicSimulation
                 country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
                 country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
                 //nationalization
-                country.getBank().sendAllAvailableMoney(country);
+                country.getBank().PayAllAvailableMoney(country);
                 country.getBank().getGivenLoans().setZero();
                 country.loans.setZero();
                 country.deposits.setZero();
@@ -1205,7 +1205,7 @@ namespace Nashet.EconomicSimulation
         }
     }
 
-    public class TaxationForRich : AbstractReform
+    public class TaxationForRich : AbstractReform//, ICopyable<TaxationForRich>
     {
         public class ReformValue : AbstractReformStepValue
         {
@@ -1270,6 +1270,7 @@ namespace Nashet.EconomicSimulation
         {
             status = PossibleStatuses[1];
         }
+        
         internal bool isThatReformEnacted(int value)
         {
             return status == PossibleStatuses[value];
@@ -1307,6 +1308,11 @@ namespace Nashet.EconomicSimulation
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
+
+        //public TaxationForRich Copy()
+        //{
+        //    return new TaxationForRich(this);
+        //}
     }
 
     public class MinorityPolicy : AbstractReform

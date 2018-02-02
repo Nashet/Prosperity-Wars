@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
         //public abstract float getLocalEffectiveDemand(Product product);
 
 
-        public abstract void payTaxes();
+        
 
         /// <summary>
         /// Just adds statistics
