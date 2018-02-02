@@ -75,6 +75,12 @@ namespace Nashet.EconomicSimulation
         {
             get { return incomeTaxStatisticRich.Copy(); }
         }
+        private readonly Value incomeTaxForeigner = new Value(0f);
+        public Value IncomeTaxForeigner
+        {
+            get { return incomeTaxForeigner.Copy(); }
+        }
+
         private readonly Value goldMinesIncome = new Value(0f);
         private readonly Value ownedFactoriesIncome = new Value(0f);
 
@@ -707,11 +713,10 @@ namespace Nashet.EconomicSimulation
             // could it give uninvented factory?
             if (propositionFactory != null)
             {
-
                 var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.GetBuildNeeds());
                 if (buildNeeds != null)
                 {
-                    var newFactory = province.BuildFactory(this, propositionFactory, null);
+                    var newFactory = province.BuildFactory(this, propositionFactory, Game.market.getCost(buildNeeds));
                     consumeFromCountryStorage(buildNeeds, this);
                     return true;
                     //newFactory.constructionNeeds.setZero();
@@ -1266,6 +1271,7 @@ namespace Nashet.EconomicSimulation
         override public void SetStatisticToZero()
         {
             base.SetStatisticToZero();
+            incomeTaxForeigner.setZero();
             countryStorageSet.SetStatisticToZero();
             failedToPaySoldiers = false;
             incomeTaxStaticticPoor.set(0f);
@@ -1297,6 +1303,7 @@ namespace Nashet.EconomicSimulation
             Value result = new Value(0f);
             result.Add(incomeTaxStaticticPoor);
             result.Add(incomeTaxStatisticRich);
+            result.Add(incomeTaxForeigner);
             result.Add(goldMinesIncome);
             result.Add(ownedFactoriesIncome);
             result.Add(getCostOfAllSellsByGovernment());
@@ -1362,15 +1369,17 @@ namespace Nashet.EconomicSimulation
             return moneyIncomethisTurn.get() - getAllIncome().get();
         }
         /// <summary>
-        /// Forces payer to pay tax from taxable. Returns false if payer didn't have enough funds
-        /// Don't call it manually, it called from Agent.Pay automatically
+        /// Forces payer to pay tax from taxable. Returns how much payed (new value)
+        /// Don't call it manually, it called from Agent.Pay() automatically
         /// </summary>                
-        internal bool TakeIncomeTax(PopUnit payer, Value taxable, bool isPoorStrata)
+        internal Value TakeIncomeTaxFrom(Agent taxPayer, Value taxable, bool isPoorStrata)
         {
-            if (payer.popType == PopType.Aristocrats
+            var pop = taxPayer as PopUnit;
+            if (pop != null
+                && pop.popType == PopType.Aristocrats
                 //&& Serfdom.IsNotAbolishedInAnyWay.checkIfTrue(GetCountry()))
                 && government.getTypedValue() == Government.Aristocracy)
-                return true; // don't pay with monarchy
+                return Value.Zero.Copy(); // don't pay with monarchy
             Procent tax;
             Value statistics;
             if (isPoorStrata)
@@ -1383,144 +1392,43 @@ namespace Nashet.EconomicSimulation
                 tax = taxationForRich.getTypedValue().tax;
                 statistics = incomeTaxStatisticRich;
             }
+            if (!(taxPayer is Market) && taxPayer.GetCountry() != this) //foreigner
+                statistics = incomeTaxForeigner;
 
-            //var pop = payer as PopUnit;
-            if (Economy.isMarket.checkIfTrue(this) && payer.popType != PopType.Tribesmen                )
+            var taxSize = taxable.Copy().multiply(tax);
+            if (taxPayer.canPay(taxSize))
             {
-                var taxSize = tax.SendProcentOf(taxable);
-                if (payer.canPay(taxSize))
-                {
-                    payer.incomeTaxPayed.set(taxSize);
-                    statistics.Add(taxSize);
-                    payer.pay(this, taxSize);
-                    return true;
-                }
-                else
-                {
-                    payer.incomeTaxPayed.set(cash);
-                    statistics.Add(cash);
-                    payer.PayAllAvailableMoney(this);
-                    return false;
-                }
+                taxPayer.incomeTaxPayed.Add(taxSize);
+                statistics.Add(taxSize);
+                moneyIncomethisTurn.Add(taxSize);
+                taxPayer.payWithoutRecord(this, taxSize);
+                return taxSize;
             }
-            else// non market - NE                
+            else
             {
-                var howMuchSend = tax.SendProcentOf(payer.getGainGoodsThisTurn());
-
-                if (payer.storage.isBiggerOrEqual(howMuchSend))
-                {
-                    payer.storage.send(countryStorageSet, howMuchSend);
-                    return true;
-                }
-                else
-                {
-                    payer.storage.sendAll(countryStorageSet);
-                    return false;
-                }
+                var hadMiney = taxPayer.cash.Copy();
+                taxPayer.incomeTaxPayed.Add(taxPayer.cash);
+                statistics.Add(taxPayer.cash);
+                moneyIncomethisTurn.Add(taxPayer.cash);
+                taxPayer.PayAllAvailableMoneyWithoutRecord(this);
+                return hadMiney;
             }
         }
-        //internal bool TakePoorIncomeTax(Agent pop)
-        //{
-        //    if (Economy.isMarket.checkIftrue(this) && pop.popType != PopType.Tribesmen)
-        //    {
-        //        if (pop.popType.isPoorStrata())
-        //        {
-        //            var c = taxationForPoor.GetType();
-        //            var taxSize = taxationForPoor.getTypedValue().tax.SendProcentOf(pop.moneyIncomethisTurn);
-        //            if (canPay(taxSize))
-        //            {
-        //                pop.incomeTaxPayed = taxSize;
-        //                poorTaxIncome.Add(taxSize);
-        //                pay(this, taxSize);
-        //                return true;
-        //            }
-        //            else
-        //            {
-        //                pop.incomeTaxPayed.set(cash);
-        //                poorTaxIncome.Add(cash);
-        //                sendAllAvailableMoney(this);
-        //                return false;
-        //            }
-        //        }
-        //        else
-        //        //if (this.popType.isRichStrata())
-        //        {
-        //            var taxSize = taxationForRich.getTypedValue().tax.SendProcentOf(pop.moneyIncomethisTurn);
-        //            if (canPay(taxSize))
-        //            {
-        //                pop.incomeTaxPayed.set(taxSize);
-        //                richTaxIncome.Add(taxSize);
-        //                pay(this, taxSize);
-        //                return true;
-        //            }
-        //            else
-        //            {
-        //                pop.incomeTaxPayed.set(cash);
-        //                richTaxIncome.Add(cash);
-        //                sendAllAvailableMoney(this);
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    else// non market                
-        //    {
-        //        Storage howMuchSend;
-        //        if (pop.popType.isPoorStrata())
-        //            howMuchSend = taxationForPoor.getTypedValue().tax.SendProcentOf(pop.getGainGoodsThisTurn());
-        //        else //if (this.popType.isRichStrata())                    
-        //            howMuchSend = taxationForRich.getTypedValue().tax.SendProcentOf(pop.getGainGoodsThisTurn());
+        public bool TakeNaturalTax(PopUnit pop, Procent tax)
+        {
+            var howMuchSend = tax.SendProcentOf(pop.getGainGoodsThisTurn());
 
-        //        if (pop.storage.isBiggerOrEqual(howMuchSend))
-        //        {
-        //            pop.storage.send(countryStorageSet, howMuchSend);
-        //            return true;
-        //        }
-        //        else
-        //        {
-        //            pop.storage.sendAll(countryStorageSet);
-        //            return false;
-        //        }
-        //    }
-        //}
-        //internal bool TakeRichIncomeTax(PopUnit pop)
-        //{
-        //    if (Economy.isMarket.checkIftrue(this) && pop.popType != PopType.Tribesmen)
-        //    {
-        //        //if (this.popType.isRichStrata())
-
-        //        var taxSize = taxationForRich.getTypedValue().tax.SendProcentOf(pop.moneyIncomethisTurn);
-        //        if (canPay(taxSize))
-        //        {
-        //            pop.incomeTaxPayed.set(taxSize);
-        //            richTaxIncome.Add(taxSize);
-        //            pay(this, taxSize);
-        //            return true;
-        //        }
-        //        else
-        //        {
-        //            pop.incomeTaxPayed.set(cash);
-        //            richTaxIncome.Add(cash);
-        //            sendAllAvailableMoney(this);
-        //            return false;
-        //        }
-        //    }
-        //    else// non market                
-        //    {
-        //        var howMuchSend = taxationForRich.getTypedValue().tax.SendProcentOf(pop.getGainGoodsThisTurn());
-
-        //        if (pop.storage.isBiggerOrEqual(howMuchSend))
-        //        {
-        //            pop.storage.send(countryStorageSet, howMuchSend);
-        //            return true;
-        //        }
-        //        else
-        //        {
-        //            pop.storage.sendAll(countryStorageSet);
-        //            return false;
-        //        }
-        //    }
-        //}
-
+            if (pop.storage.isBiggerOrEqual(howMuchSend))
+            {
+                pop.storage.send(countryStorageSet, howMuchSend);
+                return true;
+            }
+            else
+            {
+                pop.storage.sendAll(countryStorageSet);
+                return false;
+            }
+        }
         internal void goldMinesIncomeAdd(Value toAdd)
         {
             goldMinesIncome.Add(toAdd);

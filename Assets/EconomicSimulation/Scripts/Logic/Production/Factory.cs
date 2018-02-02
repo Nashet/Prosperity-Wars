@@ -195,7 +195,8 @@ namespace Nashet.EconomicSimulation
             salary.set(province.getLocalMinSalary());
             if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 setPriorityAutoWithPlannedEconomy();
-            Debug.Log(investor + " invested " + cost + " in building new " + this);
+            else
+                Debug.Log(investor + " invested " + cost + " in building new " + this);
         }
 
         public Value GetInvestmentCost()
@@ -765,7 +766,7 @@ namespace Nashet.EconomicSimulation
         {
             if (IsOpen)
             {
-                Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);                
+                Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);
                 payedDividends.set(dividends);
 
                 if (dividends.isNotZero())

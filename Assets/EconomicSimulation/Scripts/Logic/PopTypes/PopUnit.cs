@@ -38,7 +38,7 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy;
         static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).GetCountry().getSize() > (x as PopUnit).GetCountry().government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
 
-        public Value incomeTaxPayed = new Value(0);
+        
 
         private readonly MyDate born;
         private Movement movement;
@@ -313,8 +313,7 @@ namespace Nashet.EconomicSimulation
 
         override public void SetStatisticToZero()
         {
-            base.SetStatisticToZero();
-            incomeTaxPayed.setZero(); // need it because pop could stop paying taxes due to reforms for example
+            base.SetStatisticToZero();            
             needsFulfilled.setZero();
             didntGetPromisedUnemloymentSubsidy = false;
             lastEscaped.value = 0;
@@ -738,7 +737,7 @@ namespace Nashet.EconomicSimulation
         }
         protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
         {
-            GetCountry().TakeIncomeTax(this, null, popType.isPoorStrata()); //payTaxes(); // that is here because pop should pay taxes from all income
+            GetCountry().TakeNaturalTax(this, GetCountry().taxationForPoor.getTypedValue().tax); //payTaxes(); // that is here because pop should pay taxes from all income
             foreach (Storage need in lifeNeeds)
                 if (storage.has(need))// don't need to buy on market
                 {

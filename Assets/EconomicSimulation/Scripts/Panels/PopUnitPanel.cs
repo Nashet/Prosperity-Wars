@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("Cash: ").Append(pop.cash.ToString());
                 money.text = sb.ToString();
                 money.GetComponent<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
-                + "\nIncome tax: " + pop.incomeTaxPayed
+                + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
                 if (pop.popType.isProducer())

@@ -19,6 +19,7 @@ namespace Nashet.EconomicSimulation
         public Value loans = new Value(0);
         public Value deposits = new Value(0);
         private readonly Province province;
+        public Value incomeTaxPayed = new Value(0);
 
         public abstract void simulate();
 
@@ -32,6 +33,7 @@ namespace Nashet.EconomicSimulation
         {
             moneyIncomeLastTurn.set(moneyIncomethisTurn);
             moneyIncomethisTurn.set(0f);
+            incomeTaxPayed.setZero();
         }
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
         protected Value getSpendingLimit(Value value)
@@ -222,23 +224,41 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// checks inside. Wouldn't pay if can't. Takes credits from bank
-        /// Register moneyIncomethisTurn, pays tax
+        /// Register moneyIncomethisTurn, pays tax. Returns true if was able pay
         /// </summary>    
-        public bool pay(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
+        public bool pay(Agent incomeReceiver, Value howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (payWithoutRecord(whom, howMuch, showMessageAboutNegativeValue))
-            {
-                whom.moneyIncomethisTurn.Add(howMuch);
-                var pop = whom as PopUnit;
-                if (pop != null)
-                    if (this is Market)
-                        pop.GetCountry().TakeIncomeTax(pop, howMuch, pop.popType.isPoorStrata());
+            if (howMuch.isNotZero())
+                if (payWithoutRecord(incomeReceiver, howMuch, showMessageAboutNegativeValue))
+                {
+                    Value howMuchPayReally = howMuch.Copy();
+                    incomeReceiver.moneyIncomethisTurn.Add(howMuchPayReally);
+                    if (incomeReceiver is Market) // Market wouldn't pay taxes cause it's abstract entity
+                        return true;
+                    Agent payer = this;
+
+                    if (payer is Market == false && incomeReceiver is Market == false
+                        && payer.GetCountry() != incomeReceiver.GetCountry()
+                        && payer is Factory) // pay taxes in enterprise jurisdiction
+                    {   // and reduce taxable base
+                        var payed = payer.GetCountry().TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
+                        howMuchPayReally.subtract(payed);
+                    }
+
+                    var popReceiver = incomeReceiver as PopUnit;
+                    if (popReceiver != null)
+                        incomeReceiver.GetCountry().TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.popType.isPoorStrata());
                     else
-                        this.GetCountry().TakeIncomeTax(pop, howMuch, pop.popType.isPoorStrata());
-                return true;
-            }
-            else
-                return false;
+                    {
+                        var countryPayer = incomeReceiver as Country;
+                        if (countryPayer != null)
+                            incomeReceiver.GetCountry().TakeIncomeTaxFrom(countryPayer, howMuchPayReally, false);
+                    }
+                    return true;
+                }
+                else
+                    return false;
+            return true;
         }
         internal void PayAllAvailableMoney(Agent whom)
         {
