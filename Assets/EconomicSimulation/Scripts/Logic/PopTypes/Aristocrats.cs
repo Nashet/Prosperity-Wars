@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
                 && x.CanProduce(getProvince().getResource())
                 );
 
-                var project = projects.MaxBy(x => x.GetMargin().get());
+                var project = projects.MaxByRandom(x => x.GetMargin().get());
                 if (project != null)
                 {
                     var factoryProject = project as FactoryProject; // build new one

@@ -636,7 +636,7 @@ namespace Nashet.EconomicSimulation
                             pop.calcAssimilations();
                         }
                         if (country.economy.getValue() != Economy.PlannedEconomy)
-                            Rand.Call(() => pop.invest(), 15);
+                            Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }
                     if (country.isAI())
                         country.invest(province);

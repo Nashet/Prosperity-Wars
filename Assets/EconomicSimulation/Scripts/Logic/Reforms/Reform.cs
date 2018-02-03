@@ -425,7 +425,7 @@ namespace Nashet.EconomicSimulation
     public class Economy : AbstractReform, IHasGetCountry
     {
         private readonly Country country;
-        
+
 
         internal readonly static Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status != Economy.LaissezFaire; }, "Economy policy is not Laissez Faire", true);
         internal readonly static Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status == Economy.LaissezFaire; }, "Economy policy is Laissez Faire", true);
@@ -540,7 +540,7 @@ namespace Nashet.EconomicSimulation
 
 
         private ReformValue status;
-        
+
         internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
         internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0, false,
             new DoubleConditionsList(new List<Condition> {
@@ -563,6 +563,7 @@ namespace Nashet.EconomicSimulation
         {
             return country;
         }
+        // todo add OnReformEnacted?
         internal override void setValue(AbstractReformValue selectedReform)
         {
             status = (ReformValue)selectedReform;
@@ -572,7 +573,12 @@ namespace Nashet.EconomicSimulation
                     GetCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
                 if (GetCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
                     GetCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-                GetCountry().getAllFactories().PerformAction(x => x.setSubsidized(false));
+                GetCountry().getAllFactories().PerformAction(
+                     x =>
+                     {
+                         x.setSubsidized(false);
+                         x.ownership.SetToSell(GetCountry(), Procent.HundredProcent, false);
+                     });
             }
             else
                 if (status == StateCapitalism)
@@ -1270,7 +1276,7 @@ namespace Nashet.EconomicSimulation
         {
             status = PossibleStatuses[1];
         }
-        
+
         internal bool isThatReformEnacted(int value)
         {
             return status == PossibleStatuses[value];

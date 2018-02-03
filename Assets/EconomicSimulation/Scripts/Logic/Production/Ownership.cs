@@ -112,20 +112,20 @@ namespace Nashet.EconomicSimulation
             else
                 if (showMessageAboutOperationFails) Debug.Log("No such owner");
         }
-        internal void Nationilize(Country byWhom)
+        internal void Nationilize(Country nationalizator)
         {
             foreach (var owner in GetAll().ToList())
-                if (owner.Key != byWhom)
+                if (owner.Key != nationalizator)
                 {
                     TransferAll(owner.Key, Game.Player);
-                    var isPop = owner.Key as PopUnit;
-                    if (isPop != null)
-                        isPop.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
+                    var popOwner = owner.Key as PopUnit;
+                    if (popOwner != null && popOwner.GetCountry() == nationalizator)
+                        popOwner.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
                     else
                     {
-                        //var isCountry = owner.Key as Country;
-                        //if (isCountry != null)
-                        //todo drop relations
+                        var countryOwner = owner.Key as Country;
+                        if (countryOwner != null)
+                            countryOwner.changeRelation(nationalizator, Options.PopLoyaltyDropOnNationalization.get());
                     }
                 }
         }

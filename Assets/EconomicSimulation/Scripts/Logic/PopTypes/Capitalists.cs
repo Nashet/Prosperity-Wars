@@ -75,7 +75,7 @@ namespace Nashet.EconomicSimulation
 
                 //var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
                 var projects = World.GetAllAllowedInvestments(this.GetCountry()).Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxBy(x => x.GetMargin().get());
+                var project = projects.MaxByRandom(x => x.GetMargin().get());
 
                 if (project != null)
                 {
@@ -113,10 +113,6 @@ namespace Nashet.EconomicSimulation
                 }
             }
             base.invest();
-        }
-        //override internal bool CanGainDividents()
-        //{
-        //    return true;
-        //}
+        }       
     }
 }

@@ -429,9 +429,12 @@ namespace Nashet.EconomicSimulation
                 return opinion;
             }
         }
-        public void changeRelation(Country country, float change)
+        /// <summary>
+        /// Changes that country opinion of another country
+        /// </summary>        
+        public void changeRelation(Country another, float change)
         {
-            var relation = getRelationTo(country);
+            var relation = getRelationTo(another);
             relation.add(change, false);
             relation.clamp100();
         }
@@ -862,11 +865,56 @@ namespace Nashet.EconomicSimulation
                     newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
                     setSoldierWage(newWage);
                 }
+            // dealing with enterprises
             if (economy.getValue() == Economy.Interventionism)
                 Rand.Call(() => getAllFactories().PerformAction(
                     x => x.ownership.HowMuchOwns(this).Copy().subtract(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     20);
+            else
+            //SC invests in own country only, Interv. don't invests in any country
+            if (economy.getValue() == Economy.StateCapitalism)
+                Rand.Call(
+                    () =>
+                    {
+                        // copied from Capitalist.Invest()
+                        var project = GetAllInvestmentProjects().Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)).MaxByRandom(x => x.GetMargin().get());
+                        if (project != null)
+                        {
+                            Value investmentCost = project.GetInvestmentCost();
+                            if (!canPay(investmentCost))
+                                getBank().giveLackingMoney(this, investmentCost);
+                            if (canPay(investmentCost))
+                            {
+                                Factory factory = project as Factory;
+                                if (factory != null)
+                                {
+                                    if (factory.IsOpen)// upgrade existing factory
+                                        factory.upgrade(this);
+                                    else
+                                        factory.open(this, true);
+                                }
+                                else
+                                {
+                                    Owners buyShare = project as Owners;
+                                    if (buyShare != null) // buy part of existing factory
+                                        buyShare.BuyStandardShare(this);
+                                    else
+                                    {
+                                        var factoryProject = project as FactoryProject;
+                                        if (factoryProject != null)
+                                        {
+                                            Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
+                                            payWithoutRecord(factory2, investmentCost);
+                                        }
+                                        else
+                                            Debug.Log("Unknown investment type");
+                                    }
+                                }
+                            }
+                        }
+                    }, Options.CountryInvestmentRate);
+
         }
         internal void simulate()
         {
