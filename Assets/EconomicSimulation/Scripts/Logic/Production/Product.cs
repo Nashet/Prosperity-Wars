@@ -286,7 +286,6 @@ namespace Nashet.EconomicSimulation
             return _isResource;
         }
 
-
         public bool IsInventedByAnyOne()
         {
             // including dead countries. Because dead country could organize production

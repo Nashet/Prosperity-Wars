@@ -10,7 +10,7 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : IClickable,  ISortableName
+    public class FactoryType : IClickable, ISortableName
     {
         static private readonly List<FactoryType> allTypes = new List<FactoryType>();
         internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
@@ -198,7 +198,7 @@ namespace Nashet.EconomicSimulation
             foreach (var next in allTypes)
                 if (next.basicProduction.getProduct().isInventedBy(country))
                     yield return next;
-        }        
+        }
         public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
         {
             foreach (var next in getAllInventedTypes(country))
@@ -319,6 +319,7 @@ namespace Nashet.EconomicSimulation
             if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
             Value income = Game.market.getCost(basicProduction);
+            income.multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
             var outCome = new Value(0f);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
@@ -356,7 +357,8 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province);
-            var payToGovernment = province.GetCountry().taxationForRich.getTypedValue().tax.SendProcentOf(profit);            
+
+            var payToGovernment = province.GetCountry().taxationForRich.getTypedValue().tax.SendProcentOf(profit);
             return Procent.makeProcent(profit, GetBuildCost());
         }
 

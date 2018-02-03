@@ -716,8 +716,7 @@ namespace Nashet.EconomicSimulation
                 terrain = TerrainTypes.Plains;
         }
         internal Product getResource()
-        {
-            //if (getOwner().isInvented(resource))
+        {            
             if (resource.IsInventedByAnyOne())
                 return resource;
             else

@@ -19,10 +19,7 @@ namespace Nashet.EconomicSimulation
     public interface IInvestable
     {
         Procent GetMargin();
-        Value GetInvestmentCost();
-        /// <summary>
-        /// Nit Only for Aristocrats: allows type sampling
-        /// </summary>        
+        Value GetInvestmentCost();        
         bool CanProduce(Product product);
     }
     public interface ISortableName

@@ -184,19 +184,22 @@ namespace Nashet.EconomicSimulation
 
         public Factory(Province province, IShareOwner investor, FactoryType type, Value cost) : base(type, province)
         {
-
             ownership = new Owners(this);
-            currentInvestor = investor;
-            //assuming this is level 0 building        
-            constructionNeeds = new StorageSet(getType().GetBuildNeeds());
+            if (investor != null) // that mean that factory is a fake
+            {
+                
+                currentInvestor = investor;
+                //assuming this is level 0 building        
+                constructionNeeds = new StorageSet(getType().GetBuildNeeds());
 
-            ownership.Add(investor, cost);
+                ownership.Add(investor, cost);
 
-            salary.set(province.getLocalMinSalary());
-            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
-                setPriorityAutoWithPlannedEconomy();
-            else
-                Debug.Log(investor + " invested " + cost + " in building new " + this);
+                salary.set(province.getLocalMinSalary());
+                if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                    setPriorityAutoWithPlannedEconomy();
+                else
+                    Debug.Log(investor + " invested " + cost + " in building new " + this);
+            }
         }
 
         public Value GetInvestmentCost()

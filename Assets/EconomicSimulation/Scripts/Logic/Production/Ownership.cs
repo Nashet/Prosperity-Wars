@@ -174,7 +174,7 @@ namespace Nashet.EconomicSimulation
                 total.Add(value);
             }
 
-            var res = Procent.makeProcent(ownedByAnyCountry, total);
+            var res = Procent.makeProcent(ownedByAnyCountry, total, false); // to avoid console spam with ghost factories
             if (res.isBiggerOrEqual(Procent._50Procent))
                 return true;
             else

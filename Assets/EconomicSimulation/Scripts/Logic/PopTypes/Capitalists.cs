@@ -84,41 +84,30 @@ namespace Nashet.EconomicSimulation
                         getBank().giveLackingMoney(this, investmentCost);
                     if (canPay(investmentCost))
                     {
-
-                        var factoryToBuild = project as FactoryType;
-                        if (factoryToBuild != null) // build new factory
+                        Factory factory = project as Factory;
+                        if (factory != null)
                         {
-                            Factory factory = getProvince().BuildFactory(this, factoryToBuild, investmentCost);
-                            payWithoutRecord(factory, investmentCost);
+                            if (factory.IsOpen)// upgrade existing factory
+                                factory.upgrade(this);
+                            else
+                                factory.open(this, true);
                         }
                         else
                         {
-                            Factory factory = project as Factory;
-                            if (factory != null)
-                            {
-                                if (factory.IsOpen)// upgrade existing factory
-                                    factory.upgrade(this);
-                                else
-                                    factory.open(this, true);
-                            }
+                            Owners buyShare = project as Owners;
+                            if (buyShare != null) // buy part of existing factory
+                                buyShare.BuyStandardShare(this);
                             else
                             {
-                                Owners buyShare = project as Owners;
-                                if (buyShare != null) // buy part of existing factory
-                                    buyShare.BuyStandardShare(this);
-                                else
+                                var factoryProject = project as FactoryProject;
+                                if (factoryProject != null)
                                 {
-                                    var factoryProject = project as FactoryProject;
-                                    if (factoryProject != null)
-                                    {
-                                        Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
-                                        payWithoutRecord(factory2, investmentCost);
-                                    }
-                                    else
-                                        Debug.Log("Unknown investment type");
+                                    Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
+                                    payWithoutRecord(factory2, investmentCost);
                                 }
+                                else
+                                    Debug.Log("Unknown investment type");
                             }
-
                         }
                     }
                 }
