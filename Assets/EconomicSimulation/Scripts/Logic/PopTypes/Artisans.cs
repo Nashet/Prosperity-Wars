@@ -158,7 +158,7 @@ namespace Nashet.EconomicSimulation
             }
             if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
             {
-                artisansProduction = new ArtisanProduction(result.Key, getProvince(), this);
+                artisansProduction = new ArtisanProduction(result.Key, GetProvince(), this);
                 base.changeProductionType(artisansProduction.getType().basicProduction.getProduct());
             }
         }

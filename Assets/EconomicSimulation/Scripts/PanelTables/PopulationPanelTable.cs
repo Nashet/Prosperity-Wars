@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
             cashOrder = new SortOrder(this, x => x.getCash());
 
 
-            provinceOrder = new SortOrder(this, x => x.getProvince().GetNameWeight());
+            provinceOrder = new SortOrder(this, x => x.GetProvince().GetNameWeight());
             cultureOrder = new SortOrder(this, x => x.culture.GetNameWeight());
             movementOrder = new SortOrder(this, x =>
             {
@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation
             // Adding PopType
             AddCell(pop.popType.ToString(), pop);
             ////Adding province
-            AddCell(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province" + " " + pop.getProvince().ToString().GetWeight());
+            AddCell(pop.GetProvince().ToString(), pop.GetProvince(), () => "Click to select this province" + " " + pop.GetProvince().ToString().GetWeight());
             ////Adding population
             AddCell(System.Convert.ToString(pop.getPopulation()), pop);
             ////Adding culture

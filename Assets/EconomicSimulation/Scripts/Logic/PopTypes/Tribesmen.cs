@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             Storage producedAmount;
-            var overpopulation = getProvince().GetOverpopulation();
+            var overpopulation = GetProvince().GetOverpopulation();
             if (overpopulation.isSmallerOrEqual(Procent.HundredProcent)) // all is OK
                 producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().multiply(getPopulation()).divide(1000));
             else

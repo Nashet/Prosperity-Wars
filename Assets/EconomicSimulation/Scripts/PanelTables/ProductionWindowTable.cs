@@ -17,14 +17,14 @@ namespace Nashet.EconomicSimulation
         {
 
             typeOrder = new SortOrder(this, x => x.getType().GetNameWeight());
-            provinceOrder = new SortOrder(this, x => x.getProvince().GetNameWeight());
+            provinceOrder = new SortOrder(this, x => x.GetProvince().GetNameWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
             profitOrder = new SortOrder(this, x => x.getProfit());
             profitabilityOrder = new SortOrder(this, x => x.GetMargin().get());
             salaryOrder = new SortOrder(this, x => x.getSalary().get());
-            unemploymentOrder = new SortOrder(this, x => x.getProvince().getUnemployedWorkers());
+            unemploymentOrder = new SortOrder(this, x => x.GetProvince().getUnemployedWorkers());
         }
         protected override IEnumerable<Factory> ContentSelector()
         {
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
             AddCell(factory.GetDescription(), factory);
 
             // Adding province 
-            AddCell(factory.getProvince().ToString(), factory.getProvince());
+            AddCell(factory.GetProvince().ToString(), factory.GetProvince());
 
             ////Adding production
             AddCell(factory.getGainGoodsThisTurn().ToString(), factory);
@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
             }
 
             //Adding unemployment
-            AddCell(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
+            AddCell(factory.GetProvince().getUnemployedWorkers().ToString("N0"), factory);
         }
         protected override void AddHeader()
         {

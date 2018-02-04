@@ -78,5 +78,10 @@ namespace Nashet.UnityUIUtils
         {
             return text;
         }
+
+        internal void AddText(string add)
+        {
+            text += add;
+        }
     }
 }

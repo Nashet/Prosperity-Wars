@@ -76,15 +76,13 @@ namespace Nashet.EconomicSimulation
         internal override void invest()
         {
             // Aristocrats invests only in resource factories (and banks)
-            if (getProvince().getResource() != null)
+            if (GetProvince().getResource() != null)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)
-                && x.CanProduce(getProvince().getResource())
-                );
-
-                var project = projects.MaxByRandom(x => x.GetMargin().get());
-                if (project != null)
+                var projects = GetProvince().getAllInvestmentProjects().Where(x => x.CanProduce(GetProvince().getResource()));
+                
+                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x.GetProvince())).get());
+                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project.GetProvince())).isBiggerThan(Options.minMarginToInvest))
                 {
                     var factoryProject = project as FactoryProject; // build new one
                     if (factoryProject != null)
@@ -95,7 +93,7 @@ namespace Nashet.EconomicSimulation
                         // try to build for grain
                         if (storage.has(resourceToBuild))
                         {
-                            var factory = getProvince().BuildFactory(this, factoryProject.Type, Game.market.getCost(resourceToBuild));
+                            var factory = GetProvince().BuildFactory(this, factoryProject.Type, Game.market.getCost(resourceToBuild));
                             storage.send(factory.getInputProductsReserve(), resourceToBuild);
                             factory.constructionNeeds.setZero();
                         }
@@ -106,7 +104,7 @@ namespace Nashet.EconomicSimulation
                                 getBank().giveLackingMoney(this, investmentCost);
                             if (canPay(investmentCost))
                             {
-                                var factory = getProvince().BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
+                                var factory = GetProvince().BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
                                 payWithoutRecord(factory, investmentCost);
                             }
                         }

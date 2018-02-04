@@ -25,6 +25,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
         internal static readonly Value CountryPopConsumptionLimitPE = new Value(40f);
         internal static readonly int CountryInvestmentRate = 25;
+        internal static readonly Procent CountryOwnershipRiskRestoreSpeed = new Procent(0.001f);
+        internal static readonly Procent CountryOwnershipRiskDropOnNationalization = new Procent(0.01f);
+
         // MAP
         internal static readonly int ProvinceLakeShance = 9; // bigger - less lakes
         internal static readonly int ProvincesPerCountry = 6;// don't do it lees than 3 - ugly    
@@ -143,7 +146,12 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent PopMarginToSellShares = new Procent(0.005f);
         internal static readonly int PopInvestRate = 15;
 
-
+        // INVESTING
+        internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.95f);
+        /// <summary>
+        /// There is bigger chance to loose property in another province
+        /// </summary>
+        internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

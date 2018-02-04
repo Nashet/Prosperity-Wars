@@ -311,7 +311,7 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
-        /// For 1 level / 1000 workers. Not includes tax. New value
+        /// For 1 level / 1000 workers. Not includes tax. Includes modifiers. New value
         /// </summary>        
         internal Value getPossibleProfit(Province province)
         {
@@ -332,9 +332,8 @@ namespace Nashet.EconomicSimulation
             return income.subtract(outCome, false);
         }
         /// <summary>
-        /// Not including salary
-        /// </summary>
-        /// <returns></returns>
+        /// For artisans. Not including salary
+        /// </summary>        
         internal Value getPossibleProfit()
         {
             if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)

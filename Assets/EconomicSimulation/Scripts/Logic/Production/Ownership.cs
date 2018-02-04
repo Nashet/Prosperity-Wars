@@ -112,23 +112,26 @@ namespace Nashet.EconomicSimulation
             else
                 if (showMessageAboutOperationFails) Debug.Log("No such owner");
         }
-        internal void Nationilize(Country nationalizator)
-        {
-            foreach (var owner in GetAll().ToList())
-                if (owner.Key != nationalizator)
-                {
-                    TransferAll(owner.Key, Game.Player);
-                    var popOwner = owner.Key as PopUnit;
-                    if (popOwner != null && popOwner.GetCountry() == nationalizator)
-                        popOwner.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
-                    else
-                    {
-                        var countryOwner = owner.Key as Country;
-                        if (countryOwner != null)
-                            countryOwner.changeRelation(nationalizator, Options.PopLoyaltyDropOnNationalization.get());
-                    }
-                }
-        }
+        /// <summary>
+        /// Don't call it directly, call it from Country
+        /// </summary>        
+        //internal void Nationilize(Country nationalizator)
+        //{
+        //    foreach (var owner in GetAll().ToList())
+        //        if (owner.Key != nationalizator)
+        //        {
+        //            TransferAll(owner.Key, Game.Player);
+        //            var popOwner = owner.Key as PopUnit;
+        //            if (popOwner != null && popOwner.GetCountry() == nationalizator)
+        //                popOwner.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
+        //            else
+        //            {
+        //                var countryOwner = owner.Key as Country;
+        //                if (countryOwner != null)
+        //                    countryOwner.changeRelation(nationalizator, Options.PopLoyaltyDropOnNationalization.get());
+        //            }
+        //        }
+        //}
         public IEnumerable<KeyValuePair<IShareOwner, Share>> GetAll()
         {
             foreach (var item in ownership)
@@ -385,6 +388,14 @@ namespace Nashet.EconomicSimulation
                             //Debug.Log(item.Key + " put on sale shares of " + parent);
                         }, 10);
                 }
+        }
+        public Country GetCountry()
+        {
+            return parent.GetCountry();
+        }
+        public Province GetProvince()
+        {
+            return parent.GetProvince();
         }
     }
 

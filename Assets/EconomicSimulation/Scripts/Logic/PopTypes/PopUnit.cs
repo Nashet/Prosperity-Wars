@@ -79,14 +79,14 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy,
             new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
             new Modifier (x => !(x as PopUnit).isStateCulture() &&
-            (x as PopUnit).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false),
+            (x as PopUnit).GetProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false),
             modCountryIsToBig
 });
 
             // can increase performance by making separate modifiers for different popTypes
             modEfficiency = new ModifiersList(new List<Condition> {
             Modifier.modifierDefault1,
-            new Modifier(x=>(x as PopUnit).getProvince().getOverpopulationAdjusted(x as PopUnit), "Overpopulation", -1f, false),
+            new Modifier(x=>(x as PopUnit).GetProvince().getOverpopulationAdjusted(x as PopUnit), "Overpopulation", -1f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).GetCountry(), 0.25f, false),
             new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).GetCountry(), 0.25f, false),
 
@@ -99,8 +99,8 @@ namespace Nashet.EconomicSimulation
 
             // copied in Factory
              new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).GetCountry())
-             && (x as PopUnit).getProvince().isCapital(), "Capital of Polis", 1f, false),
-             new Modifier(x=>(x as PopUnit).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             && (x as PopUnit).GetProvince().isCapital(), "Capital of Polis", 1f, false),
+             new Modifier(x=>(x as PopUnit).GetProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).GetCountry().government.getValue() == Government.Tribal
              && (x as PopUnit).popType!=PopType.Tribesmen, "Government is Tribal", -0.5f, false),
              new Modifier(Government.isDespotism, x=>(x as PopUnit).GetCountry(), -0.30f, false) // remove this?
@@ -479,7 +479,7 @@ namespace Nashet.EconomicSimulation
             if (popType == PopType.Workers)
             {
                 int employed = 0;
-                foreach (Factory factory in getProvince().getAllFactories())
+                foreach (Factory factory in GetProvince().getAllFactories())
                     employed += factory.howManyEmployed(this);
                 if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
                     return new Procent(0);
@@ -487,7 +487,7 @@ namespace Nashet.EconomicSimulation
             }
             else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
             {
-                var overPopulation = getProvince().GetOverpopulation();
+                var overPopulation = GetProvince().GetOverpopulation();
                 if (overPopulation.isSmallerOrEqual(Procent.HundredProcent))
                     return new Procent(0f);
                 else
@@ -888,7 +888,7 @@ namespace Nashet.EconomicSimulation
         }
         private Separatism getPotentialSeparatismTarget()
         {
-            foreach (var item in getProvince().getAllCores())
+            foreach (var item in GetProvince().getAllCores())
             {
                 if (!item.isAlive() && item != GetCountry() && item.getCulture() == this.culture)//todo doesn't supports different countries for same culture
                 {
@@ -934,7 +934,7 @@ namespace Nashet.EconomicSimulation
         public void payTaxToAllAristocrats()
         {
             Value taxSize = getGainGoodsThisTurn().multiplyOutside(GetCountry().serfdom.status.getTax());
-            getProvince().shareWithAllAristocrats(storage, taxSize);
+            GetProvince().shareWithAllAristocrats(storage, taxSize);
         }
         abstract public bool shouldPayAristocratTax();
 
@@ -950,7 +950,7 @@ namespace Nashet.EconomicSimulation
             if (result > 0)
                 return result;
             else
-            if (getProvince().hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
+            if (GetProvince().hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
                 return this.getPopulation();// wipe-out
             else
                 return 0;
@@ -969,7 +969,7 @@ namespace Nashet.EconomicSimulation
             Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
             foreach (PopType nextType in PopType.getAllPopTypes())
                 if (canThisPromoteInto(nextType))
-                    list.Add(nextType, getProvince().getAverageNeedsFulfilling(nextType));
+                    list.Add(nextType, GetProvince().getAverageNeedsFulfilling(nextType));
             var result = list.MaxBy(x => x.Value.get());
             if (result.Value != null && result.Value.get() > this.needsFulfilled.get())
                 return result.Key;
@@ -982,7 +982,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType != null)
             {
-                PopUnit.makeVirtualPop(targetType, this, amount, this.getProvince(), this.culture);
+                PopUnit.makeVirtualPop(targetType, this, amount, this.GetProvince(), this.culture);
             }
         }
 
@@ -1074,7 +1074,7 @@ namespace Nashet.EconomicSimulation
                     if (targetIsPopType != null)
                     {
                         // assuming its PopType
-                        PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.getProvince(), this.culture);
+                        PopUnit.makeVirtualPop(targetIsPopType, this, escapeSize, this.GetProvince(), this.culture);
                         lastEscaped.key = targetIsPopType;
                     }
                     else
@@ -1099,7 +1099,7 @@ namespace Nashet.EconomicSimulation
                 return result;
             else
             {
-                if (getProvince().hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
+                if (GetProvince().hasAnotherPop(this.popType) && getAge() > Options.PopAgeLimitToWipeOut)
                     return this.getPopulation();// wipe-out
                 else
                     return 0;
@@ -1126,7 +1126,7 @@ namespace Nashet.EconomicSimulation
 
             foreach (PopType type in PopType.getAllPopTypes())
                 if (canThisDemoteInto(type) && predicate(type))
-                    list.Add(type, getProvince().getAverageNeedsFulfilling(type));
+                    list.Add(type, GetProvince().getAverageNeedsFulfilling(type));
             var result = list.MaxBy(x => x.Value.get());
             if (result.Value != null && result.Value.isBiggerThan(this.needsFulfilled, Options.PopNeedsEscapingBarrier))
                 return result;
@@ -1162,7 +1162,7 @@ namespace Nashet.EconomicSimulation
             //foreach (var pro in getCountry().ownedProvinces)            
             //if (pro != this.province)
 
-            foreach (var province in getProvince().getNeigbors(x => x.GetCountry() == this.GetCountry() && predicate(x)))
+            foreach (var province in GetProvince().getNeigbors(x => x.GetCountry() == this.GetCountry() && predicate(x)))
             {
                 var needsInProvince = province.getAverageNeedsFulfilling(this.popType);
                 if (needsInProvince.isBiggerThan(needsFulfilled, Options.PopNeedsEscapingBarrier))
@@ -1186,12 +1186,12 @@ namespace Nashet.EconomicSimulation
         {
             //if (toWhom != null)
             //{
-            PopUnit.makeVirtualPop(popType, this, assimilationSize, this.getProvince(), toWhom);
+            PopUnit.makeVirtualPop(popType, this, assimilationSize, this.GetProvince(), toWhom);
             //}
         }
         public int getAssimilationSize()
         {
-            if (getProvince().isCoreFor(this))
+            if (GetProvince().isCoreFor(this))
                 return 0;
             else
             {
@@ -1237,7 +1237,7 @@ namespace Nashet.EconomicSimulation
         override public string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(getProvince().GetDescription());
+            sb.Append(culture).Append(" ").Append(popType).Append(" from ").Append(GetProvince().GetDescription());
             //return popType + " from " + province;
             return sb.ToString();
         }

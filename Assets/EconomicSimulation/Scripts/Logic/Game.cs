@@ -644,9 +644,9 @@ namespace Nashet.EconomicSimulation
                     //    province.consolidatePops();                
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                     {
-                        PopUnit targetToMerge = pop.getProvince().getSimilarPopUnit(pop);
+                        PopUnit targetToMerge = pop.GetProvince().getSimilarPopUnit(pop);
                         if (targetToMerge == null)
-                            pop.getProvince().allPopUnits.Add(pop);
+                            pop.GetProvince().allPopUnits.Add(pop);
                         else
                             targetToMerge.mergeIn(pop);
                     }

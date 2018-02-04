@@ -30,14 +30,7 @@ namespace Nashet.EconomicSimulation
         internal readonly UnemploymentSubsidies unemploymentSubsidies;
         internal readonly TaxationForPoor taxationForPoor;
         internal readonly TaxationForRich taxationForRich;
-        //public TaxationForRich PoorIncomeTax
-        //{
-        //    get { return poorIncomeTax.Copy(); }
-        //}
-        //public TaxationForRich RichIncomeTax
-        //{
-        //    get { return richIncomeTax.Copy(); }
-        //}
+
         internal readonly MinorityPolicy minorityPolicy;
 
         public List<Province> ownedProvinces = new List<Province>();
@@ -51,7 +44,7 @@ namespace Nashet.EconomicSimulation
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
         public readonly List<Movement> movements = new List<Movement>();
 
-        //public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();    
+
 
         private readonly string name;
         private readonly Culture culture;
@@ -63,6 +56,13 @@ namespace Nashet.EconomicSimulation
         public readonly Value sciencePoints = new Value(0f);
         public bool failedToPaySoldiers;
         public int autoPutInBankLimit = 2000;
+
+        private readonly Procent ownershipSecurity = Procent.HundredProcent.Copy();
+        /// <summary> Read only, new value</summary>
+        public Procent OwnershipSecurity
+        {            
+            get { return ownershipSecurity.Copy(); }
+        }
 
         private readonly Value incomeTaxStaticticPoor = new Value(0f);
         public Value IncomeTaxStaticticPoor
@@ -878,6 +878,7 @@ namespace Nashet.EconomicSimulation
                     () =>
                     {
                         // copied from Capitalist.Invest()
+                        // doesn't care about risks
                         var project = GetAllInvestmentProjects().Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)).MaxByRandom(x => x.GetMargin().get());
                         if (project != null)
                         {
@@ -921,6 +922,8 @@ namespace Nashet.EconomicSimulation
             // military staff
             base.simulate();
 
+            ownershipSecurity.add(Options.CountryOwnershipRiskRestoreSpeed, false);
+            ownershipSecurity.clamp100();
             // get science points
             var spBase = getSciencePointsBase();
             spBase.multiply(modSciencePoints.getModifier(this));
@@ -1546,6 +1549,24 @@ namespace Nashet.EconomicSimulation
                     yield return item;
                 }
 
+        }
+        internal void Nationilize(Factory factory)
+        {
+            foreach (var owner in factory.ownership.GetAll().ToList())
+                if (owner.Key != this)
+                {
+                    factory.ownership.TransferAll(owner.Key, Game.Player);
+                    ownershipSecurity.subtract(Options.CountryOwnershipRiskDropOnNationalization, false);
+                    var popOwner = owner.Key as PopUnit;
+                    if (popOwner != null && popOwner.GetCountry() == this)
+                        popOwner.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
+                    else
+                    {
+                        var countryOwner = owner.Key as Country;
+                        if (countryOwner != null)
+                            countryOwner.changeRelation(this, Options.PopLoyaltyDropOnNationalization.get());
+                    }
+                }
         }
     }
 }

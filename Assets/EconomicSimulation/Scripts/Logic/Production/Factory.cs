@@ -52,8 +52,8 @@ namespace Nashet.EconomicSimulation
 
         internal static readonly Modifier
             modifierHasResourceInProvince = new Modifier(x => !(x as Factory).getType().isResourceGathering() &&
-            ((x as Factory).getProvince().isProducingOnEnterprises((x as Factory).getType().resourceInput)
-            || ((x as Factory).getProvince().getResource() == Product.Grain && (x as Factory).getType() == FactoryType.Barnyard)
+            ((x as Factory).GetProvince().isProducingOnEnterprises((x as Factory).getType().resourceInput)
+            || ((x as Factory).GetProvince().getResource() == Product.Grain && (x as Factory).getType() == FactoryType.Barnyard)
             ),
                   "Has input resource in this province", 0.20f, false),
 
@@ -170,8 +170,8 @@ namespace Nashet.EconomicSimulation
             modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
              new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).GetCountry())
-             && (x as Factory).getProvince().isCapital(), "Capital of Polis", 0.50f, false),
-             new Modifier(x=>(x as Factory).getProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             && (x as Factory).GetProvince().isCapital(), "Capital of Polis", 0.50f, false),
+             new Modifier(x=>(x as Factory).GetProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).GetCountry(), -1.0f, false),
              new Modifier(Government.isDespotism, x=>(x as Factory).GetCountry(), -0.30f, false), // remove this?
              new Modifier(x=>!(x as Factory).GetCountry().isInvented(Invention.Manufactures)
@@ -260,7 +260,7 @@ namespace Nashet.EconomicSimulation
         override public string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(GetDescription()).Append(" in ").Append(getProvince().GetDescription());
+            sb.Append(GetDescription()).Append(" in ").Append(GetProvince().GetDescription());
             return sb.ToString();
         }
         public string GetDescription()
@@ -375,7 +375,7 @@ namespace Nashet.EconomicSimulation
             }
         }
         /// <summary>
-        /// Returns new value. Includes tax
+        /// Returns new value. Includes tax, salary and modifiers. New value
         /// </summary>
         /// <returns></returns>
         public Procent GetMargin()
@@ -385,7 +385,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 if (IsClosed)
-                    return getType().GetPossibleMargin(getProvince());//potential margin
+                    return getType().GetPossibleMargin(GetProvince());//potential margin
                 else
                 {
                     var dividendsCopy = payedDividends.Copy();
@@ -529,7 +529,7 @@ namespace Nashet.EconomicSimulation
 
             if (IsOpen && Economy.isMarket.checkIfTrue(GetCountry()))
             {
-                var unemployment = getProvince().getUnemployment(x => x == PopType.Workers);
+                var unemployment = GetProvince().getUnemployment(x => x == PopType.Workers);
                 var margin = GetMargin();
 
                 // rise salary to attract  workforce, including workforce from other factories
@@ -564,7 +564,7 @@ namespace Nashet.EconomicSimulation
                     salary.subtract(0.001f, false);
 
                 if (getWorkForce() == 0)// && getInputFactor() == 1)
-                    salary.set(getProvince().getLocalMinSalary());
+                    salary.set(GetProvince().getLocalMinSalary());
                 // to help factories catch up other factories salaries
                 //    salary.set(province.getLocalMinSalary());
                 // freshly built factories should rise salary to concurrency with old ones
@@ -716,7 +716,7 @@ namespace Nashet.EconomicSimulation
         internal void destroyImmediately()
         {
             markToDestroy();
-            getProvince().DestroyFactory(this);
+            GetProvince().DestroyFactory(this);
             // + GUI 2 places
             MainCamera.factoryPanel.removeFactory(this);
             //MainCamera.productionWindow.removeFactory(this);
@@ -801,7 +801,7 @@ namespace Nashet.EconomicSimulation
         {
             var agent = byWhom as Agent;
             if (agent.GetCountry().economy.getValue() != Economy.PlannedEconomy)
-                salary.set(getProvince().getLocalMinSalary());
+                salary.set(GetProvince().getLocalMinSalary());
             if (payMoney)
             {
                 agent.payWithoutRecord(this, getReopenCost());

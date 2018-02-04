@@ -337,7 +337,7 @@ namespace Nashet.EconomicSimulation
             allFactories.PerformAction(x => x.ownership.TransferAll(oldCountry, taker, false));
 
 
-            oldCountry.demobilize(x => x.getPopUnit().getProvince() == this);
+            oldCountry.demobilize(x => x.getPopUnit().GetProvince() == this);
 
             //kill country or move capital
             if (oldCountry.isOneProvince())

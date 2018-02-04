@@ -12,15 +12,23 @@ namespace Nashet.EconomicSimulation
     {
         Country GetCountry();
     }
+    public interface IHasGetProvince
+    {
+        Province GetProvince();
+    }
     public interface IEscapeTarget
     {
         bool HasJobsFor(PopType popType, Province province);
     }
-    public interface IInvestable
+    public interface IInvestable : IHasGetCountry, IHasGetProvince
     {
+        /// <summary>
+        /// Includes tax (1 country only), salary and modifiers. Doesn't include risks. New value
+        /// </summary>
         Procent GetMargin();
         Value GetInvestmentCost();        
         bool CanProduce(Product product);
+
     }
     public interface ISortableName
     {

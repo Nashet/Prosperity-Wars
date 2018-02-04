@@ -18,6 +18,11 @@ namespace Nashet.EconomicSimulation
             return Type.CanProduce(product);
         }
 
+        public Country GetCountry()
+        {
+            return Province.GetCountry();
+        }
+
         public Value GetInvestmentCost()
         {
             return Type.GetBuildCost();
@@ -26,6 +31,11 @@ namespace Nashet.EconomicSimulation
         public Procent GetMargin()
         {
             return Type.GetPossibleMargin(Province);
+        }
+
+        public Province GetProvince()
+        {
+            return Province;
         }
     }
 }

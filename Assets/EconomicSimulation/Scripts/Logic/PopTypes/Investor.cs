@@ -24,19 +24,23 @@ namespace Nashet.EconomicSimulation
         }
         
         /// <summary>
-        /// Should be reworked to multiple province support
+        /// Should be reworked to multiple province support and performance
         /// </summary>        
         public IEnumerable<Factory> getOwnedFactories()
-        {
-            //List<Factory> result = new List<Factory>();
-            if (popType == PopType.Aristocrats || popType == PopType.Capitalists)
-            {
-                foreach (var item in getProvince().getAllFactories())
+        {   
+                foreach (var item in World.GetAllFactories())
                     if (item.ownership.HasOwner(this))
-                        yield return item;            
-            }            
+                        yield return item;                                    
         }
-
+        public Procent getBusinessSecurity(Province province)
+        {
+            var res = province.GetCountry().OwnershipSecurity;
+            if (province.GetCountry() != this.GetCountry())
+                res.multiply(Options.InvestingForeignCountrySecurity);
+            if (province!= this.GetProvince())
+                res.multiply(Options.InvestingAnotherProvinceSecurity);
+            return res;
+        }
         //private readonly Properties stock = new Properties();
         //public Properties GetOwnership()
         //{

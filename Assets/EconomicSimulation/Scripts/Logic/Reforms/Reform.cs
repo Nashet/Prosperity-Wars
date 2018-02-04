@@ -259,7 +259,9 @@ namespace Nashet.EconomicSimulation
                 //nationalization
                 foreach (var factory in province.getAllFactories())
                 {
-                    factory.ownership.Nationilize(country);
+                    country.Nationilize(factory);
+                    
+                    // next is for PE only
                     factory.PayAllAvailableMoney(country);
                     factory.loans.setZero();
                     factory.deposits.setZero();

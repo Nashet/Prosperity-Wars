@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
     /// <summary>
     /// represent ability to take loans/deposits
     /// </summary>
-    abstract public class Agent : IHasGetCountry, IHasStatistics
+    abstract public class Agent : IHasGetCountry, IHasStatistics, IHasGetProvince
     {
         /// <summary> Must be filled together with wallet </summary>
         public Value moneyIncomethisTurn = new Value(0);
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         {
             return moneyIncomeLastTurn.Copy().subtract(value, false);
         }
-        public Province getProvince()
+        public Province GetProvince()
         {
             return province;
         }

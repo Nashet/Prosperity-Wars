@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
-            issues, money, caption;
+            issues, money, caption, property;
         private PopUnit pop;
         // Use this for initialization
         void Start()
@@ -115,8 +115,12 @@ namespace Nashet.EconomicSimulation
                     efficiencyText.enabled = false;
                     //efficiencyText.GetComponent<ToolTipHandler>().SetText("");//it's disabled anyway
                 }
-
-
+                var thisInvestor = pop as Investor;
+                if (thisInvestor != null)
+                {
+                    var found = World.GetAllShares(thisInvestor).OrderByDescending(x=>x.Value.get());
+                    property.GetComponent<ToolTipHandler>().SetText(found.getString(" ", "\n"));
+                }
                 issues.GetComponent<ToolTipHandler>().SetDynamicString(
                     delegate ()
                     {
