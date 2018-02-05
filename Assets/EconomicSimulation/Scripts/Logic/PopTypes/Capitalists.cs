@@ -75,9 +75,9 @@ namespace Nashet.EconomicSimulation
 
                 //var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
                 var projects = World.GetAllAllowedInvestments(this.GetCountry());//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x.GetProvince())).get());
+                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x)).get());
 
-                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project.GetProvince())).isBiggerThan(Options.minMarginToInvest))
+                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
                     Value investmentCost = project.GetInvestmentCost();
                     if (!canPay(investmentCost))
@@ -99,7 +99,7 @@ namespace Nashet.EconomicSimulation
                                 buyShare.BuyStandardShare(this);
                             else
                             {
-                                var factoryProject = project as FactoryProject;
+                                var factoryProject = project as NewFactoryProject;
                                 if (factoryProject != null)
                                 {
                                     Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);

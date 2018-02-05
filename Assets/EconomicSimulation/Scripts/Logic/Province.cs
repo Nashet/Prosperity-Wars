@@ -1135,7 +1135,7 @@ namespace Nashet.EconomicSimulation
 
             var buildInvestments = FactoryType.getAllInventedTypes(GetCountry()).Where(x => x.canBuildNewFactory(this));
             foreach (var item in buildInvestments)
-                yield return new FactoryProject(this, item);
+                yield return new NewFactoryProject(this, item);
 
             foreach (var item in GetSales())
                 yield return item;

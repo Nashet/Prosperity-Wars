@@ -902,7 +902,7 @@ namespace Nashet.EconomicSimulation
                                         buyShare.BuyStandardShare(this);
                                     else
                                     {
-                                        var factoryProject = project as FactoryProject;
+                                        var factoryProject = project as NewFactoryProject;
                                         if (factoryProject != null)
                                         {
                                             Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);

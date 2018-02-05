@@ -81,10 +81,10 @@ namespace Nashet.EconomicSimulation
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
                 var projects = GetProvince().getAllInvestmentProjects().Where(x => x.CanProduce(GetProvince().getResource()));
                 
-                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x.GetProvince())).get());
-                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project.GetProvince())).isBiggerThan(Options.minMarginToInvest))
+                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x)).get());
+                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
-                    var factoryProject = project as FactoryProject; // build new one
+                    var factoryProject = project as NewFactoryProject; // build new one
                     if (factoryProject != null)
                     {
                         // todo remove connection to grain

@@ -119,7 +119,7 @@ namespace Nashet.EconomicSimulation
                 if (thisInvestor != null)
                 {
                     var found = World.GetAllShares(thisInvestor).OrderByDescending(x=>x.Value.get());
-                    property.GetComponent<ToolTipHandler>().SetText(found.getString(" ", "\n"));
+                    property.GetComponent<ToolTipHandler>().SetText(found.getString(" share: ", "\n"));
                 }
                 issues.GetComponent<ToolTipHandler>().SetDynamicString(
                     delegate ()

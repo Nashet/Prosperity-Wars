@@ -4,11 +4,11 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryProject :IInvestable
+    public class NewFactoryProject :IInvestable
     {
         public readonly FactoryType Type;
         public readonly Province Province;
-        public FactoryProject(Province province, FactoryType type)
+        public NewFactoryProject(Province province, FactoryType type)
         {
             this.Type = type;
             this.Province = province;

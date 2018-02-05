@@ -197,8 +197,8 @@ namespace Nashet.EconomicSimulation
                 salary.set(province.getLocalMinSalary());
                 if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                     setPriorityAutoWithPlannedEconomy();
-                else
-                    Debug.Log(investor + " invested " + cost + " in building new " + this);
+                //else
+                //    Debug.Log(investor + " invested " + cost + " in building new " + this);
             }
         }
 
@@ -806,7 +806,7 @@ namespace Nashet.EconomicSimulation
             {
                 agent.payWithoutRecord(this, getReopenCost());
                 ownership.Add(byWhom, getReopenCost());
-                Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this);
+                //Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this);
             }
             _isOpen = true;
             daysUnprofitable = 0;
@@ -852,10 +852,10 @@ namespace Nashet.EconomicSimulation
                 var cost = Game.market.getCost(getUpgradeNeeds());
                 (byWhom as Agent).payWithoutRecord(this, cost);
                 ownership.Add(byWhom, cost);
-                Debug.Log(byWhom + " invested " + cost + " in upgrading " + this);
+                //Debug.Log(byWhom + " invested " + cost + " in upgrading " + this);
             }
-            else
-                Debug.Log(byWhom + " invested in upgrading " + this);
+            //else
+            //    Debug.Log(byWhom + " invested in upgrading " + this);
 
         }
 

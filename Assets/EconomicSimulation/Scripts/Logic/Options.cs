@@ -152,6 +152,7 @@ namespace Nashet.EconomicSimulation
         /// There is bigger chance to loose property in another province
         /// </summary>
         internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
+        internal static readonly Procent InvestorEmploymentRisk = new Procent(0.80f);
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
