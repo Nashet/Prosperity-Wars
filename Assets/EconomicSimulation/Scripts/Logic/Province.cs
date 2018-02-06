@@ -350,7 +350,7 @@ namespace Nashet.EconomicSimulation
             foreach (var pop in allPopUnits)
             {
                 if (pop.culture == taker.getCulture())
-                    pop.loyalty.add(Options.PopLoyaltyChangeOnAnnexStateCulture);
+                    pop.loyalty.Add(Options.PopLoyaltyChangeOnAnnexStateCulture);
                 else
                     pop.loyalty.subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
                 pop.loyalty.clamp100();
@@ -879,7 +879,7 @@ namespace Nashet.EconomicSimulation
                 else
                     usedLand += pop.getPopulation() * Options.PopMinLandForTownspeople;
 
-            return Procent.makeProcent(usedLand, fertileSoil);
+            return new Procent(usedLand, fertileSoil);
         }
         /// <summary> call it BEFORE opening enterprise
         /// Returns salary of a factory with lowest salary in province. If only one factory in province, then returns Country.minsalary
@@ -1084,7 +1084,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
         /// <summary>
-        /// If type is null than return average value for ALL Pops
+        /// If type is null than return average value for ALL Pops. New value
         /// </summary>    
         public Value getAverageNeedsFulfilling(PopType type)
         {
@@ -1105,7 +1105,7 @@ namespace Nashet.EconomicSimulation
             if (allPopulation > 0)
                 return result.divide(allPopulation);
             else
-                return Procent.HundredProcent;
+                return Procent.HundredProcent.Copy();
         }
         public void OnClicked()
         {

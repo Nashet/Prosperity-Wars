@@ -119,21 +119,21 @@ namespace Nashet.EconomicSimulation
         private float getHorsesSupply()
         {
             if (getOwner().getPlaceDejure().isInvented(Invention.Domestication))
-                return Procent.makeProcent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
+                return new Procent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
             else return 0f;
         }
         private float getColdArmsSupply()
         {
             if (Product.ColdArms.isInventedBy(getOwner().getPlaceDejure()))
-                return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
+                return new Procent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
             else return 0f;
         }
         private float getEquippedFirearmsSupply()
         {
             if (Product.Firearms.isInventedBy(getOwner().getPlaceDejure()))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
@@ -141,8 +141,8 @@ namespace Nashet.EconomicSimulation
         {
             if (Product.Artillery.isInventedBy(getOwner().getPlaceDejure()))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
@@ -150,8 +150,8 @@ namespace Nashet.EconomicSimulation
         {
             if (Product.Cars.isInventedBy(getOwner().getPlaceDejure()))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
-             Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
+             new Procent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
+             new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
              );
             else return 0f;
         }
@@ -159,9 +159,9 @@ namespace Nashet.EconomicSimulation
         {
             if (Product.Tanks.isInventedBy(getOwner().getPlaceDejure()))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
-             Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
+             new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
@@ -169,9 +169,9 @@ namespace Nashet.EconomicSimulation
         {
             if (Product.Airplanes.isInventedBy(getOwner().getPlaceDejure()))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
-             Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
+             new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }

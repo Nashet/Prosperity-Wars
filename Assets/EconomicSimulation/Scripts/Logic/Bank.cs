@@ -81,7 +81,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Gives credit. Checks inside. Just wouldn't give money if can't
         /// </summary>    
-        internal bool giveLackingMoney(Agent taker, Value sum)
+        internal bool giveLackingMoney(Agent taker, ReadOnlyValue sum)
         {
             if (taker.GetCountry().isInvented(Invention.Banking))// find money in bank?
             {

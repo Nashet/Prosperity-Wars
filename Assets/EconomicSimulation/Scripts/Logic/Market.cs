@@ -74,12 +74,12 @@ namespace Nashet.EconomicSimulation
             //    Debug.Log("Can't determinate price of abstract product " + need.getProduct());
             if (need.getProduct() == Product.Gold)
             {
-                var res = need.multiplyOutside(Options.goldToCoinsConvert);
+                var res = need.Copy().Multiply(Options.goldToCoinsConvert);
                 res.multiply(Options.GovernmentTakesShareOfGoldOutput);
                 return res;
             }
             else
-                return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
+                return need.Copy().Multiply(Game.market.getPrice(need.getProduct()));
         }
 
 
@@ -304,7 +304,7 @@ namespace Nashet.EconomicSimulation
                 Value cost;
                 if (Game.market.sentToMarket.has(buying))
                 {
-                    cost = buying.multiplyOutside(price);
+                    cost = buying.Copy().Multiply(price);
                     //if (cost.isNotZero())
                     //{
                     if (buyer.canPay(cost))
@@ -320,7 +320,7 @@ namespace Nashet.EconomicSimulation
                         float val = buyer.cash.get() / price.get();
                         val = Mathf.Floor(val * Value.precision) / Value.precision;
                         howMuchCanConsume = new Storage(buying.getProduct(), val);
-                        buyer.pay(Game.market, howMuchCanConsume.multiplyOutside(price));
+                        buyer.pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
                         buyer.consumeFromMarket(howMuchCanConsume);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);
@@ -335,7 +335,7 @@ namespace Nashet.EconomicSimulation
                     Storage howMuchAvailable = new Storage(Game.market.HowMuchAvailable(buying));
                     if (howMuchAvailable.get() > 0f)
                     {
-                        cost = howMuchAvailable.multiplyOutside(price);
+                        cost = howMuchAvailable.Copy().Multiply(price);
                         if (buyer.canPay(cost))
                         {
                             buyer.pay(Game.market, cost);

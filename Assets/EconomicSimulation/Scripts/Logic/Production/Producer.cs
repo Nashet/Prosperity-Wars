@@ -119,9 +119,12 @@ namespace Nashet.EconomicSimulation
             gainGoodsThisTurn = new Storage(product);
             sentToMarket = new Storage(product);
         }
+        /// <summary>
+        /// New value
+        /// </summary>        
         public Storage getGainGoodsThisTurn()
         {
-            return gainGoodsThisTurn;
+            return gainGoodsThisTurn.Copy();
         }
         public void addProduct(Storage howMuch)
         {

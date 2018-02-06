@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        buyIfLessLimits.Add(item, new Storage(item, Value.Zero));
+                        buyIfLessLimits.Add(item, new Storage(item, ReadOnlyValue.Zero));
                         sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
                     }
                     producedTotal.Add(item, new Value(0f));
@@ -80,7 +80,7 @@ namespace Nashet.EconomicSimulation
             base.SetStatisticToZero();
             sentToMarket.setZero();
             foreach (var item in producedTotal)
-                item.Value.set(Value.Zero);
+                item.Value.set(ReadOnlyValue.Zero);
             foreach (var item in soldByGovernment)
                 item.Value.set(Value.Zero);
         }
@@ -180,13 +180,16 @@ namespace Nashet.EconomicSimulation
                 }
             return new Storage(product, res);
         }
+        /// <summary>
+        /// new value
+        /// </summary>        
         public Procent getWorldProductionShare(Product product)
         {
             var worldProduction = Game.market.getProductionTotal(product, true);
             if (worldProduction.isZero())
-                return Procent.ZeroProcent;
+                return Procent.ZeroProcent.Copy();
             else
-                return Procent.makeProcent(getProducedTotal(product), worldProduction);
+                return new Procent(getProducedTotal(product), worldProduction);
         }
     }
 }

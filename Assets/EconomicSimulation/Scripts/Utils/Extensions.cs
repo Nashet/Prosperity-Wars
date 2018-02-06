@@ -178,10 +178,19 @@ namespace Nashet.Utils
             }
             return list;
         }
+        public static Value Sum(this List<Storage> list)
+        {
+            Value sum = new Value(0f);
+            foreach (var item in list)
+            {
+                sum.Add(item);
+            }
+            return sum;
+        }
         /// <summary>
         /// Does dip copy
         /// </summary>
-        
+
         public static List<Storage> Copy(this List<Storage> list)
         {
             var res = new List<Storage>();
@@ -545,7 +554,7 @@ namespace Nashet.Utils
                     }
                     var othersSum = new Procent(0f);
                     for (int i = howMuchStringsToShow; i < list.Count; i++)
-                        othersSum.add(list[i].Value);
+                        othersSum.Add(list[i].Value);
                     sb.Append(lineBreaker);
                     sb.Append("Others: ").Append(othersSum);
                 }

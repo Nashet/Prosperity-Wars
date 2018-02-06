@@ -105,7 +105,7 @@ namespace Nashet.EconomicSimulation
         internal Procent getConsumptionProcent(Product product, Country country)
         {
             // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
-            return Procent.makeProcent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
+            return new Procent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
         }
         internal Value getConsumption(Product prod)
         {
@@ -120,15 +120,18 @@ namespace Nashet.EconomicSimulation
                 next.multiply(multiplier);
             return result;
         }
+        /// <summary>
+        /// New value
+        /// </summary>        
         public Storage getRealNeeds(Country country, Product product)
         {
             if (product.isInventedBy(country))
             {
-                Storage found = origin.popType.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product);
+                Storage found = origin.popType.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product).Copy();
                 if (found.isZero())
                     return found;
                 else
-                    return new Storage(product, found.multiplyOutside(this.getSize() / 1000f));
+                    return found.Multiply(this.getSize() / 1000f);
             }
             else
                 return new Storage(product);

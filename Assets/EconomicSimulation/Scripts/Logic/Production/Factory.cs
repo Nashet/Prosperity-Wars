@@ -187,7 +187,7 @@ namespace Nashet.EconomicSimulation
             ownership = new Owners(this);
             if (investor != null) // that mean that factory is a fake
             {
-                
+
                 currentInvestor = investor;
                 //assuming this is level 0 building        
                 constructionNeeds = new StorageSet(getType().GetBuildNeeds());
@@ -376,8 +376,7 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// Returns new value. Includes tax, salary and modifiers. New value
-        /// </summary>
-        /// <returns></returns>
+        /// </summary>        
         public Procent GetMargin()
         {
             if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
@@ -389,8 +388,9 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     var dividendsCopy = payedDividends.Copy();
-                    var payToGovernment = GetCountry().taxationForRich.getTypedValue().tax.SendProcentOf(dividendsCopy);
-                    return Procent.makeProcent(dividendsCopy, ownership.GetMarketValue(), false);
+                    var taxes = dividendsCopy.Copy().Multiply(GetCountry().taxationForRich.getTypedValue().tax);
+                    dividendsCopy.subtract(taxes);
+                    return new Procent(dividendsCopy, ownership.GetMarketValue(), false);
                 }
             }
         }
@@ -641,7 +641,7 @@ namespace Nashet.EconomicSimulation
 
         public Procent GetWorkForceFulFilling()
         {
-            return Procent.makeProcent(getWorkForce(), workForcePerLevel * level, false);
+            return new Procent(getWorkForce(), workForcePerLevel * level, false);
         }
         override public List<Storage> getRealAllNeeds()
         {
@@ -663,7 +663,7 @@ namespace Nashet.EconomicSimulation
             Procent workforceProcent = GetWorkForceFulFilling();
             Procent inputFactor = getInputFactor();
             if (inputFactor.isZero() & isJustHiredPeople())
-                inputFactor = Procent.HundredProcent;
+                inputFactor = Procent.HundredProcent.Copy();
 
             if (inputFactor.isSmallerThan(workforceProcent))
                 efficencyFactor = inputFactor;

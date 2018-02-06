@@ -79,9 +79,7 @@ namespace Nashet.EconomicSimulation
             if (factory != null)
             {
                 setGUIElementsAccesability();
-                Factory.modifierEfficiency.getModifier(factory, out efficiencyText.GetComponent<ToolTipHandler>().text);
-
-
+                
                 caption.text = factory.ToString();
                 var sb = new StringBuilder();
                 sb = new StringBuilder();
@@ -139,11 +137,14 @@ namespace Nashet.EconomicSimulation
                 //    sb.Append("\nHowMuchHiredLastTurn ").Append(shownFactory.getHowMuchHiredLastTurn());
                 generaltext.text = sb.ToString();
                 //+"\nExpenses:"
+
                 efficiencyText.text = "Efficiency: " + Factory.modifierEfficiency.getModifier(factory);
+                efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(()=> "Efficiency: " + Factory.modifierEfficiency.GetDescription(factory));
+                
 
                 var owners = factory.ownership.GetAllShares().OrderByDescending(x => x.Value.get()).ToList();//.getString(" ", "\n");
                 ownership.text = "Biggest owner: " + owners[0].Key + " " + owners[0].Value + " (hover mouse for rest)";
-                ownership.GetComponent<ToolTipHandler>().SetDynamicString(() => owners.getString(" ", "\n"));
+                ownership.GetComponent<ToolTipHandler>().SetDynamicString(() =>"Owners:\n"+ owners.getString(" ", "\n"));
                 RefreshBuySellButtons();
             }
         }

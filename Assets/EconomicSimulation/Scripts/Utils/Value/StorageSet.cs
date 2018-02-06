@@ -209,7 +209,7 @@ namespace Nashet.ValueSpace
         //internal Procent HowMuchHaveOf(PrimitiveStorageSet need)
         //{
         //    PrimitiveStorageSet shortage = this.subtractOuside(need);
-        //    return Procent.makeProcent(shortage, need);
+        //    return new Procent(shortage, need);
         //}
 
         /// <summary>Returns NULL if search is failed</summary>

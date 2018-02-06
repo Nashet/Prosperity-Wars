@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
 
             // here should be careful copying of popUnit data
             //And careful editing of old unit
-            Procent newPopShare = Procent.makeProcent(sizeOfNewPop, source.getPopulation());
+            Procent newPopShare = new Procent(sizeOfNewPop, source.getPopulation());
 
             //Own PopUnit fields:
             loyalty = new Procent(source.loyalty.get());
@@ -353,7 +353,8 @@ namespace Nashet.EconomicSimulation
             else
             {
                 if (byWhom == getMovement())
-                    howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.ArmyMobilizationFactor);
+                    //howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.ArmyMobilizationFactor);
+                    howMuchCanMobilizeTotal = (int)Procent.HundredProcent.Copy().subtract(loyalty).multiply(getPopulation()).multiply(Options.ArmyMobilizationFactor).get();                        
                 else
                     howMuchCanMobilizeTotal = 0;
             }
@@ -565,33 +566,39 @@ namespace Nashet.EconomicSimulation
         //{
         //    return false;
         //}
-
+        /// <summary>
+        /// new value
+        /// </summary>        
         public Procent getLifeNeedsFullfilling()
         {
             float need = needsFulfilled.get();
             if (need < Options.PopOneThird)
-                return new Procent(needsFulfilled.get() * Options.PopStrataWeight.get());
-            //return needsFullfilled;
+                return new Procent(needsFulfilled.get() * Options.PopStrataWeight.get());            
             else
-                return Procent.HundredProcent;
+                return Procent.HundredProcent.Copy();
         }
+        /// <summary>
+        /// new value
+        /// </summary>        
         public Procent getEveryDayNeedsFullfilling()
         {
             float need = needsFulfilled.get();
             if (need <= Options.PopOneThird)
-                return Procent.ZeroProcent;
+                return Procent.ZeroProcent.Copy();
             if (need < Options.PopTwoThird)
                 return new Procent((needsFulfilled.get() - Options.PopOneThird) * Options.PopStrataWeight.get());
             //return needsFullfilled;
             else
-                return Procent.HundredProcent;
+                return Procent.HundredProcent.Copy();
         }
-
+        /// <summary>
+        /// new value
+        /// </summary>        
         public Procent getLuxuryNeedsFullfilling()
         {
             float need = needsFulfilled.get();
             if (need <= Options.PopTwoThird)
-                return Procent.ZeroProcent;
+                return Procent.ZeroProcent.Copy();
             //if (need == 0.999f)
             //    return Procent.HundredProcent;
             //else
@@ -650,7 +657,7 @@ namespace Nashet.EconomicSimulation
                 }
                 else
                     needsFulfilled.set(Game.market.buy(this, need, null).get() / need.get() / Options.PopStrataWeight.get());
-                //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
+                //needsFullfilled.set(new Procent(getConsumed().getContainer(), getRealLifeNeeds()));
                 //{
                 //    needsFullfilled.set(Game.market.buy(this, need, null), need);
                 //    needsFullfilled.divide(Options.PopStrataWeight);
@@ -676,9 +683,9 @@ namespace Nashet.EconomicSimulation
                 //Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
                 //if (spentMoneyOnEveryDayNeeds.isNotZero())
                 //    needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
-                var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+                var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, getRealEveryDayNeeds());
                 everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
-                needsFulfilled.add(everyDayNeedsFulfilled);
+                needsFulfilled.Add(everyDayNeedsFulfilled);
 
                 // buy luxury needs
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
@@ -724,9 +731,9 @@ namespace Nashet.EconomicSimulation
                             }
                         }
                     }
-                    var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
                     luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
-                    needsFulfilled.add(luxuryNeedsFulfilled);
+                    needsFulfilled.Add(luxuryNeedsFulfilled);
                     //Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
                     //if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
                     //    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
@@ -798,27 +805,27 @@ namespace Nashet.EconomicSimulation
             {
                 // todo - !! - check for substitutes
                 consumeWithPlannedEconomy(getRealLifeNeeds());
-                //needsFullfilled.set(Procent.makeProcent(getConsumed().getContainer(), getRealLifeNeeds()));
-                var lifeNeedsFulfilled = Procent.makeProcent(getConsumed(), getRealLifeNeeds());
+                //needsFullfilled.set(new Procent(getConsumed().getContainer(), getRealLifeNeeds()));
+                var lifeNeedsFulfilled = new Procent(getConsumed(), getRealLifeNeeds());
                 lifeNeedsFulfilled.divide(Options.PopStrataWeight);
                 needsFulfilled.set(lifeNeedsFulfilled);
 
                 var everyDayNeedsConsumed = consumeWithPlannedEconomy(getRealEveryDayNeeds());
                 if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    var everyDayNeedsFulfilled = Procent.makeProcent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+                    var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, getRealEveryDayNeeds());
                     everyDayNeedsFulfilled.divide(Options.PopStrataWeight);
-                    needsFulfilled.add(everyDayNeedsFulfilled);
+                    needsFulfilled.Add(everyDayNeedsFulfilled);
                 }
 
                 var luxuryNeedsConsumed = consumeWithPlannedEconomy(getRealLuxuryNeeds());
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    var luxuryNeedsFulfilled = Procent.makeProcent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
                     luxuryNeedsFulfilled.divide(Options.PopStrataWeight);
-                    needsFulfilled.add(luxuryNeedsFulfilled);
+                    needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
-                //var consumed = Procent.makeProcent(getConsumed().getContainer(), getRealAllNeeds());
+                //var consumed = new Procent(getConsumed().getContainer(), getRealAllNeeds());
                 //consumed.multiply(Options.PopStrataWeight);
                 //needsFullfilled.set(consumed);
             }
@@ -933,7 +940,7 @@ namespace Nashet.EconomicSimulation
         // Not called in capitalism
         public void payTaxToAllAristocrats()
         {
-            Value taxSize = getGainGoodsThisTurn().multiplyOutside(GetCountry().serfdom.status.getTax());
+            Value taxSize = getGainGoodsThisTurn().Multiply(GetCountry().serfdom.status.getTax());
             GetProvince().shareWithAllAristocrats(storage, taxSize);
         }
         abstract public bool shouldPayAristocratTax();

@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
             incomeTaxPayed.setZero();
         }
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
-        protected Value getSpendingLimit(Value value)
+        protected Value getSpendingLimit(ReadOnlyValue value)
         {
             return moneyIncomeLastTurn.Copy().subtract(value, false);
         }
@@ -141,7 +141,7 @@ namespace Nashet.EconomicSimulation
         //}
         /// <summary> Returns how much you lack. Doesn't change data
         /// WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-        internal Value GetLackingMoney(Value need)
+        internal Value GetLackingMoney(ReadOnlyValue need)
         {
             return need.Copy().subtract(getMoneyAvailable());
         }
@@ -183,11 +183,11 @@ namespace Nashet.EconomicSimulation
         //        return false;
         //}
         /// <summary> Includes deposits </summary>    
-        internal bool canPay(Value howMuchPay)
+        internal bool canPay(ReadOnlyValue howMuchPay)
         {
             return getMoneyAvailable().isBiggerOrEqual(howMuchPay);
         }
-        internal bool canPayCashOnly(Value howMuchPay)
+        internal bool canPayCashOnly(ReadOnlyValue howMuchPay)
         {
             return cash.isBiggerOrEqual(howMuchPay);
         }
@@ -201,7 +201,7 @@ namespace Nashet.EconomicSimulation
         /// checks inside. Wouldn't pay if can't. Takes credits from bank
         /// Doesn't pay tax, doesn't register transaction
         /// </summary>    
-        public bool payWithoutRecord(Agent whom, Value howMuch, bool showMessageAboutNegativeValue = true)
+        public bool payWithoutRecord(Agent whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (canPay(howMuch))
             {

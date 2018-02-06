@@ -24,7 +24,7 @@ namespace Nashet.ValueSpace
             //value = new Value(inAmount);
             // TODO exceptions!!
         }
-        public Storage(Product inProduct, Value inAmount) : base(inAmount)
+        public Storage(Product inProduct, ReadOnlyValue inAmount) : base(inAmount)
         {
             product = inProduct;
         }
@@ -169,23 +169,27 @@ namespace Nashet.ValueSpace
         }
 
 
-        internal Storage multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
+        internal Storage Multiply(float invalue, bool showMessageAboutOperationFails = true)
         {
-            if (invalue < 0f)
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Storage multiply failed");
-                return new Storage(this.getProduct(), 0f);
-            }
-            else
-                return new Storage(this.getProduct(), get() * invalue);
+            //if (invalue < 0f)
+            //{
+            //    if (showMessageAboutOperationFails)
+            //        Debug.Log("Storage multiply failed");
+            //    return new Storage(this.getProduct(), 0f);
+            //}
+            //else
+            //    return new Storage(this.getProduct(), get() * invalue);
+            multiply(invalue);
+            return this;
         }
         /// <summary>
         /// returns new value
         /// </summary>    
-        public Storage multiplyOutside(Value invalue)
+        public Storage Multiply(ReadOnlyValue invalue)
         {
-            return new Storage(this.getProduct(), get() * invalue.get());
+            //return new Storage(this.getProduct(), get() * invalue.get());
+            multiply(invalue);
+            return this;
         }
         /// <summary> Returns true if has that good or it's substitute</summary>    
         public bool has(Storage storage)

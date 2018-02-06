@@ -106,28 +106,33 @@ namespace Nashet.EconomicSimulation
 
                 if (pop.popType.isProducer())
                 {
-                    efficiencyText.enabled = true;
+                    efficiencyText.gameObject.SetActive(true);
                     efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop);
-                    efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(() => PopUnit.modEfficiency.GetDescription(pop));
+                    efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Efficiency: " + PopUnit.modEfficiency.GetDescription(pop));
                 }
                 else
                 {
-                    efficiencyText.enabled = false;
+                    efficiencyText.gameObject.SetActive(false);
                     //efficiencyText.GetComponent<ToolTipHandler>().SetText("");//it's disabled anyway
                 }
                 var thisInvestor = pop as Investor;
                 if (thisInvestor != null)
                 {
-                    var found = World.GetAllShares(thisInvestor).OrderByDescending(x=>x.Value.get());
-                    property.GetComponent<ToolTipHandler>().SetText(found.getString(" share: ", "\n"));
+                    property.gameObject.SetActive(true);
+                    var found = World.GetAllShares(thisInvestor).OrderByDescending(x => x.Value.get());
+                    property.GetComponent<ToolTipHandler>().SetText("Owns:\n" + found.getString(", ", "\n"));
                 }
+                else
+                    property.gameObject.SetActive(false);
+
                 issues.GetComponent<ToolTipHandler>().SetDynamicString(
                     delegate ()
                     {
-                        var items = from pair in pop.getIssues()
-                                    orderby pair.Value descending
-                                    select pair;
-                        return items.getString(" willing ", "\n");
+                        //var items = from pair in pop.getIssues()
+                        //            orderby pair.Value descending
+                        //            select pair;
+                        var items = pop.getIssues().OrderBy(x => x.Value);
+                        return "Issues:\n" + items.getString(" willing ", "\n");
                     }
                     );
             }

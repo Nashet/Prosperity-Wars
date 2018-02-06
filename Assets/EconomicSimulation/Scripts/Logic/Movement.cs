@@ -186,7 +186,7 @@ namespace Nashet.EconomicSimulation
                 targetReform.setValue(targetReformValue);
             foreach (var pop in members)
             {
-                pop.loyalty.add(Options.PopLoyaltyBoostOnRevolutionWon);
+                pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionWon);
                 pop.loyalty.clamp100();
             }
             killMovement();
@@ -198,7 +198,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var pop in members)
             {
-                pop.loyalty.add(Options.PopLoyaltyBoostOnRevolutionLost);
+                pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionLost);
                 pop.loyalty.clamp100();
             }
             //_isInRevolt = false;
@@ -254,6 +254,11 @@ namespace Nashet.EconomicSimulation
             sendArmy(place.getCapital(), Procent.HundredProcent);
             _isInRevolt = true;
         }
+        /// <summary>
+        /// new value
+        /// </summary>
+        /// <param name="toWhom"></param>
+        /// <returns></returns>
         public Procent getRelativeStrength(Staff toWhom)
         {
             //var governmentHomeArmy = country.getDefenceForces();
@@ -266,12 +271,12 @@ namespace Nashet.EconomicSimulation
             if (toWhomStrenght == 0f)
             {
                 if (thisStrenght == 0f)
-                    return Procent.ZeroProcent;
+                    return Procent.ZeroProcent.Copy();
                 else
-                    return Procent.Max999;
+                    return Procent.Max999.Copy();
             }
             else
-                return Procent.makeProcent(thisStrenght, toWhomStrenght);
+                return new Procent(thisStrenght, toWhomStrenght);
         }
     }
 }

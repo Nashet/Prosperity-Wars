@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         protected void produce(Value multiplier)
         {
-            addProduct(getType().basicProduction.multiplyOutside(multiplier));
+            addProduct(getType().basicProduction.Copy().Multiply(multiplier));
             if (getGainGoodsThisTurn().isNotZero())
             {
                 storage.add(getGainGoodsThisTurn());
@@ -84,9 +84,9 @@ namespace Nashet.EconomicSimulation
         protected Procent getInputFactor(Procent multiplier)
         {
             if (multiplier.isZero())
-                return Procent.ZeroProcent;
+                return Procent.ZeroProcent.Copy();
             if (getType().isResourceGathering())
-                return Procent.HundredProcent;
+                return Procent.HundredProcent.Copy();
 
             List<Storage> reallyNeedResources = new List<Storage>();
             //Storage available;
@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
             // how much we really want
             foreach (Storage input in getType().resourceInput)
             {
-                reallyNeedResources.Add(input.multiplyOutside(multiplier));
+                reallyNeedResources.Add(input.Copy().Multiply(multiplier));
             }
 
             // checking if there is enough in market
@@ -145,7 +145,7 @@ namespace Nashet.EconomicSimulation
                 Value denominator = getType().resourceInput.GetFirstSubstituteStorage(need.getProduct()).Copy().multiply( multiplier);
                 if (denominator.isNotZero()) 
                 {
-                    var newfactor = Procent.makeProcent(need, denominator);
+                    var newfactor = new Procent(need, denominator);
                     if (newfactor.isSmallerThan(inputFactor))
                         inputFactor = newfactor;
                 }
@@ -211,14 +211,12 @@ namespace Nashet.EconomicSimulation
         protected float getLocalEffectiveDemand(Product product, Procent multiplier)
         {
             // need to know how much i Consumed inside my needs
-            Storage need = getType().resourceInput.GetFirstSubstituteStorage(product);
+            Storage need = getType().resourceInput.GetFirstSubstituteStorage(product).Copy();
             if (need.isZero())
                 return 0f;
             else
-            {
-                //Storage realNeed = new Storage(need.getProduct(), need.get() * multiplier.get());
-                Storage realNeed = need.multiplyOutside(multiplier.get());
-                //Storage realNeed = new Storage(need.getProduct(), need.get() * getInputFactor());
+            {                
+                Storage realNeed = need.Multiply(multiplier.get());             
                 Storage canAfford = howMuchCanAfford(realNeed);
                 return canAfford.get();
             }

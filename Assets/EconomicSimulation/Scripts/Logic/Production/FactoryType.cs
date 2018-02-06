@@ -356,9 +356,9 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province);
-
-            var payToGovernment = province.GetCountry().taxationForRich.getTypedValue().tax.SendProcentOf(profit);
-            return Procent.makeProcent(profit, GetBuildCost());
+            var taxes = profit.Copy().multiply(province.GetCountry().taxationForRich.getTypedValue().tax);
+            profit.subtract(taxes);
+            return new Procent(profit, GetBuildCost());
         }
 
         internal bool canBuildNewFactory(Province where)

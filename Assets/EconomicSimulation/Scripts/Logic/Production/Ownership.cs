@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
             var total = GetAllAssetsValue();
             foreach (var item in ownership)
             {
-                yield return new KeyValuePair<IShareOwner, Procent>(item.Key, Procent.makeProcent(item.Value.GetShare(), total));
+                yield return new KeyValuePair<IShareOwner, Procent>(item.Key, new Procent(item.Value.GetShare(), total));
             }
         }
 
@@ -177,7 +177,7 @@ namespace Nashet.EconomicSimulation
                 total.Add(value);
             }
 
-            var res = Procent.makeProcent(ownedByAnyCountry, total, false); // to avoid console spam with ghost factories
+            var res = new Procent(ownedByAnyCountry, total, false); // to avoid console spam with ghost factories
             if (res.isBiggerOrEqual(Procent._50Procent))
                 return true;
             else
@@ -189,7 +189,7 @@ namespace Nashet.EconomicSimulation
             var onSale = new Value(0f);
             foreach (var item in ownership)
                 onSale.Add(item.Value.GetShareForSale());
-            return Procent.makeProcent(onSale, totallyInvested);
+            return new Procent(onSale, totallyInvested);
         }
 
         internal bool IsOnlyOwner(IShareOwner owner)
@@ -208,7 +208,7 @@ namespace Nashet.EconomicSimulation
         {
             Share record;
             if (ownership.TryGetValue(owner, out record))
-                return Procent.makeProcent(record.GetShareForSale(), GetAllAssetsValue());
+                return new Procent(record.GetShareForSale(), GetAllAssetsValue());
             else
                 return Procent.ZeroProcent.Copy();
         }
@@ -219,7 +219,7 @@ namespace Nashet.EconomicSimulation
         {
             Share record;
             if (ownership.TryGetValue(owner, out record))
-                return Procent.makeProcent(record.GetShare(), GetAllAssetsValue());
+                return new Procent(record.GetShare(), GetAllAssetsValue());
             else
                 return Procent.ZeroProcent.Copy();
         }
@@ -301,7 +301,8 @@ namespace Nashet.EconomicSimulation
             else
             {
 
-                var purchaseValue = GetShareAssetsValue(Options.PopBuyAssetsAtTime);
+                //var purchaseValue = GetShareMarketValue(Options.PopBuyAssetsAtTime);
+                var purchaseValue = GetInvestmentCost();
                 var sharesToBuy = ownership.Where(x => x.Value.GetShareForSale().IsEqual(purchaseValue));
 
                 if (sharesToBuy.Count() == 0)
@@ -331,8 +332,8 @@ namespace Nashet.EconomicSimulation
 
                         shareToBuy.Value.ReduceSale(cost);
 
-                        var boughtProcent = Procent.makeProcent(cost, parent.ownership.totallyInvested);
-                        Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key);
+                        var boughtProcent = new Procent(cost, parent.ownership.totallyInvested);
+                        //Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key);
                     }
                 }
             }
@@ -348,8 +349,8 @@ namespace Nashet.EconomicSimulation
             else
                 return parent.GetMargin();
             //var payToGovernment = parent.GetCountry().taxationForRich.getTypedValue().tax.getProcentOf(GetDividends());
-            //return Procent.makeProcent(payedDividends.Copy().subtract(payToGovernment), ownership.GetMarketValue(), false);
-            //return Procent.makeProcent(parent.GetDividends(), GetMarketValue(), false); 
+            //return new Procent(payedDividends.Copy().subtract(payToGovernment), ownership.GetMarketValue(), false);
+            //return new Procent(parent.GetDividends(), GetMarketValue(), false); 
         }
         /// <summary>
         /// Cost of standard share

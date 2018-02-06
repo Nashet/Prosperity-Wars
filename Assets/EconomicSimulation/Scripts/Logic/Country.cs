@@ -922,7 +922,7 @@ namespace Nashet.EconomicSimulation
             // military staff
             base.simulate();
 
-            ownershipSecurity.add(Options.CountryOwnershipRiskRestoreSpeed, false);
+            ownershipSecurity.Add(Options.CountryOwnershipRiskRestoreSpeed, false);
             ownershipSecurity.clamp100();
             // get science points
             var spBase = getSciencePointsBase();
@@ -1014,7 +1014,7 @@ namespace Nashet.EconomicSimulation
                         else
                         {
                             minLimit = new Storage(takenFromStorage);
-                            maxLimit = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                            maxLimit = takenFromStorage.Multiply(Options.CountrySaveProductsDaysMaximum);
                         }
                     }
                     var howMuchHave = countryStorageSet.GetFirstSubstituteStorage(product);
@@ -1069,7 +1069,7 @@ namespace Nashet.EconomicSimulation
                     if (takenFromStorage.isZero())
                         desiredMinimum = new Storage(takenFromStorage.getProduct(), Options.CountryMinStorage);// todo change
                     else
-                        desiredMinimum = takenFromStorage.multiplyOutside(Options.CountryBuyProductsForXDays);
+                        desiredMinimum = takenFromStorage.Copy().Multiply(Options.CountryBuyProductsForXDays);
                 }
                 var toBuy = desiredMinimum.Copy().subtract(countryStorageSet.GetFirstSubstituteStorage(product), false);
                 if (toBuy.isBiggerThan(Value.Zero)) // have less than desiredMinimum
@@ -1084,7 +1084,7 @@ namespace Nashet.EconomicSimulation
                         if (takenFromStorage.isZero())
                             desiredMaximum = new Storage(takenFromStorage.getProduct(), Options.CountryMaxStorage);// todo change
                         else
-                            desiredMaximum = takenFromStorage.multiplyOutside(Options.CountrySaveProductsDaysMaximum);
+                            desiredMaximum = takenFromStorage.Copy().Multiply(Options.CountrySaveProductsDaysMaximum);
                     }
                     var toSell = countryStorageSet.GetFirstSubstituteStorage(product).Copy().subtract(desiredMaximum, false);
                     if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
@@ -1274,7 +1274,7 @@ namespace Nashet.EconomicSimulation
             {
                 worldGDP.Add(item.getGDP());
             }
-            return Procent.makeProcent(this.getGDP(), worldGDP);
+            return new Procent(this.getGDP(), worldGDP);
         }
         /// <summary>
         /// Returns 0 if failed
@@ -1313,7 +1313,7 @@ namespace Nashet.EconomicSimulation
             var result = new List<KeyValuePair<Culture, Procent>>();
             foreach (var item in cultures)
             {
-                result.Add(new KeyValuePair<Culture, Procent>(item.Key, Procent.makeProcent(item.Value, totalPopulation)));
+                result.Add(new KeyValuePair<Culture, Procent>(item.Key, new Procent(item.Value, totalPopulation)));
             }
             result.Sort(ProcentOrder);
             return result;
@@ -1423,14 +1423,14 @@ namespace Nashet.EconomicSimulation
         /// Forces payer to pay tax from taxable. Returns how much payed (new value)
         /// Don't call it manually, it called from Agent.Pay() automatically
         /// </summary>                
-        internal Value TakeIncomeTaxFrom(Agent taxPayer, Value taxable, bool isPoorStrata)
+        internal ReadOnlyValue TakeIncomeTaxFrom(Agent taxPayer, Value taxable, bool isPoorStrata)
         {
             var pop = taxPayer as PopUnit;
             if (pop != null
                 && pop.popType == PopType.Aristocrats
                 //&& Serfdom.IsNotAbolishedInAnyWay.checkIfTrue(GetCountry()))
                 && government.getTypedValue() == Government.Aristocracy)
-                return Value.Zero.Copy(); // don't pay with monarchy
+                return ReadOnlyValue.Zero; // don't pay with monarchy
             Procent tax;
             Value statistics;
             if (isPoorStrata)
@@ -1467,7 +1467,7 @@ namespace Nashet.EconomicSimulation
         }
         public bool TakeNaturalTax(PopUnit pop, Procent tax)
         {
-            var howMuchSend = tax.SendProcentOf(pop.getGainGoodsThisTurn());
+            var howMuchSend = pop.getGainGoodsThisTurn().Multiply(tax);
 
             if (pop.storage.isBiggerOrEqual(howMuchSend))
             {
