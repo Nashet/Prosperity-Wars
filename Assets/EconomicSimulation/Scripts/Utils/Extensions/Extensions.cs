@@ -87,6 +87,41 @@ namespace Nashet.Utils
             else
                 return false;
         }
+        static public bool HasComponent<T>(this MonoBehaviour that)
+        {
+            if (that.GetComponent<T>() == null)
+                return false;
+            else
+                return true;
+        }
+        static public bool HasComponent<T>(this GameObject that)
+        {
+            if (that.GetComponent<T>() == null)
+                return false;
+            else
+                return true;
+        }
+        static public bool HasComponentInParent<T>(this GameObject that)
+        {
+            if (that.transform.parent== null || that.transform.parent.GetComponent<T>() == null)
+                return false;
+            else
+                return true;
+        }
+        static public bool HasComponentInParent<T>(this MonoBehaviour that)
+        {
+            if (that.transform.parent == null || that.transform.parent.GetComponent<T>() == null)
+                return false;
+            else
+                return true;
+        }
+        static public bool HasComponentInParentParent<T>(this MonoBehaviour that)
+        {
+            if (that.transform.parent == null || that.transform.parent.parent == null || that.transform.parent.parent.GetComponent<T>() == null)
+                return false;
+            else
+                return true;
+        }
         public static bool isLeftTopCorner(this Texture2D image, int x, int y)
         {
             if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)

@@ -18,11 +18,18 @@ namespace Nashet.EconomicSimulation
         {
             btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
             btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
-            btnPlay.image.color = Color.grey;
+            //btnPlay.image.color = GUIChanger.DisabledButtonColor; 
+            //btnPlay.interactable = false;
             MainCamera.topPanel = this;
-            Hide();
+            // Hide();
         }
-
+        bool firstUpdate = true;
+        private void Update()
+        {
+            if (firstUpdate)
+                btnPlay.image.color = GUIChanger.DisabledButtonColor;
+            firstUpdate = false;
+        }
         public override void Refresh()
         {
             var sb = new StringBuilder();
@@ -64,8 +71,8 @@ namespace Nashet.EconomicSimulation
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))               
-                    MainCamera.productionWindow.ClearAllFiltres();                   
+                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))
+                    MainCamera.productionWindow.ClearAllFiltres();
                 else
                     MainCamera.productionWindow.Hide();
             else
@@ -107,7 +114,7 @@ namespace Nashet.EconomicSimulation
             if (Game.isRunningSimulation())
             {
                 Game.pauseSimulation();
-                button.image.color = Color.grey;
+                button.image.color = GUIChanger.DisabledButtonColor;
                 Text text = button.GetComponentInChildren<Text>();
                 text.text = "Pause";
             }
@@ -127,13 +134,15 @@ namespace Nashet.EconomicSimulation
 
             if (Game.isRunningSimulation())
             {
-                btnPlay.image.color = Color.white;
+                //btnPlay.interactable = true;
+                btnPlay.image.color = GUIChanger.ButtonsColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
                 text.text = "Playing";
             }
             else
             {
-                btnPlay.image.color = Color.grey;
+                //btnPlay.interactable = false;
+                btnPlay.image.color = GUIChanger.DisabledButtonColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
                 text.text = "Pause";
             }

@@ -240,7 +240,10 @@ namespace Nashet.EconomicSimulation
             //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
         }
 
-
+        /// <summary>
+        /// Isn't Gold & Invested by anyone
+        /// </summary>
+        /// <returns></returns>
         public bool isTradable()
         {
             return this != Product.Gold && IsInventedByAnyOne();

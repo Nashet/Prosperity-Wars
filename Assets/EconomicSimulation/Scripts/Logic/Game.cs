@@ -531,16 +531,18 @@ namespace Nashet.EconomicSimulation
             // strongly before PrepareForNewTick
             Game.market.simulatePriceChangeBasingOnLastTurnData();
 
-            Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-                                // includes workforce balancing
-                                // and sets statistics to zero. Should go after price calculation
+            // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
+            Game.calcBattles();
+
+            // includes workforce balancing
+            // and sets statistics to zero. Should go after price calculation
             prepareForNewTick();
 
             // big PRODUCE circle
             foreach (Country country in Country.getAllExisting())
                 foreach (Province province in country.ownedProvinces)
-                    foreach (var producer in province.getAllProducers())                    
-                        producer.produce();                                            
+                    foreach (var producer in province.getAllProducers())
+                        producer.produce();
 
             // big CONCUME circle   
             foreach (Country country in Country.getAllExisting())
@@ -623,9 +625,9 @@ namespace Nashet.EconomicSimulation
                         }
                         //because income come only after consuming, and only after FULL consumption
                         //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
-                            // POps who can't trade will pay tax BEFORE consumption, not after
-                            // Otherwise pops who can't trade avoid tax
-                           // pop.GetCountry().TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.popType.isPoorStrata());//pop.payTaxes();
+                        // POps who can't trade will pay tax BEFORE consumption, not after
+                        // Otherwise pops who can't trade avoid tax
+                        // pop.GetCountry().TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.popType.isPoorStrata());//pop.payTaxes();
                         pop.calcLoyalty();
                         //if (Game.Random.Next(10) == 1)
                         {

@@ -60,9 +60,16 @@ namespace Nashet.UnityUIUtils
             position.Set(lastDragPosition.x - 10f, lastDragPosition.y - 10f, 0);
             transform.localPosition = position;
             lastDragPosition = transform.localPosition;
+
+            //var image = GetComponent<Image>();
+            //image.color = GUIChanger.BackgroundColor;
+            //image.material = null;
+            //image = GetComponentInChildren<Image>();
+            //image.color = GUIChanger.ButtonsColor;
+            GUIChanger.Apply(this.gameObject);
         }
 
-        override public void OnDrag(PointerEventData data)
+        override public void OnDrag(PointerEventData data) // need it to place windows in stair-order
         {
             base.OnDrag(data);
             lastDragPosition = transform.localPosition;

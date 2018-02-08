@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Text generalText;
         // Use this for initialization
-        void Awake()
+        void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
             Hide();

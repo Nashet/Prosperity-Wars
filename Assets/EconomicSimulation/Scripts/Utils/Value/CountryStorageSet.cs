@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using Nashet.Utils;
 using Nashet.EconomicSimulation;
 using System.Collections.Generic;

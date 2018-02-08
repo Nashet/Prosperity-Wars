@@ -32,7 +32,9 @@ namespace Nashet.EconomicSimulation
         internal PricePool priceHistory;
         internal StorageSet sentToMarket = new StorageSet();
         public Market() : base(0f, null, null)
-        { }
+        {
+
+        }
         internal Value getPrice(Product whom)
         {
             return marketPrice.getCheapestStorage(whom);
@@ -391,8 +393,8 @@ namespace Nashet.EconomicSimulation
                 if (item.isNotZero())
                     buy(buyer, item, subsidizer);
         }
-        
-        
+
+
         /// <summary>
         /// Buying needs in circle, by Procent in time
         /// return true if buying is zero (bought all what it wanted)
@@ -523,10 +525,10 @@ namespace Nashet.EconomicSimulation
         public void simulatePriceChangeBasingOnLastTurnData()
         {
             float balance;
-            float priceChangeSpeed = 0;
-            float highestChangingSpeed = 0.2f; //%
-            float highChangingSpeed = 0.04f;//%
-            float antiBalance;
+            float priceChangeSpeed;
+            //float highestChangingSpeed = 0.2f; //%
+            //float highChangingSpeed = 0.04f;//%
+
             foreach (Storage price in this.marketPrice)
                 if (price.getProduct().isTradable())
                 {
@@ -534,8 +536,7 @@ namespace Nashet.EconomicSimulation
                     /// Result > 1 mean demand is higher, price should go up  
                     /// Result fewer 1 mean supply is higher, price should go down              
 
-                    //if (balance < 1f) antiBalance = 1 / balance;
-                    //else antiBalance = balance;
+
                     priceChangeSpeed = 0;
                     if (balance >= 1f)//0.95f)
                         priceChangeSpeed = 0.001f + price.get() * 0.1f;
@@ -543,9 +544,7 @@ namespace Nashet.EconomicSimulation
                     {
                         if (balance <= 0.8f)
                             //priceChangeSpeed = -0.001f + price.get() * -0.02f;
-                            priceChangeSpeed = -0.001f + price.get() * -0.1f;
-                        // - 0.1f; caused dsb 1-0 fluctuation, destroying industry
-                        //}
+                            priceChangeSpeed = -0.001f + price.get() * -0.1f;// - 0.1f; caused dsb 1-0 fluctuation, destroying industry
                     }
                     ChangePrice(price, priceChangeSpeed);
                 }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+
 namespace Nashet.Utils
 {
     public static class StringExtension
