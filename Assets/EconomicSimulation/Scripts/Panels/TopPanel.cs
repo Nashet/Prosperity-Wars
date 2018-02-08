@@ -8,6 +8,9 @@ namespace Nashet.EconomicSimulation
     public class TopPanel : Window
     {
         [SerializeField]
+        private MainCamera mainCamera;
+
+        [SerializeField]
         private Button btnPlay, btnStep, btnTrade;
 
         [SerializeField]
@@ -124,6 +127,11 @@ namespace Nashet.EconomicSimulation
         void onbtnPlayClick(Button button)
         {
             switchHaveToRunSimulation();
+        }
+        public void OnFocusOnCountryClick()
+        {
+            if (Game.Player!=null)
+                mainCamera.focus(Game.Player.getCapital());
         }
         public void switchHaveToRunSimulation()
         {

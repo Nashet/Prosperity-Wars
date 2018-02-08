@@ -8,6 +8,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Canvas canvas;
 
+        private float focusHeight;
+
         public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
         public static PopulationPanel populationPanel;
@@ -31,6 +33,11 @@ namespace Nashet.EconomicSimulation
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
         private float deltaTime;
+
+        private void Start()
+        {
+            focusHeight = this.transform.position.z;
+        }
         void FixedUpdate()
         {
             if (gameIsLoaded)
@@ -114,7 +121,7 @@ namespace Nashet.EconomicSimulation
                         deltaTime = Time.time + 1f;
                         Game.simulate();
                     }
-                    
+
                     //if (Time.unscaledTime - lastTime > howOften)
                     //{                    
                     //    lastTime = Time.unscaledTime;
@@ -246,7 +253,7 @@ namespace Nashet.EconomicSimulation
         public void focus(Province province)
         {
             gameObject.transform.position = new Vector3(province.getPosition().x,
-                        province.getPosition().y, gameObject.transform.position.z);
+                        province.getPosition().y, focusHeight);
         }
 
     }
