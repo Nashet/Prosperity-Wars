@@ -25,6 +25,15 @@ namespace Nashet.UnityUIUtils
         }
 
         [SerializeField]
+        Color darkestColor;
+
+        private static Color _darkestColor;
+        public static Color DarkestColor
+        {
+            get { return _darkestColor; }
+        }
+
+        [SerializeField]
         Color disabledButtonColor;
 
         private static Color _disabledButtonColor;
@@ -39,7 +48,7 @@ namespace Nashet.UnityUIUtils
             _buttons = buttons;
 
             _background = background;
-
+            _darkestColor = darkestColor;
             _disabledButtonColor = disabledButtonColor;
             Apply(this.gameObject);         
         }
