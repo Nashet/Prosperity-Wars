@@ -32,7 +32,11 @@ namespace Nashet.EconomicSimulation
         private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
-        private float deltaTime;
+        //[SerializeField]
+        /// <summary>Limits simulation speed (in seconds)</summary>
+        private float simulationSpeedLimit = 0.2f;
+        private float previousFrameTime;
+
 
         private void Start()
         {
@@ -116,17 +120,12 @@ namespace Nashet.EconomicSimulation
 
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
-                    //if (Time.time > deltaTime)
+                    if (Game.isPlayerSurrended() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
-                        deltaTime = Time.time + 1f;
                         Game.simulate();
+                        previousFrameTime = Time.time;
+                        refreshAllActive();
                     }
-
-                    //if (Time.unscaledTime - lastTime > howOften)
-                    //{                    
-                    //    lastTime = Time.unscaledTime;
-                    refreshAllActive();
-                    //}
                 }
 
 
