@@ -14,8 +14,8 @@ namespace Nashet.EconomicSimulation
         { }
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && GetCountry().isInvented(Invention.Farming)
-                || targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy)
+            if (targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
+                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
                 || targetType == PopType.Tribesmen)
                 return true;
             else
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
             if (GetProvince().getResource() != null)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = GetProvince().getAllInvestmentProjects().Where(x => x.CanProduce(GetProvince().getResource()));
+                var projects = GetProvince().getAllInvestmentProjects(this).Where(x => x.CanProduce(GetProvince().getResource()));
                 
                 var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x)).get());
                 if (project != null && project.GetMargin().multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))

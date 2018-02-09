@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
             //{ }
             internal override bool isAvailable(Country country)
             {
-                if (ID == 4 && !country.isInvented(Invention.Collectivism))
+                if (ID == 4 && !country.Invented(Invention.Collectivism))
                     return false;
                 else
                     return true;
@@ -480,15 +480,15 @@ namespace Nashet.EconomicSimulation
             , "Economy is market economy", true);
         public class ReformValue : AbstractReformValue
         {
-            private readonly bool _allowForeighnIvestments;
-            public bool AllowForeighnIvestments
+            private readonly bool _allowForeignIvestments;
+            public bool AllowForeignInvestments
             {
-                get { return _allowForeighnIvestments; }
+                get { return _allowForeignIvestments; }
             }
             public ReformValue(string name, string description, int id, bool _allowForeighnIvestments, DoubleConditionsList condition) : base(name, description, id, condition)
             {
                 PossibleStatuses.Add(this);
-                this._allowForeighnIvestments = _allowForeighnIvestments;
+                this._allowForeignIvestments = _allowForeighnIvestments;
             }
 
             internal override bool isAvailable(Country country)
@@ -500,7 +500,7 @@ namespace Nashet.EconomicSimulation
                 if (requested.ID == 1)
                     return true;
                 else
-                if (requested.ID == 2 && country.isInvented(Invention.Collectivism))
+                if (requested.ID == 2 && country.Invented(Invention.Collectivism))
                     return true;
                 else
                 if (requested.ID == 3)
@@ -633,10 +633,10 @@ namespace Nashet.EconomicSimulation
             {
                 ReformValue requested = this;
 
-                if ((requested.ID == 4) && country.isInvented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
+                if ((requested.ID == 4) && country.Invented(Invention.Collectivism) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 4))
                     return true;
                 else
-                if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
+                if ((requested.ID == 3) && country.Invented(Invention.Banking) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 3))
                     return true;
                 else
                 if ((requested.ID == 2) && (country.serfdom.status.ID == 0 || country.serfdom.status.ID == 1 || country.serfdom.status.ID == 2))
@@ -930,7 +930,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool isAvailable(Country country)
         {
-            if (country.isInvented(Invention.Welfare))
+            if (country.Invented(Invention.Welfare))
                 return true;
             else
                 return false;
@@ -1101,7 +1101,7 @@ namespace Nashet.EconomicSimulation
 
         internal override bool isAvailable(Country country)
         {
-            if (country.isInvented(Invention.Welfare))
+            if (country.Invented(Invention.Welfare))
                 return true;
             else
                 return false;
@@ -1334,10 +1334,10 @@ namespace Nashet.EconomicSimulation
             internal override bool isAvailable(Country country)
             {
                 ReformValue requested = this;
-                if ((requested.ID == 4) && country.isInvented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
+                if ((requested.ID == 4) && country.Invented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
                     return true;
                 else
-                if ((requested.ID == 3) && country.isInvented(Invention.Banking) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 3))
+                if ((requested.ID == 3) && country.Invented(Invention.Banking) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 3))
                     return true;
                 else
                 if ((requested.ID == 2) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 2))

@@ -144,11 +144,11 @@ namespace Nashet.EconomicSimulation
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.GetCountry();
 
+            
+            btnBuild.interactable = FactoryType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
 
-            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
-
-            btMobilize.GetComponent<ToolTipHandler>().SetText(btnBuild.GetComponent<ToolTipHandler>().text);
-            btMobilize.interactable = btnBuild.interactable;
+            
+            btMobilize.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btMobilize.GetComponent<ToolTipHandler>().text);
 
 
             //if (Game.devMode)

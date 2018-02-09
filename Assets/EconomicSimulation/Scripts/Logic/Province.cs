@@ -22,7 +22,17 @@ namespace Nashet.EconomicSimulation
         new DoubleCondition((province, country)=>(province as Province).GetCountry()==country, x=>"That's your province", true),
     });
         public static readonly DoubleCondition doesCountryOwn =
-        new DoubleCondition((country, province) => (province as Province).isBelongsTo(country as Country), x => x + " owns that province", true);
+        new DoubleCondition((country, province) => (province as Province).isBelongsTo(country as Country),
+            x =>
+            {
+                if ((x as Country) == Game.Player)
+                    return "You ("+ (x as Country).getName() + ") own that province";
+                else
+                    return (x as Country).getName() + " owns that province";
+            }
+        , true);
+
+
         public readonly static List<Province> allProvinces = new List<Province>();
         public static readonly Predicate<Province> All = x => true;
 
@@ -407,7 +417,7 @@ namespace Nashet.EconomicSimulation
             foreach (Factory factory in allFactories)
                 yield return factory;
             foreach (PopUnit pop in allPopUnits)
-                if (pop.popType.isProducer())                    
+                if (pop.popType.isProducer())
                     yield return pop;
         }
         public IEnumerable<Producer> getAllBuyers()
@@ -716,7 +726,7 @@ namespace Nashet.EconomicSimulation
                 terrain = TerrainTypes.Plains;
         }
         internal Product getResource()
-        {            
+        {
             if (resource.IsInventedByAnyOne())
                 return resource;
             else
@@ -1124,7 +1134,7 @@ namespace Nashet.EconomicSimulation
         /// Don't use it for aristocrats
         /// Shouldn't exist
         /// </summary>
-        public IEnumerable<IInvestable> getAllInvestmentProjects()
+        public IEnumerable<IInvestable> getAllInvestmentProjects(Agent investor)
         {
             var upgradeInvestments = getAllFactories().Where(x =>
                     canUpgradeFactory(x.getType())
@@ -1133,7 +1143,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in upgradeInvestments)
                 yield return item;
 
-            var buildInvestments = FactoryType.getAllInventedTypes(GetCountry()).Where(x => x.canBuildNewFactory(this));
+            var buildInvestments = FactoryType.getAllInventedTypes(GetCountry()).Where(x => x.canBuildNewFactory(this, investor));
             foreach (var item in buildInvestments)
                 yield return new NewFactoryProject(this, item);
 
@@ -1229,7 +1239,6 @@ namespace Nashet.EconomicSimulation
                 allFactories.Add(res);
                 return res;
             }
-
         }
 
         public string GetDescription()

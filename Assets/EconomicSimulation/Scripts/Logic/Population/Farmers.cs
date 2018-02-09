@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy)
+            if (targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
              || targetType == PopType.Tribesmen
              || targetType == PopType.Workers
                 )
@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats
-              || targetType == PopType.Capitalists && GetCountry().isInvented(Invention.Manufactures)
+              || targetType == PopType.Capitalists && GetCountry().Invented(Invention.Manufactures)
                 )
                 return true;
             else

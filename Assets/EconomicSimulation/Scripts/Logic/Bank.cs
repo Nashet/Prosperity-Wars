@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         internal bool giveLackingMoney(Agent taker, ReadOnlyValue sum)
         {
-            if (taker.GetCountry().isInvented(Invention.Banking))// find money in bank?
+            if (taker.GetCountry().Invented(Invention.Banking))// find money in bank?
             {
                 Value lackOfSum = sum.Copy().subtract(taker.cash);
                 if (canGiveMoney(taker, lackOfSum))

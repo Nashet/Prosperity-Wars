@@ -48,6 +48,8 @@ namespace Nashet.EconomicSimulation
         private bool justHiredPeople = true;
         private int hiredLastTurn;
         public readonly Owners ownership;
+        /// <summary>used only on initial factory building</summary>
+        private bool buildByPlannedEconomy;
         private IShareOwner currentInvestor;
 
         internal static readonly Modifier
@@ -59,7 +61,7 @@ namespace Nashet.EconomicSimulation
 
             modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 5f, false),
 
-            modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).GetCountry().isInvented(Invention.Mining) && (x as Factory).getType().isShaft(),
+            modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).GetCountry().Invented(Invention.Mining) && (x as Factory).getType().isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
 
             modifierBelongsToCountry = new Modifier(x => (x as Factory).ownership.IsCountryOwnsControlPacket(), "Control packet belongs to government", -0.35f, false),
@@ -112,7 +114,12 @@ namespace Nashet.EconomicSimulation
                 , true),
             conPlacedInOurCountry = new DoubleCondition((factory, agent) => (factory as Factory).GetCountry() == (agent as Consumer).GetCountry(),
             (factory) => "Enterprise placed in our country", true),
-            conNotLForNotCountry = new DoubleCondition((factory, agent) => (factory as Factory).GetCountry().economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
+            ///duplicated in FactoryTypes
+            conAllowsForeignInvestments = new DoubleCondition((factory, agent) => (factory as Factory).GetCountry() == (agent as Country)
+                || ((factory as Factory).GetCountry().economy.getTypedValue().AllowForeignInvestments
+                && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
+                (factory) => (factory as Factory).GetCountry() + " allows foreign investments or it isn't foreign investment", true),
+            conNotLForNotCountry = new DoubleCondition((factory, agent) => (agent as Country).economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
 
@@ -121,10 +128,10 @@ namespace Nashet.EconomicSimulation
             conditionsUpgrade = new DoubleConditionsList(new List<Condition>
             {
             conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved, conNotLForNotCountry,
-            conHaveMoneyOrResourcesToUpgrade, conPlacedInOurCountry
+            conHaveMoneyOrResourcesToUpgrade, conAllowsForeignInvestments
             }),
             conditionsClose = new DoubleConditionsList(new List<Condition> { conNotBuilding, conOpen, conPlacedInOurCountry, conNotLForNotCountry }),
-            conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conPlacedInOurCountry, conNotLForNotCountry }),
+            conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conAllowsForeignInvestments, conNotLForNotCountry }),
             conditionsDestroy = new DoubleConditionsList(new List<Condition> {
             //new Condition(Economy.isNotLF, x=>(x as Producer).getCountry()),
              conPlacedInOurCountry }).addForSecondObject(new List<Condition> { Economy.isNotLF }),
@@ -174,16 +181,17 @@ namespace Nashet.EconomicSimulation
              new Modifier(x=>(x as Factory).GetProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).GetCountry(), -1.0f, false),
              new Modifier(Government.isDespotism, x=>(x as Factory).GetCountry(), -0.30f, false), // remove this?
-             new Modifier(x=>!(x as Factory).GetCountry().isInvented(Invention.Manufactures)
-             && !(x as Factory).getType().isResourceGathering(), Invention.ManufacturesUnInvented.getName(), -1f, false)
+             new Modifier(x=>!(x as Factory).GetCountry().Invented((x as Factory).getType()), "Uses uninvented technologies", -0.3f, false)
             });
 
         /// <summary>
         /// Don't call it directly
         /// </summary>
 
-        public Factory(Province province, IShareOwner investor, FactoryType type, Value cost) : base(type, province)
+        public Factory(Province province, IShareOwner investor, FactoryType type, Value cost)
+            : base(type, province)
         {
+            //this.buildByPlannedEconomy = buildByPlannedEconomy;
             ownership = new Owners(this);
             if (investor != null) // that mean that factory is a fake
             {
@@ -692,7 +700,7 @@ namespace Nashet.EconomicSimulation
             toRemove = true;
 
             //return loans only if banking invented
-            if (GetCountry().isInvented(Invention.Banking))
+            if (GetCountry().Invented(Invention.Banking))
             {
                 if (loans.isNotZero())
                 {
@@ -977,12 +985,14 @@ namespace Nashet.EconomicSimulation
                 daysInConstruction++;
                 bool isBuyingComplete = false;
 
+                //if (buildByPlannedEconomy)
                 if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                 {
                     if (daysInConstruction >= Options.fabricConstructionTimeWithoutCapitalism)
                         if (GetCountry().countryStorageSet.has(constructionNeeds))
                         {
                             isBuyingComplete = true; //getCountry().countryStorageSet.send(this.getInputProductsReserve(), constructionNeeds);
+                            buildByPlannedEconomy = false;
                             //getCountry().countryStorageSet.send(this, )
                         }
                 }

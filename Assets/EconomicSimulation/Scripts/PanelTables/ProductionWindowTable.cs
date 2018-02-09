@@ -28,28 +28,19 @@ namespace Nashet.EconomicSimulation
         }
         protected override IEnumerable<Factory> ContentSelector()
         {
-            return Game.Player.getAllFactories();
-            //var factoriesToShow = new List<Factory>();
-            //foreach (Province province in Game.Player.ownedProvinces)
-            //    foreach (Factory factory in province.allFactories)
-            //        factoriesToShow.Add(factory);
-            //return factoriesToShow;
+            var selectedProvince = MainCamera.productionWindow.SelectedProvince;
+            if (selectedProvince == null)
+                return Game.Player.getAllFactories();
+            else
+                return selectedProvince.getAllFactories();
         }
-        //public override void onShowAllClick()
-        //{
-        //    base.onShowAllClick();
-
-        //    RemoveFilter(filterSelectedProvince);
-        //    //table.ClearAllFiltres();
-        //    table.Refresh();
-        //}
         protected override void AddRow(Factory factory, int number)
         {
             // Adding shownFactory name 
             AddCell(factory.GetDescription(), factory);
 
             // Adding province 
-            AddCell(factory.GetProvince().ToString(), factory.GetProvince());
+            AddCell(factory.GetProvince().ToString(), factory.GetProvince(), () => "Click to select this province");
 
             ////Adding production
             AddCell(factory.getGainGoodsThisTurn().ToString(), factory);

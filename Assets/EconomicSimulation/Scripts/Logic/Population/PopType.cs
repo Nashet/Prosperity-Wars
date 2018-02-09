@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
             //return militaryNeeds;
             var result = new List<Storage>();
             foreach (var item in militaryNeeds)
-                if (item.getProduct() != Product.Cattle || country.isInvented(Invention.Domestication))
+                if (item.getProduct() != Product.Cattle || country.Invented(Invention.Domestication))
                     //if (item.getProduct().IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;

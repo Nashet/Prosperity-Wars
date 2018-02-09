@@ -19,7 +19,10 @@ namespace Nashet.EconomicSimulation
         //private Province m_showingProvince;
 
         private Province showingProvince;
-       
+        public Province SelectedProvince
+        {
+            get { return showingProvince; }
+        }
         // Use this for initialization
         void Start()
         {

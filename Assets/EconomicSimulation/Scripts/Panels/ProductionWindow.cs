@@ -11,11 +11,14 @@ namespace Nashet.EconomicSimulation
     public class ProductionWindow : DragPanel, IFiltrable<Factory>
     {
         [SerializeField]
-        private ProductionWindowTable table;
-        //public readonly static Predicate<PopUnit> filterSelectedProvince = x => x.getProvince() == Game.selectedProvince;
+        private ProductionWindowTable table;        
         private Predicate<Factory> filterSelectedProvince;
         private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
-        private Province showingProvince;
+        private Province showingProvince; // should it go to table?
+        public Province SelectedProvince
+        {
+            get { return showingProvince; }
+        }
 
         void Start()
         {

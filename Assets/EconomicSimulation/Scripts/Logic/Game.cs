@@ -274,7 +274,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (province.GetCountry() == Country.NullCountry)
                 {
-                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.GetCountry().getCulture(), province);
+                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(1500, 2000), province.GetCountry().getCulture(), province);
                 }
                 else
                 {
@@ -554,7 +554,7 @@ namespace Nashet.EconomicSimulation
                     foreach (Factory factory in country.getAllFactories())
                         factory.consumeNeeds();
 
-                    if (country.isInvented(Invention.ProfessionalArmy))
+                    if (country.Invented(Invention.ProfessionalArmy))
                         foreach (var item in country.getAllPopUnits(PopType.Soldiers))
                             item.consumeNeeds();
 
@@ -616,7 +616,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.canSellProducts())
                             pop.getMoneyForSoldProduct();
                         pop.takeUnemploymentSubsidies();
-                        if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.Invented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                         // don't need salary with PE
                         {
                             var soldier = pop as Soldiers;

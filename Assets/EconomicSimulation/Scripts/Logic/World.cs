@@ -9,11 +9,11 @@ namespace Nashet.EconomicSimulation
 {
     public class World : MonoBehaviour
     {
-        static public IEnumerable<IInvestable> GetAllAllowedInvestments(Country includingCountry)
+        static public IEnumerable<IInvestable> GetAllAllowedInvestments(Country includingCountry, Agent investor)
         {
-            var countriesAllowingInvestments = Country.getAllExisting().Where(x => x.economy.getTypedValue().AllowForeighnIvestments || x == includingCountry);
+            var countriesAllowingInvestments = Country.getAllExisting().Where(x => x.economy.getTypedValue().AllowForeignInvestments || x == includingCountry);
             foreach (var country in countriesAllowingInvestments)
-                foreach (var item in country.GetAllInvestmentProjects())
+                foreach (var item in country.GetAllInvestmentProjects(investor))
                     yield return item;
         }
 

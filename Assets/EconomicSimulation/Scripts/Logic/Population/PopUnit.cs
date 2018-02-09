@@ -1220,7 +1220,7 @@ namespace Nashet.EconomicSimulation
         }
         virtual internal void invest()
         {
-            if (GetCountry().isInvented(Invention.Banking))
+            if (GetCountry().Invented(Invention.Banking))
             {
                 Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
                 if (extraMoney.isNotZero())

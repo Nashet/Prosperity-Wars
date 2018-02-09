@@ -32,9 +32,17 @@ namespace Nashet.EconomicSimulation
         private readonly List<Storage> upgradeResourceHighTier = new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) };
 
 
-        //internal ConditionsList conditionsBuild;
+        
         internal Condition enoughMoneyOrResourcesToBuild;
-        internal DoubleConditionsList conditionsBuild;
+
+        ///duplicated in Factory        
+        static internal DoubleCondition allowsForeignInvestments = new DoubleCondition((agent, province) =>
+        (province as Province).GetCountry() == (agent as Country)
+             || ((province as Province).GetCountry().economy.getTypedValue().AllowForeignInvestments
+        && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
+            (agent) => "Local government allows foreign investments or it isn't foreign investment", true);
+
+        internal DoubleConditionsList conditionsBuildThis;
         private readonly bool shaft;
         private readonly float nameWeight;
         static FactoryType()
@@ -161,26 +169,24 @@ namespace Nashet.EconomicSimulation
                         return agent.GetCountry().countryStorageSet.has(this.GetBuildNeeds());
                     }
                     else
-                    {
-                        //Value cost = Game.market.getCost(this.getBuildNeeds());
-                        //cost.add(Options.factoryMoneyReservPerLevel);
+                    {                        
                         Value cost = GetBuildCost();
                         return agent.canPay(cost);
                     }
                 },
                 delegate
                 {
-                    var sb = new StringBuilder();
-                    //Value cost = Game.market.getCost(this.getBuildNeeds());
-                    //cost.add(Options.factoryMoneyReservPerLevel);
+                    var sb = new StringBuilder();                    
                     Value cost = GetBuildCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
                     return sb.ToString();
                 }, true);
 
-            conditionsBuild = new DoubleConditionsList(new List<Condition>() {
-                Economy.isNotLF, enoughMoneyOrResourcesToBuild, Province.doesCountryOwn }); // can build
+
+            conditionsBuildThis = new DoubleConditionsList(new List<Condition>() {
+                Economy.isNotLF, Economy.isNotInterventionism, enoughMoneyOrResourcesToBuild,
+                allowsForeignInvestments}); // 
             this.shaft = shaft;
         }
         /// <summary>
@@ -196,7 +202,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<FactoryType> getAllInventedTypes(Country country)
         {
             foreach (var next in allTypes)
-                if (next.basicProduction.getProduct().isInventedBy(country))
+                if (country.Invented(next))
                     yield return next;
         }
         public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
@@ -360,15 +366,18 @@ namespace Nashet.EconomicSimulation
             profit.subtract(taxes);
             return new Procent(profit, GetBuildCost());
         }
-
-        internal bool canBuildNewFactory(Province where)
+        /// <summary>
+        /// Doesn't care about builder reforms
+        /// </summary>        
+        internal bool canBuildNewFactory(Province where, Agent investor)
         {
             if (where.hasFactory(this))
                 return false;
             if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
-                || !basicProduction.getProduct().isInventedBy(where.GetCountry())
-                || isManufacture() && !where.GetCountry().isInvented(Invention.Manufactures)
-                || (basicProduction.getProduct() == Product.Cattle && !where.GetCountry().isInvented(Invention.Domestication))
+                //|| !where.GetCountry().isInvented(basicProduction.getProduct())
+                || !investor.GetCountry().Invented(this)
+                //|| isManufacture() && !investor.GetCountry().Invented(Invention.Manufactures)
+                //|| (basicProduction.getProduct() == Product.Cattle && !investor.GetCountry().Invented(Invention.Domestication))
                 )
                 return false;
             return true;

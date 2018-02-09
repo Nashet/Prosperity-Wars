@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType == PopType.Workers
                 //|| targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
-                || targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy))
+                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy))
                 return true;
             else
                 return false;

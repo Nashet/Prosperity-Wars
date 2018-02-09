@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType == PopType.Aristocrats // should be officers
              || targetType == PopType.Artisans
-             || targetType == PopType.Farmers && GetCountry().isInvented(Invention.Farming)
+             || targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
              )
                 return true;
             else

@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
         public override bool canThisDemoteInto(PopType targetType)
         {
             if (//|| targetType == PopType.Farmers && !getCountry().isInvented(Invention.Farming)
-                targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy)
+                targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
                 || targetType == PopType.Workers
                 )
                 return true;
@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         }
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Capitalists && GetCountry().isInvented(Invention.Manufactures))
+            if (targetType == PopType.Capitalists && GetCountry().Invented(Invention.Manufactures))
                 return true;
             else
                 return false;
@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
                 payWithoutRecord(artisansProduction, cash);
 
                 // take loan if don't have enough money to buy inputs            
-                if (GetCountry().isInvented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
+                if (GetCountry().Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
                     if (artisansProduction.getType().getPossibleProfit().isNotZero())
                     {
                         var needs = artisansProduction.getRealAllNeeds();

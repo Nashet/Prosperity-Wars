@@ -36,12 +36,11 @@ namespace Nashet.EconomicSimulation
         }
         protected override IEnumerable<PopUnit> ContentSelector()
         {
-            return Game.Player.getAllPopUnits();
-            //var popsToShow = new List<PopUnit>();
-            //foreach (Province province in Game.Player.ownedProvinces)
-            //    foreach (PopUnit pop in province.allPopUnits)
-            //        popsToShow.Add(pop);
-            //return popsToShow;
+            var selectedProvince = MainCamera.populationPanel.SelectedProvince;
+            if (selectedProvince == null)
+                return Game.Player.getAllPopUnits();
+            else
+                return selectedProvince.getAllPopUnits();
         }
         protected override void AddRow(PopUnit pop, int number)
         {
@@ -51,7 +50,7 @@ namespace Nashet.EconomicSimulation
             // Adding PopType
             AddCell(pop.popType.ToString(), pop);
             ////Adding province
-            AddCell(pop.GetProvince().ToString(), pop.GetProvince(), () => "Click to select this province" + " " + pop.GetProvince().ToString().GetWeight());
+            AddCell(pop.GetProvince().ToString(), pop.GetProvince(), () => "Click to select this province" );
             ////Adding population
             AddCell(System.Convert.ToString(pop.getPopulation()), pop);
             ////Adding culture

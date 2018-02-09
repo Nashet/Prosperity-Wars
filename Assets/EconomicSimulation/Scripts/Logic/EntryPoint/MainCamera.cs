@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
-        private float simulationSpeedLimit = 0.2f;
+        private readonly float simulationSpeedLimit = 0.2f;
         private float previousFrameTime;
 
 

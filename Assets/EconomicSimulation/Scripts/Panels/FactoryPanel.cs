@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
 
 
             nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(factory, Game.Player, out nationalizeButton.GetComponent<ToolTipHandler>().text);
-            nationalizeButton.GetComponent<ToolTipHandler>().AddText("That would make owners angry and would reduce your reputation");
+            nationalizeButton.GetComponent<ToolTipHandler>().AddText("\nThat would make owners angry and would reduce your reputation");
 
             this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(factory, Game.Player, out priority.GetComponent<ToolTipHandler>().text);
             priority.GetComponent<ToolTipHandler>().text += "\n\nHighest priority enterprises get workforce first";

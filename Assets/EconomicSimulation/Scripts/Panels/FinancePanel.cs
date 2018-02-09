@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n Unemployment subsidies: ").Append(Game.Player.getUnemploymentSubsidiesExpense())
                 .Append(" unemployment: ").Append(Game.Player.getUnemployment());
             sb.Append("\n Enterprises subsidies: ").Append(Game.Player.getFactorySubsidiesExpense());
-            if (Game.Player.isInvented(Invention.ProfessionalArmy))
+            if (Game.Player.Invented(Invention.ProfessionalArmy))
                 sb.Append("\n Soldiers paychecks: ").Append(Game.Player.getSoldiersWageExpense());
             sb.Append("\n Storage buying: ").Append(Game.Player.getStorageBuyingExpense());
             sb.Append("\nTotal: ").Append(Game.Player.getAllExpenses());
@@ -85,14 +85,14 @@ namespace Nashet.EconomicSimulation
             onDepositLimitChange();
             //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
             autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
-            if (Game.Player.isInvented(Invention.Banking))
+            if (Game.Player.Invented(Invention.Banking))
                 bankPanel.interactable = true;
             else
             {
                 bankPanel.interactable = false;
                 autoSendMoneyToBank.isOn = false;
             }
-            if (Game.Player.isInvented(Invention.ProfessionalArmy))
+            if (Game.Player.Invented(Invention.ProfessionalArmy))
             {
                 ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).get() * 2f);
                 ssSoldiersWage.exponentialValue = Game.Player.getSoldierWage(); // could be changed by AI

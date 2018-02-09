@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
         private readonly Procent ownershipSecurity = Procent.HundredProcent.Copy();
         /// <summary> Read only, new value</summary>
         public Procent OwnershipSecurity
-        {            
+        {
             get { return ownershipSecurity.Copy(); }
         }
 
@@ -127,6 +127,7 @@ namespace Nashet.EconomicSimulation
         {
             NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
             NullCountry.government.setValue(Government.Tribal);
+            NullCountry.economy.setValue(Economy.NaturalEconomy);
         }
         public Country(string name, Culture culture, Color color, Province capital) : base(null)
         {
@@ -298,11 +299,43 @@ namespace Nashet.EconomicSimulation
         {
             inventions[type] = true;
         }
-        public bool isInvented(Invention type)
+        public bool Invented(Invention type)
         {
             bool result = false;
             inventions.TryGetValue(type, out result);
             return result;
+        }
+        public bool Invented(Product product)
+        {
+            if (product.isAbstract())
+                return true;
+            if (
+                ((product == Product.Metal || product == Product.MetalOre || product == Product.ColdArms) && !this.Invented(Invention.Metal))
+                || (!this.Invented(Invention.SteamPower) && (product == Product.Machinery || product == Product.Cement))
+                || ((product == Product.Artillery || product == Product.Ammunition) && !this.Invented(Invention.Gunpowder))
+                || (product == Product.Firearms && !this.Invented(Invention.Firearms))
+                || (product == Product.Coal && !this.Invented(Invention.Coal))
+                //|| (product == Cattle && !country.isInvented(Invention.Domestication))
+                || (!this.Invented(Invention.CombustionEngine) && (product == Product.Oil || product == Product.MotorFuel || product == Product.Rubber || product == Product.Cars))
+                || (!this.Invented(Invention.Tanks) && product == Product.Tanks)
+                || (!this.Invented(Invention.Airplanes) && product == Product.Airplanes)
+                || (product == Product.Tobacco && !this.Invented(Invention.Tobacco))
+                || (product == Product.Electronics && !this.Invented(Invention.Electronics))
+                //|| (!isResource() && !country.isInvented(Invention.Manufactories))
+                )
+                return false;
+            else
+                return true;
+        }
+        public bool Invented(FactoryType factory)
+        {
+            if (!Invented(factory.basicProduction.getProduct())
+             || factory.isManufacture() && !Invented(Invention.Manufactures)
+             || (factory.basicProduction.getProduct() == Product.Cattle && !Invented(Invention.Domestication))
+             )
+                return false;
+            else
+                return true;
         }
         internal void setPrefix()
         {
@@ -460,7 +493,7 @@ namespace Nashet.EconomicSimulation
                 UnityEngine.Object.Destroy(meshCapitalText.gameObject);
 
             //take all money from bank
-            if (byWhom.isInvented(Invention.Banking))
+            if (byWhom.Invented(Invention.Banking))
                 byWhom.getBank().add(this.getBank());
             else
                 this.getBank().destroy(byWhom);
@@ -734,12 +767,12 @@ namespace Nashet.EconomicSimulation
         {
             Storage minFound = null;
             foreach (var item in selector)
-                if (item.isInventedBy(this))
+                if (Invented(item))
                 {
 
                     var proposition = FactoryType.whoCanProduce(item);
                     if (proposition != null)
-                        if (proposition.canBuildNewFactory(province) || province.canUpgradeFactory(proposition))
+                        if (proposition.canBuildNewFactory(province, this) || province.canUpgradeFactory(proposition))
                         {
                             var found = countryStorageSet.GetFirstSubstituteStorage(item);
                             if (minFound == null || found.isSmallerThan(minFound))
@@ -755,7 +788,7 @@ namespace Nashet.EconomicSimulation
         // todo should be redone as country-wise method
         internal void invest(Province province)
         {
-            if (economy.getValue() == Economy.PlannedEconomy && GetCountry().isInvented(Invention.Manufactures))
+            if (economy.getValue() == Economy.PlannedEconomy && GetCountry().Invented(Invention.Manufactures))
                 if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
                     && province.getUnemployedWorkers() > 0)
                 {
@@ -770,7 +803,7 @@ namespace Nashet.EconomicSimulation
                             {
                                 //if there is no enough some consumer product - build it
                                 var proposition = FactoryType.whoCanProduce(consumerProduct);
-                                if (proposition.canBuildNewFactory(province))
+                                if (proposition.canBuildNewFactory(province, this))
                                     buildIfCanPE(proposition, province);
                                 else
                                 {
@@ -785,7 +818,7 @@ namespace Nashet.EconomicSimulation
                         {
                             //if there is no enough some military product - build it
                             var proposition = FactoryType.whoCanProduce(militaryProduct);
-                            if (proposition.canBuildNewFactory(province))
+                            if (proposition.canBuildNewFactory(province, this))
                                 buildIfCanPE(proposition, province);
                             else
                             {
@@ -799,7 +832,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //if there is no enough some industrial product - build it
                         var proposition = FactoryType.whoCanProduce(industrialProduct);
-                        if (proposition.canBuildNewFactory(province))
+                        if (proposition.canBuildNewFactory(province, this))
                             buildIfCanPE(proposition, province);
                         else
                         {
@@ -839,7 +872,7 @@ namespace Nashet.EconomicSimulation
                 aiInvent();
             // changing salary for soldiers
             if (economy.getValue() != Economy.PlannedEconomy)
-                if (isInvented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
+                if (Invented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
                 {
                     float newWage;
                     var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).get();
@@ -879,7 +912,7 @@ namespace Nashet.EconomicSimulation
                     {
                         // copied from Capitalist.Invest()
                         // doesn't care about risks
-                        var project = GetAllInvestmentProjects().Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)).MaxByRandom(x => x.GetMargin().get());
+                        var project = GetAllInvestmentProjects(this).Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)).MaxByRandom(x => x.GetMargin().get());
                         if (project != null)
                         {
                             Value investmentCost = project.GetInvestmentCost();
@@ -970,15 +1003,19 @@ namespace Nashet.EconomicSimulation
             if (invention.Key != null)
                 invent(invention.Key);
         }
-        public bool invent(Invention invention)
+        /// <summary>
+        /// Checks ouside
+        /// </summary>
+        /// <param name="invention"></param>
+        public void invent(Invention invention)
         {
-            if (sciencePoints.isBiggerOrEqual(invention.getCost()))
+            //if (sciencePoints.isBiggerOrEqual(invention.getCost()))
             {
                 markInvented(invention);
                 sciencePoints.subtract(invention.getCost());
-                return true;
+                //return true;
             }
-            else return false;
+            //else return false;
         }
 
         private void tradeNonPE(bool usePlayerTradeSettings)//, int buyProductsForXDays)
@@ -1541,10 +1578,10 @@ namespace Nashet.EconomicSimulation
                 item.secedeTo(country, false);
             }
         }
-        public IEnumerable<IInvestable> GetAllInvestmentProjects()
+        public IEnumerable<IInvestable> GetAllInvestmentProjects(Agent investor)
         {
             foreach (var province in ownedProvinces)
-                foreach (var item in province.getAllInvestmentProjects())
+                foreach (var item in province.getAllInvestmentProjects(investor))
                 {
                     yield return item;
                 }
@@ -1568,5 +1605,6 @@ namespace Nashet.EconomicSimulation
                     }
                 }
         }
+
     }
 }

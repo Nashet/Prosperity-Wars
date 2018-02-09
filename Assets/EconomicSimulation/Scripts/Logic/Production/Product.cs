@@ -168,7 +168,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
         {
             foreach (var item in getAll(x => !x.isAbstract()))
-                if (selector(item) && item.isInventedBy(country))
+                if (selector(item) && country.Invented(item))
                     yield return item;
         }
         public static IEnumerable<Product> getAllSpecificProductsTradable(Func<Product, bool> selector)
@@ -296,32 +296,11 @@ namespace Nashet.EconomicSimulation
             if (isAbstract())
                 return true;
             foreach (var country in Country.allCountries)
-                if (this.isInventedBy(country))
+                if (country.Invented(this))
                     return true;
             return false;
         }
-        public bool isInventedBy(Country country)
-        {
-            if (isAbstract())
-                return true;
-            if (
-                ((this == Metal || this == MetalOre || this == ColdArms) && !country.isInvented(Invention.Metal))
-                || (!country.isInvented(Invention.SteamPower) && (this == Machinery || this == Cement))
-                || ((this == Artillery || this == Ammunition) && !country.isInvented(Invention.Gunpowder))
-                || (this == Firearms && !country.isInvented(Invention.Firearms))
-                || (this == Coal && !country.isInvented(Invention.Coal))
-                //|| (this == Cattle && !country.isInvented(Invention.Domestication))
-                || (!country.isInvented(Invention.CombustionEngine) && (this == Oil || this == MotorFuel || this == Rubber || this == Cars))
-                || (!country.isInvented(Invention.Tanks) && this == Tanks)
-                || (!country.isInvented(Invention.Airplanes) && this == Airplanes)
-                || (this == Tobacco && !country.isInvented(Invention.Tobacco))
-                || (this == Electronics && !country.isInvented(Invention.Electronics))
-                //|| (!isResource() && !country.isInvented(Invention.Manufactories))
-                )
-                return false;
-            else
-                return true;
-        }
+        
         //bool isStorable()
         //{
         //    return storable;

@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Storage getRealNeeds(Country country, Product product)
         {
-            if (product.isInventedBy(country))
+            if (country.Invented(product))
             {
                 Storage found = origin.popType.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product).Copy();
                 if (found.isZero())

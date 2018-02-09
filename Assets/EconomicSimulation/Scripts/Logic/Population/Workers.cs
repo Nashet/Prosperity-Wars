@@ -15,14 +15,14 @@ namespace Nashet.EconomicSimulation
         public override bool canThisDemoteInto(PopType targetType)
         {
             if (targetType == PopType.Tribesmen
-                || targetType == PopType.Soldiers && GetCountry().isInvented(Invention.ProfessionalArmy))
+                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy))
                 return true;
             else
                 return false;
         }
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && GetCountry().isInvented(Invention.Farming)
+            if (targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
              || targetType == PopType.Artisans
              )
                 return true;
