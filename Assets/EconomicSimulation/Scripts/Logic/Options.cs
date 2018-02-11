@@ -153,6 +153,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
         internal static readonly Procent InvestorEmploymentRisk = new Procent(0.80f);
+        internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

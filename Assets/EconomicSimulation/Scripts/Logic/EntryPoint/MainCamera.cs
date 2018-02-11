@@ -249,6 +249,7 @@ namespace Nashet.EconomicSimulation
         public void FocusOnProvince(Province province)
         {
             gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
+            selectProvince(province.getID());
         }
 
     }

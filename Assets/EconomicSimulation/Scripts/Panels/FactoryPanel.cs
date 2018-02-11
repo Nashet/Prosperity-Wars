@@ -214,11 +214,10 @@ namespace Nashet.EconomicSimulation
         {
             //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
             {
-                factory.upgrade(Game.Player);
-                if (MainCamera.productionWindow.isActiveAndEnabled) MainCamera.productionWindow.Refresh();
-                MainCamera.topPanel.Refresh();
-                if (MainCamera.financePanel.isActiveAndEnabled) MainCamera.financePanel.Refresh();
-                this.Refresh();
+                factory.upgrade(Game.Player);                
+                MainCamera.refreshAllActive();                
+                if (Game.Player != factory.GetCountry())
+                    factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }
         }
         public void onDestroyClick()

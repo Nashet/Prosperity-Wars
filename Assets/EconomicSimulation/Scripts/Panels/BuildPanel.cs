@@ -40,18 +40,19 @@ namespace Nashet.EconomicSimulation
         }
         public void onBuildClick()
         {
-
             bool buildSomething = false;
-
-            if (Economy.isMarket.checkIfTrue(Game.Player))            
-            {                
+            Factory factory;
+            if (Economy.isMarket.checkIfTrue(Game.Player))
+            {
                 Value cost = selectedFactoryType.GetBuildCost();
                 if (Game.Player.canPay(cost))
                 {
-                    var factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
+                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
                     Game.Player.payWithoutRecord(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
+                    if (Game.Player != factory.GetCountry())
+                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
 
             }
@@ -62,20 +63,19 @@ namespace Nashet.EconomicSimulation
                 Storage needFood = resourceToBuild.GetFirstSubstituteStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    Factory fact = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.market.getCost(resourceToBuild));             
+                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.market.getCost(resourceToBuild));
                     Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
-                    MainCamera.factoryPanel.show(fact);
+                    MainCamera.factoryPanel.show(factory);
+                    if (Game.Player != factory.GetCountry())
+                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
 
             if (buildSomething == true)
             {
-                // voteButton.interactable = false;
-                MainCamera.refreshAllActive();
                 selectedFactoryType = null;
-                //table.Refresh();
-                Refresh();
+                MainCamera.refreshAllActive();
             }
         }
         public void selectFactoryType(FactoryType newSelection)
