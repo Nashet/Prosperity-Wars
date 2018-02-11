@@ -99,7 +99,7 @@ namespace Nashet.EconomicSimulation
 
             // copied in Factory
              new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).GetCountry())
-             && (x as PopUnit).GetProvince().isCapital(), "Capital of Polis", 1f, false),
+             && (x as PopUnit).GetCountry().Capital == (x as PopUnit).GetProvince(), "Capital of Polis", 1f, false),
              new Modifier(x=>(x as PopUnit).GetProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).GetCountry().government.getValue() == Government.Tribal
              && (x as PopUnit).popType!=PopType.Tribesmen, "Government is Tribal", -0.5f, false),

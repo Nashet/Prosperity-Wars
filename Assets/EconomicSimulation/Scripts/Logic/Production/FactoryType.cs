@@ -37,11 +37,11 @@ namespace Nashet.EconomicSimulation
 
         ///duplicated in Factory        
         static internal DoubleCondition allowsForeignInvestments = new DoubleCondition((agent, province) =>
-        (province as Province).GetCountry() == (agent as Country)
-             || ((province as Province).GetCountry().economy.getTypedValue().AllowForeignInvestments
-        && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
+        (province as Province).GetCountry() == (agent as Agent).GetCountry()
+        || ((province as Province).GetCountry().economy.getTypedValue().AllowForeignInvestments
+        && (agent as Agent).GetCountry().economy.getTypedValue() != Economy.PlannedEconomy),
             (agent) => "Local government allows foreign investments or it isn't foreign investment", true);
-
+        // empty trade
         internal DoubleConditionsList conditionsBuildThis;
         private readonly bool shaft;
         private readonly float nameWeight;
@@ -183,8 +183,11 @@ namespace Nashet.EconomicSimulation
                     return sb.ToString();
                 }, true);
 
-
-            conditionsBuildThis = new DoubleConditionsList(new List<Condition>() {
+            // Using: Country () , province, this <FactoryType>
+            // used in BuildPanel only, only for Game.Player
+            // Should be: de-facto Country, Investor, this <FactoryType> (change Economy.isNot..)
+            // or put it in FactoryProject
+            conditionsBuildThis = new DoubleConditionsList(new List<Condition> {
                 Economy.isNotLF, Economy.isNotInterventionism, enoughMoneyOrResourcesToBuild,
                 allowsForeignInvestments}); // 
             this.shaft = shaft;
@@ -378,6 +381,7 @@ namespace Nashet.EconomicSimulation
                 || !investor.GetCountry().Invented(this)
                 //|| isManufacture() && !investor.GetCountry().Invented(Invention.Manufactures)
                 //|| (basicProduction.getProduct() == Product.Cattle && !investor.GetCountry().Invented(Invention.Domestication))
+                || !allowsForeignInvestments.checkIftrue(investor, where)
                 )
                 return false;
             return true;

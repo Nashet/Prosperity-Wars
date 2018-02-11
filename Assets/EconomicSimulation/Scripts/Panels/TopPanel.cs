@@ -37,10 +37,15 @@ namespace Nashet.EconomicSimulation
         {
             var sb = new StringBuilder();
 
-            sb.Append("Date: ").Append(Game.date).Append("; Country: ").Append(Game.Player.getName())
-                .Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
-                .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"))
-                .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
+            sb.Append("Date: ").Append(Game.date).Append("; You rule: ").Append(Game.Player.GetFullName());
+            if (!Game.Player.isAlive())
+                sb.Append(" (destroyed by enemies, but could rise again)");
+
+            sb.Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
+            .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+
+            if (Game.Player.isAlive())
+                sb.Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
                 .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
             generalText.text = sb.ToString();
         }
@@ -130,8 +135,8 @@ namespace Nashet.EconomicSimulation
         }
         public void OnFocusOnCountryClick()
         {
-            if (Game.Player!=null)
-                mainCamera.focus(Game.Player.getCapital());
+            if (Game.Player != null)
+                mainCamera.focus(Game.Player.Capital);
         }
         public void switchHaveToRunSimulation()
         {

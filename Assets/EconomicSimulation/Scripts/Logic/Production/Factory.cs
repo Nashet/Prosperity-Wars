@@ -177,7 +177,7 @@ namespace Nashet.EconomicSimulation
             modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
              new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).GetCountry())
-             && (x as Factory).GetProvince().isCapital(), "Capital of Polis", 0.50f, false),
+             && (x as Factory).GetCountry().Capital == (x as Factory).GetProvince(), "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).GetProvince().hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).GetCountry(), -1.0f, false),
              new Modifier(Government.isDespotism, x=>(x as Factory).GetCountry(), -0.30f, false), // remove this?

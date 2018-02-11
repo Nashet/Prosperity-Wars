@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
 
         private readonly Country separatismTarget;
 
-        private Separatism(Country country) : base(country.getName() + " independence", "", 0,
+        private Separatism(Country country) : base(country.GetShortName() + " independence", "", 0,
             new DoubleConditionsList())//new ConditionsList(Condition.AlwaysYes))
         {
             separatismAllowed = new Condition(x => isAvailable(x as Country), "Separatism target is valid", true);

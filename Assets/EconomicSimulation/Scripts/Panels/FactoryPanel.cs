@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
         {
             string dynText;
             upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(factory, Game.Player, out dynText);
-            upgradeButton.GetComponent<ToolTipHandler>().SetDynamicString(() => dynText + "\n\nUpgrade makes enterprise bigger");
+            upgradeButton.GetComponent<ToolTipHandler>().SetTextDynamic(() => dynText + "\n\nUpgrade makes enterprise bigger");
 
             subidize.interactable = Factory.conditionsSubsidize.isAllTrue(factory, Game.Player, out subidize.GetComponent<ToolTipHandler>().text);
 
@@ -139,12 +139,12 @@ namespace Nashet.EconomicSimulation
                 //+"\nExpenses:"
 
                 efficiencyText.text = "Efficiency: " + Factory.modifierEfficiency.getModifier(factory);
-                efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(()=> "Efficiency: " + Factory.modifierEfficiency.GetDescription(factory));
+                efficiencyText.GetComponent<ToolTipHandler>().SetTextDynamic(()=> "Efficiency: " + Factory.modifierEfficiency.GetDescription(factory));
                 
 
                 var owners = factory.ownership.GetAllShares().OrderByDescending(x => x.Value.get()).ToList();//.getString(" ", "\n");
                 ownership.text = "Biggest owner: " + owners[0].Key + " " + owners[0].Value + " (hover mouse for rest)";
-                ownership.GetComponent<ToolTipHandler>().SetDynamicString(() =>"Owners:\n"+ owners.getString(" ", "\n"));
+                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() =>"Owners:\n"+ owners.getString(" ", "\n"));
                 RefreshBuySellButtons();
             }
         }

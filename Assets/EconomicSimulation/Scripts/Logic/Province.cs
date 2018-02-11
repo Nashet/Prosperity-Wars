@@ -26,9 +26,9 @@ namespace Nashet.EconomicSimulation
             x =>
             {
                 if ((x as Country) == Game.Player)
-                    return "You ("+ (x as Country).getName() + ") own that province";
+                    return "You (" + (x as Country).GetFullName() + ") own that province";
                 else
-                    return (x as Country).getName() + " owns that province";
+                    return (x as Country).GetFullName() + " owns that province";
             }
         , true);
 
@@ -262,8 +262,8 @@ namespace Nashet.EconomicSimulation
             //        this.getCountry().ownedProvinces.Remove(this);
             owner = taker;
 
-            if (taker.ownedProvinces == null)
-                taker.ownedProvinces = new List<Province>();
+            //if (taker.ownedProvinces == null)
+            //    taker.ownedProvinces = new List<Province>();
             taker.ownedProvinces.Add(this);
             color = taker.getColor().getAlmostSameColor();
 
@@ -304,11 +304,11 @@ namespace Nashet.EconomicSimulation
                 return "none";
             else
                 if (cores.Count == 1)
-                return cores[0].getName();
+                return cores[0].GetShortName();
             else
             {
                 StringBuilder sb = new StringBuilder();
-                cores.ForEach(x => sb.Append(x.getName()).Append("; "));
+                cores.ForEach(x => sb.Append(x.GetShortName()).Append("; "));
                 return sb.ToString();
             }
         }
@@ -349,12 +349,6 @@ namespace Nashet.EconomicSimulation
 
             oldCountry.demobilize(x => x.getPopUnit().GetProvince() == this);
 
-            //kill country or move capital
-            if (oldCountry.isOneProvince())
-                oldCountry.killCountry(taker);
-            else
-                if (isCapital())
-                oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince(x => x != this));
 
             // add loyalty penalty for conquered province // temp
             foreach (var pop in allPopUnits)
@@ -369,15 +363,17 @@ namespace Nashet.EconomicSimulation
 
             //transfer province
             if (oldCountry != null)
-                if (oldCountry.ownedProvinces != null)
-                    oldCountry.ownedProvinces.Remove(this);
+                oldCountry.ownedProvinces.Remove(this);
             owner = taker;
-
-            if (taker.ownedProvinces == null)
-                taker.ownedProvinces = new List<Province>();
             taker.ownedProvinces.Add(this);
 
             taker.government.onReformEnacted(this);
+
+            //kill country or move capital
+            if (oldCountry.ownedProvinces.Count == 0)
+                oldCountry.OnKillCountry(taker);
+            else if (oldCountry.Capital == this)
+                oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince());
 
             //graphic stuff
             color = taker.getColor().getAlmostSameColor();
@@ -398,10 +394,10 @@ namespace Nashet.EconomicSimulation
         {
             return modifiers;
         }
-        internal bool isCapital()
-        {
-            return GetCountry().getCapital() == this;
-        }
+        //internal bool isCapital()
+        //{
+        //    return GetCountry().Capital == this;
+        //}
 
         internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
         {

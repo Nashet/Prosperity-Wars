@@ -36,7 +36,7 @@ namespace Nashet.UnityUIUtils
             OnPointerExit(null);
         }
 
-        public void SetDynamicString(Func<string> dynamicString)
+        public void SetTextDynamic(Func<string> dynamicString)
         {
             this.dynamicText = dynamicString;
             isDynamic = true;

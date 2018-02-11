@@ -100,7 +100,7 @@ namespace Nashet.ValueSpace
         }
         override public string ToString()
         {
-            return get() + " " + getProduct();
+            return get().ToString("N3") + " " + getProduct();
 
         }
         public void sendAll(StorageSet whom)

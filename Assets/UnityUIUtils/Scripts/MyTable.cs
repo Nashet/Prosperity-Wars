@@ -167,7 +167,7 @@ namespace Nashet.UnityUIUtils
             sampleButton.Setup(text, @object);
             if (dynamicTooltip != null)
             {
-                newButton.GetComponent<ToolTipHandler>().SetDynamicString(dynamicTooltip);
+                newButton.GetComponent<ToolTipHandler>().SetTextDynamic(dynamicTooltip);
             }
         }
         //protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)

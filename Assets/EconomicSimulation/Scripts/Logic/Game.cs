@@ -210,15 +210,15 @@ namespace Nashet.EconomicSimulation
         static private void setStartResources()
         {
             //Country.allCountries[0] is null country
-            //Country.allCountries[1].getCapital().setResource(Product.Wood);// player
+            //Country.allCountries[1].Capital.setResource(Product.Wood);// player
 
-            //Country.allCountries[0].getCapital().setResource(Product.Wood;
-            Country.allCountries[2].getCapital().setResource(Product.Fruit);
-            Country.allCountries[3].getCapital().setResource(Product.Gold);
-            Country.allCountries[4].getCapital().setResource(Product.Cotton);
-            Country.allCountries[5].getCapital().setResource(Product.Stone);
-            Country.allCountries[6].getCapital().setResource(Product.MetalOre);
-            Country.allCountries[7].getCapital().setResource(Product.Wood);
+            //Country.allCountries[0].Capital.setResource(Product.Wood;
+            Country.allCountries[2].Capital.setResource(Product.Fruit);
+            Country.allCountries[3].Capital.setResource(Product.Gold);
+            Country.allCountries[4].Capital.setResource(Product.Cotton);
+            Country.allCountries[5].Capital.setResource(Product.Stone);
+            Country.allCountries[6].Capital.setResource(Product.MetalOre);
+            Country.allCountries[7].Capital.setResource(Product.Wood);
         }
 
         internal static int getMapMode()
@@ -274,7 +274,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (province.GetCountry() == Country.NullCountry)
                 {
-                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(1500, 2000), province.GetCountry().getCulture(), province);
+                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.GetCountry().getCulture(), province);
                 }
                 else
                 {
@@ -481,7 +481,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
                 + "\n\tpolitical \\ culture \\ core \\ resource map mode"
                 + "\n\tmovements and rebellions"
-                + "\n\nYou play as " + Game.Player.getDescription() + " You can try to growth economy or conquer the world."
+                + "\n\nYou play as " + Game.Player.GetFullName() + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"

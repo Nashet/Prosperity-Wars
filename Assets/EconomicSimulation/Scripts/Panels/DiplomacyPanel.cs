@@ -5,13 +5,14 @@ using UnityEngine.EventSystems;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
     public class DiplomacyPanel : DragPanel
     {
         [SerializeField]
-        private Text captionText, generalText;
+        private Text captionText, generalText, property;
         [SerializeField]
         private Button giveControlToAi, giveControlToPlayer;
         [SerializeField]
@@ -57,7 +58,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nOpinion of myself: I'm cool!");
             else
             {
-                sb.Append("\n\n").Append(selectedCountry.getDescription()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+                sb.Append("\n\n").Append(selectedCountry.GetFullName()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
                 string str;
                 selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
                 sb.Append(" Dynamics: ").Append(str);
@@ -65,6 +66,8 @@ namespace Nashet.EconomicSimulation
             //sb.Append("\nInventions: ").Append(selectedCountry.inventions.getInvented(selectedCountry).ToString());
             //selectedCountry.inventions.getInvented(selectedCountry).ToString();
             generalText.text = sb.ToString();
+            var found = World.GetAllShares(selectedCountry).OrderByDescending(x => x.Value.get());
+            property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
         }
         public Country getSelectedCountry()
         {
@@ -73,7 +76,7 @@ namespace Nashet.EconomicSimulation
         public void show(Country count)
         {
             selectedCountry = count;
-            Show();                       
+            Show();
         }
         private void setButtonsState()
         {
@@ -88,7 +91,7 @@ namespace Nashet.EconomicSimulation
         public void onGoToClick()
         {
             if (selectedCountry != Country.NullCountry)
-                mainCamera.focus(selectedCountry.getCapital());
+                mainCamera.focus(selectedCountry.Capital);
         }
         public void onRegainControlClick()
         {

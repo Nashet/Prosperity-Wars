@@ -180,7 +180,7 @@ namespace Nashet.EconomicSimulation
                 var separatists = targetReformValue as Separatism;
                 separatists.getCountry().onSeparatismWon(getPlaceDejure());
                 if (!separatists.getCountry().isAI())
-                    new Message("", "Separatists won revolution - " + separatists.getCountry().getDescription(), "hmm");
+                    new Message("", "Separatists won revolution - " + separatists.getCountry().GetFullName(), "hmm");
             }
             else
                 targetReform.setValue(targetReformValue);
@@ -251,7 +251,7 @@ namespace Nashet.EconomicSimulation
 
             base.mobilize(place.ownedProvinces);
 
-            sendArmy(place.getCapital(), Procent.HundredProcent);
+            sendArmy(place.Capital, Procent.HundredProcent);
             _isInRevolt = true;
         }
         /// <summary>

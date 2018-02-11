@@ -340,7 +340,7 @@ namespace Nashet.EconomicSimulation
         internal void setPrefix()
         {
             if (meshCapitalText != null)
-                meshCapitalText.text = getDescription();
+                meshCapitalText.text = GetFullName();
         }
         public List<Country> getAllCoresOnMyland()
         {
@@ -487,7 +487,10 @@ namespace Nashet.EconomicSimulation
                     yield return c;
 
         }
-        internal void killCountry(Country byWhom)
+        /// <summary>
+        /// Also transfers enterprises to local governments
+        /// </summary>        
+        internal void OnKillCountry(Country byWhom)
         {
             if (meshCapitalText != null) //todo WTF!!
                 UnityEngine.Object.Destroy(meshCapitalText.gameObject);
@@ -502,6 +505,10 @@ namespace Nashet.EconomicSimulation
             this.PayAllAvailableMoney(byWhom);
             this.getBank().defaultLoaner(this);
             countryStorageSet.sendAll(byWhom.countryStorageSet);
+            //foreach (var item in World.GetAllShares(this).ToList())// transfer all enterprises to local governments            
+            foreach (var item in World.GetAllFactories())// transfer all enterprises to local governments            
+                if (item.ownership.HasOwner(this))
+                    item.ownership.TransferAll(this, item.GetCountry());
 
             if (!this.isAI())
                 new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
@@ -510,14 +517,11 @@ namespace Nashet.EconomicSimulation
             SetStatisticToZero();
         }
 
-        internal bool isOneProvince()
+        public Province Capital
         {
-            return ownedProvinces.Count == 1;
+            get { return capital; }
         }
-        internal Province getCapital()
-        {
-            return capital;
-        }
+        
         override internal void sendArmy(Province target, Procent procent)
         {
             base.sendArmy(target, procent);
@@ -580,7 +584,7 @@ namespace Nashet.EconomicSimulation
             txtMeshTransform.position = capitalTextPosition;
 
             meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
-            meshCapitalText.text = getDescription();
+            meshCapitalText.text = GetFullName();
             meshCapitalText.fontSize *= 2;
             if (this == Game.Player)
             {
@@ -718,13 +722,13 @@ namespace Nashet.EconomicSimulation
             return res;
             //return minSalary.get();
         }
-        public string getName()
+        public string GetShortName()
         {
             return name;
         }
-        public string getDescription()
-        {
-            if (this == Game.Player)
+        public string GetFullName()
+        {            
+            if (Game.devMode && this == Game.Player)
                 return name + " " + government.getPrefix() + " (you are)";
             else
                 return name + " " + government.getPrefix();
@@ -732,7 +736,7 @@ namespace Nashet.EconomicSimulation
 
         override public string ToString()
         {
-            return getDescription();
+            return GetFullName();
         }
         public Value getSciencePointsBase()
         {

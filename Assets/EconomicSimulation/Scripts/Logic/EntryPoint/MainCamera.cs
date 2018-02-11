@@ -90,9 +90,9 @@ namespace Nashet.EconomicSimulation
                     Game.setUnityAPI();
 
                     camera = this.GetComponent<Camera>();
-                    focus(Game.Player.getCapital());
-                    //gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
-                    //    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
+                    focus(Game.Player.Capital);
+                    //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
+                    //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
                     loadingPanel.Hide();
                     topPanel.Show();
                     bottomPanel.Show();
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
 
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
-                    if (Game.isPlayerSurrended() || Time.time - previousFrameTime >= simulationSpeedLimit)
+                    if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
                         Game.simulate();
                         previousFrameTime = Time.time;
