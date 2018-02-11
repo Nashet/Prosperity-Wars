@@ -91,7 +91,7 @@ namespace Nashet.EconomicSimulation
         public void onGoToClick()
         {
             if (selectedCountry != Country.NullCountry)
-                mainCamera.focus(selectedCountry.Capital);
+                mainCamera.FocusOnProvince(selectedCountry.Capital);
         }
         public void onRegainControlClick()
         {

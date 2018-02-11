@@ -90,7 +90,7 @@ namespace Nashet.EconomicSimulation
                     Game.setUnityAPI();
 
                     camera = this.GetComponent<Camera>();
-                    focus(Game.Player.Capital);
+                    FocusOnProvince(Game.Player.Capital);
                     //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
                     //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
                     loadingPanel.Hide();
@@ -246,13 +246,9 @@ namespace Nashet.EconomicSimulation
                 closeToppestPanel();
             }
         }
-
-
-        // This function is called every fixed framerate frame, if the MonoBehavior is enabled.
-        public void focus(Province province)
+        public void FocusOnProvince(Province province)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x,
-                        province.getPosition().y, focusHeight);
+            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
         }
 
     }

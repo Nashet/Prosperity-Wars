@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
             ),
                   "Has input resource in this province", 0.20f, false),
 
-            modifierLevelBonus = new Modifier(x => ((x as Factory).getLevel() - 1) / 100f, "High production concentration bonus", 5f, false),
+            modifierLevelBonus = new Modifier(x => ((x as Factory).GetEmploymentLevel() - 1) / 100f, "High production concentration bonus", 5f, false),
 
             modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).GetCountry().Invented(Invention.Mining) && (x as Factory).getType().isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
@@ -252,6 +252,17 @@ namespace Nashet.EconomicSimulation
         internal int getLevel()
         {
             return level;
+        }
+        /// <summary>
+        /// Level based on hired worker
+        /// </summary>
+        public int GetEmploymentLevel()
+        {
+            var res = getWorkForce() / workForcePerLevel;// forget about remainder 
+            if (res == 0 && level > 0)
+                res++;
+            return res;
+
         }
         internal bool isUpgrading()
         {
