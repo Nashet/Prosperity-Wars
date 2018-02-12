@@ -907,7 +907,7 @@ namespace Nashet.EconomicSimulation
                 Rand.Call(() => getAllFactories().PerformAction(
                     x => x.ownership.HowMuchOwns(this).Copy().subtract(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
-                    20);
+                    30);
             else
             //SC invests in own country only, Interv. don't invests in any country
             if (economy.getValue() == Economy.StateCapitalism)
@@ -990,7 +990,7 @@ namespace Nashet.EconomicSimulation
 
 
             if (economy.getValue() == Economy.LaissezFaire)
-                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 20);
+                Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
         public void PutAllPropertyOnSale()
         { }

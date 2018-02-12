@@ -172,8 +172,8 @@ namespace Nashet.EconomicSimulation
             }
             public override string getDescription()
             {
-                return base.getDescription() + ". Max size before loyalty penalty applied: " + getLoyaltySizeLimit()
-                    + ". Science points modifier: " + scienceModifier;
+                return base.getDescription();// + ". Max size before loyalty penalty applied: " + getLoyaltySizeLimit()
+                                             //+ ". Science points modifier: " + scienceModifier;
             }
         }
 
@@ -260,7 +260,7 @@ namespace Nashet.EconomicSimulation
                 foreach (var factory in province.getAllFactories())
                 {
                     country.Nationilize(factory);
-                    
+
                     // next is for PE only
                     factory.PayAllAvailableMoney(country);
                     factory.loans.setZero();
@@ -512,13 +512,14 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                if (pop.popType == PopType.Capitalists)
+                //if (pop.popType == PopType.Capitalists)
+                if (pop.popType.isRichStrata())
                 {
                     //positive - more liberal
                     int change = ID - pop.GetCountry().economy.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
-                        result = new Procent(1f);
+                        result = new Procent(1f + change / 10f);
                     else
                         //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
                         result = new Procent(0f);
@@ -526,7 +527,11 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (this == Economy.PlannedEconomy)
-                        result = new Procent(0f);
+                        result = new Procent(0f); // that can be achieved only by government reform
+                    else if (this == Economy.LaissezFaire)
+                        result = new Procent(0.8f);
+                    else if (this == Economy.Interventionism)
+                        result = new Procent(0.9f);
                     else
                         result = new Procent(0.5f);
                 }
@@ -548,7 +553,7 @@ namespace Nashet.EconomicSimulation
             new DoubleConditionsList(new List<Condition> {
             Invention.CollectivismInvented, Government.isProletarianDictatorship }));
         internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, false, new DoubleConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes)); 
-        internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, true, new DoubleConditionsList(capitalism));
+        internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, false, new DoubleConditionsList(capitalism));
         internal static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, true, new DoubleConditionsList(capitalism));
         internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, true, new DoubleConditionsList(capitalism));
         /// ////////////
@@ -1260,7 +1265,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (change > 0)
-                        result = new Procent(1f);
+                        result = new Procent(0.8f);
                     else
                         result = new Procent(0f);
                 }

@@ -265,11 +265,11 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         internal Money GetMarketValue()
         {
-            return totallyInvested.Copy().Multiply(marketPriceModifier);            
+            return totallyInvested.Copy().Multiply(marketPriceModifier);
         }
         internal Value GetShareMarketValue(Procent share)
         {
-            return GetMarketValue().Multiply(share);            
+            return GetMarketValue().Multiply(share);
             //return share.SendProcentOf(GetMarketValue());
         }
         internal Value GetShareAssetsValue(Procent share)
@@ -357,7 +357,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Value GetInvestmentCost()
         {
-            return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);            
+            return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);
         }
         public bool CanProduce(Product product)
         {
@@ -375,19 +375,13 @@ namespace Nashet.EconomicSimulation
                     if (country != null)
                     {
                         if (country.isAI())
-                            Rand.Call(() =>
-                            {
-                                SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
-                                //Debug.Log(item.Key + " put on sale shares of " + parent);
-                            }, 10);
+                            SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
+                        //Debug.Log(item.Key + " put on sale shares of " + parent);                            
                     }
                     else
-                        //var agent = item.Key as Agent;
-                        Rand.Call(() =>
-                        {
-                            SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
-                            //Debug.Log(item.Key + " put on sale shares of " + parent);
-                        }, 10);
+                        //var agent = item.Key as Agent;                        
+                        SetToSell(item.Key, Options.PopBuyAssetsAtTime, false);
+                    //Debug.Log(item.Key + " put on sale shares of " + parent);                        
                 }
         }
         public Country GetCountry()

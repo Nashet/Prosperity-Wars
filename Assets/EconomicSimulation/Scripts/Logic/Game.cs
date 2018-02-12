@@ -606,7 +606,10 @@ namespace Nashet.EconomicSimulation
                             factory.payDividend(); // also pays taxes inside
                             factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
-                            factory.ownership.SellLowMarginShares();
+                            Rand.Call(() =>
+                            {
+                                factory.ownership.SellLowMarginShares();
+                            }, 20);
                         }
                     }
                     province.DestroyAllMarkedfactories();

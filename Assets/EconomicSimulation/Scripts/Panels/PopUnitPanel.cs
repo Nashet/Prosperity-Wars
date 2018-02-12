@@ -131,7 +131,7 @@ namespace Nashet.EconomicSimulation
                         //var items = from pair in pop.getIssues()
                         //            orderby pair.Value descending
                         //            select pair;
-                        var items = pop.getIssues().OrderBy(x => x.Value);
+                        var items = pop.getIssues().OrderByDescending(x => x.Value);
                         return "Issues:\n" + items.getString(" willing ", "\n");
                     }
                     );
