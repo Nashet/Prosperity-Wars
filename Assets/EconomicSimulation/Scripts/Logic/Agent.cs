@@ -237,23 +237,24 @@ namespace Nashet.EconomicSimulation
                         return true;
                     Agent payer = this;
 
-                    if (payer is Market == false && incomeReceiver is Market == false
+                    if (payer is Market == false //&& incomeReceiver is Market == false
                         && payer.GetCountry() != incomeReceiver.GetCountry()
-                        && payer is Factory) // pay taxes in enterprise jurisdiction
-                    {   // and reduce taxable base
+                        && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
+                    {   
                         var payed = payer.GetCountry().TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
-                        howMuchPayReally.subtract(payed);
+                        howMuchPayReally.subtract(payed);//and reduce taxable base
                     }
 
+                    // in rest cases only pops pay taxes
                     var popReceiver = incomeReceiver as PopUnit;
                     if (popReceiver != null)
                         incomeReceiver.GetCountry().TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.popType.isPoorStrata());
-                    else
-                    {
-                        var countryPayer = incomeReceiver as Country;
-                        if (countryPayer != null)
-                            incomeReceiver.GetCountry().TakeIncomeTaxFrom(countryPayer, howMuchPayReally, false);
-                    }
+                    //else // if it's not Pop than it should by dividends from enterprise..
+                    //{ 
+                    //    //var countryPayer = incomeReceiver as Country;
+                    //    //if (countryPayer != null)
+                    //        incomeReceiver.GetCountry().TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
+                    //}
                     return true;
                 }
                 else
