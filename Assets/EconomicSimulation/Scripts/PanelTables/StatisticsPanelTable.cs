@@ -8,8 +8,8 @@ namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : UITableNew<Country>
     {
-        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder            ,
-            richTaxOrder, economyTypeOrder, GDPShareOrder;        
+        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder,
+            richTaxOrder, economyTypeOrder, GDPShareOrder;
         public void Awake()// start doesn't work somehow
         {
             countryOrder = new SortOrder(this, x => x.GetNameWeight());
@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             averageNeedsOrder = new SortOrder(this, x => x.getAverageNeedsFulfilling().get());
             richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
-            economyTypeOrder = new SortOrder(this, x => x.economy.GetHashCode());
+            economyTypeOrder = new SortOrder(this, x => x.economy.GetType().GetHashCode());
             GDPShareOrder = new SortOrder(this, x => x.getGDP().get());
         }
         protected override IEnumerable<Country> ContentSelector()
@@ -32,7 +32,10 @@ namespace Nashet.EconomicSimulation
             AddCell((number + GetRowOffset() + 1).ToString(), country);
 
             // Adding Country
-            AddCell(country.ToString(), country, () => country.ToString());
+            if (country == Game.Player)
+                AddCell(country.ToString().ToUpper(), country, () => country.ToString());
+            else
+                AddCell(country.ToString(), country, () => country.ToString());
             ////Adding population
             AddCell(country.getFamilyPopulation().ToString("N0"), country);
 

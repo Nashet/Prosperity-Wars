@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         //static internal StringBuilder threadDangerSB = new StringBuilder();
 
         static public MyDate date = new MyDate(0);
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -240,7 +240,7 @@ namespace Nashet.EconomicSimulation
 
         internal static bool isRunningSimulation()
         {
-            return haveToRunSimulation || haveToStepSimulation;
+            return (haveToRunSimulation || haveToStepSimulation);// && !MessagePanel.IsOpenAny();
         }
         internal static void pauseSimulation()
         {
@@ -331,8 +331,12 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                mapSize = 25000;
+                //mapSize = 25000;
+                //width = 170 + Random.Next(65);
+                mapSize = 30000;
                 width = 170 + Random.Next(65);
+                //mapSize = 40000;
+                //width = 200 + Random.Next(80);
             }
             // 140 is sqrt of 20000
             //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
@@ -473,7 +477,7 @@ namespace Nashet.EconomicSimulation
         }
         static void makeHelloMessage()
         {
-            new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
+            Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
                 "\n\nCurrently there is: "
                 + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
                 + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"
@@ -487,7 +491,7 @@ namespace Nashet.EconomicSimulation
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
                 + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
-                , "Ok");
+                , closeText: "Ok", isDefeatingAttackersMessage: false);
         }
 
         private static void calcBattles()

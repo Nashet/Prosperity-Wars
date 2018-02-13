@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent PopLoyaltyDropOnNationalization = new Procent(0.1f);
         internal static readonly Procent PopBuyAssetsAtTime = new Procent(0.05f);
         internal static readonly Procent PopMarginToSellShares = new Procent(0.005f);
-        internal static readonly int PopInvestRate = 25;
+        internal static readonly int PopInvestRate = 15;
 
         // INVESTING
         internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.95f);

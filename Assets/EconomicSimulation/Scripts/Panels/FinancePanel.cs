@@ -97,10 +97,24 @@ namespace Nashet.EconomicSimulation
                 ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).get() * 2f);
                 ssSoldiersWage.exponentialValue = Game.Player.getSoldierWage(); // could be changed by AI
                 refreshSoldierWageText();
-                ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
+                //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
+                //ssSoldiersWage.enabled = true;
+                ssSoldiersWage.gameObject.SetActive(true);
             }
             else
-                ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
+                //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
+                //ssSoldiersWage.enabled = false;
+                ssSoldiersWage.gameObject.SetActive(false);
+            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
+            {
+                ssSoldiersWage.enabled = false;
+                ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("With Planned Economy soldiers take products from country stockpile");
+            }
+            else
+            {
+                ssSoldiersWage.enabled = true;
+                ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("");
+            }
         }
         //public void findNoonesEterprises()
         //{

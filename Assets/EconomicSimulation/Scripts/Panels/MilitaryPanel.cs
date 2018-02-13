@@ -38,11 +38,7 @@ namespace Nashet.EconomicSimulation
 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            //refresh();
-        }
+        
         public override void Refresh()
         {
             refresh(true);

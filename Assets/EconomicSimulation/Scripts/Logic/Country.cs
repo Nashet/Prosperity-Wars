@@ -170,11 +170,12 @@ namespace Nashet.EconomicSimulation
             this.capital = capital;
             //if (!Game.devMode)
             {
-                economy.setValue(Economy.StateCapitalism);
+                
                 //economy.setValue( Economy.NaturalEconomy);
                 serfdom.setValue(Serfdom.Abolished);
                 //government.setValue(Government.Tribal, false);
                 government.setValue(Government.Aristocracy);
+                economy.setValue(Economy.StateCapitalism);
                 taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
                 markInvented(Invention.Farming);
@@ -510,8 +511,8 @@ namespace Nashet.EconomicSimulation
                 if (item.ownership.HasOwner(this))
                     item.ownership.TransferAll(this, item.GetCountry());
 
-            if (!this.isAI())
-                new Message("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay");
+            if (this.IsHuman)
+                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay",false);
             alive = false;
 
             SetStatisticToZero();

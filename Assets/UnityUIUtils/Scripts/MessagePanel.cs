@@ -11,6 +11,23 @@ namespace Nashet.UnityUIUtils
     {
         static private readonly Stack<Message> Queue = new Stack<Message>();
         private readonly string caption, text, closeText;
+        static private bool showDefeatingAttackersMessages = true;
+        static public bool ShowDefeatingAttackersMessages
+        {
+            get { return showDefeatingAttackersMessages; }
+        }
+        static public void NewMessage(string caption, string message, string closeText, bool isDefeatingAttackersMessage)
+        {
+            if (!isDefeatingAttackersMessage || showDefeatingAttackersMessages)
+                new Message(caption, message, closeText);
+        }
+        protected Message(string caption, string message, string closeText)
+        {
+            this.caption = caption;
+            this.text = message;
+            this.closeText = closeText;
+            Queue.Push(this);
+        }
         static public bool HasUnshownMessages()
         {
             return Queue.Count > 0;
@@ -19,14 +36,11 @@ namespace Nashet.UnityUIUtils
         {
             return Queue.Pop();
         }
-
-        public Message(string caption, string message, string closeText)
+        static public void SetShowDefeatingAttackersMessages(bool value)
         {
-            this.caption = caption;
-            this.text = message;
-            this.closeText = closeText;
-            Queue.Push(this);
+            showDefeatingAttackersMessages = value;
         }
+
         public string GetCaption()
         {
             return caption;
@@ -43,10 +57,13 @@ namespace Nashet.UnityUIUtils
     public class MessagePanel : DragPanel
     {
         ///<summary>Stores position of top-level message window. Used to correctly place next message window</summary>
-        static Vector3 lastDragPosition;
+        static private Vector3 lastDragPosition;
 
         [SerializeField]
         private Text caption, message, closeText;
+
+        [SerializeField]
+        private Toggle showDefeatingAttackerMessage;
 
         [SerializeField]
         private static GameObject messagePanelPrefab; //FixedJoint it
@@ -67,6 +84,7 @@ namespace Nashet.UnityUIUtils
             //image = GetComponentInChildren<Image>();
             //image.color = GUIChanger.ButtonsColor;
             GUIChanger.Apply(this.gameObject);
+            showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
         }
 
         override public void OnDrag(PointerEventData data) // need it to place windows in stair-order
@@ -79,14 +97,17 @@ namespace Nashet.UnityUIUtils
         {
             //
         }
-
+        public void OnShowMessagesChanged(bool value)
+        {
+            Message.SetShowDefeatingAttackersMessages(value);
+        }
         public void show(Message mess)
         {
             howMuchPausedWindowsOpen++;
             caption.text = mess.GetCaption();
             message.text = mess.GetText();
             closeText.text = mess.GetClosetext();
-            Show();            
+            Show();
         }
         static public void showMessageBox(Canvas canvas)
         {

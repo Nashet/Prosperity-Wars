@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
-        private readonly float simulationSpeedLimit = 0.2f;
+        private readonly float simulationSpeedLimit = 0.15f;
         private float previousFrameTime;
 
 
@@ -90,7 +90,7 @@ namespace Nashet.EconomicSimulation
                     Game.setUnityAPI();
 
                     camera = this.GetComponent<Camera>();
-                    FocusOnProvince(Game.Player.Capital);
+                    FocusOnProvince(Game.Player.Capital, false);
                     //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
                     //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
                     loadingPanel.Hide();
@@ -246,10 +246,11 @@ namespace Nashet.EconomicSimulation
                 closeToppestPanel();
             }
         }
-        public void FocusOnProvince(Province province)
+        public void FocusOnProvince(Province province, bool select)
         {
             gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
-            selectProvince(province.getID());
+            if (select)
+                selectProvince(province.getID());
         }
 
     }

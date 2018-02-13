@@ -74,6 +74,10 @@ namespace Nashet.EconomicSimulation
         {
             return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
         }
+        public bool IsHuman
+        {
+            get { return !isAI(); }
+        }
         /// <summary>
         /// Unites all home armies in one. Assuming armies are alive, just needed to consolidate. If there is nothing to consolidate than returns empty army    
         /// </summary>
@@ -162,7 +166,7 @@ namespace Nashet.EconomicSimulation
             var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(getPlaceDejure());
             var multiplier = new Value(getAllArmiesSize() / 1000f);
             res.Multiply(multiplier);
-            return res;            
+            return res;
         }
 
         virtual internal void sendArmy(Province possibleTarget, Procent procent)

@@ -111,7 +111,7 @@ namespace Nashet.EconomicSimulation
         static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
         static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
 
-        
+
         private readonly Dictionary<PopUnit, Corps> personal;
         Province destination;
         private readonly Staff owner;
@@ -130,7 +130,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedFirearmsSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Firearms))                
+            if (getOwner().getPlaceDejure().Invented(Product.Firearms))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
              new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -139,7 +139,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedArtillerySupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Artillery))                
+            if (getOwner().getPlaceDejure().Invented(Product.Artillery))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
              new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -148,7 +148,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedCarsSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Cars))                
+            if (getOwner().getPlaceDejure().Invented(Product.Cars))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
@@ -157,7 +157,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedTanksSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Tanks))                
+            if (getOwner().getPlaceDejure().Invented(Product.Tanks))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
@@ -167,7 +167,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedAirplanesSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Airplanes))                
+            if (getOwner().getPlaceDejure().Invented(Product.Airplanes))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
@@ -720,7 +720,7 @@ namespace Nashet.EconomicSimulation
         {
             sb.Clear();
 
-            if (!attacker.isAI() && isAttackerWon())
+            if (attacker.IsHuman && isAttackerWon())
             {
                 //.Append(" owned by ").Append(place.getCountry())
                 sb.Append("Our glorious army attacked ").Append(place)
@@ -730,10 +730,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
                 sb.Append("\nProvince ").Append(place).Append(" is our now!");
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We won a battle!", sb.ToString(), "Fine");
+                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", false);
             }
-            else
-            if (!defender.isAI() && isDefenderWon())
+            else if (defender.IsHuman && isDefenderWon())
             {
                 sb.Append("Our glorious army attacked in province ").Append(place).Append(" by evil ").Append(attacker)
                     .Append(" with army of ").Append(attackerArmy).Append(" men.");
@@ -741,10 +740,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
                 sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We won a battle!", sb.ToString(), "Fine");
+                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", true);
             }
-            else
-                if (!attacker.isAI() && isDefenderWon())
+            else if (attacker.IsHuman && isDefenderWon())
             {
                 //.Append(" owned by ").Append(place.getCountry())
                 sb.Append("Our glorious army attacked ").Append(place)
@@ -753,10 +751,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
                 sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We lost a battle!", sb.ToString(), "Fine");
+                Message.NewMessage("We lost a battle!", sb.ToString(), "Fine", false);
             }
-            else
-                if (!defender.isAI() && isAttackerWon())
+            else if (defender.IsHuman && isAttackerWon())
 
             {
                 sb.Append("Our glorious army attacked in province ").Append(place).Append(" by evil ").Append(attacker)
@@ -770,7 +767,7 @@ namespace Nashet.EconomicSimulation
                 else
                     sb.Append("\nWe had to enact ").Append(movement.getGoal());
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We lost a battle!", sb.ToString(), "Not fine really");
+                Message.NewMessage("We lost a battle!", sb.ToString(), "Not fine really", false);
             }
         }
 

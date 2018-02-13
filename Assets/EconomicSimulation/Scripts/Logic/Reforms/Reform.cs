@@ -154,6 +154,10 @@ namespace Nashet.EconomicSimulation
                 Procent result;
                 if (pop.getVotingPower(this) > pop.getVotingPower(pop.GetCountry().government.getTypedValue()))
                     result = new Procent(1f);
+                else if (this == Government.ProletarianDictatorship)
+                    result = new Procent(0.4f);
+                else if (this == Government.Despotism && pop.needsFulfilled.get() < 0.1f)
+                    result = new Procent(1f);
                 else
                     result = new Procent(0f);
                 return result;
@@ -256,6 +260,8 @@ namespace Nashet.EconomicSimulation
             var government = province.GetCountry().government.getValue();
             if (government == Government.ProletarianDictatorship)
             {
+                country.setSoldierWage(0f);
+
                 //nationalization
                 foreach (var factory in province.getAllFactories())
                 {
@@ -529,9 +535,19 @@ namespace Nashet.EconomicSimulation
                     if (this == Economy.PlannedEconomy)
                         result = new Procent(0f); // that can be achieved only by government reform
                     else if (this == Economy.LaissezFaire)
-                        result = new Procent(0.8f);
+                    {
+                        if (this == Economy.Interventionism)
+                            result = new Procent(0.3f);
+                        else
+                            result = new Procent(0.7f);
+                    }
                     else if (this == Economy.Interventionism)
-                        result = new Procent(0.9f);
+                    {
+                        if (this == Economy.LaissezFaire)
+                            result = new Procent(0.3f);
+                        else
+                            result = new Procent(0.8f);
+                    }
                     else
                         result = new Procent(0.5f);
                 }
@@ -1361,7 +1377,7 @@ namespace Nashet.EconomicSimulation
                 Procent result;
                 if (pop.isStateCulture())
                 {
-                    result = new Procent(0.5f);
+                    result = new Procent(0f);//0.5f);
                 }
                 else
                 {
@@ -1369,7 +1385,7 @@ namespace Nashet.EconomicSimulation
                     int change = ID - pop.GetCountry().minorityPolicy.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
-                        result = new Procent(1f);
+                        result = new Procent(0.3f);// 1f);
                     else
                         //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
                         result = new Procent(0f);

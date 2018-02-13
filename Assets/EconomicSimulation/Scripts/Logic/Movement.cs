@@ -180,7 +180,7 @@ namespace Nashet.EconomicSimulation
                 var separatists = targetReformValue as Separatism;
                 separatists.getCountry().onSeparatismWon(getPlaceDejure());
                 if (!separatists.getCountry().isAI())
-                    new Message("", "Separatists won revolution - " + separatists.getCountry().GetFullName(), "hmm");
+                    Message.NewMessage("", "Separatists won revolution - " + separatists.getCountry().GetFullName(), "hmm", false);
             }
             else
                 targetReform.setValue(targetReformValue);
@@ -245,7 +245,7 @@ namespace Nashet.EconomicSimulation
         {
             //revolt
             if (place == Game.Player && !Game.Player.isAI())
-                new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
+                Message.NewMessage("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false);
 
             getPlaceDejure().rebelTo(x => x.getPopUnit().getMovement() == this, this);
 

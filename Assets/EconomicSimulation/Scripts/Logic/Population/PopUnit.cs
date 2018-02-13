@@ -38,7 +38,7 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy;
         static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).GetCountry().getSize() > (x as PopUnit).GetCountry().government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
 
-        
+
 
         private readonly MyDate born;
         private Movement movement;
@@ -313,7 +313,7 @@ namespace Nashet.EconomicSimulation
 
         override public void SetStatisticToZero()
         {
-            base.SetStatisticToZero();            
+            base.SetStatisticToZero();
             needsFulfilled.setZero();
             didntGetPromisedUnemloymentSubsidy = false;
             lastEscaped.value = 0;
@@ -354,7 +354,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (byWhom == getMovement())
                     //howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.ArmyMobilizationFactor);
-                    howMuchCanMobilizeTotal = (int)Procent.HundredProcent.Copy().subtract(loyalty).multiply(getPopulation()).multiply(Options.ArmyMobilizationFactor).get();                        
+                    howMuchCanMobilizeTotal = (int)Procent.HundredProcent.Copy().subtract(loyalty).multiply(getPopulation()).multiply(Options.ArmyMobilizationFactor).get();
                 else
                     howMuchCanMobilizeTotal = 0;
             }
@@ -573,7 +573,7 @@ namespace Nashet.EconomicSimulation
         {
             float need = needsFulfilled.get();
             if (need < Options.PopOneThird)
-                return new Procent(needsFulfilled.get() * Options.PopStrataWeight.get());            
+                return new Procent(needsFulfilled.get() * Options.PopStrataWeight.get());
             else
                 return Procent.HundredProcent.Copy();
         }
@@ -1061,8 +1061,13 @@ namespace Nashet.EconomicSimulation
         {
             var list = new List<KeyValuePair<IEscapeTarget, Value>>();
             list.AddIfNotNull(getRichestDemotionTarget(predicate));
-            list.AddIfNotNull(getRichestMigrationTarget(predicate));
-            list.AddIfNotNull(getRichestImmigrationTarget(predicate));
+
+            if (this.popType == PopType.Farmers || this.popType == PopType.Workers) // others don't care where they live
+                list.AddIfNotNull(getRichestMigrationTarget(predicate));
+
+            if (this.popType != PopType.Aristocrats && this.popType != PopType.Capitalists) // redo
+                list.AddIfNotNull(getRichestImmigrationTarget(predicate));
+
             return list.MaxBy(x => x.Value.get()).Key;
         }
 

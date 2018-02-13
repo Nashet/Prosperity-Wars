@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
             new Modifier(Economy.isStateCapitlism, x => (x as Factory).GetCountry(),  0.10f, false),
             new Modifier(Economy.isInterventionism, x => (x as Factory).GetCountry(),  0.30f, false),
             new Modifier(Economy.isLF, x => (x as Factory).GetCountry(), 0.50f, false),
-            new Modifier(Economy.isPlanned, x => (x as Factory).GetCountry(), -0.10f, false),
+            //new Modifier(Economy.isPlanned, x => (x as Factory).GetCountry(), -0.10f, false),
 
             modifierInventedMiningAndIsShaft,
             modifierHasResourceInProvince,

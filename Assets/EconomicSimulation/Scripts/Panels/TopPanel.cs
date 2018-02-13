@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
         public void OnFocusOnCountryClick()
         {
             if (Game.Player != null)
-                mainCamera.FocusOnProvince(Game.Player.Capital);
+                mainCamera.FocusOnProvince(Game.Player.Capital, true);
         }
         public void switchHaveToRunSimulation()
         {
