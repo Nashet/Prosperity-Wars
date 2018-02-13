@@ -14,14 +14,14 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Text generalText;
         // Use this for initialization
-        void Awake()
+        void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
             Hide();
         }       
         public override void Refresh()
         {
-            generalText.text = "Economic Simulation Demo v0.16.2";
+            //generalText.text = "Economic Simulation Demo v0.17.0";
         }
 
         public void onStatisticsClick()

@@ -118,60 +118,60 @@ namespace Nashet.EconomicSimulation
 
         private float getHorsesSupply()
         {
-            if (getOwner().getPlaceDejure().isInvented(Invention.Domestication))
-                return Procent.makeProcent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
+            if (getOwner().getPlaceDejure().Invented(Invention.Domestication))
+                return new Procent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
             else return 0f;
         }
         private float getColdArmsSupply()
         {
-            if (Product.ColdArms.isInventedBy(getOwner().getPlaceDejure()))
-                return Procent.makeProcent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
+            if (getOwner().getPlaceDejure().Invented(Product.ColdArms))
+                return new Procent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
             else return 0f;
         }
         private float getEquippedFirearmsSupply()
         {
-            if (Product.Firearms.isInventedBy(getOwner().getPlaceDejure()))
+            if (getOwner().getPlaceDejure().Invented(Product.Firearms))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
         private float getEquippedArtillerySupply()
         {
-            if (Product.Artillery.isInventedBy(getOwner().getPlaceDejure()))
+            if (getOwner().getPlaceDejure().Invented(Product.Artillery))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
         private float getEquippedCarsSupply()
         {
-            if (Product.Cars.isInventedBy(getOwner().getPlaceDejure()))
+            if (getOwner().getPlaceDejure().Invented(Product.Cars))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
-             Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
+             new Procent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
+             new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
              );
             else return 0f;
         }
         private float getEquippedTanksSupply()
         {
-            if (Product.Tanks.isInventedBy(getOwner().getPlaceDejure()))
+            if (getOwner().getPlaceDejure().Invented(Product.Tanks))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
-             Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
+             new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
         private float getEquippedAirplanesSupply()
         {
-            if (Product.Airplanes.isInventedBy(getOwner().getPlaceDejure()))
+            if (getOwner().getPlaceDejure().Invented(Product.Airplanes))
                 return Mathf.Min(
-             Procent.makeProcent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
-             Procent.makeProcent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
-             Procent.makeProcent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
+             new Procent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
+             new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
+             new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
              );
             else return 0f;
         }
@@ -348,14 +348,14 @@ namespace Nashet.EconomicSimulation
         {
             Value res = new Value(0f);
             foreach (var item in personal)
-                res.add(item.Value.getConsumption(prod));
+                res.Add(item.Value.getConsumption(prod));
             return res;
         }
         private StorageSet getConsumption()
         {
             var consumption = new StorageSet();
             foreach (var item in personal)
-                consumption.add(item.Value.getConsumption());
+                consumption.Add(item.Value.getConsumption());
 
 
             //    Procent res = new Procent(0f);
@@ -368,18 +368,19 @@ namespace Nashet.EconomicSimulation
             //return res;
             return consumption;
         }
-        public StorageSet getNeeds()
+        public List<Storage> getNeeds()
         {
+            // StorageSet used for faster calculation
             StorageSet res = new StorageSet();
             foreach (var item in personal)
-                res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
-            return res;
+                res.Add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
+            return res.ToList();
         }
         Value getNeeds(Product product)
         {
             Value res = new Value(0f);
             foreach (var item in personal)
-                res.add(item.Value.getRealNeeds(getOwner().getPlaceDejure(), product));
+                res.Add(item.Value.getRealNeeds(getOwner().getPlaceDejure(), product));
             return res;
         }
 
@@ -415,7 +416,7 @@ namespace Nashet.EconomicSimulation
                 //Army sumArmy = new Army();
                 //sumArmy.add(this);
                 this.joinin(secondArmy);
-                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(this.getSize());
 
                 //secondArmy.clear();
 
@@ -447,7 +448,7 @@ namespace Nashet.EconomicSimulation
                 //Army sumArmy = new Army();
                 //sumArmy.add(this);
                 //this.joinin(secondArmy);
-                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
+                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(this.getSize());
 
                 //secondArmy.clear();
 
@@ -498,7 +499,7 @@ namespace Nashet.EconomicSimulation
         //}
         internal BattleResult attack(Province prov)
         {
-            var enemy = prov.getCountry();
+            var enemy = prov.GetCountry();
             if (enemy == Country.NullCountry)
                 prov.mobilize();
             else
@@ -719,7 +720,7 @@ namespace Nashet.EconomicSimulation
         {
             sb.Clear();
 
-            if (!attacker.isAI() && isAttackerWon())
+            if (attacker.IsHuman && isAttackerWon())
             {
                 //.Append(" owned by ").Append(place.getCountry())
                 sb.Append("Our glorious army attacked ").Append(place)
@@ -729,10 +730,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
                 sb.Append("\nProvince ").Append(place).Append(" is our now!");
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We won a battle!", sb.ToString(), "Fine");
+                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", false);
             }
-            else
-            if (!defender.isAI() && isDefenderWon())
+            else if (defender.IsHuman && isDefenderWon())
             {
                 sb.Append("Our glorious army attacked in province ").Append(place).Append(" by evil ").Append(attacker)
                     .Append(" with army of ").Append(attackerArmy).Append(" men.");
@@ -740,10 +740,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
                 sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We won a battle!", sb.ToString(), "Fine");
+                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", true);
             }
-            else
-                if (!attacker.isAI() && isDefenderWon())
+            else if (attacker.IsHuman && isDefenderWon())
             {
                 //.Append(" owned by ").Append(place.getCountry())
                 sb.Append("Our glorious army attacked ").Append(place)
@@ -752,10 +751,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
                 sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We lost a battle!", sb.ToString(), "Fine");
+                Message.NewMessage("We lost a battle!", sb.ToString(), "Fine", false);
             }
-            else
-                if (!defender.isAI() && isAttackerWon())
+            else if (defender.IsHuman && isAttackerWon())
 
             {
                 sb.Append("Our glorious army attacked in province ").Append(place).Append(" by evil ").Append(attacker)
@@ -769,7 +767,7 @@ namespace Nashet.EconomicSimulation
                 else
                     sb.Append("\nWe had to enact ").Append(movement.getGoal());
                 // sb.Append("\nDate is ").Append(Game.date);
-                new Message("We lost a battle!", sb.ToString(), "Not fine really");
+                Message.NewMessage("We lost a battle!", sb.ToString(), "Not fine really", false);
             }
         }
 

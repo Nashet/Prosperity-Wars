@@ -8,18 +8,18 @@ namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanelTable : UITableNew<Country>
     {
-        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder            ,
+        private SortOrder countryOrder, populationOrder, GDPOrder, GDPPerCapitaOrder, unemploymentOrder, averageNeedsOrder,
             richTaxOrder, economyTypeOrder, GDPShareOrder;
-        public void Start()
+        public void Awake()// start doesn't work somehow
         {
-            countryOrder = new SortOrder(this, x => x.getSortRank());
+            countryOrder = new SortOrder(this, x => x.GetNameWeight());
             populationOrder = new SortOrder(this, x => x.getMenPopulation());
             GDPOrder = new SortOrder(this, x => x.getGDP().get());
             GDPPerCapitaOrder = new SortOrder(this, x => x.getGDPPer1000());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             averageNeedsOrder = new SortOrder(this, x => x.getAverageNeedsFulfilling().get());
             richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
-            economyTypeOrder = new SortOrder(this, x => x.economy.getSortRank());
+            economyTypeOrder = new SortOrder(this, x => x.economy.GetType().GetHashCode());
             GDPShareOrder = new SortOrder(this, x => x.getGDP().get());
         }
         protected override IEnumerable<Country> ContentSelector()
@@ -32,7 +32,10 @@ namespace Nashet.EconomicSimulation
             AddCell((number + GetRowOffset() + 1).ToString(), country);
 
             // Adding Country
-            AddCell(country.ToString(), country, () => country.ToString());
+            if (country == Game.Player)
+                AddCell(country.ToString().ToUpper(), country, () => country.ToString());
+            else
+                AddCell(country.ToString(), country, () => country.ToString());
             ////Adding population
             AddCell(country.getFamilyPopulation().ToString("N0"), country);
 
@@ -52,8 +55,6 @@ namespace Nashet.EconomicSimulation
         }
         protected override void AddHeader()
         {
-            if (countryOrder == null)
-                Start(); //fixes Start call
             AddCell("Place");
             AddCell("Country" + countryOrder.getSymbol(), countryOrder);
             AddCell("Population" + populationOrder.getSymbol(), populationOrder);

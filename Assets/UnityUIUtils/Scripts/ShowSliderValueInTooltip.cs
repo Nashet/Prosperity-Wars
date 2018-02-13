@@ -10,7 +10,7 @@ namespace Nashet.UnityUIUtils
         private void Start()
         {
             base.Start();
-            this.SetDynamicString(() => "Value: " + GetComponent<Slider>().value);
+            this.SetTextDynamic(() => "Value: " + GetComponent<Slider>().value);
         }
     }
 }

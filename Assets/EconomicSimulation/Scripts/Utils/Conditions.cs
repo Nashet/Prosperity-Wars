@@ -78,7 +78,7 @@ namespace Nashet.Conditions
         public bool isAllTrue(object forWhom)
         {
             foreach (var item in list)
-                if (!item.checkIftrue(forWhom))
+                if (!item.checkIfTrue(forWhom))
                     return false;
             return true;
         }
@@ -211,7 +211,7 @@ namespace Nashet.Conditions
             return answer;
         }
         /// <summary>Returns bool result, fast version, without description</summary>    
-        internal bool checkIftrue(object forWhom)
+        internal bool checkIfTrue(object forWhom)
         {
             if (changeTargetObject != null)
                 forWhom = changeTargetObject(forWhom); ;
@@ -222,35 +222,35 @@ namespace Nashet.Conditions
     /// <summary>
     /// Supports second object to compare & dynamic string
     /// </summary>
-    public class ConditionsListForDoubleObjects : ConditionsList
+    public class DoubleConditionsList : ConditionsList
     {
         protected List<Condition> listForSecondObject;
         /// <summary>
         /// basic constructor
         /// </summary>    
-        public ConditionsListForDoubleObjects(List<Condition> inlist) : base(inlist)
+        public DoubleConditionsList(List<Condition> inlist) : base(inlist)
         {
 
         }
         /// <summary>
         /// basic constructor
         /// </summary>    
-        public ConditionsListForDoubleObjects(Condition condition) : base(condition)
+        public DoubleConditionsList(Condition condition) : base(condition)
         {
 
         }
-        public ConditionsListForDoubleObjects() : base()
+        public DoubleConditionsList() : base()
         {
 
         }
         /// <summary>
         /// copy constructor
         /// </summary>    
-        public ConditionsListForDoubleObjects(ConditionsList conditionsList) : base(conditionsList)
+        public DoubleConditionsList(ConditionsList conditionsList) : base(conditionsList)
         {
 
         }
-        public ConditionsListForDoubleObjects addForSecondObject(List<Condition> toAdd)
+        public DoubleConditionsList addForSecondObject(List<Condition> toAdd)
         {
             listForSecondObject = toAdd;
             return this;
@@ -278,7 +278,7 @@ namespace Nashet.Conditions
             bool atLeastOneNoAnswer = false;
             foreach (var item in list)
             {
-                var doubleCondition = item as ConditionForDoubleObjects;
+                var doubleCondition = item as DoubleCondition;
                 if (doubleCondition == null)
                 {
                     if (!item.checkIftrue(firstObject, out accu))
@@ -308,10 +308,10 @@ namespace Nashet.Conditions
         {
             foreach (var item in list)
             {
-                var doubleCondition = item as ConditionForDoubleObjects;
+                var doubleCondition = item as DoubleCondition;
                 if (doubleCondition == null)
                 {
-                    if (!item.checkIftrue(firstObject))
+                    if (!item.checkIfTrue(firstObject))
                         return false;
                 }
                 else
@@ -323,7 +323,7 @@ namespace Nashet.Conditions
             if (listForSecondObject != null)
                 foreach (var item in listForSecondObject)
                 {
-                    if (!item.checkIftrue(secondObject))
+                    if (!item.checkIfTrue(secondObject))
                         return false;
                 }
             return true;
@@ -332,13 +332,13 @@ namespace Nashet.Conditions
     /// <summary>
     /// Supports second object to compare & dynamic string
     /// </summary>
-    public class ConditionForDoubleObjects : Condition
+    public class DoubleCondition : Condition
     {
         protected readonly Func<object, object, bool> checkingFunctionForTwoObjects;
         /// <summary>
         /// Supports second object to compare & dynamic string
         /// </summary>    
-        public ConditionForDoubleObjects(Func<object, object, bool> checkingFunctionForTwoObjects, Func<object, string> dynamicString, bool showAchievedConditionDescribtion)
+        public DoubleCondition(Func<object, object, bool> checkingFunctionForTwoObjects, Func<object, string> dynamicString, bool showAchievedConditionDescribtion)
             : base(null, dynamicString, showAchievedConditionDescribtion)
         {
             this.checkingFunctionForTwoObjects = checkingFunctionForTwoObjects;

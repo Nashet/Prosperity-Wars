@@ -11,15 +11,18 @@ namespace Nashet.EconomicSimulation
     public class ProductionWindow : DragPanel, IFiltrable<Factory>
     {
         [SerializeField]
-        private ProductionWindowTable table;
-        //public readonly static Predicate<PopUnit> filterSelectedProvince = x => x.getProvince() == Game.selectedProvince;
+        private ProductionWindowTable table;        
         private Predicate<Factory> filterSelectedProvince;
         private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
-        private Province showingProvince;
+        private Province showingProvince; // should it go to table?
+        public Province SelectedProvince
+        {
+            get { return showingProvince; }
+        }
 
         void Start()
         {
-            filterSelectedProvince = x => x.getProvince() == showingProvince;
+            filterSelectedProvince = x => x.GetProvince() == showingProvince;
             MainCamera.productionWindow = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.bottomPanel.GetComponent<RectTransform>().rect.height - 2f);
             Canvas.ForceUpdateCanvases();
@@ -50,7 +53,7 @@ namespace Nashet.EconomicSimulation
             table.Refresh();
         }
        
-        private readonly Predicate<Factory> filterGovernmentOwned = (x => x.getOwner() != x.getCountry());
+        private readonly Predicate<Factory> filterGovernmentOwned = (x => !x.ownership.IsCountryOwnsControlPacket());
         public void OnGovernmentOwnedFilterChange(bool @checked)
         {
             if (@checked)
@@ -60,7 +63,7 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
-        private readonly Predicate<Factory> filterPrivateOwned = (x => x.getOwner() == x.getCountry());
+        private readonly Predicate<Factory> filterPrivateOwned = (x => x.ownership.IsCountryOwnsControlPacket());
         public void OnPrivateOwnedFilterChange(bool @checked)
         {
             if (@checked)

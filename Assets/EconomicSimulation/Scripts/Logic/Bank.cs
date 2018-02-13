@@ -7,10 +7,10 @@ namespace Nashet.EconomicSimulation
     public class Bank : Agent
     {
         Value givenLoans = new Value(0);
-
-        public Bank() : base(0f, null, null)
+        private readonly Country country;
+        public Bank(Country country) : base(0f, null, null)
         {
-            //setBank(this);
+            this.country = country;
         }
         /// <summary>
         /// Returns money to bank. checks inside.
@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
                 if (giver.loans.isBiggerThan(Value.Zero))  //has debt (meaning has no deposits)
                     if (howMuchTake.isBiggerOrEqual(giver.loans)) // cover debt
                     {
-                        Value extraMoney = howMuchTake.subtractOutside(giver.loans);
+                        Value extraMoney = howMuchTake.Copy().subtract(giver.loans);
                         this.givenLoans.subtract(giver.loans);
                         giver.loans.set(0f);
                         giver.deposits.set(extraMoney);
@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
                     }
                 else
                 {
-                    giver.deposits.add(howMuchTake);
+                    giver.deposits.Add(howMuchTake);
                 }
         }
 
@@ -48,10 +48,10 @@ namespace Nashet.EconomicSimulation
             if (taker.deposits.isBiggerThan(Value.Zero)) // has deposit (meaning, has no loans)
                 if (howMuch.isBiggerOrEqual(taker.deposits))// loan is bigger than this deposit
                 {
-                    Value notEnoughMoney = howMuch.subtractOutside(taker.deposits);
+                    Value notEnoughMoney = howMuch.Copy().subtract(taker.deposits);
                     taker.deposits.set(0f);
                     taker.loans.set(notEnoughMoney);
-                    this.givenLoans.add(notEnoughMoney);
+                    this.givenLoans.Add(notEnoughMoney);
                 }
                 else // not cover
                 {
@@ -59,8 +59,8 @@ namespace Nashet.EconomicSimulation
                 }
             else
             {
-                taker.loans.add(howMuch);
-                this.givenLoans.add(howMuch);
+                taker.loans.Add(howMuch);
+                this.givenLoans.Add(howMuch);
             }
         }
         /// <summary>
@@ -79,13 +79,13 @@ namespace Nashet.EconomicSimulation
         //    return false;
         //}
         /// <summary>
-        /// checks inside. Just wouldn't give money if can't
+        /// Gives credit. Checks inside. Just wouldn't give money if can't
         /// </summary>    
-        internal bool giveLackingMoney(Agent taker, Value sum)
+        internal bool giveLackingMoney(Agent taker, ReadOnlyValue sum)
         {
-            if (taker.getCountry().isInvented(Invention.Banking))// find money in bank?
+            if (taker.GetCountry().Invented(Invention.Banking))// find money in bank?
             {
-                Value lackOfSum = sum.subtractOutside(taker.cash);
+                Value lackOfSum = sum.Copy().subtract(taker.cash);
                 if (canGiveMoney(taker, lackOfSum))
                 {
                     giveMoney(taker, lackOfSum);
@@ -111,11 +111,11 @@ namespace Nashet.EconomicSimulation
             return givenLoans;
         }
         /// <summary>
-        /// how much money have in cash
+        /// how much money have in cash. It's copy
         /// </summary>
         internal Value getReservs()
         {
-            return new Value(cash);
+            return cash.Copy();
         }
         /// <summary>
         /// Checks reserve limits and deposits
@@ -151,32 +151,32 @@ namespace Nashet.EconomicSimulation
         }
         bool isItEnoughReserves(Value sum)
         {
-            return cash.subtractOutside(getMinimalReservs()).isNotZero();
+            return cash.Copy().subtract(getMinimalReservs()).isNotZero();
         }
 
         /// <summary>
-        /// Checks reserve limits and deposits
+        /// Checks reserve limits and deposits. Returns copy
         /// </summary>    
         internal Value howMuchCanGive(Agent agent)
         {
-            Value wouldGive = cash.subtractOutside(getMinimalReservs(), false);
+            Value wouldGive = cash.Copy().subtract(getMinimalReservs(), false);
             if (agent.deposits.isBiggerThan(wouldGive))
             {
-                wouldGive = new Value(agent.deposits); // increase wouldGive to deposits size
+                wouldGive = agent.deposits.Copy(); // increase wouldGive to deposits size
                 if (wouldGive.isBiggerThan(cash)) //decrease wouldGive to cash size
-                    wouldGive = new Value(cash);
+                    wouldGive.set(cash);
             }
             return wouldGive;
         }
         /// <summary>
-        /// includes checks for cash and deposit size
+        /// includes checks for cash and deposit size. Returns copy
         /// </summary>   
         internal Value howMuchDepositCanReturn(Agent agent)
         {
             if (cash.isBiggerOrEqual(agent.deposits))
-                return new Value(agent.deposits);
+                return agent.deposits.Copy();
             else
-                return new Value(cash);
+                return cash.Copy();
         }
         internal void destroy(Country byWhom)
         {
@@ -187,6 +187,10 @@ namespace Nashet.EconomicSimulation
         public override void simulate()
         {
             throw new NotImplementedException();
+        }
+        public override Country GetCountry()
+        {
+            return country;
         }
     }
 }

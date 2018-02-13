@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
 using System.Linq;
 
 namespace Nashet.EconomicSimulation
@@ -17,7 +18,7 @@ namespace Nashet.EconomicSimulation
             if (Game.selectedProvince == null)
                 return Enumerable.Empty<FactoryType>();
             else
-                return FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince));
+                return FactoryType.getAllInventedTypes(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player));
         }
         protected override void AddRow(FactoryType factoryType, int number)
         {
@@ -26,10 +27,10 @@ namespace Nashet.EconomicSimulation
 
             ////Adding cost
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Economy.isMarket.checkIftrue(Game.Player))
-                AddCell(factoryType.getInvestmentsCost().ToString(), factoryType);
+            if (Economy.isMarket.checkIfTrue(Game.Player))
+                AddCell(factoryType.GetBuildCost().ToString(), factoryType);
             else
-                AddCell(factoryType.getBuildNeeds().ToString(), factoryType);
+                AddCell(factoryType.GetBuildNeeds().getString(""), factoryType);
 
 
             ////Adding resource needed
@@ -42,7 +43,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
-                AddCell(factoryType.getMargin().ToString(), factoryType);
+                AddCell(factoryType.GetPossibleMargin(Game.selectedProvince).ToString(), factoryType);
         }
 
         protected override void AddHeader()

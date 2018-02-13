@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 namespace Nashet.UnityUIUtils
 {
+    //MenuItem("Tools/MyTool/Do It in C#")]
     public class SliderExponential : Slider
     {
         // has to be public 

@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Culture: ISortable
+    public class Culture: ISortableName
     {
         private readonly string name;
         private readonly List<Culture> allCultures = new List<Culture>();
-        public Culture(string iname)
+        private readonly float nameWeight;
+        public Culture(string name)
         {
-            name = iname;
+            nameWeight = name.GetWeight();
+            this.name = name;
             allCultures.Add(this);
         }
 
-        public float getSortRank()
+        public float GetNameWeight()
         {
-            return GetHashCode();
+            return nameWeight;
         }
 
         public override string ToString()

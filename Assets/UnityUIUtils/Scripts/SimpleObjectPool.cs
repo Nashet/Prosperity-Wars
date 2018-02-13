@@ -79,7 +79,7 @@ namespace Nashet.UnityUIUtils
                 ToolTipHandler s = toReturn.GetComponent<ToolTipHandler>();
                 // s.GetComponent<ToolTipHandler>().tooltip = "";
                 s.SetText("");
-                s.SetDynamicString(null);
+                s.SetTextDynamic(null);
                 //if (s.tip != null)
                 //    s.tip.HideTooltip();
                 //s.tip = null;

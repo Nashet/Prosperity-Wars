@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
-            issues, money, caption;
+            issues, money, caption, property;
         private PopUnit pop;
         // Use this for initialization
         void Start()
@@ -56,8 +56,8 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nNo demotions\\migrations\\immigrations");
 
                 sb.Append("\nAssimilation: ");
-                if (pop.culture != pop.getCountry().getCulture() && pop.getAssimilationSize() > 0)
-                    sb.Append(pop.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
+                if (pop.culture != pop.GetCountry().getCulture() && pop.getAssimilationSize() > 0)
+                    sb.Append(pop.GetCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
                 else
                     sb.Append("none");
 
@@ -84,46 +84,55 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
-                lifeNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
-                everyDayNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
-                luxuryNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Cash: ").Append(pop.cash.ToString());
                 money.text = sb.ToString();
-                money.GetComponent<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
-                + "\nIncome tax: " + pop.incomeTaxPayed
+                money.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Money income: " + pop.moneyIncomethisTurn
+                + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
                 if (pop.popType.isProducer())
                 {
-                    efficiencyText.enabled = true;
+                    efficiencyText.gameObject.SetActive(true);
                     efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop);
-                    efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(() => PopUnit.modEfficiency.GetDescription(pop));
+                    efficiencyText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Efficiency: " + PopUnit.modEfficiency.GetDescription(pop));
                 }
                 else
                 {
-                    efficiencyText.enabled = false;
+                    efficiencyText.gameObject.SetActive(false);
                     //efficiencyText.GetComponent<ToolTipHandler>().SetText("");//it's disabled anyway
                 }
+                var thisInvestor = pop as Investor;
+                if (thisInvestor != null)
+                {
+                    property.gameObject.SetActive(true);
+                    var found = World.GetAllShares(thisInvestor).OrderByDescending(x => x.Value.get());
+                    property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
+                }
+                else
+                    property.gameObject.SetActive(false);
 
-
-                issues.GetComponent<ToolTipHandler>().SetDynamicString(
+                issues.GetComponent<ToolTipHandler>().SetTextDynamic(
                     delegate ()
                     {
-                        var items = from pair in pop.getIssues()
-                                    orderby pair.Value descending
-                                    select pair;
-                        return items.getString(" willing ", "\n");
+                        //var items = from pair in pop.getIssues()
+                        //            orderby pair.Value descending
+                        //            select pair;
+                        var items = pop.getIssues().OrderByDescending(x => x.Value);
+                        return "Issues:\n" + items.getString(" willing ", "\n");
                     }
                     );
             }
@@ -139,10 +148,10 @@ namespace Nashet.EconomicSimulation
                     sb.Append(target).Append(" ").Append(size);
                 else
                 {
-                    if (pop.getCountry() == targetIsProvince.getCountry())
+                    if (pop.GetCountry() == targetIsProvince.GetCountry())
                         sb.Append(targetIsProvince).Append(" ").Append(size);
                     else// immigration
-                        sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+                        sb.Append(targetIsProvince.GetCountry()).Append(" (").Append(target).Append(") ").Append(size);
 
                 }
             }
@@ -160,7 +169,7 @@ namespace Nashet.EconomicSimulation
             }
             else // Assuming target is Province
             {
-                if (pop.getCountry() == targetIsProvince.getCountry())
+                if (pop.GetCountry() == targetIsProvince.GetCountry())
                 {
                     sb.Append("\n").Append("Migration: ");
                     sb.Append(targetIsProvince).Append(" ").Append(size);
@@ -168,7 +177,7 @@ namespace Nashet.EconomicSimulation
                 else// immigration
                 {
                     sb.Append("\n").Append("Immigration: ");
-                    sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
+                    sb.Append(targetIsProvince.GetCountry()).Append(" (").Append(target).Append(") ").Append(size);
                 }
             }
         }

@@ -39,9 +39,9 @@ namespace Nashet.EconomicSimulation
                 if (!goal.Equals(default(KeyValuePair<AbstractReform, AbstractReformValue>)))
                 {
                     //find reasonable goal and join
-                    var found = pop.getCountry().movements.Find(x => x.getGoal() == goal.Value);
+                    var found = pop.GetCountry().movements.Find(x => x.getGoal() == goal.Value);
                     if (found == null)
-                        pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.getCountry()));
+                        pop.setMovement(new Movement(goal.Key, goal.Value, pop, pop.GetCountry()));
                     else
                     {
                         found.add(pop);
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
                 if (pop.getMovement().members.Count == 0)
                 {
                     pop.getMovement().demobilize();
-                    pop.getCountry().movements.Remove(pop.getMovement());
+                    pop.GetCountry().movements.Remove(pop.getMovement());
                 }
                 pop.setMovement(null);
             }
@@ -180,13 +180,13 @@ namespace Nashet.EconomicSimulation
                 var separatists = targetReformValue as Separatism;
                 separatists.getCountry().onSeparatismWon(getPlaceDejure());
                 if (!separatists.getCountry().isAI())
-                    new Message("", "Separatists won revolution - " + separatists.getCountry().getDescription(), "hmm");
+                    Message.NewMessage("", "Separatists won revolution - " + separatists.getCountry().GetFullName(), "hmm", false);
             }
             else
                 targetReform.setValue(targetReformValue);
             foreach (var pop in members)
             {
-                pop.loyalty.add(Options.PopLoyaltyBoostOnRevolutionWon);
+                pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionWon);
                 pop.loyalty.clamp100();
             }
             killMovement();
@@ -198,7 +198,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var pop in members)
             {
-                pop.loyalty.add(Options.PopLoyaltyBoostOnRevolutionLost);
+                pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionLost);
                 pop.loyalty.clamp100();
             }
             //_isInRevolt = false;
@@ -245,15 +245,20 @@ namespace Nashet.EconomicSimulation
         {
             //revolt
             if (place == Game.Player && !Game.Player.isAI())
-                new Message("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok");
+                Message.NewMessage("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false);
 
             getPlaceDejure().rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
             base.mobilize(place.ownedProvinces);
 
-            sendArmy(place.getCapital(), Procent.HundredProcent);
+            sendArmy(place.Capital, Procent.HundredProcent);
             _isInRevolt = true;
         }
+        /// <summary>
+        /// new value
+        /// </summary>
+        /// <param name="toWhom"></param>
+        /// <returns></returns>
         public Procent getRelativeStrength(Staff toWhom)
         {
             //var governmentHomeArmy = country.getDefenceForces();
@@ -266,12 +271,12 @@ namespace Nashet.EconomicSimulation
             if (toWhomStrenght == 0f)
             {
                 if (thisStrenght == 0f)
-                    return Procent.ZeroProcent;
+                    return Procent.ZeroProcent.Copy();
                 else
-                    return Procent.Max999;
+                    return Procent.Max999.Copy();
             }
             else
-                return Procent.makeProcent(thisStrenght, toWhomStrenght);
+                return new Procent(thisStrenght, toWhomStrenght);
         }
     }
 }

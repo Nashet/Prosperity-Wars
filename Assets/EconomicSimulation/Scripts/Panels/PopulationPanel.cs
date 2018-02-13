@@ -19,11 +19,14 @@ namespace Nashet.EconomicSimulation
         //private Province m_showingProvince;
 
         private Province showingProvince;
-       
+        public Province SelectedProvince
+        {
+            get { return showingProvince; }
+        }
         // Use this for initialization
         void Start()
         {
-            filterSelectedProvince = x => x.getProvince() == showingProvince;
+            filterSelectedProvince = x => x.GetProvince() == showingProvince;
             MainCamera.populationPanel = this;
             //show(false);
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);

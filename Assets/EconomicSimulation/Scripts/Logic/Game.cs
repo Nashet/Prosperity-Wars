@@ -203,22 +203,22 @@ namespace Nashet.EconomicSimulation
             {
                 int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
                 for (int i = 0; i < howMuchLakes; i++)
-                    Province.allProvinces.Remove(Province.allProvinces.PickRandom());
+                    Province.allProvinces.Remove(Province.allProvinces.Random());
             }
         }
 
         static private void setStartResources()
         {
             //Country.allCountries[0] is null country
-            //Country.allCountries[1].getCapital().setResource(Product.Wood);// player
+            //Country.allCountries[1].Capital.setResource(Product.Wood);// player
 
-            //Country.allCountries[0].getCapital().setResource(Product.Wood;
-            Country.allCountries[2].getCapital().setResource(Product.Fruit);
-            Country.allCountries[3].getCapital().setResource(Product.Gold);
-            Country.allCountries[4].getCapital().setResource(Product.Cotton);
-            Country.allCountries[5].getCapital().setResource(Product.Stone);
-            Country.allCountries[6].getCapital().setResource(Product.MetalOre);
-            Country.allCountries[7].getCapital().setResource(Product.Wood);
+            //Country.allCountries[0].Capital.setResource(Product.Wood;
+            Country.allCountries[2].Capital.setResource(Product.Fruit);
+            Country.allCountries[3].Capital.setResource(Product.Gold);
+            Country.allCountries[4].Capital.setResource(Product.Cotton);
+            Country.allCountries[5].Capital.setResource(Product.Stone);
+            Country.allCountries[6].Capital.setResource(Product.MetalOre);
+            Country.allCountries[7].Capital.setResource(Product.Wood);
         }
 
         internal static int getMapMode()
@@ -240,7 +240,7 @@ namespace Nashet.EconomicSimulation
 
         internal static bool isRunningSimulation()
         {
-            return haveToRunSimulation || haveToStepSimulation;
+            return (haveToRunSimulation || haveToStepSimulation);// && !MessagePanel.IsOpenAny();
         }
         internal static void pauseSimulation()
         {
@@ -256,15 +256,15 @@ namespace Nashet.EconomicSimulation
             Value allMoney = new Value(0f);
             foreach (Country country in Country.allCountries)
             {
-                allMoney.add(country.cash);
-                allMoney.add(country.getBank().getReservs());
+                allMoney.Add(country.cash);
+                allMoney.Add(country.getBank().getReservs());
                 foreach (Province province in country.ownedProvinces)
                 {
                     foreach (var factory in province.getAllAgents())
-                        allMoney.add(factory.cash);
+                        allMoney.Add(factory.cash);
                 }
             }
-            allMoney.add(Game.market.cash);
+            allMoney.Add(Game.market.cash);
             return allMoney;
         }
         static void сreateRandomPopulation()
@@ -272,9 +272,9 @@ namespace Nashet.EconomicSimulation
 
             foreach (Province province in Province.allProvinces)
             {
-                if (province.getCountry() == Country.NullCountry)
+                if (province.GetCountry() == Country.NullCountry)
                 {
-                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.getCountry().getCulture(), province);
+                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.GetCountry().getCulture(), province);
                 }
                 else
                 {
@@ -282,10 +282,10 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
                     //else
-                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.getCountry().getCulture(), province);
+                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.GetCountry().getCulture(), province);
 
 
-                    if (province.getCountry() == Game.Player)
+                    if (province.GetCountry() == Game.Player)
                     {
                         //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                         //province.allPopUnits.Add(pop);
@@ -293,7 +293,7 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Aristocrats(1000, province.getCountry().getCulture(), province);
                     //else
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.getCountry().getCulture(), province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.GetCountry().getCulture(), province);
 
 
                     pop.cash.set(9000);
@@ -303,10 +303,10 @@ namespace Nashet.EconomicSimulation
                     //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
                     //pop.cash.set(9000);
 
-                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.getCountry().getCulture(), province);
+                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.GetCountry().getCulture(), province);
                     pop.cash.set(900);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.getCountry().getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.GetCountry().getCulture(), province);
                     pop.cash.set(20);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
@@ -331,8 +331,12 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                mapSize = 25000;
+                //mapSize = 25000;
+                //width = 170 + Random.Next(65);
+                mapSize = 30000;
                 width = 170 + Random.Next(65);
+                //mapSize = 40000;
+                //width = 200 + Random.Next(80);
             }
             // 140 is sqrt of 20000
             //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
@@ -458,13 +462,13 @@ namespace Nashet.EconomicSimulation
             Game.market.sentToMarket.setZero();
             foreach (Country country in Country.getAllExisting())
             {
-                country.setStatisticToZero();
+                country.SetStatisticToZero();
                 foreach (Province province in country.ownedProvinces)
                 {
                     province.BalanceEmployableWorkForce();
                     {
                         foreach (var item in province.getAllAgents())
-                            item.setStatisticToZero();
+                            item.SetStatisticToZero();
                     }
                 }
             }
@@ -473,7 +477,7 @@ namespace Nashet.EconomicSimulation
         }
         static void makeHelloMessage()
         {
-            new Message("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
+            Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
                 "\n\nCurrently there is: "
                 + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
                 + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"
@@ -481,13 +485,13 @@ namespace Nashet.EconomicSimulation
                 + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
                 + "\n\tpolitical \\ culture \\ core \\ resource map mode"
                 + "\n\tmovements and rebellions"
-                + "\n\nYou play as " + Game.Player.getDescription() + " You can try to growth economy or conquer the world."
+                + "\n\nYou play as " + Game.Player.GetFullName() + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
                 + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
-                , "Ok");
+                , closeText: "Ok", isDefeatingAttackersMessage: false);
         }
 
         private static void calcBattles()
@@ -531,23 +535,18 @@ namespace Nashet.EconomicSimulation
             // strongly before PrepareForNewTick
             Game.market.simulatePriceChangeBasingOnLastTurnData();
 
-            Game.calcBattles(); // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-                                // includes workforce balancing
-                                // and sets statistics to zero. Should go after price calculation
+            // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
+            Game.calcBattles();
+
+            // includes workforce balancing
+            // and sets statistics to zero. Should go after price calculation
             prepareForNewTick();
 
             // big PRODUCE circle
             foreach (Country country in Country.getAllExisting())
-                foreach (Province province in country.ownedProvinces)//Province.allProvinces)
-                {
-                    foreach (Factory factory in province.allFactories)
-                    {
-                        factory.produce();
-                        factory.payTaxes(); // empty for now                        
-                    }
-                    foreach (PopUnit pop in province.allPopUnits)
-                        pop.produce();
-                }
+                foreach (Province province in country.ownedProvinces)
+                    foreach (var producer in province.getAllProducers())
+                        producer.produce();
 
             // big CONCUME circle   
             foreach (Country country in Country.getAllExisting())
@@ -559,7 +558,7 @@ namespace Nashet.EconomicSimulation
                     foreach (Factory factory in country.getAllFactories())
                         factory.consumeNeeds();
 
-                    if (country.isInvented(Invention.ProfessionalArmy))
+                    if (country.Invented(Invention.ProfessionalArmy))
                         foreach (var item in country.getAllPopUnits(PopType.Soldiers))
                             item.consumeNeeds();
 
@@ -575,7 +574,7 @@ namespace Nashet.EconomicSimulation
                 else  //consume in regular order
                     foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
                     {
-                        foreach (Factory factory in province.allFactories)
+                        foreach (Factory factory in province.getAllFactories())
                         {
                             factory.consumeNeeds();
                         }
@@ -599,27 +598,32 @@ namespace Nashet.EconomicSimulation
                 country.getMoneyForSoldProduct();
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                 {
-                    foreach (Factory factory in province.allFactories)
+                    foreach (Factory factory in province.getAllFactories())
                     {
-                        if (country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.economy.getValue() == Economy.PlannedEconomy)
+                            factory.OpenFactoriesPE();
+                        else
                         {
                             factory.getMoneyForSoldProduct();
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here                   
-                            factory.payDividend();
-                            factory.simulateClosing(); // that too
+                            factory.payDividend(); // also pays taxes inside
+                            factory.CloseUnprofitable();
+                            factory.ownership.CalcMarketPrice();
+                            Rand.Call(() =>
+                            {
+                                factory.ownership.SellLowMarginShares();
+                            }, 20);
                         }
-                        //todo that should be done by owners, like capitalists or bureaucrats 
-                        factory.simulateOpening();
                     }
-
-                    province.allFactories.RemoveAll(item => item.isToRemove());
+                    province.DestroyAllMarkedfactories();
+                    // get pop's income section:
                     foreach (PopUnit pop in province.allPopUnits)
                     {
                         if (pop.canSellProducts())
                             pop.getMoneyForSoldProduct();
                         pop.takeUnemploymentSubsidies();
-                        if (country.isInvented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        if (country.Invented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                         // don't need salary with PE
                         {
                             var soldier = pop as Soldiers;
@@ -627,10 +631,10 @@ namespace Nashet.EconomicSimulation
                                 soldier.takePayCheck();
                         }
                         //because income come only after consuming, and only after FULL consumption
-                        if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
-                            // POps who can't trade will pay tax BEFORE consumption, not after
-                            // Otherwise pops who can't trade avoid tax
-                            pop.payTaxes();
+                        //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                        // POps who can't trade will pay tax BEFORE consumption, not after
+                        // Otherwise pops who can't trade avoid tax
+                        // pop.GetCountry().TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.popType.isPoorStrata());//pop.payTaxes();
                         pop.calcLoyalty();
                         //if (Game.Random.Next(10) == 1)
                         {
@@ -640,8 +644,8 @@ namespace Nashet.EconomicSimulation
                                 pop.EscapeForBetterLife(x => x.HasJobsFor(pop.popType, province));
                             pop.calcAssimilations();
                         }
-                        if (Game.Random.Next(15) == 1 && country.economy.getValue() != Economy.PlannedEconomy)
-                            pop.invest();
+                        if (country.economy.getValue() != Economy.PlannedEconomy)
+                            Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }
                     if (country.isAI())
                         country.invest(province);
@@ -649,9 +653,9 @@ namespace Nashet.EconomicSimulation
                     //    province.consolidatePops();                
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                     {
-                        PopUnit targetToMerge = pop.getProvince().getSimilarPopUnit(pop);
+                        PopUnit targetToMerge = pop.GetProvince().getSimilarPopUnit(pop);
                         if (targetToMerge == null)
-                            pop.getProvince().allPopUnits.Add(pop);
+                            pop.GetProvince().allPopUnits.Add(pop);
                         else
                             targetToMerge.mergeIn(pop);
                     }

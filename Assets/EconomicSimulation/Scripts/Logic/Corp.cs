@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     //todo inherit from consumer?
@@ -73,7 +75,7 @@ namespace Nashet.EconomicSimulation
                     {
                         owner.consumeFromCountryStorage(realConsumption, owner);
                         //owner.countryStorageSet.subtract(realConsumption);
-                        consumption.add(realConsumption);
+                        consumption.Add(realConsumption);
                     }
                 }
                 else
@@ -103,35 +105,33 @@ namespace Nashet.EconomicSimulation
         internal Procent getConsumptionProcent(Product product, Country country)
         {
             // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
-            return Procent.makeProcent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
+            return new Procent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
         }
         internal Value getConsumption(Product prod)
         {
-            return consumption.getFirstStorage(prod);
+            return consumption.GetFirstSubstituteStorage(prod);
         }
-        public StorageSet getRealNeeds(Country country)
+        public List<Storage> getRealNeeds(Country country)
         {
             Value multiplier = new Value(this.getSize() / 1000f);
 
-            List<Storage> result = new List<Storage>();
-            foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
-                if (next.getProduct().isInventedBy(country) && (next.getProduct() != Product.Cattle || country.isInvented(Invention.Domestication)))
-                {
-                    Storage nStor = new Storage(next.getProduct(), next.get());
-                    nStor.multiply(multiplier);
-                    result.Add(nStor);
-                }
-            return new StorageSet(result);
+            List<Storage> result = origin.popType.getMilitaryNeedsPer1000Men(country);
+            foreach (Storage next in result)
+                next.multiply(multiplier);
+            return result;
         }
+        /// <summary>
+        /// New value
+        /// </summary>        
         public Storage getRealNeeds(Country country, Product product)
         {
-            if (product.isInventedBy(country))
+            if (country.Invented(product))
             {
-                Storage found = origin.popType.getMilitaryNeedsPer1000().getFirstStorage(product);
+                Storage found = origin.popType.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product).Copy();
                 if (found.isZero())
                     return found;
                 else
-                    return new Storage(product, found.multiplyOutside(this.getSize() / 1000f));
+                    return found.Multiply(this.getSize() / 1000f);
             }
             else
                 return new Storage(product);

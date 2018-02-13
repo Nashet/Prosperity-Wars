@@ -24,6 +24,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly Value CountryBuyProductsForXDays = new Value(20f);
         internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
         internal static readonly Value CountryPopConsumptionLimitPE = new Value(40f);
+        internal static readonly int CountryInvestmentRate = 35;
+        internal static readonly Procent CountryOwnershipRiskRestoreSpeed = new Procent(0.001f);
+        internal static readonly Procent CountryOwnershipRiskDropOnNationalization = new Procent(0.01f);
 
         // MAP
         internal static readonly int ProvinceLakeShance = 9; // bigger - less lakes
@@ -46,8 +49,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly int minUnemploymentToInvestInFactory = 10;
         internal static readonly int maximumFactoriesInUpgradeToBuildNew = 2;
         internal static readonly byte maxFactoryLevel = 255;
-        internal static readonly float minMarginToInvest = 0.005f;
-        
+        internal static readonly Procent minMarginToInvest = new Procent(0.005f);
+
 
         internal static readonly int maxDaysUnprofitableBeforeFactoryClosing = 90;
         internal static readonly int maxDaysBuildingBeforeRemoving = 90; // 180;
@@ -56,7 +59,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
         internal static readonly float factoryMoneyReservePerLevel = 20f;
-        internal static readonly Procent minMarginToRiseSalary =  new Procent(0.01f);
+        internal static readonly Procent minMarginToRiseSalary = new Procent(0.01f);
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
         internal static readonly int maxFactoryFireHireSpeed = 50;
@@ -66,13 +69,14 @@ namespace Nashet.EconomicSimulation
         internal static readonly byte FactoryInputReservInDays = 5;
         internal static readonly int FactoryMediumTierLevels = 8 + 1;
         internal static readonly int FactoryMediumHighLevels = 15 + 1;
-        internal static readonly float FactoryMinPossibleSallary = 0.001f;
+        internal static readonly Money FactoryMinPossibleSallary = new Money( 0.001f);
 
         //Province
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceExcessWorkforce = new Procent(0.15f);
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceLackWorkforce = new Procent(0.05f);
+
 
         //POPS
 
@@ -96,7 +100,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.001f);
 
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
-        public static readonly Procent PopNeedsEscapingLimit = new Procent(0.33f);
+        public static readonly Procent PopNeedsEscapingLimit = new Procent(0.30f);//0.33f
         /// <summary> New life should this better to start escaping</summary>
         public static readonly Procent PopNeedsEscapingBarrier = new Procent(0.01f); // was 0.1
 
@@ -136,8 +140,20 @@ namespace Nashet.EconomicSimulation
         /// <summary>/// change pr with needs fulfilling lower than that /// </summary>
         internal static readonly Value ArtisansChangeProductionLevel = new Value(0.2f);
         internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;
+        /// <summary>For every nationalized enterprise</summary>
+        internal static readonly Procent PopLoyaltyDropOnNationalization = new Procent(0.1f);
+        internal static readonly Procent PopBuyAssetsAtTime = new Procent(0.05f);
+        internal static readonly Procent PopMarginToSellShares = new Procent(0.005f);
+        internal static readonly int PopInvestRate = 15;
 
-        
+        // INVESTING
+        internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.95f);
+        /// <summary>
+        /// There is bigger chance to loose property in another province
+        /// </summary>
+        internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
+        internal static readonly Procent InvestorEmploymentRisk = new Procent(0.80f);
+        internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

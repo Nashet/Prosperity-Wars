@@ -8,6 +8,9 @@ namespace Nashet.EconomicSimulation
     public class TopPanel : Window
     {
         [SerializeField]
+        private MainCamera mainCamera;
+
+        [SerializeField]
         private Button btnPlay, btnStep, btnTrade;
 
         [SerializeField]
@@ -18,19 +21,31 @@ namespace Nashet.EconomicSimulation
         {
             btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
             btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
-            btnPlay.image.color = Color.grey;
+            //btnPlay.image.color = GUIChanger.DisabledButtonColor; 
+            //btnPlay.interactable = false;
             MainCamera.topPanel = this;
-            Hide();
+            // Hide();
         }
-
+        bool firstUpdate = true;
+        private void Update()
+        {
+            if (firstUpdate)
+                btnPlay.image.color = GUIChanger.DisabledButtonColor;
+            firstUpdate = false;
+        }
         public override void Refresh()
         {
             var sb = new StringBuilder();
 
-            sb.Append("Date: ").Append(Game.date).Append("; Country: ").Append(Game.Player.getName())
-                .Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
-                .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"))
-                .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
+            sb.Append("Date: ").Append(Game.date).Append("; You rule: ").Append(Game.Player.GetFullName());
+            if (!Game.Player.isAlive())
+                sb.Append(" (destroyed by enemies, but could rise again)");
+
+            sb.Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
+            .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+
+            if (Game.Player.isAlive())
+                sb.Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
                 .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
             generalText.text = sb.ToString();
         }
@@ -64,8 +79,8 @@ namespace Nashet.EconomicSimulation
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))               
-                    MainCamera.productionWindow.ClearAllFiltres();                   
+                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))
+                    MainCamera.productionWindow.ClearAllFiltres();
                 else
                     MainCamera.productionWindow.Hide();
             else
@@ -107,7 +122,7 @@ namespace Nashet.EconomicSimulation
             if (Game.isRunningSimulation())
             {
                 Game.pauseSimulation();
-                button.image.color = Color.grey;
+                button.image.color = GUIChanger.DisabledButtonColor;
                 Text text = button.GetComponentInChildren<Text>();
                 text.text = "Pause";
             }
@@ -118,6 +133,11 @@ namespace Nashet.EconomicSimulation
         {
             switchHaveToRunSimulation();
         }
+        public void OnFocusOnCountryClick()
+        {
+            if (Game.Player != null)
+                mainCamera.FocusOnProvince(Game.Player.Capital, true);
+        }
         public void switchHaveToRunSimulation()
         {
             if (Game.isRunningSimulation())
@@ -127,13 +147,15 @@ namespace Nashet.EconomicSimulation
 
             if (Game.isRunningSimulation())
             {
-                btnPlay.image.color = Color.white;
+                //btnPlay.interactable = true;
+                btnPlay.image.color = GUIChanger.ButtonsColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
                 text.text = "Playing";
             }
             else
             {
-                btnPlay.image.color = Color.grey;
+                //btnPlay.interactable = false;
+                btnPlay.image.color = GUIChanger.DisabledButtonColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
                 text.text = "Pause";
             }

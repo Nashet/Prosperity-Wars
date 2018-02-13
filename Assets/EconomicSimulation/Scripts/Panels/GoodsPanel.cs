@@ -15,6 +15,9 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private RawImage priceGraph;
 
+        Color32 graphColor = GUIChanger.DarkestColor;
+        Color32 backGroundColor = GUIChanger.ButtonsColor;
+
         private Product product;
         private readonly int textureWidth = 300, textureHeight = 300;
         private Texture2D graphTexture;
@@ -25,7 +28,9 @@ namespace Nashet.EconomicSimulation
             //priceGraph = GameObject.Find("PriceGraph").GetComponent<RawImage>();
             MainCamera.goodsPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
-           Hide();
+            Hide();
+            graphColor = GUIChanger.DarkestColor;
+            backGroundColor = GUIChanger.ButtonsColor;
         }
 
         // Update is called once per frame
@@ -40,19 +45,17 @@ namespace Nashet.EconomicSimulation
                 generaltext.text = product.ToString()
                     + "\n price: " + Game.market.getPrice(product).get() + " supply: " + Game.market.getMarketSupply(product, true).get() + " consumption: " + Game.market.getBouthOnMarket(product, true).get();
 
-
-                //            graphTexture.
-                // Reset all pixels color to transparent
-                Color32 resetColor = new Color32(0, 0, 0, 255);
+                                
+                
                 Color32[] resetColorArray = graphTexture.GetPixels32();
 
                 for (int i = 0; i < resetColorArray.Length; i++)
                 {
-                    resetColorArray[i] = resetColor;
+                    resetColorArray[i] = backGroundColor;
                 }
                 graphTexture.SetPixels32(resetColorArray);
                 graphTexture.Apply();
-                Color32 graphColor = new Color32(10, 200, 20, 255);
+                
 
                 var dataStorage = Game.market.priceHistory.getPool(product);
                 if (dataStorage != null)
@@ -111,7 +114,7 @@ namespace Nashet.EconomicSimulation
         public void show(Product inn)
         {
             product = inn;
-            Show();            
+            Show();
         }
     }
 }

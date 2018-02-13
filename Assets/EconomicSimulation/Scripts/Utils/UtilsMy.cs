@@ -12,6 +12,10 @@ using Nashet.EconomicSimulation;
 using Nashet.ValueSpace;
 namespace Nashet.Utils
 {
+    public interface ICopyable<T>
+    {
+        T Copy();
+    }
     public class CultureNameGenerator
     {
         static ChanceBox<string> prefix;

@@ -40,47 +40,42 @@ namespace Nashet.EconomicSimulation
         }
         public void onBuildClick()
         {
-
             bool buildSomething = false;
-
-            if (Economy.isMarket.checkIftrue(Game.Player))
-            //if (Game.player.economy.status == Economy.StateCapitalism)
-            //have money /resource
+            Factory factory;
+            if (Economy.isMarket.checkIfTrue(Game.Player))
             {
-                //Value cost = Game.market.getCost(resourceToBuild);
-                //cost.add(Options.factoryMoneyReservePerLevel);
-                Value cost = selectedFactoryType.getInvestmentsCost();
+                Value cost = selectedFactoryType.GetBuildCost();
                 if (Game.Player.canPay(cost))
                 {
-                    var factory = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
+                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
                     Game.Player.payWithoutRecord(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
+                    if (Game.Player != factory.GetCountry())
+                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
 
             }
             else // non market
             {
                 //todo remove grain connection
-                var resourceToBuild = selectedFactoryType.getBuildNeeds();
-                Storage needFood = resourceToBuild.getFirstStorage(Product.Grain);
+                var resourceToBuild = selectedFactoryType.GetBuildNeeds();
+                Storage needFood = resourceToBuild.GetFirstSubstituteStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    Factory fact = new Factory(Game.selectedProvince, Game.Player, selectedFactoryType);
-                    //wallet.pay(fact.wallet, new Value(100f));
-                    Game.Player.countryStorageSet.subtract(needFood);
+                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.market.getCost(resourceToBuild));
+                    Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
-                    MainCamera.factoryPanel.show(fact);
+                    MainCamera.factoryPanel.show(factory);
+                    if (Game.Player != factory.GetCountry())
+                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
 
             if (buildSomething == true)
             {
-                // voteButton.interactable = false;
-                MainCamera.refreshAllActive();
                 selectedFactoryType = null;
-                //table.Refresh();
-                Refresh();
+                MainCamera.refreshAllActive();
             }
         }
         public void selectFactoryType(FactoryType newSelection)
@@ -97,19 +92,23 @@ namespace Nashet.EconomicSimulation
             {
                 sb.Clear();
                 sb.Append("Build ").Append(selectedFactoryType);
-                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.getBuildNeeds());
+                sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
-                    var cost = selectedFactoryType.getInvestmentsCost();
+                    var cost = selectedFactoryType.GetBuildCost();
                     sb.Append(" cost: ").Append(cost);
                 }
-                sb.Append("\nEveryday resource input: ").Append(selectedFactoryType.resourceInput);
+                sb.Append("\nEveryday resource input: ");
+                if (selectedFactoryType.resourceInput == null)
+                    sb.Append("none");
+                else
+                    sb.Append(selectedFactoryType.resourceInput);
 
                 descriptionText.text = sb.ToString();
 
 
-                buildButton.interactable = selectedFactoryType.conditionsBuild.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
-                if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince))
+                buildButton.interactable = selectedFactoryType.conditionsBuildThis.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
+                if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince, Game.Player))
                     buildButton.interactable = false;
                 if (buildButton.interactable)
                     buildButton.GetComponentInChildren<Text>().text = "Build " + selectedFactoryType;
@@ -120,7 +119,7 @@ namespace Nashet.EconomicSimulation
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
                 if (Game.selectedProvince == null)
                     descriptionText.text = "Select province where to build";
-                else if (FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince)).Count() == 0)
+                else if (FactoryType.getAllInventedTypes(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player)).Count() == 0)
                     descriptionText.text = "Nothing to build now";
                 else
                     descriptionText.text = "Select building from left";

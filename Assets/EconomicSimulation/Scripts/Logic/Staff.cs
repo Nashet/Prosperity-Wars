@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
@@ -71,6 +73,10 @@ namespace Nashet.EconomicSimulation
         public bool isAI()
         {
             return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
+        }
+        public bool IsHuman
+        {
+            get { return !isAI(); }
         }
         /// <summary>
         /// Unites all home armies in one. Assuming armies are alive, just needed to consolidate. If there is nothing to consolidate than returns empty army    
@@ -152,10 +158,15 @@ namespace Nashet.EconomicSimulation
 
         override public List<Storage> getRealAllNeeds()
         {
-            StorageSet res = new StorageSet();
-            foreach (var item in allArmies)
-                res.add(item.getNeeds());
-            return res.getContainer();
+            //StorageSet res = new StorageSet();
+            //foreach (var item in allArmies)
+            //    res.Add(item.getNeeds());
+
+            // assuming all corps has same needs
+            var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(getPlaceDejure());
+            var multiplier = new Value(getAllArmiesSize() / 1000f);
+            res.Multiply(multiplier);
+            return res;
         }
 
         virtual internal void sendArmy(Province possibleTarget, Procent procent)
@@ -163,9 +174,9 @@ namespace Nashet.EconomicSimulation
             consolidateArmies().balance(procent).sendTo(possibleTarget);
         }
 
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
+            base.SetStatisticToZero();
             allArmies.ForEach(x => x.setStatisticToZero());
         }
         internal IEnumerable<Army> getAllArmies()
@@ -183,7 +194,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var army in allArmies)
                 if (army.getDestination() != null)
-                    if (army.getDestination().getCountry() != army.getOwner())
+                    if (army.getDestination().GetCountry() != army.getOwner())
                         yield return army;
                     else
                         army.sendTo(null); // go home

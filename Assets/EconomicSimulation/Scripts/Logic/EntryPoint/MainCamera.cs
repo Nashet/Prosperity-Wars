@@ -8,6 +8,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Canvas canvas;
 
+        private float focusHeight;
+
         public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
         public static PopulationPanel populationPanel;
@@ -30,7 +32,16 @@ namespace Nashet.EconomicSimulation
         private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
+        //[SerializeField]
+        /// <summary>Limits simulation speed (in seconds)</summary>
+        private readonly float simulationSpeedLimit = 0.15f;
+        private float previousFrameTime;
 
+
+        private void Start()
+        {
+            focusHeight = this.transform.position.z;
+        }
         void FixedUpdate()
         {
             if (gameIsLoaded)
@@ -79,9 +90,9 @@ namespace Nashet.EconomicSimulation
                     Game.setUnityAPI();
 
                     camera = this.GetComponent<Camera>();
-                    focus(Game.Player.getCapital());
-                    //gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
-                    //    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
+                    FocusOnProvince(Game.Player.Capital, false);
+                    //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
+                    //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
                     loadingPanel.Hide();
                     topPanel.Show();
                     bottomPanel.Show();
@@ -109,12 +120,12 @@ namespace Nashet.EconomicSimulation
 
                 if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
                 {
-                    Game.simulate();
-                    //if (Time.unscaledTime - lastTime > howOften)
-                    //{                    
-                    //    lastTime = Time.unscaledTime;
-                    refreshAllActive();
-                    //}
+                    if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
+                    {
+                        Game.simulate();
+                        previousFrameTime = Time.time;
+                        refreshAllActive();
+                    }
                 }
 
 
@@ -235,13 +246,11 @@ namespace Nashet.EconomicSimulation
                 closeToppestPanel();
             }
         }
-
-
-        // This function is called every fixed framerate frame, if the MonoBehavior is enabled.
-        public void focus(Province province)
+        public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x,
-                        province.getPosition().y, gameObject.transform.position.z);
+            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
+            if (select)
+                selectProvince(province.getID());
         }
 
     }

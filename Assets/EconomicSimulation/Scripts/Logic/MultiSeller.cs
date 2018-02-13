@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        buyIfLessLimits.Add(item, new Storage(item, Value.Zero));
+                        buyIfLessLimits.Add(item, new Storage(item, ReadOnlyValue.Zero));
                         sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
                     }
                     producedTotal.Add(item, new Value(0f));
@@ -75,19 +75,19 @@ namespace Nashet.EconomicSimulation
         {
             buyIfLessLimits[product].set(value);
         }
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
+            base.SetStatisticToZero();
             sentToMarket.setZero();
             foreach (var item in producedTotal)
-                item.Value.set(Value.Zero);
+                item.Value.set(ReadOnlyValue.Zero);
             foreach (var item in soldByGovernment)
                 item.Value.set(Value.Zero);
         }
 
         public Storage getSentToMarket(Product product)
         {
-            return sentToMarket.getFirstStorage(product);
+            return sentToMarket.GetFirstSubstituteStorage(product);
         }
         /// <summary> Assuming product is abstract product</summary>
         public Storage getSentToMarketIncludingSubstituts(Product product)
@@ -96,7 +96,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in product.getSubstitutes())
                 if (item.isTradable())
                 {
-                    res.add(sentToMarket.getFirstStorage(item));
+                    res.Add(sentToMarket.GetFirstSubstituteStorage(item));
                 }
             return new Storage(product, res);
         }
@@ -106,10 +106,10 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public void sell(Storage what)
         {
-            sentToMarket.add(what);
+            sentToMarket.Add(what);
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
-            Game.market.sentToMarket.add(what);
+            Game.market.sentToMarket.Add(what);
         }
         public void getMoneyForSoldProduct()
         {
@@ -142,8 +142,8 @@ namespace Nashet.EconomicSimulation
                             Game.market.pay(this, cost);
                             //Game.market.sentToMarket.subtract(realSold);
                         }
-                        else if (Game.market.howMuchMoneyCanNotPay(cost).get() > 10f && Game.devMode)
-                            Debug.Log("Failed market - can't pay " + Game.market.howMuchMoneyCanNotPay(cost)
+                        else if (Game.market.GetLackingMoney(cost).get() > 10f && Game.devMode)
+                            Debug.Log("Failed market - can't pay " + Game.market.GetLackingMoney(cost)
                                 + " for " + realSold); // money in market ended... Only first lucky get money
                     }
                 }
@@ -165,7 +165,7 @@ namespace Nashet.EconomicSimulation
             var res = new Value(0f);
             foreach (var item in soldByGovernment)
             {
-                res.add(Game.market.getCost(new Storage(item.Key, item.Value)));
+                res.Add(Game.market.getCost(new Storage(item.Key, item.Value)));
             }
             return res;
         }
@@ -176,17 +176,20 @@ namespace Nashet.EconomicSimulation
             foreach (var item in product.getSubstitutes())
                 if (item.isTradable())
                 {
-                    res.add(producedTotal[item]);
+                    res.Add(producedTotal[item]);
                 }
             return new Storage(product, res);
         }
+        /// <summary>
+        /// new value
+        /// </summary>        
         public Procent getWorldProductionShare(Product product)
         {
             var worldProduction = Game.market.getProductionTotal(product, true);
             if (worldProduction.isZero())
-                return Procent.ZeroProcent;
+                return Procent.ZeroProcent.Copy();
             else
-                return Procent.makeProcent(getProducedTotal(product), worldProduction);
+                return new Procent(getProducedTotal(product), worldProduction);
         }
     }
 }

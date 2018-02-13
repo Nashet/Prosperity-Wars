@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                var storage = Game.Player.countryStorageSet.getFirstStorage(product);
+                var storage = Game.Player.countryStorageSet.GetFirstSubstituteStorage(product);
 
                 // Adding product name 
                 AddCell(product.getName(), storage);
@@ -82,10 +82,10 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.getProducedTotal(product).get().ToString(), storage, () => Game.Player.getWorldProductionShare(product) + " of world production");
 
                 ////Adding used by gov.
-                AddCell(Game.Player.countryStorageSet.used.getFirstStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.countryStorageSet.used.GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket().getFirstStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.getConsumedInMarket().GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding Sold
                 //// finding actually sold from sentToMarket

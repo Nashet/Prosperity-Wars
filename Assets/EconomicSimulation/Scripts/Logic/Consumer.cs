@@ -50,26 +50,25 @@ namespace Nashet.EconomicSimulation
         // Do I use where need to? Yes, I do. It goes to Market.Buy()
         public void consumeFromMarket(Storage what)
         {
-            consumed.add(what);
-            consumedInMarket.add(what);
-            Game.market.sentToMarket.subtract(what);
+            consumed.Add(what);
+            consumedInMarket.Add(what);
+            Game.market.sentToMarket.Subtract(what);
         }
 
         public void consumeFromCountryStorage(List<Storage> what, Country country)
         {
-            consumed.add(what);
+            consumed.Add(what);
             country.countryStorageSet.subtract(what);
 
         }
         public void consumeFromCountryStorage(Storage what, Country country)
         {
-            consumed.add(what);
-            country.countryStorageSet.subtract(what);
+            consumed.Add(what);
+            country.countryStorageSet.Subtract(what);
         }
-        override public void setStatisticToZero()
+        override public void SetStatisticToZero()
         {
-            base.setStatisticToZero();
-            consumed.copyDataFrom(consumed); // temp   
+            base.SetStatisticToZero();            
             consumed.setZero();
             consumedInMarket.setZero();
         }

@@ -7,175 +7,7 @@ using Nashet.Utils;
 using Nashet.UnityUIUtils;
 namespace Nashet.ValueSpace
 {
-    /// <summary>
-    /// Allows to keep info about how much product was taken from StorageSet
-    /// !!! if someone would change returning object (Storage) then country takenAway logic would be broken!!
-    /// </summary>
-    public class CountryStorageSet : StorageSet, IHasStatistics
-    {
-        /// <summary>
-        /// Counts how much products was taken from country storage 
-        /// for consumption or some spending. Shouldn't include sells
-        /// Used to determinate how much to buy deficit or sell extra products
-        /// </summary>
-        public readonly StorageSet used = new StorageSet();
-
-        //internal Value getConsumption(Product whom)
-        //{
-        //    foreach (Storage stor in takenAwayLastTurn)
-        //        if (stor.getProduct() == whom)
-        //            return stor;
-        //    return new Value(0f);
-        //}
-        public void setStatisticToZero()
-        {
-            used.setZero();
-        }
-
-        /// / next - inherited
-
-
-        public void set(Storage inn)
-        {
-            base.set(inn);
-            throw new DontUseThatMethod();
-        }
-        ///// <summary>
-        ///// If duplicated than adds
-        ///// </summary>
-        //internal void add(Storage need)
-        //{
-        //    base.add(need);
-        //    consumedLastTurn.add(need)
-        //}
-
-        ///// <summary>
-        ///// If duplicated than adds
-        ///// </summary>
-        //internal void add(PrimitiveStorageSet need)
-        //{ }
-
-        /// <summary>
-        /// Do checks outside
-        /// Supports takenAway
-        /// </summary>   
-        public bool send(Producer whom, Storage what)
-        {
-            if (base.send(whom, what))
-            {
-                used.add(what);
-                return true;
-            }
-            else
-                return false;
-        }
-        /// <summary>
-        /// Do checks outside Check for taken away
-        /// </summary>   
-        //public bool send(Producer whom, List<Storage> what)
-        //{
-        //    bool result = true;
-        //    foreach (var item in what)
-        //    {
-        //        if (!send(whom, item))
-        //            result = false;
-        //    }
-        //    return result;           
-        //}
-        /// <summary>
-        /// Do checks outside
-        /// Supports takenAway
-        /// </summary>   
-        public bool send(StorageSet whom, StorageSet what)
-        {
-            return send(whom, what.getContainer());
-        }
-        /// <summary>
-        /// Do checks outside
-        /// Supports takenAway
-        /// </summary>   
-        public bool send(StorageSet whom, List<Storage> what)
-        {
-            used.add(what);
-            return base.send(whom, what);
-        }
-        /// <summary>
-        /// 
-        /// /// Supports takenAway
-        /// </summary>
-
-        override public bool subtract(Storage stor, bool showMessageAboutNegativeValue = true)
-        {
-            if (base.subtract(stor, showMessageAboutNegativeValue))
-            {
-                used.add(stor);
-                return true;
-            }
-            else
-                return false;
-        }
-        //internal void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
-        //{
-        //    foreach (Storage stor in set)
-        //    {
-        //        subtract(stor, showMessageAboutNegativeValue);
-        //    }
-        //}
-        public bool subtractNoStatistic(Storage stor, bool showMessageAboutNegativeValue = true)
-        {
-            return base.subtract(stor, showMessageAboutNegativeValue);
-        }
-        /// <summary>
-        /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
-        /// </summary>    
-        //internal Value getStorage(Product whom)
-        //{
-        //    return base.getStorage(whom);
-        //}
-
-        internal void SetZero()
-        {
-            base.setZero();
-            throw new DontUseThatMethod();
-        }
-        //internal PrimitiveStorageSet Divide(float v)
-        //{
-        //    PrimitiveStorageSet result = new PrimitiveStorageSet();
-        //    foreach (Storage stor in container)
-        //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
-        //    return result;
-        //}
-
-
-
-        //internal Storage subtractOutside(Storage stor)
-        //{
-        //    Storage find = this.findStorage(stor.getProduct());
-        //    if (find == null)
-        //        return new Storage(stor);
-        //    else
-        //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
-        //}
-        //internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
-        //{
-        //    base.subtract(set, showMessageAboutNegativeValue);
-        //    throw new DontUseThatMethod();
-        //}
-        internal void copyDataFrom(StorageSet consumed)
-        {
-            base.copyDataFrom(consumed);
-            throw new DontUseThatMethod();
-        }
-        internal void sendAll(StorageSet toWhom)
-        {
-            used.add(this);
-            base.sendAll(toWhom);
-        }
-
-
-    }
-
-    public class Storage : Value, IClickable
+    public class Storage : Value, IClickable, ICopyable<Storage>
     {
         static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
 
@@ -192,7 +24,7 @@ namespace Nashet.ValueSpace
             //value = new Value(inAmount);
             // TODO exceptions!!
         }
-        public Storage(Product inProduct, Value inAmount) : base(inAmount)
+        public Storage(Product inProduct, ReadOnlyValue inAmount) : base(inAmount)
         {
             product = inProduct;
         }
@@ -241,21 +73,23 @@ namespace Nashet.ValueSpace
         //    throw new DontUseThatMethod();
         //}
         [System.Obsolete("Method is deprecated, need product specified")]
-        override public void add(float invalue, bool showMessageAboutNegativeValue = true)
+        public Storage add(float invalue, bool showMessageAboutNegativeValue = true)
         {
             base.add(invalue, showMessageAboutNegativeValue);
             //throw new DontUseThatMethod(); temporally
+            return this;
         }
         public void add(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             if (this.isExactlySameProduct(storage))
-                base.add(storage, showMessageAboutNegativeValue);
+                base.Add(storage, showMessageAboutNegativeValue);
             else
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Attempt to add wrong product to Storage");
             }
         }
+
         public Product getProduct()
         {
             return product;
@@ -266,7 +100,7 @@ namespace Nashet.ValueSpace
         }
         override public string ToString()
         {
-            return get() + " " + getProduct();
+            return get().ToString("N3") + " " + getProduct();
 
         }
         public void sendAll(StorageSet whom)
@@ -291,7 +125,7 @@ namespace Nashet.ValueSpace
             if (has(howMuch))
             {
                 Storage targetStorage = new Storage(howMuch);
-                whom.add(targetStorage);
+                whom.Add(targetStorage);
                 this.subtract(howMuch);
             }
         }
@@ -335,23 +169,27 @@ namespace Nashet.ValueSpace
         }
 
 
-        internal Storage multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
+        internal Storage Multiply(float invalue, bool showMessageAboutOperationFails = true)
         {
-            if (invalue < 0f)
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Storage multiply failed");
-                return new Storage(this.getProduct(), 0f);
-            }
-            else
-                return new Storage(this.getProduct(), get() * invalue);
+            //if (invalue < 0f)
+            //{
+            //    if (showMessageAboutOperationFails)
+            //        Debug.Log("Storage multiply failed");
+            //    return new Storage(this.getProduct(), 0f);
+            //}
+            //else
+            //    return new Storage(this.getProduct(), get() * invalue);
+            multiply(invalue);
+            return this;
         }
         /// <summary>
         /// returns new value
         /// </summary>    
-        public Storage multiplyOutside(Value invalue)
+        public Storage Multiply(ReadOnlyValue invalue)
         {
-            return new Storage(this.getProduct(), get() * invalue.get());
+            //return new Storage(this.getProduct(), get() * invalue.get());
+            multiply(invalue);
+            return this;
         }
         /// <summary> Returns true if has that good or it's substitute</summary>    
         public bool has(Storage storage)
@@ -415,27 +253,33 @@ namespace Nashet.ValueSpace
         //{     
         //    throw new DontUseThatMethod();        
         //}
-        public Storage subtractOutside(Storage storage, bool showMessageAboutNegativeValue = true)
+        public Storage subtract(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             //if (!this.isSameProductType(storage.getProduct()))
             if (!storage.isSameProductType(this.getProduct()))
             {
                 Debug.Log("Storage subtract Outside failed - wrong product");
-                return new Storage(getProduct(), 0f);
+                set(0f);
             }
-            if (storage.isBiggerThan(this))
+            else if (storage.isBiggerThan(this))
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Storage subtract Outside failed");
-                return new Storage(getProduct(), 0f);
+                set(0f);
             }
             else
-                return new Storage(getProduct(), this.get() - storage.get());
+                set(this.get() - storage.get());
+            return this;
         }
         public void OnClicked()
-        {            
+        {
             if (!this.isAbstractProduct())
                 MainCamera.tradeWindow.selectProduct((this).getProduct());
+        }
+
+        public Storage Copy()
+        {
+            return new Storage(this);
         }
     }
 }

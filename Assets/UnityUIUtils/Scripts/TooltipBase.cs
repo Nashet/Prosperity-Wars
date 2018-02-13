@@ -19,8 +19,12 @@ namespace Nashet.UnityUIUtils
         //horizontal layout of the tooltip
         [SerializeField]
         private HorizontalLayoutGroup hlG;
+
         [SerializeField]
         private Image bgImageSource;
+
+        [SerializeField]
+        private float yOffset = 40f;
 
         //needed as the layout refreshes only on the first Update() call
         private bool firstUpdate;
@@ -294,8 +298,8 @@ namespace Nashet.UnityUIUtils
             var rightEdge = newPos.x + tooltipRealWidth / 2f;
             var leftEdge = newPos.x - tooltipRealWidth / 2f;
 
-            var topEdge = newPos.y - 40f;
-            var bottomEdge = newPos.y - tooltipRealHeight - 40f;
+            var topEdge = newPos.y - yOffset;
+            var bottomEdge = newPos.y - tooltipRealHeight - yOffset;
 
             float moveByX = 0f, moveByY = 0f;
             if (rightEdge > rt.rect.width)
@@ -319,7 +323,7 @@ namespace Nashet.UnityUIUtils
                     moveByY = bottomEdge * -1f;
             }
 
-            this.transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - 40f, 0f);//
+            this.transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - yOffset, 0f);//
 
             //this.transform.SetParent(this.transform.parent, false);
 

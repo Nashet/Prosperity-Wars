@@ -19,14 +19,6 @@ namespace Nashet.EconomicSimulation
             Hide();
         }        
        
-        //public void onShowAllClick()
-        //{
-        //    //hide();
-        //    SetAllPopsToShow();
-        //    //showAll = true;
-        //    showingProvince = null;
-        //    show(true);
-        //}
         public override void Refresh()
         {
             table.Refresh();

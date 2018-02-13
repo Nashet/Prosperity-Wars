@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -45,7 +46,7 @@ namespace Nashet.EconomicSimulation
             forceDecisionButton.interactable = false;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
             Hide();
-        }        
+        }
 
         void changeReformValue()
         {
@@ -124,9 +125,8 @@ namespace Nashet.EconomicSimulation
         private void refresh(bool callRebuildDropDown)
         {
 
-            table.Refresh();
-            //if (Game.Player.movements != null)
-            movementsText.text = Game.Player.movements.getString();
+            table.Refresh();            
+            movementsText.text = Game.Player.movements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
                 movementsText.text += "\n\n\n\n";
 
@@ -205,7 +205,7 @@ namespace Nashet.EconomicSimulation
                         forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nForcing decision against people's desires will drop loyalty!";
                     }
                 }
-            }            
+            }
         }
     }
 }

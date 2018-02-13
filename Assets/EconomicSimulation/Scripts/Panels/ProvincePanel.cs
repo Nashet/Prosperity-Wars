@@ -46,14 +46,14 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {
-                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.getCountry())
+                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.GetCountry())
 
                     MainCamera.diplomacyPanel.Hide();
                 else
-                    MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
+                    MainCamera.diplomacyPanel.show(Game.selectedProvince.GetCountry());
             }
             else
-                MainCamera.diplomacyPanel.show(Game.selectedProvince.getCountry());
+                MainCamera.diplomacyPanel.show(Game.selectedProvince.GetCountry());
         }
         public void onMobilizeClick()
         {
@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
             else
                 sb.Append(Game.selectedProvince.getResource());
             sb.Append("\nTerrain: ").Append(Game.selectedProvince.getTerrain());
-            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.getOverpopulation() * 100).Append("%");
+            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.GetOverpopulation());
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));
@@ -142,13 +142,13 @@ namespace Nashet.EconomicSimulation
             // "\nNeighbors " + province.getNeigborsList()
             ;
             Text text = btnOwner.GetComponentInChildren<Text>();
-            text.text = "Owner: " + Game.selectedProvince.getCountry();
+            text.text = "Owner: " + Game.selectedProvince.GetCountry();
 
+            
+            btnBuild.interactable = FactoryType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
 
-            btnBuild.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
-
-            btMobilize.GetComponent<ToolTipHandler>().SetText(btnBuild.GetComponent<ToolTipHandler>().text);
-            btMobilize.interactable = btnBuild.interactable;
+            
+            btMobilize.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btMobilize.GetComponent<ToolTipHandler>().text);
 
 
             //if (Game.devMode)

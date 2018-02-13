@@ -38,11 +38,7 @@ namespace Nashet.EconomicSimulation
 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            //refresh();
-        }
+        
         public override void Refresh()
         {
             refresh(true);
@@ -118,7 +114,7 @@ namespace Nashet.EconomicSimulation
             {
                 //if (next.isAvailable(Game.player))
                 {
-                    ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.getCountry() + ")" });
+                    ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.GetCountry() + ")" });
                     availableProvinces.Add(next);
 
                     //selectedReformValue = next;

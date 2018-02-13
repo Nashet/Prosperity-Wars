@@ -32,7 +32,9 @@ namespace Nashet.EconomicSimulation
         internal PricePool priceHistory;
         internal StorageSet sentToMarket = new StorageSet();
         public Market() : base(0f, null, null)
-        { }
+        {
+
+        }
         internal Value getPrice(Product whom)
         {
             return marketPrice.getCheapestStorage(whom);
@@ -49,7 +51,7 @@ namespace Nashet.EconomicSimulation
             foreach (Storage stor in need)
             {
                 //price = Game.market.findPrice(stor.getProduct()).get();
-                cost.add(getCost(stor));
+                cost.Add(getCost(stor));
             }
             return cost;
         }
@@ -57,11 +59,11 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns new Value
         /// </summary>
-        internal Value getCost(List<Storage> need)
+        internal Money getCost(List<Storage> need)
         {
-            Value cost = new Value(0f);
+            Money cost = new Money(0f);
             foreach (Storage stor in need)
-                cost.add(getCost(stor));
+                cost.Add(getCost(stor));
             return cost;
         }
         /// <summary>
@@ -74,12 +76,12 @@ namespace Nashet.EconomicSimulation
             //    Debug.Log("Can't determinate price of abstract product " + need.getProduct());
             if (need.getProduct() == Product.Gold)
             {
-                var res = need.multiplyOutside(Options.goldToCoinsConvert);
+                var res = need.Copy().Multiply(Options.goldToCoinsConvert);
                 res.multiply(Options.GovernmentTakesShareOfGoldOutput);
                 return res;
             }
             else
-                return need.multiplyOutside(Game.market.getPrice(need.getProduct()));
+                return need.Copy().Multiply(Game.market.getPrice(need.getProduct()));
         }
 
 
@@ -101,10 +103,10 @@ namespace Nashet.EconomicSimulation
                 foreach (Province province in country.ownedProvinces)
                     foreach (Consumer consumer in province.getAllAgents())
                     {
-                        Storage found = selector(consumer).getFirstStorage(product);
+                        Storage found = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(found);
                     }
-                Storage countryStor = selector(country).getFirstStorage(product);
+                Storage countryStor = selector(country).GetFirstSubstituteStorage(product);
                 result.add(countryStor);
             }
             return result;
@@ -117,10 +119,10 @@ namespace Nashet.EconomicSimulation
                 foreach (Province province in country.ownedProvinces)
                     foreach (Consumer consumer in province.getAllBuyers())
                     {
-                        Storage re = selector(consumer).getFirstStorage(product);
+                        Storage re = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(re);
                     }
-                Storage countryStor = selector(country).getFirstStorage(product);
+                Storage countryStor = selector(country).GetFirstSubstituteStorage(product);
                 result.add(countryStor);
             }
             return result;
@@ -173,11 +175,11 @@ namespace Nashet.EconomicSimulation
                     {
                         var result = recalculateProductForConsumers(recalculatingProduct.getProduct(), x => x.getConsumedInMarket());
 
-                        bought.set(new Storage(recalculatingProduct.getProduct(), result));
+                        bought.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
                 dateOfgetBought.set(Game.date);
             }
-            return bought.getFirstStorage(product);
+            return bought.GetFirstSubstituteStorage(product);
         }
         internal Storage getTotalConsumption(Product product, bool takeThisTurnData)
         {
@@ -192,11 +194,11 @@ namespace Nashet.EconomicSimulation
                     if (recalculatingProduct.getProduct().isTradable())
                     {
                         var result = recalculateProductForConsumers(recalculatingProduct.getProduct(), x => x.getConsumed());
-                        totalConsumption.set(new Storage(recalculatingProduct.getProduct(), result));
+                        totalConsumption.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
                 dateOfgetTotalConsumption.set(Game.date);
             }
-            return totalConsumption.getFirstStorage(product);
+            return totalConsumption.GetFirstSubstituteStorage(product);
         }
 
         /// <summary>
@@ -216,11 +218,11 @@ namespace Nashet.EconomicSimulation
                     if (recalculatingProduct.getProduct().isTradable())
                     {
                         var result = recalculateProductForSellers(recalculatingProduct.getProduct(), x => x.getSentToMarket(recalculatingProduct.getProduct()));
-                        supplyOnMarket.set(new Storage(recalculatingProduct.getProduct(), result));
+                        supplyOnMarket.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
                 dateOfgetSupplyOnMarket.set(Game.date);
             }
-            return supplyOnMarket.getFirstStorage(product);
+            return supplyOnMarket.GetFirstSubstituteStorage(product);
         }
 
         /// <summary>
@@ -240,12 +242,12 @@ namespace Nashet.EconomicSimulation
                     if (recalculatingProduct.getProduct().isTradable())
                     {
                         var result = recalculateProductForProducers(recalculatingProduct.getProduct(), x => x.getGainGoodsThisTurn());
-                        totalProduction.set(new Storage(recalculatingProduct.getProduct(), result));
+                        totalProduction.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
                 dateOfgetTotalProduction.set(Game.date);
             }
 
-            return totalProduction.getFirstStorage(product);
+            return totalProduction.GetFirstSubstituteStorage(product);
         }
         //internal void ForceDSBRecalculation()
         //{
@@ -257,7 +259,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public void SetDefaultPrice(Product pro, float inprice)
         {
-            marketPrice.set(new Storage(pro, inprice));
+            marketPrice.Set(new Storage(pro, inprice));
         }
         internal bool isAvailable(Product product)
         {
@@ -304,7 +306,7 @@ namespace Nashet.EconomicSimulation
                 Value cost;
                 if (Game.market.sentToMarket.has(buying))
                 {
-                    cost = buying.multiplyOutside(price);
+                    cost = buying.Copy().Multiply(price);
                     //if (cost.isNotZero())
                     //{
                     if (buyer.canPay(cost))
@@ -312,7 +314,7 @@ namespace Nashet.EconomicSimulation
                         buyer.pay(Game.market, cost);
                         buyer.consumeFromMarket(buying);
                         if (buyer is SimpleProduction)
-                            (buyer as SimpleProduction).getInputProductsReserve().add(buying);
+                            (buyer as SimpleProduction).getInputProductsReserve().Add(buying);
                         howMuchCanConsume = buying;
                     }
                     else
@@ -320,10 +322,10 @@ namespace Nashet.EconomicSimulation
                         float val = buyer.cash.get() / price.get();
                         val = Mathf.Floor(val * Value.precision) / Value.precision;
                         howMuchCanConsume = new Storage(buying.getProduct(), val);
-                        buyer.pay(Game.market, howMuchCanConsume.multiplyOutside(price));
+                        buyer.pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
                         buyer.consumeFromMarket(howMuchCanConsume);
                         if (buyer is SimpleProduction)
-                            (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
+                            (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);
                     }
                     //}
                     //else
@@ -335,13 +337,13 @@ namespace Nashet.EconomicSimulation
                     Storage howMuchAvailable = new Storage(Game.market.HowMuchAvailable(buying));
                     if (howMuchAvailable.get() > 0f)
                     {
-                        cost = howMuchAvailable.multiplyOutside(price);
+                        cost = howMuchAvailable.Copy().Multiply(price);
                         if (buyer.canPay(cost))
                         {
                             buyer.pay(Game.market, cost);
                             buyer.consumeFromMarket(howMuchAvailable);
                             if (buyer is SimpleProduction)
-                                (buyer as SimpleProduction).getInputProductsReserve().add(howMuchAvailable);
+                                (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchAvailable);
                             howMuchCanConsume = howMuchAvailable;
                         }
                         else
@@ -351,10 +353,10 @@ namespace Nashet.EconomicSimulation
                                 howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
                             if (howMuchCanConsume.isNotZero())
                             {
-                                buyer.sendAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
+                                buyer.PayAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
                                 buyer.consumeFromMarket(howMuchCanConsume);
                                 if (buyer is SimpleProduction)
-                                    (buyer as SimpleProduction).getInputProductsReserve().add(howMuchCanConsume);
+                                    (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);
                             }
                         }
                     }
@@ -377,7 +379,7 @@ namespace Nashet.EconomicSimulation
                 return buy(forWhom, need);
             else
             {
-                subsidizer.takeFactorySubsidies(forWhom, forWhom.howMuchMoneyCanNotPay(need));
+                subsidizer.takeFactorySubsidies(forWhom, forWhom.GetLackingMoney(need));
                 return buy(forWhom, need);
             }
         }
@@ -391,11 +393,13 @@ namespace Nashet.EconomicSimulation
                 if (item.isNotZero())
                     buy(buyer, item, subsidizer);
         }
+
+
         /// <summary>
         /// Buying needs in circle, by Procent in time
         /// return true if buying is zero (bought all what it wanted)
         /// </summary>    
-        internal bool buy(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, StorageSet ofWhat)
+        internal bool buy(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
         {
             bool buyingIsFinished = true;
             foreach (Storage what in ofWhat)
@@ -409,7 +413,7 @@ namespace Nashet.EconomicSimulation
                     consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.getProduct());
                 var reallyBought = buy(buyer, consumeOnThisIteration, null);
 
-                stillHaveToBuy.subtract(reallyBought);
+                stillHaveToBuy.Subtract(reallyBought);
 
                 if (stillHaveToBuy.getBiggestStorage(what.getProduct()).isNotZero())
                     buyingIsFinished = false;
@@ -476,6 +480,8 @@ namespace Nashet.EconomicSimulation
         ///</summary>
         internal float getDemandSupplyBalance(Product product)
         {
+            if (product == Product.Gold)
+                return Options.MarketInfiniteDSB;
             //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
             float balance;
 
@@ -505,11 +511,11 @@ namespace Nashet.EconomicSimulation
                                 balance = demand / supply;
                         }
                         //}
-                        DSBbuffer.set(new Storage(nextProduct.getProduct(), balance));
+                        DSBbuffer.Set(new Storage(nextProduct.getProduct(), balance));
                     }
                 dateOfDSB.set(Game.date);
             }
-            return DSBbuffer.getFirstStorage(product).get();
+            return DSBbuffer.GetFirstSubstituteStorage(product).get();
         }
 
         /// <summary>
@@ -519,10 +525,10 @@ namespace Nashet.EconomicSimulation
         public void simulatePriceChangeBasingOnLastTurnData()
         {
             float balance;
-            float priceChangeSpeed = 0;
-            float highestChangingSpeed = 0.2f; //%
-            float highChangingSpeed = 0.04f;//%
-            float antiBalance;
+            float priceChangeSpeed;
+            //float highestChangingSpeed = 0.2f; //%
+            //float highChangingSpeed = 0.04f;//%
+
             foreach (Storage price in this.marketPrice)
                 if (price.getProduct().isTradable())
                 {
@@ -530,8 +536,7 @@ namespace Nashet.EconomicSimulation
                     /// Result > 1 mean demand is higher, price should go up  
                     /// Result fewer 1 mean supply is higher, price should go down              
 
-                    //if (balance < 1f) antiBalance = 1 / balance;
-                    //else antiBalance = balance;
+
                     priceChangeSpeed = 0;
                     if (balance >= 1f)//0.95f)
                         priceChangeSpeed = 0.001f + price.get() * 0.1f;
@@ -539,9 +544,7 @@ namespace Nashet.EconomicSimulation
                     {
                         if (balance <= 0.8f)
                             //priceChangeSpeed = -0.001f + price.get() * -0.02f;
-                            priceChangeSpeed = -0.001f + price.get() * -0.1f;
-                        // - 0.1f; caused dsb 1-0 fluctuation, destroying industry
-                        //}
+                            priceChangeSpeed = -0.001f + price.get() * -0.1f;// - 0.1f; caused dsb 1-0 fluctuation, destroying industry
                     }
                     ChangePrice(price, priceChangeSpeed);
                 }
