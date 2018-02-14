@@ -43,10 +43,12 @@ Map is generated randomly, you play as some country yet there is no much gamepla
 ![map](http://i.imgrpost.com/imgr/2017/08/14/VYAaererrerdsdVA.png)
 ![map](http://i.imgrpost.com/imgr/2017/08/14/VYsdffAaererdsdVA.png)
 ![map](http://i.imgrpost.com/imgr/2017/06/22/VYAaereVAVArdsdVA.png)
-![diplomacy](http://i.imgrpost.com/imgr/2017/06/22/VYAaersderdsdVA.png)
-![panels](http://i.imgrpost.com/imgr/2017/08/14/ES-14.png)
-![Imgur](http://i.imgur.com/KevTH51.png)
-![Imgur](http://i.imgur.com/uzEJCvM.png)
+
+![Imgur](https://i.imgur.com/ir7pqgV.png)
+![Imgur](https://i.imgur.com/U85ZjSV.png)
+![Imgur](https://i.imgur.com/knumBN0.png)
+![Imgur](https://i.imgur.com/goICtvL.png)
+![Imgur](https://i.imgur.com/6YLDnnq.png)
 
 ## Contributing
 I would love to have other people providing ideas, code or questions.  You may:
