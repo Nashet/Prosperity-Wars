@@ -50,10 +50,10 @@ namespace Nashet.EconomicSimulation
             this.ID = ID;
             description = indescription;
             this.allowed = condition;
-            isEnacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", false);
+            isEnacted = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform not enacted yet", false);
             allowed.add(isEnacted);
             wantsReform = new Modifier(x => this.howIsItGoodForPop(x as PopUnit).get(),
-                        "How much is it good for population", 1f, true);
+                        "Benefit to population", 1f, true);
             loyalty = new Modifier(x => this.loyaltyBoostFor(x as PopUnit),
                         "Loyalty", 1f, false);
             modVoting = new ModifiersList(new List<Condition>{
@@ -181,34 +181,34 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        readonly internal static ReformValue Tribal = new ReformValue("Tribal democracy", "- Tribesmen and Aristocrats can vote", 0,
-            new DoubleConditionsList(), "tribe", 10, 0f);
+		readonly internal static ReformValue Tribal = new ReformValue("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
+            new DoubleConditionsList(), "Tribe", 10, 0f);
 
-        readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Only Aristocrats and Clerics can vote", 1,
-            new DoubleConditionsList(), "kingdom", 20, 0.5f);
+        readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
+            new DoubleConditionsList(), "Kingdom", 20, 0.5f);
 
-        readonly internal static ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, Clerics; each vote is equal", 8,
-            new DoubleConditionsList(), "polis", 5, 1f);
+        readonly internal static ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
+            new DoubleConditionsList(), "Polis", 5, 1f);
 
-        readonly internal static ReformValue Despotism = new ReformValue("Despotism", "- Despot does what he wants", 2,
-            new DoubleConditionsList(), "empire", 40, 0.25f);
+        readonly internal static ReformValue Despotism = new ReformValue("Despotism", "- Who needs elections? All the power belongs to you!", 2,
+            new DoubleConditionsList(), "Empire", 40, 0.25f);
 
-        readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- Only Clerics have power", 5,
+        readonly internal static ReformValue Theocracy = new ReformValue("Theocracy", "- God decreed only Clerics should have power because of their heavenly connections.", 5,
             new DoubleConditionsList(Condition.IsNotImplemented), "", 40, 0f);
 
-        readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Rich classes has more votes (5 to 1)", 9,
-            new DoubleConditionsList(Condition.IsNotImplemented), "states", 40, 1f);
+        readonly internal static ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
+            new DoubleConditionsList(Condition.IsNotImplemented), "States", 40, 1f);
 
-        readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "- Everyone can vote; each vote is equal", 3,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "republic", 100, 1f);
+        readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
-        readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois dictatorship", "- Only capitalists have power", 6,
-            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "", 20, 1f);
+		readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
+            new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f);
 
-        readonly internal static ReformValue Junta = new ReformValue("Junta", "- Only military guys have power", 7,
-            new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "junta", 20, 0.3f);
+        readonly internal static ReformValue Junta = new ReformValue("Junta", "- The military knows what's best for the people...", 7,
+            new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
 
-        readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian dictatorship", "- ProletarianDictatorship is it. Bureaucrats rule you", 4,
+        readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
             new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f);
 
         internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
