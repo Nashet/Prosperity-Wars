@@ -36,9 +36,9 @@ namespace Nashet.EconomicSimulation
             Storage producedAmount;
             var overpopulation = GetProvince().GetOverpopulation();
             if (overpopulation.isSmallerOrEqual(Procent.HundredProcent)) // all is OK
-                producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().multiply(getPopulation()).divide(1000));
+                producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().Multiply(getPopulation()).Divide(1000));
             else
-                producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().multiply(getPopulation()).divide(1000).divide(overpopulation));
+                producedAmount = new Storage(popType.getBasicProduction().getProduct(), popType.getBasicProduction().Multiply(getPopulation()).Divide(1000).Divide(overpopulation));
 
 
             if (producedAmount.isNotZero())
@@ -76,6 +76,7 @@ namespace Nashet.EconomicSimulation
         public override void consumeNeeds()
         {
             //life needs First
+            // Don't need education
             consumeWithNaturalEconomy(getRealLifeNeeds());
         }
     }

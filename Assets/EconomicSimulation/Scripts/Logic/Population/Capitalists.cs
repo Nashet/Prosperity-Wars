@@ -75,9 +75,9 @@ namespace Nashet.EconomicSimulation
 
                 //var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
                 var projects = World.GetAllAllowedInvestments(this.GetCountry(), this);//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x)).get());
+                var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
 
-                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
+                if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
                     Value investmentCost = project.GetInvestmentCost();
                     if (!canPay(investmentCost))

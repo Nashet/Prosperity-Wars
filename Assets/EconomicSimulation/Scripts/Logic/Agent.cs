@@ -25,20 +25,20 @@ namespace Nashet.EconomicSimulation
 
         protected Agent(float inAmount, Bank bank, Province province)
         {
-            cash.set(inAmount);
+            cash.Set(inAmount);
             this.bank = bank;
             this.province = province;
         }
         public virtual void SetStatisticToZero()
         {
-            moneyIncomeLastTurn.set(moneyIncomethisTurn);
-            moneyIncomethisTurn.set(0f);
-            incomeTaxPayed.setZero();
+            moneyIncomeLastTurn.Set(moneyIncomethisTurn);
+            moneyIncomethisTurn.Set(0f);
+            incomeTaxPayed.SetZero();
         }
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
         protected Value getSpendingLimit(ReadOnlyValue value)
         {
-            return moneyIncomeLastTurn.Copy().subtract(value, false);
+            return moneyIncomeLastTurn.Copy().Subtract(value, false);
         }
         public Province GetProvince()
         {
@@ -143,7 +143,7 @@ namespace Nashet.EconomicSimulation
         /// WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         internal Value GetLackingMoney(ReadOnlyValue need)
         {
-            return need.Copy().subtract(getMoneyAvailable());
+            return need.Copy().Subtract(getMoneyAvailable());
         }
         //internal Value HowMuchMoneyCanNotPay(Value value)
         //{
@@ -161,7 +161,7 @@ namespace Nashet.EconomicSimulation
             if (canPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.getProduct(), getMoneyAvailable().divide(Game.market.getPrice(need.getProduct())));
+                return new Storage(need.getProduct(), getMoneyAvailable().Divide(Game.market.getPrice(need.getProduct())));
         }
 
         //private float get()
@@ -208,10 +208,10 @@ namespace Nashet.EconomicSimulation
                 if (!canPayCashOnly(howMuch) && bank != null)// checked for bank inv
                 {
                     bank.giveLackingMoney(this, howMuch);
-                    bank.giveLackingMoney(this, howMuch.Copy().multiply(5));
+                    bank.giveLackingMoney(this, howMuch.Copy().Multiply(5));
                 }
                 whom.cash.Add(howMuch); // rise warning if have enough money to pay (with deposits) but didn't get enough from bank
-                this.cash.subtract(howMuch);
+                this.cash.Subtract(howMuch);
                 return true;
             }
             else
@@ -242,7 +242,7 @@ namespace Nashet.EconomicSimulation
                         && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
                     {   
                         var payed = payer.GetCountry().TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
-                        howMuchPayReally.subtract(payed);//and reduce taxable base
+                        howMuchPayReally.Subtract(payed);//and reduce taxable base
                     }
 
                     // in rest cases only pops pay taxes
@@ -282,9 +282,9 @@ namespace Nashet.EconomicSimulation
         public void ConvertFromGoldAndAdd(Value gold)
         {
             float coins = gold.get() * Options.goldToCoinsConvert;
-            this.cash.add(coins);
-            this.moneyIncomethisTurn.add(coins);
-            gold.set(0);
+            this.cash.Add(coins);
+            this.moneyIncomethisTurn.Add(coins);
+            gold.Set(0);
         }
 
         override public string ToString()

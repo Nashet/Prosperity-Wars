@@ -12,16 +12,18 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
-        movementOrder, provinceOrder, cultureOrder, popTypeOrder;
+        movementOrder, provinceOrder, cultureOrder, popTypeOrder, educationOrder;
 
         private void Start()
         {
             popTypeOrder = new SortOrder(this, x => x.popType.GetNameWeight());
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
-            unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
+            unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
             cashOrder = new SortOrder(this, x => x.getCash());
+
+            educationOrder = new SortOrder(this, x => x.Education.get());
 
 
             provinceOrder = new SortOrder(this, x => x.GetProvince().GetNameWeight());
@@ -57,7 +59,7 @@ namespace Nashet.EconomicSimulation
             AddCell(pop.culture.ToString(), pop);
 
             ////Adding education
-            AddCell(pop.education.ToString(), pop);
+            AddCell(pop.Education.ToString(), pop);
 
             ////Adding cash
             AddCell(pop.cash.ToString(), pop);
@@ -76,7 +78,7 @@ namespace Nashet.EconomicSimulation
             AddCell(pop.loyalty.ToString(), pop, () => accu);
 
             //Adding Unemployment
-            AddCell(pop.getUnemployedProcent().ToString(), pop);
+            AddCell(pop.getUnemployment().ToString(), pop);
 
             //Adding Movement
             if (pop.getMovement() == null)
@@ -102,7 +104,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Culture" + cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
-            AddCell("Education");
+            AddCell("Education"+ educationOrder.getSymbol(), educationOrder);
 
             ////Adding storage
             //if (null.storage != null)

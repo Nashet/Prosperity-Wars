@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -43,7 +44,8 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Liquor, 2f),
-            new Storage(Product.Electronics, 1f)
+            new Storage(Product.Electronics, 1f),
+            new Storage(Product.Education, 1f)
             ,};
             var aristocratsLuxuryNeeds = new List<Storage> {
             new Storage(Product.Fruit, 1),
@@ -58,7 +60,9 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Tobacco, 2f),
-            new Storage(Product.Fruit, 1f) };
+            new Storage(Product.Fruit, 1f),
+            new Storage(Product.Education, 1f)};
+
             var capitalistsLuxuryNeeds = new List<Storage> {
             new Storage(Product.Liquor, 2f),
             new Storage(Product.Firearms, 1f),
@@ -75,13 +79,14 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Fish, 1f),
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
-            new Storage(Product.Metal, 1f) };
+            new Storage(Product.Metal, 1f),
+                new Storage(Product.Education, 1f)};
                 var artisansLuxuryNeeds = new List<Storage> {
             new Storage(Product.Liquor, 1f),
             //new Storage(Product.Cars, 1f),
             //new Storage(Product.MotorFuel, 1f),
             new Storage(Product.Electronics, 1f),
-            new Storage(Product.Tobacco, 1f)
+            new Storage(Product.Tobacco, 1f),
             };
                 Artisans = new PopType("Artisans", null, 1f,
                     militaryNeeds, artisansLifeNeeds, artisansEveryDayNeeds, artisansLuxuryNeeds);
@@ -100,7 +105,8 @@ namespace Nashet.EconomicSimulation
             var farmersLuxuryNeeds = new List<Storage> {
             new Storage(Product.Clothes, 1),
             new Storage(Product.Furniture, 1),
-            new Storage(Product.Liquor, 2)
+            new Storage(Product.Liquor, 2),
+            new Storage(Product.Education, 1f)
             //new Storage(Product.Metal, 1),
             //new Storage(Product.Cement, 0.5f)
                                             };
@@ -118,7 +124,8 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Cars, 0.5f),
             new Storage(Product.Tobacco, 1f),
             new Storage(Product.MotorFuel, 0.5f),
-            new Storage(Product.Electronics, 1f)
+            new Storage(Product.Electronics, 1f),
+            new Storage(Product.Education, 1f)
             };
             Workers = new PopType("Workers", null, 1f,
                 militaryNeeds, workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);
@@ -135,7 +142,7 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Tobacco, 1f),
             new Storage(Product.Cars, 1f), // temporally
             new Storage(Product.MotorFuel, 1f),// temporally
-            
+            new Storage(Product.Education, 1f),
             };
             Soldiers = new PopType("Soldiers", null, 2f,
                 militaryNeeds, soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
@@ -292,7 +299,7 @@ namespace Nashet.EconomicSimulation
         {
             //if (this == Workers || this == Farmers || this == Tribesmen)
             if (this == Workers)
-                return province.getUnemployment(x => x == Workers).isSmallerThan(MigrationUnemploymentLimit);
+                return province.getAllPopUnits().Where(x => x.popType == Workers).GetAverageProcent(x => x.getUnemployment()).isSmallerThan(MigrationUnemploymentLimit);
             else if (this == Farmers || this == Tribesmen)
                 return province.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
             else

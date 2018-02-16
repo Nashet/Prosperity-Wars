@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
     interface ICanSell
@@ -29,7 +31,7 @@ namespace Nashet.EconomicSimulation
 
         public MultiSeller(Country place) : base(place)
         {
-            foreach (var item in Product.getAll(x => !x.isAbstract()))
+            foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
                 if (item != Product.Gold)
                 {
                     if (item == Product.Grain)
@@ -66,23 +68,23 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public void setSellIfMoreLimits(Product product, float value)
         {
-            sellIfMoreLimits[product].set(value);
+            sellIfMoreLimits[product].Set(value);
         }
         /// <summary>
         /// returns exception if failed
         /// </summary>    
         public void setBuyIfLessLimits(Product product, float value)
         {
-            buyIfLessLimits[product].set(value);
+            buyIfLessLimits[product].Set(value);
         }
         override public void SetStatisticToZero()
         {
             base.SetStatisticToZero();
             sentToMarket.setZero();
             foreach (var item in producedTotal)
-                item.Value.set(ReadOnlyValue.Zero);
+                item.Value.Set(ReadOnlyValue.Zero);
             foreach (var item in soldByGovernment)
-                item.Value.set(Value.Zero);
+                item.Value.Set(Value.Zero);
         }
 
         public Storage getSentToMarket(Product product)
@@ -118,17 +120,17 @@ namespace Nashet.EconomicSimulation
                 {
                     Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.getProduct()));
                     if (DSB.get() == Options.MarketInfiniteDSB)
-                        DSB.setZero();// real DSB is unknown
+                        DSB.SetZero();// real DSB is unknown
                     else
                     if (DSB.get() > Options.MarketEqualityDSB)
-                        DSB.set(Options.MarketEqualityDSB);
+                        DSB.Set(Options.MarketEqualityDSB);
                     Storage realSold = new Storage(sent);
-                    realSold.multiply(DSB);
+                    realSold.Multiply(DSB);
                     if (realSold.isNotZero())
                     {
                         Value cost = Game.market.getCost(realSold);
                         //soldByGovernment.addMy(realSold.getProduct(), realSold);
-                        soldByGovernment[realSold.getProduct()].set(realSold);
+                        soldByGovernment[realSold.getProduct()].Set(realSold);
                         //returning back unsold product
                         //if (sent.isBiggerThan(realSold))
                         //{

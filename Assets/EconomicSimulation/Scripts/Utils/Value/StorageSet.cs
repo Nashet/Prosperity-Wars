@@ -13,7 +13,7 @@ namespace Nashet.ValueSpace
     {
         //private static Storage tStorage;
         //private List<Storage> container = new List<Storage>();
-        private readonly Dictionary<Product, Storage> collection = new Dictionary<Product, Storage>();
+        protected readonly Dictionary<Product, Storage> collection = new Dictionary<Product, Storage>();
 
         public StorageSet()
         { }
@@ -447,7 +447,7 @@ namespace Nashet.ValueSpace
         internal void setZero()
         {
             foreach (Storage st in this)
-                st.set(0f);
+                st.Set(0f);
         }
 
         internal int Count()
@@ -458,13 +458,13 @@ namespace Nashet.ValueSpace
         internal StorageSet Multiply(Value value)
         {
             foreach (var stor in collection)
-                stor.Value.multiply(value);
+                stor.Value.Multiply(value);
             return this;
         }
         internal StorageSet Divide(Value divider)
         {
             foreach (var stor in collection)
-                stor.Value.divide(divider);
+                stor.Value.Divide(divider);
             return this;
         }
 

@@ -12,6 +12,9 @@ namespace Nashet.ValueSpace
         static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
 
         private Product product;
+
+        public bool IsStorabe { get { return getProduct().IsStorable; } }
+
         // protected  Value value;
         //public Value value;
         //public Storage(JSONObject jsonObject)
@@ -49,12 +52,12 @@ namespace Nashet.ValueSpace
         public void set(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true)
         {
             product = inProduct;
-            set(inAmount, showMessageAboutNegativeValue);
+            Set(inAmount, showMessageAboutNegativeValue);
         }
         public void set(Storage storage)
         {
             product = storage.getProduct();
-            base.set(storage);
+            base.Set(storage);
         }
         //[System.Obsolete("Method is deprecated, need product specified")]
         //override public void set(Value invalue)
@@ -75,7 +78,7 @@ namespace Nashet.ValueSpace
         [System.Obsolete("Method is deprecated, need product specified")]
         public Storage add(float invalue, bool showMessageAboutNegativeValue = true)
         {
-            base.add(invalue, showMessageAboutNegativeValue);
+            base.Add(invalue, showMessageAboutNegativeValue);
             //throw new DontUseThatMethod(); temporally
             return this;
         }
@@ -114,7 +117,7 @@ namespace Nashet.ValueSpace
             else
             {
                 another.add(this);
-                this.setZero();
+                this.SetZero();
             }
         }
         /// <summary>
@@ -179,7 +182,7 @@ namespace Nashet.ValueSpace
             //}
             //else
             //    return new Storage(this.getProduct(), get() * invalue);
-            multiply(invalue);
+            base.Multiply(invalue);
             return this;
         }
         /// <summary>
@@ -188,7 +191,7 @@ namespace Nashet.ValueSpace
         public Storage Multiply(ReadOnlyValue invalue)
         {
             //return new Storage(this.getProduct(), get() * invalue.get());
-            multiply(invalue);
+            base.Multiply(invalue);
             return this;
         }
         /// <summary> Returns true if has that good or it's substitute</summary>    
@@ -259,16 +262,16 @@ namespace Nashet.ValueSpace
             if (!storage.isSameProductType(this.getProduct()))
             {
                 Debug.Log("Storage subtract Outside failed - wrong product");
-                set(0f);
+                Set(0f);
             }
             else if (storage.isBiggerThan(this))
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Storage subtract Outside failed");
-                set(0f);
+                Set(0f);
             }
             else
-                set(this.get() - storage.get());
+                Set(this.get() - storage.get());
             return this;
         }
         public void OnClicked()

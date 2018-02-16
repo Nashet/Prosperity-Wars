@@ -274,7 +274,7 @@ namespace Nashet.EconomicSimulation
         }
         internal Value GetShareAssetsValue(Procent share)
         {
-            return GetAllAssetsValue().multiply(share);
+            return GetAllAssetsValue().Multiply(share);
             //return share.SendProcentOf(GetAllAssetsValue());
         }
         internal void CalcMarketPrice()
@@ -283,12 +283,12 @@ namespace Nashet.EconomicSimulation
             if (isOnsale || parent.IsClosed)
             {
                 // reduce price
-                marketPriceModifier.subtract(0.001f, false);
+                marketPriceModifier.Subtract(0.001f, false);
                 if (marketPriceModifier.isZero())
-                    marketPriceModifier.set(0.001f);
+                    marketPriceModifier.Set(0.001f);
             }
             if (!isOnsale && parent.IsOpen) //rise price
-                marketPriceModifier.add(0.01f);
+                marketPriceModifier.Add(0.01f);
         }
         /// <summary>
         /// Buy that share (or less). Assumes that there is something on sale. Assumes that buyer has enough money
@@ -322,7 +322,7 @@ namespace Nashet.EconomicSimulation
                     var shareToBuy = sharesToBuy.Random();
                     var cost = shareToBuy.Value.GetShareForSale();
                     if (cost.isBiggerThan(purchaseValue))
-                        cost.set(purchaseValue);
+                        cost.Set(purchaseValue);
                     var buyingAgent = buyer as Agent;
 
                     if (buyingAgent.pay(shareToBuy.Key as Agent, cost))
@@ -361,7 +361,7 @@ namespace Nashet.EconomicSimulation
         }
         public bool CanProduce(Product product)
         {
-            return parent.getType().CanProduce(product);
+            return parent.Type.CanProduce(product);
         }
         /// <summary>
         /// Should be in Investor class

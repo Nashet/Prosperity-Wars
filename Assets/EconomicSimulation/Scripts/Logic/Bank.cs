@@ -23,15 +23,15 @@ namespace Nashet.EconomicSimulation
                 if (giver.loans.isBiggerThan(Value.Zero))  //has debt (meaning has no deposits)
                     if (howMuchTake.isBiggerOrEqual(giver.loans)) // cover debt
                     {
-                        Value extraMoney = howMuchTake.Copy().subtract(giver.loans);
-                        this.givenLoans.subtract(giver.loans);
-                        giver.loans.set(0f);
-                        giver.deposits.set(extraMoney);
+                        Value extraMoney = howMuchTake.Copy().Subtract(giver.loans);
+                        this.givenLoans.Subtract(giver.loans);
+                        giver.loans.Set(0f);
+                        giver.deposits.Set(extraMoney);
                     }
                     else// not cover debt
                     {
-                        giver.loans.subtract(howMuchTake);
-                        this.givenLoans.subtract(howMuchTake);
+                        giver.loans.Subtract(howMuchTake);
+                        this.givenLoans.Subtract(howMuchTake);
                     }
                 else
                 {
@@ -48,14 +48,14 @@ namespace Nashet.EconomicSimulation
             if (taker.deposits.isBiggerThan(Value.Zero)) // has deposit (meaning, has no loans)
                 if (howMuch.isBiggerOrEqual(taker.deposits))// loan is bigger than this deposit
                 {
-                    Value notEnoughMoney = howMuch.Copy().subtract(taker.deposits);
-                    taker.deposits.set(0f);
-                    taker.loans.set(notEnoughMoney);
+                    Value notEnoughMoney = howMuch.Copy().Subtract(taker.deposits);
+                    taker.deposits.Set(0f);
+                    taker.loans.Set(notEnoughMoney);
                     this.givenLoans.Add(notEnoughMoney);
                 }
                 else // not cover
                 {
-                    taker.deposits.subtract(howMuch);
+                    taker.deposits.Subtract(howMuch);
                 }
             else
             {
@@ -85,7 +85,7 @@ namespace Nashet.EconomicSimulation
         {
             if (taker.GetCountry().Invented(Invention.Banking))// find money in bank?
             {
-                Value lackOfSum = sum.Copy().subtract(taker.cash);
+                Value lackOfSum = sum.Copy().Subtract(taker.cash);
                 if (canGiveMoney(taker, lackOfSum))
                 {
                     giveMoney(taker, lackOfSum);
@@ -138,20 +138,20 @@ namespace Nashet.EconomicSimulation
 
         internal void defaultLoaner(Agent agent)
         {
-            givenLoans.subtract(agent.loans);
-            agent.loans.set(0);
+            givenLoans.Subtract(agent.loans);
+            agent.loans.Set(0);
         }
         /// <summary>
         /// Assuming all clients already defaulted theirs loans
         /// </summary>    
         internal void add(Bank annexingBank)
         {
-            annexingBank.cash.sendAll(this.cash);
-            annexingBank.givenLoans.sendAll(this.givenLoans);
+            annexingBank.cash.SendAll(this.cash);
+            annexingBank.givenLoans.SendAll(this.givenLoans);
         }
         bool isItEnoughReserves(Value sum)
         {
-            return cash.Copy().subtract(getMinimalReservs()).isNotZero();
+            return cash.Copy().Subtract(getMinimalReservs()).isNotZero();
         }
 
         /// <summary>
@@ -159,12 +159,12 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         internal Value howMuchCanGive(Agent agent)
         {
-            Value wouldGive = cash.Copy().subtract(getMinimalReservs(), false);
+            Value wouldGive = cash.Copy().Subtract(getMinimalReservs(), false);
             if (agent.deposits.isBiggerThan(wouldGive))
             {
                 wouldGive = agent.deposits.Copy(); // increase wouldGive to deposits size
                 if (wouldGive.isBiggerThan(cash)) //decrease wouldGive to cash size
-                    wouldGive.set(cash);
+                    wouldGive.Set(cash);
             }
             return wouldGive;
         }
@@ -180,8 +180,8 @@ namespace Nashet.EconomicSimulation
         }
         internal void destroy(Country byWhom)
         {
-            cash.sendAll(byWhom.cash);
-            givenLoans.setZero();
+            cash.SendAll(byWhom.cash);
+            givenLoans.SetZero();
         }
 
         public override void simulate()

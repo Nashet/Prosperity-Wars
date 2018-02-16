@@ -24,17 +24,15 @@ namespace Nashet.EconomicSimulation
         static public System.Random Random = new System.Random();
 
         static public Province selectedProvince;
-        static public Province previoslySelectedProvince;
-        //static public List<PopUnit> popsToShowInPopulationPanel = new List<PopUnit>();        
+        static public Province previoslySelectedProvince;        
 
         static internal List<BattleResult> allBattles = new List<BattleResult>();
 
         static public readonly Market market = new Market();
 
-        //static internal StringBuilder threadDangerSB = new StringBuilder();
-
-        static public MyDate date = new MyDate(0);
-        static internal bool devMode = false;
+        
+        //static public MyDate date = new MyDate(0);
+        static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -296,7 +294,7 @@ namespace Nashet.EconomicSimulation
                     pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.GetCountry().getCulture(), province);
 
 
-                    pop.cash.set(9000);
+                    pop.cash.Set(9000);
                     pop.storage.add(new Storage(Product.Grain, 60f));
                     //if (!Game.devMode)
                     //{
@@ -304,10 +302,10 @@ namespace Nashet.EconomicSimulation
                     //pop.cash.set(9000);
 
                     pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.GetCountry().getCulture(), province);
-                    pop.cash.set(900);
+                    pop.cash.Set(900);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.GetCountry().getCulture(), province);
-                    pop.cash.set(20);
+                    pop.cash.Set(20);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
                 }
@@ -531,7 +529,7 @@ namespace Nashet.EconomicSimulation
             if (Game.haveToStepSimulation)
                 Game.haveToStepSimulation = false;
 
-            date.AddTick(1);
+            Date.Simulate();
             // strongly before PrepareForNewTick
             Game.market.simulatePriceChangeBasingOnLastTurnData();
 
@@ -599,7 +597,7 @@ namespace Nashet.EconomicSimulation
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)
                 {
                     foreach (Factory factory in province.getAllFactories())
-                    {
+                    {                        
                         if (country.economy.getValue() == Economy.PlannedEconomy)
                             factory.OpenFactoriesPE();
                         else
@@ -620,6 +618,8 @@ namespace Nashet.EconomicSimulation
                     // get pop's income section:
                     foreach (PopUnit pop in province.allPopUnits)
                     {
+                        if (pop.popType == PopType.Workers)
+                            pop.LearnByWork();
                         if (pop.canSellProducts())
                             pop.getMoneyForSoldProduct();
                         pop.takeUnemploymentSubsidies();

@@ -103,7 +103,7 @@ namespace Nashet.Utils
         }
         static public bool HasComponentInParent<T>(this GameObject that)
         {
-            if (that.transform.parent== null || that.transform.parent.GetComponent<T>() == null)
+            if (that.transform.parent == null || that.transform.parent.GetComponent<T>() == null)
                 return false;
             else
                 return true;
@@ -209,7 +209,7 @@ namespace Nashet.Utils
         {
             foreach (var item in list)
             {
-                item.multiply(value);
+                item.Multiply(value);
             }
             return list;
         }
@@ -236,13 +236,13 @@ namespace Nashet.Utils
     }
     public static class CollectionExtensions
     {
-        public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
-        {
-            foreach (var keyValue in dictionary)
-            {
-                invokeMe(keyValue.Key, keyValue.Value);
-            }
-        }
+        //public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
+        //{
+        //    foreach (var keyValue in dictionary)
+        //    {
+        //        invokeMe(keyValue.Key, keyValue.Value);
+        //    }
+        //}
         //public static void AddMy(this Dictionary<object, int> dictionary, object what, int size)
         //{
         //    if (dictionary.ContainsKey(what))
@@ -267,7 +267,7 @@ namespace Nashet.Utils
         public static void setMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))
-                dictionary[what].set(value);
+                dictionary[what].Set(value);
             else
                 dictionary.Add(what, value);
         }
@@ -293,6 +293,17 @@ namespace Nashet.Utils
             foreach (var item in source)
                 if (predicate(item))
                     action(item);
+        }
+        public static Procent GetAverageProcent(this IEnumerable<PopUnit> source, Func<PopUnit, Procent> selector)
+        {
+            Procent result = new Procent(0f);
+            int calculatedPopulation = 0;
+            foreach (var item in source)
+            {
+                result.AddPoportionally(calculatedPopulation, item.getPopulation(), selector(item));
+                calculatedPopulation += item.getPopulation();
+            }
+            return result;
         }
         public static void PerformAction<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
@@ -505,7 +516,7 @@ namespace Nashet.Utils
     {
         public static string GetString(this Dictionary<Product, Storage> collection, String lineBreaker)
         {
-            if (collection.Any(x=>x.Value.isNotZero()))
+            if (collection.Any(x => x.Value.isNotZero()))
             {
                 var sb = new StringBuilder();
                 bool isFirstRow = true;
@@ -524,7 +535,7 @@ namespace Nashet.Utils
         }
         public static string getString(this IEnumerable<Storage> list, string lineBreaker)
         {
-            if (list.Any(x=>x.isNotZero()))
+            if (list.Any(x => x.isNotZero()))
             {
                 var sb = new StringBuilder();
                 bool isFirstRow = true;
@@ -654,7 +665,7 @@ namespace Nashet.Utils
         //    }
         //    return sb.ToString();
         //}
-        public static string getString(IEnumerable<KeyValuePair<Mod, MyDate>> dictionary)
+        public static string getString(IEnumerable<KeyValuePair<Mod, Date>> dictionary)
         {
             if (dictionary.Count() == 0)
                 return "none";

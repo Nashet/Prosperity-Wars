@@ -46,9 +46,9 @@ namespace Nashet.EconomicSimulation
         {
             base.SetStatisticToZero();
             if (gainGoodsThisTurn != null)
-                gainGoodsThisTurn.setZero();
+                gainGoodsThisTurn.SetZero();
             if (sentToMarket != null)
-                sentToMarket.setZero();
+                sentToMarket.SetZero();
         }
         //public Value getProducing()
         //{
@@ -60,12 +60,12 @@ namespace Nashet.EconomicSimulation
             {
                 Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
                 if (DSB.get() == Options.MarketInfiniteDSB)
-                    DSB.setZero(); // real DSB is unknown
+                    DSB.SetZero(); // real DSB is unknown
                 else
                 if (DSB.get() > Options.MarketEqualityDSB)
-                    DSB.set(Options.MarketEqualityDSB);
+                    DSB.Set(Options.MarketEqualityDSB);
                 Storage realSold = new Storage(sentToMarket);
-                realSold.multiply(DSB);
+                realSold.Multiply(DSB);
                 if (realSold.isNotZero())
                 {
                     Value cost = Game.market.getCost(realSold);
@@ -76,7 +76,7 @@ namespace Nashet.EconomicSimulation
                         storage.add(gainGoodsThisTurn);
                     else
                         storage = new Storage(gainGoodsThisTurn);
-                    storage.subtract(realSold.get());
+                    storage.Subtract(realSold.get());
 
                     if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
                     {

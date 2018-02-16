@@ -10,96 +10,11 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class MyDate
-    {
-        internal static readonly MyDate Never = new MyDate(int.MinValue);
-        private int year;
-        public MyDate(int year)
-        {
-            this.year = year;
-        }
-        public MyDate(MyDate date)
-        {
-            this.year = date.year;
-        }
-
-        internal void AddTick(int v)
-        {
-            year += v;
-        }
-
-        internal MyDate getNewDate(int v)
-        {
-            return new MyDate(year + v);
-        }
-        /// <summary>
-        /// How much time passed after stored here date
-        /// </summary>    
-        public int getYearsSince()
-        {
-
-            return Game.date.year - this.year;
-        }
-        /// <summary>
-        /// How much time before that date come
-        /// </summary>    
-        public int getYearsUntill()
-        {
-            return this.year - Game.date.year;
-        }
-        /// <summary>
-        /// Returns true if exactly passed years has passed, no more no less
-        /// </summary>    
-        public bool isDivisible(int passed)
-        {
-            return this.year % passed == 0;
-        }
-        public bool isDatePassed()
-        {
-            return Game.date.year > this.year;
-        }
-
-        internal void set(MyDate newDate)
-        {
-            // Debug.Log("date set to "+ newDate.year);
-            this.year = newDate.year;
-        }
-        public static bool operator ==(MyDate d1, MyDate d2)
-        {
-
-            if (object.ReferenceEquals(d1, null) && object.ReferenceEquals(d2, null)) // both null
-                return true;
-            else
-            {
-                if (object.ReferenceEquals(d1, null) || object.ReferenceEquals(d2, null))   //one null
-                    return false;
-            }
-            //no null
-            return d1.year == d2.year;
-        }
-        public static bool operator !=(MyDate d1, MyDate d2)
-        {
-            if (object.ReferenceEquals(d1, null) && object.ReferenceEquals(d2, null)) // both null
-                return false;
-            else
-            {
-                if (object.ReferenceEquals(d1, null) || object.ReferenceEquals(d2, null))   //one null
-                    return true;
-            }
-            //no null
-            return d1.year != d2.year;
-        }
-        public override string ToString()
-        {
-            return year.ToString();
-        }
-    }
-
     public class Army
     {
         static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
         //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
-        static Modifier modifierMorale = new Modifier(x => (x as Army).getAverageMorale().get(), "Morale", 1f, true);
+        static Modifier modifierMorale = new Modifier(x => (x as Army).GetAverageCorps(y => y.getMorale()).get(), "Morale", 1f, true);
 
         static Modifier modifierHorses = new Modifier(x => (x as Army).getHorsesSupply(), "Horses", 0.5f, false);
         static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
@@ -110,6 +25,7 @@ namespace Nashet.EconomicSimulation
         static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Fueled & charged Tanks", 1f, false);
         static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
         static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
+        static Modifier modifierEducation = new Modifier(x => (x as Army).GetAverageCorps(y=>y.getPopUnit().Education).RawUIntValue, "Education", 1f / Procent.Precision, false);
 
 
         private readonly Dictionary<PopUnit, Corps> personal;
@@ -180,7 +96,8 @@ namespace Nashet.EconomicSimulation
         {
         //modifierDefenseInMountains
             Modifier.modifierDefault1, modifierInDefense,  modifierMorale, modifierHorses, modifierColdArms,
-        modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck
+        modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck,
+        modifierEducation
         });
         // private Army consolidatedArmy;
 
@@ -238,19 +155,30 @@ namespace Nashet.EconomicSimulation
         }
         public void consume()
         {
-            personal.ForEach((x, corps) => corps.consume(getOwner().getPlaceDejure()));
+            personal.PerformAction(corps => corps.Value.consume(getOwner().getPlaceDejure()));
         }
-        public Procent getAverageMorale()
+        public Procent GetAverageCorps(Func<Corps, Procent> selector)
         {
             Procent result = new Procent(0);
             int calculatedSize = 0;
             foreach (var item in personal)
             {
-                result.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getMorale());
+                result.AddPoportionally(calculatedSize, item.Value.getSize(), selector(item.Value));
                 calculatedSize += item.Value.getSize();
             }
             return result;
         }
+        //public Procent getAverageMorale()
+        //{
+        //    Procent result = new Procent(0);
+        //    int calculatedSize = 0;
+        //    foreach (var item in personal)
+        //    {
+        //        result.addPoportionally(calculatedSize, item.Value.getSize(), item.Value.getMorale());
+        //        calculatedSize += item.Value.getSize();
+        //    }
+        //    return result;
+        //}
         public void add(Corps corpsToAdd)
         {
             if (corpsToAdd != null)
@@ -323,7 +251,7 @@ namespace Nashet.EconomicSimulation
                 //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
                 sb.Append(getAmountByTypes().getString(": ", ", "));
                 sb.Append(", Total size: ").Append(getSize());
-                sb.Append(", Morale: ").Append(getAverageMorale());
+                sb.Append(", Morale: ").Append(GetAverageCorps(x=>x.getMorale()));
                 sb.Append(", Provision: ").Append(getConsumption());
                 //string str;
                 //modifierStrenght.getModifier(this, out str);
@@ -606,11 +534,11 @@ namespace Nashet.EconomicSimulation
                     foreach (var corp in personal.ToList())
                     {
 
-                        var corpsStrenght = corp.Value.getType().getStrenght();
-                        if (corpsStrenght * armyStrenghtModifier > 0)//(corp.Value.getType().getStrenght() > 0f)
+                        var corpsStrenght = corp.Value.Type.getStrenght();
+                        if (corpsStrenght * armyStrenghtModifier > 0)//(corp.Value.Type.getStrenght() > 0f)
                         {
                             streghtLoss = corp.Value.getStrenght(this, armyStrenghtModifier) * (lossStrenght / totalStrenght);
-                            menLoss = Mathf.RoundToInt(streghtLoss / (corpsStrenght * armyStrenghtModifier)); // corp.Value.getType().getStrenght());
+                            menLoss = Mathf.RoundToInt(streghtLoss / (corpsStrenght * armyStrenghtModifier)); // corp.Value.Type.getStrenght());
 
                             totalMenLoss += corp.Value.TakeLoss(menLoss);
                         }

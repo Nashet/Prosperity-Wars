@@ -9,7 +9,9 @@ namespace Nashet.EconomicSimulation
         public Farmers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Farmers, where, culture)
         { }
         public Farmers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Farmers, iculture, where)
-        { }
+        {
+            
+        }
 
         public override bool canThisDemoteInto(PopType targetType)
         {
@@ -33,7 +35,7 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             Storage producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
-            producedAmount.multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
+            producedAmount.Multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
             if (producedAmount.isNotZero())
             {
                 addProduct(producedAmount);

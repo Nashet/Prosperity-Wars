@@ -41,10 +41,10 @@ namespace Nashet.EconomicSimulation
                 {
                     sb.Append(", input products:  ").Append(isArtisan.getInputProducts());
                     sb.Append("\nProducing: ");
-                    if (isArtisan.getType() == null)
+                    if (isArtisan.Type == null)
                         sb.Append("nothing");
                     else
-                        sb.Append(isArtisan.getType().basicProduction.getProduct());
+                        sb.Append(isArtisan.Type.basicProduction.getProduct());
                 }
                 sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
                 sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
                     sb.Append("none");
 
                 sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
-                sb.Append("\nUnemployment: ").Append(pop.getUnemployedProcent());
+                sb.Append("\nUnemployment: ").Append(pop.getUnemployment());
                 sb.Append("\nLoyalty: ").Append(pop.loyalty);
 
                 if (pop.loans.get() > 0f)

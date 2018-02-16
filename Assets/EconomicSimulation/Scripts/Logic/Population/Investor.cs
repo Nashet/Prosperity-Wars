@@ -36,11 +36,11 @@ namespace Nashet.EconomicSimulation
         {
             var res = business.GetCountry().OwnershipSecurity;
             if (business.GetCountry() != this.GetCountry())
-                res.multiply(Options.InvestingForeignCountrySecurity);
+                res.Multiply(Options.InvestingForeignCountrySecurity);
             if (business.GetProvince() != this.GetProvince())
-                res.multiply(Options.InvestingAnotherProvinceSecurity);
+                res.Multiply(Options.InvestingAnotherProvinceSecurity);
             if (!(business is Owners)) // building, upgrading and opening requires hiring people which can be impossible
-                res.multiply(Options.InvestorEmploymentRisk);
+                res.Multiply(Options.InvestorEmploymentRisk);
 
             return res;
         }

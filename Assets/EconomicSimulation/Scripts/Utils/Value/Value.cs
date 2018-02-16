@@ -7,131 +7,129 @@ namespace Nashet.ValueSpace
     public class Value : ReadOnlyValue, ICopyable<Value>
     {
         public Value(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
-        {            
+        {
         }
         //protected
-        public Value(ReadOnlyValue number):base (number)
+        public Value(ReadOnlyValue number) : base(number)
         {
-         //   set(number); // set already have multiplier
+            //   set(number); // set already have multiplier
         }
         /// <summary>
         /// Converts dirty float into Value format
         /// </summary>        
         public static float Convert(float invalue)
         {
-            uint intermediate = (uint)Mathf.RoundToInt(invalue * precision);
-            return (float)intermediate / (float)precision;
+            uint intermediate = (uint)Mathf.RoundToInt(invalue * Precision);
+            return (float)intermediate / (float)Precision;
         }
 
         //TODO overflow checks?
-        virtual public Value Add(ReadOnlyValue invalue, bool showMessageAboutNegativeValue = true)
+        public Value Add(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (value + invalue.RawValue < 0f)
+            if (rawUIntValue + howMuch.RawUIntValue < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value Add-Value failed");
-                set(0);
+                Set(0);
             }
             else
-                value += invalue.RawValue;
+                rawUIntValue += howMuch.RawUIntValue;
             return this;
         }
 
-        virtual public Value add(float invalue, bool showMessageAboutNegativeValue = true)
+        public Value Add(float howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue + get() < 0f)
+            if (howMuch + get() < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value Add-float failed");
-                set(0);
+                Set(0);
             }
             else
-                value += (uint)Mathf.RoundToInt(invalue * precision);
+                base.rawUIntValue += (uint)Mathf.RoundToInt(howMuch * Precision);
             return this;
         }
-        
-        public Value subtract(ReadOnlyValue invalue, bool showMessageAboutNegativeValue = true)
+
+        public Value Subtract(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue.RawValue > value)
+            if (howMuch.RawUIntValue > rawUIntValue)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract gave negative result");
-                set(0);
-                return this;
+                Set(0);            
             }
             else
-            {
-                value -= invalue.RawValue;
-                return this;
-            }
+                rawUIntValue -= howMuch.RawUIntValue;
+            return this;
         }
-        public void subtract(float invalue, bool showMessageAboutNegativeValue = true)
+        public Value Subtract(float howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue > get())
+            if (howMuch > get())
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract failed");
-                value = 0;
+                rawUIntValue = 0;
             }
             else
-                value -= (uint)Mathf.RoundToInt(invalue * precision);
+                rawUIntValue -= (uint)Mathf.RoundToInt(howMuch * Precision);
+            return this;
         }
-        
+
 
         /// <summary>Keeps result inside</summary>    
-        public Value multiply(ReadOnlyValue invalue, bool showMessageAboutNegativeValue = true)
+        public Value Multiply(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue.get() < 0)
+            //if (howMuch.get() < 0)
+            //{
+            //    if (showMessageAboutNegativeValue)
+            //        Debug.Log("Value multiply failed");
+            //    value = 0;
+            //}
+            //else
+            Set(howMuch.get() * this.get());
+            return this;
+        }
+
+        public Value Multiply(float howMuch, bool showMessageAboutNegativeValue = true)
+        {
+            if (howMuch < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value multiply failed");
-                value = 0;
+                rawUIntValue = 0;
             }
             else
-                set(invalue.get() * this.get());
+                Set(howMuch * this.get());
             return this;
         }
 
-        public Value multiply(float invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue < 0f)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value multiply failed");
-                value = 0;
-            }
-            else
-                set(invalue * this.get());
-            return this;
-        }
-        
         /// <summary>Keeps result inside</summary>    
-        public Value divide(ReadOnlyValue invalue, bool showMessageAboutNegativeValue = true)
+        public Value Divide(ReadOnlyValue divider, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue.get() <= 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value divide failed");
-                value = 99999;
-            }
-            else
-                set(this.value / (float)invalue.RawValue);
+            //if (invalue.get() <= 0)
+            //{
+            //    if (showMessageAboutNegativeValue)
+            //        Debug.Log("Value divide failed");
+            //    value = 99999;
+            //}
+            //else
+                Set(this.rawUIntValue / (float)divider.RawUIntValue);
             return this;
         }
 
-        internal Value divide(int v, bool showMessageAboutNegativeValue = true)
+        internal Value Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
-            if (v <= 0)
+            if (divider <= 0)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value divide failed");
-                value = 99999;
+                rawUIntValue = 99999;
             }
             else
-                set(this.get() / (float)v);
+                Set(this.get() / (float)divider);
             return this;
         }
-        
+
         //public void send(Value another, float amount, bool showMessageAboutOperationFails = true)
         //{
         //    if (this.get() >= amount)
@@ -162,36 +160,36 @@ namespace Nashet.ValueSpace
         //        return false;
         //    }
         //}
-        
-        public void sendAll(Value another)
-        {
-            another.Add(this);
-            this.setZero();
-        }
-        
 
-        internal void setZero()
+        public void SendAll(Value where)
         {
-            value = 0;
+            where.Add(this);
+            this.SetZero();
         }
 
-        public void set(float invalue, bool showMessageAboutOperationFails = true)
+
+        internal void SetZero()
         {
-            if (invalue >= 0)
-                value = (uint)Mathf.RoundToInt(invalue * precision);
+            rawUIntValue = 0;
+        }
+
+        public void Set(float newValue, bool showMessageAboutOperationFails = true)
+        {
+            if (newValue >= 0f)
+                rawUIntValue = (uint)Mathf.RoundToInt(newValue * Precision);
             else
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("Can't set negative value");
-                value = 0;
+                rawUIntValue = 0;
             }
         }
-        public void set(ReadOnlyValue invalue)
+        public void Set(ReadOnlyValue invalue)
         {
-            value = invalue.RawValue;
-        }    
+            rawUIntValue = invalue.RawUIntValue;
+        }
 
-        
+
         //public int Compare(Value x, Value y)
         //{
         //    if (x.value == y.value)

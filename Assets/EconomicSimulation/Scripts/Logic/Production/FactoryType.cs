@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     public class FactoryType : IClickable, ISortableName
     {
         static private readonly List<FactoryType> allTypes = new List<FactoryType>();
-        internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
+        internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard, University;
 
         internal readonly string name;
 
@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Storage> upgradeResourceHighTier = new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) };
 
 
-        
+
         internal Condition enoughMoneyOrResourcesToBuild;
 
         ///duplicated in Factory        
@@ -141,6 +141,8 @@ namespace Nashet.EconomicSimulation
             resourceInput.Set(new Storage(Product.Oil, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
             new FactoryType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
+
+            University = new FactoryType("University", new Storage(Product.Education, 2f), new StorageSet());
         }
         /// <summary>
         /// Basic constructor for resource getting FactoryType
@@ -169,14 +171,14 @@ namespace Nashet.EconomicSimulation
                         return agent.GetCountry().countryStorageSet.has(this.GetBuildNeeds());
                     }
                     else
-                    {                        
+                    {
                         Value cost = GetBuildCost();
                         return agent.canPay(cost);
                     }
                 },
                 delegate
                 {
-                    var sb = new StringBuilder();                    
+                    var sb = new StringBuilder();
                     Value cost = GetBuildCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
@@ -197,9 +199,6 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         internal FactoryType(string name, Storage basicProduction, StorageSet resourceInput) : this(name, basicProduction, false)
         {
-            //if (resourceInput == null)
-            //    this.resourceInput = new PrimitiveStorageSet();
-            //else
             this.resourceInput = resourceInput;
         }
         public static IEnumerable<FactoryType> getAllInventedTypes(Country country)
@@ -208,25 +207,25 @@ namespace Nashet.EconomicSimulation
                 if (country.Invented(next))
                     yield return next;
         }
-        public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
-        {
-            foreach (var next in getAllInventedTypes(country))
-                if (next.isResourceGathering())
-                    yield return next;
-        }
-        public static IEnumerable<FactoryType> getAllNonResourceTypes(Country country)
-        {
-            foreach (var next in getAllInventedTypes(country))
-                if (!next.isResourceGathering())
-                    yield return next;
-        }
+        //public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
+        //{
+        //    foreach (var next in getAllInventedTypes(country))
+        //        if (next.isResourceGathering())
+        //            yield return next;
+        //}
+        //public static IEnumerable<FactoryType> getAllNonResourceTypes(Country country)
+        //{
+        //    foreach (var next in getAllInventedTypes(country))
+        //        if (!next.isResourceGathering())
+        //            yield return next;
+        //}
         /// <summary>
         ///Returns new value
         /// </summary>        
         public Value GetBuildCost()
         {
             Value result = Game.market.getCost(GetBuildNeeds());
-            result.add(Options.factoryMoneyReservePerLevel);
+            result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }
         /// <summary>
@@ -280,7 +279,7 @@ namespace Nashet.EconomicSimulation
         }
         internal bool isManufacture()
         {
-            return !isResourceGathering() && this != Barnyard;
+            return !isResourceGathering() && this != Barnyard && this != University;
         }
         internal bool isShaft()
         {
@@ -304,7 +303,7 @@ namespace Nashet.EconomicSimulation
         //    KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
         //    foreach (Factory factory in province.allFactories)
         //    {
-        //        if (province.canUpgradeFactory(factory.getType()))
+        //        if (province.canUpgradeFactory(factory.Type))
         //        {
         //            float profit = factory.getProfit();
         //            if (profit > result.Value)
@@ -328,7 +327,7 @@ namespace Nashet.EconomicSimulation
             if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
             Value income = Game.market.getCost(basicProduction);
-            income.multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
+            income.Multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
             var outCome = new Value(0f);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
@@ -338,7 +337,7 @@ namespace Nashet.EconomicSimulation
 
                 outCome.Add(Game.market.getCost(resourceInput));
             }
-            return income.subtract(outCome, false);
+            return income.Subtract(outCome, false);
         }
         /// <summary>
         /// For artisans. Not including salary
@@ -355,7 +354,7 @@ namespace Nashet.EconomicSimulation
                     if (!Game.market.isAvailable(inputProduct.getProduct()))
                         return new Value(0);// inputs are unavailable                                            
 
-                return income.subtract(Game.market.getCost(resourceInput), false);
+                return income.Subtract(Game.market.getCost(resourceInput), false);
             }
             return income;
         }
@@ -365,8 +364,8 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province);
-            var taxes = profit.Copy().multiply(province.GetCountry().taxationForRich.getTypedValue().tax);
-            profit.subtract(taxes);
+            var taxes = profit.Copy().Multiply(province.GetCountry().taxationForRich.getTypedValue().tax);
+            profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost());
         }
         /// <summary>

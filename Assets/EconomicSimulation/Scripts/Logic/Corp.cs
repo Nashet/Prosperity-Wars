@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation
         {
             this.origin = origin;
             this.size = size;
-            this.morale.set(0f);
+            this.morale.Set(0f);
             consumption.setZero();
         }
         public Corps(PopUnit origin, int size)//:base(null,null)
@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation
         {
             size = 0;
             origin = null;
-            morale.set(0);
+            morale.Set(0);
             consumption.setZero();
             //here - delete all links on that object        
         }
@@ -87,14 +87,14 @@ namespace Nashet.EconomicSimulation
             float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
             moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
             if (morale.get() + moraleChange < 0)
-                morale.set(0f);
+                morale.Set(0f);
             else
-                morale.add(moraleChange);
+                morale.Add(moraleChange);
             if (this.origin.popType == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
-                morale.set(origin.loyalty);
+                morale.Set(origin.loyalty);
 
             if (morale.isBiggerThan(Procent.HundredProcent))
-                morale.set(1f);
+                morale.Set(1f);
             //if (getPopUnit().loyalty.isSmallerThan(Options.PopMinLoyaltyToMobilizeForGovernment))
             //    getCountry().demobilize(x => x.getPopUnit() == this);
         }
@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
 
             List<Storage> result = origin.popType.getMilitaryNeedsPer1000Men(country);
             foreach (Storage next in result)
-                next.multiply(multiplier);
+                next.Multiply(multiplier);
             return result;
         }
         /// <summary>
@@ -142,16 +142,17 @@ namespace Nashet.EconomicSimulation
         }
         //private float getStrenght()
         //{
-        //    return getType().getStrenght(); // bonus
+        //    return Type.getStrenght(); // bonus
         //}
         internal float getStrenght(Army army, float armyStrenghtModifier)
         {
             return getSize() * origin.popType.getStrenght() * armyStrenghtModifier;
         }
-        public PopType getType()
-        {
-            return origin.popType;
-        }
+        public PopType Type { get { return origin.popType; } }
+        //public PopType Type
+        //{
+        //    return origin.popType;
+        //}
         public int getSize()
         {
             return size;
@@ -189,7 +190,7 @@ namespace Nashet.EconomicSimulation
         internal void add(Corps another)
         {
             size += another.getSize();
-            morale.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
+            morale.AddPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
         }
 
         internal void setStatisticToZero()

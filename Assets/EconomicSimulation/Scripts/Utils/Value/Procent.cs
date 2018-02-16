@@ -39,10 +39,10 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("Division by zero in new Procent(float)");
-                set(Procent.Max999);
+                Set(Procent.Max999);
             }
             else
-                set(numerator / denominator, showMessageAboutOperationFails);
+                Set(numerator / denominator, showMessageAboutOperationFails);
         }
         public Procent(int numerator, int denominator, bool showMessageAboutOperationFails = true) : base(0f)
         {
@@ -50,10 +50,10 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("Division by zero in Percent.makeProcent(int)");
-                set(Procent.Max999);
+                Set(Procent.Max999);
             }
             else
-                set(numerator / (float)denominator, showMessageAboutOperationFails);
+                Set(numerator / (float)denominator, showMessageAboutOperationFails);
         }
 
         internal float get50Centre()
@@ -70,10 +70,10 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// Calculates procent proportionally to int sizes of elements
         /// </summary>        
-        public void addPoportionally(int totalValculatedValue, int nextElementValue, Procent elementProcent)
+        public void AddPoportionally(int totalValculatedValue, int nextElementValue, Procent elementProcent)
         {
             if ((totalValculatedValue + nextElementValue) != 0)
-                set(
+                Set(
                     (this.get() * totalValculatedValue + elementProcent.get() * nextElementValue) / (float)(totalValculatedValue + nextElementValue)
                     );
         }
@@ -107,13 +107,19 @@ namespace Nashet.ValueSpace
         internal void clamp100()
         {
             if (this.isBiggerThan(Procent.HundredProcent))
-                this.set(1f);
+                this.Set(1f);
         }
 
-
+        [Obsolete("Don't use that for Procent")]
+        public void SendAll(Value where)
+        { }
         public Procent Copy()
         {
             return new Procent(this);
+        }
+        public Procent Subtract(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
+        {
+            return base.Subtract(howMuch, showMessageAboutNegativeValue) as Procent;
         }
     }
 }

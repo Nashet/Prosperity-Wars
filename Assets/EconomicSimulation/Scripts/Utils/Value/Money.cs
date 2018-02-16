@@ -19,7 +19,7 @@ namespace Nashet.ValueSpace
             if (divider == 0)
             {
                 Debug.Log("Can't divide by zero");
-                set(99999);
+                Set(99999);
                 return this;
             }
             else
@@ -40,10 +40,10 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value multiply failed");
-                set(0);
+                Set(0);
             }
             else
-                set(multiplier * this.get());
+                Set(multiplier * this.get());
             return this;
         }
         ///////////////////Add section
@@ -53,10 +53,10 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Money can't be negative");
-                set(0);
+                Set(0);
             }
             else
-                set(get() + adding);
+                Set(get() + adding);
             return this;
         }
     }

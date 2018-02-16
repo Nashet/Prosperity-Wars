@@ -76,7 +76,7 @@ namespace Nashet.EconomicSimulation
         }
         internal void selectProduct(Product product)
         {
-            if (!product.isAbstract())
+            if (!product.isAbstract() && product.IsStorable)
             {
                 selectedProduct = product;
                 slBuyIfLessThan.exponentialValue = Game.Player.getBuyIfLessLimits(selectedProduct).get();

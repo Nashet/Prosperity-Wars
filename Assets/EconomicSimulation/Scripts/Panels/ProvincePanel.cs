@@ -124,7 +124,8 @@ namespace Nashet.EconomicSimulation
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
            // sb.Append("\nID: ").Append(Game.selectedProvince.getID());
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
-            sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.getAverageLoyalty());
+            //sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAveragePop(x=>x.loyalty));
+            sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.getAllPopUnits().GetAverageProcent(x => x.loyalty));
             sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
             sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
             sb.Append("\nResource: ");

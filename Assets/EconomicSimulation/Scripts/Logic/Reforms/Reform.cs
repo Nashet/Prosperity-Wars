@@ -224,8 +224,7 @@ namespace Nashet.EconomicSimulation
         internal readonly static Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == Government.ProletarianDictatorship, "Government is " + Government.ProletarianDictatorship.getName(), true);
 
         public Government(Country country) : base("Government", "Form of government", country)
-        {
-            //status = Tribal;
+        {            
             reform = Aristocracy;
             this.country = country;
         }
@@ -269,8 +268,8 @@ namespace Nashet.EconomicSimulation
 
                     // next is for PE only
                     factory.PayAllAvailableMoney(country);
-                    factory.loans.setZero();
-                    factory.deposits.setZero();
+                    factory.loans.SetZero();
+                    factory.deposits.SetZero();
                     factory.setSubsidized(false);
                     factory.setZeroSalary();
                     factory.setPriorityAutoWithPlannedEconomy();
@@ -280,8 +279,8 @@ namespace Nashet.EconomicSimulation
                 foreach (var item in province.getAllPopUnits())
                 {
                     item.PayAllAvailableMoney(country);
-                    item.loans.setZero();
-                    item.deposits.setZero();
+                    item.loans.SetZero();
+                    item.deposits.SetZero();
                 }
             }
         }
@@ -402,9 +401,9 @@ namespace Nashet.EconomicSimulation
                 country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
                 //nationalization
                 country.getBank().PayAllAvailableMoney(country);
-                country.getBank().getGivenLoans().setZero();
-                country.loans.setZero();
-                country.deposits.setZero();
+                country.getBank().getGivenLoans().SetZero();
+                country.loans.SetZero();
+                country.deposits.SetZero();
 
                 foreach (var province in country.ownedProvinces)
                 {
@@ -826,7 +825,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.02f);
+                    everyDayCost.Multiply(0.02f);
                     result.Add(everyDayCost);
                     return result;
                 }
@@ -834,7 +833,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.04f);
+                    everyDayCost.Multiply(0.04f);
                     result.Add(everyDayCost);
                     return result;
                 }
@@ -842,7 +841,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.06f);
+                    everyDayCost.Multiply(0.06f);
                     result.Add(everyDayCost);
                     return result;
                 }
@@ -850,7 +849,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.08f);
+                    everyDayCost.Multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
@@ -1005,7 +1004,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.02f);
+                    everyDayCost.Multiply(0.02f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -1013,7 +1012,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.04f);
+                    everyDayCost.Multiply(0.04f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -1021,7 +1020,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.06f);
+                    everyDayCost.Multiply(0.06f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -1029,7 +1028,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.08f);
+                    everyDayCost.Multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);

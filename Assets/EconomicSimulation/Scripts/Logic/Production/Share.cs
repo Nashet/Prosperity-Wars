@@ -21,11 +21,11 @@ namespace Nashet.EconomicSimulation
         }
         public void Decrease(Value sum)
         {
-            howMuchOwns.subtract(sum);
+            howMuchOwns.Subtract(sum);
         }
         internal void CancelBuyOrder(Value sum)
         {
-            howMuchWantsToSell.subtract(sum, false);
+            howMuchWantsToSell.Subtract(sum, false);
         }
         /// <summary>
         /// Only for read! Returns copy
@@ -44,15 +44,15 @@ namespace Nashet.EconomicSimulation
         public void SetToSell(Value sum)
         {
             if (howMuchOwns.get() - howMuchWantsToSell.get() - sum.get() < 0f)
-                howMuchWantsToSell.set(howMuchOwns);
+                howMuchWantsToSell.Set(howMuchOwns);
             else
                 howMuchWantsToSell.Add(sum);            
         }
         public void ReduceSale(Value sum)
         {
-            howMuchWantsToSell.subtract(sum, false);
+            howMuchWantsToSell.Subtract(sum, false);
             if (howMuchWantsToSell.isBiggerThan(howMuchOwns))
-                howMuchWantsToSell.set(howMuchOwns);
+                howMuchWantsToSell.Set(howMuchOwns);
         }
         public override string ToString()
         {

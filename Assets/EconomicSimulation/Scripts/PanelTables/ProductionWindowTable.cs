@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         private void Start()
         {
 
-            typeOrder = new SortOrder(this, x => x.getType().GetNameWeight());
+            typeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
             provinceOrder = new SortOrder(this, x => x.GetProvince().GetNameWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());

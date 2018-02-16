@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameIsLoaded)
             {
-                if (Game.getMapMode() != 0 && Game.date.isDivisible(Options.MapRedrawRate))
+                if (Game.getMapMode() != 0 && Date.Today.isDivisible(Options.MapRedrawRate))
                     Game.redrawMapAccordingToMapMode(Game.getMapMode());
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {

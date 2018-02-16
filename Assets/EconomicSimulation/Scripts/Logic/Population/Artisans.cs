@@ -2,6 +2,7 @@
 
 using Nashet.ValueSpace;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -58,17 +59,11 @@ namespace Nashet.EconomicSimulation
                         if (Economy.isMarket.checkIfTrue(GetCountry()))
                         {
                             sell(getGainGoodsThisTurn());
-                            //sentToMarket.set(gainGoodsThisTurn);
-                            //storage.setZero();
-                            //Game.market.sentToMarket.add(gainGoodsThisTurn);
                         }
                         else if (GetCountry().economy.getValue() == Economy.NaturalEconomy)
                         {
                             // send to market?
                             sell(getGainGoodsThisTurn());
-                            //sentToMarket.set(gainGoodsThisTurn);
-                            //storage.setZero();
-                            //Game.market.sentToMarket.add(gainGoodsThisTurn);
                         }
                         else if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
                         {
@@ -89,7 +84,7 @@ namespace Nashet.EconomicSimulation
 
                 // take loan if don't have enough money to buy inputs            
                 if (GetCountry().Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
-                    if (artisansProduction.getType().getPossibleProfit().isNotZero())
+                    if (artisansProduction.Type.getPossibleProfit().isNotZero())
                     {
                         var needs = artisansProduction.getRealAllNeeds();
                         if (!artisansProduction.canAfford(needs))
@@ -150,16 +145,18 @@ namespace Nashet.EconomicSimulation
         private void changeProductionType()
         {
             KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-            foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(GetCountry()))
+            //foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(GetCountry()))
+            foreach (FactoryType factoryType in FactoryType.getAllInventedTypes(GetCountry()).
+                Where(x => !x.isResourceGathering() && x.basicProduction.getProduct() != Product.Education))
             {
                 float possibleProfit = factoryType.getPossibleProfit().get();
                 if (possibleProfit > result.Value)
                     result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
             }
-            if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.getType()))
+            if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.Type))
             {
                 artisansProduction = new ArtisanProduction(result.Key, GetProvince(), this);
-                base.changeProductionType(artisansProduction.getType().basicProduction.getProduct());
+                base.changeProductionType(artisansProduction.Type.basicProduction.getProduct());
             }
         }
         public StorageSet getInputProducts()
@@ -175,14 +172,17 @@ namespace Nashet.EconomicSimulation
             if (artisansProduction != null)
                 artisansProduction.SetStatisticToZero();
         }
-        public FactoryType getType()
+        public FactoryType Type
         {
-            if (artisansProduction == null)
-                return null;
-            else
-                return artisansProduction.getType();
+            get
+            {
+                if (artisansProduction == null)
+                    return null;
+                else
+                    return artisansProduction.Type;
+            }
         }
-
+        
         internal void checkProfit()
         {
             // todo doesn't include taxes. Should it?

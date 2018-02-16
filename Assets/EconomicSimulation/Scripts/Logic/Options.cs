@@ -69,7 +69,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly byte FactoryInputReservInDays = 5;
         internal static readonly int FactoryMediumTierLevels = 8 + 1;
         internal static readonly int FactoryMediumHighLevels = 15 + 1;
-        internal static readonly Money FactoryMinPossibleSallary = new Money( 0.001f);
+        internal static readonly Money FactoryMinPossibleSallary = new Money(0.001f);
 
         //Province
         /// <summary>In procent of unemployed</summary>
@@ -154,6 +154,10 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
         internal static readonly Procent InvestorEmploymentRisk = new Procent(0.80f);
         internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
+        internal static readonly Procent PopEducationGrowthRate = new Procent(0.002f);
+        internal static readonly ReadOnlyValue PopEducationRegressChance = new ReadOnlyValue(0.01f);
+        internal static readonly ReadOnlyValue PopLearnByWorkingChance = new ReadOnlyValue(0.1f);
+        internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

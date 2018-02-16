@@ -148,7 +148,7 @@ namespace Nashet.EconomicSimulation
             int calculatedSize = 0;
             foreach (var item in members)
             {
-                result.addPoportionally(calculatedSize, item.getPopulation(), item.loyalty);
+                result.AddPoportionally(calculatedSize, item.getPopulation(), item.loyalty);
                 calculatedSize += item.getPopulation();
             }
             return result;

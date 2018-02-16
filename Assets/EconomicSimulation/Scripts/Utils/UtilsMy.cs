@@ -349,7 +349,7 @@ namespace Nashet.Utils
         static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
         internal PricePool()
         {
-            foreach (var product in Product.getAll(x => !x.isAbstract()))
+            foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
                 if (product != Product.Gold)
                     for (int i = 0; i < lenght; i++)
                         this.addData(product, new Value(0f));

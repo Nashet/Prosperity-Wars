@@ -14,19 +14,19 @@ namespace Nashet.EconomicSimulation
         private readonly StorageSet marketPrice = new StorageSet();
 
         // todo make Better class for it? - yes
-        private MyDate dateOfDSB = new MyDate(int.MaxValue);
+        private Date dateOfDSB = new Date(int.MaxValue);
         private readonly StorageSet DSBbuffer = new StorageSet();
 
-        private MyDate dateOfgetSupplyOnMarket = new MyDate(int.MaxValue);
+        private Date dateOfgetSupplyOnMarket = new Date(int.MaxValue);
         private readonly StorageSet supplyOnMarket = new StorageSet();
 
-        private MyDate dateOfgetTotalProduction = new MyDate(int.MaxValue);
+        private Date dateOfgetTotalProduction = new Date(int.MaxValue);
         private readonly StorageSet totalProduction = new StorageSet();
 
-        private MyDate dateOfgetTotalConsumption = new MyDate(int.MaxValue);
+        private Date dateOfgetTotalConsumption = new Date(int.MaxValue);
         private readonly StorageSet totalConsumption = new StorageSet();
 
-        private MyDate dateOfgetBought = new MyDate(int.MaxValue);
+        private Date dateOfgetBought = new Date(int.MaxValue);
         private readonly StorageSet bought = new StorageSet();
 
         internal PricePool priceHistory;
@@ -77,7 +77,7 @@ namespace Nashet.EconomicSimulation
             if (need.getProduct() == Product.Gold)
             {
                 var res = need.Copy().Multiply(Options.goldToCoinsConvert);
-                res.multiply(Options.GovernmentTakesShareOfGoldOutput);
+                res.Multiply(Options.GovernmentTakesShareOfGoldOutput);
                 return res;
             }
             else
@@ -167,7 +167,7 @@ namespace Nashet.EconomicSimulation
                 // recalculate only 1 product
                 return recalculateProductForBuyers(product, x => x.getConsumedInMarket());
             }
-            if (dateOfgetBought != Game.date)
+            if (!dateOfgetBought.IsToday)
             {
                 //recalculate all products
                 foreach (Storage recalculatingProduct in marketPrice)
@@ -177,7 +177,7 @@ namespace Nashet.EconomicSimulation
 
                         bought.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
-                dateOfgetBought.set(Game.date);
+                dateOfgetBought.set(Date.Today);
             }
             return bought.GetFirstSubstituteStorage(product);
         }
@@ -187,7 +187,7 @@ namespace Nashet.EconomicSimulation
             {
                 return recalculateProductForConsumers(product, x => x.getConsumed());
             }
-            if (dateOfgetTotalConsumption != Game.date)
+            if (!dateOfgetTotalConsumption.IsToday)
             {
                 //recalculate buffer
                 foreach (Storage recalculatingProduct in marketPrice)
@@ -196,7 +196,7 @@ namespace Nashet.EconomicSimulation
                         var result = recalculateProductForConsumers(recalculatingProduct.getProduct(), x => x.getConsumed());
                         totalConsumption.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
-                dateOfgetTotalConsumption.set(Game.date);
+                dateOfgetTotalConsumption.set(Date.Today);
             }
             return totalConsumption.GetFirstSubstituteStorage(product);
         }
@@ -211,7 +211,7 @@ namespace Nashet.EconomicSimulation
             {
                 return recalculateProductForSellers(product, x => x.getSentToMarket(product));
             }
-            if (dateOfgetSupplyOnMarket != Game.date)
+            if (!dateOfgetSupplyOnMarket.IsToday)
             {
                 //recalculate supply buffer
                 foreach (Storage recalculatingProduct in marketPrice)
@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
                         var result = recalculateProductForSellers(recalculatingProduct.getProduct(), x => x.getSentToMarket(recalculatingProduct.getProduct()));
                         supplyOnMarket.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
-                dateOfgetSupplyOnMarket.set(Game.date);
+                dateOfgetSupplyOnMarket.set(Date.Today);
             }
             return supplyOnMarket.GetFirstSubstituteStorage(product);
         }
@@ -235,7 +235,7 @@ namespace Nashet.EconomicSimulation
             {
                 return recalculateProductForProducers(product, x => x.getGainGoodsThisTurn());
             }
-            if (dateOfgetTotalProduction != Game.date)
+            if (!dateOfgetTotalProduction.IsToday)
             {
                 //recalculate Production buffer
                 foreach (Storage recalculatingProduct in marketPrice)
@@ -244,7 +244,7 @@ namespace Nashet.EconomicSimulation
                         var result = recalculateProductForProducers(recalculatingProduct.getProduct(), x => x.getGainGoodsThisTurn());
                         totalProduction.Set(new Storage(recalculatingProduct.getProduct(), result));
                     }
-                dateOfgetTotalProduction.set(Game.date);
+                dateOfgetTotalProduction.set(Date.Today);
             }
 
             return totalProduction.GetFirstSubstituteStorage(product);
@@ -320,7 +320,7 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         float val = buyer.cash.get() / price.get();
-                        val = Mathf.Floor(val * Value.precision) / Value.precision;
+                        val = Mathf.Floor(val * Value.Precision) / Value.Precision;
                         howMuchCanConsume = new Storage(buying.getProduct(), val);
                         buyer.pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
                         buyer.consumeFromMarket(howMuchCanConsume);
@@ -350,7 +350,7 @@ namespace Nashet.EconomicSimulation
                         {
                             howMuchCanConsume = new Storage(howMuchAvailable.getProduct(), buyer.cash.get() / price.get());
                             if (howMuchCanConsume.get() > howMuchAvailable.get())
-                                howMuchCanConsume.set(howMuchAvailable.get()); // you don't buy more than there is
+                                howMuchCanConsume.Set(howMuchAvailable.get()); // you don't buy more than there is
                             if (howMuchCanConsume.isNotZero())
                             {
                                 buyer.PayAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
@@ -485,7 +485,7 @@ namespace Nashet.EconomicSimulation
             //Debug.Log("I'm in DSBBalancer, dateOfDSB = " + dateOfDSB);
             float balance;
 
-            if (dateOfDSB != Game.date)
+            if (!dateOfDSB.IsToday)
             // recalculate DSBbuffer
             {
                 //Debug.Log("Recalculation of DSB started");
@@ -513,7 +513,7 @@ namespace Nashet.EconomicSimulation
                         //}
                         DSBbuffer.Set(new Storage(nextProduct.getProduct(), balance));
                     }
-                dateOfDSB.set(Game.date);
+                dateOfDSB.set(Date.Today);
             }
             return DSBbuffer.GetFirstSubstituteStorage(product).get();
         }
@@ -560,7 +560,7 @@ namespace Nashet.EconomicSimulation
                 newValue = Options.maxPrice;
                 //if (getBouth(price.getProduct()) != 0) newValue = Game.maxPrice / 20f;
             }
-            price.set(newValue);
+            price.Set(newValue);
             priceHistory.addData(price.getProduct(), price);
         }
 

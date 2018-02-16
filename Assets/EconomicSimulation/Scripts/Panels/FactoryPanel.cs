@@ -83,10 +83,10 @@ namespace Nashet.EconomicSimulation
                 caption.text = factory.ToString();
                 var sb = new StringBuilder();
                 sb = new StringBuilder();
-                sb.Append("Workforce: ").Append(factory.getWorkForce());
+                sb.Append("Workforce: ").Append(factory.getWorkForce()).Append(", average education: ").Append(factory.AverageWorkersEducation);
                 sb.Append("\nProduced: ").Append(factory.getGainGoodsThisTurn().ToString());
                 sb.Append("\nUnsold: ").Append(factory.storage.ToString());
-                sb.Append("\nBasic production: ").Append(factory.getType().basicProduction);
+                sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
                 sb.Append("\nMoney income: ").Append(factory.moneyIncomethisTurn);
                 sb.Append(" Cash: ").Append(factory.cash.ToString());
@@ -97,10 +97,10 @@ namespace Nashet.EconomicSimulation
                 else
                     sb.Append("unknown");
                 sb.Append(" Dividends: ").Append(factory.GetDividends());
-                if (factory.getType().hasInput())
+                if (factory.Type.hasInput())
                 {
                     sb.Append("\nInput required: ");
-                    foreach (Storage next in factory.getType().resourceInput)
+                    foreach (Storage next in factory.Type.resourceInput)
                         sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
                 }
                 if (factory.getConsumed().Count() > 0)

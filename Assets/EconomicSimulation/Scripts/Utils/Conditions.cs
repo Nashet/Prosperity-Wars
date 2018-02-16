@@ -36,8 +36,7 @@ namespace Nashet.Conditions
         /// </summary>    
         public ConditionsList(Condition condition)
         {
-            list = new List<Condition>();
-            list.Add(condition);
+            list = new List<Condition> { condition };
         }
         /// <summary>
         /// copy constructor
@@ -94,7 +93,7 @@ namespace Nashet.Conditions
             //= new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
             = new Condition(delegate { return 2 * 2 == 5; }, "Feature is implemented", true);
         internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
-        
+
         protected readonly Func<object, bool> checkingFunction;
         /// <summary>to hide junk info /// </summary>
         protected readonly bool showAchievedConditionDescribtion;
@@ -260,15 +259,13 @@ namespace Nashet.Conditions
         public bool isAllTrue(object forWhom, out string description)
         {
             throw new DontUseThatMethod();
-            description = "";
-            return false;
+            
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
         public bool isAllTrue(object forWhom)
         {
-            throw new DontUseThatMethod();
-            return false;
+            throw new DontUseThatMethod();            
         }
         /// <summary>Return false if any of conditions is false, supports two objects, also makes description</summary>    
         public bool isAllTrue(object firstObject, object secondObject, out string description)

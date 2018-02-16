@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Text;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
     public class TopPanel : Window
@@ -37,7 +40,7 @@ namespace Nashet.EconomicSimulation
         {
             var sb = new StringBuilder();
 
-            sb.Append("Date: ").Append(Game.date).Append("; You rule: ").Append(Game.Player.GetFullName());
+            sb.Append("Date: ").Append(Date.Today).Append("; You rule: ").Append(Game.Player.GetFullName());
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");
 
@@ -45,8 +48,10 @@ namespace Nashet.EconomicSimulation
             .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
 
             if (Game.Player.isAlive())
-                sb.Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
-                .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
+                sb.Append("; Men: ").Append(Game.Player.getAllPopUnits().Sum(x => x.getPopulation()).ToString("N0"))
+                .Append("; avg. loyalty: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x=>x.loyalty))
+                .Append("; avg. education: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x => x.Education))
+                .Append("; avg. unemployment: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x => x.getUnemployment()));
             generalText.text = sb.ToString();
         }
         public void onTradeClick()

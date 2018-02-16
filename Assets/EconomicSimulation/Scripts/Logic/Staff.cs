@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
             int calculatedSize = 0;
             foreach (var item in allArmies)
             {
-                result.addPoportionally(calculatedSize, item.getSize(), item.getAverageMorale());
+                result.AddPoportionally(calculatedSize, item.getSize(), item.GetAverageCorps(x=>x.getMorale()));
                 calculatedSize += item.getSize();
             }
             return result;

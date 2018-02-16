@@ -45,7 +45,10 @@ namespace Nashet.EconomicSimulation
 
             sb.Append("\nGDP: ").Append(selectedCountry.getGDP().get().ToString("N3")).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
             sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000().ToString("F3")).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
-            sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAverageNeedsFulfilling());
+            //sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.GetAveragePop(x=>x.needsFulfilled));
+            sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAllPopUnits().GetAverageProcent(x => x.needsFulfilled));
+            sb.Append(", av. loyalty: ").Append(selectedCountry.getAllPopUnits().GetAverageProcent(x => x.loyalty));
+            sb.Append(", av. education: ").Append(selectedCountry.getAllPopUnits().GetAverageProcent(x => x.Education));
             sb.Append("\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
             sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
             sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());

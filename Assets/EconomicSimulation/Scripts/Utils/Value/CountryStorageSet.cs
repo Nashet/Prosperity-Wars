@@ -28,6 +28,10 @@ namespace Nashet.ValueSpace
         public void SetStatisticToZero()
         {
             used.setZero();
+            //collection.PerformAction(x => !x.Value.getProduct().IsStorable, x => x.Value.SetZero());
+            Storage record;            
+            if (collection.TryGetValue(Product.Education, out record))
+                record.SetZero();
         }
 
         /// / next - inherited
