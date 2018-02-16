@@ -717,12 +717,12 @@ namespace Nashet.EconomicSimulation
             {
             Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
             }));
-        internal static ReformValue AbolishedAndNationalized = new ReformValue("Abolished and nationalized land", "- Aristocrats loose property", 4,
+        internal static ReformValue AbolishedAndNationalized = new ReformValue("Abolished and Nationalized land", "- Aristocrats loose property", 4,
             new DoubleConditionsList(new List<Condition>()
             {
             Government.isProletarianDictatorship, Condition.IsNotImplemented
             }));
-        public Serfdom(Country country) : base("Serfdom", "- Aristocrats privileges", country)
+        public Serfdom(Country country) : base("Serfdom", "- Aristocratic Privileges", country)
         {
             if (Allowed == null)
                 Allowed = new ReformValue("Allowed", "- Peasants and other plebes pay 10% of income to Aristocrats", 1,
@@ -896,25 +896,25 @@ namespace Nashet.EconomicSimulation
         private ReformValue status;
 
         internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-        internal readonly static ReformValue None = new ReformValue("No minimal wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstractReformValue.isNotLFOrMoreConservative }));
+        internal readonly static ReformValue None = new ReformValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstractReformValue.isNotLFOrMoreConservative }));
 
-        internal readonly static ReformValue Scanty = new ReformValue("Scanty minimal wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
+        internal readonly static ReformValue Scanty = new ReformValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Minimal = new ReformValue("Tiny minimal wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
+        internal readonly static ReformValue Minimal = new ReformValue("Subsistance Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Trinket = new ReformValue("Trinket minimal wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
+        internal readonly static ReformValue Trinket = new ReformValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Middle = new ReformValue("Middle minimal wage", "- Plenty good wage", 4, new DoubleConditionsList(new List<Condition>
+        internal readonly static ReformValue Middle = new ReformValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Big = new ReformValue("Generous minimal wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue Big = new ReformValue("Basic Universal Income", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
@@ -1066,24 +1066,24 @@ namespace Nashet.EconomicSimulation
         }
         private ReformValue status;
         internal readonly static List<ReformValue> PossibleStatuses = new List<ReformValue>();
-        internal readonly static ReformValue None = new ReformValue("No unemployment subsidies", "", 0, new DoubleConditionsList(new List<Condition>()));
-        internal readonly static ReformValue Scanty = new ReformValue("Scanty unemployment subsidies", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue None = new ReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition>()));
+        internal readonly static ReformValue Scanty = new ReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Minimal = new ReformValue("Minimal unemployment subsidies", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue Minimal = new ReformValue("Food Stamps", "- Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Trinket = new ReformValue("Trinket unemployment subsidies", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue Trinket = new ReformValue("Housing & Food Assistance", "- Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Middle = new ReformValue("Middle unemployment subsidies", "- Plenty good subsidies", 4, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue Middle = new ReformValue("Welfare Ministry", "- Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Big = new ReformValue("Generous unemployment subsidies", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue Big = new ReformValue("Full State Umployment Benefits", "- Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
@@ -1397,17 +1397,17 @@ namespace Nashet.EconomicSimulation
         readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
         internal static ReformValue Equality; // all can vote
         internal static ReformValue Residency; // state culture only can vote    
-        internal readonly static ReformValue NoRights = new ReformValue("No rights for minorities", "- Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
+        internal readonly static ReformValue NoRights = new ReformValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
 
         //internal readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
         //internal static Condition IsResidencyPop;
         public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)
         {
             if (Equality == null)
-                Equality = new ReformValue("Equality for minorities", "- All cultures have same rights, assimilation is slower", 2,
+                Equality = new ReformValue("Equality for Minorities", "- All cultures have same rights, assimilation is slower.", 2,
                     new DoubleConditionsList(new List<Condition>() { Invention.IndividualRightsInvented }));
             if (Residency == null)
-                Residency = new ReformValue("Restricted rights for minorities", "- Only state culture can vote, assimilation is on except foreign core provinces", 1, new DoubleConditionsList());
+                Residency = new ReformValue("Restricted Rights for Minorities", "- Only state culture can vote, assimilation occurs except foreign core provinces", 1, new DoubleConditionsList());
 
             status = Residency;
             //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
