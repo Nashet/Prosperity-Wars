@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
+            if (targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
              || targetType == PopType.Tribesmen
              || targetType == PopType.Workers
                 )
@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats
-              || targetType == PopType.Capitalists && GetCountry().Invented(Invention.Manufactures)
+              || targetType == PopType.Capitalists && Country.Invented(Invention.Manufactures)
                 )
                 return true;
             else
@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         }
         public override void produce()
         {
-            Storage producedAmount = new Storage(popType.getBasicProduction().getProduct(), getPopulation() * popType.getBasicProduction().get() / 1000f);
+            Storage producedAmount = new Storage(Type.getBasicProduction().Product, getPopulation() * Type.getBasicProduction().get() / 1000f);
             producedAmount.Multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
             if (producedAmount.isNotZero())
             {
@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
                 storage.add(getGainGoodsThisTurn());
                 calcStatistics();
             }
-            if (Economy.isMarket.checkIfTrue(GetCountry()))
+            if (Economy.isMarket.checkIfTrue(Country))
             {
                 //sentToMarket.set(gainGoodsThisTurn);
                 //Game.market.sentToMarket.add(gainGoodsThisTurn);
@@ -50,16 +50,16 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                if (Country.economy.getValue() == Economy.PlannedEconomy)
                 {
-                    GetCountry().countryStorageSet.Add(getGainGoodsThisTurn());
+                    Country.countryStorageSet.Add(getGainGoodsThisTurn());
                 }
             }
 
         }
         override internal bool canSellProducts()
         {
-            if (Economy.isMarket.checkIfTrue(GetCountry()))
+            if (Economy.isMarket.checkIfTrue(Country))
                 return true;
             else
                 return false;
@@ -119,7 +119,7 @@ namespace Nashet.EconomicSimulation
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;

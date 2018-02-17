@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
             // Adding product name 
             if (product.isAbstract())
             {
-                AddCell(product.getName() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
+                AddCell(product.ToString() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
 
                 ////Adding total amount
                 AddCell(Game.Player.countryStorageSet.getTotal(product).get().ToString());
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
                 var storage = Game.Player.countryStorageSet.GetFirstSubstituteStorage(product);
 
                 // Adding product name 
-                AddCell(product.getName(), storage);
+                AddCell(product.ToString(), storage);
 
                 ////Adding storage amount
                 AddCell(storage.get().ToString(), storage);

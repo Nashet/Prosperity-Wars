@@ -17,8 +17,8 @@ namespace Nashet.EconomicSimulation
         { }
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
-                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
+            if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
                 || targetType == PopType.Artisans
                 )
                 return true;
@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool canTrade()
         {
-            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -67,14 +67,14 @@ namespace Nashet.EconomicSimulation
         internal override void invest()
         {
             //should I invest?                
-            if (Economy.isMarket.checkIfTrue(GetCountry()) && GetCountry().Invented(Invention.Manufactures))
+            if (Economy.isMarket.checkIfTrue(Country) && Country.Invented(Invention.Manufactures))
 
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
 
 
-                //var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
-                var projects = World.GetAllAllowedInvestments(this.GetCountry(), this);//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
+                //var projects = Province.getAllInvestmentProjects().Where(x => x.GetMargin(Province).isBiggerThan(Options.minMarginToInvest));
+                var projects = World.GetAllAllowedInvestments(this.Country, this);//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
                 var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
 
                 if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))

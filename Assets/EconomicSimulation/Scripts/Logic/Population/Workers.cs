@@ -15,14 +15,14 @@ namespace Nashet.EconomicSimulation
         public override bool canThisDemoteInto(PopType targetType)
         {
             if (targetType == PopType.Tribesmen
-                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy))
+                || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
                 return true;
             else
                 return false;
         }
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
+            if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
              || targetType == PopType.Artisans
              )
                 return true;
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality)
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                 )
                 return true;
             else

@@ -9,7 +9,7 @@ namespace Nashet.ValueSpace
     /// Allows to keep info about how much product was taken from StorageSet
     /// !!! if someone would change returning object (Storage) then country takenAway logic would be broken!!
     /// </summary>
-    public class CountryStorageSet : StorageSet, IHasStatistics
+    public class CountryStorageSet : StorageSet, IStatisticable
     {
         /// <summary>
         /// Counts how much products was taken from country storage 
@@ -21,14 +21,14 @@ namespace Nashet.ValueSpace
         //internal Value getConsumption(Product whom)
         //{
         //    foreach (Storage stor in takenAwayLastTurn)
-        //        if (stor.getProduct() == whom)
+        //        if (stor.Product == whom)
         //            return stor;
         //    return new Value(0f);
         //}
         public void SetStatisticToZero()
         {
             used.setZero();
-            //collection.PerformAction(x => !x.Value.getProduct().IsStorable, x => x.Value.SetZero());
+            //collection.PerformAction(x => !x.Value.Product.IsStorable, x => x.Value.SetZero());
             Storage record;            
             if (collection.TryGetValue(Product.Education, out record))
                 record.SetZero();
@@ -146,7 +146,7 @@ namespace Nashet.ValueSpace
         //{
         //    PrimitiveStorageSet result = new PrimitiveStorageSet();
         //    foreach (Storage stor in container)
-        //        result.Set(new Storage(stor.getProduct(), stor.get() / v));
+        //        result.Set(new Storage(stor.Product, stor.get() / v));
         //    return result;
         //}
 
@@ -154,11 +154,11 @@ namespace Nashet.ValueSpace
 
         //internal Storage subtractOutside(Storage stor)
         //{
-        //    Storage find = this.findStorage(stor.getProduct());
+        //    Storage find = this.findStorage(stor.Product);
         //    if (find == null)
         //        return new Storage(stor);
         //    else
-        //        return new Storage(stor.getProduct(), find.subtractOutside(stor).get());
+        //        return new Storage(stor.Product, find.subtractOutside(stor).get());
         //}
         //internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
         //{

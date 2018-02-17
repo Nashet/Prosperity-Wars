@@ -122,7 +122,7 @@ namespace Nashet.EconomicSimulation
         //        {
         //            TransferAll(owner.Key, Game.Player);
         //            var popOwner = owner.Key as PopUnit;
-        //            if (popOwner != null && popOwner.GetCountry() == nationalizator)
+        //            if (popOwner != null && popOwner.Country == nationalizator)
         //                popOwner.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
         //            else
         //            {
@@ -348,7 +348,7 @@ namespace Nashet.EconomicSimulation
                 return Procent.ZeroProcent.Copy();
             else
                 return parent.GetMargin();
-            //var payToGovernment = parent.GetCountry().taxationForRich.getTypedValue().tax.getProcentOf(GetDividends());
+            //var payToGovernment = parent.Country.taxationForRich.getTypedValue().tax.getProcentOf(GetDividends());
             //return new Procent(payedDividends.Copy().subtract(payToGovernment), ownership.GetMarketValue(), false);
             //return new Procent(parent.GetDividends(), GetMarketValue(), false); 
         }
@@ -384,13 +384,13 @@ namespace Nashet.EconomicSimulation
                     //Debug.Log(item.Key + " put on sale shares of " + parent);                        
                 }
         }
-        public Country GetCountry()
+        public Country Country
         {
-            return parent.GetCountry();
+            get { return parent.Country; }
         }
-        public Province GetProvince()
+        public Province Province
         {
-            return parent.GetProvince();
+            get { return parent.Province; }
         }
     }
 

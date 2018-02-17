@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
         { }
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (//targetType == PopType.Farmers && getCountry().isInvented(Invention.Farming)
+            if (//targetType == PopType.Farmers && Country.isInvented(Invention.Farming)
                 //||
                 targetType == PopType.Tribesmen
                 || targetType == PopType.Workers
@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         {
             if (targetType == PopType.Aristocrats // should be officers
              || targetType == PopType.Artisans
-             || targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
+             || targetType == PopType.Farmers && Country.Invented(Invention.Farming)
              )
                 return true;
             else
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Junta)
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -60,18 +60,18 @@ namespace Nashet.EconomicSimulation
 
         internal void takePayCheck()
         {
-            Value payCheck = new Value(GetCountry().getSoldierWage());
+            Value payCheck = new Value(Country.getSoldierWage());
             payCheck.Multiply(getPopulation() / 1000f);
-            if (GetCountry().canPay(payCheck))
+            if (Country.canPay(payCheck))
             {
-                GetCountry().pay(this, payCheck);
-                GetCountry().soldiersWageExpenseAdd(payCheck);
+                Country.pay(this, payCheck);
+                Country.soldiersWageExpenseAdd(payCheck);
                 this.didntGetPromisedSalary = false;
             }
             else
             {
                 this.didntGetPromisedSalary = true;
-                GetCountry().failedToPaySoldiers = true;
+                Country.failedToPaySoldiers = true;
             }
         }
     }

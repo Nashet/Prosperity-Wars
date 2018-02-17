@@ -65,10 +65,10 @@ namespace Nashet.EconomicSimulation
             AddCell("GDP per capita" + GDPPerCapitaOrder.getSymbol(), GDPPerCapitaOrder, () => "GDP per capita per 1000 men");
             AddCell("GDP share" + GDPShareOrder.getSymbol(), GDPShareOrder);
             AddCell("Unemployment" + unemploymentOrder.getSymbol(), unemploymentOrder);
-            AddCell("Av. education" + educationOrder.getSymbol(), educationOrder);
+            AddCell("Education" + educationOrder.getSymbol(), educationOrder);
             
             AddCell("Economy" + economyTypeOrder.getSymbol(), economyTypeOrder);
-            AddCell("Av. needs" + averageNeedsOrder.getSymbol(), averageNeedsOrder);
+            AddCell("Needs fulfill" + averageNeedsOrder.getSymbol(), averageNeedsOrder);
             AddCell("Rich tax" + richTaxOrder.getSymbol(), richTaxOrder);
         }
     }

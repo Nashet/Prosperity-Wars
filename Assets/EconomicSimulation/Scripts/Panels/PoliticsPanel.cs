@@ -144,13 +144,13 @@ namespace Nashet.EconomicSimulation
             {
                 if (callRebuildDropDown) // meaning changed whole reform            
                     rebuildDropDown();
-                descriptionText.text = selectedReform + " reforms " + selectedReform.getDescription()
-               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
+                descriptionText.text = selectedReform + " reforms " + selectedReform.FullName
+               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().FullName
                + "\nSelected: ";
 
                 //if (selectedReformValue != null)
                 if (selectedReformValue != selectedReform.getValue())
-                    descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
+                    descriptionText.text += selectedReformValue + " " + selectedReformValue.FullName;
                 else
                     descriptionText.text += "current";
 

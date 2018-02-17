@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
 
             //if (isSubsidized())
-            //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
+            //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), Country);
             //else
             //shoppingList - getInputProductsReserve(); that is included in getHowMuchInputProductsReservesWants()
             Game.market.buy(this, new StorageSet(shoppingList), null);

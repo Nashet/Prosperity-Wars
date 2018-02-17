@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PopType : IEscapeTarget, ISortableName
+    public class PopType : Name, IEscapeTarget
     {
         private readonly static List<PopType> allPopTypes = new List<PopType>();
         public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
 
         ///<summary> per 1000 men </summary>
         private readonly Storage basicProduction;
-        private readonly string name;
+        //private readonly string name;
         /// <summary>
         /// SHOULD not be zero!
         /// </summary>
@@ -148,13 +148,12 @@ namespace Nashet.EconomicSimulation
                 militaryNeeds, soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
         }
         private PopType(string name, Storage produces, float strenght, List<Storage> militaryNeeds,
-            List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds)
-        {
-            nameWeight = name.GetWeight();
+            List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds):base (name)
+        {            
             this.militaryNeeds = militaryNeeds;
             this.strenght = strenght;
 
-            this.name = name;
+            
             basicProduction = produces;
             this.lifeNeeds = lifeNeeds;
             this.everyDayNeeds = everyDayNeeds;
@@ -192,8 +191,8 @@ namespace Nashet.EconomicSimulation
             //return militaryNeeds;
             var result = new List<Storage>();
             foreach (var item in militaryNeeds)
-                if (item.getProduct() != Product.Cattle || country.Invented(Invention.Domestication))
-                    //if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product != Product.Cattle || country.Invented(Invention.Domestication))
+                    //if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -208,7 +207,7 @@ namespace Nashet.EconomicSimulation
             //return result;
             var result = new List<Storage>();
             foreach (var item in lifeNeeds)
-                if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -222,7 +221,7 @@ namespace Nashet.EconomicSimulation
             //return everyDayNeeds;
             var result = new List<Storage>();
             foreach (var item in everyDayNeeds)
-                if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -236,7 +235,7 @@ namespace Nashet.EconomicSimulation
             //return luxuryNeeds;
             var result = new List<Storage>();
             foreach (var item in luxuryNeeds)
-                if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -250,7 +249,7 @@ namespace Nashet.EconomicSimulation
         }
         override public string ToString()
         {
-            return name;
+            return ShortName;
         }
 
         internal bool isPoorStrata()
@@ -299,15 +298,12 @@ namespace Nashet.EconomicSimulation
         {
             //if (this == Workers || this == Farmers || this == Tribesmen)
             if (this == Workers)
-                return province.getAllPopUnits().Where(x => x.popType == Workers).GetAverageProcent(x => x.getUnemployment()).isSmallerThan(MigrationUnemploymentLimit);
+                return province.getAllPopUnits().Where(x => x.Type == Workers).GetAverageProcent(x => x.getUnemployment()).isSmallerThan(MigrationUnemploymentLimit);
             else if (this == Farmers || this == Tribesmen)
                 return province.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
             else
                 return true;
         }
-        public float GetNameWeight()
-        {
-            return nameWeight;
-        }
+        
     }
 }

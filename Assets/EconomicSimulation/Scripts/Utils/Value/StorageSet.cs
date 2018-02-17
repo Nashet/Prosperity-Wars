@@ -21,13 +21,13 @@ namespace Nashet.ValueSpace
         {
             foreach (var item in another)
             {
-                collection.Add(item.getProduct(), item.Copy());
+                collection.Add(item.Product, item.Copy());
             }
         }
         public StorageSet(List<Storage> list)
         {
             for (int i = 0; i < list.Count; i++)
-                collection.Add(list[i].getProduct(), list[i].Copy());
+                collection.Add(list[i].Product, list[i].Copy());
         }
 
 
@@ -37,11 +37,11 @@ namespace Nashet.ValueSpace
         public void Set(Storage what)
         {
             Storage res;
-            if (collection.TryGetValue(what.getProduct(), out res))
+            if (collection.TryGetValue(what.Product, out res))
                 res.set(what);
             else
-                collection.Add(what.getProduct(), what);
-            //Storage find = this.hasStorage(setValue.getProduct());
+                collection.Add(what.Product, what);
+            //Storage find = this.hasStorage(setValue.Product);
             //if (find == null)
             //    container.Add(new Storage(setValue));
             //else
@@ -64,11 +64,11 @@ namespace Nashet.ValueSpace
         internal void Add(Storage what)
         {
             Storage find;
-            if (collection.TryGetValue(what.getProduct(), out find))
+            if (collection.TryGetValue(what.Product, out find))
                 find.add(what);
             else
-                collection.Add(what.getProduct(), new Storage(what));
-            //Storage find = hasStorage(what.getProduct());
+                collection.Add(what.Product, new Storage(what));
+            //Storage find = hasStorage(what.Product);
             //if (find == null)
             //    container.Add(new Storage(what));
             //else
@@ -107,7 +107,7 @@ namespace Nashet.ValueSpace
         /// </summary>   
         public bool send(Producer whom, Storage what)
         {
-            Storage storage = getBiggestStorage(what.getProduct());
+            Storage storage = getBiggestStorage(what.Product);
             if (storage.isZero())
                 return false;
             else
@@ -153,7 +153,7 @@ namespace Nashet.ValueSpace
         }
         public bool has(Storage what)
         {
-            Storage foundStorage = getBiggestStorage(what.getProduct());
+            Storage foundStorage = getBiggestStorage(what.Product);
             return (foundStorage.isBiggerOrEqual(what)) ? true : false;
         }
         /// <summary>Returns False when some check not presented in here</summary>    
@@ -178,7 +178,7 @@ namespace Nashet.ValueSpace
             var res = new List<Storage>();
             foreach (var what in list)
             {
-                //Storage foundStorage = getBiggestStorage(what.getProduct());
+                //Storage foundStorage = getBiggestStorage(what.Product);
                 var foundStorage = convertToBiggestExistingStorage(what);
                 if (foundStorage.isNotZero())
                     res.Add(foundStorage);
@@ -189,7 +189,7 @@ namespace Nashet.ValueSpace
         }
         internal bool hasMoreThan(Storage item, Value limit)
         {
-            Storage disiredAmount = new Storage(item.getProduct(), item.get() + limit.get());
+            Storage disiredAmount = new Storage(item.Product, item.get() + limit.get());
             return has(disiredAmount);
         }
         /// <summary>Returns  null if container hasn't storage for that product
@@ -297,14 +297,14 @@ namespace Nashet.ValueSpace
         internal Storage GetExistingStorage(Storage what)
         {
             Storage found;
-            if (collection.TryGetValue(what.getProduct(), out found))
+            if (collection.TryGetValue(what.Product, out found))
                 if (found.has(what))
                     return new Storage(found);
             //foreach (var storage in collection)
             //    if (storage.Value.has(what))
             //        return storage.Value;
             //if not found
-            return new Storage(what.getProduct(), 0f);
+            return new Storage(what.Product, 0f);
         }
 
         /// <summary>Gets biggest storage of that product type. Returns NEW empty storage if search is failed</summary>    
@@ -315,7 +315,7 @@ namespace Nashet.ValueSpace
         /// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>    
         internal Storage getCheapestStorage(Product what)
         {
-            return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.getProduct()).get());
+            return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.Product).get());
         }
         /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
         /// Returns copy of need if need was not abstract (make check)
@@ -323,7 +323,7 @@ namespace Nashet.ValueSpace
 
         internal Storage convertToBiggestStorage(Storage need)
         {
-            return new Storage(getBiggestStorage(need.getProduct()).getProduct(), need);
+            return new Storage(getBiggestStorage(need.Product).Product, need);
         }
         /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
         /// Returns copy of need if need was not abstract (make check)
@@ -331,11 +331,11 @@ namespace Nashet.ValueSpace
 
         internal Storage convertToBiggestExistingStorage(Storage need)
         {
-            var substitute = getBiggestStorage(need.getProduct());
+            var substitute = getBiggestStorage(need.Product);
             if (substitute.isBiggerOrEqual(need))
-                return new Storage(substitute.getProduct(), need);
+                return new Storage(substitute.Product, need);
             else
-                return new Storage(substitute.getProduct(), 0f);
+                return new Storage(substitute.Product, 0f);
         }
         /// <summary>
         /// Returns NULL if failed
@@ -343,7 +343,7 @@ namespace Nashet.ValueSpace
         public Storage convertToCheapestExistingSubstitute(Storage abstractProduct)
         {
             // assuming substitutes are sorted in cheap-expensive order
-            foreach (var substitute in abstractProduct.getProduct().getSubstitutes())
+            foreach (var substitute in abstractProduct.Product.getSubstitutes())
                 if (substitute.isTradable())
                 {
                     Storage newStor = new Storage(substitute, abstractProduct);
@@ -360,7 +360,7 @@ namespace Nashet.ValueSpace
         public Storage convertToCheapestStorageProduct(Storage abstractProduct)
         {
             // assuming substitutes are sorted in cheap-expensive order
-            foreach (var item in abstractProduct.getProduct().getSubstitutes())
+            foreach (var item in abstractProduct.Product.getSubstitutes())
                 if (item.isTradable())
                 {
                     return new Storage(item, abstractProduct);
@@ -373,7 +373,7 @@ namespace Nashet.ValueSpace
         {
             Value res = new Value(0f);
             foreach (var item in this)
-                if (item.getProduct().isSubstituteFor(product))
+                if (item.Product.isSubstituteFor(product))
                 {
                     res.Add(item);
                 }
@@ -470,7 +470,7 @@ namespace Nashet.ValueSpace
 
         //internal bool subtract(Storage stor)
         //{
-        //    Storage find = this.findStorage(stor.getProduct());
+        //    Storage find = this.findStorage(stor.Product);
         //    if (find == null)
         //        return false;//container.Add(value);
         //    else
@@ -491,7 +491,7 @@ namespace Nashet.ValueSpace
         virtual public bool Subtract(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             Storage found;
-            if (collection.TryGetValue(storage.getProduct(), out found))
+            if (collection.TryGetValue(storage.Product, out found))
             {
                 var res = found.has(storage);                
                 found.subtract(storage, showMessageAboutNegativeValue);
@@ -503,8 +503,8 @@ namespace Nashet.ValueSpace
                     Debug.Log("This StorageSet don't have - " + storage + " " + storage);
                 return false;//container.Add(value); }
 
-                //    Storage found = GetStorageNullable(storage.getProduct());
-                ////Storage found = getBiggestStorage(storage.getProduct());
+                //    Storage found = GetStorageNullable(storage.Product);
+                ////Storage found = getBiggestStorage(storage.Product);
                 //if (found == null)
                 //{
                 //    if (showMessageAboutNegativeValue)

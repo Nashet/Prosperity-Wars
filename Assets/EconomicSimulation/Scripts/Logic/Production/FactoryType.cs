@@ -37,9 +37,9 @@ namespace Nashet.EconomicSimulation
 
         ///duplicated in Factory        
         static internal DoubleCondition allowsForeignInvestments = new DoubleCondition((agent, province) =>
-        (province as Province).GetCountry() == (agent as Agent).GetCountry()
-        || ((province as Province).GetCountry().economy.getTypedValue().AllowForeignInvestments
-        && (agent as Agent).GetCountry().economy.getTypedValue() != Economy.PlannedEconomy),
+        (province as Province).Country == (agent as Agent).Country
+        || ((province as Province).Country.economy.getTypedValue().AllowForeignInvestments
+        && (agent as Agent).Country.economy.getTypedValue() != Economy.PlannedEconomy),
             (agent) => "Local government allows foreign investments or it isn't foreign investment", true);
         // empty trade
         internal DoubleConditionsList conditionsBuildThis;
@@ -166,9 +166,9 @@ namespace Nashet.EconomicSimulation
                 delegate (object forWhom)
                 {
                     var agent = forWhom as Agent;
-                    if (agent.GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                    if (agent.Country.economy.getValue() == Economy.PlannedEconomy)
                     {
-                        return agent.GetCountry().countryStorageSet.has(this.GetBuildNeeds());
+                        return agent.Country.countryStorageSet.has(this.GetBuildNeeds());
                     }
                     else
                     {
@@ -324,7 +324,7 @@ namespace Nashet.EconomicSimulation
         internal Value getPossibleProfit(Province province)
         {
 
-            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+            if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
             Value income = Game.market.getCost(basicProduction);
             income.Multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
@@ -332,7 +332,7 @@ namespace Nashet.EconomicSimulation
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Game.market.isAvailable(inputProduct.getProduct()))
+                    if (!Game.market.isAvailable(inputProduct.Product))
                         return new Value(0);// inputs are unavailable                                            
 
                 outCome.Add(Game.market.getCost(resourceInput));
@@ -344,14 +344,14 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         internal Value getPossibleProfit()
         {
-            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+            if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
             Value income = Game.market.getCost(basicProduction);
 
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Game.market.isAvailable(inputProduct.getProduct()))
+                    if (!Game.market.isAvailable(inputProduct.Product))
                         return new Value(0);// inputs are unavailable                                            
 
                 return income.Subtract(Game.market.getCost(resourceInput), false);
@@ -364,7 +364,7 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province);
-            var taxes = profit.Copy().Multiply(province.GetCountry().taxationForRich.getTypedValue().tax);
+            var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
             profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost());
         }
@@ -375,11 +375,11 @@ namespace Nashet.EconomicSimulation
         {
             if (where.hasFactory(this))
                 return false;
-            if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
-                //|| !where.GetCountry().isInvented(basicProduction.getProduct())
-                || !investor.GetCountry().Invented(this)
-                //|| isManufacture() && !investor.GetCountry().Invented(Invention.Manufactures)
-                //|| (basicProduction.getProduct() == Product.Cattle && !investor.GetCountry().Invented(Invention.Domestication))
+            if (isResourceGathering() && basicProduction.Product != where.getResource()
+                //|| !where.Country.isInvented(basicProduction.Product)
+                || !investor.Country.Invented(this)
+                //|| isManufacture() && !investor.Country.Invented(Invention.Manufactures)
+                //|| (basicProduction.Product == Product.Cattle && !investor.Country.Invented(Invention.Domestication))
                 || !allowsForeignInvestments.checkIftrue(investor, where)
                 )
                 return false;
@@ -393,7 +393,7 @@ namespace Nashet.EconomicSimulation
         }
         public bool CanProduce(Product product)
         {
-            return basicProduction.getProduct() == product;
+            return basicProduction.Product == product;
         }
 
         public float GetNameWeight()

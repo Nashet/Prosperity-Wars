@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
         {
             base.deleteData();
             //secede property... to government
-            getOwnedFactories().PerformAction(x => x.ownership.TransferAll(this, GetCountry()));
+            getOwnedFactories().PerformAction(x => x.ownership.TransferAll(this, Country));
         }
 
         /// <summary>
@@ -34,10 +34,10 @@ namespace Nashet.EconomicSimulation
         }
         public Procent getBusinessSecurity(IInvestable business)
         {
-            var res = business.GetCountry().OwnershipSecurity;
-            if (business.GetCountry() != this.GetCountry())
+            var res = business.Country.OwnershipSecurity;
+            if (business.Country != this.Country)
                 res.Multiply(Options.InvestingForeignCountrySecurity);
-            if (business.GetProvince() != this.GetProvince())
+            if (business.Province != this.Province)
                 res.Multiply(Options.InvestingAnotherProvinceSecurity);
             if (!(business is Owners)) // building, upgrading and opening requires hiring people which can be impossible
                 res.Multiply(Options.InvestorEmploymentRisk);

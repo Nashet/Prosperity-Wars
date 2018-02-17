@@ -51,8 +51,8 @@ namespace Nashet.EconomicSimulation
                     Game.Player.payWithoutRecord(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
-                    if (Game.Player != factory.GetCountry())
-                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                    if (Game.Player != factory.Country)
+                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
 
             }
@@ -67,8 +67,8 @@ namespace Nashet.EconomicSimulation
                     Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
-                    if (Game.Player != factory.GetCountry())
-                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                    if (Game.Player != factory.Country)
+                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
 

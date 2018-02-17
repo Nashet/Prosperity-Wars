@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
 
     /// <summary>
     /// represent ability to take loans/deposits
     /// </summary>
-    abstract public class Agent : IHasGetCountry, IHasStatistics, IHasGetProvince
+    abstract public class Agent : IHasCountry, IStatisticable
     {
         /// <summary> Must be filled together with wallet </summary>
         public Value moneyIncomethisTurn = new Value(0);
@@ -18,16 +20,16 @@ namespace Nashet.EconomicSimulation
         private Bank bank;
         public Value loans = new Value(0);
         public Value deposits = new Value(0);
-        private readonly Province province;
+        
         public Value incomeTaxPayed = new Value(0);
 
         public abstract void simulate();
-
-        protected Agent(float inAmount, Bank bank, Province province)
+        protected  Country country;
+        protected Agent(float inAmount, Bank bank, Country country)
         {
             cash.Set(inAmount);
             this.bank = bank;
-            this.province = province;
+            this.country = country;            
         }
         public virtual void SetStatisticToZero()
         {
@@ -40,13 +42,14 @@ namespace Nashet.EconomicSimulation
         {
             return moneyIncomeLastTurn.Copy().Subtract(value, false);
         }
-        public Province GetProvince()
+        //public Province Province
+        //{
+        //    return province;
+        //}
+        public Country Country
         {
-            return province;
-        }
-        virtual public Country GetCountry()
-        {
-            return province.GetCountry();
+            //get { return province.Country; }
+            get { return country; }
         }
         public Bank getBank()
         {
@@ -102,7 +105,7 @@ namespace Nashet.EconomicSimulation
         {
             Storage realNeed;
             if (need.isAbstractProduct())
-                //realNeed = new Storage(Game.market.getCheapestSubstitute(need).getProduct(), need);
+                //realNeed = new Storage(Game.market.getCheapestSubstitute(need).Product, need);
                 realNeed = Game.market.getCheapestSubstitute(need);
             else
                 realNeed = need;
@@ -161,7 +164,7 @@ namespace Nashet.EconomicSimulation
             if (canPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.getProduct(), getMoneyAvailable().Divide(Game.market.getPrice(need.getProduct())));
+                return new Storage(need.Product, getMoneyAvailable().Divide(Game.market.getPrice(need.Product)));
         }
 
         //private float get()
@@ -238,22 +241,22 @@ namespace Nashet.EconomicSimulation
                     Agent payer = this;
 
                     if (payer is Market == false //&& incomeReceiver is Market == false
-                        && payer.GetCountry() != incomeReceiver.GetCountry()
+                        && payer.Country != incomeReceiver.Country
                         && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
                     {   
-                        var payed = payer.GetCountry().TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
+                        var payed = payer.Country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
                         howMuchPayReally.Subtract(payed);//and reduce taxable base
                     }
 
                     // in rest cases only pops pay taxes
                     var popReceiver = incomeReceiver as PopUnit;
                     if (popReceiver != null)
-                        incomeReceiver.GetCountry().TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.popType.isPoorStrata());
+                        incomeReceiver.Country.TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.Type.isPoorStrata());
                     //else // if it's not Pop than it should by dividends from enterprise..
                     //{ 
                     //    //var countryPayer = incomeReceiver as Country;
                     //    //if (countryPayer != null)
-                    //        incomeReceiver.GetCountry().TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
+                    //        incomeReceiver.Country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
                     //}
                     return true;
                 }

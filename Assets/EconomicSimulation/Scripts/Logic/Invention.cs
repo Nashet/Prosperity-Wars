@@ -86,9 +86,9 @@ namespace Nashet.EconomicSimulation
                 return true;
 
         }
-        internal string getDescription()
+        public override string FullName
         {
-            return description;
+            get { return description; }
         }
 
         internal Value getCost()

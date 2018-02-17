@@ -18,10 +18,10 @@ namespace Nashet.EconomicSimulation
         protected SimpleProduction(FactoryType type, Province province) : base(province)
         {
             this.type = type;
-            //gainGoodsThisTurn = new Storage(this.Type.basicProduction.getProduct());
-            //storage = new Storage(this.Type.basicProduction.getProduct());
-            //sentToMarket = new Storage(this.Type.basicProduction.getProduct());
-            changeProductionType(this.type.basicProduction.getProduct());
+            //gainGoodsThisTurn = new Storage(this.Type.basicProduction.Product);
+            //storage = new Storage(this.Type.basicProduction.Product);
+            //sentToMarket = new Storage(this.Type.basicProduction.Product);
+            changeProductionType(this.type.basicProduction.Product);
         }
         //internal Agent getOwner()
         //{
@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation
             // check if we have enough resources
             foreach (Storage resource in reallyNeedResources)
             {
-                Storage haveResource = getInputProductsReserve().getBiggestStorage(resource.getProduct());
+                Storage haveResource = getInputProductsReserve().getBiggestStorage(resource.Product);
                 //if (!getInputProductsReserve().has(resource))
                 if (haveResource.isSmallerThan(resource))
                 {
@@ -121,10 +121,10 @@ namespace Nashet.EconomicSimulation
             //foreach (Storage input in realInput)
             //{
 
-            //    //if (Game.market.getDemandSupplyBalance(input.getProduct()) >= 1f)
+            //    //if (Game.market.getDemandSupplyBalance(input.Product) >= 1f)
             //    //available = input
 
-            //    available = consumedLastTurn.findStorage(input.getProduct());
+            //    available = consumedLastTurn.findStorage(input.Product);
             //    if (available == null)
             //        ;// do nothing - pretend there is 100%, it fires only on shownFactory start
             //    else
@@ -142,7 +142,7 @@ namespace Nashet.EconomicSimulation
             // searching lowest factor
             foreach (Storage need in reallyNeedResources)
             {
-                Value denominator = type.resourceInput.GetFirstSubstituteStorage(need.getProduct()).Copy().Multiply( multiplier);
+                Value denominator = type.resourceInput.GetFirstSubstituteStorage(need.Product).Copy().Multiply( multiplier);
                 if (denominator.isNotZero()) 
                 {
                     var newfactor = new Procent(need, denominator);
@@ -166,7 +166,7 @@ namespace Nashet.EconomicSimulation
             {
                 Storage howMuchWantToBuy = new Storage(next);
                 howMuchWantToBuy.Multiply(multiplier);
-                Storage howMuchHave = getInputProductsReserve().getBiggestStorage(next.getProduct());
+                Storage howMuchHave = getInputProductsReserve().getBiggestStorage(next.Product);
                 if (howMuchWantToBuy.isBiggerThan(howMuchHave))
                 {
                     howMuchWantToBuy.subtract(howMuchHave);
@@ -184,7 +184,7 @@ namespace Nashet.EconomicSimulation
 
         //    foreach (Storage next in type.resourceInput)
         //    {
-        //        Storage nStor = new Storage(next.getProduct(), next.get());
+        //        Storage nStor = new Storage(next.Product, next.get());
         //        nStor.multiple(multiplier);
         //        result.Add(nStor);
         //    }
@@ -200,7 +200,7 @@ namespace Nashet.EconomicSimulation
 
             foreach (Storage next in type.resourceInput)
             {
-                Storage nStor = new Storage(next.getProduct(), next.get());
+                Storage nStor = new Storage(next.Product, next.get());
                 nStor.Multiply(multiplier);
                 result.Add(nStor);
             }

@@ -24,8 +24,8 @@ namespace Nashet.EconomicSimulation
         }
         public override bool canThisDemoteInto(PopType targetType)
         {
-            if (//|| targetType == PopType.Farmers && !getCountry().isInvented(Invention.Farming)
-                targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
+            if (//|| targetType == PopType.Farmers && !Country.isInvented(Invention.Farming)
+                targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
                 || targetType == PopType.Workers
                 )
                 return true;
@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         }
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Capitalists && GetCountry().Invented(Invention.Manufactures))
+            if (targetType == PopType.Capitalists && Country.Invented(Invention.Manufactures))
                 return true;
             else
                 return false;
@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
         public override void produce()
         {
             // artisan shouldn't work with PE
-            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy.getValue() == Economy.PlannedEconomy)
                 artisansProduction = null;
             else
             {
@@ -56,18 +56,18 @@ namespace Nashet.EconomicSimulation
                     if (artisansProduction.isAllInputProductsCollected())
                     {
                         artisansProduction.produce();
-                        if (Economy.isMarket.checkIfTrue(GetCountry()))
+                        if (Economy.isMarket.checkIfTrue(Country))
                         {
                             sell(getGainGoodsThisTurn());
                         }
-                        else if (GetCountry().economy.getValue() == Economy.NaturalEconomy)
+                        else if (Country.economy.getValue() == Economy.NaturalEconomy)
                         {
                             // send to market?
                             sell(getGainGoodsThisTurn());
                         }
-                        else if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                        else if (Country.economy.getValue() == Economy.PlannedEconomy)
                         {
-                            storage.sendAll(GetCountry().countryStorageSet);
+                            storage.sendAll(Country.countryStorageSet);
                         }
                     }
                     //else
@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
                 payWithoutRecord(artisansProduction, cash);
 
                 // take loan if don't have enough money to buy inputs            
-                if (GetCountry().Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
+                if (Country.Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
                     if (artisansProduction.Type.getPossibleProfit().isNotZero())
                     {
                         var needs = artisansProduction.getRealAllNeeds();
@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool canTrade()
         {
-            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -127,7 +127,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -145,9 +145,9 @@ namespace Nashet.EconomicSimulation
         private void changeProductionType()
         {
             KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
-            //foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(GetCountry()))
-            foreach (FactoryType factoryType in FactoryType.getAllInventedTypes(GetCountry()).
-                Where(x => !x.isResourceGathering() && x.basicProduction.getProduct() != Product.Education))
+            //foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(Country))
+            foreach (FactoryType factoryType in FactoryType.getAllInventedTypes(Country).
+                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education))
             {
                 float possibleProfit = factoryType.getPossibleProfit().get();
                 if (possibleProfit > result.Value)
@@ -155,8 +155,8 @@ namespace Nashet.EconomicSimulation
             }
             if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.Type))
             {
-                artisansProduction = new ArtisanProduction(result.Key, GetProvince(), this);
-                base.changeProductionType(artisansProduction.Type.basicProduction.getProduct());
+                artisansProduction = new ArtisanProduction(result.Key, Province, this);
+                base.changeProductionType(artisansProduction.Type.basicProduction.Product);
             }
         }
         public StorageSet getInputProducts()

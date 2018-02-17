@@ -800,20 +800,31 @@ namespace Nashet.Utils
             return map[Game.Random.Next((width * height) - 1)];
         }
     }
-    public abstract class Name
+    public abstract class Name : INameable, ISortableName
     {
-        protected readonly string name;
+        private readonly string name;
+        private readonly float nameWeight;
         protected Name(string name)
         {
             this.name = name;
+            if (name != null)
+                nameWeight = name.GetWeight();
         }
-        virtual public string getName()
+        public float GetNameWeight()
         {
-            return name;
+            return nameWeight;
         }
-        virtual public string getDescription()
+        //public string getShortName()
+        //{
+        //    return name;
+        //}
+        public string ShortName
         {
-            return name;
+            get { return name; }
+        }
+        public virtual string FullName
+        {
+            get { return name + " longed"; }
         }
         public override string ToString()
         {

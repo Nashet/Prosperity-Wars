@@ -202,7 +202,7 @@ namespace Nashet.Utils
                         return stor;
             }
             else
-                return list.Find(x => x.getProduct() == product);
+                return list.Find(x => x.Product == product);
             return new Storage(product, 0f);
         }
         public static List<Storage> Multiply(this List<Storage> list, Value value)
@@ -560,14 +560,14 @@ namespace Nashet.Utils
                 return "none";
         }
         /// <summary>
-        /// Uses getDescription() instead of standard ToString()
+        /// Uses FullName instead of standard ToString()
         /// </summary>    
         public static string getString(this IEnumerable<Movement> source)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var item in source)
             {
-                sb.Append("  ").Append(item.getDescription()).Append(" \n");
+                sb.Append("  ").Append(item.FullName).Append(" \n");
             }
             return sb.ToString();
         }

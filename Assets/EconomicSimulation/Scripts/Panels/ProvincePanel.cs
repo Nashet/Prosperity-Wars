@@ -46,14 +46,14 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
             {
-                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.GetCountry())
+                if (MainCamera.diplomacyPanel.getSelectedCountry() == Game.selectedProvince.Country)
 
                     MainCamera.diplomacyPanel.Hide();
                 else
-                    MainCamera.diplomacyPanel.show(Game.selectedProvince.GetCountry());
+                    MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
             }
             else
-                MainCamera.diplomacyPanel.show(Game.selectedProvince.GetCountry());
+                MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
         }
         public void onMobilizeClick()
         {
@@ -143,7 +143,7 @@ namespace Nashet.EconomicSimulation
             // "\nNeighbors " + province.getNeigborsList()
             ;
             Text text = btnOwner.GetComponentInChildren<Text>();
-            text.text = "Owner: " + Game.selectedProvince.GetCountry();
+            text.text = "Owner: " + Game.selectedProvince.Country;
 
             
             btnBuild.interactable = FactoryType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);

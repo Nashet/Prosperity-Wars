@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
 
         void Start()
         {
-            filterSelectedProvince = x => x.GetProvince() == showingProvince;
+            filterSelectedProvince = x => x.Province == showingProvince;
             MainCamera.productionWindow = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.bottomPanel.GetComponent<RectTransform>().rect.height - 2f);
             Canvas.ForceUpdateCanvases();

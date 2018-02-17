@@ -90,13 +90,13 @@ namespace Nashet.EconomicSimulation
                 morale.Set(0f);
             else
                 morale.Add(moraleChange);
-            if (this.origin.popType == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
+            if (this.origin.Type == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
                 morale.Set(origin.loyalty);
 
             if (morale.isBiggerThan(Procent.HundredProcent))
                 morale.Set(1f);
             //if (getPopUnit().loyalty.isSmallerThan(Options.PopMinLoyaltyToMobilizeForGovernment))
-            //    getCountry().demobilize(x => x.getPopUnit() == this);
+            //    Country.demobilize(x => x.getPopUnit() == this);
         }
         public StorageSet getConsumption()
         {
@@ -115,7 +115,7 @@ namespace Nashet.EconomicSimulation
         {
             Value multiplier = new Value(this.getSize() / 1000f);
 
-            List<Storage> result = origin.popType.getMilitaryNeedsPer1000Men(country);
+            List<Storage> result = origin.Type.getMilitaryNeedsPer1000Men(country);
             foreach (Storage next in result)
                 next.Multiply(multiplier);
             return result;
@@ -127,7 +127,7 @@ namespace Nashet.EconomicSimulation
         {
             if (country.Invented(product))
             {
-                Storage found = origin.popType.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product).Copy();
+                Storage found = origin.Type.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product).Copy();
                 if (found.isZero())
                     return found;
                 else
@@ -146,12 +146,12 @@ namespace Nashet.EconomicSimulation
         //}
         internal float getStrenght(Army army, float armyStrenghtModifier)
         {
-            return getSize() * origin.popType.getStrenght() * armyStrenghtModifier;
+            return getSize() * origin.Type.getStrenght() * armyStrenghtModifier;
         }
-        public PopType Type { get { return origin.popType; } }
+        public PopType Type { get { return origin.Type; } }
         //public PopType Type
         //{
-        //    return origin.popType;
+        //    return origin.Type;
         //}
         public int getSize()
         {

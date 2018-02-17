@@ -270,41 +270,41 @@ namespace Nashet.EconomicSimulation
 
             foreach (Province province in Province.allProvinces)
             {
-                if (province.GetCountry() == Country.NullCountry)
+                if (province.Country == Country.NullCountry)
                 {
-                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.GetCountry().getCulture(), province);
+                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.Country.getCulture(), province);
                 }
                 else
                 {
                     PopUnit pop;
                     //if (Game.devMode)
-                    //    pop = new Tribesmen(2000, province.getCountry().getCulture(), province);
+                    //    pop = new Tribesmen(2000, province.Country.getCulture(), province);
                     //else
-                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.GetCountry().getCulture(), province);
+                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.Country.getCulture(), province);
 
 
-                    if (province.GetCountry() == Game.Player)
+                    if (province.Country == Game.Player)
                     {
                         //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
                         //province.allPopUnits.Add(pop);
                     }
                     //if (Game.devMode)
-                    //    pop = new Aristocrats(1000, province.getCountry().getCulture(), province);
+                    //    pop = new Aristocrats(1000, province.Country.getCulture(), province);
                     //else
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.GetCountry().getCulture(), province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.Country.getCulture(), province);
 
 
                     pop.cash.Set(9000);
                     pop.storage.add(new Storage(Product.Grain, 60f));
                     //if (!Game.devMode)
                     //{
-                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), getCountry().getCulture(), province);
+                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), Country.getCulture(), province);
                     //pop.cash.set(9000);
 
-                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.GetCountry().getCulture(), province);
+                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     pop.cash.Set(900);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.GetCountry().getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.Country.getCulture(), province);
                     pop.cash.Set(20);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
@@ -483,7 +483,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
                 + "\n\tpolitical \\ culture \\ core \\ resource map mode"
                 + "\n\tmovements and rebellions"
-                + "\n\nYou play as " + Game.Player.GetFullName() + " You can try to growth economy or conquer the world."
+                + "\n\nYou play as " + Game.Player.FullName + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
@@ -618,7 +618,7 @@ namespace Nashet.EconomicSimulation
                     // get pop's income section:
                     foreach (PopUnit pop in province.allPopUnits)
                     {
-                        if (pop.popType == PopType.Workers)
+                        if (pop.Type == PopType.Workers)
                             pop.LearnByWork();
                         if (pop.canSellProducts())
                             pop.getMoneyForSoldProduct();
@@ -634,14 +634,14 @@ namespace Nashet.EconomicSimulation
                         //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
-                        // pop.GetCountry().TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.popType.isPoorStrata());//pop.payTaxes();
+                        // pop.Country.TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.Type.isPoorStrata());//pop.payTaxes();
                         pop.calcLoyalty();
                         //if (Game.Random.Next(10) == 1)
                         {
                             pop.calcGrowth();
                             pop.calcPromotions();
                             if (pop.needsFulfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
-                                pop.EscapeForBetterLife(x => x.HasJobsFor(pop.popType, province));
+                                pop.EscapeForBetterLife(x => x.HasJobsFor(pop.Type, province));
                             pop.calcAssimilations();
                         }
                         if (country.economy.getValue() != Economy.PlannedEconomy)
@@ -653,9 +653,9 @@ namespace Nashet.EconomicSimulation
                     //    province.consolidatePops();                
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                     {
-                        PopUnit targetToMerge = pop.GetProvince().getSimilarPopUnit(pop);
+                        PopUnit targetToMerge = pop.Province.getSimilarPopUnit(pop);
                         if (targetToMerge == null)
-                            pop.GetProvince().allPopUnits.Add(pop);
+                            pop.Province.allPopUnits.Add(pop);
                         else
                             targetToMerge.mergeIn(pop);
                     }

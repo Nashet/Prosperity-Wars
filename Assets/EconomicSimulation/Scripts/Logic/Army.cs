@@ -34,19 +34,19 @@ namespace Nashet.EconomicSimulation
 
         private float getHorsesSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Invention.Domestication))
+            if (getOwner().Country.Invented(Invention.Domestication))
                 return new Procent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
             else return 0f;
         }
         private float getColdArmsSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.ColdArms))
+            if (getOwner().Country.Invented(Product.ColdArms))
                 return new Procent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
             else return 0f;
         }
         private float getEquippedFirearmsSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Firearms))
+            if (getOwner().Country.Invented(Product.Firearms))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Firearms), getNeeds(Product.Firearms), false).get(),
              new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedArtillerySupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Artillery))
+            if (getOwner().Country.Invented(Product.Artillery))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Artillery), getNeeds(Product.Artillery), false).get(),
              new Procent(getConsumption(Product.Ammunition), getNeeds(Product.Ammunition), false).get()
@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedCarsSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Cars))
+            if (getOwner().Country.Invented(Product.Cars))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Cars), getNeeds(Product.Cars), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get()
@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedTanksSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Tanks))
+            if (getOwner().Country.Invented(Product.Tanks))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Tanks), getNeeds(Product.Tanks), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
         }
         private float getEquippedAirplanesSupply()
         {
-            if (getOwner().getPlaceDejure().Invented(Product.Airplanes))
+            if (getOwner().Country.Invented(Product.Airplanes))
                 return Mathf.Min(
              new Procent(getConsumption(Product.Airplanes), getNeeds(Product.Airplanes), false).get(),
              new Procent(getConsumption(Product.MotorFuel), getNeeds(Product.MotorFuel), false).get(),
@@ -155,7 +155,7 @@ namespace Nashet.EconomicSimulation
         }
         public void consume()
         {
-            personal.PerformAction(corps => corps.Value.consume(getOwner().getPlaceDejure()));
+            personal.PerformAction(corps => corps.Value.consume(getOwner().Country));
         }
         public Procent GetAverageCorps(Func<Corps, Procent> selector)
         {
@@ -301,14 +301,14 @@ namespace Nashet.EconomicSimulation
             // StorageSet used for faster calculation
             StorageSet res = new StorageSet();
             foreach (var item in personal)
-                res.Add(item.Value.getRealNeeds(getOwner().getPlaceDejure()));
+                res.Add(item.Value.getRealNeeds(getOwner().Country));
             return res.ToList();
         }
         Value getNeeds(Product product)
         {
             Value res = new Value(0f);
             foreach (var item in personal)
-                res.Add(item.Value.getRealNeeds(getOwner().getPlaceDejure(), product));
+                res.Add(item.Value.getRealNeeds(getOwner().Country, product));
             return res;
         }
 
@@ -322,10 +322,10 @@ namespace Nashet.EconomicSimulation
                 //    test += next.Value.getSize();
                 //else
                 //    res.Add(next.Key.type, next.Value.getSize());
-                if (res.ContainsKey(next.Key.popType))
-                    res[next.Key.popType] += next.Value.getSize();
+                if (res.ContainsKey(next.Key.Type))
+                    res[next.Key.Type] += next.Value.getSize();
                 else
-                    res.Add(next.Key.popType, next.Value.getSize());
+                    res.Add(next.Key.Type, next.Value.getSize());
             }
             return res;
         }
@@ -427,7 +427,7 @@ namespace Nashet.EconomicSimulation
         //}
         internal BattleResult attack(Province prov)
         {
-            var enemy = prov.GetCountry();
+            var enemy = prov.Country;
             if (enemy == Country.NullCountry)
                 prov.mobilize();
             else
@@ -650,7 +650,7 @@ namespace Nashet.EconomicSimulation
 
             if (attacker.IsHuman && isAttackerWon())
             {
-                //.Append(" owned by ").Append(place.getCountry())
+                //.Append(" owned by ").Append(place.Country)
                 sb.Append("Our glorious army attacked ").Append(place)
                     .Append(" with army of ").Append(attackerArmy).Append(" men.");
                 sb.Append(" Modifiers: ").Append(attackerBonus);
@@ -672,7 +672,7 @@ namespace Nashet.EconomicSimulation
             }
             else if (attacker.IsHuman && isDefenderWon())
             {
-                //.Append(" owned by ").Append(place.getCountry())
+                //.Append(" owned by ").Append(place.Country)
                 sb.Append("Our glorious army attacked ").Append(place)
                     .Append(" with army of ").Append(attackerArmy).Append(" men");
                 sb.Append(" Modifiers: ").Append(attackerBonus);

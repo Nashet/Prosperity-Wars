@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
                     if (isArtisan.Type == null)
                         sb.Append("nothing");
                     else
-                        sb.Append(isArtisan.Type.basicProduction.getProduct());
+                        sb.Append(isArtisan.Type.basicProduction.Product);
                 }
                 sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
                 sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
@@ -56,8 +56,8 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nNo demotions\\migrations\\immigrations");
 
                 sb.Append("\nAssimilation: ");
-                if (pop.culture != pop.GetCountry().getCulture() && pop.getAssimilationSize() > 0)
-                    sb.Append(pop.GetCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
+                if (pop.culture != pop.Country.getCulture() && pop.getAssimilationSize() > 0)
+                    sb.Append(pop.Country.getCulture()).Append(" ").Append(pop.getAssimilationSize());
                 else
                     sb.Append("none");
 
@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
                 + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
                 + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
 
-                if (pop.popType.isProducer())
+                if (pop.Type.isProducer())
                 {
                     efficiencyText.gameObject.SetActive(true);
                     efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop);
@@ -148,10 +148,10 @@ namespace Nashet.EconomicSimulation
                     sb.Append(target).Append(" ").Append(size);
                 else
                 {
-                    if (pop.GetCountry() == targetIsProvince.GetCountry())
+                    if (pop.Country == targetIsProvince.Country)
                         sb.Append(targetIsProvince).Append(" ").Append(size);
                     else// immigration
-                        sb.Append(targetIsProvince.GetCountry()).Append(" (").Append(target).Append(") ").Append(size);
+                        sb.Append(targetIsProvince.Country).Append(" (").Append(target).Append(") ").Append(size);
 
                 }
             }
@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
             }
             else // Assuming target is Province
             {
-                if (pop.GetCountry() == targetIsProvince.GetCountry())
+                if (pop.Country == targetIsProvince.Country)
                 {
                     sb.Append("\n").Append("Migration: ");
                     sb.Append(targetIsProvince).Append(" ").Append(size);
@@ -177,7 +177,7 @@ namespace Nashet.EconomicSimulation
                 else// immigration
                 {
                     sb.Append("\n").Append("Immigration: ");
-                    sb.Append(targetIsProvince.GetCountry()).Append(" (").Append(target).Append(") ").Append(size);
+                    sb.Append(targetIsProvince.Country).Append(" (").Append(target).Append(") ").Append(size);
                 }
             }
         }

@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());
+                sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.FullName);
 
                 // invention available
                 if (!Game.Player.Invented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.getCost().get())

@@ -80,7 +80,7 @@ namespace Nashet.EconomicSimulation
             {
                 setGUIElementsAccesability();
                 
-                caption.text = factory.ToString();
+                caption.text = factory.FullName;
                 var sb = new StringBuilder();
                 sb = new StringBuilder();
                 sb.Append("Workforce: ").Append(factory.getWorkForce()).Append(", average education: ").Append(factory.AverageWorkersEducation);
@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
                 {
                     sb.Append("\nInput required: ");
                     foreach (Storage next in factory.Type.resourceInput)
-                        sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
+                        sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
                 }
                 if (factory.getConsumed().Count() > 0)
                     sb.Append("\nConsumed: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
@@ -216,8 +216,8 @@ namespace Nashet.EconomicSimulation
             {
                 factory.upgrade(Game.Player);                
                 MainCamera.refreshAllActive();                
-                if (Game.Player != factory.GetCountry())
-                    factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                if (Game.Player != factory.Country)
+                    factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }
         }
         public void onDestroyClick()

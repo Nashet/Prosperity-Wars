@@ -10,6 +10,7 @@ namespace Nashet.UnityUIUtils
         private Func<string> dynamicText;
 
         /// <summary>Has to be public to allow direct write in Condition.isAllTRue()</summary>
+        [TextArea]
         public string text;
 
         [SerializeField]

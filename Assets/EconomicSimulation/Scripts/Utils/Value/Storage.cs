@@ -13,7 +13,7 @@ namespace Nashet.ValueSpace
 
         private Product product;
 
-        public bool IsStorabe { get { return getProduct().IsStorable; } }
+        public bool IsStorabe { get { return Product.IsStorable; } }
 
         // protected  Value value;
         //public Value value;
@@ -36,15 +36,15 @@ namespace Nashet.ValueSpace
         {
 
         }
-        public Storage(Storage storage) : this(storage.getProduct(), storage)
+        public Storage(Storage storage) : this(storage.Product, storage)
         {
 
         }
         static public int CostOrder(Storage x, Storage y)
         {
             //eats less memory
-            float sumX = x.get() * Game.market.getPrice(x.getProduct()).get();
-            float sumY = y.get() * Game.market.getPrice(y.getProduct()).get();
+            float sumX = x.get() * Game.market.getPrice(x.Product).get();
+            float sumY = y.get() * Game.market.getPrice(y.Product).get();
             return sumX.CompareTo(sumY);
 
             //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
@@ -56,7 +56,7 @@ namespace Nashet.ValueSpace
         }
         public void set(Storage storage)
         {
-            product = storage.getProduct();
+            product = storage.Product;
             base.Set(storage);
         }
         //[System.Obsolete("Method is deprecated, need product specified")]
@@ -93,17 +93,17 @@ namespace Nashet.ValueSpace
             }
         }
 
-        public Product getProduct()
+        public Product Product
         {
-            return product;
+            get { return product; }
         }
         public string ToStringWithoutSubstitutes()
         {
-            return get() + " " + getProduct().ToStringWithoutSubstitutes();
+            return get() + " " + Product.ToStringWithoutSubstitutes();
         }
         override public string ToString()
         {
-            return get().ToString("N3") + " " + getProduct();
+            return get().ToString("N3") + " " + Product;
 
         }
         public void sendAll(StorageSet whom)
@@ -137,7 +137,7 @@ namespace Nashet.ValueSpace
         /// </summary>    
         //public void send(Storage another, float amount)
         //{
-        //    if (this.getProduct() != another.getProduct())
+        //    if (this.Product != another.Product)
         //        Debug.Log("Attempt to give wrong product");
         //    else
         //        base.send(another, amount);
@@ -178,11 +178,11 @@ namespace Nashet.ValueSpace
             //{
             //    if (showMessageAboutOperationFails)
             //        Debug.Log("Storage multiply failed");
-            //    return new Storage(this.getProduct(), 0f);
+            //    return new Storage(this.Product, 0f);
             //}
             //else
-            //    return new Storage(this.getProduct(), get() * invalue);
-            base.Multiply(invalue);
+            //    return new Storage(this.Product, get() * invalue);
+            base.Multiply(invalue, showMessageAboutOperationFails);
             return this;
         }
         /// <summary>
@@ -190,7 +190,7 @@ namespace Nashet.ValueSpace
         /// </summary>    
         public Storage Multiply(ReadOnlyValue invalue)
         {
-            //return new Storage(this.getProduct(), get() * invalue.get());
+            //return new Storage(this.Product, get() * invalue.get());
             base.Multiply(invalue);
             return this;
         }
@@ -207,7 +207,7 @@ namespace Nashet.ValueSpace
         }
         //public bool hasSubstitute(Storage storage)
         //{
-        //    if (!isSubstituteProduct(storage.getProduct()))
+        //    if (!isSubstituteProduct(storage.Product))
         //    {
         //        // Debug.Log("Attempted to pay wrong product!");
         //        return false;
@@ -219,31 +219,31 @@ namespace Nashet.ValueSpace
         /// <summary> Returns true if products exactly same or this is substitute for anotherStorage</summary>    
         internal bool isSameProductType(Storage anotherStorage)
         {
-            return this.getProduct().isSameProduct(anotherStorage.getProduct());
+            return this.Product.isSameProduct(anotherStorage.Product);
         }
         /// <summary> Returns true if products exactly same or this is substitute for anotherProduct</summary>
         public bool isSameProductType(Product anotherProduct)
         {
-            return this.getProduct().isSameProduct(anotherProduct);
+            return this.Product.isSameProduct(anotherProduct);
         }
         /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>    
         internal bool isExactlySameProduct(Storage anotherStorage)
         {
-            return this.getProduct() == anotherStorage.getProduct();
+            return this.Product == anotherStorage.Product;
         }
         /// <summary> Returns true only if products exactly same. Does not count substitutes</summary>    
         public bool isExactlySameProduct(Product anotherProduct)
         {
-            return this.getProduct() == anotherProduct;
+            return this.Product == anotherProduct;
         }
 
         //internal bool isSubstituteProduct(Product product)
         //{
-        //    return this.getProduct().isSubstituteFor(product);
+        //    return this.Product.isSubstituteFor(product);
         //}
         internal bool isAbstractProduct()
         {
-            return getProduct().isAbstract();
+            return Product.isAbstract();
         }
 
         //[System.Obsolete("Method is deprecated, need product specified")]
@@ -258,8 +258,8 @@ namespace Nashet.ValueSpace
         //}
         public Storage subtract(Storage storage, bool showMessageAboutNegativeValue = true)
         {
-            //if (!this.isSameProductType(storage.getProduct()))
-            if (!storage.isSameProductType(this.getProduct()))
+            //if (!this.isSameProductType(storage.Product))
+            if (!storage.isSameProductType(this.Product))
             {
                 Debug.Log("Storage subtract Outside failed - wrong product");
                 Set(0f);
@@ -277,7 +277,7 @@ namespace Nashet.ValueSpace
         public void OnClicked()
         {
             if (!this.isAbstractProduct())
-                MainCamera.tradeWindow.selectProduct((this).getProduct());
+                MainCamera.tradeWindow.selectProduct((this).Product);
         }
 
         public Storage Copy()

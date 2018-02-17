@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
     /// Had to be class representing ability to sell more than 1 product
     /// but actually it contains statistics for Country
     /// </summary>
-    public abstract class MultiSeller : Staff, IHasStatistics, ICanSell
+    public abstract class MultiSeller : Staff, IStatisticable, ICanSell
     {
         public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
         private readonly StorageSet sentToMarket = new StorageSet();
@@ -118,7 +118,7 @@ namespace Nashet.EconomicSimulation
             foreach (var sent in sentToMarket)
                 if (sent.isNotZero())
                 {
-                    Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.getProduct()));
+                    Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.Product));
                     if (DSB.get() == Options.MarketInfiniteDSB)
                         DSB.SetZero();// real DSB is unknown
                     else
@@ -129,8 +129,8 @@ namespace Nashet.EconomicSimulation
                     if (realSold.isNotZero())
                     {
                         Value cost = Game.market.getCost(realSold);
-                        //soldByGovernment.addMy(realSold.getProduct(), realSold);
-                        soldByGovernment[realSold.getProduct()].Set(realSold);
+                        //soldByGovernment.addMy(realSold.Product, realSold);
+                        soldByGovernment[realSold.Product].Set(realSold);
                         //returning back unsold product
                         //if (sent.isBiggerThan(realSold))
                         //{
@@ -152,7 +152,7 @@ namespace Nashet.EconomicSimulation
         }
         internal void producedTotalAdd(Storage produced)
         {
-            producedTotal.addMy(produced.getProduct(), produced);
+            producedTotal.addMy(produced.Product, produced);
         }
         public Value getProducedTotal(Product product)
         {

@@ -13,10 +13,10 @@ namespace Nashet.EconomicSimulation
     public abstract class Staff : Consumer
     {
         List<Army> allArmies = new List<Army>();
-        protected Country place; //todo change class
-        protected Staff(Country place) : base(null, null)
+        //protected Country place; //todo change class
+        protected Staff(Country place) : base(null, place)
         {
-            this.place = place;
+            //this.place = place;
         }
         /// <summary>
         /// Sum of existing armies men + unmobilized reserve
@@ -39,9 +39,9 @@ namespace Nashet.EconomicSimulation
         public float howMuchCanMobilize(Staff againstWho)
         {
             float result = 0f;
-            foreach (var province in place.ownedProvinces)
+            foreach (var province in country.ownedProvinces)
                 foreach (var pop in province.allPopUnits)
-                    if (pop.popType.canMobilize(this))
+                    if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);
             return result;
         }
@@ -66,10 +66,10 @@ namespace Nashet.EconomicSimulation
                 size = defArmy.getSize();
             return size;
         }
-        public Country getPlaceDejure()
-        {
-            return place;
-        }
+        //public Country Country
+        //{
+        //    return place;
+        //}
         public bool isAI()
         {
             return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
@@ -112,9 +112,9 @@ namespace Nashet.EconomicSimulation
         //{
         //    foreach (var province in place.ownedProvinces)
         //    {
-        //        Army newArmy = new Army(getCountry());
+        //        Army newArmy = new Army(Country);
         //        foreach (var item in province.allPopUnits)
-        //            //if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
+        //            //if (item.Type.canMobilize() && item.howMuchCanMobilize(this) > 0)
         //                newArmy.add(item.mobilize(this));
         //    }
         //    consolidateArmies();
@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
             {
                 Army newArmy = new Army(this);
                 foreach (var pop in province.allPopUnits)
-                    if (pop.popType.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0)
+                    if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0)
                         //newArmy.add(item.mobilize(this));
                         newArmy.add(Corps.mobilize(this, pop));
             }
@@ -163,7 +163,7 @@ namespace Nashet.EconomicSimulation
             //    res.Add(item.getNeeds());
 
             // assuming all corps has same needs
-            var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(getPlaceDejure());
+            var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(Country);
             var multiplier = new Value(getAllArmiesSize() / 1000f);
             res.Multiply(multiplier);
             return res;
@@ -194,7 +194,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var army in allArmies)
                 if (army.getDestination() != null)
-                    if (army.getDestination().GetCountry() != army.getOwner())
+                    if (army.getDestination().Country != army.getOwner())
                         yield return army;
                     else
                         army.sendTo(null); // go home

@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     /// Represents anyone who can produce, store and sell product (1 product)
     /// also linked to Province
     /// </summary>
-    public abstract class Producer : Consumer, ICanSell
+    public abstract class Producer : Consumer, ICanSell, IHasGetProvince
     {
         /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
         private Storage gainGoodsThisTurn;
@@ -20,11 +20,12 @@ namespace Nashet.EconomicSimulation
         /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
         private Storage sentToMarket;
 
+        private readonly Province province;
         /// <summary> /// Return in pieces  /// </summary>    
         //public abstract float getLocalEffectiveDemand(Product product);
 
 
-        
+
 
         /// <summary>
         /// Just adds statistics
@@ -32,15 +33,20 @@ namespace Nashet.EconomicSimulation
         abstract public void produce();
 
 
-        protected Producer(Province province) : base(province.GetCountry().getBank(), province)
+        protected Producer(Province province) : base(province.Country.getBank(), province.Country)
         {
+            this.province = province;
         }
         //protected Producer() : base(null, null)
         //{
         //}
+        public Province Province
+        {
+            get { return province; }
+        }
         public void calcStatistics()
         {
-            GetCountry().producedTotalAdd(gainGoodsThisTurn);
+            Country.producedTotalAdd(gainGoodsThisTurn);
         }
         override public void SetStatisticToZero()
         {
@@ -58,7 +64,7 @@ namespace Nashet.EconomicSimulation
         {
             if (sentToMarket.get() > 0f)
             {
-                Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
+                Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.Product));
                 if (DSB.get() == Options.MarketInfiniteDSB)
                     DSB.SetZero(); // real DSB is unknown
                 else
