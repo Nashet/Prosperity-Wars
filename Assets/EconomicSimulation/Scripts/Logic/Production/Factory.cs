@@ -13,8 +13,8 @@ namespace Nashet.EconomicSimulation
     public class Factory : SimpleProduction, IClickable, IInvestable, IShareable, INameable
     {
         public enum Priority { none, low, medium, high }
-        private static readonly int workForcePerLevel = 1000;
-        private static int xMoneyReservForResources = 10;
+        public static readonly int workForcePerLevel = 1000;
+        private static readonly int xMoneyReservForResources = 10;
 
         private int level = 0;
         private bool building = true;
@@ -22,23 +22,15 @@ namespace Nashet.EconomicSimulation
         private bool _isOpen = false;
         private bool toRemove = false;
 
+        private readonly Money payedDividends = new Money(0f);
         private bool dontHireOnSubsidies, subsidized;
         private int priority = 0;
-        private Money salary = new Money(0);
-        //{
-        //    get { return Salary; }
-        //    set
-        //    {
-        //        if (value.get() > Country.getMinSalary())
-        //            Salary.set(value);
-        //    }
-        //}
+        private readonly Money salary = new Money(0);
 
         /// <summary>
         /// How much need to finish building/upgrading
         /// </summary>
         internal readonly StorageSet constructionNeeds;
-
 
         private readonly Dictionary<PopUnit, int> hiredWorkForce = new Dictionary<PopUnit, int>();
 
@@ -236,7 +228,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public Value GetInvestmentCost()
+        public Money GetInvestmentCost()
         {
             if (IsOpen)
             {
@@ -452,9 +444,9 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        internal Value getReopenCost()
+        internal Money getReopenCost()
         {
-            return new Value(Options.factoryMoneyReservePerLevel);
+            return new Money(Options.factoryMoneyReservePerLevel);
         }
         internal int HowManyEmployed(PopUnit pop)
         {
@@ -776,10 +768,12 @@ namespace Nashet.EconomicSimulation
         {
             return toRemove;
         }
-
+        /// <summary>
+        ///new value
+        /// </summary>
         float wantsMinMoneyReserv()
         {
-            return getExpences() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
+            return getExpences().get()*Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
         }
         public void CloseUnprofitable()
         {
@@ -807,7 +801,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private readonly Money payedDividends = new Money(0f);
+
         /// <summary>
         /// New value, readonly
         /// </summary>        
@@ -954,7 +948,7 @@ namespace Nashet.EconomicSimulation
                     base.produce(new Value(getEfficiency(true).get() * getLevel()));
 
                 if (Type == FactoryType.GoldMine)
-                {                    
+                {
                     this.GiveMoneyFromGoldPit(storage);
                 }
                 else
@@ -1042,7 +1036,7 @@ namespace Nashet.EconomicSimulation
                         isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
                     // get money from current investor, not owner
-                    Value needExtraFonds = new Value(wantsMinMoneyReserv() - Cash.get(), false);
+                    Money needExtraFonds = new Money(wantsMinMoneyReserv() - Cash.get(), false);
                     if (needExtraFonds.isNotZero())
                     {
                         var investor = currentInvestor as Agent;
@@ -1092,9 +1086,12 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        override internal float getExpences()
+        /// <summary>
+        ///new value
+        /// </summary>
+        override internal Money getExpences()
         {
-            return base.getExpences() + getSalaryCost().get();
+            return base.getExpences().Add(getSalaryCost());
         }
         //Not necessary ti optimize -  cost 0.1% of tick
         public int getWorkForce()

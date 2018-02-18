@@ -13,18 +13,18 @@ namespace Nashet.EconomicSimulation
     abstract public class Agent : IHasCountry, IStatisticable
     {
         /// <summary> Used to calculate income tax, now it's only for statistics </summary>
-        public Value moneyIncomeThisTurn = new Value(0);
-        private readonly Value moneyIncomeLastTurn = new Value(0);
+        public Money moneyIncomeThisTurn = new Money(0);
+        private readonly Money moneyIncomeLastTurn = new Money(0);
         private readonly Money cash = new Money(0);
         public ReadOnlyValue Cash { get { return cash; } }
 
 
         /// <summary> could be null</summary>
         //private Bank bank;
-        public Value loans = new Value(0);
-        public Value deposits = new Value(0);
+        public Money loans = new Money(0);
+        public Money deposits = new Money(0);
 
-        public Value incomeTaxPayed = new Value(0);
+        public Money incomeTaxPayed = new Money(0);
 
         public abstract void simulate();
         protected Country country;

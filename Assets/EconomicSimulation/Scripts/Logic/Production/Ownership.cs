@@ -355,7 +355,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Cost of standard share
         /// </summary>        
-        public Value GetInvestmentCost()
+        public Money GetInvestmentCost()
         {
             return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);
         }

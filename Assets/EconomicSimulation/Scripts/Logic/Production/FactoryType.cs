@@ -222,9 +222,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///Returns new value
         /// </summary>        
-        public Value GetBuildCost()
+        public Money GetBuildCost()
         {
-            Value result = Game.market.getCost(GetBuildNeeds());
+            Money result = Game.market.getCost(GetBuildNeeds());
             result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }

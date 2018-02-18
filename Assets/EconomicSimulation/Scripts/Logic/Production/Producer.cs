@@ -24,9 +24,6 @@ namespace Nashet.EconomicSimulation
         /// <summary> /// Return in pieces  /// </summary>    
         //public abstract float getLocalEffectiveDemand(Product product);
 
-
-
-
         /// <summary>
         /// Just adds statistics
         /// </summary>
@@ -56,10 +53,7 @@ namespace Nashet.EconomicSimulation
             if (sentToMarket != null)
                 sentToMarket.SetZero();
         }
-        //public Value getProducing()
-        //{
-        //    return gainGoodsThisTurn;
-        //}
+        //todo put it and duplicate in market?
         public void getMoneyForSoldProduct()
         {
             if (sentToMarket.get() > 0f)

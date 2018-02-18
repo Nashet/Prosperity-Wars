@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
             if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("none", factory);
             else
-                AddCell(factory.getProfit().ToString("F3"), factory);
+                AddCell(factory.getProfit().ToString("F3") + " Gold", factory);
 
             ////Adding margin
             if (factory.isUpgrading())

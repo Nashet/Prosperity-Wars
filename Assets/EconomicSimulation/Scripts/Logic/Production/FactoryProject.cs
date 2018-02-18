@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
         }
 
         
-        public Value GetInvestmentCost()
+        public Money GetInvestmentCost()
         {
             return Type.GetBuildCost();
         }

@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
         internal void checkProfit()
         {
             // todo doesn't include taxes. Should it?
-            if (artisansProduction == null || moneyIncomeThisTurn.get() - artisansProduction.getExpences() <= 0f)
+            if (artisansProduction == null || moneyIncomeThisTurn.Copy().subtract( artisansProduction.getExpences()).isZero())
                 changeProductionType();
         }
     }

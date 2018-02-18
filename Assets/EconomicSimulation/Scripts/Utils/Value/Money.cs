@@ -7,7 +7,7 @@ namespace Nashet.ValueSpace
 {
     public class Money : Storage, ICopyable<Money>
     {
-        public Money(float value) : base(Product.Gold, value)
+        public Money(float value, bool showMessageAboutNegativeValue = true) : base(Product.Gold, value, showMessageAboutNegativeValue)
         { }
         protected Money(Money value) : base(value)
         { }
@@ -26,6 +26,7 @@ namespace Nashet.ValueSpace
         {
             return new Money(stor);
         }
+        
         internal Money Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
             if (divider == 0)
@@ -59,6 +60,17 @@ namespace Nashet.ValueSpace
             return this;
         }
         ///////////////////Add section
+        public Money Add(Storage storage, bool showMessageAboutNegativeValue = true)
+        {
+            if (this.isExactlySameProduct(storage))
+                base.Add(storage, showMessageAboutNegativeValue);
+            else
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Attempt to add wrong product to Storage");
+            }
+            return this;
+        }
         public Money Add(float adding, bool showMessageAboutNegativeValue = true)
         {
             if (adding + get() < 0f)
@@ -71,7 +83,24 @@ namespace Nashet.ValueSpace
                 Set(get() + adding);
             return this;
         }
+        public Money Subtract(Storage storage, bool showMessageAboutNegativeValue = true)
+        {
+            //if (!this.isSameProductType(storage.Product))
+            if (!storage.isSameProductType(this.Product))
+            {
+                Debug.Log("Storage subtract Outside failed - wrong product");
+                Set(0f);
+            }
+            else if (storage.isBiggerThan(this))
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Storage subtract Outside failed");
+                Set(0f);
+            }
+            else
+                Set(this.get() - storage.get());
+            return this;
+        }
 
-        
     }
 }

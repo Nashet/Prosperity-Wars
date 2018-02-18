@@ -43,10 +43,14 @@ namespace Nashet.EconomicSimulation
         {
             priceHistory = new PricePool();
         }
-
-        internal Value getCost(StorageSet need)
+        /// <summary>
+        /// new value
+        /// </summary>
+        /// <param name="need"></param>
+        /// <returns></returns>
+        internal Money getCost(StorageSet need)
         {
-            Value cost = new Value(0f);
+            Money cost = new Money(0f);
             // float price;
             foreach (Storage stor in need)
             {

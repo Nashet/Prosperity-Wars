@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
 {
     public class Bank : Agent, INameable
     {
-        private readonly Value givenCredits = new Value(0);
+        private readonly Money givenCredits = new Money(0);
         //private readonly Country country;
 
         override public string ToString()
@@ -185,11 +185,11 @@ namespace Nashet.EconomicSimulation
             return givenCredits;
         }
         /// <summary>
-        /// how much money have in Cash. It's copy
+        /// how much money have in Cash.
         /// </summary>
         internal ReadOnlyValue getReservs()
         {
-            return Cash.Copy();
+            return Cash;
         }
 
 
@@ -227,7 +227,7 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// How much can
-        /// Checks reserve limits. Returns copy
+        /// Checks reserve limits.
         /// </summary>    
         internal ReadOnlyValue HowBigCreditCanGive(Agent whom)
         {

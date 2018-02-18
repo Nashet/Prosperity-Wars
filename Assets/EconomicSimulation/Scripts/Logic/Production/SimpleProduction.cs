@@ -52,9 +52,13 @@ namespace Nashet.EconomicSimulation
             base.SetStatisticToZero();
             storage.Set(0f);
         }
+        /// <summary>
+        /// could be negative
+        /// </summary>
+        /// <returns></returns>
         virtual internal float getProfit()
         {
-            return moneyIncomeThisTurn.get() - getExpences();
+            return moneyIncomeThisTurn.get() - getExpences().get();
         }
 
         /// <summary>
@@ -221,9 +225,12 @@ namespace Nashet.EconomicSimulation
                 return canAfford.get();
             }
         }
-        virtual internal float getExpences()
+        /// <summary>
+        ///new value
+        /// </summary>
+        virtual internal Money getExpences()
         {
-            return Game.market.getCost(getConsumed()).get();
+            return Game.market.getCost(getConsumed());
         }
         public bool isAllInputProductsCollected()
         {

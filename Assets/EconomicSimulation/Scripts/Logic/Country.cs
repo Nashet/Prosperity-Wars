@@ -15,14 +15,6 @@ namespace Nashet.EconomicSimulation
         public readonly static List<Country> allCountries = new List<Country>();
         internal static readonly Country NullCountry;
 
-        internal static int howMuchCountriesAlive()
-        {
-            int res = 0;
-            foreach (var item in getAllExisting())
-                res++;
-            return res;
-        }
-
         internal readonly Government government;
         internal readonly Economy economy;
         internal readonly Serfdom serfdom;
@@ -43,8 +35,6 @@ namespace Nashet.EconomicSimulation
         private readonly Dictionary<Country, Date> myLastAttackDate = new Dictionary<Country, Date>();
         private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
-
-
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
         public readonly List<Movement> movements = new List<Movement>();
 
@@ -56,7 +46,7 @@ namespace Nashet.EconomicSimulation
         private Province capital;
         private bool alive = true;
 
-        private readonly Value soldiersWage = new Value(0f);
+        private readonly Money soldiersWage = new Money(0f);
         public readonly Value sciencePoints = new Value(0f);
         public bool failedToPaySoldiers;
         public int autoPutInBankLimit = 2000;
@@ -68,30 +58,47 @@ namespace Nashet.EconomicSimulation
             get { return ownershipSecurity.Copy(); }
         }
 
-        private readonly Value incomeTaxStaticticPoor = new Value(0f);
-        public Value IncomeTaxStaticticPoor
+        private readonly Money incomeTaxStaticticPoor = new Money(0f);
+        public Money IncomeTaxStaticticPoor
         {
             get { return incomeTaxStaticticPoor.Copy(); }
         }
 
-        private readonly Value incomeTaxStatisticRich = new Value(0f);
-        public Value IncomeTaxStatisticRich
+        private readonly Money incomeTaxStatisticRich = new Money(0f);
+        public Money IncomeTaxStatisticRich
         {
             get { return incomeTaxStatisticRich.Copy(); }
         }
-        private readonly Value incomeTaxForeigner = new Value(0f);
-        public Value IncomeTaxForeigner
+        private readonly Money incomeTaxForeigner = new Money(0f);
+        public Money IncomeTaxForeigner
         {
             get { return incomeTaxForeigner.Copy(); }
         }
 
-        private readonly Value goldMinesIncome = new Value(0f);
-        private readonly Value ownedFactoriesIncome = new Value(0f);
+        private readonly Money goldMinesIncome = new Money(0f);
+        public Money GoldMinesIncome { get { return goldMinesIncome.Copy(); } }
 
-        private readonly Value unemploymentSubsidiesExpense = new Value(0f);
-        private readonly Value soldiersWageExpense = new Value(0f);
-        private readonly Value factorySubsidiesExpense = new Value(0f);
-        private readonly Value storageBuyingExpense = new Value(0f);
+        private readonly Money ownedFactoriesIncome = new Money(0f);
+        public Money OwnedFactoriesIncome { get { return ownedFactoriesIncome.Copy(); } }
+
+        public Money RestIncome
+        {
+            get { return moneyIncomeThisTurn.Copy().Subtract(getAllIncome()); }
+        }
+
+
+
+        private readonly Money unemploymentSubsidiesExpense = new Money(0f);
+        public Money UnemploymentSubsidiesExpense { get { return unemploymentSubsidiesExpense.Copy(); } }
+
+        private readonly Money soldiersWageExpense = new Money(0f);
+        public Money SoldiersWageExpense { get { return soldiersWageExpense.Copy(); } }
+
+        private readonly Money factorySubsidiesExpense = new Money(0f);
+        public Money FactorySubsidiesExpense { get { return factorySubsidiesExpense.Copy(); } }
+
+        private readonly Money storageBuyingExpense = new Money(0f);
+        public Money StorageBuyingExpense { get { return storageBuyingExpense.Copy(); } }
 
         private readonly float nameWeight;
 
@@ -268,7 +275,7 @@ namespace Nashet.EconomicSimulation
                 Country country = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province, 100f);
                 //count.setBank(count.bank);
                 Game.Player = Country.allCountries[1]; // not wild Tribes, DONT touch that
-                province.InitialOwner(country);                
+                province.InitialOwner(country);
                 country.GiveMoneyFromNoWhere(100);
             }
 
@@ -280,6 +287,13 @@ namespace Nashet.EconomicSimulation
         internal int getSize()
         {
             return ownedProvinces.Count;
+        }
+        internal static int howMuchCountriesAlive()
+        {
+            int res = 0;
+            foreach (var item in getAllExisting())
+                res++;
+            return res;
         }
         //public IEnumerable<KeyValuePair<Invention, bool>> getAllI()
         //{
@@ -1408,9 +1422,9 @@ namespace Nashet.EconomicSimulation
             result.Add(soldiersWageExpense);
             return result;
         }
-        internal Value getAllIncome()
+        internal Money getAllIncome()
         {
-            Value result = new Value(0f);
+            Money result = new Money(0f);
             result.Add(incomeTaxStaticticPoor);
             result.Add(incomeTaxStatisticRich);
             result.Add(incomeTaxForeigner);
@@ -1442,22 +1456,8 @@ namespace Nashet.EconomicSimulation
         {
             soldiersWageExpense.Add(payCheck);
         }
-        internal float getSoldiersWageExpense()
-        {
-            return soldiersWageExpense.get();
-        }
-        internal float getFactorySubsidiesExpense()
-        {
-            return factorySubsidiesExpense.get();
-        }
-        internal float getUnemploymentSubsidiesExpense()
-        {
-            return unemploymentSubsidiesExpense.get();
-        }
-        internal float getStorageBuyingExpense()
-        {
-            return storageBuyingExpense.get();
-        }
+
+
         //internal float getPoorTaxIncome()
         //{
         //    return poorTaxIncome.get();
@@ -1468,19 +1468,7 @@ namespace Nashet.EconomicSimulation
         //    return richTaxIncome.get();
         //}
 
-        internal float getGoldMinesIncome()
-        {
-            return goldMinesIncome.get();
-        }
-        internal float getOwnedFactoriesIncome()
-        {
-            return ownedFactoriesIncome.get();
-        }
 
-        internal float getRestIncome()
-        {
-            return moneyIncomeThisTurn.get() - getAllIncome().get();
-        }
         /// <summary>
         /// Forces payer to pay tax from taxable. Returns how much payed (new value)
         /// Don't call it manually, it called from Agent.Pay() automatically

@@ -40,9 +40,9 @@ namespace Nashet.EconomicSimulation
                         if (record.Key == owner)
                             yield return new KeyValuePair<IShareable, Procent>(factory, record.Value);
         }
-        internal static Value getAllMoney()
+        internal static Money GetAllMoney()
         {
-            Value allMoney = new Value(0f);
+            Money allMoney = new Money(0f);
             foreach (Country country in Country.allCountries)
             {
                 allMoney.Add(country.Cash);
