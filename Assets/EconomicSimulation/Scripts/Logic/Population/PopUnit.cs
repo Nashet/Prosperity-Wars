@@ -185,17 +185,15 @@ namespace Nashet.EconomicSimulation
             //Agent's fields:
             //wallet = new Wallet(0f, where.Country.bank); it's already set in constructor
             //bank - could be different, set in constructor
-            //loans - keep it in old unit        
-            //take deposit share?
+            //loans - keep it in old unit   
+
+            //take deposit share
             if (source.deposits.isNotZero())
             {
-                Value takeDeposit = source.deposits.Copy().Multiply(newPopShare);
-                if (source.getBank().canGiveMoney(this, takeDeposit))
-                {
-                    source.getBank().giveMoney(source, takeDeposit);
-                    source.payWithoutRecord(this, takeDeposit);
-                }
+                ReadOnlyValue returnDeposit = source.deposits.Copy().Multiply(newPopShare);
+                source.payWithoutRecord(this, source.getBank().ReturnDeposit(source, returnDeposit));
             }
+            //take cash
             source.payWithoutRecord(this, source.cash.Copy().Multiply(newPopShare));
 
 
@@ -1042,9 +1040,9 @@ namespace Nashet.EconomicSimulation
                     Value subsidy = getUnemployment();
                     subsidy.Multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
-                    if (Country.canPay(subsidy))
+                    if (Country.CanPay(subsidy))
                     {
-                        Country.pay(this, subsidy);
+                        Country.Pay(this, subsidy);
                         Country.unemploymentSubsidiesExpenseAdd(subsidy);
                     }
                     else

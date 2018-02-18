@@ -62,9 +62,9 @@ namespace Nashet.EconomicSimulation
         {
             Value payCheck = new Value(Country.getSoldierWage());
             payCheck.Multiply(getPopulation() / 1000f);
-            if (Country.canPay(payCheck))
+            if (Country.CanPay(payCheck))
             {
-                Country.pay(this, payCheck);
+                Country.Pay(this, payCheck);
                 Country.soldiersWageExpenseAdd(payCheck);
                 this.didntGetPromisedSalary = false;
             }

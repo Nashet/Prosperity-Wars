@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
         }
         virtual internal float getProfit()
         {
-            return moneyIncomethisTurn.get() - getExpences();
+            return moneyIncomeThisTurn.get() - getExpences();
         }
 
         /// <summary>

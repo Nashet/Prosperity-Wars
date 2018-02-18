@@ -80,9 +80,9 @@ namespace Nashet.EconomicSimulation
                 if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
                     Value investmentCost = project.GetInvestmentCost();
-                    if (!canPay(investmentCost))
-                        getBank().giveLackingMoney(this, investmentCost);
-                    if (canPay(investmentCost))
+                    if (!CanPay(investmentCost))
+                        getBank().giveLackingMoneyInCredit(this, investmentCost);
+                    if (CanPay(investmentCost))
                     {
                         Factory factory = project as Factory;
                         if (factory != null)

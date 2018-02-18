@@ -325,7 +325,7 @@ namespace Nashet.EconomicSimulation
                         cost.Set(purchaseValue);
                     var buyingAgent = buyer as Agent;
 
-                    if (buyingAgent.pay(shareToBuy.Key as Agent, cost))
+                    if (buyingAgent.Pay(shareToBuy.Key as Agent, cost))
                     {
                         Transfer(shareToBuy.Key, buyer, cost);
                         //reduce onSale amount on successful deal

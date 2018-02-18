@@ -309,9 +309,9 @@ namespace Nashet.EconomicSimulation
                     cost = buying.Copy().Multiply(price);
                     //if (cost.isNotZero())
                     //{
-                    if (buyer.canPay(cost))
+                    if (buyer.CanPay(cost))
                     {
-                        buyer.pay(Game.market, cost);
+                        buyer.Pay(Game.market, cost);
                         buyer.consumeFromMarket(buying);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().Add(buying);
@@ -322,7 +322,7 @@ namespace Nashet.EconomicSimulation
                         float val = buyer.cash.get() / price.get();
                         val = Mathf.Floor(val * Value.Precision) / Value.Precision;
                         howMuchCanConsume = new Storage(buying.Product, val);
-                        buyer.pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
+                        buyer.Pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
                         buyer.consumeFromMarket(howMuchCanConsume);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);
@@ -338,9 +338,9 @@ namespace Nashet.EconomicSimulation
                     if (howMuchAvailable.get() > 0f)
                     {
                         cost = howMuchAvailable.Copy().Multiply(price);
-                        if (buyer.canPay(cost))
+                        if (buyer.CanPay(cost))
                         {
-                            buyer.pay(Game.market, cost);
+                            buyer.Pay(Game.market, cost);
                             buyer.consumeFromMarket(howMuchAvailable);
                             if (buyer is SimpleProduction)
                                 (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchAvailable);
@@ -377,11 +377,10 @@ namespace Nashet.EconomicSimulation
         {
             if (forWhom.canAfford(need) || subsidizer == null)
                 return buy(forWhom, need);
-            else
-            {
-                subsidizer.takeFactorySubsidies(forWhom, forWhom.GetLackingMoney(need));
+            else if (subsidizer.GiveFactorySubsidies(forWhom, forWhom.HowMuchLacksMoneyIncludingDeposits(need)))
                 return buy(forWhom, need);
-            }
+            else
+                return new Storage(need.Product, 0f);
         }
 
         /// <summary>

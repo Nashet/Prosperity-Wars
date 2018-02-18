@@ -333,7 +333,7 @@ namespace Nashet.EconomicSimulation
                 if (agent.loans.isNotZero())
                     agent.getBank().defaultLoaner(agent);
                 //take back deposits            
-                oldCountry.getBank().returnAllMoney(agent);
+                oldCountry.getBank().ReturnAllDeposits(agent);
                 agent.setBank(taker.getBank());
             }
 

@@ -139,13 +139,13 @@ namespace Nashet.EconomicSimulation
                         //}
 
 
-                        if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                        if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
                         {
-                            Game.market.pay(this, cost);
+                            Game.market.Pay(this, cost);
                             //Game.market.sentToMarket.subtract(realSold);
                         }
-                        else if (Game.market.GetLackingMoney(cost).get() > 10f && Game.devMode)
-                            Debug.Log("Failed market - can't pay " + Game.market.GetLackingMoney(cost)
+                        else if (Game.market.HowMuchLacksMoneyIncludingDeposits(cost).get() > 10f && Game.devMode)
+                            Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyIncludingDeposits(cost)
                                 + " for " + realSold); // money in market ended... Only first lucky get money
                     }
                 }

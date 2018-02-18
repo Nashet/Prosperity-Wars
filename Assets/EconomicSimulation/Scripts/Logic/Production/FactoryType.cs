@@ -173,7 +173,7 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         Value cost = GetBuildCost();
-                        return agent.canPay(cost);
+                        return agent.CanPay(cost);
                     }
                 },
                 delegate

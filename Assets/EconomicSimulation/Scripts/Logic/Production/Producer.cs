@@ -84,9 +84,9 @@ namespace Nashet.EconomicSimulation
                         storage = new Storage(gainGoodsThisTurn);
                     storage.Subtract(realSold.get());
 
-                    if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                    if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
                     {
-                        Game.market.pay(this, cost);
+                        Game.market.Pay(this, cost);
                         //Game.market.sentToMarket.subtract(realSold);
                     }
                     //else if (Game.market.GetLackingMoney(cost).get() > 10f && Game.devMode)

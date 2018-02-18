@@ -512,7 +512,7 @@ namespace Nashet.EconomicSimulation
 
             //take all money from bank
             if (byWhom.Invented(Invention.Banking))
-                byWhom.getBank().add(this.getBank());
+                byWhom.getBank().Annex(this.getBank()); // deposits transfered in province.OnSecede()
             else
                 this.getBank().destroy(byWhom);
 
@@ -921,7 +921,7 @@ namespace Nashet.EconomicSimulation
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     30);
             else
-            //SC invests in own country only, Interv. don't invests in any country
+            //State Capitalism invests in own country only, Interventionists. don't invests in any country
             if (economy.getValue() == Economy.StateCapitalism)
                 Rand.Call(
                     () =>
@@ -932,9 +932,9 @@ namespace Nashet.EconomicSimulation
                         if (project != null)
                         {
                             Value investmentCost = project.GetInvestmentCost();
-                            if (!canPay(investmentCost))
-                                getBank().giveLackingMoney(this, investmentCost);
-                            if (canPay(investmentCost))
+                            if (!CanPay(investmentCost))
+                                getBank().giveLackingMoneyInCredit(this, investmentCost);
+                            if (CanPay(investmentCost))
                             {
                                 Factory factory = project as Factory;
                                 if (factory != null)
@@ -1393,7 +1393,7 @@ namespace Nashet.EconomicSimulation
 
         internal float getBalance()
         {
-            return moneyIncomethisTurn.get() - getAllExpenses().get();
+            return moneyIncomeThisTurn.get() - getAllExpenses().get();
         }
 
         internal Value getAllExpenses()
@@ -1416,21 +1416,24 @@ namespace Nashet.EconomicSimulation
             result.Add(getCostOfAllSellsByGovernment());
             return result;
         }
-
-        internal void takeFactorySubsidies(Consumer byWhom, Value howMuch)
+        /// <summary>
+        /// Returns true if was able to give a subsidy
+        /// </summary>        
+        internal bool GiveFactorySubsidies(Consumer byWhom, Value howMuch)
         {
-            if (canPay(howMuch))
+            if (CanPay(howMuch))
             {
                 payWithoutRecord(byWhom, howMuch);
                 factorySubsidiesExpense.Add(howMuch);
+                return true;
             }
             else
-            {
-                //sendAll(byWhom.wallet);
-                payWithoutRecord(byWhom, byWhom.cash);
-                factorySubsidiesExpense.Add(byWhom.cash);
-            }
-
+                return false;
+            //{
+            //    //sendAll(byWhom.wallet);
+            //    payWithoutRecord(byWhom, byWhom.cash);
+            //    factorySubsidiesExpense.Add(byWhom.cash);
+            //}
         }
         internal void soldiersWageExpenseAdd(Value payCheck)
         {
@@ -1473,7 +1476,7 @@ namespace Nashet.EconomicSimulation
 
         internal float getRestIncome()
         {
-            return moneyIncomethisTurn.get() - getAllIncome().get();
+            return moneyIncomeThisTurn.get() - getAllIncome().get();
         }
         /// <summary>
         /// Forces payer to pay tax from taxable. Returns how much payed (new value)
@@ -1503,11 +1506,11 @@ namespace Nashet.EconomicSimulation
                 statistics = incomeTaxForeigner;
 
             var taxSize = taxable.Copy().Multiply(tax);
-            if (taxPayer.canPay(taxSize))
+            if (taxPayer.CanPay(taxSize))
             {
                 taxPayer.incomeTaxPayed.Add(taxSize);
                 statistics.Add(taxSize);
-                moneyIncomethisTurn.Add(taxSize);
+                moneyIncomeThisTurn.Add(taxSize);
                 taxPayer.payWithoutRecord(this, taxSize);
                 return taxSize;
             }
@@ -1516,7 +1519,7 @@ namespace Nashet.EconomicSimulation
                 var hadMiney = taxPayer.cash.Copy();
                 taxPayer.incomeTaxPayed.Add(taxPayer.cash);
                 statistics.Add(taxPayer.cash);
-                moneyIncomethisTurn.Add(taxPayer.cash);
+                moneyIncomeThisTurn.Add(taxPayer.cash);
                 taxPayer.PayAllAvailableMoneyWithoutRecord(this);
                 return hadMiney;
             }

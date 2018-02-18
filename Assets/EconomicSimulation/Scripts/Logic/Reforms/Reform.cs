@@ -404,7 +404,7 @@ namespace Nashet.EconomicSimulation
                 country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
                 //nationalization
                 country.getBank().PayAllAvailableMoney(country);
-                country.getBank().getGivenLoans().SetZero();
+                country.getBank().getGivenCredits().SetZero();
                 country.loans.SetZero();
                 country.deposits.SetZero();
 

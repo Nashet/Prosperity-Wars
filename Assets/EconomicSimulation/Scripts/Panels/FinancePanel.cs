@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n Dividends: ").Append(Game.Player.getOwnedFactoriesIncome());
             sb.Append("\n Storage sells: ").Append(Game.Player.getCostOfAllSellsByGovernment());
             sb.Append("\n Rest: ").Append(Game.Player.getRestIncome());
-            sb.Append("\nTotal: ").Append(Game.Player.moneyIncomethisTurn);
+            sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
 
             sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());
             sb.Append("\nHave money: ").Append(Game.Player.cash).Append(" + ").Append(Game.Player.deposits).Append(" on bank deposit");
@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Expenses: ");
             sb.Append("\n Unemployment subsidies: ").Append(Game.Player.getUnemploymentSubsidiesExpense())
-                .Append(" unemployment: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x=>x.getUnemployment()));
+                .Append(" unemployment: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x => x.getUnemployment()));
             sb.Append("\n Enterprises subsidies: ").Append(Game.Player.getFactorySubsidiesExpense());
             if (Game.Player.Invented(Invention.ProfessionalArmy))
                 sb.Append("\n Soldiers paychecks: ").Append(Game.Player.getSoldiersWageExpense());
@@ -75,7 +75,8 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
 
-            sb.Append("\nNational bank: ").Append(Game.Player.getBank()).Append(" loans: ").Append(Game.Player.getBank().getGivenLoans());
+            sb.Append("\n").Append(Game.Player.getBank()).Append(" - reserves: ").Append(Game.Player.getBank().cash)
+                .Append("; loans: ").Append(Game.Player.getBank().getGivenCredits());
             //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
             sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
             sb.Append("\n*Government and others could automatically take money from deposits");
@@ -143,11 +144,10 @@ namespace Nashet.EconomicSimulation
         //}
         public void onTakeLoan()
         {
-            Value loan = Game.Player.getBank().howMuchCanGive(Game.Player);
+            Value loan = Game.Player.getBank().HowBigCreditCanGive(Game.Player);
             if (loanLimit.value != 1f)
                 loan.Multiply(loanLimit.value);
-            if (Game.Player.getBank().canGiveMoney(Game.Player, loan))
-                Game.Player.getBank().giveMoney(Game.Player, loan);
+            Game.Player.getBank().GiveCredit(Game.Player, loan);
             MainCamera.refreshAllActive();
         }
         public void onPutInDeposit()
@@ -160,7 +160,7 @@ namespace Nashet.EconomicSimulation
         }
         public void onLoanLimitChange()
         {
-            loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).Multiply(loanLimit.value).ToString();
+            loanLimitText.text = Game.Player.getBank().HowBigCreditCanGive(Game.Player).Multiply(loanLimit.value).ToString();
         }
 
         public void onDepositLimitChange()

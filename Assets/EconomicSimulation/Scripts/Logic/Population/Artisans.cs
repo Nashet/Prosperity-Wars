@@ -89,9 +89,8 @@ namespace Nashet.EconomicSimulation
                         var needs = artisansProduction.getRealAllNeeds();
                         if (!artisansProduction.canAfford(needs))
                         {
-                            var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed
-                            if (getBank().canGiveMoney(this, loanSize))
-                                getBank().giveMoney(this, loanSize);
+                            var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed                            
+                            getBank().GiveCredit(this, loanSize);
                             payWithoutRecord(artisansProduction, cash);
                         }
                     }
@@ -182,11 +181,11 @@ namespace Nashet.EconomicSimulation
                     return artisansProduction.Type;
             }
         }
-        
+
         internal void checkProfit()
         {
             // todo doesn't include taxes. Should it?
-            if (artisansProduction == null || moneyIncomethisTurn.get() - artisansProduction.getExpences() <= 0f)
+            if (artisansProduction == null || moneyIncomeThisTurn.get() - artisansProduction.getExpences() <= 0f)
                 changeProductionType();
         }
     }

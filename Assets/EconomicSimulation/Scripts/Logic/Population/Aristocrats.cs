@@ -100,9 +100,9 @@ namespace Nashet.EconomicSimulation
                         else // build for money
                         {
                             Value investmentCost = Game.market.getCost(resourceToBuild);
-                            if (!canPay(investmentCost))
-                                getBank().giveLackingMoney(this, investmentCost);
-                            if (canPay(investmentCost))
+                            if (!CanPay(investmentCost))
+                                getBank().giveLackingMoneyInCredit(this, investmentCost);
+                            if (CanPay(investmentCost))
                             {
                                 var factory = Province.BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
                                 payWithoutRecord(factory, investmentCost);
@@ -115,9 +115,9 @@ namespace Nashet.EconomicSimulation
                         if (factory != null)
                         {
                             Value investmentCost = factory.GetInvestmentCost();
-                            if (!canPay(investmentCost))
-                                getBank().giveLackingMoney(this, investmentCost);
-                            if (canPay(investmentCost))
+                            if (!CanPay(investmentCost))
+                                getBank().giveLackingMoneyInCredit(this, investmentCost);
+                            if (CanPay(investmentCost))
                             {
                                 if (factory.IsOpen)
                                     factory.upgrade(this);
@@ -131,9 +131,9 @@ namespace Nashet.EconomicSimulation
                             if (buyShare != null) // buy part of existing factory
                             {
                                 Value investmentCost = buyShare.GetInvestmentCost();
-                                if (!canPay(investmentCost))
-                                    getBank().giveLackingMoney(this, investmentCost);
-                                if (canPay(investmentCost))
+                                if (!CanPay(investmentCost))
+                                    getBank().giveLackingMoneyInCredit(this, investmentCost);
+                                if (CanPay(investmentCost))
                                     buyShare.BuyStandardShare(this);
                             }
                             else

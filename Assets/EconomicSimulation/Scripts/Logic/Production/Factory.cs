@@ -92,7 +92,7 @@ namespace Nashet.EconomicSimulation
             conClosed = new Condition(x => !(x as Factory).IsOpen, "Closed", false),
             conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
 
-            conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.canPay((x as Factory).getReopenCost()), delegate (object x)
+            conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.CanPay((x as Factory).getReopenCost()), delegate (object x)
             {
                 var sb = new StringBuilder();
                 sb.Append("Have ").Append((x as Factory).getReopenCost()).Append(" coins");
@@ -113,7 +113,7 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         Value cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
-                        return agent.canPay(cost);
+                        return agent.CanPay(cost);
                     }
                 },
 
@@ -171,7 +171,7 @@ namespace Nashet.EconomicSimulation
 
             conditionsBuy = new DoubleConditionsList(new List<Condition> {Economy.isNotLF, Economy.isNotPlanned,
                 new DoubleCondition ((agent, factory)=>(factory as Factory).ownership.IsOnSale(), x=>"Is on sale", true),
-                new DoubleCondition ((agent, factory)=> (agent as Agent).canPay( (factory as Factory).ownership.GetShareMarketValue(Options.PopBuyAssetsAtTime) ),
+                new DoubleCondition ((agent, factory)=> (agent as Agent).CanPay( (factory as Factory).ownership.GetShareMarketValue(Options.PopBuyAssetsAtTime) ),
                     x=> "Has money to buy share", false)
             })
             ;
@@ -499,38 +499,23 @@ namespace Nashet.EconomicSimulation
             {
                 // per 1000 men            
                 if (Economy.isMarket.checkIfTrue(Country))
-                {
                     foreach (var employee in hiredWorkForce)
                     {
 
                         Value howMuchPay = salary.Copy().Multiply((float)employee.Value).Divide(workForcePerLevel);
-                        if (canPay(howMuchPay))
-                            pay(employee.Key, howMuchPay);
+                        if (CanPay(howMuchPay))
+                            Pay(employee.Key, howMuchPay);
+                        else if (isSubsidized()
+                        && Country.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(howMuchPay))) //take money and try again
+                            Pay(employee.Key, howMuchPay);
                         else
                         {
-                            if (isSubsidized()) //take money and try again
-                            {
-                                Country.takeFactorySubsidies(this, GetLackingMoney(howMuchPay));
-                                if (canPay(howMuchPay))
-                                    pay(employee.Key, howMuchPay);
-                                else
-                                {
-                                    //todo else don't pay if there is nothing to pay
-                                    close();
-                                    return;
-                                    //salary.set(Country.getMinSalary());
-                                }
-                            }
-                            else
-                            {
-                                close();
-                                return;
-                                //salary.set(Country.getMinSalary());
-                            }
-                        }
+                            //todo else don't pay if there is nothing to pay
+                            close();
+                            return;
 
+                        }
                     }
-                }
                 // don't pay nothing if where is planned economy
                 else if (Country.economy.getValue() == Economy.NaturalEconomy)
                 {
@@ -772,7 +757,7 @@ namespace Nashet.EconomicSimulation
             // send remaining money to owners
             foreach (var item in ownership.GetAllShares())
             {
-                pay(item.Key as Agent, cash.Copy().Multiply(item.Value), false);
+                Pay(item.Key as Agent, cash.Copy().Multiply(item.Value), false);
                 //pay(item.Key as Agent, item.Value.SendProcentOf(cash), false);
             }
 
@@ -845,7 +830,7 @@ namespace Nashet.EconomicSimulation
                         var owner = item.Key as Agent;
                         Value sentToOwner = dividends.Copy().Multiply(item.Value);
                         //Value sentToOwner = item.Value.SendProcentOf(dividends);                        
-                        pay(owner, sentToOwner);
+                        Pay(owner, sentToOwner);
                         //Country.TakeIncomeTax(owner, sentToOwner, false);
                         var isCountry = item.Key as Country;
                         if (isCountry != null)
@@ -972,8 +957,8 @@ namespace Nashet.EconomicSimulation
                 {
                     this.ConvertFromGoldAndAdd(storage);
                     //send 50% to government
-                    Value sentToGovernment = new Value(moneyIncomethisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
-                    pay(Country, sentToGovernment);
+                    Value sentToGovernment = new Value(moneyIncomeThisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
+                    Pay(Country, sentToGovernment);
                     Country.goldMinesIncomeAdd(sentToGovernment);
                 }
                 else
@@ -1065,7 +1050,7 @@ namespace Nashet.EconomicSimulation
                     if (needExtraFonds.isNotZero())
                     {
                         var investor = currentInvestor as Agent;
-                        if (investor.canPay(needExtraFonds))
+                        if (investor.CanPay(needExtraFonds))
                         {
                             investor.payWithoutRecord(this, needExtraFonds);
                             ownership.Add(currentInvestor, needExtraFonds);
@@ -1073,8 +1058,8 @@ namespace Nashet.EconomicSimulation
 
                         else
                         {
-                            investor.getBank().giveLackingMoney(investor, needExtraFonds);
-                            if (investor.canPay(needExtraFonds))
+                            investor.getBank().giveLackingMoneyInCredit(investor, needExtraFonds);
+                            if (investor.CanPay(needExtraFonds))
                             {
                                 investor.payWithoutRecord(this, needExtraFonds);
                                 ownership.Add(currentInvestor, needExtraFonds);
