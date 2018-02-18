@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
                 sb.Append("\nMoney income: ").Append(factory.moneyIncomeThisTurn);
-                sb.Append(" Cash: ").Append(factory.cash.ToString());
+                sb.Append(" Cash: ").Append(factory.Cash.ToString());
 
                 sb.Append("\nProfit: ");
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)

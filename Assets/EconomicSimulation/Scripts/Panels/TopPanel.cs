@@ -44,7 +44,8 @@ namespace Nashet.EconomicSimulation
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");
 
-            sb.Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
+            //sb.Append("\nMoney: ").Append(Game.Player.Cash.get().ToString("N0"))
+            sb.Append("\nMoney: ").Append(Game.Player.Cash)
             .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
 
             if (Game.Player.isAlive())

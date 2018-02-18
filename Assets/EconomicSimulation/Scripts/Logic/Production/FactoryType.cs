@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
         static FactoryType()
         {
             new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
-            new FactoryType("Gold pit", new Storage(Product.Gold, 2f), true);
+            new FactoryType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
             new FactoryType("Metal pit", new Storage(Product.MetalOre, 2f), true);
             new FactoryType("Coal pit", new Storage(Product.Coal, 3f), true);
             new FactoryType("Cotton farm", new Storage(Product.Cotton, 2f), false);
@@ -326,8 +326,8 @@ namespace Nashet.EconomicSimulation
 
             if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
-            Value income = Game.market.getCost(basicProduction);
-            income.Multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
+            ReadOnlyValue income = Game.market.getCost(basicProduction);
+            income.Copy().Multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
             var outCome = new Value(0f);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
@@ -337,16 +337,16 @@ namespace Nashet.EconomicSimulation
 
                 outCome.Add(Game.market.getCost(resourceInput));
             }
-            return income.Subtract(outCome, false);
+            return income.Copy().Subtract(outCome, false);
         }
         /// <summary>
         /// For artisans. Not including salary
         /// </summary>        
-        internal Value getPossibleProfit()
+        internal ReadOnlyValue getPossibleProfit()
         {
             if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
-            Value income = Game.market.getCost(basicProduction);
+            ReadOnlyValue income = Game.market.getCost(basicProduction);
 
             if (hasInput())
             {
@@ -354,7 +354,7 @@ namespace Nashet.EconomicSimulation
                     if (!Game.market.isAvailable(inputProduct.Product))
                         return new Value(0);// inputs are unavailable                                            
 
-                return income.Subtract(Game.market.getCost(resourceInput), false);
+                return income.Copy().Subtract(Game.market.getCost(resourceInput), false);
             }
             return income;
         }

@@ -128,7 +128,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///  Constructor for population created on game startup
         /// </summary>    
-        protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(where)
+        protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(  where)
         {
 
             where.allPopUnits.Add(this);
@@ -145,7 +145,8 @@ namespace Nashet.EconomicSimulation
         /// <summary> Creates new PopUnit basing on part of other PopUnit.
         /// And transfers sizeOfNewPop population.
         /// </summary>    
-        protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(where)
+        protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture)
+            : base( where)
         {
             born = new Date(Date.Today);
             PopListToAddToGeneralList.Add(this);
@@ -191,10 +192,10 @@ namespace Nashet.EconomicSimulation
             if (source.deposits.isNotZero())
             {
                 ReadOnlyValue returnDeposit = source.deposits.Copy().Multiply(newPopShare);
-                source.payWithoutRecord(this, source.getBank().ReturnDeposit(source, returnDeposit));
+                source.PayWithoutRecord(this, source.Bank.ReturnDeposit(source, returnDeposit));
             }
-            //take cash
-            source.payWithoutRecord(this, source.cash.Copy().Multiply(newPopShare));
+            //take Cash
+            source.PayWithoutRecord(this, source.Cash.Copy().Multiply(newPopShare));
 
 
             //Producer's fields:
@@ -310,8 +311,8 @@ namespace Nashet.EconomicSimulation
                 MainCamera.popUnitPanel.Hide();
             //remove from population panel.. Would do it automatically        
 
-            PayAllAvailableMoney(getBank()); // just in case if there is something
-            getBank().defaultLoaner(this);
+            PayAllAvailableMoney(Bank); // just in case if there is something
+            Bank.OnLoanerRefusesToPay(this);
             Movement.leave(this);
         }
         //public Culture getCulture()
@@ -530,8 +531,8 @@ namespace Nashet.EconomicSimulation
         //            }
         //            else
         //            {
-        //                incomeTaxPayed.set(cash);
-        //                Country.poorTaxIncomeAdd(cash);
+        //                incomeTaxPayed.set(Cash);
+        //                Country.poorTaxIncomeAdd(Cash);
         //                sendAllAvailableMoney(Country);
 
         //            }
@@ -548,8 +549,8 @@ namespace Nashet.EconomicSimulation
         //            }
         //            else
         //            {
-        //                incomeTaxPayed.set(cash);
-        //                Country.richTaxIncomeAdd(cash);
+        //                incomeTaxPayed.set(Cash);
+        //                Country.richTaxIncomeAdd(Cash);
         //                sendAllAvailableMoney(Country);
         //            }
         //        }
@@ -677,7 +678,7 @@ namespace Nashet.EconomicSimulation
             {
                 // save some money in reserve to avoid spending all money on luxury 
                 //Agent reserve = new Agent(0f, null, null); // temporally removed for testing
-                // payWithoutRecord(reserve, cash.multipleOutside(Options.savePopMoneyReserv));            
+                // payWithoutRecord(reserve, Cash.multipleOutside(Options.savePopMoneyReserv));            
 
                 Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
                 var everyDayNeedsConsumed = new List<Storage>();
@@ -692,7 +693,7 @@ namespace Nashet.EconomicSimulation
                             education.Learn();
                     }
                 }
-                //Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                //Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                 //if (spentMoneyOnEveryDayNeeds.isNotZero())
                 //    needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
                 var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, getRealEveryDayNeeds());
@@ -725,10 +726,10 @@ namespace Nashet.EconomicSimulation
                     // unlimited luxury spending should be limited by money income and already spent money
                     // I also can limit regular luxury consumption but should I?:
                     if (!someLuxuryProductUnavailable
-                        && cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
+                        && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
-                        Value spentOnUnlimitedConsumption = cash.Copy();
-                        Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                        Value spentOnUnlimitedConsumption = Cash.Copy();
+                        Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                         Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by income - already spent money
 
                         if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
@@ -736,7 +737,7 @@ namespace Nashet.EconomicSimulation
 
                         if (spentOnUnlimitedConsumption.get() > 5f)// to avoid zero values
                         {
-                            // how much pop wants to spent on unlimited consumption. Pop should spent cash only..
+                            // how much pop wants to spent on unlimited consumption. Pop should spent Cash only..
                             Value buyExtraGoodsMultiplier = spentOnUnlimitedConsumption.Copy().Divide(luxuryNeedsCost);
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
@@ -750,11 +751,11 @@ namespace Nashet.EconomicSimulation
                     var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
-                    //Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - cash.get() could be < 0 due to taking money from deposits
+                    //Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                     //if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
                     //    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
                 }
-                // reserve.payWithoutRecord(this, reserve.cash);
+                // reserve.payWithoutRecord(this, reserve.Cash);
             }
 
         }
@@ -1243,9 +1244,9 @@ namespace Nashet.EconomicSimulation
         {
             if (Country.Invented(Invention.Banking))
             {
-                Value extraMoney = new Value(cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
+                Value extraMoney = new Value(Cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
                 if (extraMoney.isNotZero())
-                    getBank().takeMoney(this, extraMoney);
+                    Bank.ReceiveMoney(this, extraMoney);
             }
         }
         /// <summary>

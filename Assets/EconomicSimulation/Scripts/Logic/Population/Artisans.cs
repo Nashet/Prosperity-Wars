@@ -80,23 +80,23 @@ namespace Nashet.EconomicSimulation
             base.consumeNeeds();
             if (artisansProduction != null)
             {
-                payWithoutRecord(artisansProduction, cash);
+                PayWithoutRecord(artisansProduction, Cash);
 
                 // take loan if don't have enough money to buy inputs            
                 if (Country.Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
                     if (artisansProduction.Type.getPossibleProfit().isNotZero())
                     {
                         var needs = artisansProduction.getRealAllNeeds();
-                        if (!artisansProduction.canAfford(needs))
+                        if (!artisansProduction.CanAfford(needs))
                         {
                             var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed                            
-                            getBank().GiveCredit(this, loanSize);
-                            payWithoutRecord(artisansProduction, cash);
+                            Bank.GiveCredit(this, loanSize);
+                            PayWithoutRecord(artisansProduction, Cash);
                         }
                     }
 
                 artisansProduction.consumeNeeds();
-                artisansProduction.payWithoutRecord(this, artisansProduction.cash);
+                artisansProduction.PayWithoutRecord(this, artisansProduction.Cash);
 
                 // consuming made in artisansProduction.consumeNeeds()
                 // here is data transfering

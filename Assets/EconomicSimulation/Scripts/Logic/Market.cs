@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
 
         internal PricePool priceHistory;
         internal StorageSet sentToMarket = new StorageSet();
-        public Market() : base(0f, null, null)
+        public Market() : base(null)
         {
 
         }
@@ -67,9 +67,9 @@ namespace Nashet.EconomicSimulation
             return cost;
         }
         /// <summary>
-        /// returns new Value
+        /// 
         /// </summary>
-        internal Value getCost(Storage need)
+        internal ReadOnlyValue getCost(Storage need)
         {
             // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
             //if (need.isAbstractProduct())
@@ -319,7 +319,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        float val = buyer.cash.get() / price.get();
+                        float val = buyer.Cash.get() / price.get();
                         val = Mathf.Floor(val * Value.Precision) / Value.Precision;
                         howMuchCanConsume = new Storage(buying.Product, val);
                         buyer.Pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
@@ -348,7 +348,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            howMuchCanConsume = new Storage(howMuchAvailable.Product, buyer.cash.get() / price.get());
+                            howMuchCanConsume = new Storage(howMuchAvailable.Product, buyer.Cash.get() / price.get());
                             if (howMuchCanConsume.get() > howMuchAvailable.get())
                                 howMuchCanConsume.Set(howMuchAvailable.get()); // you don't buy more than there is
                             if (howMuchCanConsume.isNotZero())
@@ -375,8 +375,9 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
         {
-            if (forWhom.canAfford(need) || subsidizer == null)
+            if (forWhom.CanAfford(need) || subsidizer == null)
                 return buy(forWhom, need);
+            //todo fix that
             else if (subsidizer.GiveFactorySubsidies(forWhom, forWhom.HowMuchLacksMoneyIncludingDeposits(need)))
                 return buy(forWhom, need);
             else

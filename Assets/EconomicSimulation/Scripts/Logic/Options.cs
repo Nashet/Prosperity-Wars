@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly float CountryBadBoyWorldLimit = 0.1f;
         internal static readonly int CountryTimeToForgetBattle = 40;
         internal static readonly float defaultSciencePointMultiplier = 1.1f;//0.00001f; 
-        internal static readonly float GovernmentTakesShareOfGoldOutput = 0.5f;
+        internal static readonly Procent GovernmentTakesShareOfGoldOutput = new Procent(0.5f);
         internal static readonly int ProvinceChanceToGetCore = 70;
         internal static readonly Value CountryMinStorage = new Value(5f);
         internal static readonly Value CountryMaxStorage = new Value(50f);

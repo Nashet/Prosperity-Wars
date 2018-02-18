@@ -331,10 +331,10 @@ namespace Nashet.EconomicSimulation
             foreach (var agent in getAllAgents())
             {
                 if (agent.loans.isNotZero())
-                    agent.getBank().defaultLoaner(agent);
+                    agent.Bank.OnLoanerRefusesToPay(agent);
                 //take back deposits            
-                oldCountry.getBank().ReturnAllDeposits(agent);
-                agent.setBank(taker.getBank());
+                oldCountry.Bank.ReturnAllDeposits(agent);
+                //agent.setBank(taker.Bank);
             }
 
             // transfer government owned factories
@@ -1227,7 +1227,7 @@ namespace Nashet.EconomicSimulation
         {
             return nameWeight;
         }
-        public Factory BuildFactory(IShareOwner investor, FactoryType type, Value cost)
+        public Factory BuildFactory(IShareOwner investor, FactoryType type, ReadOnlyValue cost)
         {
             if (getAllFactories().Any(x => x.Type == type))
             {

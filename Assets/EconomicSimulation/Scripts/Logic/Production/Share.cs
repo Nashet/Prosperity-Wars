@@ -11,19 +11,19 @@ namespace Nashet.EconomicSimulation
     {
         private readonly Value howMuchOwns;//default value
         private readonly Value howMuchWantsToSell = new Value(0f);
-        public Share(Value initialSumm)
+        public Share(ReadOnlyValue initialSumm)
         {
             howMuchOwns = initialSumm.Copy();
         }
-        public void Increase(Value sum)
+        public void Increase(ReadOnlyValue sum)
         {
             howMuchOwns.Add(sum);
         }
-        public void Decrease(Value sum)
+        public void Decrease(ReadOnlyValue sum)
         {
             howMuchOwns.Subtract(sum);
         }
-        internal void CancelBuyOrder(Value sum)
+        internal void CancelBuyOrder(ReadOnlyValue sum)
         {
             howMuchWantsToSell.Subtract(sum, false);
         }

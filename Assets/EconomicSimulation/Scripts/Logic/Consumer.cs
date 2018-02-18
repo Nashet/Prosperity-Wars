@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         public abstract void consumeNeeds();
         public abstract List<Storage> getRealAllNeeds();
 
-        protected Consumer(Bank bank, Country country) : base(0f, bank, country)
+        protected Consumer(Country country) : base(country)
         {
 
         }
@@ -68,7 +68,7 @@ namespace Nashet.EconomicSimulation
         }
         override public void SetStatisticToZero()
         {
-            base.SetStatisticToZero();            
+            base.SetStatisticToZero();
             consumed.setZero();
             consumedInMarket.setZero();
         }

@@ -15,9 +15,12 @@ namespace Nashet.EconomicSimulation
         /// <summary> Used to calculate income tax, now it's only for statistics </summary>
         public Value moneyIncomeThisTurn = new Value(0);
         private readonly Value moneyIncomeLastTurn = new Value(0);
-        public Value cash = new Value(0);
+        private readonly Money cash = new Money(0);
+        public ReadOnlyValue Cash { get { return cash; } }
+
+
         /// <summary> could be null</summary>
-        private Bank bank;
+        //private Bank bank;
         public Value loans = new Value(0);
         public Value deposits = new Value(0);
 
@@ -25,11 +28,22 @@ namespace Nashet.EconomicSimulation
 
         public abstract void simulate();
         protected Country country;
-        protected Agent(float inAmount, Bank bank, Country country)
+        protected Agent(Country country)
         {
-            cash.Set(inAmount);
-            this.bank = bank;
             this.country = country;
+        }
+        internal void GiveMoneyFromNoWhere(float money)
+        {
+            cash.Add(money);
+        }
+        internal void GiveMoneyFromGoldPit(Storage gold)
+        {
+            this.moneyIncomeThisTurn.Add(gold);
+            Money sentToGovernment = Money.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
+            gold.SendAll(cash);
+            //send 50% to government            
+            Pay(Country, sentToGovernment);
+            Country.goldMinesIncomeAdd(sentToGovernment);
         }
         public virtual void SetStatisticToZero()
         {
@@ -51,21 +65,33 @@ namespace Nashet.EconomicSimulation
             //get { return province.Country; }
             get { return country; }
         }
-        public Bank getBank()
+        //public Bank Bank
+        //{
+        //    return country.Bank;
+        //}
+
+        public Bank Bank
         {
-            return bank;
+            get
+            {
+                if (country == null)
+                    return null; // to deal with no-country Agents like Market
+                else
+                    return country.Bank;
+            }
         }
-        public void setBank(Bank bank)
-        {
-            this.bank = bank;
-        }
+
+        //public void setBank(Bank bank)
+        //{
+        //    this.bank = bank;
+        //}
         /// <summary> Includes deposits. New value </summary>    
         public Value getMoneyAvailable()
         {
-            if (bank == null)
+            if (Bank == null)
                 return cash.Copy();
             else
-                return cash.Copy().Add(bank.HowMuchDepositCanReturn(this));//that's new Value
+                return cash.Copy().Add(Bank.HowMuchDepositCanReturn(this));//that's new Value
         }
         //new internal bool canPay(Value howMuchPay)
         //{
@@ -101,8 +127,8 @@ namespace Nashet.EconomicSimulation
         //        return loans.get() * -1f;
         //}
         //***************
-        //todo redo those methods:
-        internal bool canAfford(Storage need)
+
+        internal bool CanAfford(Storage need)
         {
             Storage realNeed;
             if (need.isAbstractProduct())
@@ -111,32 +137,32 @@ namespace Nashet.EconomicSimulation
             else
                 realNeed = need;
 
-            if (realNeed.get() == howMuchCanAfford(realNeed).get())
-                return true;
-            else
-                return false;
+            return CanPay(Game.market.getCost(realNeed));
+            //return realNeed.IsEqual(HowMuchCanAfford(realNeed));                
         }
 
-        internal bool canAfford(StorageSet need)
+        internal bool CanAfford(StorageSet need)
         {
             foreach (Storage stor in need)
             {
-                if (howMuchCanAfford(stor).get() < stor.get())
+                if (!CanAfford(stor))
+                    //if (HowMuchCanAfford(stor).get() < stor.get())
                     return false;
             }
             return true;
         }
-        internal bool canAfford(List<Storage> need)
+        internal bool CanAfford(List<Storage> need)
         {
             foreach (Storage stor in need)
-                if (howMuchCanAfford(stor).isSmallerThan(stor))
+                //if (HowMuchCanAfford(stor).isSmallerThan(stor))
+                if (!CanAfford(stor))
                     return false;
             return true;
         }
         /// <summary> Including deposits </summary>    
-        internal Storage howMuchCanAfford(Storage need)
+        internal Storage HowMuchCanAfford(Storage need)
         {
-            Value cost = Game.market.getCost(need);
+            ReadOnlyValue cost = Game.market.getCost(need);
             if (CanPay(cost))
                 return new Storage(need);
             else
@@ -177,7 +203,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    return new Value(Game.market.getCost(need) - this.cash.get());
         //}
-        
+
 
         //private float get()
         //{
@@ -207,16 +233,16 @@ namespace Nashet.EconomicSimulation
             return cash.isBiggerOrEqual(howMuchPay);
         }
 
-        public float getCash()
-        {
-            return cash.get();
-        }
+        //public float getCash()
+        //{
+        //    return cash.get();
+        //}
 
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
         /// Doesn't pay tax, doesn't register transaction
         /// </summary>    
-        public bool payWithoutRecord(Agent whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
+        public bool PayWithoutRecord(Agent whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
@@ -231,7 +257,7 @@ namespace Nashet.EconomicSimulation
                     this.cash.Subtract(howMuch);
                 }
                 else
-                    bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch)); 
+                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
                 return true;
             }
             else
@@ -246,10 +272,10 @@ namespace Nashet.EconomicSimulation
         /// Checks inside. Wouldn't pay if can't. Takes back deposit from bank if needed
         /// Registers moneyIncomeThisTurn, pays tax. Returns true if was able to pay
         /// </summary>    
-        public bool Pay(Agent incomeReceiver, Value howMuch, bool showMessageAboutNegativeValue = true)
+        public bool Pay(Agent incomeReceiver, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (howMuch.isNotZero())
-                if (payWithoutRecord(incomeReceiver, howMuch, showMessageAboutNegativeValue))
+                if (PayWithoutRecord(incomeReceiver, howMuch, showMessageAboutNegativeValue))
                 {
                     // income tax calculation
                     Value howMuchPayReally = howMuch.Copy();
@@ -284,23 +310,17 @@ namespace Nashet.EconomicSimulation
         }
         internal void PayAllAvailableMoney(Agent whom)
         {
-            if (bank != null)
-                bank.ReturnAllDeposits(this);
-            Pay(whom, this.cash.Copy());            
+            if (Bank != null)
+                Bank.ReturnAllDeposits(this);
+            Pay(whom, this.cash.Copy());
         }
         internal void PayAllAvailableMoneyWithoutRecord(Agent whom)
         {
-            if (bank != null)
-                bank.ReturnAllDeposits(this);
-            payWithoutRecord(whom, this.cash.Copy());            
+            if (Bank != null)
+                Bank.ReturnAllDeposits(this);
+            PayWithoutRecord(whom, this.cash.Copy());
         }
-        public void ConvertFromGoldAndAdd(Value gold)
-        {
-            float coins = gold.get() * Options.goldToCoinsConvert;
-            this.cash.Add(coins);
-            this.moneyIncomeThisTurn.Add(coins);
-            gold.Set(0);
-        }
+
 
         override public string ToString()
         {

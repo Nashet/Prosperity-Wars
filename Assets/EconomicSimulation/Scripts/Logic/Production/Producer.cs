@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         abstract public void produce();
 
 
-        protected Producer(Province province) : base(province.Country.getBank(), province.Country)
+        protected Producer(Province province) : base(province.Country)
         {
             this.province = province;
         }
@@ -74,7 +74,7 @@ namespace Nashet.EconomicSimulation
                 realSold.Multiply(DSB);
                 if (realSold.isNotZero())
                 {
-                    Value cost = Game.market.getCost(realSold);
+                    ReadOnlyValue cost = Game.market.getCost(realSold);
 
                     // adding unsold product
                     // assuming gainGoodsThisTurn & realSold have same product

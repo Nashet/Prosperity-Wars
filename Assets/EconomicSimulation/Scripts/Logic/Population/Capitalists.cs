@@ -81,7 +81,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value investmentCost = project.GetInvestmentCost();
                     if (!CanPay(investmentCost))
-                        getBank().giveLackingMoneyInCredit(this, investmentCost);
+                        Bank.GiveLackingMoneyInCredit(this, investmentCost);
                     if (CanPay(investmentCost))
                     {
                         Factory factory = project as Factory;
@@ -103,7 +103,7 @@ namespace Nashet.EconomicSimulation
                                 if (factoryProject != null)
                                 {
                                     Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
-                                    payWithoutRecord(factory2, investmentCost);
+                                    PayWithoutRecord(factory2, investmentCost);
                                 }
                                 else
                                     Debug.Log("Unknown investment type");

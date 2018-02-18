@@ -31,6 +31,10 @@ namespace Nashet.EconomicSimulation
         internal readonly TaxationForPoor taxationForPoor;
         internal readonly TaxationForRich taxationForRich;
 
+        /// <summary> could be null</summary>
+        private readonly Bank bank;
+        public Bank Bank { get { return bank; } }
+
         internal readonly MinorityPolicy minorityPolicy;
 
         public List<Province> ownedProvinces = new List<Province>();
@@ -126,11 +130,11 @@ namespace Nashet.EconomicSimulation
 
         static Country()
         {
-            NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null);
+            NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null, 0f);
             NullCountry.government.setValue(Government.Tribal);
             NullCountry.economy.setValue(Economy.NaturalEconomy);
         }
-        public Country(string name, Culture culture, Color color, Province capital) : base(null)
+        public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
             nameWeight = name.GetWeight();
             foreach (var each in Invention.getAll())
@@ -149,7 +153,7 @@ namespace Nashet.EconomicSimulation
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
             new Modifier(x=>(x as Country).government.getValue() == this.government.getValue() && government.getValue()==Government.ProletarianDictatorship, "Comintern aka Third International", 0.2f, false),
             });
-            setBank(new Bank(this));
+            bank = new Bank(this);
             //staff = new GeneralStaff(this);
             //homeArmy = new Army(this);
             //sendingArmy = new Army(this);
@@ -261,12 +265,11 @@ namespace Nashet.EconomicSimulation
 
                 Province province = Province.getRandomProvinceInWorld((x) => x.Country == null);
                 //&& !Game.seaProvinces.Contains(x));// Country.NullCountry);
-                Country count = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province);
+                Country country = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province, 100f);
                 //count.setBank(count.bank);
                 Game.Player = Country.allCountries[1]; // not wild Tribes, DONT touch that
-                province.InitialOwner(count);
-                count.cash.Add(100f);
-
+                province.InitialOwner(country);                
+                country.GiveMoneyFromNoWhere(100);
             }
 
 
@@ -512,13 +515,13 @@ namespace Nashet.EconomicSimulation
 
             //take all money from bank
             if (byWhom.Invented(Invention.Banking))
-                byWhom.getBank().Annex(this.getBank()); // deposits transfered in province.OnSecede()
+                byWhom.Bank.Annex(this.Bank); // deposits transfered in province.OnSecede()
             else
-                this.getBank().destroy(byWhom);
+                this.Bank.destroy(byWhom);
 
             //byWhom.storageSet.
             this.PayAllAvailableMoney(byWhom);
-            this.getBank().defaultLoaner(this);
+            this.Bank.OnLoanerRefusesToPay(this);
             countryStorageSet.sendAll(byWhom.countryStorageSet);
             //foreach (var item in World.GetAllShares(this).ToList())// transfer all enterprises to local governments            
             foreach (var item in World.GetAllFactories())// transfer all enterprises to local governments            
@@ -933,7 +936,7 @@ namespace Nashet.EconomicSimulation
                         {
                             Value investmentCost = project.GetInvestmentCost();
                             if (!CanPay(investmentCost))
-                                getBank().giveLackingMoneyInCredit(this, investmentCost);
+                                Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
                             {
                                 Factory factory = project as Factory;
@@ -955,7 +958,7 @@ namespace Nashet.EconomicSimulation
                                         if (factoryProject != null)
                                         {
                                             Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
-                                            payWithoutRecord(factory2, investmentCost);
+                                            PayWithoutRecord(factory2, investmentCost);
                                         }
                                         else
                                             Debug.Log("Unknown investment type");
@@ -980,9 +983,9 @@ namespace Nashet.EconomicSimulation
             if (economy.getValue() != Economy.PlannedEconomy)
                 if (this.autoPutInBankLimit > 0f)
                 {
-                    float extraMoney = cash.get() - (float)this.autoPutInBankLimit;
+                    float extraMoney = Cash.get() - (float)this.autoPutInBankLimit;
                     if (extraMoney > 0f)
-                        getBank().takeMoney(this, new Value(extraMoney));
+                        Bank.ReceiveMoney(this, new Value(extraMoney));
                 }
 
             //todo performance - do it not every tick?
@@ -1423,7 +1426,7 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))
             {
-                payWithoutRecord(byWhom, howMuch);
+                PayWithoutRecord(byWhom, howMuch);
                 factorySubsidiesExpense.Add(howMuch);
                 return true;
             }
@@ -1431,8 +1434,8 @@ namespace Nashet.EconomicSimulation
                 return false;
             //{
             //    //sendAll(byWhom.wallet);
-            //    payWithoutRecord(byWhom, byWhom.cash);
-            //    factorySubsidiesExpense.Add(byWhom.cash);
+            //    payWithoutRecord(byWhom, byWhom.Cash);
+            //    factorySubsidiesExpense.Add(byWhom.Cash);
             //}
         }
         internal void soldiersWageExpenseAdd(Value payCheck)
@@ -1511,17 +1514,17 @@ namespace Nashet.EconomicSimulation
                 taxPayer.incomeTaxPayed.Add(taxSize);
                 statistics.Add(taxSize);
                 moneyIncomeThisTurn.Add(taxSize);
-                taxPayer.payWithoutRecord(this, taxSize);
+                taxPayer.PayWithoutRecord(this, taxSize);
                 return taxSize;
             }
             else
             {
-                var hadMiney = taxPayer.cash.Copy();
-                taxPayer.incomeTaxPayed.Add(taxPayer.cash);
-                statistics.Add(taxPayer.cash);
-                moneyIncomeThisTurn.Add(taxPayer.cash);
+                var hadMoney = taxPayer.Cash.Copy();
+                taxPayer.incomeTaxPayed.Add(taxPayer.Cash);
+                statistics.Add(taxPayer.Cash);
+                moneyIncomeThisTurn.Add(taxPayer.Cash);
                 taxPayer.PayAllAvailableMoneyWithoutRecord(this);
-                return hadMiney;
+                return hadMoney;
             }
         }
         public bool TakeNaturalTax(PopUnit pop, Procent tax)
@@ -1539,19 +1542,19 @@ namespace Nashet.EconomicSimulation
                 return false;
             }
         }
-        internal void goldMinesIncomeAdd(Value toAdd)
+        internal void goldMinesIncomeAdd(ReadOnlyValue toAdd)
         {
             goldMinesIncome.Add(toAdd);
         }
-        internal void unemploymentSubsidiesExpenseAdd(Value toAdd)
+        internal void unemploymentSubsidiesExpenseAdd(ReadOnlyValue toAdd)
         {
             unemploymentSubsidiesExpense.Add(toAdd);
         }
-        internal void storageBuyingExpenseAdd(Value toAdd)
+        internal void storageBuyingExpenseAdd(ReadOnlyValue toAdd)
         {
             storageBuyingExpense.Add(toAdd);
         }
-        internal void ownedFactoriesIncomeAdd(Value toAdd)
+        internal void ownedFactoriesIncomeAdd(ReadOnlyValue toAdd)
         {
             ownedFactoriesIncome.Add(toAdd);
         }

@@ -103,7 +103,7 @@ namespace Nashet.EconomicSimulation
         public override string ToString()
         {
             return "Movement for " + ShortName;
-        }                
+        }
         public string FullName
         {
             get

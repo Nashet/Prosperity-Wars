@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
 
             sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());
-            sb.Append("\nHave money: ").Append(Game.Player.cash).Append(" + ").Append(Game.Player.deposits).Append(" on bank deposit");
+            sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" on bank deposit");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
             incomeText.text = sb.ToString();
@@ -75,10 +75,10 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
 
-            sb.Append("\n").Append(Game.Player.getBank()).Append(" - reserves: ").Append(Game.Player.getBank().cash)
-                .Append("; loans: ").Append(Game.Player.getBank().getGivenCredits());
+            sb.Append("\n").Append(Game.Player.Bank).Append(" - reserves: ").Append(Game.Player.Bank.Cash)
+                .Append("; loans: ").Append(Game.Player.Bank.GetGivenCredits());
             //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
-            sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
+            sb.Append("\nTotal gold (in world): ").Append(World.getAllMoney());
             sb.Append("\n*Government and others could automatically take money from deposits");
             bankText.text = sb.ToString();
 
@@ -144,28 +144,28 @@ namespace Nashet.EconomicSimulation
         //}
         public void onTakeLoan()
         {
-            Value loan = Game.Player.getBank().HowBigCreditCanGive(Game.Player);
+            Value loan = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy();
             if (loanLimit.value != 1f)
                 loan.Multiply(loanLimit.value);
-            Game.Player.getBank().GiveCredit(Game.Player, loan);
+            Game.Player.Bank.GiveCredit(Game.Player, loan);
             MainCamera.refreshAllActive();
         }
         public void onPutInDeposit()
         {
-            if (loanLimit.value == 1f)
-                Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.Copy());// Copye some how related to bug with self paying
+            if (loanLimit.value == 1f)//.Copy()
+                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash);// Copye some how related to bug with self paying
             else
-                Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.Copy().Multiply(depositLimit.value));
+                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash.Copy().Multiply(depositLimit.value));
             MainCamera.refreshAllActive();
         }
         public void onLoanLimitChange()
         {
-            loanLimitText.text = Game.Player.getBank().HowBigCreditCanGive(Game.Player).Multiply(loanLimit.value).ToString();
+            loanLimitText.text = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy().Multiply(loanLimit.value).ToString();
         }
 
         public void onDepositLimitChange()
         {
-            depositLimitText.text = Game.Player.cash.Copy().Multiply(depositLimit.value).ToString();
+            depositLimitText.text = Game.Player.Cash.Copy().Multiply(depositLimit.value).ToString();
         }
         private void refreshSoldierWageText()
         {

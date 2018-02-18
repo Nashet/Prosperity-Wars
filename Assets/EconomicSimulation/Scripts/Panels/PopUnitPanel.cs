@@ -98,7 +98,7 @@ namespace Nashet.EconomicSimulation
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Cash: ").Append(pop.cash.ToString());
+                sb.Append("Cash: ").Append(pop.Cash.ToString());
                 money.text = sb.ToString();
                 money.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Money income: " + pop.moneyIncomeThisTurn
                 + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed

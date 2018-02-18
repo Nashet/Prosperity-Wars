@@ -61,7 +61,7 @@
   <Class Name="Nashet.EconomicSimulation.PopUnit" Collapsed="true">
     <Position X="26.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>cCHEgUiEEYgEY+RGBFAhPsACj4BUkOpwoaQkVi0YFyQ=</HashCode>
+      <HashCode>cCHEgUiEEYgEY+RGBFAhHsACj4BVkOpwoaQkVi0YFyQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\PopUnit.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -166,7 +166,7 @@
   <Class Name="Nashet.EconomicSimulation.Agent" Collapsed="true">
     <Position X="30.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>BBgQBQESAJAEAAEMAIAEQAgAgQIAEAASAAAAAAQABAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Agent.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -188,9 +188,10 @@
   <Class Name="Nashet.EconomicSimulation.Bank" Collapsed="true">
     <Position X="44.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAiAAGAAAABEAECQBAAABCAAAAAEACACA=</HashCode>
+      <HashCode>AIAgAAAACAAAAIAGAAIAAEAAIzIEAIAIAQCAAgAAACA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Bank.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Nashet.EconomicSimulation.Consumer" Collapsed="true">
     <Position X="30.75" Y="1.75" Width="1.5" />
@@ -216,7 +217,7 @@
   <Class Name="Nashet.EconomicSimulation.Country" Collapsed="true">
     <Position X="42" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>uMbG0Acq4rjWhorOpJvVTXLAHaEtDowYoUIOjC2ikLY=</HashCode>
+      <HashCode>ucbG0Acq4rjWhorOpJvVTXLAHaEtDowYoUIOjC2ikLY=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Country.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -305,7 +306,7 @@
   <Class Name="Nashet.EconomicSimulation.World" Collapsed="true">
     <Position X="52" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>IAAAAAAAAAAAAAAAgIAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\World.cs</FileName>
     </TypeIdentifier>
   </Class>

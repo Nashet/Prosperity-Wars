@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
-            cashOrder = new SortOrder(this, x => x.getCash());
+            cashOrder = new SortOrder(this, x => x.Cash.get());
 
             educationOrder = new SortOrder(this, x => x.Education.get());
 
@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
             AddCell(pop.Education.ToString(), pop);
 
             ////Adding cash
-            AddCell(pop.cash.ToString(), pop);
+            AddCell(pop.Cash.ToString(), pop);
 
             ////Adding needs fulfilling
 

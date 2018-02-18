@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
             this.parent = parent as Factory;
         }
 
-        public void Add(IShareOwner owner, Value value)
+        public void Add(IShareOwner owner, ReadOnlyValue value)
         {
             //if (IsCorrectData(value.))
             {

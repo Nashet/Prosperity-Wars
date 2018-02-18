@@ -402,11 +402,9 @@ namespace Nashet.EconomicSimulation
                 country.minorityPolicy.setValue(MinorityPolicy.Equality);
                 country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
                 country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
+
                 //nationalization
-                country.getBank().PayAllAvailableMoney(country);
-                country.getBank().getGivenCredits().SetZero();
-                country.loans.SetZero();
-                country.deposits.SetZero();
+                country.Bank.Nationalize();
 
                 foreach (var province in country.ownedProvinces)
                 {

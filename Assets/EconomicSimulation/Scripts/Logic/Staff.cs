@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
     {
         List<Army> allArmies = new List<Army>();
         //protected Country place; //todo change class
-        protected Staff(Country place) : base(null, place)
+        protected Staff(Country place) : base(place)
         {
             //this.place = place;
         }
@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
             int calculatedSize = 0;
             foreach (var item in allArmies)
             {
-                result.AddPoportionally(calculatedSize, item.getSize(), item.GetAverageCorps(x=>x.getMorale()));
+                result.AddPoportionally(calculatedSize, item.getSize(), item.GetAverageCorps(x => x.getMorale()));
                 calculatedSize += item.getSize();
             }
             return result;

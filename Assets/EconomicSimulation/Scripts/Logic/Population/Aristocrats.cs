@@ -99,13 +99,13 @@ namespace Nashet.EconomicSimulation
                         }
                         else // build for money
                         {
-                            Value investmentCost = Game.market.getCost(resourceToBuild);
+                            ReadOnlyValue investmentCost = Game.market.getCost(resourceToBuild);
                             if (!CanPay(investmentCost))
-                                getBank().giveLackingMoneyInCredit(this, investmentCost);
+                                Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
                             {
                                 var factory = Province.BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
-                                payWithoutRecord(factory, investmentCost);
+                                PayWithoutRecord(factory, investmentCost);
                             }
                         }
                     }
@@ -116,7 +116,7 @@ namespace Nashet.EconomicSimulation
                         {
                             Value investmentCost = factory.GetInvestmentCost();
                             if (!CanPay(investmentCost))
-                                getBank().giveLackingMoneyInCredit(this, investmentCost);
+                                Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
                             {
                                 if (factory.IsOpen)
@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
                             {
                                 Value investmentCost = buyShare.GetInvestmentCost();
                                 if (!CanPay(investmentCost))
-                                    getBank().giveLackingMoneyInCredit(this, investmentCost);
+                                    Bank.GiveLackingMoneyInCredit(this, investmentCost);
                                 if (CanPay(investmentCost))
                                     buyShare.BuyStandardShare(this);
                             }

@@ -76,6 +76,9 @@ namespace Nashet.EconomicSimulation
             Sugar = new Product("Sugar", 0.04f, new List<Product> { Grain, Fruit }, type.consumerProduct),
             Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton }, type.consumerProduct),
             Fuel = new Product("Fuel", 0.04f, new List<Product> { Wood, Coal, Oil }, type.industrial);
+
+        static public void init()
+        { }
         //static initialization
         static Product()
         {

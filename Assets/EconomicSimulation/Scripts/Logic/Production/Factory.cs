@@ -214,7 +214,7 @@ namespace Nashet.EconomicSimulation
         /// Don't call it directly
         /// </summary>
 
-        public Factory(Province province, IShareOwner investor, FactoryType type, Value cost)
+        public Factory(Province province, IShareOwner investor, FactoryType type, ReadOnlyValue cost)
             : base(type, province)
         {
             //this.buildByPlannedEconomy = buildByPlannedEconomy;
@@ -618,7 +618,7 @@ namespace Nashet.EconomicSimulation
                 // to help factories catch up other factories salaries
                 //    salary.set(province.getLocalMinSalary());
                 // freshly built factories should rise salary to concurrency with old ones
-                //if (getWorkForce() < 100 && Province.getUnemployedWorkers() == 0 && this.cash.get() > 10f)// && getInputFactor() == 1)
+                //if (getWorkForce() < 100 && Province.getUnemployedWorkers() == 0 && this.Cash.get() > 10f)// && getInputFactor() == 1)
                 //    //salary.set(province.getLocalMinSalary());
                 //    salary.add(0.09f);
 
@@ -747,18 +747,18 @@ namespace Nashet.EconomicSimulation
                 if (loans.isNotZero())
                 {
                     Value howMuchToReturn = loans.Copy();
-                    if (howMuchToReturn.isSmallerOrEqual(cash))
-                        howMuchToReturn.Set(cash);
-                    getBank().takeMoney(this, howMuchToReturn);
+                    if (howMuchToReturn.isSmallerOrEqual(Cash))
+                        howMuchToReturn.Set(Cash);
+                    Bank.ReceiveMoney(this, howMuchToReturn);
                     if (loans.isNotZero())
-                        getBank().defaultLoaner(this);
+                        Bank.OnLoanerRefusesToPay(this);
                 }
             }
             // send remaining money to owners
             foreach (var item in ownership.GetAllShares())
             {
-                Pay(item.Key as Agent, cash.Copy().Multiply(item.Value), false);
-                //pay(item.Key as Agent, item.Value.SendProcentOf(cash), false);
+                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), false);
+                //pay(item.Key as Agent, item.Value.SendProcentOf(Cash), false);
             }
 
             MainCamera.factoryPanel.removeFactory(this);
@@ -819,7 +819,7 @@ namespace Nashet.EconomicSimulation
         {
             if (IsOpen)
             {
-                Value dividends = new Value(cash.get() - wantsMinMoneyReserv(), false);
+                Value dividends = new Value(Cash.get() - wantsMinMoneyReserv(), false);
                 payedDividends.Set(dividends);
 
                 if (dividends.isNotZero())
@@ -854,7 +854,7 @@ namespace Nashet.EconomicSimulation
                 salary.set(Province.getLocalMinSalary());
             if (payMoney)
             {
-                agent.payWithoutRecord(this, getReopenCost());
+                agent.PayWithoutRecord(this, getReopenCost());
                 ownership.Add(byWhom, getReopenCost());
                 //Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this);
             }
@@ -900,7 +900,7 @@ namespace Nashet.EconomicSimulation
             if ((byWhom as Agent).Country.economy.getValue() != Economy.PlannedEconomy)
             {
                 var cost = Game.market.getCost(getUpgradeNeeds());
-                (byWhom as Agent).payWithoutRecord(this, cost);
+                (byWhom as Agent).PayWithoutRecord(this, cost);
                 ownership.Add(byWhom, cost);
                 //Debug.Log(byWhom + " invested " + cost + " in upgrading " + this);
             }
@@ -954,12 +954,8 @@ namespace Nashet.EconomicSimulation
                     base.produce(new Value(getEfficiency(true).get() * getLevel()));
 
                 if (Type == FactoryType.GoldMine)
-                {
-                    this.ConvertFromGoldAndAdd(storage);
-                    //send 50% to government
-                    Value sentToGovernment = new Value(moneyIncomeThisTurn.get() * Options.GovernmentTakesShareOfGoldOutput);
-                    Pay(Country, sentToGovernment);
-                    Country.goldMinesIncomeAdd(sentToGovernment);
+                {                    
+                    this.GiveMoneyFromGoldPit(storage);
                 }
                 else
                 {
@@ -1046,22 +1042,22 @@ namespace Nashet.EconomicSimulation
                         isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
                     // get money from current investor, not owner
-                    Value needExtraFonds = new Value(wantsMinMoneyReserv() - cash.get(), false);
+                    Value needExtraFonds = new Value(wantsMinMoneyReserv() - Cash.get(), false);
                     if (needExtraFonds.isNotZero())
                     {
                         var investor = currentInvestor as Agent;
                         if (investor.CanPay(needExtraFonds))
                         {
-                            investor.payWithoutRecord(this, needExtraFonds);
+                            investor.PayWithoutRecord(this, needExtraFonds);
                             ownership.Add(currentInvestor, needExtraFonds);
                         }
 
                         else
                         {
-                            investor.getBank().giveLackingMoneyInCredit(investor, needExtraFonds);
+                            investor.Bank.GiveLackingMoneyInCredit(investor, needExtraFonds);
                             if (investor.CanPay(needExtraFonds))
                             {
-                                investor.payWithoutRecord(this, needExtraFonds);
+                                investor.PayWithoutRecord(this, needExtraFonds);
                                 ownership.Add(currentInvestor, needExtraFonds);
                             }
                         }

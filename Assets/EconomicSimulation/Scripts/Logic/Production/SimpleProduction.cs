@@ -35,14 +35,14 @@ namespace Nashet.EconomicSimulation
         {
             return inputProductsReserve;
         }
-        
 
-        
+
+
         override public string ToString()
         {
             return "crafting " + type.basicProduction;
         }
-       
+
         public override void simulate()
         {
             throw new NotImplementedException();
@@ -142,8 +142,8 @@ namespace Nashet.EconomicSimulation
             // searching lowest factor
             foreach (Storage need in reallyNeedResources)
             {
-                Value denominator = type.resourceInput.GetFirstSubstituteStorage(need.Product).Copy().Multiply( multiplier);
-                if (denominator.isNotZero()) 
+                Value denominator = type.resourceInput.GetFirstSubstituteStorage(need.Product).Copy().Multiply(multiplier);
+                if (denominator.isNotZero())
                 {
                     var newfactor = new Procent(need, denominator);
                     if (newfactor.isSmallerThan(inputFactor))
@@ -215,9 +215,9 @@ namespace Nashet.EconomicSimulation
             if (need.isZero())
                 return 0f;
             else
-            {                
-                Storage realNeed = need.Multiply(multiplier.get());             
-                Storage canAfford = howMuchCanAfford(realNeed);
+            {
+                Storage realNeed = need.Multiply(multiplier.get());
+                Storage canAfford = HowMuchCanAfford(realNeed);
                 return canAfford.get();
             }
         }

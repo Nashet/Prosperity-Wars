@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using System;
+
 namespace Nashet.ValueSpace
 {
     public class Money : Storage, ICopyable<Money>
@@ -9,10 +11,20 @@ namespace Nashet.ValueSpace
         { }
         protected Money(Money value) : base(value)
         { }
+        private Money(Storage value) : base(value)
+        {
+            if (value.Product != Product.Gold)
+                Debug.Log("THAT IS NOT REAL GOLD"); 
+        }
+
 
         public Money Copy()
         {
             return new Money(this);
+        }
+        public static Money CovertFromGold(Storage stor)
+        {
+            return new Money(stor);
         }
         internal Money Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
@@ -59,5 +71,7 @@ namespace Nashet.ValueSpace
                 Set(get() + adding);
             return this;
         }
+
+        
     }
 }

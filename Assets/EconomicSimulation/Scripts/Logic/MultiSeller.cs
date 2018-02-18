@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> Shows actual sells, not sent to market   </summary>
         private readonly Dictionary<Product, Value> soldByGovernment = new Dictionary<Product, Value>();
 
-        public MultiSeller(Country place) : base(place)
+        public MultiSeller(float money, Country place) : base(place)
         {
             foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
                 if (item != Product.Gold)
@@ -128,7 +128,7 @@ namespace Nashet.EconomicSimulation
                     realSold.Multiply(DSB);
                     if (realSold.isNotZero())
                     {
-                        Value cost = Game.market.getCost(realSold);
+                        ReadOnlyValue cost = Game.market.getCost(realSold);
                         //soldByGovernment.addMy(realSold.Product, realSold);
                         soldByGovernment[realSold.Product].Set(realSold);
                         //returning back unsold product

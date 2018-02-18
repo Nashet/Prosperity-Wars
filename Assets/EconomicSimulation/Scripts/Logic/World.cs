@@ -40,5 +40,26 @@ namespace Nashet.EconomicSimulation
                         if (record.Key == owner)
                             yield return new KeyValuePair<IShareable, Procent>(factory, record.Value);
         }
+        internal static Value getAllMoney()
+        {
+            Value allMoney = new Value(0f);
+            foreach (Country country in Country.allCountries)
+            {
+                allMoney.Add(country.Cash);
+                allMoney.Add(country.Bank.getReservs());
+                foreach (Province province in country.ownedProvinces)
+                {
+                    foreach (var agent in province.getAllAgents())
+                    {
+                        allMoney.Add(agent.Cash);
+                        //var isArtisan = agent as Artisans;
+                        //if (isArtisan!=null && isArtisan.)
+                    }
+
+                }
+            }
+            allMoney.Add(Game.market.Cash);
+            return allMoney;
+        }
     }
 }
