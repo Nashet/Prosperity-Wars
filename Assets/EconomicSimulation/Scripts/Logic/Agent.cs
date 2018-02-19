@@ -28,9 +28,18 @@ namespace Nashet.EconomicSimulation
 
         public abstract void simulate();
         protected Country country;
+        public Country Country
+        {
+            //get { return province.Country; }
+            get { return country; }
+        }
         protected Agent(Country country)
         {
             this.country = country;
+        }
+        public void OnProvinceOwnerChanged(Country newOner)
+        {
+            country = newOner;
         }
         internal void GiveMoneyFromNoWhere(float money)
         {
@@ -42,8 +51,8 @@ namespace Nashet.EconomicSimulation
             Money sentToGovernment = Money.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
             gold.SendAll(cash);
             //send 50% to government            
-            Pay(Country, sentToGovernment);
-            Country.goldMinesIncomeAdd(sentToGovernment);
+            Pay(country, sentToGovernment);
+            country.goldMinesIncomeAdd(sentToGovernment);
         }
         public virtual void SetStatisticToZero()
         {
@@ -56,19 +65,8 @@ namespace Nashet.EconomicSimulation
         {
             return moneyIncomeLastTurn.Copy().Subtract(value, false);
         }
-        //public Province Province
-        //{
-        //    return province;
-        //}
-        public Country Country
-        {
-            //get { return province.Country; }
-            get { return country; }
-        }
-        //public Bank Bank
-        //{
-        //    return country.Bank;
-        //}
+                
+        
 
         public Bank Bank
         {
@@ -285,17 +283,17 @@ namespace Nashet.EconomicSimulation
                     Agent payer = this;
 
                     if (payer is Market == false //&& incomeReceiver is Market == false
-                        && payer.Country != incomeReceiver.Country
+                        && payer.country != incomeReceiver.country
                         && payer is Factory) // pay taxes in enterprise jurisdiction only if it's factory
                     {
-                        var payed = payer.Country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
+                        var payed = payer.country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
                         howMuchPayReally.Subtract(payed);//and reduce taxable base
                     }
 
                     // in rest cases only pops pay taxes
                     var popReceiver = incomeReceiver as PopUnit;
                     if (popReceiver != null)
-                        incomeReceiver.Country.TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.Type.isPoorStrata());
+                        incomeReceiver.country.TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.Type.isPoorStrata());
                     //else // if it's not Pop than it should by dividends from enterprise..
                     //{ 
                     //    //var countryPayer = incomeReceiver as Country;

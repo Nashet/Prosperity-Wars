@@ -6,9 +6,9 @@ namespace Nashet.EconomicSimulation
 {
     public class NewFactoryProject : IInvestable
     {
-        public readonly FactoryType Type;
+        public readonly ProductionType Type;
         private readonly Province province;
-        public NewFactoryProject(Province province, FactoryType type)
+        public NewFactoryProject(Province province, ProductionType type)
         {
             this.Type = type;
             this.province = province;

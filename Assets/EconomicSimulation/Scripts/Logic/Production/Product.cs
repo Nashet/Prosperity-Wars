@@ -316,7 +316,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                var type = FactoryType.whoCanProduce(this);
+                var type = ProductionType.whoCanProduce(this);
                 if (type == null)
                     return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
                 else

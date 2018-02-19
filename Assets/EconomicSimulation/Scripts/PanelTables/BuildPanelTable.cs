@@ -10,17 +10,17 @@ using System.Linq;
 namespace Nashet.EconomicSimulation
 {
 
-    public class BuildPanelTable : UITableNew<FactoryType>
+    public class BuildPanelTable : UITableNew<ProductionType>
     {
-        protected override IEnumerable<FactoryType> ContentSelector()
+        protected override IEnumerable<ProductionType> ContentSelector()
         {
             
             if (Game.selectedProvince == null)
-                return Enumerable.Empty<FactoryType>();
+                return Enumerable.Empty<ProductionType>();
             else
-                return FactoryType.getAllInventedTypes(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player));
+                return ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player));
         }
-        protected override void AddRow(FactoryType factoryType, int number)
+        protected override void AddRow(ProductionType factoryType, int number)
         {
             // Adding shownFactory type
             AddCell(factoryType.ToString(), factoryType);

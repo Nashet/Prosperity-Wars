@@ -34,9 +34,7 @@ namespace Nashet.EconomicSimulation
         {
             this.province = province;
         }
-        //protected Producer() : base(null, null)
-        //{
-        //}
+       
         public Province Province
         {
             get { return province; }

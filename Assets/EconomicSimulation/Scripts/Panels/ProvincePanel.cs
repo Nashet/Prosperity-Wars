@@ -146,7 +146,7 @@ namespace Nashet.EconomicSimulation
             text.text = "Owner: " + Game.selectedProvince.Country;
 
             
-            btnBuild.interactable = FactoryType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
+            btnBuild.interactable = ProductionType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
 
             
             btMobilize.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btMobilize.GetComponent<ToolTipHandler>().text);

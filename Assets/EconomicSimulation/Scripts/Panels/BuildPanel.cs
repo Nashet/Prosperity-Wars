@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button buildButton;
 
-        private FactoryType selectedFactoryType;
+        private ProductionType selectedFactoryType;
         StringBuilder sb = new StringBuilder();
         //Province province;
         // Use this for initialization
@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
             }
         }
-        public void selectFactoryType(FactoryType newSelection)
+        public void selectFactoryType(ProductionType newSelection)
         {
             selectedFactoryType = newSelection;
         }
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
                 if (Game.selectedProvince == null)
                     descriptionText.text = "Select province where to build";
-                else if (FactoryType.getAllInventedTypes(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player)).Count() == 0)
+                else if (ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player)).Count() == 0)
                     descriptionText.text = "Nothing to build now";
                 else
                     descriptionText.text = "Select building from left";

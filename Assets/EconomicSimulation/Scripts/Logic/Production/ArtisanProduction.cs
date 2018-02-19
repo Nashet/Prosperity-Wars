@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     public class ArtisanProduction : SimpleProduction
     {
         private readonly Artisans artisan;
-        public ArtisanProduction(FactoryType type, Province province, Artisans artisan) : base(type, province)
+        public ArtisanProduction(ProductionType type, Province province, Artisans artisan) : base(type, province)
         {
             this.artisan = artisan;
         }       

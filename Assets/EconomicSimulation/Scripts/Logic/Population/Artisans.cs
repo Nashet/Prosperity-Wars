@@ -3,6 +3,7 @@
 using Nashet.ValueSpace;
 using System.Collections.Generic;
 using System.Linq;
+using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
@@ -46,8 +47,8 @@ namespace Nashet.EconomicSimulation
                 artisansProduction = null;
             else
             {
-                if (Game.Random.Next(Options.ArtisansChangeProductionRate) == 1
-                   )// && (artisansProduction==null 
+                if (Rand.Chance(Options.ArtisansChangeProductionRate))
+                    // && (artisansProduction==null 
                     //|| (artisansProduction !=null && needsFulfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
                     changeProductionType();
 
@@ -143,14 +144,14 @@ namespace Nashet.EconomicSimulation
         }
         private void changeProductionType()
         {
-            KeyValuePair<FactoryType, float> result = new KeyValuePair<FactoryType, float>(null, 0f);
+            KeyValuePair<ProductionType, float> result = new KeyValuePair<ProductionType, float>(null, 0f);
             //foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(Country))
-            foreach (FactoryType factoryType in FactoryType.getAllInventedTypes(Country).
+            foreach (ProductionType factoryType in ProductionType.getAllInventedArtisanships(Country).
                 Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education))
             {
                 float possibleProfit = factoryType.getPossibleProfit().get();
                 if (possibleProfit > result.Value)
-                    result = new KeyValuePair<FactoryType, float>(factoryType, possibleProfit);
+                    result = new KeyValuePair<ProductionType, float>(factoryType, possibleProfit);
             }
             if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.Type))
             {
@@ -171,7 +172,7 @@ namespace Nashet.EconomicSimulation
             if (artisansProduction != null)
                 artisansProduction.SetStatisticToZero();
         }
-        public FactoryType Type
+        public ProductionType Type
         {
             get
             {
@@ -185,7 +186,7 @@ namespace Nashet.EconomicSimulation
         internal void checkProfit()
         {
             // todo doesn't include taxes. Should it?
-            if (artisansProduction == null || moneyIncomeThisTurn.Copy().subtract( artisansProduction.getExpences()).isZero())
+            if (artisansProduction == null || moneyIncomeThisTurn.Copy().subtract(artisansProduction.getExpences()).isZero())
                 changeProductionType();
         }
     }

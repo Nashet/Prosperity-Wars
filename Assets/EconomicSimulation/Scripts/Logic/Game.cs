@@ -48,9 +48,7 @@ namespace Nashet.EconomicSimulation
             market = new Market();
         }
         public Game()
-        {
-            
-           
+        {  
             if (readMapFormFile)
             {
                 Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;                
@@ -272,20 +270,14 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Tribesmen(2000, province.Country.getCulture(), province);
                     //else
-                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(1800, 2000), province.Country.getCulture(), province);
-
-
-                    if (province.Country == Game.Player)
-                    {
-                        //pop = new Tribesmen(20900, PopType.tribeMen, province.getOwner().culture, province);
-                        //province.allPopUnits.Add(pop);
-                    }
+                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(3600, 4000), province.Country.getCulture(), province);
+                    
                     //if (Game.devMode)
                     //    pop = new Aristocrats(1000, province.Country.getCulture(), province);
                     //else
                     pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.Country.getCulture(), province);
                                        
-                    pop.GiveMoneyFromNoWhere(9000f);
+                    pop.GiveMoneyFromNoWhere(900f);
                     pop.storage.add(new Storage(Product.Grain, 60f));
                     //if (!Game.devMode)
                     //{
@@ -295,7 +287,7 @@ namespace Nashet.EconomicSimulation
                     pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(900f);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(10000, 12000), province.Country.getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(1000, 1100), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(20f);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
@@ -631,7 +623,7 @@ namespace Nashet.EconomicSimulation
                         {
                             pop.calcGrowth();
                             pop.calcPromotions();
-                            if (pop.needsFulfilled.isSmallerThan(Options.PopNeedsEscapingLimit))
+                            if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
                                 pop.EscapeForBetterLife(x => x.HasJobsFor(pop.Type, province));
                             pop.calcAssimilations();
                         }

@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.001f);
 
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
-        public static readonly Procent PopNeedsEscapingLimit = new Procent(0.30f);//0.33f
+        public static readonly Procent PopNeedsEscapingLimit = new Procent(0.333f);//0.33f
         /// <summary> New life should this better to start escaping</summary>
         public static readonly Procent PopNeedsEscapingBarrier = new Procent(0.01f); // was 0.1
 
@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
 
         internal static readonly float aristocratsFoodReserv = 50;
         internal static readonly float ArtisansProductionModifier = 0.5f;
-        internal static readonly int ArtisansChangeProductionRate = 60;
+        internal static readonly Procent ArtisansChangeProductionRate =  new Procent(0.05f);
         internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
         internal static readonly float PopOneThird = 0.333f;
         internal static readonly float PopTwoThird = 0.666f;

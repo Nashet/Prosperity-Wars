@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Modifier
             modifierHasResourceInProvince = new Modifier(x => !(x as Factory).Type.isResourceGathering() &&
             ((x as Factory).Province.isProducingOnEnterprises((x as Factory).Type.resourceInput)
-            || ((x as Factory).Province.getResource() == Product.Grain && (x as Factory).Type == FactoryType.Barnyard)
+            || ((x as Factory).Province.getResource() == Product.Grain && (x as Factory).Type == ProductionType.Barnyard)
             ),
                   "Has input resource in this province", 0.20f, false),
 
@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
             new Modifier(x=>
             {
                 var factory = x as Factory;
-                if (factory.Type == FactoryType.University)
+                if (factory.Type == ProductionType.University)
                     return (factory.AverageWorkersEducation.get() - 0.5f)  * 2f;
                 else if (factory.Type.isResourceGathering())
                     return factory.AverageWorkersEducation.get() / 10f;
@@ -197,16 +197,16 @@ namespace Nashet.EconomicSimulation
              new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).Country)
              && (x as Factory).Country.Capital == (x as Factory).Province, "Capital of Polis", 0.50f, false),
              new Modifier(x=>(x as Factory).Province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
-             new Modifier(Government.isTribal, x=>(x as Factory).Country, -1.0f, false),
-             new Modifier(Government.isDespotism, x=>(x as Factory).Country, -0.30f, false), // remove this?
-             new Modifier(x=>!(x as Factory).Country.Invented((x as Factory).Type), "Uses uninvented technologies", -0.3f, false)
+             new Modifier(Government.isTribal, x=>(x as Factory).Country, -0.3f, false),
+             new Modifier(Government.isDespotism, x=>(x as Factory).Country, -0.20f, false), // remove this?
+             new Modifier(x=>!(x as Factory).Country.InventedFactory((x as Factory).Type), "Uses uninvented technologies", -0.3f, false)
             });
 
         /// <summary>
         /// Don't call it directly
         /// </summary>
 
-        public Factory(Province province, IShareOwner investor, FactoryType type, ReadOnlyValue cost)
+        public Factory(Province province, IShareOwner investor, ProductionType type, ReadOnlyValue cost)
             : base(type, province)
         {
             //this.buildByPlannedEconomy = buildByPlannedEconomy;
@@ -347,7 +347,7 @@ namespace Nashet.EconomicSimulation
             {
                 int leftToHire = amount;
                 hiredLastTurn = 0;
-                popList = popList.OrderByDescending(x => x.Education.get()).ToList();
+                popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.getPopulation()).ToList();
 
                 foreach (PopUnit pop in popList)
 
@@ -773,7 +773,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         float wantsMinMoneyReserv()
         {
-            return getExpences().get()*Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
+            return getExpences().get() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
         }
         public void CloseUnprofitable()
         {
@@ -947,7 +947,7 @@ namespace Nashet.EconomicSimulation
                 if (workers > 0)
                     base.produce(new Value(getEfficiency(true).get() * getLevel()));
 
-                if (Type == FactoryType.GoldMine)
+                if (Type == ProductionType.GoldMine)
                 {
                     this.GiveMoneyFromGoldPit(storage);
                 }

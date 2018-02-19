@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
         public override bool canThisDemoteInto(PopType targetType)
         {
             if (targetType == PopType.Workers
-                //|| targetType == PopType.Farmers && Country.isInvented(Invention.Farming) // commented this to get more workers &  more ec. growth           
+                || targetType == PopType.Farmers && Country.Invented(Invention.Farming) 
                 || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
                 return true;
             else

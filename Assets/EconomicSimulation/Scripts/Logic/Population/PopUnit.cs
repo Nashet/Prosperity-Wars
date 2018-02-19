@@ -1078,7 +1078,7 @@ namespace Nashet.EconomicSimulation
             var list = new List<KeyValuePair<IEscapeTarget, Value>>();
             list.AddIfNotNull(getRichestDemotionTarget(predicate));
 
-            if (this.type == PopType.Farmers || this.type == PopType.Workers) // others don't care where they live
+            if (this.type == PopType.Farmers || this.type == PopType.Workers || this.type == PopType.Tribesmen) // others don't care where they live
                 list.AddIfNotNull(getRichestMigrationTarget(predicate));
 
             if (this.type != PopType.Aristocrats && this.type != PopType.Capitalists) // redo

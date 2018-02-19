@@ -542,7 +542,7 @@ namespace Nashet.EconomicSimulation
 
 
                     priceChangeSpeed = 0;
-                    if (balance >= 1f)//0.95f)
+                    if (balance >= 0.95f)//1f) //some goods can't achieve 1 dsb, like cotton for example
                         priceChangeSpeed = 0.001f + price.get() * 0.1f;
                     else
                     {

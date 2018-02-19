@@ -10,10 +10,10 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : IClickable, ISortableName
+    public class ProductionType : IClickable, ISortableName
     {
-        static private readonly List<FactoryType> allTypes = new List<FactoryType>();
-        internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard, University;
+        static private readonly List<ProductionType> allTypes = new List<ProductionType>();
+        internal static ProductionType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard, University;
 
         internal readonly string name;
 
@@ -45,109 +45,109 @@ namespace Nashet.EconomicSimulation
         internal DoubleConditionsList conditionsBuildThis;
         private readonly bool shaft;
         private readonly float nameWeight;
-        static FactoryType()
+        static ProductionType()
         {
-            new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
-            new FactoryType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
-            new FactoryType("Metal pit", new Storage(Product.MetalOre, 2f), true);
-            new FactoryType("Coal pit", new Storage(Product.Coal, 3f), true);
-            new FactoryType("Cotton farm", new Storage(Product.Cotton, 2f), false);
-            new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
-            new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
-            new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
-            new FactoryType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
+            new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
+            new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
+            new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
+            new ProductionType("Coal pit", new Storage(Product.Coal, 3f), true);
+            new ProductionType("Cotton farm", new Storage(Product.Cotton, 2f), false);
+            new ProductionType("Quarry", new Storage(Product.Stone, 2f), true);
+            new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);
+            new ProductionType("Fishery", new Storage(Product.Fish, 2f), false);
+            new ProductionType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
 
-            new FactoryType("Oil rig", new Storage(Product.Oil, 2f), true);
-            new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
+            new ProductionType("Oil rig", new Storage(Product.Oil, 2f), true);
+            new ProductionType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
 
             StorageSet resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Grain, 1f));
-            new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput);
+            new ProductionType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
-            new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
+            new ProductionType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Wood, 1f));
-            new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
+            new ProductionType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fuel, 0.5f));
             resourceInput.Set(new Storage(Product.MetalOre, 2f));
-            new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
+            new ProductionType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fibers, 1f));
-            new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
+            new ProductionType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fuel, 0.5f));
             resourceInput.Set(new Storage(Product.Stone, 2f));
-            new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
+            new ProductionType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Sugar, 1f));
-            new FactoryType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
+            new ProductionType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
+            new ProductionType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Stone, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
+            new ProductionType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
+            new ProductionType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
+            new ProductionType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Oil, 1f));
-            new FactoryType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
+            new ProductionType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
 
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
+            new ProductionType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Machinery, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
-            new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
+            new ProductionType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Machinery, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Artillery, 1f));
-            new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
+            new ProductionType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Machinery, 1f));
-            new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
+            new ProductionType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Oil, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
-            new FactoryType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
+            new ProductionType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
 
-            University = new FactoryType("University", new Storage(Product.Education, 2f), new StorageSet());
+            University = new ProductionType("University", new Storage(Product.Education, 2f), new StorageSet());
         }
         /// <summary>
         /// Basic constructor for resource getting FactoryType
         /// </summary>    
-        internal FactoryType(string name, Storage basicProduction, bool shaft)
+        internal ProductionType(string name, Storage basicProduction, bool shaft)
         {
             this.name = name;
             nameWeight = name.GetWeight();
@@ -197,14 +197,20 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Constructor for resource processing FactoryType
         /// </summary>    
-        internal FactoryType(string name, Storage basicProduction, StorageSet resourceInput) : this(name, basicProduction, false)
+        internal ProductionType(string name, Storage basicProduction, StorageSet resourceInput) : this(name, basicProduction, false)
         {
             this.resourceInput = resourceInput;
         }
-        public static IEnumerable<FactoryType> getAllInventedTypes(Country country)
+        public static IEnumerable<ProductionType> getAllInventedFactories(Country country)
         {
             foreach (var next in allTypes)
-                if (country.Invented(next))
+                if (country.InventedFactory(next))
+                    yield return next;
+        }
+        public static IEnumerable<ProductionType> getAllInventedArtisanships(Country country)
+        {
+            foreach (var next in allTypes)
+                if (country.InventedArtisanship(next))
                     yield return next;
         }
         //public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
@@ -244,9 +250,9 @@ namespace Nashet.EconomicSimulation
         /// Returns first correct value
         /// Assuming there is only one  FactoryType for each Product
         /// </summary>   
-        internal static FactoryType whoCanProduce(Product product)
+        internal static ProductionType whoCanProduce(Product product)
         {
-            foreach (FactoryType ft in allTypes)
+            foreach (ProductionType ft in allTypes)
                 if (ft.basicProduction.isSameProductType(product))
                     return ft;
             return null;
@@ -277,7 +283,7 @@ namespace Nashet.EconomicSimulation
                 return true;
             //resourceInput.Count() == 0
         }
-        internal bool isManufacture()
+        internal bool IsResourceProcessing()
         {
             return !isResourceGathering() && this != Barnyard && this != University;
         }
@@ -377,7 +383,7 @@ namespace Nashet.EconomicSimulation
                 return false;
             if (isResourceGathering() && basicProduction.Product != where.getResource()
                 //|| !where.Country.isInvented(basicProduction.Product)
-                || !investor.Country.Invented(this)
+                || !investor.Country.InventedFactory(this)
                 //|| isManufacture() && !investor.Country.Invented(Invention.Manufactures)
                 //|| (basicProduction.Product == Product.Cattle && !investor.Country.Invented(Invention.Domestication))
                 || !allowsForeignInvestments.checkIftrue(investor, where)

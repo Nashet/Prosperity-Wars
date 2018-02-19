@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<Product> ContentSelector()
         {
-            return Product.getAll().Where(x => x.isTradable());
+            return Product.getAll().Where(x => x.IsInventedByAnyOne());
         }
 
         protected override void AddHeader()

@@ -326,16 +326,9 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public void secedeTo(Country taker, bool addModifier)
         {
+
             Country oldCountry = Country;
-            //refuse pay back loans to old country bank
-            foreach (var agent in getAllAgents())
-            {
-                if (agent.loans.isNotZero())
-                    agent.Bank.OnLoanerRefusesToPay(agent);
-                //take back deposits            
-                oldCountry.Bank.ReturnAllDeposits(agent);
-                //agent.setBank(taker.Bank);
-            }
+
 
             // transfer government owned factories
             // don't do government property revoking for now            
@@ -357,9 +350,19 @@ namespace Nashet.EconomicSimulation
                 Movement.leave(pop);
             }
 
+            //refuse pay back loans to old country bank
+            foreach (var agent in getAllAgents())
+            {
+                if (agent.loans.isNotZero())
+                    agent.Bank.OnLoanerRefusesToPay(agent);
+                //take back deposits            
+                oldCountry.Bank.ReturnAllDeposits(agent);
+                //agent.setBank(taker.Bank);
+                agent.OnProvinceOwnerChanged(taker);
+            }
             //transfer province
-            if (oldCountry != null)
-                oldCountry.ownedProvinces.Remove(this);
+
+            oldCountry.ownedProvinces.Remove(this);
             owner = taker;
             taker.ownedProvinces.Add(this);
 
@@ -737,7 +740,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal bool hasFactory(FactoryType type)
+        internal bool hasFactory(ProductionType type)
         {
             foreach (Factory f in allFactories)
                 if (f.Type == type)
@@ -825,7 +828,7 @@ namespace Nashet.EconomicSimulation
             //group.RecalculateBounds();
         }
 
-        internal Factory findFactory(FactoryType proposition)
+        internal Factory findFactory(ProductionType proposition)
         {
             foreach (Factory f in allFactories)
                 if (f.Type == proposition)
@@ -1143,7 +1146,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in upgradeInvestments)
                 yield return item;
 
-            var buildInvestments = FactoryType.getAllInventedTypes(Country).Where(x => x.canBuildNewFactory(this, investor));
+            var buildInvestments = ProductionType.getAllInventedFactories(Country).Where(x => x.canBuildNewFactory(this, investor));
             foreach (var item in buildInvestments)
                 yield return new NewFactoryProject(this, item);
 
@@ -1207,7 +1210,7 @@ namespace Nashet.EconomicSimulation
         //    FactoryType.getAllInventedTypes(Country, x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
         //    return res;
         //}
-        internal bool canUpgradeFactory(FactoryType type)
+        internal bool canUpgradeFactory(ProductionType type)
         {
             if (!hasFactory(type))
                 return false;
@@ -1227,7 +1230,7 @@ namespace Nashet.EconomicSimulation
         {
             return nameWeight;
         }
-        public Factory BuildFactory(IShareOwner investor, FactoryType type, ReadOnlyValue cost)
+        public Factory BuildFactory(IShareOwner investor, ProductionType type, ReadOnlyValue cost)
         {
             if (getAllFactories().Any(x => x.Type == type))
             {

@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
         new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
         new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
         new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
-        new Modifier(x=>(x as Country).getAllPopUnits().GetAverageProcent(y=>y.Education).RawUIntValue, "Average education", 1f / Procent.Precision, false),
+        new Modifier(x=>(x as Country).getAllPopUnits().GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false),
     });
 
         static Country()
@@ -195,8 +195,8 @@ namespace Nashet.EconomicSimulation
 
                 markInvented(Invention.Banking);
 
-                markInvented(Invention.Universities);
-                markInvented(Invention.Manufactures);
+                //markInvented(Invention.Universities);
+                //markInvented(Invention.Manufactures);
 
 
                 //markInvented(Invention.metal);
@@ -204,7 +204,6 @@ namespace Nashet.EconomicSimulation
                 //markInvented(Invention.ProfessionalArmy);
                 //markInvented(Invention.Welfare);
 
-                //markInvented(Invention.Manufactures);
                 //markInvented(Invention.Collectivism);
             }
         }
@@ -352,11 +351,22 @@ namespace Nashet.EconomicSimulation
             else
                 return true;
         }
-        public bool Invented(FactoryType factory)
+        public bool InventedFactory(ProductionType production)
         {
-            if (!Invented(factory.basicProduction.Product)
-             || factory.isManufacture() && !Invented(Invention.Manufactures)
-             || (factory.basicProduction.Product == Product.Cattle && !Invented(Invention.Domestication))
+            //if (!Invented(production.basicProduction.Product)
+            // || production.IsResourceProcessing() && !Invented(Invention.Manufactures)
+            // || (production.basicProduction.Product == Product.Cattle && !Invented(Invention.Domestication))
+            if (!InventedArtisanship(production)
+                 || production.IsResourceProcessing() && !Invented(Invention.Manufactures)
+             )
+                return false;
+            else
+                return true;
+        }
+        public bool InventedArtisanship(ProductionType production)
+        {
+            if (!Invented(production.basicProduction.Product)
+             || (production.basicProduction.Product == Product.Cattle && !Invented(Invention.Domestication))
              )
                 return false;
             else
@@ -777,7 +787,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns true if succeeded
         /// </summary>    
-        private bool buildIfCanPE(FactoryType propositionFactory, Province province)
+        private bool buildIfCanPE(ProductionType propositionFactory, Province province)
         {
             // could it give uninvented factory?
             if (propositionFactory != null)
@@ -803,7 +813,7 @@ namespace Nashet.EconomicSimulation
                 if (Invented(item))
                 {
 
-                    var proposition = FactoryType.whoCanProduce(item);
+                    var proposition = ProductionType.whoCanProduce(item);
                     if (proposition != null)
                         if (proposition.canBuildNewFactory(province, this) || province.canUpgradeFactory(proposition))
                         {
@@ -835,7 +845,7 @@ namespace Nashet.EconomicSimulation
                             if (consumerProduct != null)
                             {
                                 //if there is no enough some consumer product - build it
-                                var proposition = FactoryType.whoCanProduce(consumerProduct);
+                                var proposition = ProductionType.whoCanProduce(consumerProduct);
                                 if (proposition.canBuildNewFactory(province, this))
                                     buildIfCanPE(proposition, province);
                                 else
@@ -850,7 +860,7 @@ namespace Nashet.EconomicSimulation
                         else
                         {
                             //if there is no enough some military product - build it
-                            var proposition = FactoryType.whoCanProduce(militaryProduct);
+                            var proposition = ProductionType.whoCanProduce(militaryProduct);
                             if (proposition.canBuildNewFactory(province, this))
                                 buildIfCanPE(proposition, province);
                             else
@@ -864,7 +874,7 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         //if there is no enough some industrial product - build it
-                        var proposition = FactoryType.whoCanProduce(industrialProduct);
+                        var proposition = ProductionType.whoCanProduce(industrialProduct);
                         if (proposition.canBuildNewFactory(province, this))
                             buildIfCanPE(proposition, province);
                         else

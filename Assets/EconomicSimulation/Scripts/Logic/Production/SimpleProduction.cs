@@ -11,11 +11,11 @@ namespace Nashet.EconomicSimulation
     abstract public class SimpleProduction : Producer
     {
         //private Agent owner;
-        private readonly FactoryType type;
-        public FactoryType Type { get { return type; } }
+        private readonly ProductionType type;
+        public ProductionType Type { get { return type; } }
         private readonly StorageSet inputProductsReserve = new StorageSet();
 
-        protected SimpleProduction(FactoryType type, Province province) : base(province)
+        protected SimpleProduction(ProductionType type, Province province) : base(province)
         {
             this.type = type;
             //gainGoodsThisTurn = new Storage(this.Type.basicProduction.Product);

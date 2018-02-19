@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
         public MultiSeller(float money, Country place) : base(place)
         {
             foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
-                if (item != Product.Gold)
+                //if (item != Product.Gold)
                 {
                     if (item == Product.Grain)
                     {
@@ -151,18 +151,24 @@ namespace Nashet.EconomicSimulation
                 }
         }
         internal void producedTotalAdd(Storage produced)
-        {
+        {            
             producedTotal.addMy(produced.Product, produced);
         }
-        public Value getProducedTotal(Product product)
+        public ReadOnlyValue getProducedTotal(Product product)
         {
-            return producedTotal[product];
+            //if (producedTotal.ContainsKey(product))
+                return producedTotal[product];
+            //else
+            //    return Value.Zero;
         }
-        public Value getSoldByGovernment(Product product)
+        public ReadOnlyValue getSoldByGovernment(Product product)
         {
-            return soldByGovernment[product];
+            if (soldByGovernment.ContainsKey(product))
+                return soldByGovernment[product];
+            else
+                return Value.Zero;            
         }
-        public Value getCostOfAllSellsByGovernment()
+        public ReadOnlyValue getCostOfAllSellsByGovernment()
         {
             var res = new Value(0f);
             foreach (var item in soldByGovernment)
@@ -172,7 +178,7 @@ namespace Nashet.EconomicSimulation
             return res;
         }
         /// <summary> Assuming product is abstract product</summary>
-        public Value getProducedTotalIncludingSubstitutes(Product product)
+        public ReadOnlyValue getProducedTotalIncludingSubstitutes(Product product)
         {
             var res = new Value(0f);
             foreach (var item in product.getSubstitutes())
