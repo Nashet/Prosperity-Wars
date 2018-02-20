@@ -279,7 +279,7 @@ namespace Nashet.EconomicSimulation
                     //factory.setStatisticToZero();
                 }
                 //nationalize banks
-                foreach (var item in province.getAllPopUnits())
+                foreach (var item in province.GetAllPopulation())
                 {
                     item.PayAllAvailableMoney(country);
                     item.loans.SetZero();
@@ -406,7 +406,7 @@ namespace Nashet.EconomicSimulation
                 //nationalization
                 country.Bank.Nationalize();
 
-                foreach (var province in country.ownedProvinces)
+                foreach (var province in country.getAllProvinces())
                 {
                     onReformEnacted(province);
                 }

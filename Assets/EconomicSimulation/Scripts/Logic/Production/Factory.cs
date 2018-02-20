@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (hiredWorkForce.Count == 0)
                     //return Province.GetAveragePop(x => x.Education);
-                    return Province.getAllPopUnits().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.Education);
+                    return Province.GetAllPopulation().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.Education);
                 else
                     return averageWorkersEducation.Copy();
 
@@ -331,7 +331,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns how much factory hired in reality
         /// </summary>    
-        public int hireWorkforce(int amount, List<PopUnit> popList)
+        public int hireWorkforce(int amount, IEnumerable<PopUnit> popList)
         {
             //check on no too much workers?
             //if (amount > HowMuchWorkForceWants())
@@ -573,7 +573,7 @@ namespace Nashet.EconomicSimulation
 
             if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
-                var unemployment = Province.getAllPopUnits().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
+                var unemployment = Province.GetAllPopulation().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
                 var margin = GetMargin();
 
                 // rise salary to attract  workforce, including workforce from other factories

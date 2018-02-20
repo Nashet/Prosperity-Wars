@@ -431,7 +431,7 @@ namespace Nashet.EconomicSimulation
             if (enemy == World.UncolonizedLand)
                 prov.mobilize();
             else
-                enemy.mobilize(enemy.ownedProvinces);
+                enemy.mobilize(enemy.getAllProvinces());
             enemy.consolidateArmies();
             return attack(enemy.getDefenceForces());
         }

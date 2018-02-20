@@ -252,7 +252,7 @@ namespace Nashet.EconomicSimulation
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
-            base.mobilize(country.ownedProvinces);
+            base.mobilize(country.getAllProvinces());
 
             sendArmy(country.Capital, Procent.HundredProcent);
             _isInRevolt = true;

@@ -298,7 +298,7 @@ namespace Nashet.EconomicSimulation
         {
             //if (this == Workers || this == Farmers || this == Tribesmen)
             if (this == Workers)
-                return province.getAllPopUnits().Where(x => x.Type == Workers).GetAverageProcent(x => x.getUnemployment()).isSmallerThan(MigrationUnemploymentLimit);
+                return province.GetAllPopulation().Where(x => x.Type == Workers).GetAverageProcent(x => x.getUnemployment()).isSmallerThan(MigrationUnemploymentLimit);
             else if (this == Farmers || this == Tribesmen)
                 return province.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
             else

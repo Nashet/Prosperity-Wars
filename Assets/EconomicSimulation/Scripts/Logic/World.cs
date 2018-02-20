@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
         private static World thisObject;
         public static World Get
         {
-            get { return thisObject; }            
+            get { return thisObject; }
         }
         private void Start()
         {
@@ -67,22 +67,16 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in getAllExistingCountries())
             {
                 allMoney.Add(country.Cash);
-                allMoney.Add(country.Bank.getReservs());
-                foreach (Province province in country.ownedProvinces)
+                foreach (var agent in country.getAllAgents())
                 {
-                    foreach (var agent in province.getAllAgents())
-                    {
-                        allMoney.Add(agent.Cash);
-                        //var isArtisan = agent as Artisans;
-                        //if (isArtisan!=null && isArtisan.)
-                    }
-
+                    allMoney.Add(agent.Cash);
+                    //var isArtisan = agent as Artisans;
+                    //if (isArtisan!=null && isArtisan.)
                 }
+                allMoney.Add(Game.market.Cash);                
             }
-            allMoney.Add(Game.market.Cash);
             return allMoney;
         }
-
         public static Province FindProvince(Color color)
         {
             foreach (Province anyProvince in allProvinces)
@@ -142,14 +136,15 @@ namespace Nashet.EconomicSimulation
                     return true;
             return false;
         }
-
-        internal static void makeCountries()
+        static World()
         {
             UncolonizedLand = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null, 0f);
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.setValue(Government.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
-
+        }
+        internal static void makeCountries()
+        {
             var countryNameGenerator = new CountryNameGenerator();
             var cultureNameGenerator = new CultureNameGenerator();
             //int howMuchCountries =3;
@@ -163,21 +158,21 @@ namespace Nashet.EconomicSimulation
                 //Game.updateStatus("Making countries.." + i);
                 Culture cul = new Culture(cultureNameGenerator.generateCultureName());
 
-                Province province = GetAllProvinces().Where(x => x.Country == null).Random();
-                //Province.getRandomProvinceInWorld(x => x.Country == null);
-                //&& !Game.seaProvinces.Contains(x));// Country.NullCountry);
+                Province province = GetAllProvinces().Where(x => x.Country == UncolonizedLand).Random();
+                
                 Country country = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province, 100f);
                 allCountries.Add(country);
                 //count.setBank(count.bank);
-                Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
-                province.InitialOwner(country);
+                
+                //province.InitialOwner(country);
                 country.GiveMoneyFromNoWhere(100);
             }
+            Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
 
 
-            foreach (var pro in allProvinces)
-                if (pro.Country == null)
-                    pro.InitialOwner(World.UncolonizedLand);
+            //foreach (var pro in allProvinces)
+            //    if (pro.Country == null)
+            //        pro.InitialOwner(World.UncolonizedLand);
         }
         static public void сreateRandomPopulation()
         {
@@ -272,7 +267,7 @@ namespace Nashet.EconomicSimulation
             return res;
         }
         /// <summary>
-        /// 
+        /// Could run in threads
         /// </summary>        
         public static void Create(MyTexture map, bool isMapGenerated)
         {
@@ -300,6 +295,7 @@ namespace Nashet.EconomicSimulation
             //Country.allCountries[1].Capital.setResource(Product.Wood);// player
 
             //Country.allCountries[0].Capital.setResource(Product.Wood;
+
             allCountries[2].Capital.setResource(Product.Fruit);
             allCountries[3].Capital.setResource(Product.Gold);
             allCountries[4].Capital.setResource(Product.Cotton);

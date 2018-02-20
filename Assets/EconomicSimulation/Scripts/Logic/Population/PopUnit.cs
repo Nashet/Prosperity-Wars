@@ -1171,7 +1171,7 @@ namespace Nashet.EconomicSimulation
             foreach (var country in World.getAllExistingCountries())
                 if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     if (country != this.Country)
-                        foreach (var province in country.ownedProvinces)
+                        foreach (var province in country.getAllProvinces())
                             if (predicate(province))
                             {
                                 var needsInTargetProvince = province.getAverageNeedsFulfilling(this.type);

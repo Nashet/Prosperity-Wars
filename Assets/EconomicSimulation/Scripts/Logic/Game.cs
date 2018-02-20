@@ -100,6 +100,11 @@ namespace Nashet.EconomicSimulation
             // todo clear resources
             grid = null;
             mapTexture = null;
+
+            //foreach (var item in World.getAllExistingCountries())
+            //{
+            //    item.Capital.OnSecedeTo(item, false);
+            //}
             // Annex all countries to P)layer
             //foreach (var item in Country.allCountries)
             //{
@@ -239,7 +244,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.SetStatisticToZero();
-                foreach (Province province in country.ownedProvinces)
+                foreach (Province province in country.getAllProvinces())
                 {
                     province.BalanceEmployableWorkForce();
                     {
@@ -283,7 +288,8 @@ namespace Nashet.EconomicSimulation
                         if (result.isAttackerWon())
                         {
                             if (movement == null)
-                                attackerArmy.getDestination().secedeTo(attacker as Country, true);
+                                (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
+                                //attackerArmy.getDestination().secedeTo(attacker as Country, true);
                             else
                                 movement.onRevolutionWon();
                         }
@@ -320,7 +326,7 @@ namespace Nashet.EconomicSimulation
 
             // big PRODUCE circle
             foreach (Country country in World.getAllExistingCountries())
-                foreach (Province province in country.ownedProvinces)
+                foreach (Province province in country.getAllProvinces())
                     foreach (var producer in province.getAllProducers())
                         producer.produce();
 
@@ -335,20 +341,20 @@ namespace Nashet.EconomicSimulation
                         factory.consumeNeeds();
 
                     if (country.Invented(Invention.ProfessionalArmy))
-                        foreach (var item in country.getAllPopulation(PopType.Soldiers))
+                        foreach (var item in country.GetAllPopulation(PopType.Soldiers))
                             item.consumeNeeds();
 
-                    foreach (var item in country.getAllPopulation(PopType.Workers))
+                    foreach (var item in country.GetAllPopulation(PopType.Workers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.getAllPopulation(PopType.Farmers))
+                    foreach (var item in country.GetAllPopulation(PopType.Farmers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.getAllPopulation(PopType.Tribesmen))
+                    foreach (var item in country.GetAllPopulation(PopType.Tribesmen))
                         item.consumeNeeds();
                 }
                 else  //consume in regular order
-                    foreach (Province province in country.ownedProvinces)//Province.allProvinces)            
+                    foreach (Province province in country.getAllProvinces())//Province.allProvinces)            
                     {
                         foreach (Factory factory in province.getAllFactories())
                         {
@@ -372,7 +378,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.getMoneyForSoldProduct();
-                foreach (Province province in country.ownedProvinces)//Province.allProvinces)
+                foreach (Province province in country.getAllProvinces())//Province.allProvinces)
                 {
                     foreach (Factory factory in province.getAllFactories())
                     {

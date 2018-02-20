@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         , true);
 
 
-        
+
         public static readonly Predicate<Province> All = x => true;
 
 
@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
         private GameObject rootGameObject;
         private MeshRenderer meshRenderer;
 
-        private Country owner;
+        private Country country;
 
         private readonly List<Factory> allFactories = new List<Factory>();
 
@@ -68,26 +68,25 @@ namespace Nashet.EconomicSimulation
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
         {
+            country = World.UncolonizedLand;
+
+            //taker.ownedProvinces.Add(this);
+
+            color = country.getColor().getAlmostSameColor();
+
+            if (country != World.UncolonizedLand)
+                cores.Add(country);
             //nameWeight = name.GetWeight();
             setResource(resource);
             colorID = icolorID;
             ID = iID;
             fertileSoil = 10000;
         }
-        
-        public IEnumerable<PopUnit> GetAllPopulation()
-        {
-            foreach (var item in allPopUnits)
-                yield return item;
-        }
-        internal int howMuchFactories()
-        {
-            return allFactories.Count;
-        }
 
 
         public void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
-        {
+        {           
+
             //this.meshStructure = meshStructure;
 
             //spawn object
@@ -224,29 +223,25 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Country Country
         {
-            get { return owner; }
+            get { return country; }
         }
         internal int getID()
         { return ID; }
         /// <summary>
         /// called only on map generation
         /// </summary>    
-        public void InitialOwner(Country taker)
-        {
-            // in case if province already have owner..
-            //if (this.Country != null)
-            //    if (this.Country.ownedProvinces != null)
-            //        this.Country.ownedProvinces.Remove(this);
-            owner = taker;
+        //public void InitialOwner(Country taker)
+        //{
+        //    //owner = taker;           
+        //    //taker.ownedProvinces.Add(this);
+        //    //color = taker.getColor().getAlmostSameColor();
 
-            //if (taker.ownedProvinces == null)
-            //    taker.ownedProvinces = new List<Province>();
-            taker.ownedProvinces.Add(this);
-            color = taker.getColor().getAlmostSameColor();
+        //    //if (taker != World.UncolonizedLand)
+        //    //    cores.Add(taker);
 
-            if (taker != World.UncolonizedLand)
-                cores.Add(taker);
-        }
+            
+
+        //}
         public void simulate()
         {
             if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
@@ -304,21 +299,15 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// Secedes province to Taker. Also kills old province owner if it was last province
+        /// Call it only from Country.TakeProvince()
         /// </summary>    
-        public void secedeTo(Country taker, bool addModifier)
+        public void OnSecedeTo(Country taker, bool addModifier)
         {
-
             Country oldCountry = Country;
-
-
             // transfer government owned factories
             // don't do government property revoking for now            
-
             allFactories.PerformAction(x => x.ownership.TransferAll(oldCountry, taker, false));
-
-
             oldCountry.demobilize(x => x.getPopUnit().Province == this);
-
 
             // add loyalty penalty for conquered province // temp
             foreach (var pop in allPopUnits)
@@ -342,29 +331,22 @@ namespace Nashet.EconomicSimulation
                 agent.OnProvinceOwnerChanged(taker);
             }
             //transfer province
+            //oldCountry.ownedProvinces.Remove(this);
+            //taker.ownedProvinces.Add(this);
 
-            oldCountry.ownedProvinces.Remove(this);
-            owner = taker;
-            taker.ownedProvinces.Add(this);
-
-            taker.government.onReformEnacted(this);
-
-            //kill country or move capital
-            if (oldCountry.ownedProvinces.Count == 0)
-                oldCountry.OnKillCountry(taker);
-            else if (oldCountry.Capital == this)
-                oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince());
-
-            //graphic stuff
-            color = taker.getColor().getAlmostSameColor();
-            meshRenderer.material.color = this.getColorAccordingToMapMode();
-
-            setBorderMaterials(false);
+            country = taker;
             if (addModifier)
                 if (modifiers.ContainsKey(TemporaryModifier.recentlyConquered))
                     modifiers[TemporaryModifier.recentlyConquered].set(Date.Today.getNewDate(20));
                 else
                     modifiers.Add(TemporaryModifier.recentlyConquered, Date.Today.getNewDate(20));
+        }
+        public void OnSecedeGraphic(Country taker)
+        {
+            //graphic stuff
+            color = taker.getColor().getAlmostSameColor();
+            meshRenderer.material.color = this.getColorAccordingToMapMode();
+            setBorderMaterials(false);
         }
         public int howFarFromCapital()
         {
@@ -379,7 +361,7 @@ namespace Nashet.EconomicSimulation
         //    return Country.Capital == this;
         //}
 
-       
+
         internal List<Province> getNeigbors(Predicate<Province> predicate)
         {
             return neighbors.FindAll(predicate);
@@ -401,15 +383,6 @@ namespace Nashet.EconomicSimulation
             foreach (PopUnit pop in allPopUnits)
                 if (pop.canTrade())
                     yield return pop;
-        }
-        public IEnumerable<Producer> getAllConsumers()
-        {
-            foreach (Factory factory in allFactories)
-                //if (!factory.Type.isResourceGathering())// every fabric is consumer (upgrading)
-                yield return factory;
-            foreach (PopUnit pop in allPopUnits)
-                //if (pop.canBuyProducts())
-                yield return pop;
         }
         public IEnumerable<Producer> getAllAgents()
         {
@@ -489,7 +462,7 @@ namespace Nashet.EconomicSimulation
         public int getFamilyPopulation()
         {
             //return getMenPopulation() * Options.familySize;
-            return getAllPopUnits().Sum(x => x.getPopulation()) * Options.familySize;
+            return GetAllPopulation().Sum(x => x.getPopulation()) * Options.familySize;
         }
 
         internal float getIncomeTax()
@@ -499,51 +472,32 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-
-
         internal void mobilize()
         {
             Country.mobilize(new List<Province> { this });
         }
 
-        
-
-        public List<PopUnit> getAllPopUnitsList(PopType ipopType)
-        {
-            List<PopUnit> result = new List<PopUnit>();
-            foreach (PopUnit pop in allPopUnits)
-                if (pop.Type == ipopType)
-                    result.Add(pop);
-            return result;
-        }
-        public IEnumerable<PopUnit> getAllPopUnits(PopType ipopType)
+        public IEnumerable<PopUnit> GetAllPopulation(PopType popType)
         {
             foreach (PopUnit pop in allPopUnits)
-                if (pop.Type == ipopType)
+                if (pop.Type == popType)
                     yield return pop;
         }
-        public IEnumerable<PopUnit> getAllPopUnits()
+        public IEnumerable<PopUnit> GetAllPopulation()
         {
             foreach (PopUnit pop in allPopUnits)
                 yield return pop;
         }
-        
 
-        public int getPopulationAmountByType(PopType ipopType)
-        {
-            int result = 0;
-            foreach (PopUnit pop in getAllPopUnits(ipopType))
-                if (pop.Type == ipopType)
-                    result += pop.getPopulation();
-            return result;
-        }
+
+
         //not called with capitalism
         internal void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
         {
             int aristoctratAmount = 0;
-            foreach (Aristocrats aristocrats in getAllPopUnits(PopType.Aristocrats))
+            foreach (Aristocrats aristocrats in GetAllPopulation(PopType.Aristocrats))
                 aristoctratAmount += aristocrats.getPopulation();
-            foreach (Aristocrats aristocrat in getAllPopUnits(PopType.Aristocrats))
+            foreach (Aristocrats aristocrat in GetAllPopulation(PopType.Aristocrats))
             {
                 Storage howMuch = new Storage(fromWho.Product, taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
                 fromWho.send(aristocrat.storage, howMuch);
@@ -579,7 +533,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
         /// </summary>    
-        private IEnumerable<List<Factory>> getFactoriesDescendingOrder(Func<Factory, float> orderMethod)
+        private IEnumerable<List<Factory>> getAllFactoriesDescendingOrder(Func<Factory, float> orderMethod)
         {
             var sortedfactories = allFactories.OrderByDescending(o => orderMethod(o));
             var iterator = sortedfactories.GetEnumerator();
@@ -606,8 +560,8 @@ namespace Nashet.EconomicSimulation
         }
         public void BalanceEmployableWorkForce()
         {
-            List<PopUnit> workforceList = this.getAllPopUnitsList(PopType.Workers);
-            int unemplyedWorkForce = workforceList.Sum(x => x.getPopulation());
+            // List<PopUnit> workforceList = this.GetAllPopulation(PopType.Workers).ToList();
+            int unemplyedWorkForce = GetAllPopulation(PopType.Workers).Sum(x => x.getPopulation());
 
             if (unemplyedWorkForce > 0)
             {
@@ -618,7 +572,7 @@ namespace Nashet.EconomicSimulation
                 else
                     order = (x => x.getSalary().get());
 
-                foreach (List<Factory> factoryGroup in getFactoriesDescendingOrder(order))
+                foreach (List<Factory> factoryGroup in getAllFactoriesDescendingOrder(order))
                 {
                     // if there is no enough workforce to fill all factories in group then
                     // workforce should be distributed proportionally
@@ -642,7 +596,7 @@ namespace Nashet.EconomicSimulation
                                 toHire = unemplyedWorkForce * factoryWants / factoriesInGroupWantsTotal;
                             if (toHire > factoryWants)
                                 toHire = factoryWants;
-                            hiredInThatGroup += factory.hireWorkforce(toHire, workforceList);
+                            hiredInThatGroup += factory.hireWorkforce(toHire, GetAllPopulation(PopType.Workers));
 
                             //if (popsLeft <= 0) break;
                             // don't do breaks to clear old workforce records
@@ -736,16 +690,13 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         internal int getUnemployedWorkers()
         {
-            //int result = 0;
-            //List<PopUnit> list = this.FindAllPopUnits(PopType.workers);
-            //foreach (PopUnit pop in list)
-            //    result += pop.getUnemployed();
-            int totalWorkforce = this.getPopulationAmountByType(PopType.Workers);
-            if (totalWorkforce == 0) return 0;
-            int employed = 0;
+            int totalWorkforce = GetAllPopulation(PopType.Workers).Sum(x => x.getPopulation());
+            if (totalWorkforce == 0)
+                return 0;
+            int employed = allFactories.Sum(x=>x.getWorkForce());
 
-            foreach (Factory factory in allFactories)
-                employed += factory.getWorkForce();
+            //foreach (Factory factory in allFactories)
+            //    employed += factory.getWorkForce();
             return totalWorkforce - employed;
         }
         internal bool isThereFactoriesInUpgradeMoreThan(int limit)
@@ -909,7 +860,7 @@ namespace Nashet.EconomicSimulation
             if (allPopUnits.Count > 14)
             //get some small pop and merge it into bigger
             {
-                PopUnit popToMerge = getRandomPop((x) => x.getPopulation() < Options.PopSizeConsolidationLimit);
+                PopUnit popToMerge = GetAllPopulation().Where(x => x.getPopulation() < Options.PopSizeConsolidationLimit).Random();
                 //PopUnit popToMerge = getSmallerPop((x) => x.getPopulation() < Options.PopSizeConsolidationLimit);
                 if (popToMerge != null)
                 {
@@ -932,14 +883,8 @@ namespace Nashet.EconomicSimulation
             return allPopUnits.FindAll(predicate).MinBy(x => x.getPopulation());
         }
 
-        private PopUnit getRandomPop(Predicate<PopUnit> predicate)
-        {
-            return allPopUnits.Random(predicate);
-        }
-        private PopUnit getRandomPop()
-        {
-            return allPopUnits.Random();
-        }
+       
+        
 
         internal bool hasAnotherPop(PopType type)
         {
@@ -1054,7 +999,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         public Value getAverageNeedsFulfilling(PopType type)
         {
-            var list = getAllPopUnits().Where(x => x.Type == type).ToList();
+            var list = GetAllPopulation().Where(x => x.Type == type).ToList();
             if (list.Count == 0)
                 return Procent.HundredProcent.Copy();
             else
@@ -1064,11 +1009,11 @@ namespace Nashet.EconomicSimulation
             //int allPopulation = 0;
             //IEnumerable<PopUnit> selector;
             //if (type == null)
-            //    selector = getAllPopUnits();
+            //    selector = GetAllPopulation();
             //else
-            //    selector = getAllPopUnits(type);
+            //    selector = GetAllPopulation(type);
 
-            //foreach (PopUnit pop in getAllPopUnits(type))
+            //foreach (PopUnit pop in GetAllPopulation(type))
             //// get middle needs fulfilling according to pop weight            
             //{
             //    allPopulation += pop.getPopulation();
@@ -1170,10 +1115,10 @@ namespace Nashet.EconomicSimulation
         //    return res;
         //}
         internal bool canUpgradeFactory(ProductionType type)
-        {
-            if (!hasFactory(type))
-                return false;
+        {            
             var factory = findFactory(type);
+            if (factory == null)
+                return false;
             if (factory.canUpgrade())
                 return true;
             else
@@ -1183,7 +1128,7 @@ namespace Nashet.EconomicSimulation
         public bool HasJobsFor(PopType popType, Province province)
         {
             return popType.HasJobsFor(popType, here);
-        }        
+        }
         public Factory BuildFactory(IShareOwner investor, ProductionType type, ReadOnlyValue cost)
         {
             if (getAllFactories().Any(x => x.Type == type)) //temporally

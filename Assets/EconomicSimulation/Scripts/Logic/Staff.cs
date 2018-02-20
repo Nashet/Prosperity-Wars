@@ -39,7 +39,7 @@ namespace Nashet.EconomicSimulation
         public float howMuchCanMobilize(Staff againstWho)
         {
             float result = 0f;
-            foreach (var province in country.ownedProvinces)
+            foreach (var province in country.getAllProvinces())
                 foreach (var pop in province.GetAllPopulation())
                     if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);

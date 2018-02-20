@@ -187,10 +187,10 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// how much money have in Cash.
         /// </summary>
-        internal ReadOnlyValue getReservs()
-        {
-            return Cash;
-        }
+        //internal ReadOnlyValue getReservs()
+        //{
+        //    return Cash;
+        //}
 
 
         private ReadOnlyValue GetMinimalReservs()

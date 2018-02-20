@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.ownedProvinces)
+                foreach (Province province in country.getAllProvinces())
                     foreach (Consumer consumer in province.getAllAgents())
                     {
                         Storage found = selector(consumer).GetFirstSubstituteStorage(product);
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.ownedProvinces)
+                foreach (Province province in country.getAllProvinces())
                     foreach (Consumer consumer in province.getAllBuyers())
                     {
                         Storage re = selector(consumer).GetFirstSubstituteStorage(product);
@@ -137,7 +137,7 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.ownedProvinces)
+                foreach (Province province in country.getAllProvinces())
                     foreach (ICanSell producer in province.getAllProducers())
                     {
                         var found = selector(producer);
@@ -154,7 +154,7 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.ownedProvinces)
+                foreach (Province province in country.getAllProvinces())
                     foreach (Producer producer in province.getAllProducers())
                     {
                         var found = selector(producer);
