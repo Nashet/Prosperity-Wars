@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         private Button btnPlay, btnStep, btnTrade;
 
         [SerializeField]
-        private Text generalText;
+		private Text generalText, specificText;
 
         // Use this for initialization
         void Awake()
@@ -36,17 +36,18 @@ namespace Nashet.EconomicSimulation
         public override void Refresh()
         {
             var sb = new StringBuilder();
-
-            sb.Append("Date: ").Append(Game.date).Append("; You rule: ").Append(Game.Player.GetFullName());
+            sb.Append("You rule: ").Append(Game.Player.GetFullName()).Append(" Month: ").Append(Game.date);
+            //sb.Append (Game.Player.GetFullName ()).Append(" $").Append(Game.Player.cash.get().ToString("N0")).Append(" Month: ").Append(Game.date);
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");
 
+            //sb.Append("\nEng: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
             sb.Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
-            .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+            .Append(" Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
 
             if (Game.Player.isAlive())
-                sb.Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
-                .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
+                sb.Append(" Population: ").Append(Game.Player.getFamilyPopulation().ToString("N0"))
+                .Append(" Loyalty: ").Append(Game.Player.getAverageLoyalty());
             generalText.text = sb.ToString();
         }
         public void onTradeClick()
@@ -150,7 +151,7 @@ namespace Nashet.EconomicSimulation
                 //btnPlay.interactable = true;
                 btnPlay.image.color = GUIChanger.ButtonsColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
-                text.text = "Playing";
+                text.text = "Play";
             }
             else
             {
