@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Nashet.Utils
 {
@@ -12,10 +14,10 @@ namespace Nashet.Utils
         //{
         //    return random2.Next(chance) == 0;
         //}
-
-            /// <summary>
-            /// Higher procent - higher chance
-            /// </summary>            
+        
+        /// <summary>
+        /// Higher procent - higher chance
+        /// </summary>            
         public static bool Chance(ReadOnlyValue chance)
         {
             //if (chance.isZero())

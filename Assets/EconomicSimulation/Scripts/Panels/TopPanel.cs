@@ -49,9 +49,9 @@ namespace Nashet.EconomicSimulation
             .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
 
             if (Game.Player.isAlive())
-                sb.Append("; Men: ").Append(Game.Player.getAllPopUnits().Sum(x => x.getPopulation()).ToString("N0"))
-                .Append("; Loyalty: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x => x.loyalty))
-                .Append("; Education: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x => x.Education));
+                sb.Append("; Men: ").Append(Game.Player.getAllPopulation().Sum(x => x.getPopulation()).ToString("N0"))
+                .Append("; Loyalty: ").Append(Game.Player.getAllPopulation().GetAverageProcent(x => x.loyalty))
+                .Append("; Education: ").Append(Game.Player.getAllPopulation().GetAverageProcent(x => x.Education));
                 //.Append("; Unemployment: ").Append(Game.Player.getAllPopUnits().GetAverageProcent(x => x.getUnemployment()));
             generalText.text = sb.ToString();
         }

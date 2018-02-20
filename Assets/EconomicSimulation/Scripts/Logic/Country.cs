@@ -12,9 +12,6 @@ namespace Nashet.EconomicSimulation
 {
     public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable
     {
-        public readonly static List<Country> allCountries = new List<Country>();
-        internal static readonly Country NullCountry;
-
         internal readonly Government government;
         internal readonly Economy economy;
         internal readonly Serfdom serfdom;
@@ -132,15 +129,12 @@ namespace Nashet.EconomicSimulation
         new Modifier(Government.isPolis, Government.Polis.getScienceModifier(), false),
         new Modifier(Government.isWealthDemocracy, Government.WealthDemocracy.getScienceModifier(), false),
         new Modifier(Government.isBourgeoisDictatorship, Government.BourgeoisDictatorship.getScienceModifier(), false),
-        new Modifier(x=>(x as Country).getAllPopUnits().GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false),
+        new Modifier(x=>(x as Country).getAllPopulation().GetAverageProcent(y=>y.Education).RawUIntValue, "Education", 1f / Procent.Precision, false),
     });
 
-        static Country()
-        {
-            NullCountry = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null, 0f);
-            NullCountry.government.setValue(Government.Tribal);
-            NullCountry.economy.setValue(Economy.NaturalEconomy);
-        }
+        /// <summary>
+        /// Don't call it directly, only from World.cs
+        /// </summary>        
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
             nameWeight = name.GetWeight();
@@ -175,7 +169,7 @@ namespace Nashet.EconomicSimulation
             taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
             this.name = name;
-            allCountries.Add(this);
+
 
             this.culture = culture;
             nationalColor = color;
@@ -241,9 +235,9 @@ namespace Nashet.EconomicSimulation
         }
         public static void setUnityAPI()
         {
-            foreach (var item in allCountries)
+            foreach (var item in World.getAllExistingCountries())
             {
-                if (item != Country.NullCountry)
+                if (item != World.UncolonizedLand)
                     item.moveCapitalTo(item.ownedProvinces[0]);
                 //if (capital != null) // not null-country
 
@@ -253,36 +247,7 @@ namespace Nashet.EconomicSimulation
             }
 
         }
-        internal static void makeCountries(Game game)
-        {
-            var countryNameGenerator = new CountryNameGenerator();
-            var cultureNameGenerator = new CultureNameGenerator();
-            //int howMuchCountries =3;
-            int howMuchCountries = Province.allProvinces.Count / Options.ProvincesPerCountry;
-            howMuchCountries += Game.Random.Next(6);
-            if (howMuchCountries < 8)
-                howMuchCountries = 8;
 
-
-            for (int i = 0; i < howMuchCountries; i++)
-            {
-                game.updateStatus("Making countries.." + i);
-                Culture cul = new Culture(cultureNameGenerator.generateCultureName());
-
-                Province province = Province.getRandomProvinceInWorld((x) => x.Country == null);
-                //&& !Game.seaProvinces.Contains(x));// Country.NullCountry);
-                Country country = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province, 100f);
-                //count.setBank(count.bank);
-                Game.Player = Country.allCountries[1]; // not wild Tribes, DONT touch that
-                province.InitialOwner(country);
-                country.GiveMoneyFromNoWhere(100);
-            }
-
-
-            foreach (var pro in Province.allProvinces)
-                if (pro.Country == null)
-                    pro.InitialOwner(Country.NullCountry);
-        }
         internal int getSize()
         {
             return ownedProvinces.Count;
@@ -290,7 +255,7 @@ namespace Nashet.EconomicSimulation
         internal static int howMuchCountriesAlive()
         {
             int res = 0;
-            foreach (var item in getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
                 res++;
             return res;
         }
@@ -456,10 +421,10 @@ namespace Nashet.EconomicSimulation
             {
                 DateOfIsThereBadboyCountry.set(Date.Today);
                 float worldStrenght = 0f;
-                foreach (var item in Country.getAllExisting())
+                foreach (var item in World.getAllExistingCountries())
                     worldStrenght += item.getStrengthExluding(null);
                 float streghtLimit = worldStrenght * Options.CountryBadBoyWorldLimit;
-                BadboyCountry = Country.allCountries.FindAll(x => x != Country.NullCountry && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
+                BadboyCountry = World.getAllExistingCountries().Where(x => x != World.UncolonizedLand && x.getStrengthExluding(null) >= streghtLimit).MaxBy(x => x.getStrengthExluding(null));
             }
             return BadboyCountry;
 
@@ -522,13 +487,7 @@ namespace Nashet.EconomicSimulation
         {
             return alive;
         }
-        static public IEnumerable<Country> getAllExisting()
-        {
-            foreach (var c in allCountries)
-                if (c.isAlive() && c != Country.NullCountry)
-                    yield return c;
 
-        }
         /// <summary>
         /// Also transfers enterprises to local governments
         /// </summary>        
@@ -600,7 +559,7 @@ namespace Nashet.EconomicSimulation
         }
         private bool isOnlyCountry()
         {
-            foreach (var any in Country.getAllExisting())
+            foreach (var any in World.getAllExistingCountries())
                 if (any != this)
                     return false;
             return true;
@@ -659,14 +618,14 @@ namespace Nashet.EconomicSimulation
         internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
         {
             // calculate how much of population wants selected reform
-            int totalPopulation = this.getAllPopUnits().Sum(x => x.getPopulation());
+            int totalPopulation = this.getAllPopulation().Sum(x => x.getPopulation());
             int votingPopulation = 0;
             int populationSayedYes = 0;
             int votersSayedYes = 0;
             Procent procentVotersSayedYes = new Procent(0);
             //Procent procentPopulationSayedYes = new Procent(0f);
-            foreach (Province pro in ownedProvinces)
-                foreach (PopUnit pop in pro.allPopUnits)
+            foreach (Province province in ownedProvinces)
+                foreach (PopUnit pop in province.GetAllPopulation())
                 {
                     if (pop.canVote())
                     {
@@ -706,7 +665,7 @@ namespace Nashet.EconomicSimulation
         /// <param name="reform"></param>   
         internal Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
         {
-            int totalPopulation = this.getAllPopUnits().Sum(x => x.getPopulation());
+            int totalPopulation = this.getAllPopulation().Sum(x => x.getPopulation());
             int votingPopulation = 0;
             int populationSayedYes = 0;
             int votersSayedYes = 0;
@@ -892,17 +851,18 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void AIThink()
         {
-            // attacking neigbors
+            // attacking neighbors
             if (!isOnlyCountry())
                 if (Game.Random.Next(10) == 1)
                 {
+                    var thisStrength = this.getStrengthExluding(null);
                     var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.Country).get());
                     if (possibleTarget != null
                         && (getRelationTo(possibleTarget.Country).get() < 1f || Game.Random.Next(200) == 1)
-                        && this.getStrengthExluding(null) > 0
+                        && thisStrength > 0
                         && (this.getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
-                        && (this.getStrengthExluding(null) > possibleTarget.Country.getStrengthExluding(null) * 0.25f
-                            || possibleTarget.Country == Country.NullCountry
+                        && (thisStrength > possibleTarget.Country.getStrengthExluding(null) * 0.25f
+                            || possibleTarget.Country == World.UncolonizedLand
                             || possibleTarget.Country.isAI() && this.getStrengthExluding(null) > possibleTarget.Country.getStrengthExluding(null) * 0.1f)
                         && Country.canAttack.isAllTrue(possibleTarget, this)
                         )
@@ -1014,7 +974,7 @@ namespace Nashet.EconomicSimulation
 
             //todo performance - do it not every tick?
             //International opinion;
-            foreach (var item in Country.getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
                 if (item != this)
                 {
                     changeRelation(item, modMyOpinionOfXCountry.getModifier(item));
@@ -1023,20 +983,11 @@ namespace Nashet.EconomicSimulation
             movements.RemoveAll(x => x.isEmpty());
             foreach (var item in movements.ToArray())
                 item.simulate();
-
-
-
             if (economy.getValue() == Economy.LaissezFaire)
                 Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
-        public void PutAllPropertyOnSale()
-        { }
-        public IEnumerable<PopUnit> getAllPopUnits()
-        {
-            foreach (var province in ownedProvinces)
-                foreach (var pops in province.allPopUnits)
-                    yield return pops;
-        }
+
+
 
         private void aiInvent()
         {
@@ -1253,7 +1204,7 @@ namespace Nashet.EconomicSimulation
         internal int getFamilyPopulation()
         {
             //return  getMenPopulation() * Options.familySize;
-            return getAllPopUnits().Sum(x => x.getPopulation()) * Options.familySize;
+            return getAllPopulation().Sum(x => x.getPopulation()) * Options.familySize;
         }
         public int getPopulationAmountByType(PopType ipopType)
         {
@@ -1262,7 +1213,7 @@ namespace Nashet.EconomicSimulation
                 result += pro.getPopulationAmountByType(ipopType);
             return result;
         }
-        public IEnumerable<PopUnit> getAllPopUnits(PopType type)
+        public IEnumerable<PopUnit> getAllPopulation(PopType type)
         {
             foreach (var province in ownedProvinces)
             {
@@ -1271,6 +1222,20 @@ namespace Nashet.EconomicSimulation
                     yield return item;
                 }
             }
+        }
+        public IEnumerable<PopUnit> getAllPopulation()
+        {
+            foreach (var province in ownedProvinces)
+                foreach (var pops in province.GetAllPopulation())
+                    yield return pops;
+        }
+        public IEnumerable<Agent> getAllAgents()
+        {
+            foreach (var province in ownedProvinces)
+                foreach (var agent in province.getAllAgents())
+                    yield return agent;
+            if (Bank != null)
+                yield return Bank;
         }
         public IEnumerable<Factory> getAllFactories()
         {
@@ -1330,7 +1295,7 @@ namespace Nashet.EconomicSimulation
         public int getGDPRank()
         {
             var list = new List<KeyValuePair<Country, Value>>();
-            foreach (var item in Country.getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, Value>(item, item.getGDP()));
             }
@@ -1343,7 +1308,7 @@ namespace Nashet.EconomicSimulation
         public int getGDPPer1000Rank()
         {
             var list = new List<KeyValuePair<Country, float>>();
-            foreach (var item in Country.getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, float>(item, item.getGDPPer1000()));
             }
@@ -1353,7 +1318,7 @@ namespace Nashet.EconomicSimulation
         public Procent getGDPShare()
         {
             Value worldGDP = new Value(0f);
-            foreach (var item in Country.getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
             {
                 worldGDP.Add(item.getGDP());
             }
@@ -1365,7 +1330,7 @@ namespace Nashet.EconomicSimulation
         public int getPopulationRank()
         {
             var list = new List<KeyValuePair<Country, int>>();
-            foreach (var item in Country.getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, int>(item, item.getFamilyPopulation()));
             }
@@ -1378,7 +1343,7 @@ namespace Nashet.EconomicSimulation
         public int getSizeRank()
         {
             var list = new List<KeyValuePair<Country, int>>();
-            foreach (var item in Country.getAllExisting())
+            foreach (var item in World.getAllExistingCountries())
             {
                 list.Add(new KeyValuePair<Country, int>(item, item.getSize()));
             }
@@ -1388,8 +1353,8 @@ namespace Nashet.EconomicSimulation
         public List<KeyValuePair<Culture, Procent>> getCultures()
         {
             var cultures = new Dictionary<Culture, int>();
-            var totalPopulation = getAllPopUnits().Sum(x => x.getPopulation());
-            foreach (var item in getAllPopUnits())
+            var totalPopulation = getAllPopulation().Sum(x => x.getPopulation());
+            foreach (var item in getAllPopulation())
             {
                 cultures.AddMy(item.culture, item.getPopulation());
             }
@@ -1420,10 +1385,10 @@ namespace Nashet.EconomicSimulation
 
         internal float getBalance()
         {
-            return moneyIncomeThisTurn.get() - getAllExpenses().get();
+            return moneyIncomeThisTurn.get() - getExpenses().get();
         }
 
-        internal Value getAllExpenses()
+        internal Value getExpenses()
         {
             Value result = new Value(0f);
             result.Add(unemploymentSubsidiesExpense);

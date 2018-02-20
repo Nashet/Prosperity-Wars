@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         {
             float result = 0f;
             foreach (var province in country.ownedProvinces)
-                foreach (var pop in province.allPopUnits)
+                foreach (var pop in province.GetAllPopulation())
                     if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);
             return result;
@@ -124,7 +124,7 @@ namespace Nashet.EconomicSimulation
             foreach (var province in source)
             {
                 Army newArmy = new Army(this);
-                foreach (var pop in province.allPopUnits)
+                foreach (var pop in province.GetAllPopulation())
                     if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0)
                         //newArmy.add(item.mobilize(this));
                         newArmy.add(Corps.mobilize(this, pop));
@@ -215,8 +215,8 @@ namespace Nashet.EconomicSimulation
 
         internal static IEnumerable<Staff> getAllStaffs()
         {
-            foreach (var country in Country.allCountries)
-                if (country.isAlive() && country != Country.NullCountry)
+            foreach (var country in World.getAllExistingCountries())
+                if (country.isAlive() && country != World.UncolonizedLand)
                 {
                     yield return country;
                     foreach (var staff in country.movements)

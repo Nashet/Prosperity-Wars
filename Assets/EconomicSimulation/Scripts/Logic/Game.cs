@@ -12,8 +12,8 @@ namespace Nashet.EconomicSimulation
     public class Game : ThreadedJob
     {
         static private readonly bool readMapFormFile = false;
-        static private MyTexture map;
-        static public GameObject mapObject;
+        static private MyTexture mapTexture;
+        //static public GameObject mapObject;
         static internal GameObject r3dTextPrefab;
 
         static public Country Player;
@@ -31,58 +31,49 @@ namespace Nashet.EconomicSimulation
         static public readonly Market market;
 
 
-        //static public MyDate date = new MyDate(0);
         static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
             impassableBorder;
 
-        static private List<Province> seaProvinces;
-        static private VoxelGrid grid;
 
+        static private VoxelGrid grid;
         private readonly Rect mapBorders;
-        static Game() 
+
+        static Game()
         {
             Product.init(); // to avoid crash based on initialization order
             market = new Market();
         }
         public Game()
-        {  
+        {
             if (readMapFormFile)
             {
                 Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;                
-                map = new MyTexture(mapImage);
+                mapTexture = new MyTexture(mapImage);
             }
             else
                 generateMapImage();
-            mapBorders = new Rect(0f, 0f, map.getWidth() * Options.cellMultiplier, map.getHeight() * Options.cellMultiplier);
+            mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
         }
-        public void initialize()
+        public void InitializeNonUnityData()
         {
             market.initialize();
 
-            //FactoryType.getResourceTypes(); // FORCING FactoryType to initializate?
+            World.Create(mapTexture, !readMapFormFile);
+            //Game.updateStatus("Making grid..");
+            grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
-            updateStatus("Reading provinces..");
-            Province.preReadProvinces(Game.map, this);
-            seaProvinces = getSeaProvinces();
-            deleteSomeProvinces();
-
-            updateStatus("Making grid..");
-            grid = new VoxelGrid(map.getWidth(), map.getHeight(), Options.cellMultiplier * map.getWidth(), map, Game.seaProvinces, this, Province.allProvinces);
-
-            updateStatus("Making countries..");
-            Country.makeCountries(this);
-
-            updateStatus("Making population..");
-            сreateRandomPopulation();
-
-            setStartResources();
             if (!devMode)
                 makeHelloMessage();
             updateStatus("Finishing generation..");
         }
+        
+        /// <summary>
+        /// Separate method to call Unity API. WOULDN'T WORK IN MULTYTHREADING!
+        /// Called after initialization of non-Unity data
+        /// </summary>
         public static void setUnityAPI()
         {
             // Assigns a material named "Assets/Resources/..." to the object.
@@ -101,12 +92,14 @@ namespace Nashet.EconomicSimulation
             //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
             r3dTextPrefab = GameObject.Find("3dProvinceNameText");
 
-            mapObject = GameObject.Find("MapObject");
-            Province.generateUnityData(grid);
+            
+            World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
             Country.setUnityAPI();
-            seaProvinces = null;
+            //seaProvinces = null;
+            // todo clear resources
             grid = null;
-            map = null;
+            mapTexture = null;
             // Annex all countries to P)layer
             //foreach (var item in Country.allCountries)
             //{
@@ -117,62 +110,8 @@ namespace Nashet.EconomicSimulation
         {
             return mapBorders;
         }
-        static List<Province> getSeaProvinces()
-        {
-            List<Province> res = new List<Province>();
-            if (!readMapFormFile)
-            {
-                Province seaProvince;
-                for (int x = 0; x < map.getWidth(); x++)
-                {
-                    seaProvince = Province.find(map.GetPixel(x, 0));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                    seaProvince = Province.find(map.GetPixel(x, map.getHeight() - 1));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                }
-                for (int y = 0; y < map.getHeight(); y++)
-                {
-                    seaProvince = Province.find(map.GetPixel(0, y));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                    seaProvince = Province.find(map.GetPixel(map.getWidth() - 1, y));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                }
 
-                seaProvince = Province.find(map.getRandomPixel());
-                if (!res.Contains(seaProvince))
-                    res.Add(seaProvince);
-
-                if (Game.Random.Next(3) == 1)
-                {
-                    seaProvince = Province.find(map.getRandomPixel());
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                    if (Game.Random.Next(20) == 1)
-                    {
-                        seaProvince = Province.find(map.getRandomPixel());
-                        if (!res.Contains(seaProvince))
-                            res.Add(seaProvince);
-                    }
-                }
-            }
-            else
-            {
-                foreach (var item in Province.allProvinces)
-                {
-                    var color = item.getColorID();
-                    if (color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f)
-                        //if (color.g + color.b + color.r > 492f / 255f)
-                        res.Add(item);
-
-                }
-            }
-            return res;
-        }
-        internal static void takePlayerControlOfThatCountry(Country country)
+        internal static void GivePlayerControlOf(Country country)
         {
             //if (country != Country.NullCountry)
             {
@@ -188,41 +127,13 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static void givePlayerControlToAI()
+        public static void GivePlayerControlToAI()
         {
             surrended = true;
         }
-        static private void deleteSomeProvinces()
-        {
-            //Province.allProvinces.FindAndDo(x => blockedProvinces.Contains(x.getColorID()), x => x.removeProvince());
-            foreach (var item in Province.allProvinces.ToArray())
-                if (seaProvinces.Contains(item))
-                {
-                    Province.allProvinces.Remove(item);
-                    //item.removeProvince();
-                }
-            //todo move it in seaProvinces
-            if (!readMapFormFile)
-            {
-                int howMuchLakes = Province.allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
-                for (int i = 0; i < howMuchLakes; i++)
-                    Province.allProvinces.Remove(Province.allProvinces.Random());
-            }
-        }
 
-        static private void setStartResources()
-        {
-            //Country.allCountries[0] is null country
-            //Country.allCountries[1].Capital.setResource(Product.Wood);// player
 
-            //Country.allCountries[0].Capital.setResource(Product.Wood;
-            Country.allCountries[2].Capital.setResource(Product.Fruit);
-            Country.allCountries[3].Capital.setResource(Product.Gold);
-            Country.allCountries[4].Capital.setResource(Product.Cotton);
-            Country.allCountries[5].Capital.setResource(Product.Stone);
-            Country.allCountries[6].Capital.setResource(Product.MetalOre);
-            Country.allCountries[7].Capital.setResource(Product.Wood);
-        }
+
 
         internal static int getMapMode()
         {
@@ -232,7 +143,7 @@ namespace Nashet.EconomicSimulation
         public static void redrawMapAccordingToMapMode(int newMapMode)
         {
             mapMode = newMapMode;
-            foreach (var item in Province.allProvinces)
+            foreach (var item in World.GetAllProvinces())
                 item.updateColor(item.getColorAccordingToMapMode());
         }
 
@@ -252,47 +163,6 @@ namespace Nashet.EconomicSimulation
         internal static void makeOneStepSimulation()
         {
             haveToStepSimulation = true;
-        }
-
-
-        static void сreateRandomPopulation()
-        {
-
-            foreach (Province province in Province.allProvinces)
-            {
-                if (province.Country == Country.NullCountry)
-                {
-                    Tribesmen f = new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.Country.getCulture(), province);
-                }
-                else
-                {
-                    PopUnit pop;
-                    //if (Game.devMode)
-                    //    pop = new Tribesmen(2000, province.Country.getCulture(), province);
-                    //else
-                    pop = new Tribesmen(PopUnit.getRandomPopulationAmount(3600, 4000), province.Country.getCulture(), province);
-                    
-                    //if (Game.devMode)
-                    //    pop = new Aristocrats(1000, province.Country.getCulture(), province);
-                    //else
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.Country.getCulture(), province);
-                                       
-                    pop.GiveMoneyFromNoWhere(900f);
-                    pop.storage.add(new Storage(Product.Grain, 60f));
-                    //if (!Game.devMode)
-                    //{
-                    //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), Country.getCulture(), province);
-                    //pop.Cash.set(9000);
-
-                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
-                    pop.GiveMoneyFromNoWhere(900f);
-
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(1000, 1100), province.Country.getCulture(), province);
-                    pop.GiveMoneyFromNoWhere(20f);
-                    //}
-                    //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
-                }
-            }
         }
 
         internal static bool isPlayerSurrended()
@@ -358,90 +228,15 @@ namespace Nashet.EconomicSimulation
                 mapImage.setAlphaToMax();
             }
             mapImage.Apply();
-            map = new MyTexture(mapImage);
+            mapTexture = new MyTexture(mapImage);
             Texture2D.Destroy(mapImage);
         }
-
-        static bool FindProvinceCenters()
-        {
-            //Vector3 accu = new Vector3(0, 0, 0);
-            //foreach (Province pro in Province.allProvinces)
-            //{
-            //    accu.Set(0, 0, 0);
-            //    foreach (var c in pro.mesh.vertices)
-            //        accu += c;
-            //    accu = accu / pro.mesh.vertices.Length;
-            //    pro.centre = accu;
-            //}
-            return true;
-
-            //short[,] bordersMarkers = new short[mapImage.width, mapImage.height];
-
-            //int foundedProvinces = 0;
-            //Color currentColor;
-            //short borderDeepLevel = 0;
-            //short alphaChangeForLevel = 1;
-            //float defaultApha = 1f;
-            //int placedMarkers = 456;//random number
-            ////while (Province.allProvinces.Count != foundedProvinces)
-
-            //foreach (Province pro in Province.allProvinces)
-            //{
-            //    borderDeepLevel = -1;
-            //    placedMarkers = int.MaxValue;
-            //    int emergencyExit = 200;
-            //    while (placedMarkers != 0)
-            //    {
-            //        emergencyExit--;
-            //        if (emergencyExit == 0)
-            //            break;
-            //        placedMarkers = 0;
-            //        borderDeepLevel += alphaChangeForLevel;
-            //        for (int j = 0; j < mapImage.height; j++) // cicle by province        
-            //            for (int i = 0; i < mapImage.width; i++)
-            //            {
-
-            //                currentColor = mapImage.GetPixel(i, j);
-            //                //if (UtilsMy.isSameColorsWithoutAlpha(currentColor, pro.colorID) && currentColor.a == defaultApha && isThereOtherColorsIn4Negbors(i, j))
-            //                // && bordersMarkers[i, j] == borderDeepLevel-1
-            //                if (currentColor == pro.colorID  && isThereOtherColorsIn4Negbors(i, j, bordersMarkers, (short)(borderDeepLevel)))
-            //                {
-            //                    //currentColor.a = borderDeepLevel;
-            //                    //mapImage.SetPixel(i, j, currentColor);
-            //                    borderDeepLevel ++;
-            //                    bordersMarkers[i, j] = borderDeepLevel;
-            //                    borderDeepLevel--;
-            //                    placedMarkers++;
-
-            //                }
-            //            }
-
-            //        //if (placedMarkers == 0) 
-            //        //    ;
-            //    }
-            //    //// found centers!
-            //    bool wroteResult = false;
-            //    //
-            //    for (int j = 0; j < mapImage.height && !wroteResult; j++) // cicle by province, looking where is my centre        
-            //        //&& !wroteResult
-            //        for (int i = 0; i < mapImage.width && !wroteResult; i++)
-            //        {
-            //            currentColor = mapImage.GetPixel(i, j);
-            //            //if (currentColor.a == borderDeepLevel)
-            //            if (currentColor == pro.colorID && bordersMarkers[i, j] == borderDeepLevel - 1)
-            //            {
-            //                pro.centre = new Vector3((i + 0.5f) * Options.cellMuliplier, (j + 0.5f) * Options.cellMuliplier, 0f);
-            //                wroteResult = true;
-            //            }
-            //        }
-            //}
-            //return false;
-        }
+        
 
         public static void prepareForNewTick()
         {
             Game.market.sentToMarket.setZero();
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 country.SetStatisticToZero();
                 foreach (Province province in country.ownedProvinces)
@@ -524,13 +319,13 @@ namespace Nashet.EconomicSimulation
             prepareForNewTick();
 
             // big PRODUCE circle
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
                 foreach (Province province in country.ownedProvinces)
                     foreach (var producer in province.getAllProducers())
                         producer.produce();
 
             // big CONCUME circle   
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 country.consumeNeeds();
                 if (country.economy.getValue() == Economy.PlannedEconomy)
@@ -540,16 +335,16 @@ namespace Nashet.EconomicSimulation
                         factory.consumeNeeds();
 
                     if (country.Invented(Invention.ProfessionalArmy))
-                        foreach (var item in country.getAllPopUnits(PopType.Soldiers))
+                        foreach (var item in country.getAllPopulation(PopType.Soldiers))
                             item.consumeNeeds();
 
-                    foreach (var item in country.getAllPopUnits(PopType.Workers))
+                    foreach (var item in country.getAllPopulation(PopType.Workers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.getAllPopUnits(PopType.Farmers))
+                    foreach (var item in country.getAllPopulation(PopType.Farmers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.getAllPopUnits(PopType.Tribesmen))
+                    foreach (var item in country.getAllPopulation(PopType.Tribesmen))
                         item.consumeNeeds();
                 }
                 else  //consume in regular order
@@ -559,7 +354,7 @@ namespace Nashet.EconomicSimulation
                         {
                             factory.consumeNeeds();
                         }
-                        foreach (PopUnit pop in province.allPopUnits)
+                        foreach (PopUnit pop in province.GetAllPopulation())
                         {
                             //That placed here to avoid issues with Aristocrats and Clerics
                             //Otherwise Aristocrats starts to consume BEFORE they get all what they should
@@ -567,14 +362,14 @@ namespace Nashet.EconomicSimulation
                                 if (pop.shouldPayAristocratTax())
                                     pop.payTaxToAllAristocrats();
                         }
-                        foreach (PopUnit pop in province.allPopUnits)
+                        foreach (PopUnit pop in province.GetAllPopulation())
                         {
                             pop.consumeNeeds();
                         }
                     }
             }
             // big AFTER all circle
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 country.getMoneyForSoldProduct();
                 foreach (Province province in country.ownedProvinces)//Province.allProvinces)
@@ -599,7 +394,7 @@ namespace Nashet.EconomicSimulation
                     }
                     province.DestroyAllMarkedfactories();
                     // get pop's income section:
-                    foreach (PopUnit pop in province.allPopUnits)
+                    foreach (PopUnit pop in province.GetAllPopulation())
                     {
                         if (pop.Type == PopType.Workers)
                             pop.LearnByWork();
@@ -634,15 +429,17 @@ namespace Nashet.EconomicSimulation
                         country.invest(province);
                     //if (Game.random.Next(3) == 0)
                     //    province.consolidatePops();                
+                    province.RemoveDeadPops();
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                     {
                         PopUnit targetToMerge = pop.Province.getSimilarPopUnit(pop);
                         if (targetToMerge == null)
-                            pop.Province.allPopUnits.Add(pop);
+                            pop.Province.RegisterPop(pop);
                         else
                             targetToMerge.mergeIn(pop);
                     }
-                    province.allPopUnits.RemoveAll(x => !x.isAlive());
+                    
+
                     PopUnit.PopListToAddToGeneralList.Clear();
                     province.simulate();
                 }
@@ -654,7 +451,7 @@ namespace Nashet.EconomicSimulation
 
         protected override void ThreadFunction()
         {
-            initialize();
+            InitializeNonUnityData();
         }
     }
 }

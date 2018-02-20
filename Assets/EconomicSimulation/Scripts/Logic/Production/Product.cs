@@ -293,7 +293,7 @@ namespace Nashet.EconomicSimulation
             //of some freshly invented product
             if (isAbstract())
                 return true;
-            foreach (var country in Country.allCountries)
+            foreach (var country in World.getAllExistingCountries())
                 if (country.Invented(this))
                     return true;
             return false;

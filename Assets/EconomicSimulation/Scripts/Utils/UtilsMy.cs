@@ -722,7 +722,7 @@ namespace Nashet.Utils
                 }
             }
         }
-        public void updateStatus(String status)
+        public  void updateStatus(String status)
         {
             lock (this.status)
             {

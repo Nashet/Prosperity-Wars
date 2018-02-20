@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy,
             new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
             new Modifier (x => !(x as PopUnit).isStateCulture() &&
-            (x as PopUnit).Province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -1f, false),
+            (x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -1f, false),
             modCountryIsToBig
 });
 
@@ -116,7 +116,7 @@ namespace Nashet.EconomicSimulation
             // copied in Factory
              new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).Country)
              && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 1f, false),
-             new Modifier(x=>(x as PopUnit).Province.hasModifier(Mod.recentlyConquered), Mod.recentlyConquered.ToString(), -0.20f, false),
+             new Modifier(x=>(x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).Country.government.getValue() == Government.Tribal
              && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.5f, false),
              new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.30f, false) // remove this?
@@ -130,8 +130,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(  where)
         {
-
-            where.allPopUnits.Add(this);
+            where.RegisterPop(this);
             born = new Date(Date.Today);
             population = amount;
             this.type = popType;
@@ -1169,7 +1168,7 @@ namespace Nashet.EconomicSimulation
             Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
             //where to g0?
             // where life is rich and I where I have some rights
-            foreach (var country in Country.getAllExisting())
+            foreach (var country in World.getAllExistingCountries())
                 if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     if (country != this.Country)
                         foreach (var province in country.ownedProvinces)

@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
         , true);
 
 
-        public readonly static List<Province> allProvinces = new List<Province>();
+        
         public static readonly Predicate<Province> All = x => true;
 
 
@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
         private readonly int ID;
         private readonly Color colorID;
 
-        public readonly List<PopUnit> allPopUnits = new List<PopUnit>();
+        private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
 
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         private readonly List<Province> neighbors = new List<Province>();
@@ -63,49 +63,30 @@ namespace Nashet.EconomicSimulation
         private readonly List<Country> cores = new List<Country>();
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
-        private readonly Dictionary<Mod, Date> modifiers = new Dictionary<Mod, Date>();
-        private readonly float nameWeight;
+        private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
+        //private readonly float nameWeight;
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
         {
-            nameWeight = name.GetWeight();
+            //nameWeight = name.GetWeight();
             setResource(resource);
             colorID = icolorID;
             ID = iID;
             fertileSoil = 10000;
         }
-        public static void preReadProvinces(MyTexture image, Game game)
+        
+        public IEnumerable<PopUnit> GetAllPopulation()
         {
-            ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
-            Color currentProvinceColor = image.GetPixel(0, 0);
-            int provinceCounter = 0;
-            for (int j = 0; j < image.getHeight(); j++) // circle by province        
-                for (int i = 0; i < image.getWidth(); i++)
-                {
-                    if (currentProvinceColor != image.GetPixel(i, j)
-                        //&& !blockedProvinces.Contains(currentProvinceColor)
-                        && !Province.isProvinceCreated(currentProvinceColor))
-                    {
-                        allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
-                        provinceCounter++;
-
-                    }
-                    currentProvinceColor = image.GetPixel(i, j);
-                    //game.updateStatus("Reading provinces.. x = " + i + " y = " + j);
-                }
+            foreach (var item in allPopUnits)
+                yield return item;
         }
-
         internal int howMuchFactories()
         {
             return allFactories.Count;
         }
 
-        internal static void generateUnityData(VoxelGrid grid)
-        {
-            allProvinces.ForEach(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            allProvinces.ForEach(x => x.setBorderMaterials(false));
-        }
-        void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
+
+        public void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
         {
             //this.meshStructure = meshStructure;
 
@@ -118,7 +99,7 @@ namespace Nashet.EconomicSimulation
 
             // in case you want the new gameobject to be a child
             // of the gameobject that your script is attached to
-            rootGameObject.transform.parent = Game.mapObject.transform;
+            rootGameObject.transform.parent = World.Get.transform;
 
             var landMesh = meshFilter.mesh;
             landMesh.Clear();
@@ -203,12 +184,12 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
-                            if (Country == Country.NullCountry)
+                            if (Country == World.UncolonizedLand)
                                 border.Value.material = Game.defaultProvinceBorderMaterial;
                             else
                                 border.Value.material = Country.getBorderMaterial();
                         if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.Country != null)
-                            if (border.Key.Country == Country.NullCountry)
+                            if (border.Key.Country == World.UncolonizedLand)
                                 border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
                             else
                                 border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
@@ -263,7 +244,7 @@ namespace Nashet.EconomicSimulation
             taker.ownedProvinces.Add(this);
             color = taker.getColor().getAlmostSameColor();
 
-            if (taker != Country.NullCountry)
+            if (taker != World.UncolonizedLand)
                 cores.Add(taker);
         }
         public void simulate()
@@ -380,16 +361,16 @@ namespace Nashet.EconomicSimulation
 
             setBorderMaterials(false);
             if (addModifier)
-                if (modifiers.ContainsKey(Mod.recentlyConquered))
-                    modifiers[Mod.recentlyConquered].set(Date.Today.getNewDate(20));
+                if (modifiers.ContainsKey(TemporaryModifier.recentlyConquered))
+                    modifiers[TemporaryModifier.recentlyConquered].set(Date.Today.getNewDate(20));
                 else
-                    modifiers.Add(Mod.recentlyConquered, Date.Today.getNewDate(20));
+                    modifiers.Add(TemporaryModifier.recentlyConquered, Date.Today.getNewDate(20));
         }
         public int howFarFromCapital()
         {
             return 0;
         }
-        public Dictionary<Mod, Date> getModifiers()
+        public Dictionary<TemporaryModifier, Date> getModifiers()
         {
             return modifiers;
         }
@@ -398,10 +379,7 @@ namespace Nashet.EconomicSimulation
         //    return Country.Capital == this;
         //}
 
-        internal static Province getRandomProvinceInWorld(Predicate<Province> predicate)
-        {
-            return allProvinces.Random(predicate);
-        }
+       
         internal List<Province> getNeigbors(Predicate<Province> predicate)
         {
             return neighbors.FindAll(predicate);
@@ -528,13 +506,7 @@ namespace Nashet.EconomicSimulation
             Country.mobilize(new List<Province> { this });
         }
 
-        public static bool isProvinceCreated(Color color)
-        {
-            foreach (Province anyProvince in allProvinces)
-                if (anyProvince.colorID == color)
-                    return true;
-            return false;
-        }
+        
 
         public List<PopUnit> getAllPopUnitsList(PopType ipopType)
         {
@@ -555,20 +527,7 @@ namespace Nashet.EconomicSimulation
             foreach (PopUnit pop in allPopUnits)
                 yield return pop;
         }
-        public static Province find(Color color)
-        {
-            foreach (Province anyProvince in allProvinces)
-                if (anyProvince.colorID == color)
-                    return anyProvince;
-            return null;
-        }
-        internal static Province find(int number)
-        {
-            foreach (var pro in allProvinces)
-                if (pro.ID == number)
-                    return pro;
-            return null;
-        }
+        
 
         public int getPopulationAmountByType(PopType ipopType)
         {
@@ -603,7 +562,7 @@ namespace Nashet.EconomicSimulation
         public PopUnit getSimilarPopUnit(PopUnit target)
         {
             foreach (PopUnit pop in allPopUnits)
-                if (pop.Type == target.Type && pop.culture == target.culture && pop.isAlive())
+                if (pop.Type == target.Type && pop.culture == target.culture)
                     return pop;
             return null;
         }
@@ -996,7 +955,7 @@ namespace Nashet.EconomicSimulation
             }
             return false;
         }
-        public bool hasModifier(Mod modifier)
+        public bool hasModifier(TemporaryModifier modifier)
         {
             return modifiers.ContainsKey(modifier);
         }
@@ -1014,7 +973,7 @@ namespace Nashet.EconomicSimulation
                             return getResource().getColor();
                     }
                 case 1: //culture mode
-                    return Country.allCountries.Find(x => x.getCulture() == getMajorCulture()).getColor();
+                    return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
                 case 2: //cores mode
                     if (Game.selectedProvince == null)
                     {
@@ -1224,15 +1183,10 @@ namespace Nashet.EconomicSimulation
         public bool HasJobsFor(PopType popType, Province province)
         {
             return popType.HasJobsFor(popType, here);
-        }
-
-        public float GetNameWeight()
-        {
-            return nameWeight;
-        }
+        }        
         public Factory BuildFactory(IShareOwner investor, ProductionType type, ReadOnlyValue cost)
         {
-            if (getAllFactories().Any(x => x.Type == type))
+            if (getAllFactories().Any(x => x.Type == type)) //temporally
             {
                 throw new Exception("Can't have 2 same factory types");
             }
@@ -1243,29 +1197,36 @@ namespace Nashet.EconomicSimulation
                 return res;
             }
         }
+        public void RegisterPop(PopUnit pop)
+        {
+            if (GetAllPopulation().Any(x => x.Type == pop.Type && x.culture == pop.culture)) //temporally
+            {
+                throw new Exception("Can't have 2 same popunits");
+            }
+            else
+                allPopUnits.Add(pop);
+        }
+        public void RemoveDeadPops()
+        {
+            allPopUnits.RemoveAll(x => !x.isAlive());
+        }
+        //public PopUnit BithPop(int amount, PopType type, Culture culture)
+        //{
+        //    if (GetAllPopulation().Any(x => x.Type == type && x.culture == culture)) //temporally
+        //    {
+        //        throw new Exception("Can't have 2 same popunits");
+        //    }
+        //    else
+        //    {
+        //        var res = new PopUnit(int amount, PopType type, Culture culture, this);
+        //        allFactories.Add(res);
+        //        return res;
+        //    }
+        //}
 
         public override string FullName
         {
             get { return this + ", " + Country; }
         }
     }
-    public class Mod : Name
-    {
-        static readonly public Mod recentlyConquered = new Mod("Recently conquered");
-        static readonly public Mod blockade = new Mod("Blockade");
-
-        //private readonly DateTime expireDate;
-        public Mod(string name) : base(name)
-        { }
-
-        //public Mod(string name, int years) : base(name)
-        //{
-        //    expireDate = Game.date;
-        //    expireDate.AddYears(years);
-        //}
-
-    }
-
-
-
 }

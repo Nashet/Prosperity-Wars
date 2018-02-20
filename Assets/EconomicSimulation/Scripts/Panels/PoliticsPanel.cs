@@ -64,7 +64,7 @@ namespace Nashet.EconomicSimulation
         {
             //uint votersSayedYes;
             foreach (Province pro in Game.Player.ownedProvinces)
-                foreach (PopUnit pop in pro.allPopUnits)
+                foreach (PopUnit pop in pro.GetAllPopulation())
                 {
                     if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
                     {

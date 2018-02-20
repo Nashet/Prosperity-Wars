@@ -14,19 +14,19 @@ namespace Nashet.EconomicSimulation
         public void Awake()// start doesn't work somehow
         {
             countryOrder = new SortOrder(this, x => x.GetNameWeight());
-            populationOrder = new SortOrder(this, x => x.getAllPopUnits().Sum(y=>y.getPopulation()));
+            populationOrder = new SortOrder(this, x => x.getAllPopulation().Sum(y=>y.getPopulation()));
             GDPOrder = new SortOrder(this, x => x.getGDP().get());
             GDPPerCapitaOrder = new SortOrder(this, x => x.getGDPPer1000());
-            unemploymentOrder = new SortOrder(this, x => x.getAllPopUnits().GetAverageProcent(y => y.getUnemployment()).get());
-            averageNeedsOrder = new SortOrder(this, x => x.getAllPopUnits().GetAverageProcent(y => y.needsFulfilled).get());
+            unemploymentOrder = new SortOrder(this, x => x.getAllPopulation().GetAverageProcent(y => y.getUnemployment()).get());
+            averageNeedsOrder = new SortOrder(this, x => x.getAllPopulation().GetAverageProcent(y => y.needsFulfilled).get());
             richTaxOrder = new SortOrder(this, x => (x.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.get());
             economyTypeOrder = new SortOrder(this, x => x.economy.GetType().GetHashCode());
             GDPShareOrder = new SortOrder(this, x => x.getGDP().get());
-            educationOrder = new SortOrder(this, x => x.getAllPopUnits().GetAverageProcent(y => y.Education).get());
+            educationOrder = new SortOrder(this, x => x.getAllPopulation().GetAverageProcent(y => y.Education).get());
         }
         protected override IEnumerable<Country> ContentSelector()
         {
-            return Country.getAllExisting();
+            return World.getAllExistingCountries();
         }
         protected override void AddRow(Country country, int number)
         {
@@ -47,12 +47,12 @@ namespace Nashet.EconomicSimulation
 
             AddCell(country.getGDPShare().ToString(), country);
 
-            AddCell(country.getAllPopUnits().GetAverageProcent(x=>x.getUnemployment()).ToString(), country);
-            AddCell(country.getAllPopUnits().GetAverageProcent(y => y.Education).ToString(), country);
+            AddCell(country.getAllPopulation().GetAverageProcent(x=>x.getUnemployment()).ToString(), country);
+            AddCell(country.getAllPopulation().GetAverageProcent(y => y.Education).ToString(), country);
 
             AddCell(country.economy.getValue().ToString(), country);
 
-            AddCell(country.getAllPopUnits().GetAverageProcent(x => x.needsFulfilled).ToString(), country);
+            AddCell(country.getAllPopulation().GetAverageProcent(x => x.needsFulfilled).ToString(), country);
 
             AddCell((country.taxationForRich.getValue() as TaxationForRich.ReformValue).tax.ToString(), country);
         }

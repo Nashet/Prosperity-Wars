@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Consumer consumer in province.getAllAgents())
@@ -118,7 +118,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Consumer consumer in province.getAllBuyers())
@@ -135,7 +135,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForSellers(Product product, Func<ICanSell, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (ICanSell producer in province.getAllProducers())
@@ -152,7 +152,7 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in Country.getAllExisting())
+            foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.ownedProvinces)
                     foreach (Producer producer in province.getAllProducers())

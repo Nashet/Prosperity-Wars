@@ -476,18 +476,18 @@ namespace Nashet.Utils
             return source[Game.Random.Next(source.Count)];
 
         }
-        public static T Random<T>(this IEnumerable<T> enumerable)
-        {
-            return enumerable.Random<T>(new System.Random());
-        }
+        //public static T Random<T>(this IEnumerable<T> enumerable)
+        //{
+        //    return enumerable.Random<T>(new System.Random());
+        //}
 
-        public static T Random<T>(this IEnumerable<T> enumerable, System.Random rand)
+        public static T Random<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == Enumerable.Empty<T>() || enumerable.Count() == 0)
                 return default(T);
             else
             {
-                int index = rand.Next(enumerable.Count());
+                int index = Rand.random2.Next(enumerable.Count());
                 return enumerable.ElementAt(index);
             }
         }
@@ -665,7 +665,7 @@ namespace Nashet.Utils
         //    }
         //    return sb.ToString();
         //}
-        public static string getString(IEnumerable<KeyValuePair<Mod, Date>> dictionary)
+        public static string getString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
         {
             if (dictionary.Count() == 0)
                 return "none";

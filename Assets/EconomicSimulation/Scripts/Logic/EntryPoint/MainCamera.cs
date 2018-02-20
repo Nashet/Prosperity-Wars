@@ -75,7 +75,7 @@ namespace Nashet.EconomicSimulation
                 Application.runInBackground = true;
                 game = new Game();
 #if UNITY_WEBGL
-                game.initialize(); // non multi-threading
+                game.InitializeNonUnityData(); // non multi-threading
 #else
                 game.Start(); //initialize is here 
 #endif
@@ -203,7 +203,7 @@ namespace Nashet.EconomicSimulation
 
             if (number >= 0)
             {
-                if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
+                if (World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
                 {
 
                     var lastSelected = Game.selectedProvince;
@@ -221,7 +221,7 @@ namespace Nashet.EconomicSimulation
                         Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                         Game.selectedProvince.setBorderMaterials(true);
                     }
-                    Game.selectedProvince = Province.find(number);
+                    Game.selectedProvince = World.FindProvince(number);
                     Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                     provincePanel.Show();
                     if (Game.getMapMode() == 2) //core map mode
