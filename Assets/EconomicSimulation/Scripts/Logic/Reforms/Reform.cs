@@ -902,7 +902,7 @@ namespace Nashet.EconomicSimulation
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Minimal = new ReformValue("Subsistance Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
+        internal readonly static ReformValue Minimal = new ReformValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
@@ -914,12 +914,12 @@ namespace Nashet.EconomicSimulation
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
-        internal readonly static ReformValue Big = new ReformValue("Basic Universal Income", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>()
+        internal readonly static ReformValue Big = new ReformValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>()
         {
             Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned,
         }));
 
-        public MinimalWage(Country country) : base("Minimal wage", "", country)
+        public MinimalWage(Country country) : base("Minimum wage", "", country)
         {
             status = None;
         }
