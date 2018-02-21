@@ -88,6 +88,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly float PopMinLandForFarmers = 0.25f;
         internal static readonly float PopMinLandForTownspeople = 0.0025f;
 
+        ///<summary> Pop wouldn't select new life if there is unemployment hire than</summary>
+        internal static readonly ReadOnlyValue PopMigrationUnemploymentLimit = new ReadOnlyValue(0.1f);
         public static readonly Procent PopGrowthSpeed = new Procent(0.002f);
         public static readonly Procent PopStarvationSpeed = new Procent(0.01f);
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
@@ -100,7 +102,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.001f);
 
         internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.02f);
-
+        internal static readonly ReadOnlyValue PopSameCultureMigrationPreference = new ReadOnlyValue(0.1f);
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
         public static readonly Procent PopNeedsEscapingLimit = new Procent(0.333f);//0.33f
 
@@ -162,6 +164,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopEducationRegressChance = new ReadOnlyValue(0.01f);
         internal static readonly ReadOnlyValue PopLearnByWorkingChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
+        
+
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

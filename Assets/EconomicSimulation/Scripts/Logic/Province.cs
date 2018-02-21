@@ -68,8 +68,8 @@ namespace Nashet.EconomicSimulation
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
         {
-            country = World.UncolonizedLand;           
-            color = country.getColor().getAlmostSameColor();     
+            country = World.UncolonizedLand;
+            color = country.getColor().getAlmostSameColor();
             setResource(resource);
             colorID = icolorID;
             ID = iID;
@@ -360,9 +360,10 @@ namespace Nashet.EconomicSimulation
         //}
 
 
-        internal List<Province> getNeigbors(Predicate<Province> predicate)
+        internal IEnumerable<Province> getAllNeigbors()
         {
-            return neighbors.FindAll(predicate);
+            foreach (var item in neighbors)
+                yield return item;
 
         }
         public IEnumerable<Producer> getAllProducers()
@@ -1126,10 +1127,17 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
-
-        public bool HasJobsFor(PopType popType, Province province)
+        public bool HasJobsFor(PopType popType)
         {
-            return popType.HasJobsFor(popType, here);
+            if (!allFactories.Any(x => x.IsOpen))
+                return false;
+            if (popType == PopType.Workers)
+                return this.GetAllPopulation().Where(x => x.Type == PopType.Workers)
+                        .GetAverageProcent(x => x.getUnemployment()).isSmallerThan(Options.PopMigrationUnemploymentLimit);
+            else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
+                return this.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
+            else
+                return true;
         }
         public Factory BuildFactory(IShareOwner investor, ProductionType type, ReadOnlyValue cost)
         {
@@ -1174,6 +1182,20 @@ namespace Nashet.EconomicSimulation
         public override string FullName
         {
             get { return this + ", " + Country; }
+        }
+        public ReadOnlyValue getEscapeValueFor(PopUnit pop, PopType proposedType)
+        {
+            if (!this.HasJobsFor(proposedType))
+                return ReadOnlyValue.Zero;
+            else
+            {
+                var res = getAverageNeedsFulfilling(proposedType);
+                if (!res.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier))
+                    return ReadOnlyValue.Zero;
+                if (getSimilarPopUnit(pop) != null)
+                    res.Add(Options.PopSameCultureMigrationPreference);
+                return res;
+            }
         }
     }
 }

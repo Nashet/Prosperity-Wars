@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         static public readonly Market market;
 
 
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -425,7 +425,7 @@ namespace Nashet.EconomicSimulation
                             pop.calcGrowth();
                             pop.calcPromotions();
                             if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
-                                pop.EscapeForBetterLife(x => x.HasJobsFor(pop.Type, province));
+                                pop.EscapeForBetterLife();
                             pop.calcAssimilations();
                         }
                         if (country.economy.getValue() != Economy.PlannedEconomy)
@@ -443,8 +443,7 @@ namespace Nashet.EconomicSimulation
                             pop.Province.RegisterPop(pop);
                         else
                             targetToMerge.mergeIn(pop);
-                    }
-                    
+                    }                   
 
                     PopUnit.PopListToAddToGeneralList.Clear();
                     province.simulate();

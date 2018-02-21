@@ -292,18 +292,14 @@ namespace Nashet.EconomicSimulation
         //{
         //    return true;
         //}
-        private static Procent MigrationUnemploymentLimit = new Procent(0.2f);
-
-        public bool HasJobsFor(PopType type, Province province)
-        {
-            //if (this == Workers || this == Farmers || this == Tribesmen)
-            if (this == Workers)
-                return province.GetAllPopulation().Where(x => x.Type == Workers).GetAverageProcent(x => x.getUnemployment()).isSmallerThan(MigrationUnemploymentLimit);
-            else if (this == Farmers || this == Tribesmen)
-                return province.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
-            else
-                return true;
-        }
         
+
+       
+        public ReadOnlyValue getEscapeValueFor(PopUnit pop, PopType proposedType)
+        {
+            Debug.Log("Failed");
+            return ReadOnlyValue.Zero;
+        }
+
     }
 }

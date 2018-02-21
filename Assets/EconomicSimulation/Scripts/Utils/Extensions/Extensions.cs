@@ -294,6 +294,9 @@ namespace Nashet.Utils
                 if (predicate(item))
                     action(item);
         }
+        /// <summary>
+        /// New value
+        /// </summary>        
         public static Procent GetAverageProcent(this IEnumerable<PopUnit> source, Func<PopUnit, Procent> selector)
         {
             Procent result = new Procent(0f);

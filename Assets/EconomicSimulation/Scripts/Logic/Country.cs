@@ -576,7 +576,7 @@ namespace Nashet.EconomicSimulation
             List<Province> result = new List<Province>();
             foreach (var province in ownedProvinces)
                 result.AddRange(
-                    province.getNeigbors(p => p.Country != this && !result.Contains(p))
+                    province.getAllNeigbors().Where(p => p.Country != this && !result.Contains(p))
                     );
             return result;
         }

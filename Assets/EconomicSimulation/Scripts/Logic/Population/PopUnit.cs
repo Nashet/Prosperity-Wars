@@ -128,7 +128,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///  Constructor for population created on game startup
         /// </summary>    
-        protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(  where)
+        protected PopUnit(int amount, PopType popType, Culture culture, Province where) : base(where)
         {
             where.RegisterPop(this);
             born = new Date(Date.Today);
@@ -145,7 +145,7 @@ namespace Nashet.EconomicSimulation
         /// And transfers sizeOfNewPop population.
         /// </summary>    
         protected PopUnit(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture)
-            : base( where)
+            : base(where)
         {
             born = new Date(Date.Today);
             PopListToAddToGeneralList.Add(this);
@@ -989,7 +989,7 @@ namespace Nashet.EconomicSimulation
 
         public PopType getRichestPromotionTarget()
         {
-            Dictionary<PopType, Value> list = new Dictionary<PopType, Value>();
+            Dictionary<PopType, ReadOnlyValue> list = new Dictionary<PopType, ReadOnlyValue>();
             foreach (PopType nextType in PopType.getAllPopTypes())
                 if (canThisPromoteInto(nextType))
                     list.Add(nextType, Province.getAverageNeedsFulfilling(nextType));
@@ -1072,30 +1072,18 @@ namespace Nashet.EconomicSimulation
 
             return result;
             //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
-        }
-        private IEscapeTarget findEscapeTarget(Predicate<IEscapeTarget> predicate)
-        {
-            var list = new List<KeyValuePair<IEscapeTarget, Value>>();
-            list.AddIfNotNull(getRichestDemotionTarget(predicate));
-
-            if (this.type == PopType.Farmers || this.type == PopType.Workers || this.type == PopType.Tribesmen) // others don't care where they live
-                list.AddIfNotNull(getRichestMigrationTarget(predicate));
-
-            if (this.type != PopType.Aristocrats && this.type != PopType.Capitalists) // redo
-                list.AddIfNotNull(getRichestImmigrationTarget(predicate));
-
-            return list.MaxBy(x => x.Value.get()).Key;
-        }
+        }        
 
         /// <summary>
         /// Splits pops. New pops changes life in richest way - by demotion, migration or immigration
         /// </summary>        
-        public void EscapeForBetterLife(Predicate<IEscapeTarget> predicate)
+        public void EscapeForBetterLife()
         {
             int escapeSize = getEscapeSize();
             if (escapeSize > 0)// && this.getPopulation() >= escapeSize)
             {
-                var escapeTarget = findEscapeTarget(predicate);
+                //var escapeTarget = findEscapeTarget(predicate);
+                var escapeTarget = GetAllEscapes().MaxBy(x=>x.Value.get()).Key;
                 if (escapeTarget != null)
                 {
                     var targetIsPopType = escapeTarget as PopType;
@@ -1151,63 +1139,41 @@ namespace Nashet.EconomicSimulation
         }
         abstract public bool canThisDemoteInto(PopType popType);
 
-        //abstract public PopType getRichestDemotionTarget();
-        /// <summary>
-        /// return popType to demote
-        /// </summary>   
-        public KeyValuePair<IEscapeTarget, Value> getRichestDemotionTarget(Predicate<IEscapeTarget> predicate)
+        private IEnumerable<KeyValuePair<IEscapeTarget, ReadOnlyValue>> GetAllEscapes()
         {
-            Dictionary<IEscapeTarget, Value> list = new Dictionary<IEscapeTarget, Value>();
+            //***********migration inside country***********
+            foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country ))
+            {
+                var targetPriority = proposedNewProvince.getEscapeValueFor(this, this.Type);//province.getAverageNeedsFulfilling(this.type);
 
-            foreach (PopType type in PopType.getAllPopTypes())
-                if (canThisDemoteInto(type) && predicate(type))
-                    list.Add(type, Province.getAverageNeedsFulfilling(type));
-            var result = list.MaxBy(x => x.Value.get());
-            if (result.Value != null && result.Value.isBiggerThan(this.needsFulfilled, Options.PopNeedsEscapingBarrier))
-                return result;
-            else
-                return default(KeyValuePair<IEscapeTarget, Value>);
-        }
-        /// <summary>
-        /// return province to immigrate or null if there is no better place to live
-        /// </summary>    
-        public KeyValuePair<IEscapeTarget, Value> getRichestImmigrationTarget(Predicate<IEscapeTarget> predicate)
-        {
-            Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
+                if (targetPriority.isNotZero())
+                    yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewProvince, targetPriority);
+            }
+            // ***********immigration***********            
             //where to g0?
             // where life is rich and I where I have some rights
-            foreach (var country in World.getAllExistingCountries())
-                if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
-                    if (country != this.Country)
-                        foreach (var province in country.getAllProvinces())
-                            if (predicate(province))
-                            {
-                                var needsInTargetProvince = province.getAverageNeedsFulfilling(this.type);
-                                if (needsInTargetProvince.isBiggerThan(this.needsFulfilled, Options.PopNeedsEscapingBarrier))
-                                    provinces.Add(province, needsInTargetProvince);
-                            }
-            return provinces.MaxBy(x => x.Value.get());
-        }
-        /// <summary>
-        /// return province to migrate or null if there is no better place to live
-        /// </summary>  
-        public KeyValuePair<IEscapeTarget, Value> getRichestMigrationTarget(Predicate<IEscapeTarget> predicate)
-        {
-            Dictionary<IEscapeTarget, Value> provinces = new Dictionary<IEscapeTarget, Value>();
-            //foreach (var pro in Country.ownedProvinces)            
-            //if (pro != this.province)
-
-            foreach (var province in Province.getNeigbors(x => x.Country == this.Country && predicate(x)))
+            foreach (var proposedNewProvince in World.GetAllProvinces().Where(
+                province =>
+                province.Country != this.Country && province.Country != World.UncolonizedLand
+                && province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality
+                
+                ))
+            
             {
-                var needsInProvince = province.getAverageNeedsFulfilling(this.type);
-
-                if (needsInProvince.isBiggerThan(needsFulfilled, Options.PopNeedsEscapingBarrier))
-                    provinces.Add(province, needsInProvince);
+                var targetPriority = proposedNewProvince.getEscapeValueFor(this, this.Type);// province.getAverageNeedsFulfilling(this.type);
+                if (targetPriority.isNotZero())
+                    yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewProvince, targetPriority);
             }
-            return provinces.MaxBy(x => x.Value.get());
-        }
+            // ***********demotion***********            
 
-        //**********************************************
+            foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisDemoteInto(x)))
+            {
+                var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
+                if (targetPriority.isNotZero())
+                    yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
+            }
+        }
+        
         internal void calcAssimilations()
         {
 
