@@ -179,6 +179,7 @@ namespace Nashet.EconomicSimulation
             {
                 ownedProvinces.Add(capital);
                 capital.OnSecedeTo(this, false);
+                capital.setInitial(this);
             }
             //if (!Game.devMode)
             {

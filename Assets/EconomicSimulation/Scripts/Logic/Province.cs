@@ -68,15 +68,8 @@ namespace Nashet.EconomicSimulation
         //empty province constructor
         public Province(string name, int iID, Color icolorID, Product resource) : base(name)
         {
-            country = World.UncolonizedLand;
-
-            //taker.ownedProvinces.Add(this);
-
-            color = country.getColor().getAlmostSameColor();
-
-            if (country != World.UncolonizedLand)
-                cores.Add(country);
-            //nameWeight = name.GetWeight();
+            country = World.UncolonizedLand;           
+            color = country.getColor().getAlmostSameColor();     
             setResource(resource);
             colorID = icolorID;
             ID = iID;
@@ -85,7 +78,7 @@ namespace Nashet.EconomicSimulation
 
 
         public void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
-        {           
+        {
 
             //this.meshStructure = meshStructure;
 
@@ -239,9 +232,14 @@ namespace Nashet.EconomicSimulation
         //    //if (taker != World.UncolonizedLand)
         //    //    cores.Add(taker);
 
-            
+
 
         //}
+        public void setInitial(Country ini)
+        {
+            if (ini != World.UncolonizedLand)
+                cores.Add(country);
+        }
         public void simulate()
         {
             if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
@@ -693,7 +691,7 @@ namespace Nashet.EconomicSimulation
             int totalWorkforce = GetAllPopulation(PopType.Workers).Sum(x => x.getPopulation());
             if (totalWorkforce == 0)
                 return 0;
-            int employed = allFactories.Sum(x=>x.getWorkForce());
+            int employed = allFactories.Sum(x => x.getWorkForce());
 
             //foreach (Factory factory in allFactories)
             //    employed += factory.getWorkForce();
@@ -855,24 +853,24 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void consolidatePops()
-        {
-            if (allPopUnits.Count > 14)
-            //get some small pop and merge it into bigger
-            {
-                PopUnit popToMerge = GetAllPopulation().Where(x => x.getPopulation() < Options.PopSizeConsolidationLimit).Random();
-                //PopUnit popToMerge = getSmallerPop((x) => x.getPopulation() < Options.PopSizeConsolidationLimit);
-                if (popToMerge != null)
-                {
-                    PopUnit targetPop = this.getBiggerPop(x => x.isStateCulture() == popToMerge.isStateCulture()
-                       && x.Type == popToMerge.Type
-                       && x != popToMerge);
-                    if (targetPop != null)
-                        targetPop.mergeIn(popToMerge);
-                }
+        //public void consolidatePops()
+        //{
+        //    if (allPopUnits.Count > 14)
+        //    //get some small pop and merge it into bigger
+        //    {
+        //        PopUnit popToMerge = GetAllPopulation().Where(x => x.getPopulation() < Options.PopSizeConsolidationLimit).Random();
+        //        //PopUnit popToMerge = getSmallerPop((x) => x.getPopulation() < Options.PopSizeConsolidationLimit);
+        //        if (popToMerge != null)
+        //        {
+        //            PopUnit targetPop = this.getBiggerPop(x => x.isStateCulture() == popToMerge.isStateCulture()
+        //               && x.Type == popToMerge.Type
+        //               && x != popToMerge);
+        //            if (targetPop != null)
+        //                targetPop.mergeIn(popToMerge);
+        //        }
 
-            }
-        }
+        //    }
+        //}
 
         private PopUnit getBiggerPop(Predicate<PopUnit> predicate)
         {
@@ -883,8 +881,8 @@ namespace Nashet.EconomicSimulation
             return allPopUnits.FindAll(predicate).MinBy(x => x.getPopulation());
         }
 
-       
-        
+
+
 
         internal bool hasAnotherPop(PopType type)
         {
@@ -918,7 +916,8 @@ namespace Nashet.EconomicSimulation
                             return getResource().getColor();
                     }
                 case 1: //culture mode
-                    return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
+                    //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
+                    return getMajorCulture().getColor();
                 case 2: //cores mode
                     if (Game.selectedProvince == null)
                     {
@@ -1001,7 +1000,10 @@ namespace Nashet.EconomicSimulation
         {
             var list = GetAllPopulation().Where(x => x.Type == type).ToList();
             if (list.Count == 0)
-                return Procent.HundredProcent.Copy();
+                if (Rand.Chance(Options.PopMigrationToUnknowAreaChance))
+                    return Procent.HundredProcent.Copy();
+                else
+                    return Procent.ZeroProcent.Copy();
             else
                 return list.GetAverageProcent(x => x.needsFulfilled);
 
@@ -1115,7 +1117,7 @@ namespace Nashet.EconomicSimulation
         //    return res;
         //}
         internal bool canUpgradeFactory(ProductionType type)
-        {            
+        {
             var factory = findFactory(type);
             if (factory == null)
                 return false;

@@ -16,6 +16,8 @@ namespace Nashet.EconomicSimulation
     {
         private readonly static List<Province> allProvinces = new List<Province>();
         private readonly static List<Country> allCountries = new List<Country>();
+        private readonly static List<Culture> allCultures = new List<Culture>();
+
         internal static Country UncolonizedLand;
         private static World thisObject;
         public static World Get
@@ -73,7 +75,7 @@ namespace Nashet.EconomicSimulation
                     //var isArtisan = agent as Artisans;
                     //if (isArtisan!=null && isArtisan.)
                 }
-                allMoney.Add(Game.market.Cash);                
+                allMoney.Add(Game.market.Cash);
             }
             return allMoney;
         }
@@ -138,12 +140,14 @@ namespace Nashet.EconomicSimulation
         }
         static World()
         {
-            UncolonizedLand = new Country("Uncolonized lands", new Culture("Ancient tribes"), Color.yellow, null, 0f);
+            var culture = new Culture("Ancient tribes", Color.yellow);
+            allCultures.Add(culture);
+            UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.setValue(Government.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
         }
-        internal static void makeCountries()
+        internal static void CreateCountries()
         {
             var countryNameGenerator = new CountryNameGenerator();
             var cultureNameGenerator = new CultureNameGenerator();
@@ -156,14 +160,16 @@ namespace Nashet.EconomicSimulation
             for (int i = 0; i < howMuchCountries; i++)
             {
                 //Game.updateStatus("Making countries.." + i);
-                Culture cul = new Culture(cultureNameGenerator.generateCultureName());
+                
+                Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
+                allCultures.Add(culture);
 
                 Province province = GetAllProvinces().Where(x => x.Country == UncolonizedLand).Random();
-                
-                Country country = new Country(countryNameGenerator.generateCountryName(), cul, ColorExtensions.getRandomColor(), province, 100f);
+
+                Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
                 //count.setBank(count.bank);
-                
+
                 //province.InitialOwner(country);
                 country.GiveMoneyFromNoWhere(100);
             }
@@ -280,7 +286,7 @@ namespace Nashet.EconomicSimulation
             World.deleteSomeProvinces(seaProvinces, isMapGenerated);
 
             // Game.updateStatus("Making countries..");
-            World.makeCountries();
+            World.CreateCountries();
 
             //Game.updateStatus("Making population..");
             World.сreateRandomPopulation();

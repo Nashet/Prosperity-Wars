@@ -99,8 +99,11 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopAssimilationSpeed = new Procent(0.002f);
         public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.001f);
 
+        internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.02f);
+
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
         public static readonly Procent PopNeedsEscapingLimit = new Procent(0.333f);//0.33f
+
         /// <summary> New life should this better to start escaping</summary>
         public static readonly Procent PopNeedsEscapingBarrier = new Procent(0.01f); // was 0.1
 
@@ -109,6 +112,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> Pops richer than that would promote</summary>
         internal static readonly Procent PopNeedsPromotionLimit = new Procent(0.4f); //0.5f);
 
+        /// currently not used
         public static readonly int PopSizeConsolidationLimit = 100;
         /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>
         public static readonly int PopAgeLimitToWipeOut = 50; //250;
@@ -128,7 +132,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent MovementStrenthToStartRebellion = new Procent(1f);
         internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
         internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
-        internal static readonly Value PopUnlimitedConsumptionLimit = new Value(100f);
+        internal static readonly Value PopUnlimitedConsumptionLimit = new Value(110f);
 
 
         internal static readonly float aristocratsFoodReserv = 50;

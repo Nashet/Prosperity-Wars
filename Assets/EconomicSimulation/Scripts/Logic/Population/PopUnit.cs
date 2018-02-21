@@ -972,7 +972,8 @@ namespace Nashet.EconomicSimulation
             if (result > 0)
                 return result;
             else
-            if (Province.hasAnotherPop(this.type) && getAge() > Options.PopAgeLimitToWipeOut)
+            if (//Province.hasAnotherPop(this.type) &&
+                getAge() > Options.PopAgeLimitToWipeOut)
                 return this.getPopulation();// wipe-out
             else
                 return 0;
@@ -1065,8 +1066,8 @@ namespace Nashet.EconomicSimulation
             else if (type != PopType.Farmers) //starvation  
             {
                 result = Mathf.RoundToInt(Options.PopStarvationSpeed.get() * getPopulation() * -1);
-                if (result * -1 >= getPopulation()) // total starvation
-                    result = 0;
+                if (result * -1 > getPopulation()) // total starvation
+                    result = getPopulation(); // wipe out
             }
 
             return result;
@@ -1092,7 +1093,7 @@ namespace Nashet.EconomicSimulation
         public void EscapeForBetterLife(Predicate<IEscapeTarget> predicate)
         {
             int escapeSize = getEscapeSize();
-            if (escapeSize > 0 && this.getPopulation() >= escapeSize)
+            if (escapeSize > 0)// && this.getPopulation() >= escapeSize)
             {
                 var escapeTarget = findEscapeTarget(predicate);
                 if (escapeTarget != null)
@@ -1118,15 +1119,22 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
+        /// Result could be zero
         /// </summary>    
         public int getEscapeSize()
         {
             int result = (int)(this.getPopulation() * Options.PopEscapingSpeed.get());
             if (result > 0)
                 return result;
+            else if (result < 0)
+            {
+                Debug.Log("Can't be negative"); //todo what about dead pops?
+                return 0;
+            }
             else
             {
-                if (Province.hasAnotherPop(this.type) && getAge() > Options.PopAgeLimitToWipeOut)
+                if (//Province.hasAnotherPop(this.type) && 
+                    getAge() > Options.PopAgeLimitToWipeOut)
                     return this.getPopulation();// wipe-out
                 else
                     return 0;
@@ -1223,13 +1231,14 @@ namespace Nashet.EconomicSimulation
                 return 0;
             else
             {
-                int assimilationSpeed;
+                int assimilationSize;
                 if (Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
-                    assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeedWithEquality.get());
+                    assimilationSize = (int)(this.getPopulation() * Options.PopAssimilationSpeedWithEquality.get());
                 else
-                    assimilationSpeed = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
-                if (assimilationSpeed > 0)
-                    return assimilationSpeed;
+                    assimilationSize = (int)(this.getPopulation() * Options.PopAssimilationSpeed.get());
+
+                if (assimilationSize > 0)
+                    return assimilationSize;
                 else
                 {
                     if (getAge() > Options.PopAgeLimitToWipeOut)

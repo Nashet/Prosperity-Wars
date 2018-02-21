@@ -2,25 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using Nashet.Utils;
+using System;
+
 namespace Nashet.EconomicSimulation
 {
-    public class Culture: Name
+    public class Culture : Name
     {
-        //private readonly string name;
-        private readonly List<Culture> allCultures = new List<Culture>();
-        private readonly float nameWeight;
-        public Culture(string name):base (name)
+        private readonly Color color;
+        public Culture(string name, Color color) : base(name)
         {
-            
-            //this.name = name;
-            allCultures.Add(this);
+            this.color = color;
         }
 
-        
 
         public override string ToString()
         {
             return ShortName;
+        }
+
+        internal Color getColor()
+        {
+            return color;
         }
     }
 }
