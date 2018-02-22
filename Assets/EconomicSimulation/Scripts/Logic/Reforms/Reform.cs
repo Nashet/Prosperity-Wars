@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
             (country as Country).getReform((newReform as AbstractReformValue)).getValue()
             ), x => "Economy policy is not Laissez Faire or that is reform rollback", true);
         readonly string description;
-        public readonly int ID;
+        public readonly int ID; // covert inti liberal_weight
         public readonly DoubleConditionsList allowed;
         readonly public Condition isEnacted;// = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
 

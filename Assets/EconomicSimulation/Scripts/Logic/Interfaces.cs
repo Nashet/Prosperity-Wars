@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
     public interface IEscapeTarget
     {
         //bool HasJobsFor(PopType popType, Province province);
-        ReadOnlyValue getEscapeValueFor(PopUnit pop, PopType proposedType);
+        ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType);
     }
     public interface IInvestable : IHasCountry, IHasGetProvince
     {

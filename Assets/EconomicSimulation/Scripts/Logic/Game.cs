@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         static public readonly Market market;
 
 
-        static internal bool devMode = false;
+        static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -425,7 +425,7 @@ namespace Nashet.EconomicSimulation
                             pop.calcGrowth();
                             pop.calcPromotions();
                             if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
-                                pop.EscapeForBetterLife();
+                                pop.FindBetterLife();
                             pop.calcAssimilations();
                         }
                         if (country.economy.getValue() != Economy.PlannedEconomy)

@@ -295,7 +295,7 @@ namespace Nashet.EconomicSimulation
         
 
        
-        public ReadOnlyValue getEscapeValueFor(PopUnit pop, PopType proposedType)
+        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
         {
             Debug.Log("Failed");
             return ReadOnlyValue.Zero;

@@ -1072,18 +1072,18 @@ namespace Nashet.EconomicSimulation
 
             return result;
             //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
-        }        
+        }
 
         /// <summary>
         /// Splits pops. New pops changes life in richest way - by demotion, migration or immigration
         /// </summary>        
-        public void EscapeForBetterLife()
+        public void FindBetterLife()
         {
             int escapeSize = getEscapeSize();
             if (escapeSize > 0)// && this.getPopulation() >= escapeSize)
             {
                 //var escapeTarget = findEscapeTarget(predicate);
-                var escapeTarget = GetAllEscapes().MaxBy(x=>x.Value.get()).Key;
+                var escapeTarget = GetAllPossibleLifeChanges().MaxBy(x => x.Value.get()).Key;
                 if (escapeTarget != null)
                 {
                     var targetIsPopType = escapeTarget as PopType;
@@ -1139,41 +1139,54 @@ namespace Nashet.EconomicSimulation
         }
         abstract public bool canThisDemoteInto(PopType popType);
 
-        private IEnumerable<KeyValuePair<IEscapeTarget, ReadOnlyValue>> GetAllEscapes()
+        private IEnumerable<KeyValuePair<IEscapeTarget, ReadOnlyValue>> GetAllPossibleLifeChanges()
         {
             //***********migration inside country***********
-            foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country ))
-            {
-                var targetPriority = proposedNewProvince.getEscapeValueFor(this, this.Type);//province.getAverageNeedsFulfilling(this.type);
+            if (this.type == PopType.Farmers || this.type == PopType.Workers || this.type == PopType.Tribesmen)
+                foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country))
+                {
+                    var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);//province.getAverageNeedsFulfilling(this.type);
 
-                if (targetPriority.isNotZero())
-                    yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewProvince, targetPriority);
-            }
+                    if (targetPriority.isNotZero())
+                        yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewProvince, targetPriority);
+                }
             // ***********immigration***********            
             //where to g0?
             // where life is rich and I where I have some rights
-            foreach (var proposedNewProvince in World.GetAllProvinces().Where(
-                province =>
-                province.Country != this.Country && province.Country != World.UncolonizedLand
-                && province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality
-                
-                ))
-            
-            {
-                var targetPriority = proposedNewProvince.getEscapeValueFor(this, this.Type);// province.getAverageNeedsFulfilling(this.type);
-                if (targetPriority.isNotZero())
-                    yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewProvince, targetPriority);
-            }
-            // ***********demotion***********            
+            if (this.type != PopType.Aristocrats && this.type != PopType.Capitalists) // redo
 
+
+                foreach (var country in World.getAllExistingCountries())
+                    if (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality
+                        && country != this.Country)
+                        foreach (var proposedNewProvince in country.getAllProvinces())
+                        //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
+                        //province =>
+                        //province.Country != this.Country && province.Country != World.UncolonizedLand
+                        //&& province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality
+                        //))
+
+                        {
+                            var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);// province.getAverageNeedsFulfilling(this.type);
+                            if (targetPriority.isNotZero())
+                                yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewProvince, targetPriority);
+                        }
+            // ***********demotion***********            
             foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisDemoteInto(x)))
             {
-                var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
+                var targetPriority = Province.getLifeQuality(this, proposedNewType);
                 if (targetPriority.isNotZero())
                     yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
             }
+            // ***********promotion***********            
+            //foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisPromoteInto(x)))
+            //{
+            //    var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
+            //    if (targetPriority.isNotZero())
+            //        yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
+            //}
         }
-        
+
         internal void calcAssimilations()
         {
 

@@ -1183,18 +1183,38 @@ namespace Nashet.EconomicSimulation
         {
             get { return this + ", " + Country; }
         }
-        public ReadOnlyValue getEscapeValueFor(PopUnit pop, PopType proposedType)
+        public ReadOnlyValue getLifeQuality(PopUnit thisPop, PopType proposedType)
         {
             if (!this.HasJobsFor(proposedType))
                 return ReadOnlyValue.Zero;
             else
             {
-                var res = getAverageNeedsFulfilling(proposedType);
-                if (!res.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier))
+                var lifeQuality = getAverageNeedsFulfilling(proposedType);
+                if (!lifeQuality.isBiggerThan(thisPop.needsFulfilled, Options.PopNeedsEscapingBarrier))
                     return ReadOnlyValue.Zero;
-                if (getSimilarPopUnit(pop) != null)
-                    res.Add(Options.PopSameCultureMigrationPreference);
-                return res;
+                if (getSimilarPopUnit(thisPop) != null) // checks for same culture and type
+                    lifeQuality.Add(Options.PopSameCultureMigrationPreference);
+                if (thisPop.Type.isPoorStrata())
+                {
+                    lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2);
+                    lifeQuality.Add(Country.minimalWage.getValue().ID * 1);
+                    lifeQuality.Add(Country.taxationForRich.getValue().ID * 1);
+                }
+                else if (thisPop.Type.isRichStrata())
+                {
+                    if (Country.economy.getValue() == Economy.LaissezFaire)
+                        lifeQuality.Add(5f);
+                    else if (Country.economy.getValue() == Economy.Interventionism)
+                        lifeQuality.Add(2f);
+                }
+                if (!thisPop.canVote(Country.government.getTypedValue())) // includes Minority politics
+                    lifeQuality.Subtract(-10f, false);
+
+                if (thisPop.loyalty.get() < 0.3f)
+                    lifeQuality.Add(5, false);
+                //todo - serfdom
+
+                return lifeQuality;
             }
         }
     }
