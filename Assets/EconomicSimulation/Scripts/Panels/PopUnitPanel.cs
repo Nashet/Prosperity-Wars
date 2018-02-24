@@ -47,21 +47,20 @@ namespace Nashet.EconomicSimulation
                         sb.Append(isArtisan.Type.basicProduction.Product);
                 }
                 sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
-                sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
-                makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
+                sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it            
 
-                if (pop.getLastEscapeSize() != 0)
-                    makeLineNew(sb, pop.getLastEscapeTarget(), pop.getLastEscapeSize());
-                else
-                    sb.Append("\nNo demotions\\migrations\\immigrations");
+                               
+                    sb.Append("\nPopulation change: ").Append(pop.getAllPopulationChanges().Sum(x=>x.Value)).Append("\n")
+                    .Append(pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
 
-                sb.Append("\nAssimilation: ");
-                if (pop.culture != pop.Country.getCulture() && pop.getAssimilationSize() > 0)
-                    sb.Append(pop.Country.getCulture()).Append(" ").Append(pop.getAssimilationSize());
-                else
-                    sb.Append("none");
+                //sb.Append("\nAssimilation: ");
 
-                sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
+                //if (pop.culture != pop.Country.getCulture() && pop.getAssimilationSize() > 0)
+                //    sb.Append(pop.Country.getCulture()).Append(" ").Append(pop.getAssimilationSize());
+                //else
+                //    sb.Append("none");
+
+                //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
                 sb.Append("\nUnemployment: ").Append(pop.getUnemployment());
                 sb.Append("\nLoyalty: ").Append(pop.loyalty);
 
@@ -136,51 +135,7 @@ namespace Nashet.EconomicSimulation
                     }
                     );
             }
-        }
-        private void makeLine(StringBuilder sb, IEscapeTarget target, int size, string header, bool boolCheck)
-        {
-            sb.Append("\n").Append(header);
-
-            if (boolCheck && target != null && size > 0)
-            {
-                var targetIsProvince = target as Province;
-                if (targetIsProvince == null)
-                    sb.Append(target).Append(" ").Append(size);
-                else
-                {
-                    if (pop.Country == targetIsProvince.Country)
-                        sb.Append(targetIsProvince).Append(" ").Append(size);
-                    else// immigration
-                        sb.Append(targetIsProvince.Country).Append(" (").Append(target).Append(") ").Append(size);
-
-                }
-            }
-            else
-                sb.Append("none");
-        }
-        private void makeLineNew(StringBuilder sb, IEscapeTarget target, int size)
-        {
-            // extra type conversion could be reduced by adding demotion type flag in PopUnit.LastDemotion
-            var targetIsProvince = target as Province;
-            if (targetIsProvince == null) // Assuming target is PopType
-            {
-                sb.Append("\n").Append("Demotion: ");
-                sb.Append(target).Append(" ").Append(size);
-            }
-            else // Assuming target is Province
-            {
-                if (pop.Country == targetIsProvince.Country)
-                {
-                    sb.Append("\n").Append("Migration: ");
-                    sb.Append(targetIsProvince).Append(" ").Append(size);
-                }
-                else// immigration
-                {
-                    sb.Append("\n").Append("Immigration: ");
-                    sb.Append(targetIsProvince.Country).Append(" (").Append(target).Append(") ").Append(size);
-                }
-            }
-        }
+        }        
 
         public void show(PopUnit ipopUnit)
         {

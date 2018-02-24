@@ -164,7 +164,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopEducationRegressChance = new ReadOnlyValue(0.01f);
         internal static readonly ReadOnlyValue PopLearnByWorkingChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
-        
+        internal static readonly ReadOnlyValue PopPopulationChangeChance = new ReadOnlyValue(0.1f);
+
 
 
 

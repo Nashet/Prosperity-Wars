@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
         {
         }
 
-        protected Investor(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
+        protected Investor(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture, IWayOfLifeChange oldLife) : base(source, sizeOfNewPop, newPopType, where, culture, oldLife)
         {
         }
         protected override void deleteData()

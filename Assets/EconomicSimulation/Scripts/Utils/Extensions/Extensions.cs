@@ -313,6 +313,9 @@ namespace Nashet.Utils
             foreach (var item in source)
                 action(item);
         }
+        /// <summary>
+        /// Returns default() if there is source is empty
+        /// </summary>        
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
@@ -343,6 +346,9 @@ namespace Nashet.Utils
                 return min;
             }
         }
+        /// <summary>
+        /// Returns default() if there is source is empty
+        /// </summary>
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
                Func<TSource, TKey> selector)
         {
@@ -633,13 +639,17 @@ namespace Nashet.Utils
             else
                 return "none";
         }
-        public static string getString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dictionary, string intermediateString, string lineBreaker)
+        //public static string ToString<T, V>(this KeyValuePair<T, V> source, string separator)
+        //{
+        //    return source.Key + separator + source.Value;
+        //}
+        public static string getString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, string intermediateString, string lineBreaker)
         {
-            if (dictionary.Count() == 0)
+            if (source.Count() == 0)
                 return "none";
             var sb = new StringBuilder();
             bool isFirstRow = true;
-            foreach (var item in dictionary)
+            foreach (var item in source)
             {
                 if (!isFirstRow)
                 {
@@ -651,23 +661,115 @@ namespace Nashet.Utils
             return sb.ToString();
         }
 
-        //public static string getString(this IEnumerable<KeyValuePair<AbstractReformValue, float>> source, string intermediateString, string lineBreaker)
-        //{
-        //    if (source.Count() == 0)
-        //        return "none";
-        //    var sb = new StringBuilder();
-        //    bool isFirstRow = true;
-        //    foreach (var item in source)
-        //    {
-        //        if (!isFirstRow)
-        //        {
-        //            sb.Append(lineBreaker);
-        //        }
-        //        isFirstRow = false;
-        //        sb.Append(item.Key).Append(intermediateString).Append(item.Value);
-        //    }
-        //    return sb.ToString();
-        //}
+        public static string getString(this KeyValuePair<IWayOfLifeChange, int> source, PopUnit pop)
+        {
+            var sb = new StringBuilder();
+            if (source.Key == null)
+                if (source.Value > 0)
+                    sb.Append("born ");
+                else
+                    sb.Append("starved to death ");
+            else
+            {
+                String direction;
+                if (source.Value > 0)
+                    direction = " from ";
+                else
+                    direction = " to ";
+
+                var isProvince = source.Key as Province;
+                if (isProvince != null)
+                {
+                    if (pop == null)
+                        sb.Append("moved").Append(direction).Append(isProvince.FullName);
+                    else if (pop.Country == isProvince.Country)
+                        sb.Append("migrated").Append(direction).Append(isProvince.ShortName);
+                    else
+                        sb.Append("immigrated").Append(direction).Append(isProvince.FullName);
+                }
+                else
+                {
+                    var isType = source.Key as PopType;
+                    if (isType != null)
+                    {
+                        if (pop.canThisDemoteInto(isType))
+                            sb.Append("demoted").Append(direction).Append(isType);
+                        else
+                            sb.Append("promoted").Append(direction).Append(isType);
+                    }
+                    else
+                    {
+                        var isCulture = source.Key as Culture;
+                        if (isCulture != null)
+                            sb.Append("assimilated").Append(direction).Append(isCulture);
+                        else
+                            Debug.Log("Unknown WayOfLifeChange");
+                    }
+
+                }
+            }
+            return sb.ToString();
+        }        
+        //public static string getString(this IEnumerable<IGrouping<IWayOfLifeChange, KeyValuePair<IWayOfLifeChange, int>>> source, string lineBreaker)
+        public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, string totalString)
+        {
+            var sb = new StringBuilder();
+
+            var query = source.GroupBy(
+        toBeKey => toBeKey.Key,
+        (group, element) => new
+        {
+            Key = group,
+            Sum = element.Sum(everyElement => everyElement.Value)
+            //.Sum(x => x.Value))
+
+        });
+            //only null or province
+            if (query.Count() == 0)
+                return "no changes";
+            int total = 0;
+            foreach (var item in query)
+            {
+                // value-migrated-to-key
+                if (item.Sum != 0)
+                {
+                    if (item.Sum > 0)
+                        sb.Append("+");
+                    var toShow = new KeyValuePair<IWayOfLifeChange, int>(item.Key, item.Sum);
+                    sb.Append(item.Sum).Append(" ").Append(toShow.getString(null)).Append(lineBreaker);
+                    total += item.Sum;
+                }
+            }
+            //.Append(lineBreaker)
+            sb.Append(totalString).Append(total);
+            return sb.ToString();
+        }
+        public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, PopUnit pop, string totalString)
+        {
+            if (!source.Any(x => x.Value != 0))
+                return "no changes";
+            var sb = new StringBuilder();
+            bool isFirstRow = true;
+            int total = 0;
+            foreach (var item in source.Reverse())
+                if (item.Value != 0) // skip empty records
+                {
+                    if (!isFirstRow)
+                        sb.Append(lineBreaker);
+                    isFirstRow = false;
+                    total += item.Value;
+
+                    if (item.Value > 0)
+                        sb.Append("+");
+
+                    sb.Append(item.Value).Append(" ");
+                    sb.Append(item.getString(pop));                    
+                }
+            sb.Append(lineBreaker).Append(totalString).Append(total);
+            return sb.ToString();
+        }
+
+        
         public static string getString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
         {
             if (dictionary.Count() == 0)

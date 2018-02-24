@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.provincePanel = this;
             Hide();
         }
-       
+
         public void onBuildClick()
         {
             //MainCamera.buildPanel.show(true);
@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.populationPanel.isActiveAndEnabled)
                 if (MainCamera.populationPanel.IsSelectedAnyProvince())
-                {                    
+                {
                     //if (MainCamera.populationPanel.IsAppliedThatFilter(PopulationPanel.filterSelectedProvince))
                     if (MainCamera.populationPanel.IsSelectedProvince(Game.selectedProvince))
                         MainCamera.populationPanel.Hide();
@@ -96,7 +96,7 @@ namespace Nashet.EconomicSimulation
                     {
                         //MainCamera.populationPanel.AddFilter(PopulationPanel.filterSelectedProvince);
                         MainCamera.populationPanel.SelectProvince(Game.selectedProvince);
-                        MainCamera.populationPanel.Refresh();                        
+                        MainCamera.populationPanel.Refresh();
                     }
                 }
                 else
@@ -117,14 +117,18 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.militaryPanel.show(Game.selectedProvince);
         }
-        
-        
+
+
         public override void Refresh()
         {
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
-           // sb.Append("\nID: ").Append(Game.selectedProvince.getID());
+            if (Game.devMode)
+            {
+                sb.Append("\nID: ").Append(Game.selectedProvince.getID());
+                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.getAllNeigbors().getString(", "));                
+            }
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
-            //sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAveragePop(x=>x.loyalty));
+            
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAllPopulation().GetAverageProcent(x => x.loyalty));
             sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
             sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
@@ -138,17 +142,14 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));
-
-
-            // "\nNeighbors " + province.getNeigborsList()
-            ;
+                        
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.Country;
 
-            
+
             btnBuild.interactable = ProductionType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
 
-            
+
             btMobilize.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btMobilize.GetComponent<ToolTipHandler>().text);
 
 

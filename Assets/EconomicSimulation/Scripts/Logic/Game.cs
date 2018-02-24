@@ -419,15 +419,18 @@ namespace Nashet.EconomicSimulation
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         // pop.Country.TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.Type.isPoorStrata());//pop.payTaxes();
-                        pop.calcLoyalty();
-                        //if (Game.Random.Next(10) == 1)
-                        {
-                            pop.calcGrowth();
-                            pop.calcPromotions();
+                        pop.calcLoyalty();                        
+                        
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.Growth();
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.Promote();
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
                             if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
                                 pop.FindBetterLife();
-                            pop.calcAssimilations();
-                        }
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.Assimilate();
+                        
                         if (country.economy.getValue() != Economy.PlannedEconomy)
                             Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }

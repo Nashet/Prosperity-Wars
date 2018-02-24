@@ -328,5 +328,22 @@ namespace Nashet.EconomicSimulation
                         if (record.Key == owner)
                             yield return new KeyValuePair<IShareable, Procent>(factory, record.Value);
         }
+        public static IEnumerable<PopUnit> GetAllPopulation()
+        {
+            foreach (var country in World.getAllExistingCountries())
+            {                
+                foreach (var item in country.GetAllPopulation())
+                    yield return item;
+            }
+        }
+        /// <summary>
+        /// Returns last escape type - demotion, migration or immigration
+        /// </summary>
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, int>> getAllPopulationChanges()
+        {
+            foreach (var item in GetAllPopulation())
+                foreach (var record in item.getAllPopulationChanges())
+                    yield return record;
+        }
     }
 }

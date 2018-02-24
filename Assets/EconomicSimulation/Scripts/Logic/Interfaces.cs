@@ -12,10 +12,12 @@ namespace Nashet.EconomicSimulation
     {
         Province Province { get; }
     }
-    public interface IEscapeTarget
+    
+    public interface IWayOfLifeChange
     {
         //bool HasJobsFor(PopType popType, Province province);
         ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType);
+        //string getWayOfLifeString(PopUnit pop);
     }
     public interface IInvestable : IHasCountry, IHasGetProvince
     {

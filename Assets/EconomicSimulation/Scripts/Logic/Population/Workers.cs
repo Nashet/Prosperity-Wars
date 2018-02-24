@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
 {
     public class Workers : GrainGetter
     {
-        public Workers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Workers, where, culture)
+        public Workers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Workers, where, culture, oldLife)
         { }
         public Workers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Workers, iculture, where)
         { }

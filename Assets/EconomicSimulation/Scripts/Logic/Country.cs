@@ -1622,6 +1622,14 @@ namespace Nashet.EconomicSimulation
                     }
                 }
         }
-
+        /// <summary>
+        /// Returns last escape type - demotion, migration or immigration
+        /// </summary>
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, int>> getAllPopulationChanges()
+        {
+            foreach (var item in GetAllPopulation())
+                foreach (var record in item.getAllPopulationChanges())
+                    yield return record;
+        }
     }
 }

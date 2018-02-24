@@ -10,7 +10,7 @@ using Nashet.ValueSpace;
 using Nashet.Utils;
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IEscapeTarget, IHasCountry, IClickable, ISortableName, INameable
+    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName, INameable
     {
         public enum TerrainTypes
         {
@@ -118,7 +118,8 @@ namespace Nashet.EconomicSimulation
             {
                 //each color is one neighbor (non repeating)
                 var neighbor = border.Key;
-                if (this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                if (!(this.getTerrain() == TerrainTypes.Mountains && neighbor.terrain == TerrainTypes.Mountains))
+                    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                     neighbors.Add(neighbor);
 
                 GameObject borderObject = new GameObject("Border with " + neighbor.ToString());
@@ -812,26 +813,7 @@ namespace Nashet.EconomicSimulation
             //    res = Options.FactoryMinPossibleSalary;
             return res;
         }
-
-        internal void addNeigbor(Province found)
-        {
-            //if (found != this && !distances.ContainsKey(found))
-            //    distances.Add(found, 1);
-            //if (!neighbors.Contains(found))
-            //    neighbors.Add(found);
-
-        }
-        /// <summary>
-        /// for debug reasons
-        /// </summary>
-        /// <returns></returns>
-        //internal string getNeigborsList()
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    foreach (var t in distances)
-        //        sb.Append("\n").Append(t.Key.ToString());
-        //    return sb.ToString();
-        //}
+        
         /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
         /// New value
         ///</summary>
@@ -909,13 +891,6 @@ namespace Nashet.EconomicSimulation
             {
                 case 0: //political mode                
                     return getColor();
-                case 3: //resource mode                
-                    {
-                        if (getResource() == null)
-                            return Color.gray;
-                        else
-                            return getResource().getColor();
-                    }
                 case 1: //culture mode
                     //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
                     return getMajorCulture().getColor();
@@ -956,6 +931,26 @@ namespace Nashet.EconomicSimulation
                                 }
                             }
                         }
+                    }
+                case 3: //resource mode                
+                    {
+                        if (getResource() == null)
+                            return Color.gray;
+                        else
+                            return getResource().getColor();
+                    }
+                case 4: //population change mode                
+                    {
+                        float maxColor = 100;
+                        var change = GetAllPopulation().Sum(x => x.getAllPopulationChanges()
+                        .Where(y=>y.Key==null || y.Key is Province).Sum(y => y.Value));
+                        if (change > 0)
+                            return Color.Lerp(Color.grey, Color.green, change / maxColor);
+                        else if (change == 0)
+                            return Color.gray;
+                        else
+                            return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
+
                     }
                 default:
                     return default(Color);
@@ -1216,6 +1211,23 @@ namespace Nashet.EconomicSimulation
 
                 return lifeQuality;
             }
+        }
+        /// <summary>
+        /// Returns last escape type - demotion, migration or immigration
+        /// </summary>
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, int>> getAllPopulationChanges()
+        {
+            foreach (var item in GetAllPopulation())
+                foreach (var record in item.getAllPopulationChanges())
+                    yield return record;
+        }
+
+        public string getWayOfLifeString(PopUnit pop)
+        {
+            if (pop.Country == this.Country)
+                return "migrated";
+            else
+                return "immigrated";
         }
     }
 }

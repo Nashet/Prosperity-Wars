@@ -7,8 +7,8 @@ using Nashet.Utils;
 using System.Linq;
 
 namespace Nashet.EconomicSimulation
-{
-    public class PopType : Name, IEscapeTarget
+{    
+    public class PopType : Name, IWayOfLifeChange
     {
         private readonly static List<PopType> allPopTypes = new List<PopType>();
         public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;

@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
 
     public class Capitalists : Investor
     {
-        public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture)
+        public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture, oldLife)
         { }
         public Capitalists(int iamount, Culture iculture, Province where) : base(iamount, PopType.Capitalists, iculture, where)
         { }

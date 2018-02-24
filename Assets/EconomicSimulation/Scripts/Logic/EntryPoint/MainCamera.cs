@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
@@ -104,14 +106,42 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameIsLoaded)
             {
-                if (Game.getMapMode() != 0 && Date.Today.isDivisible(Options.MapRedrawRate))
+                if (Game.getMapMode() != 0
+                    //&& Date.Today.isDivisible(Options.MapRedrawRate)
+                    )
                     Game.redrawMapAccordingToMapMode(Game.getMapMode());
+
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
                     int meshNumber = getRayCastMeshNumber();
                     //found something correct            
                     selectProvince(meshNumber);
                 }
+                if (Game.getMapMode() == 4)
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        GetComponent<ToolTipHandler>().Hide();
+                    else
+                    {
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                        +"\n"+ hoveredProvince.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Province)
+                        .getString("\n", "Province population change: ")
+                        + "\n-----------------------------------"
+                        + "\nCountry: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
+                        + "\n"+ hoveredProvince.Country.getAllPopulationChanges()
+                        .Where(y => y.Key == null || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
+                        .getString("\n", "Country population change: ")
+                        );
+
+
+                        GetComponent<ToolTipHandler>().Show();
+                    }
+                }
+
                 if (Input.GetKeyUp(KeyCode.Space))
                     topPanel.switchHaveToRunSimulation();
 
@@ -194,13 +224,6 @@ namespace Nashet.EconomicSimulation
 
         internal static void selectProvince(int number)
         {
-            //if (Game.selectedProvince != null && number >= 0)
-            //{
-            //    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-            //    Game.selectedProvince.setBorderMaterials();
-            //}
-
-
             if (number >= 0)
             {
                 if (World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection

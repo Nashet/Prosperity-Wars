@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     public class Artisans : GrainGetter
     {
         private ArtisanProduction artisansProduction;
-        public Artisans(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Artisans, where, culture)
+        public Artisans(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Artisans, where, culture, oldLife)
         {
             changeProductionType();
         }

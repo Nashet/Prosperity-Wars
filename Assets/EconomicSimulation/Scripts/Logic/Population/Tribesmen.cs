@@ -6,7 +6,7 @@ namespace Nashet.EconomicSimulation
 {
     public class Tribesmen : CattleGetter
     {
-        public Tribesmen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Tribesmen, where, culture)
+        public Tribesmen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Tribesmen, where, culture, oldLife)
         {
         }
         public Tribesmen(int iamount, Culture iculture, Province where) : base(iamount, PopType.Tribesmen, iculture, where)
