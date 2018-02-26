@@ -692,10 +692,21 @@ namespace Nashet.Utils
                     var isType = source.Key as PopType;
                     if (isType != null)
                     {
-                        if (pop.canThisDemoteInto(isType))
-                            sb.Append("demoted").Append(direction).Append(isType);
+                        if (source.Value > 0) // we gain population
+                        {
+                            if (isType.CanDemoteTo(pop.Type, pop.Country))
+                                //if (pop.canThisDemoteInto(isType))
+                                sb.Append("demoted").Append(direction).Append(isType);
+                            else
+                                sb.Append("promoted").Append(direction).Append(isType);
+                        }
                         else
-                            sb.Append("promoted").Append(direction).Append(isType);
+                        {
+                            if (pop.Type.CanDemoteTo(isType, pop.Country))
+                                sb.Append("demoted").Append(direction).Append(isType);
+                            else
+                                sb.Append("promoted").Append(direction).Append(isType);
+                        }
                     }
                     else
                     {
@@ -703,13 +714,19 @@ namespace Nashet.Utils
                         if (isCulture != null)
                             sb.Append("assimilated").Append(direction).Append(isCulture);
                         else
-                            Debug.Log("Unknown WayOfLifeChange");
+                        {
+                            var isStaff = source.Key as Staff;
+                            if (isStaff != null)
+                                sb.Append("killed in battle by ").Append(isStaff);
+                            else
+                                Debug.Log("Unknown WayOfLifeChange");
+                        }
                     }
 
                 }
             }
             return sb.ToString();
-        }        
+        }
         //public static string getString(this IEnumerable<IGrouping<IWayOfLifeChange, KeyValuePair<IWayOfLifeChange, int>>> source, string lineBreaker)
         public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, string totalString)
         {
@@ -763,13 +780,13 @@ namespace Nashet.Utils
                         sb.Append("+");
 
                     sb.Append(item.Value).Append(" ");
-                    sb.Append(item.getString(pop));                    
+                    sb.Append(item.getString(pop));
                 }
             sb.Append(lineBreaker).Append(totalString).Append(total);
             return sb.ToString();
         }
 
-        
+
         public static string getString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
         {
             if (dictionary.Count() == 0)

@@ -813,7 +813,7 @@ namespace Nashet.EconomicSimulation
             //    res = Options.FactoryMinPossibleSalary;
             return res;
         }
-        
+
         /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
         /// New value
         ///</summary>
@@ -943,13 +943,24 @@ namespace Nashet.EconomicSimulation
                     {
                         float maxColor = 100;
                         var change = GetAllPopulation().Sum(x => x.getAllPopulationChanges()
-                        .Where(y=>y.Key==null || y.Key is Province).Sum(y => y.Value));
+                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(y => y.Value));
                         if (change > 0)
                             return Color.Lerp(Color.grey, Color.green, change / maxColor);
                         else if (change == 0)
                             return Color.gray;
                         else
                             return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
+
+                    }
+                case 5: //population density mode                
+                    {
+                        float maxPopultion = 25000;
+                        var population = GetAllPopulation().Sum(x => x.getPopulation());
+
+
+                        //return Color.Lerp(new Color(255f / 0xFF, 255f / 0xFD, 255f / 0xDD), new Color(255f / 0x7F, 255f / 0x33, 255f / 0x00), population / maxPopultion);
+                        return Color.Lerp(Color.white, Color.red, population / maxPopultion);
+
 
                     }
                 default:

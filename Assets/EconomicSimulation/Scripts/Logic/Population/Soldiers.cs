@@ -10,17 +10,7 @@ namespace Nashet.EconomicSimulation
         { }
         public Soldiers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Soldiers, iculture, where)
         { }
-        public override bool canThisDemoteInto(PopType targetType)
-        {
-            if (//targetType == PopType.Farmers && Country.isInvented(Invention.Farming)
-                //||
-                targetType == PopType.Tribesmen
-                || targetType == PopType.Workers
-                )
-                return true;
-            else
-                return false;
-        }
+        
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats // should be officers

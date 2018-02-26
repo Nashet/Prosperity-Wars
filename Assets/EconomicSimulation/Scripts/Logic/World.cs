@@ -169,8 +169,7 @@ namespace Nashet.EconomicSimulation
                 Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
                 //count.setBank(count.bank);
-
-                //province.InitialOwner(country);
+                
                 country.GiveMoneyFromNoWhere(100);
             }
             Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
@@ -180,13 +179,13 @@ namespace Nashet.EconomicSimulation
             //    if (pro.Country == null)
             //        pro.InitialOwner(World.UncolonizedLand);
         }
-        static public void сreateRandomPopulation()
+        static public void CreateRandomPopulation()
         {
             foreach (Province province in allProvinces)
             {
                 if (province.Country == World.UncolonizedLand)
                 {
-                    new Tribesmen(PopUnit.getRandomPopulationAmount(500, 1000), province.Country.getCulture(), province);
+                    new Tribesmen(PopUnit.getRandomPopulationAmount(2500, 3000), province.Country.getCulture(), province);
                 }
                 else
                 {
@@ -194,12 +193,12 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Tribesmen(2000, province.Country.getCulture(), province);
                     //else
-                    new Tribesmen(PopUnit.getRandomPopulationAmount(3600, 4000), province.Country.getCulture(), province);
+                    new Tribesmen(PopUnit.getRandomPopulationAmount(11000, 12000), province.Country.getCulture(), province);
 
                     //if (Game.devMode)
                     //    pop = new Aristocrats(1000, province.Country.getCulture(), province);
                     //else
-                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(800, 1000), province.Country.getCulture(), province);
+                    pop = new Aristocrats(PopUnit.getRandomPopulationAmount(500, 1000), province.Country.getCulture(), province);
 
                     pop.GiveMoneyFromNoWhere(900f);
                     pop.storage.add(new Storage(Product.Grain, 60f));
@@ -208,11 +207,12 @@ namespace Nashet.EconomicSimulation
                     //pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), Country.getCulture(), province);
                     //pop.Cash.set(9000);
 
-                    pop = new Artisans(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
+                    pop = new Artisans(PopUnit.getRandomPopulationAmount(400, 500), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(900f);
 
-                    pop = new Farmers(PopUnit.getRandomPopulationAmount(1000, 1100), province.Country.getCulture(), province);
+                    pop = new Farmers(PopUnit.getRandomPopulationAmount(8200, 9000), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(20f);
+                    pop = new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
                 }
@@ -289,9 +289,14 @@ namespace Nashet.EconomicSimulation
             World.CreateCountries();
 
             //Game.updateStatus("Making population..");
-            World.сreateRandomPopulation();
+            World.CreateRandomPopulation();
 
             setStartResources();
+            //foreach (var item in World.getAllExistingCountries())
+            //{
+            //    item.Capital.OnSecedeTo(item, false);
+            //}
+            
 
         }
 

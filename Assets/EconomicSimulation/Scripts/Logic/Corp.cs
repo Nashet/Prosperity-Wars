@@ -164,19 +164,19 @@ namespace Nashet.EconomicSimulation
             return sb.ToString();
         }
 
-        internal int TakeLoss(int loss)
+        internal int TakeLoss(int loss, IWayOfLifeChange reason)
         {
             int alive = size - loss;
             if (alive > 0)
             {
                 size = alive;
-                origin.takeLoss(loss);
+                origin.takeLoss(loss, reason);
                 return loss;
             }
             else
             {
                 int wasSize = size;
-                origin.takeLoss(size);
+                origin.takeLoss(size, reason);
                 size = 0;
                 return wasSize;
             }

@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     /// <summary>
     /// Represents any military commander structure
     /// </summary>
-    public abstract class Staff : Consumer
+    public abstract class Staff : Consumer, IWayOfLifeChange
     {
         List<Army> allArmies = new List<Army>();
         //protected Country place; //todo change class
@@ -223,6 +223,14 @@ namespace Nashet.EconomicSimulation
                         yield return staff;
                 }
 
+        }
+        /// <summary>
+        /// Just a plce holder, never intended to call
+        /// </summary>
+        
+        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
+        {
+            throw new NotImplementedException();
         }
 
         //public override void produce()

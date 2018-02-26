@@ -53,7 +53,7 @@
   <Class Name="Nashet.EconomicSimulation.PopType" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="52" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACCQcAEBQAgAoBEhUBAgAAgBBAAAAKAAIAwACAAEAI=</HashCode>
+      <HashCode>AACCQcAEAQAgAoBEhUBAgAAgBBAAAAKAAIAwACAAEAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\PopType.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -61,7 +61,7 @@
   <Class Name="Nashet.EconomicSimulation.PopUnit" Collapsed="true">
     <Position X="26.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>cCHEgUiEEYgEY+RGBFAhHsACj4BVkOpwoaQkVi0YFyQ=</HashCode>
+      <HashCode>QCDFgEiEEYiUQexGRFIhHMACi4BVEOpwgaQkUi0YFyQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\PopUnit.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -188,7 +188,7 @@
   <Class Name="Nashet.EconomicSimulation.Bank" Collapsed="true">
     <Position X="32.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAgAAAACAAAAIAGAAIAAEAAIzIEAIAIAQCAAgAAACA=</HashCode>
+      <HashCode>AIAgAAAACAAAAIAEAAIAAEAAIzIEAIAIAQCAAgAAACA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Bank.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -217,7 +217,7 @@
   <Class Name="Nashet.EconomicSimulation.Country" Collapsed="true">
     <Position X="42" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ucLG0EMK4rjXhorOptvVTTLADaFtTowYoUIOrC2gEJY=</HashCode>
+      <HashCode>ucLH0AMK4rzXhorOptvVTTLADaFtTowAoUIGrC2gGJY=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Country.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -225,9 +225,10 @@
   <Class Name="Nashet.EconomicSimulation.Culture" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="53.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAAAAAAEAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAACAAAAAgAAAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Culture.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Nashet.EconomicSimulation.MainCamera" Collapsed="true">
     <Position X="52" Y="1.5" Width="1.5" />
@@ -239,7 +240,7 @@
   <Class Name="Nashet.EconomicSimulation.Game" Collapsed="true">
     <Position X="48.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEJDEBACgAMAgBILACkkADEEARAIBCgABgAEAQCiGCQ=</HashCode>
+      <HashCode>AEIBAAACgAMAGhIDAKEkABEEARAIBCgABgAEAQAgGCQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Game.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -277,14 +278,14 @@
   <Class Name="Nashet.EconomicSimulation.Options" Collapsed="true">
     <Position X="48.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ASAjkVQFkQQUQrgInrK0ghECQLpGhkjZQTmIGjAVBNY=</HashCode>
+      <HashCode>ASAjkVQFkQQUQrgInrK0ghECQLpGhkjZQbmIGjAVDNY=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Options.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Province" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="46.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>DAOAKlREoKegm6iaA4iQeayEFUYoAADSHcCYgFRmAB4=</HashCode>
+      <HashCode>DAEBKkRGoCegkaiaA4iQeCyAFQYoABHSGcSZgFRnQA4=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Province.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -292,14 +293,15 @@
   <Class Name="Nashet.EconomicSimulation.Staff" Collapsed="true">
     <Position X="41" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AFAAACBGAIAAAAAAAyIAAAAgwQCEAAAAAACAQCAAAAA=</HashCode>
+      <HashCode>AFAAACBGAIAAAAAAAyIAAAAgwQCEAACAAACAQCAAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Staff.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Nashet.EconomicSimulation.World" Collapsed="true">
     <Position X="52" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAAAgAACAAAAAgIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>IQJBABAgACWAAABIgoAQAIAAAAAAEEAAAIAIAAAAABA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\World.cs</FileName>
     </TypeIdentifier>
   </Class>

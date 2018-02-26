@@ -49,9 +49,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
                 sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it            
 
-                               
-                    sb.Append("\nPopulation change: ").Append(pop.getAllPopulationChanges().Sum(x=>x.Value)).Append("\n")
-                    .Append(pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
+
+                sb.Append("\nPopulation change: ").Append(pop.getAllPopulationChanges().Sum(x => x.Value)).Append("\n")
+                .Append(pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
 
                 //sb.Append("\nAssimilation: ");
 
@@ -135,7 +135,7 @@ namespace Nashet.EconomicSimulation
                     }
                     );
             }
-        }        
+        }
 
         public void show(PopUnit ipopUnit)
         {

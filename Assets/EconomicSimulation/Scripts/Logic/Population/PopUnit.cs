@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
         private readonly Date born;
         private Movement movement;
         /// <summary> PopType means promotion/demotion, Province means migration/immigration, null means growth/starvation</summary>
-        private readonly FixedSizeQueue<KeyValuePair<IWayOfLifeChange, int>> populationChanges = new FixedSizeQueue<KeyValuePair<IWayOfLifeChange, int>>(8, new KeyValuePair<IWayOfLifeChange, int>(null, 0));
+        private readonly FixedSizeQueue<KeyValuePair<IWayOfLifeChange, int>> populationChanges = new FixedSizeQueue<KeyValuePair<IWayOfLifeChange, int>>(12, new KeyValuePair<IWayOfLifeChange, int>(null, 0));
         //private KeyValuePair<IEscapeTarget, int> lastEscaped = new KeyValuePair<IEscapeTarget, int>();
         //if add new fields make sure it's implemented in second constructor and in merge()  
 
@@ -236,7 +236,7 @@ namespace Nashet.EconomicSimulation
             getConsumedInMarket().setZero();// = new PrimitiveStorageSet();
 
             //kill in the end
-            source.subtractPopulation(sizeOfNewPop);
+            source.ChangePopulation(-1 * sizeOfNewPop);
         }
         /// <summary>
         /// Merging source into this pop
@@ -249,7 +249,7 @@ namespace Nashet.EconomicSimulation
             populationChanges.Add(source.populationChanges);
             //Own PopUnit fields:
             loyalty.AddPoportionally(this.getPopulation(), source.getPopulation(), source.loyalty);
-            addPopulation(source.getPopulation());
+            ChangePopulation(source.getPopulation());
 
             mobilized += source.mobilized;
             //type = newPopType; don't change that
@@ -410,13 +410,15 @@ namespace Nashet.EconomicSimulation
         {
             mobilized = 0;
         }
-        internal void takeLoss(int loss)
+        internal void takeLoss(int loss, IWayOfLifeChange reason)
         {
             //int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
-
-            this.subtractPopulation((int)(loss * Options.PopAttritionFactor));
+            var change = -1 * (int)(loss * Options.PopAttritionFactor);
+            this.ChangePopulation(change);
+            populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(reason, change));
             mobilized -= loss;
-            if (mobilized < 0) mobilized = 0;
+            if (mobilized < 0)
+                mobilized = 0;
         }
         internal void addDaysUpsetByForcedReform(int popDaysUpsetByForcedReform)
         {
@@ -1026,9 +1028,9 @@ namespace Nashet.EconomicSimulation
         //    }
         //}
 
-
-        private void setPopulation(int newPopulation)
+        private void ChangePopulation(int change)
         {
+            var newPopulation = getPopulation() + change;
             if (newPopulation > 0)
                 population = newPopulation;
             else
@@ -1037,15 +1039,8 @@ namespace Nashet.EconomicSimulation
             //because pool aren't implemented yet
             //Pool.ReleaseObject(this);
         }
-        private void subtractPopulation(int subtract)
-        {
-            setPopulation(getPopulation() - subtract);
-            //population -= subtract; ;
-        }
-        private void addPopulation(int adding)
-        {
-            population += adding;
-        }
+
+
         internal void takeUnemploymentSubsidies()
         {
             // no subsidies with PE
@@ -1071,7 +1066,7 @@ namespace Nashet.EconomicSimulation
         public void Growth()
         {
             var growth = getGrowthSize();
-            addPopulation(growth);
+            ChangePopulation(growth);
             if (growth == 0)
                 populationChanges.EnqueueEmpty();
             else
@@ -1154,15 +1149,6 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public List<PopType> getPossibeDemotionsList()
-        {
-            List<PopType> result = new List<PopType>();
-            foreach (PopType nextType in PopType.getAllPopTypes())
-                if (canThisDemoteInto(this.type))
-                    result.Add(nextType);
-            return result;
-        }
-        abstract public bool canThisDemoteInto(PopType popType);
 
         private IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleLifeChanges()
         {
@@ -1198,7 +1184,7 @@ namespace Nashet.EconomicSimulation
                                 yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
                         }
             // ***********demotion***********            
-            foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisDemoteInto(x)))
+            foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => this.type.CanDemoteTo(x, Country)))
             {
                 var targetPriority = Province.getLifeQuality(this, proposedNewType);
                 if (targetPriority.isNotZero())

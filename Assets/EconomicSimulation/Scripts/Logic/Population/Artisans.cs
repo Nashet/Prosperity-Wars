@@ -16,23 +16,13 @@ namespace Nashet.EconomicSimulation
         }
         public Artisans(int amount, Culture culture, Province where) : base(amount, PopType.Artisans, culture, where)
         {
-            changeProductionType();
+            //changeProductionType();
         }
         override protected void deleteData()
         {
             base.deleteData();
             artisansProduction = null;
-        }
-        public override bool canThisDemoteInto(PopType targetType)
-        {
-            if (//|| targetType == PopType.Farmers && !Country.isInvented(Invention.Farming)
-                targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
-                || targetType == PopType.Workers
-                )
-                return true;
-            else
-                return false;
-        }
+        }        
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Capitalists && Country.Invented(Invention.Manufactures))
@@ -144,18 +134,12 @@ namespace Nashet.EconomicSimulation
         }
         private void changeProductionType()
         {
-            KeyValuePair<ProductionType, float> result = new KeyValuePair<ProductionType, float>(null, 0f);
-            //foreach (FactoryType factoryType in FactoryType.getAllNonResourceTypes(Country))
-            foreach (ProductionType factoryType in ProductionType.getAllInventedArtisanships(Country).
-                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education))
+            var newProductionType = ProductionType.getAllInventedArtisanships(Country).
+                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit().isNotZero()).MaxBy(x => x.getPossibleProfit().get());
+            
+            if (newProductionType != null && (artisansProduction == null || artisansProduction != null && newProductionType != artisansProduction.Type))
             {
-                float possibleProfit = factoryType.getPossibleProfit().get();
-                if (possibleProfit > result.Value)
-                    result = new KeyValuePair<ProductionType, float>(factoryType, possibleProfit);
-            }
-            if (result.Key != null && (artisansProduction == null || artisansProduction != null && result.Key != artisansProduction.Type))
-            {
-                artisansProduction = new ArtisanProduction(result.Key, Province, this);
+                artisansProduction = new ArtisanProduction(newProductionType, Province, this);
                 base.changeProductionType(artisansProduction.Type.basicProduction.Product);
             }
         }

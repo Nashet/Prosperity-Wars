@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         static public readonly Market market;
 
 
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -100,13 +100,8 @@ namespace Nashet.EconomicSimulation
             // todo clear resources
             grid = null;
             mapTexture = null;
-
-            //foreach (var item in World.getAllExistingCountries())
-            //{
-            //    item.Capital.OnSecedeTo(item, false);
-            //}
             // Annex all countries to P)layer
-            //foreach (var item in Country.allCountries)
+            //foreach (var item in World.getAllExistingCountries().Where(x=>x!=Game.Player))
             //{
             //    item.annexTo(Game.Player);
             //}

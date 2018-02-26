@@ -125,17 +125,22 @@ namespace Nashet.EconomicSimulation
                         GetComponent<ToolTipHandler>().Hide();
                     else
                     {
-                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
-                        +"\n"+ hoveredProvince.getAllPopulationChanges()
-                        .Where(y => y.Key == null || y.Key is Province)
-                        .getString("\n", "Province population change: ")
-                        + "\n-----------------------------------"
-                        + "\nCountry: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
-                        + "\n"+ hoveredProvince.Country.getAllPopulationChanges()
-                        .Where(y => y.Key == null || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
-                        .getString("\n", "Country population change: ")
-                        );
+                        if (Game.selectedProvince == null)
+                            GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\n" + hoveredProvince.Country.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
+                            .getString("\n", "Country population change: "));
+
+                        else
+                            GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\n" + hoveredProvince.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
+                            .getString("\n", "Province population change: ")
+                            //+ "\n-----------------------------------"
+
+                            );
 
 
                         GetComponent<ToolTipHandler>().Show();

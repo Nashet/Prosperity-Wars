@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Fueled & charged Tanks", 1f, false);
         static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
         static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
-        static Modifier modifierEducation = new Modifier(x => (x as Army).GetAverageCorps(y=>y.getPopUnit().Education).RawUIntValue, "Education", 1f / Procent.Precision, false);
+        static Modifier modifierEducation = new Modifier(x => (x as Army).GetAverageCorps(y => y.getPopUnit().Education).RawUIntValue, "Education", 1f / Procent.Precision, false);
 
 
         private readonly Dictionary<PopUnit, Corps> personal;
@@ -251,7 +251,7 @@ namespace Nashet.EconomicSimulation
                 //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
                 sb.Append(getAmountByTypes().getString(": ", ", "));
                 sb.Append(", Total size: ").Append(getSize());
-                sb.Append(", Morale: ").Append(GetAverageCorps(x=>x.getMorale()));
+                sb.Append(", Morale: ").Append(GetAverageCorps(x => x.getMorale()));
                 sb.Append(", Provision: ").Append(getConsumption());
                 //string str;
                 //modifierStrenght.getModifier(this, out str);
@@ -459,16 +459,16 @@ namespace Nashet.EconomicSimulation
                     winnerLossUnConverted = defender.getStrenght(defenderModifier) * defender.getStrenght(defenderModifier) / attacker.getStrenght(attackerModifier);
                 else
                     winnerLossUnConverted = 0f;
-                int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted);
-                int loserLoss = defender.takeLoss(defender.getSize());
+                int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted, defender.owner);
+                int loserLoss = defender.takeLoss(defender.getSize(), attacker.owner);
 
                 result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
                 , initialDefenderSize, loserLoss, attacker.destination, attackerWon, attackerBonus, defenderBonus);
             }
             else if (attacker.getStrenght(attackerModifier) == defender.getStrenght(defenderModifier))
             {
-                attacker.takeLoss(attacker.getSize());
-                defender.takeLoss(defender.getSize());
+                attacker.takeLoss(attacker.getSize(), defender.owner);
+                defender.takeLoss(defender.getSize(), attacker.owner);
 
                 var r = new BattleResult(attacker.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(),
                     attacker.destination, false, attackerBonus, defenderBonus);
@@ -483,9 +483,9 @@ namespace Nashet.EconomicSimulation
                     winnerLossUnConverted = attacker.getStrenght(attackerModifier) * attacker.getStrenght(attackerModifier) / (defender.getStrenght(defenderModifier));
                 else
                     winnerLossUnConverted = 0f;
-                int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted);
+                int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted, attacker.owner);
 
-                int attackerLoss = attacker.takeLoss(attacker.getSize());
+                int attackerLoss = attacker.takeLoss(attacker.getSize(), defender.owner);
                 result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
                 , initialDefenderSize, defenderLoss, attacker.destination, attackerWon, attackerBonus, defenderBonus);
             }
@@ -500,7 +500,7 @@ namespace Nashet.EconomicSimulation
         //    owner = country;
         //}
 
-        private int takeLoss(int loss)
+        private int takeLoss(int loss, IWayOfLifeChange reason)
         {
             int totalLoss = 0;
             if (loss > 0)
@@ -511,7 +511,7 @@ namespace Nashet.EconomicSimulation
                     if (totalSize > 0)
                     {
                         currentLoss = Mathf.RoundToInt(corp.getSize() * loss / (float)totalSize);
-                        corp.TakeLoss(currentLoss);
+                        corp.TakeLoss(currentLoss, reason);
                         totalLoss += currentLoss;
                     }
             }
@@ -520,7 +520,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// argument is NOT men, but they strength
         /// </summary>    
-        private int takeLossUnconverted(float lossStrenght)
+        private int takeLossUnconverted(float lossStrenght, IWayOfLifeChange reason)
         {
             int totalMenLoss = 0;
             if (lossStrenght > 0f)
@@ -540,7 +540,7 @@ namespace Nashet.EconomicSimulation
                             streghtLoss = corp.Value.getStrenght(this, armyStrenghtModifier) * (lossStrenght / totalStrenght);
                             menLoss = Mathf.RoundToInt(streghtLoss / (corpsStrenght * armyStrenghtModifier)); // corp.Value.Type.getStrenght());
 
-                            totalMenLoss += corp.Value.TakeLoss(menLoss);
+                            totalMenLoss += corp.Value.TakeLoss(menLoss, reason);
                         }
                     }
                 }

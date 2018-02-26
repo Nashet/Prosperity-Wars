@@ -7,7 +7,7 @@ using Nashet.Utils;
 using System.Linq;
 
 namespace Nashet.EconomicSimulation
-{    
+{
     public class PopType : Name, IWayOfLifeChange
     {
         private readonly static List<PopType> allPopTypes = new List<PopType>();
@@ -148,12 +148,12 @@ namespace Nashet.EconomicSimulation
                 militaryNeeds, soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
         }
         private PopType(string name, Storage produces, float strenght, List<Storage> militaryNeeds,
-            List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds):base (name)
-        {            
+            List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds) : base(name)
+        {
             this.militaryNeeds = militaryNeeds;
             this.strenght = strenght;
 
-            
+
             basicProduction = produces;
             this.lifeNeeds = lifeNeeds;
             this.everyDayNeeds = everyDayNeeds;
@@ -292,14 +292,75 @@ namespace Nashet.EconomicSimulation
         //{
         //    return true;
         //}
-        
 
-       
+
+
         public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
         {
             Debug.Log("Failed");
             return ReadOnlyValue.Zero;
         }
+        public bool CanDemoteTo(PopType targetType, Country Country)
+        {
+            if (this == Aristocrats)
+                if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                    || targetType == PopType.Tribesmen)
+                    return true;
+                else
+                    return false;
+            else if (this == Artisans)
+                if (//|| targetType == PopType.Farmers && !Country.isInvented(Invention.Farming)
+                targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                || targetType == PopType.Workers
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Capitalists)
+                if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                || targetType == PopType.Artisans
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Farmers)
+                if (targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+             || targetType == PopType.Tribesmen
+             || targetType == PopType.Workers
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Soldiers)
+                if (//targetType == PopType.Farmers && Country.isInvented(Invention.Farming)
+                //||
+                targetType == PopType.Tribesmen
+                || targetType == PopType.Workers
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Tribesmen)
+                if (targetType == PopType.Workers
+                    || targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                    return true;
+                else
+                    return false;
+            else if (this == Workers)
+                if (targetType == PopType.Tribesmen
+                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                    return true;
+                else
+                    return false;
+            else
+            {
+                Debug.Log("Unknown pop type");
+                return false;
+            }
 
+        }
     }
 }

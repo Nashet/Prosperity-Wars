@@ -356,6 +356,7 @@ namespace Nashet.EconomicSimulation
 
             if (hasInput())
             {
+                // change to minimal hire limits
                 foreach (Storage inputProduct in resourceInput)
                     if (!Game.market.isAvailable(inputProduct.Product))
                         return new Value(0);// inputs are unavailable                                            
