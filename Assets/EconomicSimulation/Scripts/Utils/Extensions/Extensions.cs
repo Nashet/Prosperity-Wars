@@ -692,20 +692,26 @@ namespace Nashet.Utils
                     var isType = source.Key as PopType;
                     if (isType != null)
                     {
-                        if (source.Value > 0) // we gain population
-                        {
-                            if (isType.CanDemoteTo(pop.Type, pop.Country))
-                                //if (pop.canThisDemoteInto(isType))
-                                sb.Append("demoted").Append(direction).Append(isType);
-                            else
-                                sb.Append("promoted").Append(direction).Append(isType);
-                        }
+                        if (pop == null)
+                            sb.Append("converted").Append(direction).Append(isType);
                         else
                         {
-                            if (pop.Type.CanDemoteTo(isType, pop.Country))
-                                sb.Append("demoted").Append(direction).Append(isType);
+                            if (source.Value > 0) // we gain population
+                            {
+                                if (isType.CanDemoteTo(pop.Type, pop.Country))
+                                    //if (pop.canThisDemoteInto(isType))
+                                    sb.Append("demoted").Append(direction).Append(isType);
+                                else
+                                    sb.Append("promoted").Append(direction).Append(isType);
+                            }
                             else
-                                sb.Append("promoted").Append(direction).Append(isType);
+                            {
+                                // assumed that If pop can demote into something than it can't promote into that
+                                if (pop.Type.CanDemoteTo(isType, pop.Country))
+                                    sb.Append("demoted").Append(direction).Append(isType);
+                                else
+                                    sb.Append("promoted").Append(direction).Append(isType);
+                            }
                         }
                     }
                     else
@@ -717,7 +723,7 @@ namespace Nashet.Utils
                         {
                             var isStaff = source.Key as Staff;
                             if (isStaff != null)
-                                sb.Append("killed in battle by ").Append(isStaff);
+                                sb.Append("killed in battle with ").Append(isStaff);
                             else
                                 Debug.Log("Unknown WayOfLifeChange");
                         }

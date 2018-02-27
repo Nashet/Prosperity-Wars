@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
-        private readonly float simulationSpeedLimit = 0.15f;
+        private readonly float simulationSpeedLimit = 0.10f;
         private float previousFrameTime;
 
 
@@ -130,21 +130,34 @@ namespace Nashet.EconomicSimulation
                             "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
                             + "\n" + hoveredProvince.Country.getAllPopulationChanges()
                             .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
-                            .getString("\n", "Country population change: "));
-
+                            .getString("\n", "Total change: "));
                         else
                             GetComponent<ToolTipHandler>().SetTextDynamic(() =>
                             "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
                             + "\n" + hoveredProvince.getAllPopulationChanges()
                             .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
-                            .getString("\n", "Province population change: ")
-                            //+ "\n-----------------------------------"
-
+                            .getString("\n", "Total change: ")
                             );
-
-
                         GetComponent<ToolTipHandler>().Show();
                     }
+                }
+                else if (Game.getMapMode() == 5)
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        GetComponent<ToolTipHandler>().Hide();
+                    else
+                    {
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\nChange: " + hoveredProvince.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
+                            + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
+                            );
+                        GetComponent<ToolTipHandler>().Show();
+                    }
+
                 }
 
                 if (Input.GetKeyUp(KeyCode.Space))

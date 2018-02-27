@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
-            issues, money, caption, property;
+            issues, money, caption, property, populationChange;
         private PopUnit pop;
         // Use this for initialization
         void Start()
@@ -50,8 +50,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it            
 
 
-                sb.Append("\nPopulation change: ").Append(pop.getAllPopulationChanges().Sum(x => x.Value)).Append("\n")
-                .Append(pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
+
 
                 //sb.Append("\nAssimilation: ");
 
@@ -134,6 +133,10 @@ namespace Nashet.EconomicSimulation
                         return "Issues:\n" + items.getString(" willing ", "\n");
                     }
                     );
+                populationChange.text = "Population change: " + pop.getAllPopulationChanges().Sum(x => x.Value);
+                populationChange.GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                "Population change:\n" +
+                pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
             }
         }
 

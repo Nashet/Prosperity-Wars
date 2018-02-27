@@ -728,7 +728,7 @@ namespace Nashet.EconomicSimulation
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
             txtMesh.text = this.ToString();
-            txtMesh.color = Color.red; // Set the text's color to red
+            txtMesh.color = Color.black; // Set the text's color to red
             group.SetLODs(lods);
 #if UNITY_WEBGL
             group.size = 20; //was 30 for webgl
