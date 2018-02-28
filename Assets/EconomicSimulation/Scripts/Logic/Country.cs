@@ -561,8 +561,6 @@ namespace Nashet.EconomicSimulation
                 myLastAttackDate[target.Country].set(Date.Today);
             else
                 myLastAttackDate.Add(target.Country, Date.Today);
-
-
         }
 
         //internal bool canAttack(Province province)

@@ -393,38 +393,7 @@ namespace Nashet.EconomicSimulation
                 return secondArmy;
             }
         }
-        //internal Army getVirtualArmy(Procent howMuchShouldBeInSecondArmy)
-        //{
-        //    if (howMuchShouldBeInSecondArmy.get() == 1f)
-        //    {
-        //        return this;
-        //        //this.personal.Clear();
-        //    }
-        //    else
-        //    {
-        //        Army secondArmy = new Army(this.getOwner());
-        //        //Army sumArmy = new Army();
-        //        //sumArmy.add(this);
-        //        //this.joinin(secondArmy);
-        //        int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcent(this.getSize());
-
-        //        //secondArmy.clear();
-
-        //        int needToFullFill = secondArmyExpectedSize;
-        //        while (needToFullFill > 0)
-        //        {
-        //            var corpsToBalance = this.getBiggestCorpsSmallerThan(needToFullFill);
-        //            if (corpsToBalance == null)
-        //                break;
-        //            else
-        //                //this.move(corpsToBalance, secondArmy);
-        //                secondArmy.add(new Corps(corpsToBalance));
-        //            needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
-        //        }
-        //        return secondArmy;
-        //    }
-
-        //}
+        
         internal BattleResult attack(Province prov)
         {
             var enemy = prov.Country;

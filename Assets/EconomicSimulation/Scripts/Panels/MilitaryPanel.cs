@@ -98,10 +98,11 @@ namespace Nashet.EconomicSimulation
         }
         public void onSendArmyClick()
         {
-            //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-            Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
-            //virtualArmyToSend = new Army(null);
-            //Game.Player.sendingArmy = new Army(Game.Player);
+            if (ddProvinceSelect.value < availableProvinces.Count)
+                // province here shouldn't be null
+                Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+            else
+                Debug.Log("Failed to send Army");
             refresh(false);
         }
         void rebuildDropDown()
