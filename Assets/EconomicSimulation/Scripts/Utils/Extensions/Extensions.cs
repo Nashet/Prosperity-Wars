@@ -746,7 +746,7 @@ namespace Nashet.Utils
             Sum = element.Sum(everyElement => everyElement.Value)
             //.Sum(x => x.Value))
 
-        });
+        }).OrderBy(x=>x.Sum);
             //only null or province
             if (query.Count() == 0)
                 return "no changes";
