@@ -20,7 +20,7 @@ Main principles of that simulation are:
 * governments can put extra money in bank
 * governments can compete by wars
 
-## What it has now (v0.16.2)
+## What it has now (v0.18.0)
  - provinces and countries (generated randomly)
  - movements and Rebellions
  - factories and national banks
@@ -31,7 +31,7 @@ Main principles of that simulation are:
  - basic reforms (population can vote for reforms)
  - population demotion\promotion to other classes
  - migration\immigration\assimilation
- - political\culture\core\resource map mode
+ - political\culture\core\resource\population map mode
  - basic diplomacy (only relations for now)
  - [substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
  - [planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
