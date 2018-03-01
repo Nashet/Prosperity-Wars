@@ -4,12 +4,13 @@ using System.Collections;
 using System;
 namespace Nashet.UnityUIUtils
 {
-    public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IHideable
     {
         [SerializeField]
         private Func<string> dynamicText;
 
         /// <summary>Has to be public to allow direct write in Condition.isAllTRue()</summary>
+        [TextArea]
         public string text;
 
         [SerializeField]
@@ -17,8 +18,7 @@ namespace Nashet.UnityUIUtils
 
         [SerializeField]
         private Hideable ownerWindow;
-
-        //private TooltipBase tooltipHolder;
+                
         private bool inside;
 
         /// <summary>
@@ -49,20 +49,11 @@ namespace Nashet.UnityUIUtils
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (text != "" || dynamicText != null)
-            {
-                if (dynamicText == null)
-                    TooltipBase.get().SetTooltip(text);
-                else
-                    TooltipBase.get().SetTooltip(dynamicText());
-                inside = true;
-            }
+            Show();
         }
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (TooltipBase.get() != null)
-                TooltipBase.get().HideTooltip();
-            inside = false;
+            Hide();
         }
         public bool IsInside()
         {
@@ -82,6 +73,25 @@ namespace Nashet.UnityUIUtils
         internal void AddText(string add)
         {
             text += add;
+        }
+
+        public void Hide()
+        {
+            if (TooltipBase.get() != null)
+                TooltipBase.get().HideTooltip();
+            inside = false;
+        }
+
+        public void Show()
+        {
+            if (text != "" || dynamicText != null)
+            {
+                if (dynamicText == null)
+                    TooltipBase.get().SetTooltip(text);
+                else
+                    TooltipBase.get().SetTooltip(dynamicText());
+                inside = true;
+            }
         }
     }
 }

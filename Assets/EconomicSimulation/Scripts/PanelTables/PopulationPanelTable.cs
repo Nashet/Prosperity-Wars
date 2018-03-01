@@ -12,19 +12,21 @@ namespace Nashet.EconomicSimulation
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
-        movementOrder, provinceOrder, cultureOrder, popTypeOrder;
+        movementOrder, provinceOrder, cultureOrder, popTypeOrder, educationOrder;
 
         private void Start()
         {
-            popTypeOrder = new SortOrder(this, x => x.popType.GetNameWeight());
+            popTypeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
-            unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
+            unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
-            cashOrder = new SortOrder(this, x => x.getCash());
+            cashOrder = new SortOrder(this, x => x.Cash.get());
+
+            educationOrder = new SortOrder(this, x => x.Education.get());
 
 
-            provinceOrder = new SortOrder(this, x => x.GetProvince().GetNameWeight());
+            provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
             cultureOrder = new SortOrder(this, x => x.culture.GetNameWeight());
             movementOrder = new SortOrder(this, x =>
             {
@@ -38,9 +40,9 @@ namespace Nashet.EconomicSimulation
         {
             var selectedProvince = MainCamera.populationPanel.SelectedProvince;
             if (selectedProvince == null)
-                return Game.Player.getAllPopUnits();
+                return Game.Player.GetAllPopulation();
             else
-                return selectedProvince.getAllPopUnits();
+                return selectedProvince.GetAllPopulation();
         }
         protected override void AddRow(PopUnit pop, int number)
         {
@@ -48,19 +50,19 @@ namespace Nashet.EconomicSimulation
             //AddButton(Convert.ToString(i + offset), record);
 
             // Adding PopType
-            AddCell(pop.popType.ToString(), pop);
+            AddCell(pop.ShortName, pop);
             ////Adding province
-            AddCell(pop.GetProvince().ToString(), pop.GetProvince(), () => "Click to select this province" );
+            AddCell(pop.Province.ToString(), pop.Province, () => "Click to select this province" );
             ////Adding population
             AddCell(System.Convert.ToString(pop.getPopulation()), pop);
             ////Adding culture
             AddCell(pop.culture.ToString(), pop);
 
             ////Adding education
-            AddCell(pop.education.ToString(), pop);
+            AddCell(pop.Education.ToString(), pop);
 
             ////Adding cash
-            AddCell(pop.cash.ToString(), pop);
+            AddCell(pop.Cash.ToString(), pop);
 
             ////Adding needs fulfilling
 
@@ -76,13 +78,13 @@ namespace Nashet.EconomicSimulation
             AddCell(pop.loyalty.ToString(), pop, () => accu);
 
             //Adding Unemployment
-            AddCell(pop.getUnemployedProcent().ToString(), pop);
+            AddCell(pop.getUnemployment().ToString(), pop);
 
             //Adding Movement
             if (pop.getMovement() == null)
                 AddCell("", pop);
             else
-                AddCell(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
+                AddCell(pop.getMovement().ShortName, pop, () => pop.getMovement().ToString());
         }
         protected override void AddHeader()
         {
@@ -102,7 +104,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Culture" + cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
-            AddCell("Education");
+            AddCell("Education"+ educationOrder.getSymbol(), educationOrder);
 
             ////Adding storage
             //if (null.storage != null)

@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<Product> ContentSelector()
         {
-            return Product.getAll(x => x.isTradable());
+            return Product.getAll().Where(x => x.IsInventedByAnyOne());
         }
 
         protected override void AddHeader()
@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
             // Adding product name 
             if (product.isAbstract())
             {
-                AddCell(product.getName() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
+                AddCell(product.ToString() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
 
                 ////Adding total amount
                 AddCell(Game.Player.countryStorageSet.getTotal(product).get().ToString());
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
                 var storage = Game.Player.countryStorageSet.GetFirstSubstituteStorage(product);
 
                 // Adding product name 
-                AddCell(product.getName(), storage);
+                AddCell(product.ToString(), storage);
 
                 ////Adding storage amount
                 AddCell(storage.get().ToString(), storage);
@@ -98,24 +98,24 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
             }
         }
-        private void AddButtons()
-        {
-            int counter = 0;
+        //private void AddButtons()
+        //{
+        //    int counter = 0;
 
-            //do NOT rely on elements order!
-            var elementsToShow = Product.getAll(x => x.isTradable()).ToList();
-            var howMuchRowsShow = ReCalcSize(elementsToShow.Count);
-            var needs = Game.Player.getRealAllNeeds();
-            //foreach (var product in Product.getAll())                    
-            for (int i = 0; i < howMuchRowsShow; i++)
-            {
-                var product = elementsToShow[i + GetRowOffset()];
+        //    //do NOT rely on elements order!
+        //    var elementsToShow = Product.getAll(x => x.isTradable()).ToList();
+        //    var howMuchRowsShow = ReCalcSize(elementsToShow.Count);
+        //    var needs = Game.Player.getRealAllNeeds();
+        //    //foreach (var product in Product.getAll())                    
+        //    for (int i = 0; i < howMuchRowsShow; i++)
+        //    {
+        //        var product = elementsToShow[i + GetRowOffset()];
 
 
-            }
+        //    }
 
-            counter++;
-            //contentPanel.r                    
-        }
+        //    counter++;
+        //    //contentPanel.r                    
+        //}
     }
 }

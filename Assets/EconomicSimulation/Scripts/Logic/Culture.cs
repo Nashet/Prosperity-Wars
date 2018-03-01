@@ -2,28 +2,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using Nashet.Utils;
+using System;
+using Nashet.ValueSpace;
+
 namespace Nashet.EconomicSimulation
 {
-    public class Culture: ISortableName
+    public class Culture : Name, IWayOfLifeChange
     {
-        private readonly string name;
-        private readonly List<Culture> allCultures = new List<Culture>();
-        private readonly float nameWeight;
-        public Culture(string name)
+        private readonly Color color;
+        public Culture(string name, Color color) : base(name)
         {
-            nameWeight = name.GetWeight();
-            this.name = name;
-            allCultures.Add(this);
+            this.color = color;
         }
 
-        public float GetNameWeight()
-        {
-            return nameWeight;
-        }
+        
 
         public override string ToString()
         {
-            return name;
+            return ShortName;
+        }
+
+        internal Color getColor()
+        {
+            return color;
+        }
+        /// <summary>
+        /// Just a place holder, not used
+        /// </summary>        
+        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
+        {
+            throw new NotImplementedException();
         }
     }
 }

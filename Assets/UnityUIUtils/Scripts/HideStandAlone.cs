@@ -11,7 +11,6 @@ namespace Nashet.UnityUIUtils
 #if !UNITY_STANDALONE
             gameObject.SetActive(false);
 #endif
-        }
-       
+        }       
     }
 }

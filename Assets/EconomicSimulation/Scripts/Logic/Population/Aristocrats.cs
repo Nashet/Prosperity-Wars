@@ -8,19 +8,11 @@ namespace Nashet.EconomicSimulation
 {
     public class Aristocrats : Investor
     {
-        public Aristocrats(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Aristocrats, where, culture)
+        public Aristocrats(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Aristocrats, where, culture, oldLife)
         { }
         public Aristocrats(int iamount, Culture iculture, Province where) : base(iamount, PopType.Aristocrats, iculture, where)
         { }
-        public override bool canThisDemoteInto(PopType targetType)
-        {
-            if (targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
-                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
-                || targetType == PopType.Tribesmen)
-                return true;
-            else
-                return false;
-        }
+       
         public override bool canThisPromoteInto(PopType targetType)
         {
             return false;
@@ -29,7 +21,7 @@ namespace Nashet.EconomicSimulation
         {
             if (storage.get() > Options.aristocratsFoodReserv)
             {
-                Storage howMuchSend = new Storage(storage.getProduct(), storage.get() - Options.aristocratsFoodReserv);
+                Storage howMuchSend = new Storage(storage.Product, storage.get() - Options.aristocratsFoodReserv);
                 storage.send(getSentToMarket(), howMuchSend);
                 //sentToMarket.set(howMuchSend);
                 Game.market.sentToMarket.Add(howMuchSend);
@@ -41,7 +33,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool canTrade()
         {
-            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -58,7 +50,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.Aristocracy || reform == Government.Tribal)
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -76,13 +68,13 @@ namespace Nashet.EconomicSimulation
         internal override void invest()
         {
             // Aristocrats invests only in resource factories (and banks)
-            if (GetProvince().getResource() != null)
+            if (Province.getResource() != null)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = GetProvince().getAllInvestmentProjects(this).Where(x => x.CanProduce(GetProvince().getResource()));
+                var projects = Province.getAllInvestmentProjects(this).Where(x => x.CanProduce(Province.getResource()));
                 
-                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x)).get());
-                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
+                var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
+                if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
                     var factoryProject = project as NewFactoryProject; // build new one
                     if (factoryProject != null)
@@ -93,19 +85,19 @@ namespace Nashet.EconomicSimulation
                         // try to build for grain
                         if (storage.has(resourceToBuild))
                         {
-                            var factory = GetProvince().BuildFactory(this, factoryProject.Type, Game.market.getCost(resourceToBuild));
+                            var factory = Province.BuildFactory(this, factoryProject.Type, Game.market.getCost(resourceToBuild));
                             storage.send(factory.getInputProductsReserve(), resourceToBuild);
                             factory.constructionNeeds.setZero();
                         }
                         else // build for money
                         {
-                            Value investmentCost = Game.market.getCost(resourceToBuild);
-                            if (!canPay(investmentCost))
-                                getBank().giveLackingMoney(this, investmentCost);
-                            if (canPay(investmentCost))
+                            ReadOnlyValue investmentCost = Game.market.getCost(resourceToBuild);
+                            if (!CanPay(investmentCost))
+                                Bank.GiveLackingMoneyInCredit(this, investmentCost);
+                            if (CanPay(investmentCost))
                             {
-                                var factory = GetProvince().BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
-                                payWithoutRecord(factory, investmentCost);
+                                var factory = Province.BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
+                                PayWithoutRecord(factory, investmentCost);
                             }
                         }
                     }
@@ -115,9 +107,9 @@ namespace Nashet.EconomicSimulation
                         if (factory != null)
                         {
                             Value investmentCost = factory.GetInvestmentCost();
-                            if (!canPay(investmentCost))
-                                getBank().giveLackingMoney(this, investmentCost);
-                            if (canPay(investmentCost))
+                            if (!CanPay(investmentCost))
+                                Bank.GiveLackingMoneyInCredit(this, investmentCost);
+                            if (CanPay(investmentCost))
                             {
                                 if (factory.IsOpen)
                                     factory.upgrade(this);
@@ -131,9 +123,9 @@ namespace Nashet.EconomicSimulation
                             if (buyShare != null) // buy part of existing factory
                             {
                                 Value investmentCost = buyShare.GetInvestmentCost();
-                                if (!canPay(investmentCost))
-                                    getBank().giveLackingMoney(this, investmentCost);
-                                if (canPay(investmentCost))
+                                if (!CanPay(investmentCost))
+                                    Bank.GiveLackingMoneyInCredit(this, investmentCost);
+                                if (CanPay(investmentCost))
                                     buyShare.BuyStandardShare(this);
                             }
                             else

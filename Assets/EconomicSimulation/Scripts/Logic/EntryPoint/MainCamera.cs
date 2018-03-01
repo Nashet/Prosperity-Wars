@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using System.Linq;
+
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
@@ -34,7 +36,7 @@ namespace Nashet.EconomicSimulation
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
-        private readonly float simulationSpeedLimit = 0.15f;
+        private readonly float simulationSpeedLimit = 0.10f;
         private float previousFrameTime;
 
 
@@ -75,7 +77,7 @@ namespace Nashet.EconomicSimulation
                 Application.runInBackground = true;
                 game = new Game();
 #if UNITY_WEBGL
-                game.initialize(); // non multi-threading
+                game.InitializeNonUnityData(); // non multi-threading
 #else
                 game.Start(); //initialize is here 
 #endif
@@ -104,14 +106,60 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameIsLoaded)
             {
-                if (Game.getMapMode() != 0 && Game.date.isDivisible(Options.MapRedrawRate))
+                if (Game.getMapMode() != 0
+                    //&& Date.Today.isDivisible(Options.MapRedrawRate)
+                    )
                     Game.redrawMapAccordingToMapMode(Game.getMapMode());
+
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
                     int meshNumber = getRayCastMeshNumber();
                     //found something correct            
                     selectProvince(meshNumber);
                 }
+                if (Game.getMapMode() == 4)
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        GetComponent<ToolTipHandler>().Hide();
+                    else
+                    {
+                        if (Game.selectedProvince == null)
+                            GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\n" + hoveredProvince.Country.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
+                            .getString("\n", "Total change: "));
+                        else
+                            GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\n" + hoveredProvince.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
+                            .getString("\n", "Total change: ")
+                            );
+                        GetComponent<ToolTipHandler>().Show();
+                    }
+                }
+                else if (Game.getMapMode() == 5)
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        GetComponent<ToolTipHandler>().Hide();
+                    else
+                    {
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\nChange: " + hoveredProvince.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
+                            + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
+                            );
+                        GetComponent<ToolTipHandler>().Show();
+                    }
+
+                }
+
                 if (Input.GetKeyUp(KeyCode.Space))
                     topPanel.switchHaveToRunSimulation();
 
@@ -194,16 +242,9 @@ namespace Nashet.EconomicSimulation
 
         internal static void selectProvince(int number)
         {
-            //if (Game.selectedProvince != null && number >= 0)
-            //{
-            //    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-            //    Game.selectedProvince.setBorderMaterials();
-            //}
-
-
             if (number >= 0)
             {
-                if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
+                if (World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
                 {
 
                     var lastSelected = Game.selectedProvince;
@@ -221,7 +262,7 @@ namespace Nashet.EconomicSimulation
                         Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                         Game.selectedProvince.setBorderMaterials(true);
                     }
-                    Game.selectedProvince = Province.find(number);
+                    Game.selectedProvince = World.FindProvince(number);
                     Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                     provincePanel.Show();
                     if (Game.getMapMode() == 2) //core map mode

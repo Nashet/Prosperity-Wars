@@ -3,39 +3,32 @@ using UnityEngine;
 
 
 namespace Nashet.EconomicSimulation
-{
-    interface IHasStatistics
+{    
+    public interface IHasCountry
     {
-        void SetStatisticToZero();
-    }
-    public interface IHasGetCountry
-    {
-        Country GetCountry();
+        Country Country { get; }
     }
     public interface IHasGetProvince
     {
-        Province GetProvince();
+        Province Province { get; }
     }
-    public interface IEscapeTarget
+    
+    public interface IWayOfLifeChange
     {
-        bool HasJobsFor(PopType popType, Province province);
+        //bool HasJobsFor(PopType popType, Province province);
+        ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType);
+        //string getWayOfLifeString(PopUnit pop);
     }
-    public interface IInvestable : IHasGetCountry, IHasGetProvince
+    public interface IInvestable : IHasCountry, IHasGetProvince
     {
         /// <summary>
         /// Includes tax (1 country only), salary and modifiers. Doesn't include risks. New value
         /// </summary>
         Procent GetMargin();
-        Value GetInvestmentCost();        
+        Money GetInvestmentCost();        
         bool CanProduce(Product product);
 
     }
-    public interface ISortableName
-    {
-        float GetNameWeight();
-    }
-    public interface IDescribable
-    {
-        string GetDescription();
-    }
+    
+    
 }

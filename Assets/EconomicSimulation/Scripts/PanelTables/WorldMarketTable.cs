@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(Product product, int number)
         {
             // Adding product name 
-            AddCell(product.getName(), product);
+            AddCell(product.ToString(), product);
             ////Adding production
             AddCell(Game.market.getProductionTotal(product, true).get().ToString(), product);
             ////Adding abstract Demand
@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
 
         protected override IEnumerable<Product> ContentSelector()
         {
-            return Product.getAll(x => x.isTradable() && !x.isAbstract());
+            return Product.getAll().Where(x => x.isTradable() && !x.isAbstract());
         }
     }
 }

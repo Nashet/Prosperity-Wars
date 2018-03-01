@@ -16,15 +16,15 @@ namespace Nashet.EconomicSimulation
         private void Start()
         {
 
-            typeOrder = new SortOrder(this, x => x.getType().GetNameWeight());
-            provinceOrder = new SortOrder(this, x => x.GetProvince().GetNameWeight());
+            typeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
+            provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
             profitOrder = new SortOrder(this, x => x.getProfit());
             profitabilityOrder = new SortOrder(this, x => x.GetMargin().get());
             salaryOrder = new SortOrder(this, x => x.getSalary().get());
-            unemploymentOrder = new SortOrder(this, x => x.GetProvince().getUnemployedWorkers());
+            unemploymentOrder = new SortOrder(this, x => x.Province.getUnemployedWorkers());
         }
         protected override IEnumerable<Factory> ContentSelector()
         {
@@ -37,10 +37,10 @@ namespace Nashet.EconomicSimulation
         protected override void AddRow(Factory factory, int number)
         {
             // Adding shownFactory name 
-            AddCell(factory.GetDescription(), factory);
+            AddCell(factory.ShortName, factory);
 
             // Adding province 
-            AddCell(factory.GetProvince().ToString(), factory.GetProvince(), () => "Click to select this province");
+            AddCell(factory.Province.ToString(), factory.Province, () => "Click to select this province");
 
             ////Adding production
             AddCell(factory.getGainGoodsThisTurn().ToString(), factory);
@@ -52,10 +52,10 @@ namespace Nashet.EconomicSimulation
             AddCell(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
-            if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("none", factory);
             else
-                AddCell(factory.getProfit().ToString("F3"), factory);
+                AddCell(factory.getProfit().ToString("F3") + " Gold", factory);
 
             ////Adding margin
             if (factory.isUpgrading())
@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
                         AddCell("Closed", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                     else
                     {
-                        if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
                             AddCell(factory.GetMargin().ToString(), factory, () => "Tax included");
@@ -80,18 +80,18 @@ namespace Nashet.EconomicSimulation
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (factory.GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("centralized", factory);
             else
             {
-                if (factory.GetCountry().economy.getValue() == Economy.NaturalEconomy)
+                if (factory.Country.economy.getValue() == Economy.NaturalEconomy)
                     AddCell(factory.getSalary().ToString() + " food", factory);
                 else
                     AddCell(factory.getSalary().ToString(), factory);
             }
 
             //Adding unemployment
-            AddCell(factory.GetProvince().getUnemployedWorkers().ToString("N0"), factory);
+            AddCell(factory.Province.getUnemployedWorkers().ToString("N0"), factory);
         }
         protected override void AddHeader()
         {

@@ -103,7 +103,7 @@ namespace Nashet.Utils
         }
         static public bool HasComponentInParent<T>(this GameObject that)
         {
-            if (that.transform.parent== null || that.transform.parent.GetComponent<T>() == null)
+            if (that.transform.parent == null || that.transform.parent.GetComponent<T>() == null)
                 return false;
             else
                 return true;
@@ -202,14 +202,14 @@ namespace Nashet.Utils
                         return stor;
             }
             else
-                return list.Find(x => x.getProduct() == product);
+                return list.Find(x => x.Product == product);
             return new Storage(product, 0f);
         }
         public static List<Storage> Multiply(this List<Storage> list, Value value)
         {
             foreach (var item in list)
             {
-                item.multiply(value);
+                item.Multiply(value);
             }
             return list;
         }
@@ -236,13 +236,13 @@ namespace Nashet.Utils
     }
     public static class CollectionExtensions
     {
-        public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
-        {
-            foreach (var keyValue in dictionary)
-            {
-                invokeMe(keyValue.Key, keyValue.Value);
-            }
-        }
+        //public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
+        //{
+        //    foreach (var keyValue in dictionary)
+        //    {
+        //        invokeMe(keyValue.Key, keyValue.Value);
+        //    }
+        //}
         //public static void AddMy(this Dictionary<object, int> dictionary, object what, int size)
         //{
         //    if (dictionary.ContainsKey(what))
@@ -267,7 +267,7 @@ namespace Nashet.Utils
         public static void setMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))
-                dictionary[what].set(value);
+                dictionary[what].Set(value);
             else
                 dictionary.Add(what, value);
         }
@@ -294,11 +294,28 @@ namespace Nashet.Utils
                 if (predicate(item))
                     action(item);
         }
+        /// <summary>
+        /// New value
+        /// </summary>        
+        public static Procent GetAverageProcent(this IEnumerable<PopUnit> source, Func<PopUnit, Procent> selector)
+        {
+            Procent result = new Procent(0f);
+            int calculatedPopulation = 0;
+            foreach (var item in source)
+            {
+                result.AddPoportionally(calculatedPopulation, item.getPopulation(), selector(item));
+                calculatedPopulation += item.getPopulation();
+            }
+            return result;
+        }
         public static void PerformAction<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
             foreach (var item in source)
                 action(item);
         }
+        /// <summary>
+        /// Returns default() if there is source is empty
+        /// </summary>        
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
@@ -329,6 +346,9 @@ namespace Nashet.Utils
                 return min;
             }
         }
+        /// <summary>
+        /// Returns default() if there is source is empty
+        /// </summary>
         public static TSource MaxBy<TSource, TKey>(this IEnumerable<TSource> source,
                Func<TSource, TKey> selector)
         {
@@ -465,18 +485,18 @@ namespace Nashet.Utils
             return source[Game.Random.Next(source.Count)];
 
         }
-        public static T Random<T>(this IEnumerable<T> enumerable)
-        {
-            return enumerable.Random<T>(new System.Random());
-        }
+        //public static T Random<T>(this IEnumerable<T> enumerable)
+        //{
+        //    return enumerable.Random<T>(new System.Random());
+        //}
 
-        public static T Random<T>(this IEnumerable<T> enumerable, System.Random rand)
+        public static T Random<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == Enumerable.Empty<T>() || enumerable.Count() == 0)
                 return default(T);
             else
             {
-                int index = rand.Next(enumerable.Count());
+                int index = Rand.random2.Next(enumerable.Count());
                 return enumerable.ElementAt(index);
             }
         }
@@ -505,7 +525,7 @@ namespace Nashet.Utils
     {
         public static string GetString(this Dictionary<Product, Storage> collection, String lineBreaker)
         {
-            if (collection.Any(x=>x.Value.isNotZero()))
+            if (collection.Any(x => x.Value.isNotZero()))
             {
                 var sb = new StringBuilder();
                 bool isFirstRow = true;
@@ -524,7 +544,7 @@ namespace Nashet.Utils
         }
         public static string getString(this IEnumerable<Storage> list, string lineBreaker)
         {
-            if (list.Any(x=>x.isNotZero()))
+            if (list.Any(x => x.isNotZero()))
             {
                 var sb = new StringBuilder();
                 bool isFirstRow = true;
@@ -549,14 +569,14 @@ namespace Nashet.Utils
                 return "none";
         }
         /// <summary>
-        /// Uses getDescription() instead of standard ToString()
+        /// Uses FullName instead of standard ToString()
         /// </summary>    
         public static string getString(this IEnumerable<Movement> source)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var item in source)
             {
-                sb.Append("  ").Append(item.getDescription()).Append(" \n");
+                sb.Append("  ").Append(item.FullName).Append(" \n");
             }
             return sb.ToString();
         }
@@ -619,13 +639,17 @@ namespace Nashet.Utils
             else
                 return "none";
         }
-        public static string getString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> dictionary, string intermediateString, string lineBreaker)
+        //public static string ToString<T, V>(this KeyValuePair<T, V> source, string separator)
+        //{
+        //    return source.Key + separator + source.Value;
+        //}
+        public static string getString<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, string intermediateString, string lineBreaker)
         {
-            if (dictionary.Count() == 0)
+            if (source.Count() == 0)
                 return "none";
             var sb = new StringBuilder();
             bool isFirstRow = true;
-            foreach (var item in dictionary)
+            foreach (var item in source)
             {
                 if (!isFirstRow)
                 {
@@ -637,24 +661,139 @@ namespace Nashet.Utils
             return sb.ToString();
         }
 
-        //public static string getString(this IEnumerable<KeyValuePair<AbstractReformValue, float>> source, string intermediateString, string lineBreaker)
-        //{
-        //    if (source.Count() == 0)
-        //        return "none";
-        //    var sb = new StringBuilder();
-        //    bool isFirstRow = true;
-        //    foreach (var item in source)
-        //    {
-        //        if (!isFirstRow)
-        //        {
-        //            sb.Append(lineBreaker);
-        //        }
-        //        isFirstRow = false;
-        //        sb.Append(item.Key).Append(intermediateString).Append(item.Value);
-        //    }
-        //    return sb.ToString();
-        //}
-        public static string getString(IEnumerable<KeyValuePair<Mod, MyDate>> dictionary)
+        public static string getString(this KeyValuePair<IWayOfLifeChange, int> source, PopUnit pop)
+        {
+            var sb = new StringBuilder();
+            if (source.Key == null)
+                if (source.Value > 0)
+                    sb.Append("born ");
+                else
+                    sb.Append("starved to death ");
+            else
+            {
+                String direction;
+                if (source.Value > 0)
+                    direction = " from ";
+                else
+                    direction = " to ";
+
+                var isProvince = source.Key as Province;
+                if (isProvince != null)
+                {
+                    if (pop == null)
+                        sb.Append("moved").Append(direction).Append(isProvince.FullName);
+                    else if (pop.Country == isProvince.Country)
+                        sb.Append("migrated").Append(direction).Append(isProvince.ShortName);
+                    else
+                        sb.Append("immigrated").Append(direction).Append(isProvince.FullName);
+                }
+                else
+                {
+                    var isType = source.Key as PopType;
+                    if (isType != null)
+                    {
+                        if (pop == null)
+                            sb.Append("converted").Append(direction).Append(isType);
+                        else
+                        {
+                            if (source.Value > 0) // we gain population
+                            {
+                                if (isType.CanDemoteTo(pop.Type, pop.Country))
+                                    //if (pop.canThisDemoteInto(isType))
+                                    sb.Append("demoted").Append(direction).Append(isType);
+                                else
+                                    sb.Append("promoted").Append(direction).Append(isType);
+                            }
+                            else
+                            {
+                                // assumed that If pop can demote into something than it can't promote into that
+                                if (pop.Type.CanDemoteTo(isType, pop.Country))
+                                    sb.Append("demoted").Append(direction).Append(isType);
+                                else
+                                    sb.Append("promoted").Append(direction).Append(isType);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var isCulture = source.Key as Culture;
+                        if (isCulture != null)
+                            sb.Append("assimilated").Append(direction).Append(isCulture);
+                        else
+                        {
+                            var isStaff = source.Key as Staff;
+                            if (isStaff != null)
+                                sb.Append("killed in battle with ").Append(isStaff);
+                            else
+                                Debug.Log("Unknown WayOfLifeChange");
+                        }
+                    }
+
+                }
+            }
+            return sb.ToString();
+        }
+        //public static string getString(this IEnumerable<IGrouping<IWayOfLifeChange, KeyValuePair<IWayOfLifeChange, int>>> source, string lineBreaker)
+        public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, string totalString)
+        {
+            var sb = new StringBuilder();
+
+            var query = source.GroupBy(
+        toBeKey => toBeKey.Key,
+        (group, element) => new
+        {
+            Key = group,
+            Sum = element.Sum(everyElement => everyElement.Value)
+            //.Sum(x => x.Value))
+
+        }).OrderBy(x=>x.Sum);
+            //only null or province
+            if (query.Count() == 0)
+                return "no changes";
+            int total = 0;
+            foreach (var item in query)
+            {
+                // value-migrated-to-key
+                if (item.Sum != 0)
+                {
+                    if (item.Sum > 0)
+                        sb.Append("+");
+                    var toShow = new KeyValuePair<IWayOfLifeChange, int>(item.Key, item.Sum);
+                    sb.Append(item.Sum).Append(" ").Append(toShow.getString(null)).Append(lineBreaker);
+                    total += item.Sum;
+                }
+            }
+            //.Append(lineBreaker)
+            sb.Append(totalString).Append(total);
+            return sb.ToString();
+        }
+        public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, PopUnit pop, string totalString)
+        {
+            if (!source.Any(x => x.Value != 0))
+                return "no changes";
+            var sb = new StringBuilder();
+            bool isFirstRow = true;
+            int total = 0;
+            foreach (var item in source.Reverse())
+                if (item.Value != 0) // skip empty records
+                {
+                    if (!isFirstRow)
+                        sb.Append(lineBreaker);
+                    isFirstRow = false;
+                    total += item.Value;
+
+                    if (item.Value > 0)
+                        sb.Append("+");
+
+                    sb.Append(item.Value).Append(" ");
+                    sb.Append(item.getString(pop));
+                }
+            sb.Append(lineBreaker).Append(totalString).Append(total);
+            return sb.ToString();
+        }
+
+
+        public static string getString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
         {
             if (dictionary.Count() == 0)
                 return "none";

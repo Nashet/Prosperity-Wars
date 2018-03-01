@@ -17,11 +17,12 @@ namespace Nashet.EconomicSimulation
         void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
+            generalText.text = "Prosperity Wars demo v0.18.0";
             Hide();
         }       
         public override void Refresh()
         {
-            //generalText.text = "Economic Simulation Demo v0.17.0";
+            
         }
 
         public void onStatisticsClick()

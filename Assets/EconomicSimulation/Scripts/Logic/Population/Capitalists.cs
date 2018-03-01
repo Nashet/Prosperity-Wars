@@ -11,20 +11,11 @@ namespace Nashet.EconomicSimulation
 
     public class Capitalists : Investor
     {
-        public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture)
+        public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture, oldLife)
         { }
         public Capitalists(int iamount, Culture iculture, Province where) : base(iamount, PopType.Capitalists, iculture, where)
         { }
-        public override bool canThisDemoteInto(PopType targetType)
-        {
-            if (targetType == PopType.Farmers && GetCountry().Invented(Invention.Farming)
-                || targetType == PopType.Soldiers && GetCountry().Invented(Invention.ProfessionalArmy)
-                || targetType == PopType.Artisans
-                )
-                return true;
-            else
-                return false;
-        }
+        
         public override bool canThisPromoteInto(PopType targetType)
         {
             return false;
@@ -35,7 +26,7 @@ namespace Nashet.EconomicSimulation
         }
         internal override bool canTrade()
         {
-            if (GetCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
             else
                 return true;
@@ -48,7 +39,7 @@ namespace Nashet.EconomicSimulation
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
-                && (isStateCulture() || GetCountry().minorityPolicy.getValue() == MinorityPolicy.Equality))
+                && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
                 return true;
             else
                 return false;
@@ -67,22 +58,22 @@ namespace Nashet.EconomicSimulation
         internal override void invest()
         {
             //should I invest?                
-            if (Economy.isMarket.checkIfTrue(GetCountry()) && GetCountry().Invented(Invention.Manufactures))
+            if (Economy.isMarket.checkIfTrue(Country) && Country.Invented(Invention.Manufactures))
 
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
 
 
-                //var projects = getProvince().getAllInvestmentProjects().Where(x => x.GetMargin(getProvince()).isBiggerThan(Options.minMarginToInvest));
-                var projects = World.GetAllAllowedInvestments(this.GetCountry(), this);//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxByRandom(x => x.GetMargin().multiply(getBusinessSecurity(x)).get());
+                //var projects = Province.getAllInvestmentProjects().Where(x => x.GetMargin(Province).isBiggerThan(Options.minMarginToInvest));
+                var projects = World.GetAllAllowedInvestments(this.Country, this);//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
+                var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
 
-                if (project != null && project.GetMargin().multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
+                if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
                     Value investmentCost = project.GetInvestmentCost();
-                    if (!canPay(investmentCost))
-                        getBank().giveLackingMoney(this, investmentCost);
-                    if (canPay(investmentCost))
+                    if (!CanPay(investmentCost))
+                        Bank.GiveLackingMoneyInCredit(this, investmentCost);
+                    if (CanPay(investmentCost))
                     {
                         Factory factory = project as Factory;
                         if (factory != null)
@@ -103,7 +94,7 @@ namespace Nashet.EconomicSimulation
                                 if (factoryProject != null)
                                 {
                                     Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
-                                    payWithoutRecord(factory2, investmentCost);
+                                    PayWithoutRecord(factory2, investmentCost);
                                 }
                                 else
                                     Debug.Log("Unknown investment type");

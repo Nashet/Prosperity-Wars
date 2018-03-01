@@ -11,21 +11,21 @@ namespace Nashet.EconomicSimulation
     {
         private readonly Value howMuchOwns;//default value
         private readonly Value howMuchWantsToSell = new Value(0f);
-        public Share(Value initialSumm)
+        public Share(ReadOnlyValue initialSumm)
         {
             howMuchOwns = initialSumm.Copy();
         }
-        public void Increase(Value sum)
+        public void Increase(ReadOnlyValue sum)
         {
             howMuchOwns.Add(sum);
         }
-        public void Decrease(Value sum)
+        public void Decrease(ReadOnlyValue sum)
         {
-            howMuchOwns.subtract(sum);
+            howMuchOwns.Subtract(sum);
         }
-        internal void CancelBuyOrder(Value sum)
+        internal void CancelBuyOrder(ReadOnlyValue sum)
         {
-            howMuchWantsToSell.subtract(sum, false);
+            howMuchWantsToSell.Subtract(sum, false);
         }
         /// <summary>
         /// Only for read! Returns copy
@@ -44,15 +44,15 @@ namespace Nashet.EconomicSimulation
         public void SetToSell(Value sum)
         {
             if (howMuchOwns.get() - howMuchWantsToSell.get() - sum.get() < 0f)
-                howMuchWantsToSell.set(howMuchOwns);
+                howMuchWantsToSell.Set(howMuchOwns);
             else
                 howMuchWantsToSell.Add(sum);            
         }
         public void ReduceSale(Value sum)
         {
-            howMuchWantsToSell.subtract(sum, false);
+            howMuchWantsToSell.Subtract(sum, false);
             if (howMuchWantsToSell.isBiggerThan(howMuchOwns))
-                howMuchWantsToSell.set(howMuchOwns);
+                howMuchWantsToSell.Set(howMuchOwns);
         }
         public override string ToString()
         {

@@ -13,14 +13,14 @@ namespace Nashet.EconomicSimulation
         {
         }
 
-        protected Investor(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
+        protected Investor(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture, IWayOfLifeChange oldLife) : base(source, sizeOfNewPop, newPopType, where, culture, oldLife)
         {
         }
         protected override void deleteData()
         {
             base.deleteData();
             //secede property... to government
-            getOwnedFactories().PerformAction(x => x.ownership.TransferAll(this, GetCountry()));
+            getOwnedFactories().PerformAction(x => x.ownership.TransferAll(this, Country));
         }
 
         /// <summary>
@@ -34,13 +34,13 @@ namespace Nashet.EconomicSimulation
         }
         public Procent getBusinessSecurity(IInvestable business)
         {
-            var res = business.GetCountry().OwnershipSecurity;
-            if (business.GetCountry() != this.GetCountry())
-                res.multiply(Options.InvestingForeignCountrySecurity);
-            if (business.GetProvince() != this.GetProvince())
-                res.multiply(Options.InvestingAnotherProvinceSecurity);
+            var res = business.Country.OwnershipSecurity;
+            if (business.Country != this.Country)
+                res.Multiply(Options.InvestingForeignCountrySecurity);
+            if (business.Province != this.Province)
+                res.Multiply(Options.InvestingAnotherProvinceSecurity);
             if (!(business is Owners)) // building, upgrading and opening requires hiring people which can be impossible
-                res.multiply(Options.InvestorEmploymentRisk);
+                res.Multiply(Options.InvestorEmploymentRisk);
 
             return res;
         }

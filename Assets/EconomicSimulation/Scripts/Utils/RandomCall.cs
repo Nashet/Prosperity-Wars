@@ -1,12 +1,31 @@
 ﻿using UnityEngine;
 using System;
 using Nashet.ValueSpace;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Nashet.Utils
 {
-    public static class Rand
+    public class Rand : System.Random
     {
-        //private static readonly UnityEngine.Random random = new UnityEngine.Random();        
+        //public static readonly UnityEngine.Random random = new UnityEngine.Random();
+        public static readonly System.Random random2 = new System.Random();
+        //public static bool Chance(int chance)
+        //{
+        //    return random2.Next(chance) == 0;
+        //}
+        
+        /// <summary>
+        /// Higher procent - higher chance
+        /// </summary>            
+        public static bool Chance(ReadOnlyValue chance)
+        {
+            //if (chance.isZero())
+            //    return false;
+            //else
+            //excluding Procent.Precision
+            return random2.Next(Procent.Precision) < chance.RawUIntValue;
+        }
         internal static bool Call(Action action, int chance)
         {
             if (UnityEngine.Random.Range(0, chance) == 0)
@@ -16,6 +35,16 @@ namespace Nashet.Utils
             }
             else
                 return false;
-        }        
+        }
+        internal static bool Call(Action action, ReadOnlyValue chance)
+        {
+            if (Chance(chance))
+            {
+                action();
+                return true;
+            }
+            else
+                return false;
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using System.Linq;
 namespace Nashet.MarchingSquares
 {
     [SelectionBase]
@@ -21,14 +22,14 @@ namespace Nashet.MarchingSquares
 
 
         private Voxel dummyX, dummyY, dummyT;
-        private readonly Game game;
+        //private readonly Game game;
 
-        public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, Game game, List<Province> provinces
-            )
+        //public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, IEnumerable<Province> provinces)
+        public VoxelGrid(int width, int height, float size, MyTexture texture, IEnumerable<Province> provinces)
         {
             this.width = width;
             this.height = height;
-            this.game = game;
+            //this.game = game;
             // this.resolution = resolution;
             gridSize = size;
             voxelSize = size / width;
@@ -47,7 +48,7 @@ namespace Nashet.MarchingSquares
                 {
                     //curColor = texture.GetPixel(x, y);
                     //if (!blockedProvinces.Contains(curColor))
-                    CreateVoxel(i, x, y, provinces.Find(province => province.getColorID() == texture.GetPixel(x, y)));
+                    CreateVoxel(i, x, y, provinces.FirstOrDefault(t => t.getColorID() == texture.GetPixel(x, y)));
                     i++;
                 }
             }
@@ -77,7 +78,7 @@ namespace Nashet.MarchingSquares
         {
             mesh = new MeshStructure();
             bordersMeshes = new Dictionary<Province, MeshStructure>();
-            game.updateStatus("Triangulation .." + analysingProvince);
+            //game.updateStatus("Triangulation .." + analysingProvince);
             Triangulate(analysingProvince);
             return mesh;
         }

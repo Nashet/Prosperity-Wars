@@ -50,8 +50,8 @@ namespace Nashet.EconomicSimulation
             var sb = new StringBuilder();
             string scienceModifier;
             var spModifier = Country.modSciencePoints.getModifier(Game.Player, out scienceModifier);
-            sb.Append("Science points: ").Append(Game.Player.sciencePoints).Append(" + ");
-            sb.Append(Game.Player.getSciencePointsBase().Copy().multiply(spModifier)).Append(" Modifiers: ").Append(scienceModifier);
+            sb.Append("Science points: ").Append(Game.Player.sciencePoints);//.Append(" + ");
+            //sb.Append(Options.defaultSciencePointMultiplier * spModifier).Append(" Modifiers: ").Append(Options.defaultSciencePointMultiplier * scienceModifier);
             if (selectedInvention == null)
             {
                 inventButton.interactable = false;
@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.getDescription());
+                sb.Append("\n\n").Append(selectedInvention).Append(" : ").Append(selectedInvention.FullName);
 
                 // invention available
                 if (!Game.Player.Invented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.getCost().get())

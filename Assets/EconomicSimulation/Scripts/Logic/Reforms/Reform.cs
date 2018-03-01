@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
             (country as Country).getReform((newReform as AbstractReformValue)).getValue()
             ), x => "Economy policy is not Laissez Faire or that is reform rollback", true);
         readonly string description;
-        public readonly int ID;
+        public readonly int ID; // covert inti liberal_weight
         public readonly DoubleConditionsList allowed;
         readonly public Condition isEnacted;// = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
 
@@ -74,9 +74,9 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        override public string getDescription()
+        public override string FullName
         {
-            return description;
+            get { return description; }
         }
 
 
@@ -100,9 +100,9 @@ namespace Nashet.EconomicSimulation
         internal abstract bool canChange();
         internal abstract void setValue(AbstractReformValue selectedReformValue);
 
-        new internal string getDescription()
+        override public string FullName
         {
-            return description;
+            get { return description; }
         }
 
         abstract internal AbstractReformValue getValue();
@@ -116,14 +116,14 @@ namespace Nashet.EconomicSimulation
             MainCamera.politicsPanel.Refresh();
         }
     }
-    public class Government : AbstractReform, IHasGetCountry
+    public class Government : AbstractReform, IHasCountry
     {
         readonly internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();
         private ReformValue reform;
         private readonly Country country;
-        public Country GetCountry()
+        public Country Country
         {
-            return country;
+            get { return country; }
         }
         public class ReformValue : AbstractReformValue
         {
@@ -152,8 +152,13 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                if (pop.getVotingPower(this) > pop.getVotingPower(pop.GetCountry().government.getTypedValue()))
-                    result = new Procent(1f);
+                if (pop.getVotingPower(this) > pop.getVotingPower(pop.Country.government.getTypedValue()))
+                {
+                    if (this == Tribal)
+                        result = new Procent(0.8f);
+                    else
+                        result = new Procent(1f);
+                }
                 else if (this == Government.ProletarianDictatorship)
                     result = new Procent(0.4f);
                 else if (this == Government.Despotism && pop.needsFulfilled.get() < 0.1f)
@@ -174,14 +179,17 @@ namespace Nashet.EconomicSimulation
             {
                 return scienceModifier;
             }
-            public override string getDescription()
+            public override string FullName
             {
-                return base.getDescription();// + ". Max size before loyalty penalty applied: " + getLoyaltySizeLimit()
-                                             //+ ". Science points modifier: " + scienceModifier;
+                get
+                {
+                    return base.FullName;// + ". Max size before loyalty penalty applied: " + getLoyaltySizeLimit()
+                                         //+ ". Science points modifier: " + scienceModifier;
+                }
             }
         }
 
-		readonly internal static ReformValue Tribal = new ReformValue("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
+        readonly internal static ReformValue Tribal = new ReformValue("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
             new DoubleConditionsList(), "Tribe", 10, 0f);
 
         readonly internal static ReformValue Aristocracy = new ReformValue("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
@@ -202,7 +210,7 @@ namespace Nashet.EconomicSimulation
         readonly internal static ReformValue Democracy = new ReformValue("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
-		readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
+        readonly internal static ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f);
 
         readonly internal static ReformValue Junta = new ReformValue("Junta", "- The military knows what's best for the people...", 7,
@@ -211,21 +219,20 @@ namespace Nashet.EconomicSimulation
         readonly internal static ReformValue ProletarianDictatorship = new ReformValue("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
             new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f);
 
-        internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.getName(), true);
-        internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.getName(), true);
-        internal readonly static Condition isAristocracy = new Condition(x => (x as Country).government.getValue() == Government.Aristocracy, "Government is " + Government.Aristocracy.getName(), true);
+        internal readonly static Condition isPolis = new Condition(x => (x as Country).government.getValue() == Government.Polis, "Government is " + Government.Polis.ToString(), true);
+        internal readonly static Condition isTribal = new Condition(x => (x as Country).government.getValue() == Government.Tribal, "Government is " + Government.Tribal.ToString(), true);
+        internal readonly static Condition isAristocracy = new Condition(x => (x as Country).government.getValue() == Government.Aristocracy, "Government is " + Government.Aristocracy.ToString(), true);
 
-        internal readonly static Condition isDespotism = new Condition(x => (x as Country).government.getValue() == Government.Despotism, "Government is " + Government.Despotism.getName(), true);
-        internal readonly static Condition isTheocracy = new Condition(x => (x as Country).government.getValue() == Government.Theocracy, "Government is " + Government.Theocracy.getName(), true);
-        internal readonly static Condition isWealthDemocracy = new Condition(x => (x as Country).government.getValue() == Government.WealthDemocracy, "Government is " + Government.WealthDemocracy.getName(), true);
-        internal readonly static Condition isDemocracy = new Condition(x => (x as Country).government.getValue() == Government.Democracy, "Government is " + Government.Democracy.getName(), true);
-        internal readonly static Condition isBourgeoisDictatorship = new Condition(x => (x as Country).government.getValue() == Government.BourgeoisDictatorship, "Government is " + Government.BourgeoisDictatorship.getName(), true);
-        internal readonly static Condition isJunta = new Condition(x => (x as Country).government.getValue() == Government.Junta, "Government is " + Government.Junta.getName(), true);
-        internal readonly static Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == Government.ProletarianDictatorship, "Government is " + Government.ProletarianDictatorship.getName(), true);
+        internal readonly static Condition isDespotism = new Condition(x => (x as Country).government.getValue() == Government.Despotism, "Government is " + Government.Despotism.ToString(), true);
+        internal readonly static Condition isTheocracy = new Condition(x => (x as Country).government.getValue() == Government.Theocracy, "Government is " + Government.Theocracy.ToString(), true);
+        internal readonly static Condition isWealthDemocracy = new Condition(x => (x as Country).government.getValue() == Government.WealthDemocracy, "Government is " + Government.WealthDemocracy.ToString(), true);
+        internal readonly static Condition isDemocracy = new Condition(x => (x as Country).government.getValue() == Government.Democracy, "Government is " + Government.Democracy.ToString(), true);
+        internal readonly static Condition isBourgeoisDictatorship = new Condition(x => (x as Country).government.getValue() == Government.BourgeoisDictatorship, "Government is " + Government.BourgeoisDictatorship.ToString(), true);
+        internal readonly static Condition isJunta = new Condition(x => (x as Country).government.getValue() == Government.Junta, "Government is " + Government.Junta.ToString(), true);
+        internal readonly static Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == Government.ProletarianDictatorship, "Government is " + Government.ProletarianDictatorship.ToString(), true);
 
         public Government(Country country) : base("Government", "Form of government", country)
         {
-            //status = Tribal;
             reform = Aristocracy;
             this.country = country;
         }
@@ -257,7 +264,7 @@ namespace Nashet.EconomicSimulation
         }
         public void onReformEnacted(Province province)
         {
-            var government = province.GetCountry().government.getValue();
+            var government = province.Country.government.getValue();
             if (government == Government.ProletarianDictatorship)
             {
                 country.setSoldierWage(0f);
@@ -269,19 +276,19 @@ namespace Nashet.EconomicSimulation
 
                     // next is for PE only
                     factory.PayAllAvailableMoney(country);
-                    factory.loans.setZero();
-                    factory.deposits.setZero();
+                    factory.loans.SetZero();
+                    factory.deposits.SetZero();
                     factory.setSubsidized(false);
                     factory.setZeroSalary();
                     factory.setPriorityAutoWithPlannedEconomy();
                     //factory.setStatisticToZero();
                 }
                 //nationalize banks
-                foreach (var item in province.getAllPopUnits())
+                foreach (var item in province.GetAllPopulation())
                 {
                     item.PayAllAvailableMoney(country);
-                    item.loans.setZero();
-                    item.deposits.setZero();
+                    item.loans.SetZero();
+                    item.deposits.SetZero();
                 }
             }
         }
@@ -400,13 +407,11 @@ namespace Nashet.EconomicSimulation
                 country.minorityPolicy.setValue(MinorityPolicy.Equality);
                 country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
                 country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[10]);
-                //nationalization
-                country.getBank().PayAllAvailableMoney(country);
-                country.getBank().getGivenLoans().setZero();
-                country.loans.setZero();
-                country.deposits.setZero();
 
-                foreach (var province in country.ownedProvinces)
+                //nationalization
+                country.Bank.Nationalize();
+
+                foreach (var province in country.getAllProvinces())
                 {
                     onReformEnacted(province);
                 }
@@ -430,7 +435,7 @@ namespace Nashet.EconomicSimulation
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
     }
-    public class Economy : AbstractReform, IHasGetCountry
+    public class Economy : AbstractReform, IHasCountry
     {
         private readonly Country country;
 
@@ -518,11 +523,11 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                //if (pop.popType == PopType.Capitalists)
-                if (pop.popType.isRichStrata())
+                //if (pop.Type == PopType.Capitalists)
+                if (pop.Type.isRichStrata())
                 {
                     //positive - more liberal
-                    int change = ID - pop.GetCountry().economy.status.ID;
+                    int change = ID - pop.Country.economy.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f + change / 10f);
@@ -537,16 +542,16 @@ namespace Nashet.EconomicSimulation
                     else if (this == Economy.LaissezFaire)
                     {
                         if (this == Economy.Interventionism)
-                            result = new Procent(0.3f);
+                            result = new Procent(0.2f);
                         else
-                            result = new Procent(0.7f);
+                            result = new Procent(0.5f);
                     }
                     else if (this == Economy.Interventionism)
                     {
                         if (this == Economy.LaissezFaire)
-                            result = new Procent(0.3f);
+                            result = new Procent(0.2f);
                         else
-                            result = new Procent(0.8f);
+                            result = new Procent(0.6f);
                     }
                     else
                         result = new Procent(0.5f);
@@ -582,9 +587,9 @@ namespace Nashet.EconomicSimulation
         {
             return status;
         }
-        public Country GetCountry()
+        public Country Country
         {
-            return country;
+            get { return country; }
         }
         // todo add OnReformEnacted?
         internal override void setValue(AbstractReformValue selectedReform)
@@ -592,24 +597,24 @@ namespace Nashet.EconomicSimulation
             status = (ReformValue)selectedReform;
             if (status == LaissezFaire)
             {
-                if (GetCountry().taxationForRich.getTypedValue().tax.get() > 0.5f)
-                    GetCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
-                if (GetCountry().taxationForPoor.getTypedValue().tax.get() > 0.5f)
-                    GetCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-                GetCountry().getAllFactories().PerformAction(
+                if (Country.taxationForRich.getTypedValue().tax.get() > 0.5f)
+                    Country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
+                if (Country.taxationForPoor.getTypedValue().tax.get() > 0.5f)
+                    Country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
+                Country.getAllFactories().PerformAction(
                      x =>
                      {
                          x.setSubsidized(false);
-                         x.ownership.SetToSell(GetCountry(), Procent.HundredProcent, false);
+                         x.ownership.SetToSell(Country, Procent.HundredProcent, false);
                      });
             }
             else
                 if (status == StateCapitalism)
             {
-                if (GetCountry().taxationForRich.getTypedValue().tax.get() < 0.2f)
-                    GetCountry().taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
-                if (GetCountry().taxationForPoor.getTypedValue().tax.get() < 0.2f)
-                    GetCountry().taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
+                if (Country.taxationForRich.getTypedValue().tax.get() < 0.2f)
+                    Country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
+                if (Country.taxationForPoor.getTypedValue().tax.get() < 0.2f)
+                    Country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[2]);
             }
         }
         internal Economy.ReformValue getTypedValue()
@@ -688,8 +693,8 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = ID - pop.GetCountry().serfdom.status.ID; //positive - more liberal
-                if (pop.popType == PopType.Aristocrats)
+                int change = ID - pop.Country.serfdom.status.ID; //positive - more liberal
+                if (pop.Type == PopType.Aristocrats)
                 {
                     if (change > 0)
                         result = new Procent(0f);
@@ -826,7 +831,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.02f);
+                    everyDayCost.Multiply(0.02f);
                     result.Add(everyDayCost);
                     return result;
                 }
@@ -834,7 +839,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.04f);
+                    everyDayCost.Multiply(0.04f);
                     result.Add(everyDayCost);
                     return result;
                 }
@@ -842,7 +847,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.06f);
+                    everyDayCost.Multiply(0.06f);
                     result.Add(everyDayCost);
                     return result;
                 }
@@ -850,7 +855,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.08f);
+                    everyDayCost.Multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
@@ -866,10 +871,10 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                if (pop.popType == PopType.Workers)
+                if (pop.Type == PopType.Workers)
                 {
                     //positive - reform will be better for worker, [-5..+5]
-                    int change = ID - pop.GetCountry().minimalWage.status.ID;
+                    int change = ID - pop.Country.minimalWage.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);
@@ -877,12 +882,12 @@ namespace Nashet.EconomicSimulation
                         //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f /2f);
                         result = new Procent(0f);
                 }
-                else if (pop.popType.isPoorStrata())
+                else if (pop.Type.isPoorStrata())
                     result = new Procent(0.5f);
                 else // rich strata
                 {
                     //positive - reform will be better for rich strata, [-5..+5]
-                    int change = pop.GetCountry().minimalWage.status.ID - ID;
+                    int change = pop.Country.minimalWage.status.ID - ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(1f);
@@ -1005,7 +1010,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.02f);
+                    everyDayCost.Multiply(0.02f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -1013,7 +1018,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.04f);
+                    everyDayCost.Multiply(0.04f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -1021,7 +1026,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.06f);
+                    everyDayCost.Multiply(0.06f);
                     result.Add(everyDayCost);
                     return result.get();
                 }
@@ -1029,7 +1034,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.multiply(0.08f);
+                    everyDayCost.Multiply(0.08f);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
@@ -1046,8 +1051,8 @@ namespace Nashet.EconomicSimulation
             {
                 Procent result;
                 //positive - higher subsidies
-                int change = ID - pop.GetCountry().unemploymentSubsidies.status.ID;
-                if (pop.popType.isPoorStrata())
+                int change = ID - pop.Country.unemploymentSubsidies.status.ID;
+                if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)
                         result = new Procent(1f);
@@ -1173,8 +1178,8 @@ namespace Nashet.EconomicSimulation
             {
                 Procent result;
                 //positive mean higher tax
-                int change = ID - pop.GetCountry().taxationForPoor.status.ID;
-                if (pop.popType.isPoorStrata())
+                int change = ID - pop.Country.taxationForPoor.status.ID;
+                if (pop.Type.isPoorStrata())
                 {
                     if (change > 0)
                         result = new Procent(0f);
@@ -1270,8 +1275,8 @@ namespace Nashet.EconomicSimulation
             protected override Procent howIsItGoodForPop(PopUnit pop)
             {
                 Procent result;
-                int change = ID - pop.GetCountry().taxationForRich.status.ID;//positive mean higher tax
-                if (pop.popType.isRichStrata())
+                int change = ID - pop.Country.taxationForRich.status.ID;//positive mean higher tax
+                if (pop.Type.isRichStrata())
                 {
                     if (change > 0)
                         result = new Procent(0f);
@@ -1382,7 +1387,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     //positive - more rights for minorities
-                    int change = ID - pop.GetCountry().minorityPolicy.status.ID;
+                    int change = ID - pop.Country.minorityPolicy.status.ID;
                     //result = new Procent((change + PossibleStatuses.Count - 1) * 0.1f);
                     if (change > 0)
                         result = new Procent(0.3f);// 1f);
@@ -1411,7 +1416,7 @@ namespace Nashet.EconomicSimulation
 
             status = Residency;
             //IsResidencyPop = new Condition(x => (x as PopUnit).province.getOwner().minorityPolicy.status == MinorityPolicy.Residency,
-            //Residency.getDescription(), true);
+            //Residency.FullName, true);
         }
         internal override AbstractReformValue getValue()
         {
@@ -1441,10 +1446,10 @@ namespace Nashet.EconomicSimulation
         }
 
         //internal static Condition IsResidency = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Residency,
-        //    Residency.getDescription(), true);
+        //    Residency.FullName, true);
 
         //internal static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
-        //    Equality.getDescription(), true);
+        //    Equality.FullName, true);
         internal override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);

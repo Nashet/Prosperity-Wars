@@ -4,26 +4,30 @@ using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
-    public class NewFactoryProject :IInvestable
+    public class NewFactoryProject : IInvestable
     {
-        public readonly FactoryType Type;
-        public readonly Province Province;
-        public NewFactoryProject(Province province, FactoryType type)
+        public readonly ProductionType Type;
+        private readonly Province province;
+        public NewFactoryProject(Province province, ProductionType type)
         {
             this.Type = type;
-            this.Province = province;
+            this.province = province;
+        }
+        public Country Country
+        {
+            get { return province.Country; }
+        }
+        public Province Province
+        {
+            get { return province; }
         }
         public bool CanProduce(Product product)
         {
             return Type.CanProduce(product);
         }
 
-        public Country GetCountry()
-        {
-            return Province.GetCountry();
-        }
-
-        public Value GetInvestmentCost()
+        
+        public Money GetInvestmentCost()
         {
             return Type.GetBuildCost();
         }
@@ -33,9 +37,6 @@ namespace Nashet.EconomicSimulation
             return Type.GetPossibleMargin(Province);
         }
 
-        public Province GetProvince()
-        {
-            return Province;
-        }
+        
     }
 }

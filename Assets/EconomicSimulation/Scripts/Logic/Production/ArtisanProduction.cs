@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     public class ArtisanProduction : SimpleProduction
     {
         private readonly Artisans artisan;
-        public ArtisanProduction(FactoryType type, Province province, Artisans artisan) : base(type, province)
+        public ArtisanProduction(ProductionType type, Province province, Artisans artisan) : base(type, province)
         {
             this.artisan = artisan;
         }       
@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
 
             //if (isSubsidized())
-            //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), getCountry());
+            //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), Country);
             //else
             //shoppingList - getInputProductsReserve(); that is included in getHowMuchInputProductsReservesWants()
             Game.market.buy(this, new StorageSet(shoppingList), null);

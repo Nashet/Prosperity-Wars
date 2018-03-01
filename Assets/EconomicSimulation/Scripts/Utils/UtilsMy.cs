@@ -349,7 +349,7 @@ namespace Nashet.Utils
         static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
         internal PricePool()
         {
-            foreach (var product in Product.getAll(x => !x.isAbstract()))
+            foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
                 if (product != Product.Gold)
                     for (int i = 0; i < lenght; i++)
                         this.addData(product, new Value(0f));
@@ -722,7 +722,7 @@ namespace Nashet.Utils
                 }
             }
         }
-        public void updateStatus(String status)
+        public  void updateStatus(String status)
         {
             lock (this.status)
             {
@@ -800,20 +800,31 @@ namespace Nashet.Utils
             return map[Game.Random.Next((width * height) - 1)];
         }
     }
-    public abstract class Name
+    public abstract class Name : INameable, ISortableName
     {
-        protected readonly string name;
+        private readonly string name;
+        private readonly float nameWeight;
         protected Name(string name)
         {
             this.name = name;
+            if (name != null)
+                nameWeight = name.GetWeight();
         }
-        virtual public string getName()
+        public float GetNameWeight()
         {
-            return name;
+            return nameWeight;
         }
-        virtual public string getDescription()
+        //public string getShortName()
+        //{
+        //    return name;
+        //}
+        public string ShortName
         {
-            return name;
+            get { return name; }
+        }
+        public virtual string FullName
+        {
+            get { return name + " longed"; }
         }
         public override string ToString()
         {

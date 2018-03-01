@@ -10,13 +10,13 @@ namespace Nashet.EconomicSimulation
     /// <summary>
     /// Represents any military commander structure
     /// </summary>
-    public abstract class Staff : Consumer
+    public abstract class Staff : Consumer, IWayOfLifeChange
     {
         List<Army> allArmies = new List<Army>();
-        protected Country place; //todo change class
-        protected Staff(Country place) : base(null, null)
+        //protected Country place; //todo change class
+        protected Staff(Country place) : base(place)
         {
-            this.place = place;
+            //this.place = place;
         }
         /// <summary>
         /// Sum of existing armies men + unmobilized reserve
@@ -39,9 +39,9 @@ namespace Nashet.EconomicSimulation
         public float howMuchCanMobilize(Staff againstWho)
         {
             float result = 0f;
-            foreach (var province in place.ownedProvinces)
-                foreach (var pop in province.allPopUnits)
-                    if (pop.popType.canMobilize(this))
+            foreach (var province in country.getAllProvinces())
+                foreach (var pop in province.GetAllPopulation())
+                    if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);
             return result;
         }
@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
             int calculatedSize = 0;
             foreach (var item in allArmies)
             {
-                result.addPoportionally(calculatedSize, item.getSize(), item.getAverageMorale());
+                result.AddPoportionally(calculatedSize, item.getSize(), item.GetAverageCorps(x => x.getMorale()));
                 calculatedSize += item.getSize();
             }
             return result;
@@ -66,10 +66,10 @@ namespace Nashet.EconomicSimulation
                 size = defArmy.getSize();
             return size;
         }
-        public Country getPlaceDejure()
-        {
-            return place;
-        }
+        //public Country Country
+        //{
+        //    return place;
+        //}
         public bool isAI()
         {
             return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
@@ -112,9 +112,9 @@ namespace Nashet.EconomicSimulation
         //{
         //    foreach (var province in place.ownedProvinces)
         //    {
-        //        Army newArmy = new Army(getCountry());
+        //        Army newArmy = new Army(Country);
         //        foreach (var item in province.allPopUnits)
-        //            //if (item.popType.canMobilize() && item.howMuchCanMobilize(this) > 0)
+        //            //if (item.Type.canMobilize() && item.howMuchCanMobilize(this) > 0)
         //                newArmy.add(item.mobilize(this));
         //    }
         //    consolidateArmies();
@@ -124,8 +124,8 @@ namespace Nashet.EconomicSimulation
             foreach (var province in source)
             {
                 Army newArmy = new Army(this);
-                foreach (var pop in province.allPopUnits)
-                    if (pop.popType.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0)
+                foreach (var pop in province.GetAllPopulation())
+                    if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0)
                         //newArmy.add(item.mobilize(this));
                         newArmy.add(Corps.mobilize(this, pop));
             }
@@ -163,7 +163,7 @@ namespace Nashet.EconomicSimulation
             //    res.Add(item.getNeeds());
 
             // assuming all corps has same needs
-            var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(getPlaceDejure());
+            var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(Country);
             var multiplier = new Value(getAllArmiesSize() / 1000f);
             res.Multiply(multiplier);
             return res;
@@ -194,7 +194,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var army in allArmies)
                 if (army.getDestination() != null)
-                    if (army.getDestination().GetCountry() != army.getOwner())
+                    if (army.getDestination().Country != army.getOwner())
                         yield return army;
                     else
                         army.sendTo(null); // go home
@@ -215,14 +215,22 @@ namespace Nashet.EconomicSimulation
 
         internal static IEnumerable<Staff> getAllStaffs()
         {
-            foreach (var country in Country.allCountries)
-                if (country.isAlive() && country != Country.NullCountry)
+            foreach (var country in World.getAllExistingCountries())
+                if (country.isAlive() && country != World.UncolonizedLand)
                 {
                     yield return country;
                     foreach (var staff in country.movements)
                         yield return staff;
                 }
 
+        }
+        /// <summary>
+        /// Just a plce holder, never intended to call
+        /// </summary>
+        
+        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
+        {
+            throw new NotImplementedException();
         }
 
         //public override void produce()

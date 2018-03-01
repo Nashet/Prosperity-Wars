@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Button buildButton;
 
-        private FactoryType selectedFactoryType;
+        private ProductionType selectedFactoryType;
         StringBuilder sb = new StringBuilder();
         //Province province;
         // Use this for initialization
@@ -45,14 +45,14 @@ namespace Nashet.EconomicSimulation
             if (Economy.isMarket.checkIfTrue(Game.Player))
             {
                 Value cost = selectedFactoryType.GetBuildCost();
-                if (Game.Player.canPay(cost))
+                if (Game.Player.CanPay(cost))
                 {
                     factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
-                    Game.Player.payWithoutRecord(factory, cost);
+                    Game.Player.PayWithoutRecord(factory, cost);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
-                    if (Game.Player != factory.GetCountry())
-                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                    if (Game.Player != factory.Country)
+                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
 
             }
@@ -67,8 +67,8 @@ namespace Nashet.EconomicSimulation
                     Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
-                    if (Game.Player != factory.GetCountry())
-                        factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                    if (Game.Player != factory.Country)
+                        factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
             }
 
@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
             }
         }
-        public void selectFactoryType(FactoryType newSelection)
+        public void selectFactoryType(ProductionType newSelection)
         {
             selectedFactoryType = newSelection;
         }
@@ -93,6 +93,7 @@ namespace Nashet.EconomicSimulation
                 sb.Clear();
                 sb.Append("Build ").Append(selectedFactoryType);
                 sb.Append("\n\nResources to build: ").Append(selectedFactoryType.GetBuildNeeds().getString(", "));
+                sb.Append(".");
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
                     var cost = selectedFactoryType.GetBuildCost();
@@ -119,7 +120,7 @@ namespace Nashet.EconomicSimulation
                 buildButton.GetComponentInChildren<Text>().text = "Select building";
                 if (Game.selectedProvince == null)
                     descriptionText.text = "Select province where to build";
-                else if (FactoryType.getAllInventedTypes(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player)).Count() == 0)
+                else if (ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player)).Count() == 0)
                     descriptionText.text = "Nothing to build now";
                 else
                     descriptionText.text = "Select building from left";

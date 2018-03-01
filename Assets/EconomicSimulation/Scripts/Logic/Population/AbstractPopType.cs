@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
 {
     abstract public class GrainGetter : PopUnit
     {
-        protected GrainGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
+        protected GrainGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture, IWayOfLifeChange oldLife) : base(source, sizeOfNewPop, newPopType, where, culture, oldLife)
         {
 
             changeProductionType(Product.Grain);
@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
     }
     abstract public class CattleGetter : PopUnit
     {
-        protected CattleGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture) : base(source, sizeOfNewPop, newPopType, where, culture)
+        protected CattleGetter(PopUnit source, int sizeOfNewPop, PopType newPopType, Province where, Culture culture, IWayOfLifeChange oldLife) : base(source, sizeOfNewPop, newPopType, where, culture, oldLife)
         {
             //storage = new Storage(Product.Cattle);
             //gainGoodsThisTurn = new Storage(Product.Cattle);

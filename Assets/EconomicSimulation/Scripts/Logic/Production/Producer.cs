@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
     /// Represents anyone who can produce, store and sell product (1 product)
     /// also linked to Province
     /// </summary>
-    public abstract class Producer : Consumer, ICanSell
+    public abstract class Producer : Consumer, ICanSell, IHasGetProvince
     {
         /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
         private Storage gainGoodsThisTurn;
@@ -20,11 +20,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
         private Storage sentToMarket;
 
+        private readonly Province province;
         /// <summary> /// Return in pieces  /// </summary>    
         //public abstract float getLocalEffectiveDemand(Product product);
-
-
-        
 
         /// <summary>
         /// Just adds statistics
@@ -32,43 +30,43 @@ namespace Nashet.EconomicSimulation
         abstract public void produce();
 
 
-        protected Producer(Province province) : base(province.GetCountry().getBank(), province)
+        protected Producer(Province province) : base(province.Country)
         {
+            this.province = province;
         }
-        //protected Producer() : base(null, null)
-        //{
-        //}
+       
+        public Province Province
+        {
+            get { return province; }
+        }
         public void calcStatistics()
         {
-            GetCountry().producedTotalAdd(gainGoodsThisTurn);
+            Country.producedTotalAdd(gainGoodsThisTurn);
         }
         override public void SetStatisticToZero()
         {
             base.SetStatisticToZero();
             if (gainGoodsThisTurn != null)
-                gainGoodsThisTurn.setZero();
+                gainGoodsThisTurn.SetZero();
             if (sentToMarket != null)
-                sentToMarket.setZero();
+                sentToMarket.SetZero();
         }
-        //public Value getProducing()
-        //{
-        //    return gainGoodsThisTurn;
-        //}
+        //todo put it and duplicate in market?
         public void getMoneyForSoldProduct()
         {
             if (sentToMarket.get() > 0f)
             {
-                Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.getProduct()));
+                Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.Product));
                 if (DSB.get() == Options.MarketInfiniteDSB)
-                    DSB.setZero(); // real DSB is unknown
+                    DSB.SetZero(); // real DSB is unknown
                 else
                 if (DSB.get() > Options.MarketEqualityDSB)
-                    DSB.set(Options.MarketEqualityDSB);
+                    DSB.Set(Options.MarketEqualityDSB);
                 Storage realSold = new Storage(sentToMarket);
-                realSold.multiply(DSB);
+                realSold.Multiply(DSB);
                 if (realSold.isNotZero())
                 {
-                    Value cost = Game.market.getCost(realSold);
+                    ReadOnlyValue cost = Game.market.getCost(realSold);
 
                     // adding unsold product
                     // assuming gainGoodsThisTurn & realSold have same product
@@ -76,16 +74,16 @@ namespace Nashet.EconomicSimulation
                         storage.add(gainGoodsThisTurn);
                     else
                         storage = new Storage(gainGoodsThisTurn);
-                    storage.subtract(realSold.get());
+                    storage.Subtract(realSold.get());
 
-                    if (Game.market.canPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                    if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
                     {
-                        Game.market.pay(this, cost);
-                        //Game.market.sentToMarket.subtract(realSold);
+                        Game.market.Pay(this, cost);
+                        
                     }
-                    //else if (Game.market.GetLackingMoney(cost).get() > 10f && Game.devMode)
-                    //    Debug.Log("Failed market - can't pay " + Game.market.GetLackingMoney(cost)
-                    //            + " for " + realSold); // money in market ended... Only first lucky get money
+                    else if (Game.market.HowMuchLacksMoneyCashOnly(cost).get() > 10f && Game.devMode)
+                        Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyCashOnly(cost)
+                                + " for " + realSold); // money in market ended... Only first lucky get money
                 }
             }
         }

@@ -1,25 +1,38 @@
 ﻿using UnityEngine;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using System;
+
 namespace Nashet.ValueSpace
 {
     public class Money : Storage, ICopyable<Money>
     {
-        public Money(float value) : base(Product.Gold, value)
+        public Money(float value, bool showMessageAboutNegativeValue = true) : base(Product.Gold, value, showMessageAboutNegativeValue)
         { }
         protected Money(Money value) : base(value)
         { }
+        private Money(Storage value) : base(value)
+        {
+            if (value.Product != Product.Gold)
+                Debug.Log("THAT IS NOT REAL GOLD"); 
+        }
+
 
         public Money Copy()
         {
             return new Money(this);
         }
+        public static Money CovertFromGold(Storage stor)
+        {
+            return new Money(stor);
+        }
+        
         internal Money Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
             if (divider == 0)
             {
                 Debug.Log("Can't divide by zero");
-                set(99999);
+                Set(99999);
                 return this;
             }
             else
@@ -40,24 +53,54 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value multiply failed");
-                set(0);
+                Set(0);
             }
             else
-                set(multiplier * this.get());
+                Set(multiplier * this.get());
             return this;
         }
         ///////////////////Add section
+        public Money Add(Storage storage, bool showMessageAboutNegativeValue = true)
+        {
+            if (this.isExactlySameProduct(storage))
+                base.Add(storage, showMessageAboutNegativeValue);
+            else
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Attempt to add wrong product to Storage");
+            }
+            return this;
+        }
         public Money Add(float adding, bool showMessageAboutNegativeValue = true)
         {
             if (adding + get() < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Money can't be negative");
-                set(0);
+                Set(0);
             }
             else
-                set(get() + adding);
+                Set(get() + adding);
             return this;
         }
+        public Money Subtract(Storage storage, bool showMessageAboutNegativeValue = true)
+        {
+            //if (!this.isSameProductType(storage.Product))
+            if (!storage.isSameProductType(this.Product))
+            {
+                Debug.Log("Storage subtract Outside failed - wrong product");
+                Set(0f);
+            }
+            else if (storage.isBiggerThan(this))
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Storage subtract Outside failed");
+                Set(0f);
+            }
+            else
+                Set(this.get() - storage.get());
+            return this;
+        }
+
     }
 }

@@ -10,10 +10,10 @@ using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-    public class FactoryType : IClickable, ISortableName
+    public class ProductionType : IClickable, ISortableName
     {
-        static private readonly List<FactoryType> allTypes = new List<FactoryType>();
-        internal static FactoryType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard;
+        static private readonly List<ProductionType> allTypes = new List<ProductionType>();
+        internal static ProductionType GoldMine, Furniture, MetalDigging, MetalSmelter, Barnyard, University;
 
         internal readonly string name;
 
@@ -32,120 +32,122 @@ namespace Nashet.EconomicSimulation
         private readonly List<Storage> upgradeResourceHighTier = new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) };
 
 
-        
+
         internal Condition enoughMoneyOrResourcesToBuild;
 
         ///duplicated in Factory        
         static internal DoubleCondition allowsForeignInvestments = new DoubleCondition((agent, province) =>
-        (province as Province).GetCountry() == (agent as Agent).GetCountry()
-        || ((province as Province).GetCountry().economy.getTypedValue().AllowForeignInvestments
-        && (agent as Agent).GetCountry().economy.getTypedValue() != Economy.PlannedEconomy),
+        (province as Province).Country == (agent as Agent).Country
+        || ((province as Province).Country.economy.getTypedValue().AllowForeignInvestments
+        && (agent as Agent).Country.economy.getTypedValue() != Economy.PlannedEconomy),
             (agent) => "Local government allows foreign investments or it isn't foreign investment", true);
         // empty trade
         internal DoubleConditionsList conditionsBuildThis;
         private readonly bool shaft;
         private readonly float nameWeight;
-        static FactoryType()
+        static ProductionType()
         {
-            new FactoryType("Forestry", new Storage(Product.Wood, 2f), false);
-            new FactoryType("Gold pit", new Storage(Product.Gold, 2f), true);
-            new FactoryType("Metal pit", new Storage(Product.MetalOre, 2f), true);
-            new FactoryType("Coal pit", new Storage(Product.Coal, 3f), true);
-            new FactoryType("Cotton farm", new Storage(Product.Cotton, 2f), false);
-            new FactoryType("Quarry", new Storage(Product.Stone, 2f), true);
-            new FactoryType("Orchard", new Storage(Product.Fruit, 2f), false);
-            new FactoryType("Fishery", new Storage(Product.Fish, 2f), false);
-            new FactoryType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
+            new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
+            new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
+            new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
+            new ProductionType("Coal pit", new Storage(Product.Coal, 3f), true);
+            new ProductionType("Cotton farm", new Storage(Product.Cotton, 2f), false);
+            new ProductionType("Quarry", new Storage(Product.Stone, 2f), true);
+            new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);
+            new ProductionType("Fishery", new Storage(Product.Fish, 2f), false);
+            new ProductionType("Tobacco farm", new Storage(Product.Tobacco, 2f), false);
 
-            new FactoryType("Oil rig", new Storage(Product.Oil, 2f), true);
-            new FactoryType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
+            new ProductionType("Oil rig", new Storage(Product.Oil, 2f), true);
+            new ProductionType("Rubber plantation", new Storage(Product.Rubber, 1f), false);
 
             StorageSet resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Grain, 1f));
-            new FactoryType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput);
+            new ProductionType("Barnyard", new Storage(Product.Cattle, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
-            new FactoryType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
+            new ProductionType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Wood, 1f));
-            new FactoryType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
+            new ProductionType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fuel, 0.5f));
             resourceInput.Set(new Storage(Product.MetalOre, 2f));
-            new FactoryType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
+            new ProductionType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fibers, 1f));
-            new FactoryType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
+            new ProductionType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fuel, 0.5f));
             resourceInput.Set(new Storage(Product.Stone, 2f));
-            new FactoryType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
+            new ProductionType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Sugar, 1f));
-            new FactoryType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
+            new ProductionType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
+            new ProductionType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Stone, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
+            new ProductionType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
+            new ProductionType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
+            new ProductionType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Oil, 1f));
-            new FactoryType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
+            new ProductionType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
 
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new FactoryType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
+            new ProductionType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Machinery, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
-            new FactoryType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
+            new ProductionType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Machinery, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Artillery, 1f));
-            new FactoryType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
+            new ProductionType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Machinery, 1f));
-            new FactoryType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
+            new ProductionType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Oil, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
-            new FactoryType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
+            new ProductionType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
+
+            University = new ProductionType("University", new Storage(Product.Education, 2f), new StorageSet());
         }
         /// <summary>
         /// Basic constructor for resource getting FactoryType
         /// </summary>    
-        internal FactoryType(string name, Storage basicProduction, bool shaft)
+        internal ProductionType(string name, Storage basicProduction, bool shaft)
         {
             this.name = name;
             nameWeight = name.GetWeight();
@@ -164,19 +166,19 @@ namespace Nashet.EconomicSimulation
                 delegate (object forWhom)
                 {
                     var agent = forWhom as Agent;
-                    if (agent.GetCountry().economy.getValue() == Economy.PlannedEconomy)
+                    if (agent.Country.economy.getValue() == Economy.PlannedEconomy)
                     {
-                        return agent.GetCountry().countryStorageSet.has(this.GetBuildNeeds());
+                        return agent.Country.countryStorageSet.has(this.GetBuildNeeds());
                     }
                     else
-                    {                        
+                    {
                         Value cost = GetBuildCost();
-                        return agent.canPay(cost);
+                        return agent.CanPay(cost);
                     }
                 },
                 delegate
                 {
-                    var sb = new StringBuilder();                    
+                    var sb = new StringBuilder();
                     Value cost = GetBuildCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
@@ -195,38 +197,41 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Constructor for resource processing FactoryType
         /// </summary>    
-        internal FactoryType(string name, Storage basicProduction, StorageSet resourceInput) : this(name, basicProduction, false)
+        internal ProductionType(string name, Storage basicProduction, StorageSet resourceInput) : this(name, basicProduction, false)
         {
-            //if (resourceInput == null)
-            //    this.resourceInput = new PrimitiveStorageSet();
-            //else
             this.resourceInput = resourceInput;
         }
-        public static IEnumerable<FactoryType> getAllInventedTypes(Country country)
+        public static IEnumerable<ProductionType> getAllInventedFactories(Country country)
         {
             foreach (var next in allTypes)
-                if (country.Invented(next))
+                if (country.InventedFactory(next))
                     yield return next;
         }
-        public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
+        public static IEnumerable<ProductionType> getAllInventedArtisanships(Country country)
         {
-            foreach (var next in getAllInventedTypes(country))
-                if (next.isResourceGathering())
+            foreach (var next in allTypes)
+                if (country.InventedArtisanship(next))
                     yield return next;
         }
-        public static IEnumerable<FactoryType> getAllNonResourceTypes(Country country)
-        {
-            foreach (var next in getAllInventedTypes(country))
-                if (!next.isResourceGathering())
-                    yield return next;
-        }
+        //public static IEnumerable<FactoryType> getAllResourceTypes(Country country)
+        //{
+        //    foreach (var next in getAllInventedTypes(country))
+        //        if (next.isResourceGathering())
+        //            yield return next;
+        //}
+        //public static IEnumerable<FactoryType> getAllNonResourceTypes(Country country)
+        //{
+        //    foreach (var next in getAllInventedTypes(country))
+        //        if (!next.isResourceGathering())
+        //            yield return next;
+        //}
         /// <summary>
         ///Returns new value
         /// </summary>        
-        public Value GetBuildCost()
+        public Money GetBuildCost()
         {
-            Value result = Game.market.getCost(GetBuildNeeds());
-            result.add(Options.factoryMoneyReservePerLevel);
+            Money result = Game.market.getCost(GetBuildNeeds());
+            result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }
         /// <summary>
@@ -245,9 +250,9 @@ namespace Nashet.EconomicSimulation
         /// Returns first correct value
         /// Assuming there is only one  FactoryType for each Product
         /// </summary>   
-        internal static FactoryType whoCanProduce(Product product)
+        internal static ProductionType whoCanProduce(Product product)
         {
-            foreach (FactoryType ft in allTypes)
+            foreach (ProductionType ft in allTypes)
                 if (ft.basicProduction.isSameProductType(product))
                     return ft;
             return null;
@@ -278,9 +283,9 @@ namespace Nashet.EconomicSimulation
                 return true;
             //resourceInput.Count() == 0
         }
-        internal bool isManufacture()
+        internal bool IsResourceProcessing()
         {
-            return !isResourceGathering() && this != Barnyard;
+            return !isResourceGathering() && this != Barnyard && this != University;
         }
         internal bool isShaft()
         {
@@ -304,7 +309,7 @@ namespace Nashet.EconomicSimulation
         //    KeyValuePair<Factory, float> result = new KeyValuePair<Factory, float>(null, 0f);
         //    foreach (Factory factory in province.allFactories)
         //    {
-        //        if (province.canUpgradeFactory(factory.getType()))
+        //        if (province.canUpgradeFactory(factory.Type))
         //        {
         //            float profit = factory.getProfit();
         //            if (profit > result.Value)
@@ -325,37 +330,38 @@ namespace Nashet.EconomicSimulation
         internal Value getPossibleProfit(Province province)
         {
 
-            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+            if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
-            Value income = Game.market.getCost(basicProduction);
-            income.multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
+            ReadOnlyValue income = Game.market.getCost(basicProduction);
+            income.Copy().Multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
             var outCome = new Value(0f);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Game.market.isAvailable(inputProduct.getProduct()))
+                    if (!Game.market.isAvailable(inputProduct.Product))
                         return new Value(0);// inputs are unavailable                                            
 
                 outCome.Add(Game.market.getCost(resourceInput));
             }
-            return income.subtract(outCome, false);
+            return income.Copy().Subtract(outCome, false);
         }
         /// <summary>
         /// For artisans. Not including salary
         /// </summary>        
-        internal Value getPossibleProfit()
+        internal ReadOnlyValue getPossibleProfit()
         {
-            if (Game.market.getDemandSupplyBalance(basicProduction.getProduct()) == Options.MarketZeroDSB)
+            if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
                 return new Value(0); // no demand for result product
-            Value income = Game.market.getCost(basicProduction);
+            ReadOnlyValue income = Game.market.getCost(basicProduction);
 
             if (hasInput())
             {
+                // change to minimal hire limits
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Game.market.isAvailable(inputProduct.getProduct()))
+                    if (!Game.market.isAvailable(inputProduct.Product))
                         return new Value(0);// inputs are unavailable                                            
 
-                return income.subtract(Game.market.getCost(resourceInput), false);
+                return income.Copy().Subtract(Game.market.getCost(resourceInput), false);
             }
             return income;
         }
@@ -365,8 +371,8 @@ namespace Nashet.EconomicSimulation
         public Procent GetPossibleMargin(Province province)
         {
             var profit = getPossibleProfit(province);
-            var taxes = profit.Copy().multiply(province.GetCountry().taxationForRich.getTypedValue().tax);
-            profit.subtract(taxes);
+            var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
+            profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost());
         }
         /// <summary>
@@ -376,11 +382,11 @@ namespace Nashet.EconomicSimulation
         {
             if (where.hasFactory(this))
                 return false;
-            if (isResourceGathering() && basicProduction.getProduct() != where.getResource()
-                //|| !where.GetCountry().isInvented(basicProduction.getProduct())
-                || !investor.GetCountry().Invented(this)
-                //|| isManufacture() && !investor.GetCountry().Invented(Invention.Manufactures)
-                //|| (basicProduction.getProduct() == Product.Cattle && !investor.GetCountry().Invented(Invention.Domestication))
+            if (isResourceGathering() && basicProduction.Product != where.getResource()
+                //|| !where.Country.isInvented(basicProduction.Product)
+                || !investor.Country.InventedFactory(this)
+                //|| isManufacture() && !investor.Country.Invented(Invention.Manufactures)
+                //|| (basicProduction.Product == Product.Cattle && !investor.Country.Invented(Invention.Domestication))
                 || !allowsForeignInvestments.checkIftrue(investor, where)
                 )
                 return false;
@@ -394,7 +400,7 @@ namespace Nashet.EconomicSimulation
         }
         public bool CanProduce(Product product)
         {
-            return basicProduction.getProduct() == product;
+            return basicProduction.Product == product;
         }
 
         public float GetNameWeight()

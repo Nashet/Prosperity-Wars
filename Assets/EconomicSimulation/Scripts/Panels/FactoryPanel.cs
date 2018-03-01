@@ -80,16 +80,16 @@ namespace Nashet.EconomicSimulation
             {
                 setGUIElementsAccesability();
                 
-                caption.text = factory.ToString();
+                caption.text = factory.FullName;
                 var sb = new StringBuilder();
                 sb = new StringBuilder();
-                sb.Append("Workforce: ").Append(factory.getWorkForce());
+                sb.Append("Workforce: ").Append(factory.getWorkForce()).Append(", average education: ").Append(factory.AverageWorkersEducation);
                 sb.Append("\nProduced: ").Append(factory.getGainGoodsThisTurn().ToString());
                 sb.Append("\nUnsold: ").Append(factory.storage.ToString());
-                sb.Append("\nBasic production: ").Append(factory.getType().basicProduction);
+                sb.Append("\nBasic production: ").Append(factory.Type.basicProduction);
                 sb.Append("\nSent to market: ").Append(factory.getSentToMarket());
-                sb.Append("\nMoney income: ").Append(factory.moneyIncomethisTurn);
-                sb.Append(" Cash: ").Append(factory.cash.ToString());
+                sb.Append("\nMoney income: ").Append(factory.moneyIncomeThisTurn);
+                sb.Append(" Cash: ").Append(factory.Cash.ToString());
 
                 sb.Append("\nProfit: ");
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
@@ -97,11 +97,11 @@ namespace Nashet.EconomicSimulation
                 else
                     sb.Append("unknown");
                 sb.Append(" Dividends: ").Append(factory.GetDividends());
-                if (factory.getType().hasInput())
+                if (factory.Type.hasInput())
                 {
                     sb.Append("\nInput required: ");
-                    foreach (Storage next in factory.getType().resourceInput)
-                        sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.getProduct()).Append(";");
+                    foreach (Storage next in factory.Type.resourceInput)
+                        sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
                 }
                 if (factory.getConsumed().Count() > 0)
                     sb.Append("\nConsumed: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
@@ -216,8 +216,8 @@ namespace Nashet.EconomicSimulation
             {
                 factory.upgrade(Game.Player);                
                 MainCamera.refreshAllActive();                
-                if (Game.Player != factory.GetCountry())
-                    factory.GetCountry().changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
+                if (Game.Player != factory.Country)
+                    factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }
         }
         public void onDestroyClick()

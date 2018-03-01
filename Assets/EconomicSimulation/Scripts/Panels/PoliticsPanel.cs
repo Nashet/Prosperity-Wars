@@ -63,16 +63,14 @@ namespace Nashet.EconomicSimulation
         public void onForceDecisionClick()
         {
             //uint votersSayedYes;
-            foreach (Province pro in Game.Player.ownedProvinces)
-                foreach (PopUnit pop in pro.allPopUnits)
+            foreach (PopUnit pop in Game.Player.GetAllPopulation())
+                if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
                 {
-                    if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
-                    {
-                        //votersSayedYes = pop.getSayingYes(selectedReformValue);
-                        //if (pop.getSayYesProcent(selectedReformValue) < Options.votingPassBillLimit)
-                        pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
-                    }
+                    //votersSayedYes = pop.getSayingYes(selectedReformValue);
+                    //if (pop.getSayYesProcent(selectedReformValue) < Options.votingPassBillLimit)
+                    pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                 }
+
             changeReformValue();
         }
         //slider.onValueChanged.AddListener(ListenerMethod);
@@ -125,7 +123,7 @@ namespace Nashet.EconomicSimulation
         private void refresh(bool callRebuildDropDown)
         {
 
-            table.Refresh();            
+            table.Refresh();
             movementsText.text = Game.Player.movements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
                 movementsText.text += "\n\n\n\n";
@@ -144,13 +142,13 @@ namespace Nashet.EconomicSimulation
             {
                 if (callRebuildDropDown) // meaning changed whole reform            
                     rebuildDropDown();
-                descriptionText.text = selectedReform + " reforms " + selectedReform.getDescription()
-               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
+                descriptionText.text = selectedReform + " reforms " + selectedReform.FullName
+               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().FullName
                + "\nSelected: ";
 
                 //if (selectedReformValue != null)
                 if (selectedReformValue != selectedReform.getValue())
-                    descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
+                    descriptionText.text += selectedReformValue + " " + selectedReformValue.FullName;
                 else
                     descriptionText.text += "current";
 

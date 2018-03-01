@@ -11,16 +11,17 @@ namespace Nashet.EconomicSimulation
     abstract public class SimpleProduction : Producer
     {
         //private Agent owner;
-        private readonly FactoryType type;
+        private readonly ProductionType type;
+        public ProductionType Type { get { return type; } }
         private readonly StorageSet inputProductsReserve = new StorageSet();
 
-        protected SimpleProduction(FactoryType type, Province province) : base(province)
+        protected SimpleProduction(ProductionType type, Province province) : base(province)
         {
             this.type = type;
-            //gainGoodsThisTurn = new Storage(this.getType().basicProduction.getProduct());
-            //storage = new Storage(this.getType().basicProduction.getProduct());
-            //sentToMarket = new Storage(this.getType().basicProduction.getProduct());
-            changeProductionType(this.getType().basicProduction.getProduct());
+            //gainGoodsThisTurn = new Storage(this.Type.basicProduction.Product);
+            //storage = new Storage(this.Type.basicProduction.Product);
+            //sentToMarket = new Storage(this.Type.basicProduction.Product);
+            changeProductionType(this.type.basicProduction.Product);
         }
         //internal Agent getOwner()
         //{
@@ -34,15 +35,14 @@ namespace Nashet.EconomicSimulation
         {
             return inputProductsReserve;
         }
-        public FactoryType getType()
-        {
-            return type;
-        }
+
+
+
         override public string ToString()
         {
-            return "crafting " + getType().basicProduction;
+            return "crafting " + type.basicProduction;
         }
-       
+
         public override void simulate()
         {
             throw new NotImplementedException();
@@ -50,11 +50,15 @@ namespace Nashet.EconomicSimulation
         override public void SetStatisticToZero()
         {
             base.SetStatisticToZero();
-            storage.set(0f);
+            storage.Set(0f);
         }
+        /// <summary>
+        /// could be negative
+        /// </summary>
+        /// <returns></returns>
         virtual internal float getProfit()
         {
-            return moneyIncomethisTurn.get() - getExpences();
+            return moneyIncomeThisTurn.get() - getExpences().get();
         }
 
         /// <summary>
@@ -62,14 +66,14 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         protected void produce(Value multiplier)
         {
-            addProduct(getType().basicProduction.Copy().Multiply(multiplier));
+            addProduct(type.basicProduction.Copy().Multiply(multiplier));
             if (getGainGoodsThisTurn().isNotZero())
             {
                 storage.add(getGainGoodsThisTurn());
                 calcStatistics();
             }
             //consume Input Resources
-            if (!getType().isResourceGathering())
+            if (!type.isResourceGathering())
                 foreach (Storage next in getRealAllNeeds())
                     if (next.isAbstractProduct())
                     {
@@ -85,14 +89,14 @@ namespace Nashet.EconomicSimulation
         {
             if (multiplier.isZero())
                 return Procent.ZeroProcent.Copy();
-            if (getType().isResourceGathering())
+            if (type.isResourceGathering())
                 return Procent.HundredProcent.Copy();
 
             List<Storage> reallyNeedResources = new List<Storage>();
             //Storage available;
 
             // how much we really want
-            foreach (Storage input in getType().resourceInput)
+            foreach (Storage input in type.resourceInput)
             {
                 reallyNeedResources.Add(input.Copy().Multiply(multiplier));
             }
@@ -109,7 +113,7 @@ namespace Nashet.EconomicSimulation
             // check if we have enough resources
             foreach (Storage resource in reallyNeedResources)
             {
-                Storage haveResource = getInputProductsReserve().getBiggestStorage(resource.getProduct());
+                Storage haveResource = getInputProductsReserve().getBiggestStorage(resource.Product);
                 //if (!getInputProductsReserve().has(resource))
                 if (haveResource.isSmallerThan(resource))
                 {
@@ -121,10 +125,10 @@ namespace Nashet.EconomicSimulation
             //foreach (Storage input in realInput)
             //{
 
-            //    //if (Game.market.getDemandSupplyBalance(input.getProduct()) >= 1f)
+            //    //if (Game.market.getDemandSupplyBalance(input.Product) >= 1f)
             //    //available = input
 
-            //    available = consumedLastTurn.findStorage(input.getProduct());
+            //    available = consumedLastTurn.findStorage(input.Product);
             //    if (available == null)
             //        ;// do nothing - pretend there is 100%, it fires only on shownFactory start
             //    else
@@ -142,15 +146,15 @@ namespace Nashet.EconomicSimulation
             // searching lowest factor
             foreach (Storage need in reallyNeedResources)
             {
-                Value denominator = getType().resourceInput.GetFirstSubstituteStorage(need.getProduct()).Copy().multiply( multiplier);
-                if (denominator.isNotZero()) 
+                Value denominator = type.resourceInput.GetFirstSubstituteStorage(need.Product).Copy().Multiply(multiplier);
+                if (denominator.isNotZero())
                 {
                     var newfactor = new Procent(need, denominator);
                     if (newfactor.isSmallerThan(inputFactor))
                         inputFactor = newfactor;
                 }
                 else // no resources
-                    inputFactor.set(0f);
+                    inputFactor.Set(0f);
             }
             return inputFactor;
         }
@@ -158,15 +162,15 @@ namespace Nashet.EconomicSimulation
         protected List<Storage> getHowMuchInputProductsReservesWants(Value multiplier)
         {
             //Value multiplier = new Value(getWorkForceFulFilling() * getLevel() * Options.FactoryInputReservInDays);
-            if (getType().isResourceGathering())
+            if (type.isResourceGathering())
                 return null;
             List<Storage> result = new List<Storage>();
 
-            foreach (Storage next in getType().resourceInput)
+            foreach (Storage next in type.resourceInput)
             {
                 Storage howMuchWantToBuy = new Storage(next);
-                howMuchWantToBuy.multiply(multiplier);
-                Storage howMuchHave = getInputProductsReserve().getBiggestStorage(next.getProduct());
+                howMuchWantToBuy.Multiply(multiplier);
+                Storage howMuchHave = getInputProductsReserve().getBiggestStorage(next.Product);
                 if (howMuchWantToBuy.isBiggerThan(howMuchHave))
                 {
                     howMuchWantToBuy.subtract(howMuchHave);
@@ -182,9 +186,9 @@ namespace Nashet.EconomicSimulation
 
         //    List<Storage> result = new List<Storage>();
 
-        //    foreach (Storage next in getType().resourceInput)
+        //    foreach (Storage next in type.resourceInput)
         //    {
-        //        Storage nStor = new Storage(next.getProduct(), next.get());
+        //        Storage nStor = new Storage(next.Product, next.get());
         //        nStor.multiple(multiplier);
         //        result.Add(nStor);
         //    }
@@ -194,14 +198,14 @@ namespace Nashet.EconomicSimulation
         protected List<Storage> getRealNeeds(Value multiplier)
         {
             //Value multiplier = new Value(getEfficiency(false).get() * getLevel());
-            if (getType().isResourceGathering())
+            if (type.isResourceGathering())
                 return null;
             List<Storage> result = new List<Storage>();
 
-            foreach (Storage next in getType().resourceInput)
+            foreach (Storage next in type.resourceInput)
             {
-                Storage nStor = new Storage(next.getProduct(), next.get());
-                nStor.multiply(multiplier);
+                Storage nStor = new Storage(next.Product, next.get());
+                nStor.Multiply(multiplier);
                 result.Add(nStor);
             }
             return result;
@@ -211,19 +215,22 @@ namespace Nashet.EconomicSimulation
         protected float getLocalEffectiveDemand(Product product, Procent multiplier)
         {
             // need to know how much i Consumed inside my needs
-            Storage need = getType().resourceInput.GetFirstSubstituteStorage(product).Copy();
+            Storage need = type.resourceInput.GetFirstSubstituteStorage(product).Copy();
             if (need.isZero())
                 return 0f;
             else
-            {                
-                Storage realNeed = need.Multiply(multiplier.get());             
-                Storage canAfford = howMuchCanAfford(realNeed);
+            {
+                Storage realNeed = need.Multiply(multiplier.get());
+                Storage canAfford = HowMuchCanAfford(realNeed);
                 return canAfford.get();
             }
         }
-        virtual internal float getExpences()
+        /// <summary>
+        ///new value
+        /// </summary>
+        virtual internal Money getExpences()
         {
-            return Game.market.getCost(getConsumed()).get();
+            return Game.market.getCost(getConsumed());
         }
         public bool isAllInputProductsCollected()
         {

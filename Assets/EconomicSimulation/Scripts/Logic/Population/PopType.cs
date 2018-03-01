@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System;
 using Nashet.ValueSpace;
 using Nashet.Utils;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-    public class PopType : IEscapeTarget, ISortableName
+    public class PopType : Name, IWayOfLifeChange
     {
         private readonly static List<PopType> allPopTypes = new List<PopType>();
         public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
@@ -21,7 +22,7 @@ namespace Nashet.EconomicSimulation
 
         ///<summary> per 1000 men </summary>
         private readonly Storage basicProduction;
-        private readonly string name;
+        //private readonly string name;
         /// <summary>
         /// SHOULD not be zero!
         /// </summary>
@@ -43,7 +44,8 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Liquor, 2f),
-            new Storage(Product.Electronics, 1f)
+            new Storage(Product.Electronics, 1f),
+            new Storage(Product.Education, 1f)
             ,};
             var aristocratsLuxuryNeeds = new List<Storage> {
             new Storage(Product.Fruit, 1),
@@ -58,7 +60,9 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Tobacco, 2f),
-            new Storage(Product.Fruit, 1f) };
+            new Storage(Product.Fruit, 1f),
+            new Storage(Product.Education, 1f)};
+
             var capitalistsLuxuryNeeds = new List<Storage> {
             new Storage(Product.Liquor, 2f),
             new Storage(Product.Firearms, 1f),
@@ -75,13 +79,14 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Fish, 1f),
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
-            new Storage(Product.Metal, 1f) };
+            new Storage(Product.Metal, 1f),
+                new Storage(Product.Education, 1f)};
                 var artisansLuxuryNeeds = new List<Storage> {
             new Storage(Product.Liquor, 1f),
             //new Storage(Product.Cars, 1f),
             //new Storage(Product.MotorFuel, 1f),
             new Storage(Product.Electronics, 1f),
-            new Storage(Product.Tobacco, 1f)
+            new Storage(Product.Tobacco, 1f),
             };
                 Artisans = new PopType("Artisans", null, 1f,
                     militaryNeeds, artisansLifeNeeds, artisansEveryDayNeeds, artisansLuxuryNeeds);
@@ -100,7 +105,8 @@ namespace Nashet.EconomicSimulation
             var farmersLuxuryNeeds = new List<Storage> {
             new Storage(Product.Clothes, 1),
             new Storage(Product.Furniture, 1),
-            new Storage(Product.Liquor, 2)
+            new Storage(Product.Liquor, 2),
+            new Storage(Product.Education, 1f)
             //new Storage(Product.Metal, 1),
             //new Storage(Product.Cement, 0.5f)
                                             };
@@ -118,7 +124,8 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Cars, 0.5f),
             new Storage(Product.Tobacco, 1f),
             new Storage(Product.MotorFuel, 0.5f),
-            new Storage(Product.Electronics, 1f)
+            new Storage(Product.Electronics, 1f),
+            new Storage(Product.Education, 1f)
             };
             Workers = new PopType("Workers", null, 1f,
                 militaryNeeds, workersLifeNeeds, workersEveryDayNeeds, workersLuxuryNeeds);
@@ -135,19 +142,18 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Tobacco, 1f),
             new Storage(Product.Cars, 1f), // temporally
             new Storage(Product.MotorFuel, 1f),// temporally
-            
+            new Storage(Product.Education, 1f),
             };
             Soldiers = new PopType("Soldiers", null, 2f,
                 militaryNeeds, soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
         }
         private PopType(string name, Storage produces, float strenght, List<Storage> militaryNeeds,
-            List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds)
+            List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds) : base(name)
         {
-            nameWeight = name.GetWeight();
             this.militaryNeeds = militaryNeeds;
             this.strenght = strenght;
 
-            this.name = name;
+
             basicProduction = produces;
             this.lifeNeeds = lifeNeeds;
             this.everyDayNeeds = everyDayNeeds;
@@ -185,8 +191,8 @@ namespace Nashet.EconomicSimulation
             //return militaryNeeds;
             var result = new List<Storage>();
             foreach (var item in militaryNeeds)
-                if (item.getProduct() != Product.Cattle || country.Invented(Invention.Domestication))
-                    //if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product != Product.Cattle || country.Invented(Invention.Domestication))
+                    //if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -201,7 +207,7 @@ namespace Nashet.EconomicSimulation
             //return result;
             var result = new List<Storage>();
             foreach (var item in lifeNeeds)
-                if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -215,7 +221,7 @@ namespace Nashet.EconomicSimulation
             //return everyDayNeeds;
             var result = new List<Storage>();
             foreach (var item in everyDayNeeds)
-                if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -229,7 +235,7 @@ namespace Nashet.EconomicSimulation
             //return luxuryNeeds;
             var result = new List<Storage>();
             foreach (var item in luxuryNeeds)
-                if (item.getProduct().IsInventedByAnyOne())
+                if (item.Product.IsInventedByAnyOne())
                     result.Add(new Storage(item));
             return result;
         }
@@ -243,7 +249,7 @@ namespace Nashet.EconomicSimulation
         }
         override public string ToString()
         {
-            return name;
+            return ShortName;
         }
 
         internal bool isPoorStrata()
@@ -286,21 +292,75 @@ namespace Nashet.EconomicSimulation
         //{
         //    return true;
         //}
-        private static Procent MigrationUnemploymentLimit = new Procent(0.2f);
 
-        public bool HasJobsFor(PopType type, Province province)
+
+
+        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
         {
-            //if (this == Workers || this == Farmers || this == Tribesmen)
-            if (this == Workers)
-                return province.getUnemployment(x => x == Workers).isSmallerThan(MigrationUnemploymentLimit);
-            else if (this == Farmers || this == Tribesmen)
-                return province.GetOverpopulation().isSmallerThan(Procent.HundredProcent);
-            else
-                return true;
+            Debug.Log("Failed");
+            return ReadOnlyValue.Zero;
         }
-        public float GetNameWeight()
+        public bool CanDemoteTo(PopType targetType, Country Country)
         {
-            return nameWeight;
+            if (this == Aristocrats)
+                if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                    || targetType == PopType.Tribesmen)
+                    return true;
+                else
+                    return false;
+            else if (this == Artisans)
+                if (//|| targetType == PopType.Farmers && !Country.isInvented(Invention.Farming)
+                targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                || targetType == PopType.Workers
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Capitalists)
+                if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                || targetType == PopType.Artisans
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Farmers)
+                if (targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
+             || targetType == PopType.Tribesmen
+             || targetType == PopType.Workers
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Soldiers)
+                if (//targetType == PopType.Farmers && Country.isInvented(Invention.Farming)
+                //||
+                targetType == PopType.Tribesmen
+                || targetType == PopType.Workers
+                )
+                    return true;
+                else
+                    return false;
+            else if (this == Tribesmen)
+                if (targetType == PopType.Workers
+                    || targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                    return true;
+                else
+                    return false;
+            else if (this == Workers)
+                if (targetType == PopType.Tribesmen
+                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                    return true;
+                else
+                    return false;
+            else
+            {
+                Debug.Log("Unknown pop type");
+                return false;
+            }
+
         }
     }
 }

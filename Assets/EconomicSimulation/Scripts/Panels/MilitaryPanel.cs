@@ -84,7 +84,7 @@ namespace Nashet.EconomicSimulation
         {
             //if (Game.Player.homeArmy.getSize() == 0)
             //  Game.Player.homeArmy = new Army(Game.Player);
-            Game.Player.mobilize(Game.Player.ownedProvinces);
+            Game.Player.mobilize(Game.Player.getAllProvinces());
             //onArmyLimitChanged(0f);
             //MainCamera.tradeWindow.refresh();
             refresh(false);
@@ -98,10 +98,11 @@ namespace Nashet.EconomicSimulation
         }
         public void onSendArmyClick()
         {
-            //Game.Player.sendArmy(Game.Player.sendingArmy, availableProvinces[ddProvinceSelect.value]);
-            Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
-            //virtualArmyToSend = new Army(null);
-            //Game.Player.sendingArmy = new Army(Game.Player);
+            if (ddProvinceSelect.value < availableProvinces.Count)
+                // province here shouldn't be null
+                Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+            else
+                Debug.Log("Failed to send Army");
             refresh(false);
         }
         void rebuildDropDown()
@@ -114,7 +115,7 @@ namespace Nashet.EconomicSimulation
             {
                 //if (next.isAvailable(Game.player))
                 {
-                    ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.GetCountry() + ")" });
+                    ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.Country + ")" });
                     availableProvinces.Add(next);
 
                     //selectedReformValue = next;

@@ -36,7 +36,8 @@ namespace Nashet.EconomicSimulation
             Domestication = new Invention("Domestication", "Allows barnyard producing cattle. Also allows using horses in army", new Value(100f)),
             Electronics = new Invention("Electronics", "Allows Electronics", new Value(1000f)),
             Tobacco = new Invention("Tobacco", "Allows Tobacco", new Value(100f)),
-            Coal = new Invention("Coal", "Allows coal", new Value(100f))
+            Coal = new Invention("Coal", "Allows coal", new Value(100f)),
+            Universities = new Invention("Universities", "Allows building of Universities", new Value(150f))
             ;
         readonly public static Condition ProfessionalArmyInvented = new Condition(x => (x as Country).Invented(Invention.ProfessionalArmy), "Professional Army is invented", true);
         readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).Invented(Invention.SteamPower), "Steam Power is invented", true);
@@ -85,9 +86,9 @@ namespace Nashet.EconomicSimulation
                 return true;
 
         }
-        internal string getDescription()
+        public override string FullName
         {
-            return description;
+            get { return description; }
         }
 
         internal Value getCost()

@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
             this.parent = parent as Factory;
         }
 
-        public void Add(IShareOwner owner, Value value)
+        public void Add(IShareOwner owner, ReadOnlyValue value)
         {
             //if (IsCorrectData(value.))
             {
@@ -122,7 +122,7 @@ namespace Nashet.EconomicSimulation
         //        {
         //            TransferAll(owner.Key, Game.Player);
         //            var popOwner = owner.Key as PopUnit;
-        //            if (popOwner != null && popOwner.GetCountry() == nationalizator)
+        //            if (popOwner != null && popOwner.Country == nationalizator)
         //                popOwner.loyalty.subtract(Options.PopLoyaltyDropOnNationalization, false);
         //            else
         //            {
@@ -274,7 +274,7 @@ namespace Nashet.EconomicSimulation
         }
         internal Value GetShareAssetsValue(Procent share)
         {
-            return GetAllAssetsValue().multiply(share);
+            return GetAllAssetsValue().Multiply(share);
             //return share.SendProcentOf(GetAllAssetsValue());
         }
         internal void CalcMarketPrice()
@@ -283,12 +283,12 @@ namespace Nashet.EconomicSimulation
             if (isOnsale || parent.IsClosed)
             {
                 // reduce price
-                marketPriceModifier.subtract(0.001f, false);
+                marketPriceModifier.Subtract(0.001f, false);
                 if (marketPriceModifier.isZero())
-                    marketPriceModifier.set(0.001f);
+                    marketPriceModifier.Set(0.001f);
             }
             if (!isOnsale && parent.IsOpen) //rise price
-                marketPriceModifier.add(0.01f);
+                marketPriceModifier.Add(0.01f);
         }
         /// <summary>
         /// Buy that share (or less). Assumes that there is something on sale. Assumes that buyer has enough money
@@ -322,10 +322,10 @@ namespace Nashet.EconomicSimulation
                     var shareToBuy = sharesToBuy.Random();
                     var cost = shareToBuy.Value.GetShareForSale();
                     if (cost.isBiggerThan(purchaseValue))
-                        cost.set(purchaseValue);
+                        cost.Set(purchaseValue);
                     var buyingAgent = buyer as Agent;
 
-                    if (buyingAgent.pay(shareToBuy.Key as Agent, cost))
+                    if (buyingAgent.Pay(shareToBuy.Key as Agent, cost))
                     {
                         Transfer(shareToBuy.Key, buyer, cost);
                         //reduce onSale amount on successful deal
@@ -348,20 +348,20 @@ namespace Nashet.EconomicSimulation
                 return Procent.ZeroProcent.Copy();
             else
                 return parent.GetMargin();
-            //var payToGovernment = parent.GetCountry().taxationForRich.getTypedValue().tax.getProcentOf(GetDividends());
+            //var payToGovernment = parent.Country.taxationForRich.getTypedValue().tax.getProcentOf(GetDividends());
             //return new Procent(payedDividends.Copy().subtract(payToGovernment), ownership.GetMarketValue(), false);
             //return new Procent(parent.GetDividends(), GetMarketValue(), false); 
         }
         /// <summary>
         /// Cost of standard share
         /// </summary>        
-        public Value GetInvestmentCost()
+        public Money GetInvestmentCost()
         {
             return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);
         }
         public bool CanProduce(Product product)
         {
-            return parent.getType().CanProduce(product);
+            return parent.Type.CanProduce(product);
         }
         /// <summary>
         /// Should be in Investor class
@@ -384,13 +384,13 @@ namespace Nashet.EconomicSimulation
                     //Debug.Log(item.Key + " put on sale shares of " + parent);                        
                 }
         }
-        public Country GetCountry()
+        public Country Country
         {
-            return parent.GetCountry();
+            get { return parent.Country; }
         }
-        public Province GetProvince()
+        public Province Province
         {
-            return parent.GetProvince();
+            get { return parent.Province; }
         }
     }
 

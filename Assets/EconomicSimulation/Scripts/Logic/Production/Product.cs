@@ -27,6 +27,7 @@ namespace Nashet.EconomicSimulation
         private readonly bool _isConsumerProduct;
         private readonly List<Product> substitutes;
         private readonly Color color;
+        private bool _isStoreable = true;
 
         internal static readonly Product
             //Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetalOre,
@@ -67,19 +68,22 @@ namespace Nashet.EconomicSimulation
             Coal = new Product("Coal", 1f, Color.black, type.industrial),
             Tobacco = new Product("Tobacco", 1f, Color.green, type.consumerProduct),
             Electronics = new Product("Electronics", 1f, type.consumerProduct),
-            Gold = new Product("Gold", 4f, Color.yellow, type.industrial);
+            Gold = new Product("Gold", 4f, Color.yellow, type.industrial),
+            Education = new Product("Education", 4f, type.consumerProduct, false);
 
         internal static readonly Product //Food, Sugar, Fibers, Fuel;
             Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit }, type.consumerProduct),
             Sugar = new Product("Sugar", 0.04f, new List<Product> { Grain, Fruit }, type.consumerProduct),
             Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton }, type.consumerProduct),
             Fuel = new Product("Fuel", 0.04f, new List<Product> { Wood, Coal, Oil }, type.industrial);
+
+        static public void init()
+        { }
         //static initialization
         static Product()
         {
-
             // abstract products
-            foreach (var item in getAll(x=>!x.isAbstract()))
+            foreach (var item in getAll().Where(x=>!x.isAbstract()))
                 if (item != Product.Gold)
                 {
                     Game.market.SetDefaultPrice(item, item.defaultPrice.get());
@@ -91,10 +95,7 @@ namespace Nashet.EconomicSimulation
         /// , bool _isMilitary, bool _isIndustrial, bool _isConsumerProduct
         private Product(string name, float defaultPrice, type productType) : base(name)
         {
-            this.defaultPrice = new Value(defaultPrice);
-            //if (isAbstract())
-            //    allProducts.Insert(0, this);        
-            //else
+            this.defaultPrice = new Value(defaultPrice);            
             allProducts.Add(this);
             switch (productType)
             {
@@ -109,9 +110,7 @@ namespace Nashet.EconomicSimulation
                     break;
                 default:
                     break;
-            }
-
-            //TODO checks for duplicates&
+            }            
         }
         /// <summary>
         /// Constructor for resource product
@@ -121,6 +120,13 @@ namespace Nashet.EconomicSimulation
             this.color = color;
             _isResource = true;
             resourceCounter++;
+        }
+        /// <summary>
+        /// Constructor for unstorable product
+        /// </summary>                     
+        private Product(string name, float defaultPrice, type productType, bool isStorable) : this(name, defaultPrice, productType)
+        {
+            _isStoreable = false;
         }
         /// <summary>
         /// Constructor for abstract products
@@ -135,24 +141,16 @@ namespace Nashet.EconomicSimulation
             foreach (var item in allProducts)
                 yield return item;
         }
-        public static IEnumerable<Product> getAll(Predicate<Product> selector)
+        //public static IEnumerable<Product> getAll(Predicate<Product> selector)
+        //{
+        //    foreach (var item in allProducts)
+        //        if (selector(item))
+        //            yield return item;
+        //}
+        public bool IsStorable
         {
-            foreach (var item in allProducts)
-                if (selector(item))
-                    yield return item;
+            get { return _isStoreable; }
         }
-        //public static IEnumerable<Product> getAllAbstract()
-        //{
-        //    foreach (var item in allProducts)
-        //        if (item.isAbstract())
-        //            yield return item;
-        //}
-        //public static IEnumerable<Product> getAllNonAbstract()
-        //{
-        //    foreach (var item in allProducts)
-        //        if (!item.isAbstract())
-        //            yield return item;
-        //}
         /// <summary>
         /// Products go in industrial-military-consumer order
         /// </summary>    
@@ -167,13 +165,13 @@ namespace Nashet.EconomicSimulation
         }                
         public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
         {
-            foreach (var item in getAll(x => !x.isAbstract()))
+            foreach (var item in getAll().Where(x => !x.isAbstract()))
                 if (selector(item) && country.Invented(item))
                     yield return item;
         }
         public static IEnumerable<Product> getAllSpecificProductsTradable(Func<Product, bool> selector)
         {
-            foreach (var item in getAll(x => !x.isAbstract()))
+            foreach (var item in getAll().Where(x => !x.isAbstract()))
                 if (selector(item) && item.isTradable())
                     yield return item;
         }
@@ -224,7 +222,7 @@ namespace Nashet.EconomicSimulation
         }
         public static void sortSubstitutes()
         {
-            foreach (var item in getAll(x=>x.isAbstract()))
+            foreach (var item in getAll().Where(x=>x.isAbstract()))
             //if (item.isTradable()) 
             // Abstract are always invented and not gold
             {
@@ -295,7 +293,7 @@ namespace Nashet.EconomicSimulation
             //of some freshly invented product
             if (isAbstract())
                 return true;
-            foreach (var country in Country.allCountries)
+            foreach (var country in World.getAllExistingCountries())
                 if (country.Invented(this))
                     return true;
             return false;
@@ -314,18 +312,18 @@ namespace Nashet.EconomicSimulation
         {
             if (isResource())
             {
-                return defaultPrice.Copy().multiply(Options.defaultPriceLimitMultiplier);
+                return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
             }
             else
             {
-                var type = FactoryType.whoCanProduce(this);
+                var type = ProductionType.whoCanProduce(this);
                 if (type == null)
-                    return defaultPrice.Copy().multiply(Options.defaultPriceLimitMultiplier);
+                    return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
                 else
                 {
                     Value res = Game.market.getCost(type.resourceInput);
-                    res.multiply(Options.defaultPriceLimitMultiplier);
-                    res.divide(type.basicProduction);
+                    res.Multiply(Options.defaultPriceLimitMultiplier);
+                    res.Divide(type.basicProduction);
                     return res;
                 }
             }

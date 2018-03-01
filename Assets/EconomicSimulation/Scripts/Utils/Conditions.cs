@@ -36,8 +36,7 @@ namespace Nashet.Conditions
         /// </summary>    
         public ConditionsList(Condition condition)
         {
-            list = new List<Condition>();
-            list.Add(condition);
+            list = new List<Condition> { condition };
         }
         /// <summary>
         /// copy constructor
@@ -94,7 +93,7 @@ namespace Nashet.Conditions
             //= new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
             = new Condition(delegate { return 2 * 2 == 5; }, "Feature is implemented", true);
         internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
-        
+
         protected readonly Func<object, bool> checkingFunction;
         /// <summary>to hide junk info /// </summary>
         protected readonly bool showAchievedConditionDescribtion;
@@ -102,7 +101,7 @@ namespace Nashet.Conditions
         protected readonly Func<object, object> changeTargetObject;
         //private readonly object dynamicStringTarget;
 
-        public Condition(Func<object, bool> checkingFunction, string conditionIsTrue, bool showAchievedConditionDescribtion) : base(conditionIsTrue)
+        public Condition(Func<object, bool> checkingFunction, string conditionIsTrueText, bool showAchievedConditionDescribtion) : base(conditionIsTrueText)
         {
             this.checkingFunction = checkingFunction;
             this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
@@ -113,7 +112,6 @@ namespace Nashet.Conditions
         /// </summary>    
         public Condition(Func<object, bool> checkingFunction, Func<object, string> dynamicString, bool showAchievedConditionDescribtion) : base(null)
         {
-
             this.checkingFunction = checkingFunction;
             this.dynamicString = dynamicString;
             this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
@@ -122,7 +120,7 @@ namespace Nashet.Conditions
         /// <summary>
         /// Used to build Modifier on Condition (Copy constructor)
         /// </summary>    
-        protected Condition(Condition another) : base(another.getName())
+        protected Condition(Condition another) : base(another.ToString())
         {
             checkingFunction = another.checkingFunction;
             showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
@@ -135,7 +133,7 @@ namespace Nashet.Conditions
         /// Allows scope-changing
         /// </summary>    
         /// <param name="changeTargetObject"> Select another scope</param>
-        public Condition(Condition another, Func<object, object> changeTargetObject) : base(another.getName())
+        public Condition(Condition another, Func<object, object> changeTargetObject) : base(another.ToString())
         {
             this.changeTargetObject = changeTargetObject;
             checkingFunction = another.checkingFunction;
@@ -179,7 +177,7 @@ namespace Nashet.Conditions
         //}
         public string getName(object some)
         {
-            if (getName() == null)
+            if (ToString() == null)
             {
                 //if (dynamicStringTarget == null)
                 return dynamicString(some);
@@ -187,7 +185,7 @@ namespace Nashet.Conditions
                 // return dynamicString(dynamicStringTarget);
             }
             else
-                return getName();
+                return ToString();
         }
 
         /// <summary>Returns bool result and description in out description</summary>    
@@ -260,15 +258,13 @@ namespace Nashet.Conditions
         public bool isAllTrue(object forWhom, out string description)
         {
             throw new DontUseThatMethod();
-            description = "";
-            return false;
+            
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
         public bool isAllTrue(object forWhom)
         {
-            throw new DontUseThatMethod();
-            return false;
+            throw new DontUseThatMethod();            
         }
         /// <summary>Return false if any of conditions is false, supports two objects, also makes description</summary>    
         public bool isAllTrue(object firstObject, object secondObject, out string description)
@@ -439,10 +435,7 @@ namespace Nashet.Conditions
             this.showZeroModifiers = showZeroModifiers;
         }
 
-        public override string ToString()
-        {
-            return getName();
-        }
+        
 
         internal float getValue()
         {
@@ -456,7 +449,7 @@ namespace Nashet.Conditions
         //    if (floatModifierFunction != null)
         //    {
         //        StringBuilder str = new StringBuilder("\n(+) ");
-        //        str.Append(getDescription());
+        //        str.Append(FullName);
         //        str.Append(": ").Append(floatModifierFunction(forWhom) * getValue());
         //        description = str.ToString();
         //        answer = true;
@@ -465,7 +458,7 @@ namespace Nashet.Conditions
         //    if (multiplierModifierFunction != null)
         //    {
         //        StringBuilder str = new StringBuilder("\n(+) ");
-        //        str.Append(getDescription());
+        //        str.Append(FullName);
         //        str.Append(" ").Append(multiplierModifierFunction() * getValue());
         //        description = str.ToString();
         //        answer = true;
@@ -475,7 +468,7 @@ namespace Nashet.Conditions
         //    {
         //        answer = true;
         //        StringBuilder str = new StringBuilder("\n(+) ");
-        //        str.Append(getDescription());
+        //        str.Append(FullName);
         //        str.Append(" ").Append(getValue());
         //        description = str.ToString();
         //    }
