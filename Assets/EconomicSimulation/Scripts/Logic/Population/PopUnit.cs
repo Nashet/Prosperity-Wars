@@ -335,10 +335,11 @@ namespace Nashet.EconomicSimulation
             base.SetStatisticToZero();
             needsFulfilled.SetZero();
             didntGetPromisedUnemloymentSubsidy = false;
-            //lastEscaped = new KeyValuePair<IEscapeTarget, int>(lastEscaped.Key, 0);
-            if (type != PopType.Aristocrats)
-                storage.SetZero();  // may mess with aristocrats
-            // makes too mush tribes -> fails economy
+
+            // sets in ConsumeNeeds now
+            //if (type != PopType.Aristocrats)
+            //    storage.SetZero();  // may mess with aristocrats
+
             Rand.Call(() => education.Subtract(0.001f, false), Options.PopEducationRegressChance);
         }
         public int getMobilized()
@@ -657,12 +658,11 @@ namespace Nashet.EconomicSimulation
                 }
         }
 
-        private void consumeNeedsWithMarket(List<Storage> lifeNeeds, bool skipLifeneeds)
+        private void consumeNeedsWithMarket()
         {
             //buy life needs
             Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
-            //if (!skipLifeneeds)
-            foreach (Storage need in lifeNeeds)
+            foreach (Storage need in getRealLifeNeeds())
             {
                 if (storage.has(need))// don't need to buy on market
                 {
@@ -677,19 +677,20 @@ namespace Nashet.EconomicSimulation
                 else
                     needsFulfilled.Set(Game.market.buy(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
             }
+            if (type != PopType.Aristocrats)
+                storage.SetZero();
 
             // buy everyday needs
             if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
             {
                 // save some money in reserve to avoid spending all money on luxury 
-                //Agent reserve = new Agent(0f, null, null); // temporally removed for testing
-                // payWithoutRecord(reserve, Cash.multipleOutside(Options.savePopMoneyReserv));            
+                Money reserve = new Money(0f);
+                PayWithoutRecord(reserve, Cash.Copy().Multiply(Options.savePopMoneyReserv));
 
-                Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
+                //Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in getRealEveryDayNeeds())
                 {
-                    //NeedsFullfilled.set(0.33f + Game.market.Consume(this, need).get() / 3f);
                     var consumed = Game.market.buy(this, need, null);
                     if (consumed.isNotZero())
                     {
@@ -698,9 +699,6 @@ namespace Nashet.EconomicSimulation
                             education.Learn();
                     }
                 }
-                //Value spentMoneyOnEveryDayNeeds = moneyWasBeforeEveryDayNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
-                //if (spentMoneyOnEveryDayNeeds.isNotZero())
-                //    needsFullfilled.add(spentMoneyOnEveryDayNeeds.get() / Game.market.getCost(everyDayNeeds).get() / 3f);
                 var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, getRealEveryDayNeeds());
                 everyDayNeedsFulfilled.Divide(Options.PopStrataWeight);
                 needsFulfilled.Add(everyDayNeedsFulfilled);
@@ -710,7 +708,7 @@ namespace Nashet.EconomicSimulation
                 {
                     var luxuryNeeds = getRealLuxuryNeeds();
 
-                    Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
+                    //Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                     bool someLuxuryProductUnavailable = false;
                     var luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
@@ -732,13 +730,17 @@ namespace Nashet.EconomicSimulation
                     // I also can limit regular luxury consumption but should I?:
                     if (!someLuxuryProductUnavailable
                         && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
-                    {
-                        Value spentOnUnlimitedConsumption = Cash.Copy();
+                    {                        
                         Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
-                        Value spendingLimit = getSpendingLimit(spentMoneyOnAllNeeds);// reduce limit by income - already spent money
+                        Value spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
 
-                        if (spentOnUnlimitedConsumption.isBiggerThan(spendingLimit))
-                            spentOnUnlimitedConsumption.Set(spendingLimit); // don't spent more than gained                    
+                        //getSpendingLimit(spentMoneyOnAllNeeds);// 
+
+                        ReadOnlyValue spentOnUnlimitedConsumption; ;
+                        if (Cash.isBiggerThan(spendingLimit))
+                            spentOnUnlimitedConsumption=spendingLimit; // don't spent more than gained                    
+                        else
+                            spentOnUnlimitedConsumption = Cash;
 
                         if (spentOnUnlimitedConsumption.get() > 5f)// to avoid zero values
                         {
@@ -756,11 +758,8 @@ namespace Nashet.EconomicSimulation
                     var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
-                    //Value spentMoneyOnLuxuryNeedsTotal = moneyWasBeforeLuxuryNeedsConsumption.subtractOutside(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
-                    //if (spentMoneyOnLuxuryNeedsTotal.isNotZero())
-                    //    needsFullfilled.add(spentMoneyOnLuxuryNeedsTotal.get() / luxuryNeedsCost.get() / 3f);
                 }
-                // reserve.payWithoutRecord(this, reserve.Cash);
+                reserve.PayWithoutRecord(this, reserve);
             }
 
         }
@@ -821,7 +820,7 @@ namespace Nashet.EconomicSimulation
 
             if (canTrade())
             {
-                consumeNeedsWithMarket(getRealLifeNeeds(), false);
+                consumeNeedsWithMarket();
             }
             else if (Country.economy.getValue() == Economy.PlannedEconomy)//non - market consumption
             {
@@ -846,9 +845,6 @@ namespace Nashet.EconomicSimulation
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
-                //var consumed = new Procent(getConsumed().getContainer(), getRealAllNeeds());
-                //consumed.multiply(Options.PopStrataWeight);
-                //needsFullfilled.set(consumed);
             }
             else
                 consumeWithNaturalEconomy(getRealLifeNeeds());
@@ -1154,7 +1150,8 @@ namespace Nashet.EconomicSimulation
         {
             //***********migration inside country***********
             if (this.type == PopType.Farmers || this.type == PopType.Workers || this.type == PopType.Tribesmen)
-                foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country))
+                //foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country))
+                foreach (var proposedNewProvince in Country.getAllProvinces())
                 {
                     var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);//province.getAverageNeedsFulfilling(this.type);
 

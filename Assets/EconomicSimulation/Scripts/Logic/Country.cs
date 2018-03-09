@@ -590,10 +590,6 @@ namespace Nashet.EconomicSimulation
         {
             return ownedProvinces.Random();
         }
-        internal Province getRandomOwnedProvince(Predicate<Province> predicate)
-        {
-            return ownedProvinces.Random(predicate);
-        }
 
         internal void setCapitalTextMesh(Province province)
         {
@@ -1012,7 +1008,7 @@ namespace Nashet.EconomicSimulation
 
         private void aiInvent()
         {
-            var invention = GetAllUninvented().ToList().Random(x => this.sciencePoints.isBiggerOrEqual(x.Key.getCost()));
+            var invention = GetAllUninvented().Where(x => this.sciencePoints.isBiggerOrEqual(x.Key.getCost())).Random();//.ToList()
             if (invention.Key != null)
                 invent(invention.Key);
         }

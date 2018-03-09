@@ -478,36 +478,41 @@ namespace Nashet.Utils
         /// <summary>
         /// returns default(T) if fails
         /// </summary>    
-        public static T Random<T>(this List<T> source)
-        {
-            if (source == null || source.Count == 0)
-                return default(T);
-            return source[Game.Random.Next(source.Count)];
-
-        }
-        //public static T Random<T>(this IEnumerable<T> enumerable)
+        //public static T Random<T>(this List<T> source)
         //{
-        //    return enumerable.Random<T>(new System.Random());
-        //}
+        //    if (source == null || source.Count == 0)
+        //        return default(T);
+        //    return source[Game.Random.Next(source.Count)];
+
+        //}        
 
         public static T Random<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == Enumerable.Empty<T>() || enumerable.Count() == 0)
+            var count = enumerable.Count();
+            if (enumerable == Enumerable.Empty<T>() || count == 0)
                 return default(T);
             else
             {
-                int index = Rand.random2.Next(enumerable.Count());
+                int index = Rand.random2.Next(count);
                 return enumerable.ElementAt(index);
             }
+        }
+        public static IEnumerable<T> FirstSameElements<T>(this IEnumerable<T> collection, Func<T, uint> selector)
+        {
+            T previousElement = collection.FirstOrDefault();
+            if (previousElement != null)
+                foreach (var item in collection)
+                    if (selector(item) == selector(previousElement))
+                        yield return item;
         }
         /// <summary>
         ///returns an empty List<T> if didn't find anything
         /// </summary>    
-        public static T Random<T>(this List<T> source, Predicate<T> predicate)
-        {
-            return source.FindAll(predicate).Random();
-            //return source.ElementAt(Game.random.Next(source.Count));    
-        }
+        //public static T Random<T>(this List<T> source, Predicate<T> predicate)
+        //{
+        //    return source.FindAll(predicate).Random();
+        //    //return source.ElementAt(Game.random.Next(source.Count));    
+        //}
 
 
         public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
@@ -746,7 +751,7 @@ namespace Nashet.Utils
             Sum = element.Sum(everyElement => everyElement.Value)
             //.Sum(x => x.Value))
 
-        }).OrderBy(x=>x.Sum);
+        }).OrderBy(x => x.Sum);
             //only null or province
             if (query.Count() == 0)
                 return "no changes";

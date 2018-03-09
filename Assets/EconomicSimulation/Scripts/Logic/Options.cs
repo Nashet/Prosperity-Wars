@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent minFactoryWorkforceFulfillingToInvest = new Procent(0.70f);
 
         internal static readonly int fabricConstructionTimeWithoutCapitalism = 20;
-        internal static readonly byte FactoryInputReservInDays = 5;
+        internal static readonly byte FactoryInputReservInDays = 2;
         internal static readonly int FactoryMediumTierLevels = 8 + 1;
         internal static readonly int FactoryMediumHighLevels = 15 + 1;
         internal static readonly Money FactoryMinPossibleSallary = new Money(0.001f);
@@ -123,7 +123,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly float votingPassBillLimit = 0.5f;
         internal static readonly float votingForcedReformPenalty = 0.5f;
         internal static readonly int familySize = 5;
-        internal static readonly Procent savePopMoneyReserv = new Procent(0.66666f);
+        internal static readonly Procent savePopMoneyReserv = new Procent(0.5f);//0.66666f);
         internal static readonly float PopMinLandForTribemen = 1f;
         internal static readonly float PopMinLandForFarmers = 0.25f;
         internal static readonly float PopMinLandForTownspeople = 0.0025f;

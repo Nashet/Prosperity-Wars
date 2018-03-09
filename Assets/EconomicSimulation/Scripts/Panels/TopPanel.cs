@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         {
             var sb = new StringBuilder();
 //<<<<<<< HEAD
-            sb.Append("You rule: ").Append(Game.Player.FullName).Append(" Month: ").Append(Date.Today);
+            sb.Append("You rule: ").Append(Game.Player.FullName).Append("    Month: ").Append(Date.Today);
             //sb.Append (Game.Player.GetFullName ()).Append(" $").Append(Game.Player.cash.get().ToString("N0")).Append(" Month: ").Append(Game.date);
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");

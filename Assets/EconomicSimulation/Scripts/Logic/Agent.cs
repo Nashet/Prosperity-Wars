@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
     {
         /// <summary> Used to calculate income tax, now it's only for statistics </summary>
         public Money moneyIncomeThisTurn = new Money(0);
-        private readonly Money moneyIncomeLastTurn = new Money(0);
+        protected readonly Money moneyIncomeLastTurn = new Money(0);
         private readonly Money cash = new Money(0);
         public ReadOnlyValue Cash { get { return cash; } }
 
@@ -61,10 +61,10 @@ namespace Nashet.EconomicSimulation
             incomeTaxPayed.SetZero();
         }
         /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
-        protected Value getSpendingLimit(ReadOnlyValue value)
-        {
-            return moneyIncomeLastTurn.Copy().Subtract(value, false);
-        }
+        //protected Value getSpendingLimit(ReadOnlyValue value)
+        //{
+        //    return moneyIncomeLastTurn.Copy().Subtract(value, false);
+        //}
                 
         
 
@@ -125,13 +125,15 @@ namespace Nashet.EconomicSimulation
         //        return loans.get() * -1f;
         //}
         //***************
-
+        /// <summary>
+        /// Ignores if need is available on market or not
+        /// </summary>
         internal bool CanAfford(Storage need)
         {
             Storage realNeed;
             if (need.isAbstractProduct())
                 //realNeed = new Storage(Game.market.getCheapestSubstitute(need).Product, need);
-                realNeed = Game.market.getCheapestSubstitute(need);
+                realNeed = Game.market.GetRandomCheapestSubstitute(need);
             else
                 realNeed = need;
 
@@ -243,12 +245,7 @@ namespace Nashet.EconomicSimulation
         public bool PayWithoutRecord(Agent whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
-            {
-                //if (!canPayCashOnly(howMuch) && bank != null)// checked for bank invention
-                //{
-                //    bank.giveLackingMoneyInCredit(this, howMuch);
-                //    bank.giveLackingMoneyInCredit(this, howMuch.Copy().Multiply(5));
-                //}
+            {                
                 if (CanPayCashOnly(howMuch))
                 {
                     whom.cash.Add(howMuch);
@@ -264,7 +261,30 @@ namespace Nashet.EconomicSimulation
                     Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
                 return false;
             }
-
+        }
+        /// <summary>
+        /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
+        /// Doesn't pay tax, doesn't register transaction
+        /// </summary>    
+        public bool PayWithoutRecord(Money whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
+        {
+            if (CanPay(howMuch))// It does has enough cash or deposit
+            {
+                if (CanPayCashOnly(howMuch))
+                {
+                    whom.Add(howMuch);
+                    this.cash.Subtract(howMuch);
+                }
+                else
+                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
+                return true;
+            }
+            else
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+                return false;
+            }
         }
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposit from bank if needed

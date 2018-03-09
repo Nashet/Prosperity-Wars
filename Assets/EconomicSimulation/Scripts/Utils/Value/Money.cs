@@ -14,7 +14,7 @@ namespace Nashet.ValueSpace
         private Money(Storage value) : base(value)
         {
             if (value.Product != Product.Gold)
-                Debug.Log("THAT IS NOT REAL GOLD"); 
+                Debug.Log("THAT IS NOT REAL GOLD");
         }
 
 
@@ -26,7 +26,7 @@ namespace Nashet.ValueSpace
         {
             return new Money(stor);
         }
-        
+
         internal Money Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
             if (divider == 0)
@@ -101,6 +101,25 @@ namespace Nashet.ValueSpace
                 Set(this.get() - storage.get());
             return this;
         }
+        /// <summary>
+        /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
+        /// Doesn't pay tax, doesn't register transaction
+        /// </summary>    
+        public bool PayWithoutRecord(Agent whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
+        {
+            if (this.isBiggerOrEqual(howMuch))// It does has enough cash or deposit
+            {
 
+                (whom.Cash as Money).Add(howMuch);
+                this.Subtract(howMuch);
+                return true;
+            }
+            else
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Not enough money to pay in Money.payWithoutRecord");
+                return false;
+            }
+        }
     }
 }
