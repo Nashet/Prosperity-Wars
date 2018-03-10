@@ -50,7 +50,10 @@ namespace Nashet.EconomicSimulation
                     else
                         sb.Append(isArtisan.Type.basicProduction.Product);
                 }
-                sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
+                if (pop.Type == PopType.Aristocrats || pop.Type == PopType.Soldiers)
+                    sb.Append("\nGained: ").Append(pop.getGainGoodsThisTurn().ToString());
+                else
+                    sb.Append("\nProduced: ").Append(pop.getGainGoodsThisTurn().ToString());
                 sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it            
 
 

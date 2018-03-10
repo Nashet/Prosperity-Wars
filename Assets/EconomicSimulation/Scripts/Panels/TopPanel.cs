@@ -39,12 +39,12 @@ namespace Nashet.EconomicSimulation
         public override void Refresh()
         {
             var sb = new StringBuilder();
-//<<<<<<< HEAD
-            sb.Append("You rule: ").Append(Game.Player.FullName).Append("    Month: ").Append(Date.Today);
-            //sb.Append (Game.Player.GetFullName ()).Append(" $").Append(Game.Player.cash.get().ToString("N0")).Append(" Month: ").Append(Game.date);
+
+            sb.Append("You rule: ").Append(Game.Player.FullName);
+            
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");
-
+            sb.Append("    Month: ").Append(Date.Today);
             //sb.Append("\nEng: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
             sb.Append("\nMoney: ").Append(Game.Player.Cash)
             .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
@@ -53,22 +53,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("   Population: ").Append(Game.Player.getFamilyPopulation().ToString("N0"))
                 .Append("   Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
                 .Append("   Education: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.Education));
-//=======
 
-//            sb.Append("Date: ").Append(Date.Today).Append("; You rule: ").Append(Game.Player.FullName);
-//            if (!Game.Player.isAlive())
-//                sb.Append(" (destroyed by enemies, but could rise again)");
-
-//            //sb.Append("\nMoney: ").Append(Game.Player.Cash.get().ToString("N0"))
-//            sb.Append("\nMoney: ").Append(Game.Player.Cash)
-//            .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
-
-//            if (Game.Player.isAlive())
-//                sb.Append("; Men: ").Append(Game.Player.GetAllPopulation().Sum(x => x.getPopulation()).ToString("N0"))
-//                .Append("; Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
-//                .Append("; Education: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.Education));
-//                //.Append("; Unemployment: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.getUnemployment()));
-//>>>>>>> ver.0.18.0
             generalText.text = sb.ToString();
         }
         public void onTradeClick()

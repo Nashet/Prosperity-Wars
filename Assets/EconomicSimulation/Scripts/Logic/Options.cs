@@ -114,7 +114,7 @@ namespace Nashet.EconomicSimulation
 
         //ARTISANS
         internal static readonly float ArtisansProductionModifier = 0.75f;
-        internal static readonly Procent ArtisansChangeProductionRate = new Procent(0.20f);
+        internal static readonly Procent ArtisansChangeProductionRate = new Procent(0.01f);
         /// <summary> change production with needs fulfilling lower than that /// </summary>
         internal static readonly Value ArtisansChangeProductionLevel = new Value(0.3f);
 

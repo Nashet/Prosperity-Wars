@@ -51,12 +51,10 @@ namespace Nashet.EconomicSimulation
         override public void consumeNeeds()
         {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-
-            //if (isSubsidized())
-            //    Game.market.buy(this, new PrimitiveStorageSet(shoppingList), Country);
-            //else
-            //shoppingList - getInputProductsReserve(); that is included in getHowMuchInputProductsReservesWants()
-            Game.market.buy(this, new StorageSet(shoppingList), null);
+            //Game.market.SellList(this, new StorageSet(shoppingList), null);
+            foreach (Storage item in shoppingList)
+                if (item.isNotZero())
+                    Game.market.Sell(this, item, null);
         }
     }
 }

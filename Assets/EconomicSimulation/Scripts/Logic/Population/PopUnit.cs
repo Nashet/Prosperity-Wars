@@ -675,7 +675,7 @@ namespace Nashet.EconomicSimulation
                     needsFulfilled.Set(Options.PopOneThird);
                 }
                 else
-                    needsFulfilled.Set(Game.market.buy(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
+                    needsFulfilled.Set(Game.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
             }
             if (type != PopType.Aristocrats)
                 storage.SetZero();
@@ -691,7 +691,7 @@ namespace Nashet.EconomicSimulation
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in getRealEveryDayNeeds())
                 {
-                    var consumed = Game.market.buy(this, need, null);
+                    var consumed = Game.market.Sell(this, need, null);
                     if (consumed.isNotZero())
                     {
                         everyDayNeedsConsumed.Add(consumed);
@@ -713,7 +713,7 @@ namespace Nashet.EconomicSimulation
                     var luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
-                        var consumed = Game.market.buy(this, nextNeed, null);
+                        var consumed = Game.market.Sell(this, nextNeed, null);
                         if (consumed.isZero())
                             someLuxuryProductUnavailable = true;
                         else
@@ -749,7 +749,7 @@ namespace Nashet.EconomicSimulation
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.Multiply(buyExtraGoodsMultiplier);
-                                var consumed = Game.market.buy(this, nextNeed, null);
+                                var consumed = Game.market.Sell(this, nextNeed, null);
                                 if (consumed.isNotZero())
                                     luxuryNeedsConsumed.Add(consumed);
                             }
@@ -1150,8 +1150,8 @@ namespace Nashet.EconomicSimulation
         {
             //***********migration inside country***********
             if (this.type == PopType.Farmers || this.type == PopType.Workers || this.type == PopType.Tribesmen)
-                //foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country))
-                foreach (var proposedNewProvince in Country.getAllProvinces())
+                foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country))
+                //foreach (var proposedNewProvince in Country.getAllProvinces())
                 {
                     var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);//province.getAverageNeedsFulfilling(this.type);
 

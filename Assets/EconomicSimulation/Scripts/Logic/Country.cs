@@ -1188,7 +1188,7 @@ namespace Nashet.EconomicSimulation
 
         void buyNeeds(Storage toBuy)
         {
-            Storage realyBougth = Game.market.buy(this, toBuy, null);
+            Storage realyBougth = Game.market.Sell(this, toBuy, null);
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);
