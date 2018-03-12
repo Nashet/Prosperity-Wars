@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
             MainCamera.militaryPanel = this;
             GetComponent<RectTransform>().position = new Vector2(180f, 111);// + Screen.height);
             Hide();
-
+            //rebuildDropDown();
         }
 
 
@@ -99,6 +99,7 @@ namespace Nashet.EconomicSimulation
         }
         public void show(Province province)
         {
+            Show();
             if (province != null)
             {
                 var list = Game.Player.getAllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight());
@@ -109,7 +110,7 @@ namespace Nashet.EconomicSimulation
                 if (found < 0)
                     Debug.Log("Didn't find province " + province);
             }
-            Show();
+           
         }
 
         void rebuildDropDown()
