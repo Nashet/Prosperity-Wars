@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     public class Game : ThreadedJob
     {
         static private readonly bool readMapFormFile = false;
-        static private MyTexture mapTexture;        
+        static private MyTexture mapTexture;
         static internal GameObject r3dTextPrefab;
 
         static public Country Player;
@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         static public readonly Market market;
 
-        static internal bool devMode = false;
+        static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
                 makeHelloMessage();
             updateStatus("Finishing generation..");
         }
-        
+
         /// <summary>
         /// Separate method to call Unity API. WOULDN'T WORK IN MULTYTHREADING!
         /// Called after initialization of non-Unity data
@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
             //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
             r3dTextPrefab = GameObject.Find("3dProvinceNameText");
 
-            
+
             World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
             World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
             Country.setUnityAPI();
@@ -228,7 +228,7 @@ namespace Nashet.EconomicSimulation
             mapTexture = new MyTexture(mapImage);
             Texture2D.Destroy(mapImage);
         }
-        
+
 
         public static void prepareForNewTick()
         {
@@ -264,7 +264,7 @@ namespace Nashet.EconomicSimulation
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
                 + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
-                , closeText: "Ok", isDefeatingAttackersMessage: false);
+                , "Ok", false, Game.Player.Capital.getPosition());
         }
 
         private static void calcBattles()
@@ -281,7 +281,7 @@ namespace Nashet.EconomicSimulation
                         {
                             if (movement == null)
                                 (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
-                                //attackerArmy.getDestination().secedeTo(attacker as Country, true);
+                            //attackerArmy.getDestination().secedeTo(attacker as Country, true);
                             else
                                 movement.onRevolutionWon();
                         }
@@ -411,8 +411,8 @@ namespace Nashet.EconomicSimulation
                         // POps who can't trade will pay tax BEFORE consumption, not after
                         // Otherwise pops who can't trade avoid tax
                         // pop.Country.TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.Type.isPoorStrata());//pop.payTaxes();
-                        pop.calcLoyalty();                        
-                        
+                        pop.calcLoyalty();
+
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.Growth();
                         if (Rand.Chance(Options.PopPopulationChangeChance))
@@ -422,7 +422,7 @@ namespace Nashet.EconomicSimulation
                                 pop.FindBetterLife();
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.Assimilate();
-                        
+
                         if (country.economy.getValue() != Economy.PlannedEconomy)
                             Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }
@@ -438,7 +438,7 @@ namespace Nashet.EconomicSimulation
                             pop.Province.RegisterPop(pop);
                         else
                             targetToMerge.mergeIn(pop);
-                    }                   
+                    }
 
                     PopUnit.PopListToAddToGeneralList.Clear();
                     province.simulate();

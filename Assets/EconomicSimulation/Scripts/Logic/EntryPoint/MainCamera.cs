@@ -178,7 +178,7 @@ namespace Nashet.EconomicSimulation
 
 
                 if (Message.HasUnshownMessages())
-                    MessagePanel.showMessageBox(canvas);
+                    MessagePanel.showMessageBox(canvas, this);
                 Game.previoslySelectedProvince = Game.selectedProvince;
             }
         }
@@ -293,6 +293,10 @@ namespace Nashet.EconomicSimulation
             if (select)
                 selectProvince(province.getID());
         }
-
+        public void FocusOnPoint(Vector2 point)
+        {
+            gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
+            
+        }
     }
 }
