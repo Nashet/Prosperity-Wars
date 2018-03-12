@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     {
         protected override IEnumerable<KeyValuePair<Invention, bool>> ContentSelector()
         {
-            return Game.Player.getAllAvailableInventions();
+            return Game.Player.getAllAvailableInventions().OrderBy(x=>x.Value).ThenBy(x=>x.Key.getCost().get());
         }
         
         protected override void AddRow(KeyValuePair<Invention, bool> invention, int number)

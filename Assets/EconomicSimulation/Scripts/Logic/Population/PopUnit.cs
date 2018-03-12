@@ -1150,7 +1150,7 @@ namespace Nashet.EconomicSimulation
         {
             //***********migration inside country***********
             if (this.type == PopType.Farmers || this.type == PopType.Workers || this.type == PopType.Tribesmen)
-                foreach (var proposedNewProvince in Province.getAllNeigbors().Where(x => x.Country == this.Country))
+                foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country == this.Country))
                 //foreach (var proposedNewProvince in Country.getAllProvinces())
                 {
                     var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);//province.getAverageNeedsFulfilling(this.type);

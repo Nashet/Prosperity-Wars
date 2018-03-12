@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Text;
+using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.ValueSpace;
 using Nashet.Utils;
@@ -38,7 +39,7 @@ namespace Nashet.EconomicSimulation
 
         }
 
-        
+
         public override void Refresh()
         {
             refresh(true);
@@ -70,16 +71,7 @@ namespace Nashet.EconomicSimulation
 
         }
 
-        public void show(Province province)
-        {
-            if (province != null)
-            {
-                var list = Game.Player.getNeighborProvinces();
-                ddProvinceSelect.value = list.IndexOf(province);
-            }
-            Show();                
-        }
-
+       
         public void onMobilizationClick()
         {
             //if (Game.Player.homeArmy.getSize() == 0)
@@ -105,13 +97,28 @@ namespace Nashet.EconomicSimulation
                 Debug.Log("Failed to send Army");
             refresh(false);
         }
+        public void show(Province province)
+        {
+            if (province != null)
+            {
+                var list = Game.Player.getAllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight());
+                //var found = list.IndexOf(province);
+                var found = list.FindIndex(x => x == province);
+
+                ddProvinceSelect.value = found;
+                if (found < 0)
+                    Debug.Log("Didn't find province " + province);
+            }
+            Show();
+        }
+
         void rebuildDropDown()
         {
             ddProvinceSelect.interactable = true;
             ddProvinceSelect.ClearOptions();
             byte count = 0;
             availableProvinces.Clear();
-            foreach (Province next in Game.Player.getNeighborProvinces())
+            foreach (Province next in Game.Player.getAllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight()))
             {
                 //if (next.isAvailable(Game.player))
                 {

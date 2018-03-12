@@ -108,8 +108,8 @@ namespace Nashet.EconomicSimulation
         public readonly ModifiersList modMyOpinionOfXCountry;
         public static readonly DoubleConditionsList canAttack = new DoubleConditionsList(new List<Condition>
     {
-        new DoubleCondition((province, country)=>(province as Province).isNeighborButNotOwn(country as Country), x=>"Is neighbor province", true),
-        //new ConditionForDoubleObjects((province, province)=>(province as Province).Country.government.getValue, x=>"Is neighbor province", false),
+        new DoubleCondition((province, country)=>(province as Province).getAllNeighbors().Any(x => x.Country == country)
+        && (province as Province) .Country != country, x=>"Is neighbor province", true),
         new DoubleCondition((province, country)=>!Government.isDemocracy.checkIfTrue(country)
         || !Government.isDemocracy.checkIfTrue((province as Province).Country), x=>"Democracies can't attack each other", true),
     });
@@ -568,15 +568,22 @@ namespace Nashet.EconomicSimulation
         //    //!province.isBelongsTo(this) &&
         //    return province.isNeighbor(this);
         //}
-
-        internal List<Province> getNeighborProvinces()
+        /// <summary>
+        /// Has duplicates!
+        /// </summary>        
+        internal IEnumerable<Province> getAllNeighborProvinces()
         {
-            List<Province> result = new List<Province>();
+            //var res = Enumerable.Empty<Province>();
             foreach (var province in ownedProvinces)
-                result.AddRange(
-                    province.getAllNeigbors().Where(p => p.Country != this && !result.Contains(p))
-                    );
-            return result;
+                foreach (var neighbor in province.getAllNeighbors().Where(p => p.Country != this))
+                    yield return neighbor;
+
+            //List<Province> result = new List<Province>();
+            //foreach (var province in ownedProvinces)
+            //    result.AddRange(
+            //        province.getAllNeighbors().Where(p => p.Country != this && !result.Contains(p))
+            //        );
+            //return result;
         }
         private bool isOnlyCountry()
         {
@@ -873,7 +880,7 @@ namespace Nashet.EconomicSimulation
                 if (Game.Random.Next(10) == 1)
                 {
                     var thisStrength = this.getStrengthExluding(null);
-                    var possibleTarget = getNeighborProvinces().MinBy(x => getRelationTo(x.Country).get());
+                    var possibleTarget = getAllNeighborProvinces().Distinct().MinBy(x => getRelationTo(x.Country).get());
                     if (possibleTarget != null
                         && (getRelationTo(possibleTarget.Country).get() < 1f || Game.Random.Next(200) == 1)
                         && thisStrength > 0

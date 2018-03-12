@@ -12,8 +12,7 @@ namespace Nashet.EconomicSimulation
     public class Game : ThreadedJob
     {
         static private readonly bool readMapFormFile = false;
-        static private MyTexture mapTexture;
-        //static public GameObject mapObject;
+        static private MyTexture mapTexture;        
         static internal GameObject r3dTextPrefab;
 
         static public Country Player;
@@ -31,7 +30,7 @@ namespace Nashet.EconomicSimulation
         static public readonly Market market;
 
 
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,

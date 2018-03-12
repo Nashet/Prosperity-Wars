@@ -212,7 +212,7 @@ namespace Nashet.EconomicSimulation
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(8200, 9000), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(20f);
-                    pop = new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
+                    new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              
                 }

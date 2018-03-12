@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
         }
         public override void consumeNeeds()
         {
-            base.consumeNeeds();            
+            base.consumeNeeds();
             if (artisansProduction != null)
             {
                 PayWithoutRecord(artisansProduction, Cash);
@@ -93,7 +93,7 @@ namespace Nashet.EconomicSimulation
                 this.getConsumedInMarket().Add(artisansProduction.getConsumedInMarket());
                 this.getConsumed().Add(artisansProduction.getConsumed());
                 this.getConsumedLastTurn().Add(artisansProduction.getConsumedLastTurn());
-            }            
+            }
         }
         internal override bool canTrade()
         {
@@ -135,11 +135,14 @@ namespace Nashet.EconomicSimulation
             var newProductionType = ProductionType.getAllInventedArtisanships(Country).
                 Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit().isNotZero()).MaxBy(x => x.getPossibleProfit().get());
 
-            if (newProductionType != null && (artisansProduction == null || artisansProduction != null && newProductionType != artisansProduction.Type))
-            {
-                artisansProduction = new ArtisanProduction(newProductionType, Province, this);
-                base.changeProductionType(artisansProduction.Type.basicProduction.Product);
-            }
+            if (newProductionType != null)
+                if (artisansProduction == null 
+                    || (artisansProduction != null && newProductionType != artisansProduction.Type))
+
+                {
+                    artisansProduction = new ArtisanProduction(newProductionType, Province, this);
+                    base.changeProductionType(artisansProduction.Type.basicProduction.Product);
+                }
         }
         public StorageSet getInputProducts()
         {
