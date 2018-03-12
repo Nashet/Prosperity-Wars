@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         {
             base.deleteData();
             artisansProduction = null;
-        }        
+        }
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Capitalists && Country.Invented(Invention.Manufactures))
@@ -37,14 +37,12 @@ namespace Nashet.EconomicSimulation
                 artisansProduction = null;
             else
             {
-                if (Rand.Chance(Options.ArtisansChangeProductionRate))
-                    // && (artisansProduction==null 
-                    //|| (artisansProduction !=null && needsFulfilled.isSmallerThan(Options.ArtisansChangeProductionLevel))))
+                Rand.Call(() => checkProfit(), 10);// changes production type if needed
+                if (Rand.Chance(Options.ArtisansChangeProductionRate)) // check if it's best production type so far                
                     changeProductionType();
-
                 if (artisansProduction != null)
                 {
-                    if (artisansProduction.isAllInputProductsCollected())
+                    //if (artisansProduction.isAllInputProductsCollected())
                     {
                         artisansProduction.produce();
                         if (Economy.isMarket.checkIfTrue(Country))
@@ -74,17 +72,17 @@ namespace Nashet.EconomicSimulation
                 PayWithoutRecord(artisansProduction, Cash);
 
                 // take loan if don't have enough money to buy inputs            
-                if (Country.Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected())
-                    if (artisansProduction.Type.getPossibleProfit().isNotZero())
+                if (Country.Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
+                    && artisansProduction.Type.getPossibleProfit().isNotZero())
+                {
+                    var needs = artisansProduction.getRealAllNeeds();
+                    if (!artisansProduction.CanAfford(needs))
                     {
-                        var needs = artisansProduction.getRealAllNeeds();
-                        if (!artisansProduction.CanAfford(needs))
-                        {
-                            var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed                            
-                            Bank.GiveCredit(this, loanSize);
-                            PayWithoutRecord(artisansProduction, Cash);
-                        }
+                        var loanSize = Game.market.getCost(needs); // takes little more than really need, could be fixed                            
+                        Bank.GiveCredit(this, loanSize);
+                        PayWithoutRecord(artisansProduction, Cash);
                     }
+                }
 
                 artisansProduction.consumeNeeds();
                 artisansProduction.PayWithoutRecord(this, artisansProduction.Cash);
@@ -136,12 +134,15 @@ namespace Nashet.EconomicSimulation
         {
             var newProductionType = ProductionType.getAllInventedArtisanships(Country).
                 Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit().isNotZero()).MaxBy(x => x.getPossibleProfit().get());
-            
-            if (newProductionType != null && (artisansProduction == null || artisansProduction != null && newProductionType != artisansProduction.Type))
-            {
-                artisansProduction = new ArtisanProduction(newProductionType, Province, this);
-                base.changeProductionType(artisansProduction.Type.basicProduction.Product);
-            }
+
+            if (newProductionType != null)
+                if (artisansProduction == null 
+                    || (artisansProduction != null && newProductionType != artisansProduction.Type))
+
+                {
+                    artisansProduction = new ArtisanProduction(newProductionType, Province, this);
+                    base.changeProductionType(artisansProduction.Type.basicProduction.Product);
+                }
         }
         public StorageSet getInputProducts()
         {
@@ -170,7 +171,8 @@ namespace Nashet.EconomicSimulation
         internal void checkProfit()
         {
             // todo doesn't include taxes. Should it?
-            if (artisansProduction == null || moneyIncomeThisTurn.Copy().subtract(artisansProduction.getExpences()).isZero())
+            if (artisansProduction == null
+                || moneyIncomeThisTurn.Copy().subtract(artisansProduction.getExpences()).isZero())
                 changeProductionType();
         }
     }

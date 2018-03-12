@@ -207,6 +207,10 @@ namespace Nashet.EconomicSimulation
         //        if (item.isConsumerProduct() && item.isInventedBy(country))
         //            yield return item;
         //}
+        /// <summary>
+        /// Gives elements in cheap-expensive order
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Product> getSubstitutes()
         {
             foreach (var item in substitutes)
@@ -218,7 +222,7 @@ namespace Nashet.EconomicSimulation
         {
             if (ignoreGold)
                 return Product.Wood;
-            return Product.allProducts.Random(x => x.isResource());
+            return allProducts.Where(x => x.isResource()).Random();
         }
         public static void sortSubstitutes()
         {

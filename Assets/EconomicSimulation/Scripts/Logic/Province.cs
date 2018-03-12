@@ -361,7 +361,7 @@ namespace Nashet.EconomicSimulation
         //}
 
 
-        internal IEnumerable<Province> getAllNeigbors()
+        internal IEnumerable<Province> getAllNeighbors()
         {
             foreach (var item in neighbors)
                 yield return item;
@@ -450,10 +450,10 @@ namespace Nashet.EconomicSimulation
         {
             return this.Country == country;
         }
-        internal bool isNeighborButNotOwn(Country country)
-        {
-            return neighbors.Any(x => x.Country == country && this.Country != country);
-        }
+        //internal bool isNeighborButNotOwn(Country country)
+        //{
+        //    return this.Country != country && neighbors.Any(x => x.Country == country);
+        //}
         internal bool isNeighbor(Province province)
         {
             return neighbors.Contains(province);

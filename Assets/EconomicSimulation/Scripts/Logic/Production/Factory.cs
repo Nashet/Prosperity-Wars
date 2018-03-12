@@ -1006,10 +1006,14 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        if (isSubsidized())
-                            Game.market.buy(this, new StorageSet(shoppingList), Country);
-                        else
-                            Game.market.buy(this, new StorageSet(shoppingList), null);
+                        //if (isSubsidized())
+                        //    Game.market.SellList(this, new StorageSet(shoppingList), Country);
+                        //else
+                        //    Game.market.SellList(this, new StorageSet(shoppingList), null);
+                        Country subsidizer = isSubsidized() ? Country : null;
+                        foreach (Storage item in shoppingList)
+                            if (item.isNotZero())
+                               Game.market.Sell(this, item, subsidizer);
                     }
             }
             if (isUpgrading() || isBuilding())

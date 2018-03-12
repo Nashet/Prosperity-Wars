@@ -340,32 +340,51 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// Returns NULL if failed
         /// </summary>    
-        public Storage convertToCheapestExistingSubstitute(Storage abstractProduct)
+        public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct)
         {
+            var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x =>
+            {
+                if (!x.isTradable()) // skip uninvented
+                    return false;
+                // take available products
+                return Game.market.sentToMarket.has(new Storage(x, abstractProduct));
+            })
+            .FirstSameElements(x => Game.market.getPrice(x).RawUIntValue).Random();
+            if (randomCheapestProduct == null)
+                return null;
+            else
+                return new Storage(randomCheapestProduct, abstractProduct);
+
             // assuming substitutes are sorted in cheap-expensive order
-            foreach (var substitute in abstractProduct.Product.getSubstitutes())
-                if (substitute.isTradable())
-                {
-                    Storage newStor = new Storage(substitute, abstractProduct);
-                    // check for availability
-                    if (Game.market.sentToMarket.has(newStor))
-                        return newStor;
-                    //return this.sentToMarket.getExistingStorage(item);
-                }
-            return null;
+            //foreach (var substitute in abstractProduct.Product.getSubstitutes())
+            //    if (substitute.isTradable())
+            //    {
+            //        Storage newStor = new Storage(substitute, abstractProduct);
+            //        // check for availability
+            //        if (Game.market.sentToMarket.has(newStor))
+            //            return newStor;
+            //    }
+            //return null;
         }
         /// <summary>
         /// Returns NULL if failed
         /// </summary> 
-        public Storage convertToCheapestStorageProduct(Storage abstractProduct)
+        public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct)
         {
-            // assuming substitutes are sorted in cheap-expensive order
-            foreach (var item in abstractProduct.Product.getSubstitutes())
-                if (item.isTradable())
-                {
-                    return new Storage(item, abstractProduct);
-                }
-            return null;
+            var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
+            .FirstSameElements(x => Game.market.getPrice(x).RawUIntValue).Random();
+            
+            if (randomCheapestProduct == null)
+                return null;
+            else
+                return new Storage(randomCheapestProduct, abstractProduct);
+            //// assuming substitutes are sorted in cheap-expensive order
+            //foreach (var item in abstractProduct.Product.getSubstitutes())
+            //    if (item.isTradable())
+            //    {
+            //        return new Storage(item, abstractProduct);
+            //    }
+            //return null;
         }
         /// <summary> Assuming product is abstract product
         /// Returns total sum of all substitute products</summary>       
@@ -452,7 +471,7 @@ namespace Nashet.ValueSpace
 
         internal int Count()
         {
-            return collection.Count(x=>x.Value.isNotZero());
+            return collection.Count(x => x.Value.isNotZero());
         }
 
         internal StorageSet Multiply(Value value)
@@ -493,7 +512,7 @@ namespace Nashet.ValueSpace
             Storage found;
             if (collection.TryGetValue(storage.Product, out found))
             {
-                var res = found.has(storage);                
+                var res = found.has(storage);
                 found.subtract(storage, showMessageAboutNegativeValue);
                 return res;
             }

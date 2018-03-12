@@ -101,10 +101,10 @@ namespace Nashet.EconomicSimulation
                 {
                     sb.Append("\nInput required: ");
                     foreach (Storage next in factory.Type.resourceInput)
-                        sb.Append(next.get() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
+                        sb.Append(next.get()* factory.getLevel() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
                 }
                 if (factory.getConsumed().Count() > 0)
-                    sb.Append("\nConsumed: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
+                    sb.Append("\nBought: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
                 //if (Game.devMode)
                 //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
 

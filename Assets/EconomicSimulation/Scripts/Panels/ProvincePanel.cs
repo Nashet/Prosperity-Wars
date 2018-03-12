@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.getID());
-                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.getAllNeigbors().getString(", "));                
+                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.getAllNeighbors().getString(", "));                
             }
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
             

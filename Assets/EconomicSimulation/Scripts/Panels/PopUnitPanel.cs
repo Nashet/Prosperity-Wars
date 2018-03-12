@@ -35,7 +35,11 @@ namespace Nashet.EconomicSimulation
                 //sb.Append(pop);
                 sb.Append("Population: ").Append(pop.getPopulation());
                 //if (Game.devMode)
-                sb.Append("\nStorage: ").Append(pop.storage.ToString());
+                if (pop.storage.isNotZero())
+                    if (pop.Type == PopType.Aristocrats)
+                        sb.Append("\nStorage: ").Append(pop.storage.ToString());
+                    else
+                        sb.Append("\nUnsold: ").Append(pop.storage.ToString());
                 Artisans isArtisan = pop as Artisans;
                 if (isArtisan != null)
                 {
@@ -46,7 +50,10 @@ namespace Nashet.EconomicSimulation
                     else
                         sb.Append(isArtisan.Type.basicProduction.Product);
                 }
-                sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
+                if (pop.Type == PopType.Aristocrats || pop.Type == PopType.Soldiers)
+                    sb.Append("\nGained: ").Append(pop.getGainGoodsThisTurn().ToString());
+                else
+                    sb.Append("\nProduced: ").Append(pop.getGainGoodsThisTurn().ToString());
                 sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it            
 
 

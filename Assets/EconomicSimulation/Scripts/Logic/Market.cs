@@ -94,9 +94,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
         /// </summary>    
-        internal Storage getCheapestSubstitute(Storage need)
+        internal Storage GetRandomCheapestSubstitute(Storage need)
         {
-            return marketPrice.convertToCheapestStorageProduct(need);
+            return marketPrice.ConvertToRandomCheapestStorageProduct(need);
         }
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
@@ -299,7 +299,7 @@ namespace Nashet.EconomicSimulation
                 Storage buying;
                 if (whatWantedToBuy.Product.isAbstract())
                 {
-                    buying = marketPrice.convertToCheapestExistingSubstitute(whatWantedToBuy);
+                    buying = marketPrice.ConvertToRandomCheapestExistingSubstitute(whatWantedToBuy);
                     if (buying == null)//no substitution available on market
                         return new Storage(whatWantedToBuy.Product);
                 }
@@ -377,7 +377,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
         /// </summary>    
-        public Storage buy(Consumer forWhom, Storage need, Country subsidizer)
+        public Storage Sell(Consumer forWhom, Storage need, Country subsidizer)
         {
             if (forWhom.CanAfford(need) || subsidizer == null)
                 return buy(forWhom, need);
@@ -391,12 +391,12 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Buying PrimitiveStorageSet, subsidizations allowed
         /// </summary>
-        internal void buy(Consumer buyer, StorageSet buying, Country subsidizer)
-        {
-            foreach (Storage item in buying)
-                if (item.isNotZero())
-                    buy(buyer, item, subsidizer);
-        }
+        //internal void SellList(Consumer buyer, StorageSet buying, Country subsidizer)
+        //{
+        //    foreach (Storage item in buying)
+        //        if (item.isNotZero())
+        //            buy(buyer, item, subsidizer);
+        //}
 
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Nashet.EconomicSimulation
                 // check if consumeOnThisIteration is not bigger than stillHaveToBuy
                 if (!stillHaveToBuy.has(consumeOnThisIteration))
                     consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.Product);
-                var reallyBought = buy(buyer, consumeOnThisIteration, null);
+                var reallyBought = Sell(buyer, consumeOnThisIteration, null);
 
                 stillHaveToBuy.Subtract(reallyBought);
 

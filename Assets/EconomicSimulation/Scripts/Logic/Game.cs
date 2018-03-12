@@ -12,8 +12,7 @@ namespace Nashet.EconomicSimulation
     public class Game : ThreadedJob
     {
         static private readonly bool readMapFormFile = false;
-        static private MyTexture mapTexture;
-        //static public GameObject mapObject;
+        static private MyTexture mapTexture;        
         static internal GameObject r3dTextPrefab;
 
         static public Country Player;
@@ -30,13 +29,11 @@ namespace Nashet.EconomicSimulation
 
         static public readonly Market market;
 
-
         static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
             impassableBorder;
-
 
         static private VoxelGrid grid;
         private readonly Rect mapBorders;
@@ -186,7 +183,7 @@ namespace Nashet.EconomicSimulation
                 //width = 170 + Random.Next(65);
                 //mapSize = 30000;
                 //width = 180 + Random.Next(65);
-                mapSize = 35000;
+                mapSize = 40000;
                 width = 250 + Random.Next(40);
             }
             // 140 is sqrt of 20000
@@ -369,7 +366,7 @@ namespace Nashet.EconomicSimulation
                         }
                     }
             }
-            // big AFTER all circle
+            // big AFTER all and get money for sold circle
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.getMoneyForSoldProduct();
