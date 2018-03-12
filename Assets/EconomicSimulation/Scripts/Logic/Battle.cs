@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+
 using Nashet.UnityUIUtils;
 using System.Text;
 using Nashet.Utils;

@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         static public readonly Market market;
 
-        static internal bool devMode = true;
+        static internal bool devMode = false;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
@@ -264,7 +264,8 @@ namespace Nashet.EconomicSimulation
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
                 + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
-                , "Ok", false, Game.Player.Capital.getPosition());
+                , "Ok", false);
+            //, Game.Player.Capital.getPosition()
         }
 
         private static void calcBattles()
