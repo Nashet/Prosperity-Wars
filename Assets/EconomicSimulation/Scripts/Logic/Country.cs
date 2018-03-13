@@ -542,7 +542,7 @@ namespace Nashet.EconomicSimulation
                     item.ownership.TransferAll(this, item.Country);
 
             if (this.IsHuman)
-                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false);
+                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.getPosition());
             alive = false;
 
             SetStatisticToZero();
