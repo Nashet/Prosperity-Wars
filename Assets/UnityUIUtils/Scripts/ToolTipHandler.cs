@@ -2,6 +2,9 @@
 using UnityEngine.EventSystems;
 using System.Collections;
 using System;
+using Nashet.Utils;
+using System.Linq;
+
 namespace Nashet.UnityUIUtils
 {
     public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IHideable
@@ -16,9 +19,9 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private bool isDynamic;
 
-        [SerializeField]
-        private Hideable ownerWindow;
-                
+        //[SerializeField]
+        //private Hideable ownerWindow;
+
         private bool inside;
 
         /// <summary>
@@ -26,10 +29,16 @@ namespace Nashet.UnityUIUtils
         /// </summary>
         protected void Start()
         {
+            //var foundParent = gameObject.AllParents().FirstOrDefault(x => x.HasComponent<Hideable>());
+            //if (foundParent != null)
+            //{
+            //    var ownerWindow = foundParent.GetComponent<Hideable>();
+            var ownerWindow = GetComponentInParent<Hideable>();
             if (ownerWindow != null)
                 ownerWindow.Hidden += OnHiddenOwner;
+            //}
         }
-        
+
         void OnHiddenOwner(Hideable eventData)
         {
             // forces tooltip to hide
