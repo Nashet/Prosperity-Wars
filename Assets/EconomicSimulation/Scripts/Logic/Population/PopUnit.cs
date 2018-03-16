@@ -730,7 +730,7 @@ namespace Nashet.EconomicSimulation
                     // I also can limit regular luxury consumption but should I?:
                     if (!someLuxuryProductUnavailable
                         && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
-                    {                        
+                    {
                         Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                         Value spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
 
@@ -738,7 +738,7 @@ namespace Nashet.EconomicSimulation
 
                         ReadOnlyValue spentOnUnlimitedConsumption; ;
                         if (Cash.isBiggerThan(spendingLimit))
-                            spentOnUnlimitedConsumption=spendingLimit; // don't spent more than gained                    
+                            spentOnUnlimitedConsumption = spendingLimit; // don't spent more than gained                    
                         else
                             spentOnUnlimitedConsumption = Cash;
 
@@ -1165,21 +1165,22 @@ namespace Nashet.EconomicSimulation
 
 
                 foreach (var country in World.getAllExistingCountries())
-                    if (
-                        (country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
-                        && country != this.Country)
-                        foreach (var proposedNewProvince in country.getAllProvinces())
-                        //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
-                        //province =>
-                        //province.Country != this.Country && province.Country != World.UncolonizedLand
-                        //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
-                        //))
+                    //if (
+                    //(country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                    //&& country != this.Country)
+                    //foreach (var proposedNewProvince in country.getAllProvinces())
+                    //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
+                    //province =>
+                    //province.Country != this.Country && province.Country != World.UncolonizedLand
+                    //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                    //))
 
-                        {
-                            var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);
-                            if (targetPriority.isNotZero())
-                                yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
-                        }
+                    foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != this.Country))
+                    {
+                        var targetPriority = proposedNewProvince.getLifeQuality(this, this.Type);
+                        if (targetPriority.isNotZero())
+                            yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
+                    }
             // ***********demotion***********            
             foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => this.type.CanDemoteTo(x, Country)))
             {

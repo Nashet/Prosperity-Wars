@@ -14,7 +14,7 @@ namespace Nashet.ValueSpace
         internal readonly static int Precision = 1000; // 0.001
         internal static readonly ReadOnlyValue Zero = new ReadOnlyValue(0);
         internal static readonly ReadOnlyValue Max999 = new ReadOnlyValue(999.999f);
-        internal static readonly ReadOnlyValue Max = new ReadOnlyValue(int.MaxValue / Precision);
+        internal static readonly ReadOnlyValue Max = new ReadOnlyValue(int.MaxValue /(float) Precision);
 
         public ReadOnlyValue(float number, bool showMessageAboutOperationFails = true)
         {

@@ -773,7 +773,7 @@ namespace Nashet.Utils
             Sum = element.Sum(everyElement => everyElement.Value)
             //.Sum(x => x.Value))
 
-        }).OrderBy(x => x.Sum);
+        }).OrderByDescending(x => Math.Abs(x.Sum));
             //only null or province
             if (query.Count() == 0)
                 return "no changes";
@@ -862,7 +862,7 @@ namespace Nashet.Utils
             float maxDeviation = 0.02f;//not including
 
             var result = new Color();
-            float deviation = maxDeviation - Game.Random.getFloat(0f, maxDeviation * 2);
+            float deviation = maxDeviation - Rand.getFloat(0f, maxDeviation * 2);
             result.r = color.r + deviation;
             result.g = color.g + deviation;
             result.b = color.b + deviation;

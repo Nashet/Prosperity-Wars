@@ -251,7 +251,7 @@ namespace Nashet.EconomicSimulation
             //{
             //    if (item.Value.isDatePassed())
             //}
-            modifiers.RemoveAll((modifier, date) => date != null && date.isDatePassed());
+            modifiers.RemoveAll((modifier, date) => date != null && date.isPassed());
         }
         /// <summary>
         /// returns true if ANY of cores matches  predicate
@@ -941,16 +941,32 @@ namespace Nashet.EconomicSimulation
                     }
                 case 4: //population change mode                
                     {
-                        float maxColor = 100;
-                        var change = GetAllPopulation().Sum(x => x.getAllPopulationChanges()
-                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(y => y.Value));
-                        if (change > 0)
-                            return Color.Lerp(Color.grey, Color.green, change / maxColor);
-                        else if (change == 0)
-                            return Color.gray;
+                        
+                        if (Game.selectedProvince == null)
+                        {
+                            float maxColor = 3000;
+                            //can improve performance
+                            var change = Country.GetAllPopulation().Sum(x => x.getAllPopulationChanges()
+                             .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(y => y.Value));
+                            if (change > 0)
+                                return Color.Lerp(Color.grey, Color.green, change / maxColor);
+                            else if (change == 0)
+                                return Color.gray;
+                            else
+                                return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
+                        }
                         else
-                            return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
-
+                        {
+                            float maxColor = 500;
+                            var change = GetAllPopulation().Sum(x => x.getAllPopulationChanges()
+                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(y => y.Value));
+                            if (change > 0)
+                                return Color.Lerp(Color.grey, Color.green, change / maxColor);
+                            else if (change == 0)
+                                return Color.gray;
+                            else
+                                return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
+                        }
                     }
                 case 5: //population density mode                
                     {
@@ -1196,10 +1212,18 @@ namespace Nashet.EconomicSimulation
             else
             {
                 var lifeQuality = getAverageNeedsFulfilling(proposedType);
+
                 if (!lifeQuality.isBiggerThan(thisPop.needsFulfilled, Options.PopNeedsEscapingBarrier))
                     return ReadOnlyValue.Zero;
-                if (getSimilarPopUnit(thisPop) != null) // checks for same culture and type
+
+                // checks for same culture and type
+                if (getSimilarPopUnit(thisPop) != null) 
                     lifeQuality.Add(Options.PopSameCultureMigrationPreference);
+
+                if (country.getCulture() != thisPop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
+                    lifeQuality.Subtract(0.3f, false);
+
+                // reforms preferences
                 if (thisPop.Type.isPoorStrata())
                 {
                     lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2);

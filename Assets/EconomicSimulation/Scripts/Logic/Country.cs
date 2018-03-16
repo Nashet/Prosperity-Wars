@@ -83,8 +83,6 @@ namespace Nashet.EconomicSimulation
             get { return moneyIncomeThisTurn.Copy().Subtract(getIncome()); }
         }
 
-
-
         private readonly Money unemploymentSubsidiesExpense = new Money(0f);
         public Money UnemploymentSubsidiesExpense { get { return unemploymentSubsidiesExpense.Copy(); } }
 
@@ -99,10 +97,8 @@ namespace Nashet.EconomicSimulation
 
         private readonly float nameWeight;
 
-
         private TextMesh meshCapitalText;
         private Material borderMaterial;
-
 
         private readonly Modifier modXHasMyCores;
         public readonly ModifiersList modMyOpinionOfXCountry;
@@ -113,9 +109,6 @@ namespace Nashet.EconomicSimulation
         new DoubleCondition((province, country)=>!Government.isDemocracy.checkIfTrue(country)
         || !Government.isDemocracy.checkIfTrue((province as Province).Country), x=>"Democracies can't attack each other", true),
     });
-
-
-
 
         public static readonly ModifiersList modSciencePoints = new ModifiersList(new List<Condition>
         {
@@ -146,14 +139,16 @@ namespace Nashet.EconomicSimulation
             new Modifier(x=>(x as Country).government.getValue() != this.government.getValue(), "You have different form of government", -0.002f, false),
             new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle
             && this.getLastAttackDateOn(x as Country).getYearsSince() > Options.CountryTimeToForgetBattle,"You live in peace with us", 0.005f, false),
-            new Modifier (x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0 &&  (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
-            "Recently attacked us", -0.06f, false),
+            new Modifier (x=>!((x as Country).getLastAttackDateOn(this).getYearsSince() > Options.CountryTimeToForgetBattle) && (x as Country).getLastAttackDateOn(this).getYearsSince() < 15,
+            "Recently attacked us", -0.06f, false), //x=>(x as Country).getLastAttackDateOn(this).getYearsSince() > 0
             new Modifier (x=> this.isThreatenBy(x as Country),"We are weaker", -0.05f, false),
             new Modifier (delegate(object x) {isThereBadboyCountry();  return isThereBadboyCountry()!= null && isThereBadboyCountry()!= x as Country  && isThereBadboyCountry()!= this; },
                 delegate  { return "There is bigger threat to the world - " + isThereBadboyCountry(); },  0.05f, false),
             new Modifier (x=>isThereBadboyCountry() ==x,"You are very bad boy", -0.05f, false),
-            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue() && government.getValue()==Government.ProletarianDictatorship, "Comintern aka Third International", 0.2f, false),
+            new Modifier(x=>(x as Country).government.getValue() == this.government.getValue() && government.getValue()==Government.ProletarianDictatorship,
+            "Comintern aka Third International", 0.2f, false),
             });
+
             bank = new Bank(this);
             //staff = new GeneralStaff(this);
             //homeArmy = new Army(this);
@@ -560,7 +555,7 @@ namespace Nashet.EconomicSimulation
             if (this.myLastAttackDate.ContainsKey(target.Country))
                 myLastAttackDate[target.Country].set(Date.Today);
             else
-                myLastAttackDate.Add(target.Country, Date.Today);
+                myLastAttackDate.Add(target.Country, Date.Today.Copy());
         }
 
         //internal bool canAttack(Province province)
@@ -889,6 +884,7 @@ namespace Nashet.EconomicSimulation
                             || possibleTarget.Country == World.UncolonizedLand
                             || possibleTarget.Country.isAI() && this.getStrengthExluding(null) > possibleTarget.Country.getStrengthExluding(null) * 0.1f)
                         && Country.canAttack.isAllTrue(possibleTarget, this)
+                        && (possibleTarget.Country.isAI() || Options.AIFisrtAllowedAttackOnHuman.isPassed())
                         )
                     {
                         mobilize(ownedProvinces);

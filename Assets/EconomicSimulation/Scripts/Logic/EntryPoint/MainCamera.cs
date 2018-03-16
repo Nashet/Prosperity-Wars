@@ -129,7 +129,7 @@ namespace Nashet.EconomicSimulation
                             GetComponent<ToolTipHandler>().SetTextDynamic(() =>
                             "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
                             + "\n" + hoveredProvince.Country.getAllPopulationChanges()
-                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
+                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
                             .getString("\n", "Total change: "));
                         else
                             GetComponent<ToolTipHandler>().SetTextDynamic(() =>

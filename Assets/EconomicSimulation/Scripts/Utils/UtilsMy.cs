@@ -333,9 +333,8 @@ namespace Nashet.Utils
         }
         /// <summary>Gives random T according element weight  /// </summary>    
         public T getRandom()
-        {
-            //float randomNumver = UnityEngine.Random.value;
-            float randomNumber = Game.Random.getFloat(0f, 1f);
+        {            
+            float randomNumber = Rand.getFloat(0f, 1f);
             foreach (Mean next in list)
                 if (randomNumber <= next.weight)
                     return next.element;
@@ -427,12 +426,7 @@ namespace Nashet.Utils
 
     public static class UtilsMy
     {
-        public static float getFloat(this System.Random random, float minValue, float maxValue)
-        {
-            //float m = (maxValue - minValue) ;
 
-            return (float)(random.NextDouble()) * (maxValue - minValue) + minValue;
-        }
 
         public static void Clear(this StringBuilder value)
         {
@@ -722,7 +716,7 @@ namespace Nashet.Utils
                 }
             }
         }
-        public  void updateStatus(String status)
+        public void updateStatus(String status)
         {
             lock (this.status)
             {

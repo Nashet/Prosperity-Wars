@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         private readonly static List<Country> allCountries = new List<Country>();
         private readonly static List<Culture> allCultures = new List<Culture>();
 
-        internal static Country UncolonizedLand;
+        internal readonly static Country UncolonizedLand;
         private static World thisObject;
         public static World Get
         {
@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (province.Country == World.UncolonizedLand)
                 {
-                    new Tribesmen(PopUnit.getRandomPopulationAmount(2500, 3000), province.Country.getCulture(), province);
+                    new Tribesmen(PopUnit.getRandomPopulationAmount(1500, 2000), province.Country.getCulture(), province);
                 }
                 else
                 {
@@ -193,7 +193,8 @@ namespace Nashet.EconomicSimulation
                     //if (Game.devMode)
                     //    pop = new Tribesmen(2000, province.Country.getCulture(), province);
                     //else
-                    new Tribesmen(PopUnit.getRandomPopulationAmount(11000, 12000), province.Country.getCulture(), province);
+                    //new Tribesmen(PopUnit.getRandomPopulationAmount(11000, 12000), province.Country.getCulture(), province);
+                    new Tribesmen(PopUnit.getRandomPopulationAmount(3100, 3200), province.Country.getCulture(), province);
 
                     //if (Game.devMode)
                     //    pop = new Aristocrats(1000, province.Country.getCulture(), province);

@@ -14,19 +14,19 @@ namespace Nashet.EconomicSimulation
         private readonly StorageSet marketPrice = new StorageSet();
 
         // todo make Better class for it? - yes
-        private Date dateOfDSB = new Date(int.MaxValue);
+        private Date dateOfDSB = Date.Never.Copy();
         private readonly StorageSet DSBbuffer = new StorageSet();
 
-        private Date dateOfgetSupplyOnMarket = new Date(int.MaxValue);
+        private Date dateOfgetSupplyOnMarket = Date.Never.Copy();
         private readonly StorageSet supplyOnMarket = new StorageSet();
 
-        private Date dateOfgetTotalProduction = new Date(int.MaxValue);
+        private Date dateOfgetTotalProduction = Date.Never.Copy();
         private readonly StorageSet totalProduction = new StorageSet();
 
-        private Date dateOfgetTotalConsumption = new Date(int.MaxValue);
+        private Date dateOfgetTotalConsumption = Date.Never.Copy();
         private readonly StorageSet totalConsumption = new StorageSet();
 
-        private Date dateOfgetBought = new Date(int.MaxValue);
+        private Date dateOfgetBought = Date.Never.Copy();
         private readonly StorageSet bought = new StorageSet();
 
         internal PricePool priceHistory;

@@ -4,9 +4,9 @@ namespace Nashet.Utils
     /// <summary>
     /// Hand made class to work with game date
     /// </summary>
-    public class Date
+    public class Date: ICopyable<Date>
     {
-        internal static readonly Date Never = new Date(int.MinValue);
+        internal static readonly Date Never = new Date(int.MinValue / 2 );
         static private Date today = new Date(0);
         static public Date Today
         {
@@ -61,7 +61,7 @@ namespace Nashet.Utils
         {
             return this.year % passed == 0;
         }
-        public bool isDatePassed()
+        public bool isPassed()
         {
             return today.year > this.year;
         }
@@ -99,6 +99,11 @@ namespace Nashet.Utils
         public override string ToString()
         {
             return year.ToString();
+        }
+
+        public Date Copy()
+        {
+            return new Date(this);
         }
     }
 }

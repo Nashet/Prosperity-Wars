@@ -204,7 +204,7 @@ namespace Nashet.EconomicSimulation
             for (int i = 0; i < amountOfProvince; i++)
                 mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 
-            int emptyPixels = int.MaxValue;
+            int emptyPixels = 1;//non zero
             Color currentColor = mapImage.GetPixel(0, 0);
             int emergencyExit = 0;
             while (emptyPixels != 0 && emergencyExit < 100)

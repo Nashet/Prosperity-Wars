@@ -14,7 +14,12 @@ namespace Nashet.Utils
         //{
         //    return random2.Next(chance) == 0;
         //}
-        
+        public static float getFloat(float minValue, float maxValue)
+        {
+            //float m = (maxValue - minValue) ;
+
+            return (float)(random2.NextDouble()) * (maxValue - minValue) + minValue;
+        }
         /// <summary>
         /// Higher procent - higher chance
         /// </summary>            

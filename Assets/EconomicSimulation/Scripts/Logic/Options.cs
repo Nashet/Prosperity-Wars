@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Nashet.ValueSpace;
+using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public static class Options
@@ -102,7 +104,7 @@ namespace Nashet.EconomicSimulation
 
         ///<summary> Pop wouldn't select new life if there is unemployment hire than</summary>
         internal static readonly ReadOnlyValue PopMigrationUnemploymentLimit = new ReadOnlyValue(0.1f);
-        internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.02f);
+        internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopSameCultureMigrationPreference = new ReadOnlyValue(0.1f);
                 
         
@@ -175,7 +177,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopEducationRegressChance = new ReadOnlyValue(0.01f);
         internal static readonly ReadOnlyValue PopLearnByWorkingChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
-        
+        internal static readonly Date AIFisrtAllowedAttackOnHuman = new Date(30);
+
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
     }
