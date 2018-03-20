@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
         }
         internal static Money GetAllMoney()
         {
-            Money allMoney = new Money(0f);
+            Money allMoney = new Money(0m);
             foreach (Country country in getAllExistingCountries())
             {
                 allMoney.Add(country.Cash);
@@ -201,7 +201,7 @@ namespace Nashet.EconomicSimulation
                     //else
                     pop = new Aristocrats(PopUnit.getRandomPopulationAmount(500, 1000), province.Country.getCulture(), province);
 
-                    pop.GiveMoneyFromNoWhere(900f);
+                    pop.GiveMoneyFromNoWhere(900m);
                     pop.storage.add(new Storage(Product.Grain, 60f));
                     //if (!Game.devMode)
                     //{
@@ -209,10 +209,10 @@ namespace Nashet.EconomicSimulation
                     //pop.Cash.set(9000);
 
                     pop = new Artisans(PopUnit.getRandomPopulationAmount(400, 500), province.Country.getCulture(), province);
-                    pop.GiveMoneyFromNoWhere(900f);
+                    pop.GiveMoneyFromNoWhere(900m);
 
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(8200, 9000), province.Country.getCulture(), province);
-                    pop.GiveMoneyFromNoWhere(20f);
+                    pop.GiveMoneyFromNoWhere(20m);
                     new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));              

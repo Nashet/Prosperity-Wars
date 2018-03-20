@@ -128,7 +128,7 @@ namespace Nashet.EconomicSimulation
                     realSold.Multiply(DSB);
                     if (realSold.isNotZero())
                     {
-                        ReadOnlyValue cost = Game.market.getCost(realSold);
+                        MoneyView cost = Game.market.getCost(realSold);
                         //soldByGovernment.addMy(realSold.Product, realSold);
                         soldByGovernment[realSold.Product].Set(realSold);
                         //returning back unsold product
@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
                             Game.market.Pay(this, cost);
                             //Game.market.sentToMarket.subtract(realSold);
                         }
-                        else if (Game.market.HowMuchLacksMoneyIncludingDeposits(cost).get() > 10f && Game.devMode)
+                        else if (Game.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m && Game.devMode)
                             Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyIncludingDeposits(cost)
                                 + " for " + realSold); // money in market ended... Only first lucky get money
                     }
@@ -168,9 +168,9 @@ namespace Nashet.EconomicSimulation
             else
                 return Value.Zero;            
         }
-        public ReadOnlyValue getCostOfAllSellsByGovernment()
+        public MoneyView getCostOfAllSellsByGovernment()
         {
-            var res = new Value(0f);
+            var res = new Money(0m);
             foreach (var item in soldByGovernment)
             {
                 res.Add(Game.market.getCost(new Storage(item.Key, item.Value)));

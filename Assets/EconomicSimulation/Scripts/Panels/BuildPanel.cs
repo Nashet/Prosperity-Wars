@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
             Factory factory;
             if (Economy.isMarket.checkIfTrue(Game.Player))
             {
-                Value cost = selectedFactoryType.GetBuildCost();
+                MoneyView cost = selectedFactoryType.GetBuildCost();
                 if (Game.Player.CanPay(cost))
                 {
                     factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);

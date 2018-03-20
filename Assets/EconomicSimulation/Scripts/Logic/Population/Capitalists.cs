@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
 
                 if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
-                    Value investmentCost = project.GetInvestmentCost();
+                    MoneyView investmentCost = project.GetInvestmentCost();
                     if (!CanPay(investmentCost))
                         Bank.GiveLackingMoneyInCredit(this, investmentCost);
                     if (CanPay(investmentCost))

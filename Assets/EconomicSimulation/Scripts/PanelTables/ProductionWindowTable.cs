@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
             profitOrder = new SortOrder(this, x => x.getProfit());
             profitabilityOrder = new SortOrder(this, x => x.GetMargin().get());
-            salaryOrder = new SortOrder(this, x => x.getSalary().get());
+            salaryOrder = new SortOrder(this, x => (float)x.getSalary().Get());
             unemploymentOrder = new SortOrder(this, x => x.Province.getUnemployedWorkers());
         }
         protected override IEnumerable<Factory> ContentSelector()

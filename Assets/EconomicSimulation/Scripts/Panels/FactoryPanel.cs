@@ -126,7 +126,7 @@ namespace Nashet.EconomicSimulation
                 if (factory.getDaysClosed() > 0)
                     sb.Append(" Days closed: ").Append(factory.getDaysClosed());
 
-                if (factory.loans.get() > 0f)
+                if (factory.loans.isNotZero())
                     sb.Append("\nLoan: ").Append(factory.loans.ToString());
                 sb.Append("\nAssets value: ").Append(factory.ownership.GetAllAssetsValue());
                 sb.Append(", Market value: ").Append(factory.ownership.GetMarketValue());

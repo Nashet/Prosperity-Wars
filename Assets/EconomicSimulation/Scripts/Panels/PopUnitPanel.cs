@@ -70,9 +70,9 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nUnemployment: ").Append(pop.getUnemployment());
                 sb.Append("\nLoyalty: ").Append(pop.loyalty);
 
-                if (pop.loans.get() > 0f)
+                if (pop.loans.isNotZero())
                     sb.Append("\nLoan: ").Append(pop.loans.ToString());// hide it
-                if (pop.deposits.get() > 0f)
+                if (pop.deposits.isNotZero())
                     sb.Append("\nDeposit: ").Append(pop.deposits.ToString());// hide it
                 if (Game.devMode)
                     sb.Append("\nAge: ").Append(pop.getAge());

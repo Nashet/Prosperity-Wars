@@ -24,10 +24,8 @@ namespace Nashet.EconomicSimulation
         public bool CanProduce(Product product)
         {
             return Type.CanProduce(product);
-        }
-
-        
-        public Money GetInvestmentCost()
+        }        
+        public MoneyView GetInvestmentCost()
         {
             return Type.GetBuildCost();
         }

@@ -50,8 +50,8 @@ namespace Nashet.EconomicSimulation
 
         internal void takePayCheck()
         {
-            Value payCheck = new Value(Country.getSoldierWage());
-            payCheck.Multiply(getPopulation() / 1000f);
+            Money payCheck = Country.getSoldierWage().Copy();
+            payCheck.Multiply(getPopulation() / 1000m);
             if (Country.CanPay(payCheck))
             {
                 Country.Pay(this, payCheck);

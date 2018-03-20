@@ -172,14 +172,14 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        Value cost = GetBuildCost();
+                        var cost = GetBuildCost();
                         return agent.CanPay(cost);
                     }
                 },
                 delegate
                 {
                     var sb = new StringBuilder();
-                    Value cost = GetBuildCost();
+                    var cost = GetBuildCost();
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(this.GetBuildNeeds().getString(", "));
                     return sb.ToString();
@@ -228,9 +228,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///Returns new value
         /// </summary>        
-        public Money GetBuildCost()
+        public MoneyView GetBuildCost()
         {
-            Money result = Game.market.getCost(GetBuildNeeds());
+            Money result = Game.market.getCost(GetBuildNeeds()) .Copy();
             result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }
@@ -327,39 +327,37 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// For 1 level / 1000 workers. Not includes tax. Includes modifiers. New value
         /// </summary>        
-        internal Value getPossibleProfit(Province province)
+        internal MoneyView getPossibleProfit(Province province)
         {
-
             if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
-                return new Value(0); // no demand for result product
-            ReadOnlyValue income = Game.market.getCost(basicProduction);
-            income.Copy().Multiply(Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
-            var outCome = new Value(0f);// = province.getLocalMinSalary();//salary
+                return new MoneyView(0); // no demand for result product
+            Money income = Game.market.getCost(basicProduction).Copy();
+            income.Multiply((decimal)Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
+            var outCome = new Money(0m);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
                     if (!Game.market.isAvailable(inputProduct.Product))
-                        return new Value(0);// inputs are unavailable                                            
-
+                        return new MoneyView(0);// inputs are unavailable                                                            
                 outCome.Add(Game.market.getCost(resourceInput));
             }
-            return income.Copy().Subtract(outCome, false);
+            return income.Subtract(outCome, false);
         }
         /// <summary>
         /// For artisans. Not including salary
         /// </summary>        
-        internal ReadOnlyValue getPossibleProfit()
+        internal MoneyView getPossibleProfit()
         {
             if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
-                return new Value(0); // no demand for result product
-            ReadOnlyValue income = Game.market.getCost(basicProduction);
+                return new MoneyView(0); // no demand for result product
+            MoneyView income = Game.market.getCost(basicProduction);
 
             if (hasInput())
             {
                 // change to minimal hire limits
                 foreach (Storage inputProduct in resourceInput)
                     if (!Game.market.isAvailable(inputProduct.Product))
-                        return new Value(0);// inputs are unavailable                                            
+                        return new MoneyView(0);// inputs are unavailable                                            
 
                 return income.Copy().Subtract(Game.market.getCost(resourceInput), false);
             }
@@ -370,7 +368,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Procent GetPossibleMargin(Province province)
         {
-            var profit = getPossibleProfit(province);
+            var profit = getPossibleProfit(province) .Copy();
             var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
             profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost());

@@ -315,7 +315,7 @@ namespace Nashet.ValueSpace
         /// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>    
         internal Storage getCheapestStorage(Product what)
         {
-            return getStorage(what, CollectionExtensions.MinBy, x => Game.market.getPrice(x.Product).get());
+            return getStorage(what, CollectionExtensions.MinBy, x => (float)Game.market.getCost(x.Product).Get());
         }
         /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
         /// Returns copy of need if need was not abstract (make check)
@@ -349,7 +349,7 @@ namespace Nashet.ValueSpace
                 // take available products
                 return Game.market.sentToMarket.has(new Storage(x, abstractProduct));
             })
-            .FirstSameElements(x => Game.market.getPrice(x).RawUIntValue).Random();
+            .FirstSameElements(x => (float)Game.market.getCost(x).Get()).Random();
             if (randomCheapestProduct == null)
                 return null;
             else
@@ -372,8 +372,8 @@ namespace Nashet.ValueSpace
         public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct)
         {
             var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
-            .FirstSameElements(x => Game.market.getPrice(x).RawUIntValue).Random();
-            
+            .FirstSameElements(x => (float)Game.market.getCost(x).Get()).Random();
+
             if (randomCheapestProduct == null)
                 return null;
             else

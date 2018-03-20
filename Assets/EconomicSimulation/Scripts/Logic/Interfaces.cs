@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         /// Includes tax (1 country only), salary and modifiers. Doesn't include risks. New value
         /// </summary>
         Procent GetMargin();
-        Money GetInvestmentCost();        
+        MoneyView GetInvestmentCost();        
         bool CanProduce(Product product);
 
     }

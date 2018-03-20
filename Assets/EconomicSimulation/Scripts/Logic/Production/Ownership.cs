@@ -26,13 +26,13 @@ namespace Nashet.EconomicSimulation
         private readonly Factory parent;
         private readonly Procent marketPriceModifier = Procent.HundredProcent.Copy();
         private readonly Dictionary<IShareOwner, Share> ownership = new Dictionary<IShareOwner, Share>();
-        private readonly Money totallyInvested = new Money(0f);
+        private readonly Money totallyInvested = new Money(0m);
         public Owners(IShareable parent)
         {
             this.parent = parent as Factory;
         }
 
-        public void Add(IShareOwner owner, ReadOnlyValue value)
+        public void Add(IShareOwner owner, MoneyView value)
         {
             //if (IsCorrectData(value.))
             {
@@ -45,7 +45,7 @@ namespace Nashet.EconomicSimulation
                 //owner.GetOwnership().Add(parent, value);
             }
         }
-        private void Remove(IShareOwner fromWho, Value howMuchRemove)
+        private void Remove(IShareOwner fromWho, MoneyView howMuchRemove)
         {
             Share record;
             if (ownership.TryGetValue(fromWho, out record))
@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Test it!!
         /// </summary>        
-        public bool Transfer(IShareOwner oldOwner, IShareOwner newOwner, Value amount)
+        public bool Transfer(IShareOwner oldOwner, IShareOwner newOwner, MoneyView amount)
         {
             //if (IsCorrectData(share.get()))
             //{
@@ -167,8 +167,8 @@ namespace Nashet.EconomicSimulation
         }
         internal bool IsCountryOwnsControlPacket()
         {
-            Value ownedByAnyCountry = new Value(0f);
-            Value total = new Value(0f);
+            Money ownedByAnyCountry = new Money(0m);
+            Money total = new Money(0m);
             foreach (var item in GetAll())
             {
                 var value = item.Value.GetShare();
@@ -186,7 +186,7 @@ namespace Nashet.EconomicSimulation
 
         internal Procent GetTotalOnSale()
         {
-            var onSale = new Value(0f);
+            var onSale = new Money(0m);
             foreach (var item in ownership)
                 onSale.Add(item.Value.GetShareForSale());
             return new Procent(onSale, totallyInvested);
@@ -253,12 +253,12 @@ namespace Nashet.EconomicSimulation
         //    return ownership.Where(x => x.Value.GetAssetForSale().isBiggerOrEqual(desireableValue)).Random();
         //}
         /// <summary>
-        /// Returns copy
+        /// 
         /// </summary>
 
-        internal Value GetAllAssetsValue()
+        internal MoneyView GetAllAssetsValue()
         {
-            return totallyInvested.Copy();
+            return totallyInvested;
         }
         /// <summary>
         /// New value
@@ -267,14 +267,14 @@ namespace Nashet.EconomicSimulation
         {
             return totallyInvested.Copy().Multiply(marketPriceModifier);
         }
-        internal Value GetShareMarketValue(Procent share)
+        internal MoneyView GetShareMarketValue(Procent share)
         {
             return GetMarketValue().Multiply(share);
             //return share.SendProcentOf(GetMarketValue());
         }
-        internal Value GetShareAssetsValue(Procent share)
+        internal MoneyView GetShareAssetsValue(Procent share)
         {
-            return GetAllAssetsValue().Multiply(share);
+            return GetAllAssetsValue().Copy().Multiply(share);
             //return share.SendProcentOf(GetAllAssetsValue());
         }
         internal void CalcMarketPrice()
@@ -322,7 +322,7 @@ namespace Nashet.EconomicSimulation
                     var shareToBuy = sharesToBuy.Random();
                     var cost = shareToBuy.Value.GetShareForSale();
                     if (cost.isBiggerThan(purchaseValue))
-                        cost.Set(purchaseValue);
+                        cost = purchaseValue;
                     var buyingAgent = buyer as Agent;
 
                     if (buyingAgent.Pay(shareToBuy.Key as Agent, cost))
@@ -355,7 +355,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Cost of standard share
         /// </summary>        
-        public Money GetInvestmentCost()
+        public MoneyView GetInvestmentCost()
         {
             return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);
         }

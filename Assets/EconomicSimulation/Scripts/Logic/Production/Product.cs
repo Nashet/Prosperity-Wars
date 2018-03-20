@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation
         private static readonly List<Product> allProducts = new List<Product>();
         private static int resourceCounter;
 
-        private readonly Value defaultPrice;
+        private readonly MoneyView defaultPrice;
         private readonly bool _isResource;
         private readonly bool _isAbstract;
         private readonly bool _isMilitary;
@@ -83,10 +83,10 @@ namespace Nashet.EconomicSimulation
         static Product()
         {
             // abstract products
-            foreach (var item in getAll().Where(x=>!x.isAbstract()))
+            foreach (var item in getAll().Where(x => !x.isAbstract()))
                 if (item != Product.Gold)
                 {
-                    Game.market.SetDefaultPrice(item, item.defaultPrice.get());
+                    Game.market.SetDefaultPrice(item, (float)item.defaultPrice.Get());
                 }
         }
         /// <summary>
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
         /// , bool _isMilitary, bool _isIndustrial, bool _isConsumerProduct
         private Product(string name, float defaultPrice, type productType) : base(name)
         {
-            this.defaultPrice = new Value(defaultPrice);            
+            this.defaultPrice = new MoneyView((decimal)defaultPrice);
             allProducts.Add(this);
             switch (productType)
             {
@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
                     break;
                 default:
                     break;
-            }            
+            }
         }
         /// <summary>
         /// Constructor for resource product
@@ -162,7 +162,7 @@ namespace Nashet.EconomicSimulation
                 yield return item;
             foreach (var item in getAllSpecificProductsTradable(x => x.isConsumerProduct()))
                 yield return item;
-        }                
+        }
         public static IEnumerable<Product> getAllSpecificProductsInvented(Func<Product, bool> selector, Country country)
         {
             foreach (var item in getAll().Where(x => !x.isAbstract()))
@@ -226,7 +226,7 @@ namespace Nashet.EconomicSimulation
         }
         public static void sortSubstitutes()
         {
-            foreach (var item in getAll().Where(x=>x.isAbstract()))
+            foreach (var item in getAll().Where(x => x.isAbstract()))
             //if (item.isTradable()) 
             // Abstract are always invented and not gold
             {
@@ -236,8 +236,8 @@ namespace Nashet.EconomicSimulation
         static public int CostOrder(Product x, Product y)
         {
             //eats less memory
-            float sumX = Game.market.getPrice(x).get();
-            float sumY = Game.market.getPrice(y).get();
+            float sumX = (float)Game.market.getCost(x).Get();
+            float sumY = (float)Game.market.getCost(y).Get();
             return sumX.CompareTo(sumY);
             //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
         }
@@ -302,7 +302,7 @@ namespace Nashet.EconomicSimulation
                     return true;
             return false;
         }
-        
+
         //bool isStorable()
         //{
         //    return storable;
@@ -312,26 +312,26 @@ namespace Nashet.EconomicSimulation
         //    storable = isStorable;
         //}   
 
-        internal Value getDefaultPrice()
-        {
-            if (isResource())
-            {
-                return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
-            }
-            else
-            {
-                var type = ProductionType.whoCanProduce(this);
-                if (type == null)
-                    return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
-                else
-                {
-                    Value res = Game.market.getCost(type.resourceInput);
-                    res.Multiply(Options.defaultPriceLimitMultiplier);
-                    res.Divide(type.basicProduction);
-                    return res;
-                }
-            }
-        }
+        //internal MoneyView getDefaultPrice()
+        //{
+        //    if (isResource())
+        //    {
+        //        return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
+        //    }
+        //    else
+        //    {
+        //        var type = ProductionType.whoCanProduce(this);
+        //        if (type == null)
+        //            return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
+        //        else
+        //        {
+        //            Money res = Game.market.getCost(type.resourceInput) .Copy();
+        //            res.Multiply(Options.defaultPriceLimitMultiplier);
+        //            res.Divide(type.basicProduction.get());
+        //            return res;
+        //        }
+        //    }
+        //}
         public string ToStringWithoutSubstitutes()
         {
             return base.ToString();

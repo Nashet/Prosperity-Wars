@@ -194,7 +194,7 @@ namespace Nashet.EconomicSimulation
             //take deposit share
             if (source.deposits.isNotZero())
             {
-                ReadOnlyValue returnDeposit = source.deposits.Copy().Multiply(newPopShare);
+                MoneyView returnDeposit = source.deposits.Copy().Multiply(newPopShare);
                 source.PayWithoutRecord(this, source.Bank.ReturnDeposit(source, returnDeposit));
             }
             //take Cash
@@ -661,7 +661,7 @@ namespace Nashet.EconomicSimulation
         private void consumeNeedsWithMarket()
         {
             //buy life needs
-            Value moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
+            MoneyView moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
             foreach (Storage need in getRealLifeNeeds())
             {
                 if (storage.has(need))// don't need to buy on market
@@ -684,7 +684,7 @@ namespace Nashet.EconomicSimulation
             if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
             {
                 // save some money in reserve to avoid spending all money on luxury 
-                Money reserve = new Money(0f);
+                Money reserve = new Money(0m);
                 PayWithoutRecord(reserve, Cash.Copy().Multiply(Options.savePopMoneyReserv));
 
                 //Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
@@ -723,7 +723,7 @@ namespace Nashet.EconomicSimulation
                                 education.Learn();
                         }
                     }
-                    Value luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
@@ -731,21 +731,21 @@ namespace Nashet.EconomicSimulation
                     if (!someLuxuryProductUnavailable
                         && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
-                        Value spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
-                        Value spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
+                        MoneyView spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
+                        MoneyView spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
 
                         //getSpendingLimit(spentMoneyOnAllNeeds);// 
 
-                        ReadOnlyValue spentOnUnlimitedConsumption; ;
+                        MoneyView spentOnUnlimitedConsumption; ;
                         if (Cash.isBiggerThan(spendingLimit))
                             spentOnUnlimitedConsumption = spendingLimit; // don't spent more than gained                    
                         else
                             spentOnUnlimitedConsumption = Cash;
 
-                        if (spentOnUnlimitedConsumption.get() > 5f)// to avoid zero values
+                        if (spentOnUnlimitedConsumption.Get() > 5m)// to avoid zero values
                         {
                             // how much pop wants to spent on unlimited consumption. Pop should spent Cash only..
-                            Value buyExtraGoodsMultiplier = spentOnUnlimitedConsumption.Copy().Divide(luxuryNeedsCost);
+                            float buyExtraGoodsMultiplier = (float)(spentOnUnlimitedConsumption.Get() / luxuryNeedsCost.Get());
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.Multiply(buyExtraGoodsMultiplier);
@@ -1046,8 +1046,8 @@ namespace Nashet.EconomicSimulation
                 var reform = Country.unemploymentSubsidies.getValue();
                 if (getUnemployment().isNotZero() && reform != UnemploymentSubsidies.None)
                 {
-                    Value subsidy = getUnemployment();
-                    subsidy.Multiply(getPopulation() / 1000f * (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate());
+                    var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate();
+                    MoneyView subsidy = rate.Copy().Multiply(getPopulation()).Divide(1000).Multiply(getUnemployment());
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (Country.CanPay(subsidy))
                     {
@@ -1244,7 +1244,9 @@ namespace Nashet.EconomicSimulation
         {
             if (Country.Invented(Invention.Banking))
             {
-                Value extraMoney = new Value(Cash.get() - Game.market.getCost(this.getRealAllNeeds()).get() * Options.PopDaysReservesBeforePuttingMoneyInBak, false);
+                MoneyView extraMoney = Cash.Copy().Subtract(
+                    Game.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
+                    , false);
                 if (extraMoney.isNotZero())
                     Bank.ReceiveMoney(this, extraMoney);
             }

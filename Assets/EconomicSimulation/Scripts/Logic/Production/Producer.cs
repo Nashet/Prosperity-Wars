@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
                 realSold.Multiply(DSB);
                 if (realSold.isNotZero())
                 {
-                    ReadOnlyValue cost = Game.market.getCost(realSold);
+                    MoneyView cost = Game.market.getCost(realSold);
 
                     // adding unsold product
                     // assuming gainGoodsThisTurn & realSold have same product
@@ -81,7 +81,7 @@ namespace Nashet.EconomicSimulation
                         Game.market.Pay(this, cost);
                         
                     }
-                    else if (Game.market.HowMuchLacksMoneyCashOnly(cost).get() > 10f && Game.devMode)
+                    else if (Game.market.HowMuchLacksMoneyCashOnly(cost).Get() > 10m && Game.devMode)
                         Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyCashOnly(cost)
                                 + " for " + realSold); // money in market ended... Only first lucky get money
                 }

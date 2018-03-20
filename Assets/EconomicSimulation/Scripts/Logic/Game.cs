@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
 
         static public readonly Market market;
 
-        static internal bool devMode = false;
+        static internal bool devMode = true;
         static private int mapMode;
         static private bool surrended = devMode;
         static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,

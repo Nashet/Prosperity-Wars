@@ -269,7 +269,7 @@ namespace Nashet.EconomicSimulation
             var government = province.Country.government.getValue();
             if (government == Government.ProletarianDictatorship)
             {
-                country.setSoldierWage(0f);
+                country.setSoldierWage(MoneyView.Zero);
 
                 //nationalization
                 foreach (var factory in province.getAllFactories())
@@ -819,52 +819,52 @@ namespace Nashet.EconomicSimulation
             /// Calculates wage basing on consumption cost for 1000 workers
             /// Returns new value
             /// </summary>        
-            internal Money getWage()
+            internal MoneyView getWage()
             {
                 if (this == None)
-                    return new Money(0f);
+                    return Money.Zero;
                 else if (this == Scanty)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    MoneyView result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result;
                 }
                 else if (this == Minimal)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.02f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.04f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.06f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.08f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.08m);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
                     return result;
                 }
                 else
-                    return new Money(0f);
+                    return new Money(0m);
             }
             override public string ToString()
             {
@@ -998,52 +998,55 @@ namespace Nashet.EconomicSimulation
             /// <summary>
             /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
             /// </summary>        
-            internal float getSubsidiesRate()
+            internal MoneyView getSubsidiesRate()
             {
                 if (this == None)
-                    return 0f;
+                    return MoneyView.Zero;
                 else if (this == Scanty)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    MoneyView result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Minimal)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.02f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Trinket)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.04f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Middle)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.06f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
-                    return result.get();
+                    return result;
                 }
                 else if (this == Big)
                 {
-                    Value result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
-                    Value everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men());
-                    everyDayCost.Multiply(0.08f);
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    everyDayCost.Multiply(0.08m);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
-                    return result.get();
+                    return result;
                 }
                 else
-                    return 0f;
+                {
+                    Debug.Log("Unkown reform");
+                    return MoneyView.Zero;
+                }
             }
             override public string ToString()
             {

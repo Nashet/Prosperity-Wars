@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
         /// <returns></returns>
         virtual internal float getProfit()
         {
-            return moneyIncomeThisTurn.get() - getExpences().get();
+            return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///new value
         /// </summary>
-        virtual internal Money getExpences()
+        virtual internal MoneyView getExpences()
         {
             return Game.market.getCost(getConsumed());
         }

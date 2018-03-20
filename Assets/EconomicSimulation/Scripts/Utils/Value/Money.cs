@@ -5,112 +5,96 @@ using System;
 
 namespace Nashet.ValueSpace
 {
-    public class Money : Storage, ICopyable<Money>
+    public class Money : MoneyView, ICopyable<Money>
     {
-        public Money(float value, bool showMessageAboutNegativeValue = true) : base(Product.Gold, value, showMessageAboutNegativeValue)
+        public Money(decimal value, bool showMessageAboutNegativeValue = true) : base(value, showMessageAboutNegativeValue)
         { }
-        protected Money(Money value) : base(value)
+        public Money(MoneyView value) : base(value)
         { }
-        private Money(Storage value) : base(value)
-        {
-            if (value.Product != Product.Gold)
-                Debug.Log("THAT IS NOT REAL GOLD");
-        }
 
-
-        public Money Copy()
+        //public Money Copy()
+        //{
+        //    return new Money(this);
+        //}
+        internal Money Divide(decimal divider, bool showMessageAboutNegativeValue = true)
         {
-            return new Money(this);
-        }
-        public static Money CovertFromGold(Storage stor)
-        {
-            return new Money(stor);
-        }
-
-        internal Money Divide(int divider, bool showMessageAboutNegativeValue = true)
-        {
-            if (divider == 0)
+            if (divider == 0m)
             {
                 Debug.Log("Can't divide by zero");
-                Set(99999);
+                data = 99999m;
                 return this;
             }
             else
-                return this.Multiply(1f / divider, showMessageAboutNegativeValue);
+                return this.Multiply(1m / divider, showMessageAboutNegativeValue);
         }
+
         public Money Multiply(Procent multiplier, bool showMessageAboutNegativeValue = true)
         {
-            Multiply(multiplier.get());
+            Multiply((decimal)multiplier.get());
             return this;
         }
-        public Money Multiply(int multiplier, bool showMessageAboutNegativeValue = true)
+
+        public Money Multiply(decimal multiplier, bool showMessageAboutNegativeValue = true)
         {
-            return Multiply((float)multiplier, showMessageAboutNegativeValue);
-        }
-        public Money Multiply(float multiplier, bool showMessageAboutNegativeValue = true)
-        {
-            if (multiplier < 0f)
+            if (multiplier < 0m)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value multiply failed");
-                Set(0);
+                SetZero();
             }
             else
-                Set(multiplier * this.get());
+                data = multiplier * this.Get();
             return this;
         }
         ///////////////////Add section
-        public Money Add(Storage storage, bool showMessageAboutNegativeValue = true)
-        {
-            if (this.isExactlySameProduct(storage))
-                base.Add(storage, showMessageAboutNegativeValue);
-            else
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Attempt to add wrong product to Storage");
-            }
-            return this;
-        }
-        public Money Add(float adding, bool showMessageAboutNegativeValue = true)
-        {
-            if (adding + get() < 0f)
+        public Money Add(MoneyView storage, bool showMessageAboutNegativeValue = true)
+        {   
+            decimal newData = data += storage.Get(); 
+            if (newData < 0m)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Money can't be negative");
-                Set(0);
+                data = 0m;
             }
             else
-                Set(get() + adding);
+                data = newData;
             return this;
         }
-        public Money Subtract(Storage storage, bool showMessageAboutNegativeValue = true)
+        public Money Add(decimal adding, bool showMessageAboutNegativeValue = true)
         {
-            //if (!this.isSameProductType(storage.Product))
-            if (!storage.isSameProductType(this.Product))
-            {
-                Debug.Log("Storage subtract Outside failed - wrong product");
-                Set(0f);
-            }
-            else if (storage.isBiggerThan(this))
+            decimal newData = data + adding;
+            if (newData < 0m)
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Storage subtract Outside failed");
-                Set(0f);
+                    Debug.Log("Money can't be negative");
+                data = 0m;
             }
             else
-                Set(this.get() - storage.get());
+                data = newData;
+            return this;
+        }
+        public Money Subtract(MoneyView storage, bool showMessageAboutNegativeValue = true)
+        {
+            if (storage.isBiggerThan(this))
+            {
+                if (showMessageAboutNegativeValue)
+                    Debug.Log("Money subtract failed");
+                SetZero();
+            }
+            else
+                data = this.Get() - storage.Get();
             return this;
         }
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
         /// Doesn't pay tax, doesn't register transaction
         /// </summary>    
-        public bool PayWithoutRecord(Agent whom, ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
+        public bool PayWithoutRecord(Agent whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (this.isBiggerOrEqual(howMuch))// It does has enough cash or deposit
             {
 
-                (whom.Cash as Money).Add(howMuch);
+                (whom.Cash .Copy()).Add(howMuch);
                 this.Subtract(howMuch);
                 return true;
             }
@@ -120,6 +104,18 @@ namespace Nashet.ValueSpace
                     Debug.Log("Not enough money to pay in Money.payWithoutRecord");
                 return false;
             }
+        }
+        public void Set(MoneyView value)
+        {
+            this.data = (value .Copy()).data;
+        }
+        //public void Set(float value)
+        //{
+        //    this.data = (value .Copy()).data;
+        //}
+        public void SetZero()
+        {
+            data = 0;
         }
     }
 }

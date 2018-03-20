@@ -56,6 +56,18 @@ namespace Nashet.ValueSpace
                 Set(numerator / (float)denominator, showMessageAboutOperationFails);
         }
 
+        public Procent(MoneyView numerator, MoneyView denominator, bool showMessageAboutOperationFails = true) : base(0f)
+        {
+            if (denominator.isZero())
+            {
+                if (showMessageAboutOperationFails)
+                    Debug.Log("Division by zero in Percent.makeProcent(int)");
+                Set(Procent.Max999);
+            }
+            else
+                Set((float)(numerator.Get() / denominator.Get()), showMessageAboutOperationFails);
+        }
+
         internal float get50Centre()
         {
             return get() - 0.5f;
@@ -80,7 +92,7 @@ namespace Nashet.ValueSpace
         public override string ToString()
         {
             //if (get() > 0)
-            return (get() * 100f).ToString("0.0") + "%";
+            return get().ToString("P1");
             //else
             //    return "0%";
         }

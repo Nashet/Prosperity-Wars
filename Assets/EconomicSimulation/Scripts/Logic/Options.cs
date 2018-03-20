@@ -37,12 +37,12 @@ namespace Nashet.EconomicSimulation
         internal static readonly int MapRedrawRate = 20; // bigger number - less often redraw   
 
         // MARKET
-        internal static readonly float minPrice = 0.001f;
-        internal static readonly float maxPrice = 999.99f;
+        internal static readonly MoneyView minPrice = new MoneyView(0.001m);
+        internal static readonly MoneyView maxPrice = new MoneyView(999.99m);
         internal static readonly float MarketInfiniteDSB = 999f;
         internal static readonly float MarketEqualityDSB = 1f;
         internal static readonly float MarketZeroDSB = 0f;
-        internal static readonly Value defaultPriceLimitMultiplier = new Value(5f);
+        internal static readonly float defaultPriceLimitMultiplier = 5f;
 
         //FACTORIES
         internal static readonly float goldToCoinsConvert = 10f;
@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly int minDaysBeforeSalaryCut = 2;
         internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
-        internal static readonly float factoryMoneyReservePerLevel = 20f;
+        internal static readonly MoneyView factoryMoneyReservePerLevel = new MoneyView(20m);
         internal static readonly Procent minMarginToRiseSalary = new Procent(0.01f);
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly byte FactoryInputReservInDays = 2;
         internal static readonly int FactoryMediumTierLevels = 8 + 1;
         internal static readonly int FactoryMediumHighLevels = 15 + 1;
-        internal static readonly Money FactoryMinPossibleSallary = new Money(0.001f);
+        internal static readonly MoneyView FactoryMinPossibleSallary = new Money(0.001m);
 
         //Province
         /// <summary>In procent of unemployed</summary>
@@ -106,8 +106,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopMigrationUnemploymentLimit = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopSameCultureMigrationPreference = new ReadOnlyValue(0.1f);
-                
-        
+
+
         /// currently not used
         public static readonly int PopSizeConsolidationLimit = 100;
         /// <summary> Time before which pop wouldn't be wipe out by Pop change methods like promote\ assimilate\migrate</summary>
@@ -129,7 +129,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly float PopMinLandForTribemen = 1f;
         internal static readonly float PopMinLandForFarmers = 0.25f;
         internal static readonly float PopMinLandForTownspeople = 0.0025f;
-        
+
 
         internal static readonly int PopDaysUpsetByForcedReform = 30;
         internal static readonly float PopAttritionFactor = 0.2f;
@@ -146,16 +146,16 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent MovementStrenthToStartRebellion = new Procent(1f);
         internal static readonly Procent PopLoyaltyChangeOnAnnexStateCulture = new Procent(0.3f);
         internal static readonly Procent PopLoyaltyChangeOnAnnexNonStateCulture = new Procent(0.2f);
-        internal static readonly Value PopUnlimitedConsumptionLimit = new Value(110f);
+        internal static readonly MoneyView PopUnlimitedConsumptionLimit = new MoneyView(110m);
 
 
         internal static readonly float aristocratsFoodReserv = 50;
-        
+
         internal static readonly Value PopStrataWeight = new Value(3f); // meaning 1 / 3
         internal static readonly float PopOneThird = 0.333f;
         internal static readonly float PopTwoThird = 0.666f;
-        
-        
+
+
 
         // INVESTING
         internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.95f);
@@ -165,7 +165,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
         internal static readonly Procent InvestorEmploymentRisk = new Procent(0.80f);
         internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
-        internal static readonly float PopDaysReservesBeforePuttingMoneyInBak = 10f;
+        internal static readonly int PopDaysReservesBeforePuttingMoneyInBak = 10;
         /// <summary>For every nationalized enterprise</summary>
         internal static readonly Procent PopLoyaltyDropOnNationalization = new Procent(0.1f);
         internal static readonly Procent PopBuyAssetsAtTime = new Procent(0.05f);
@@ -178,6 +178,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopLearnByWorkingChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
         internal static readonly Date AIFisrtAllowedAttackOnHuman = new Date(30);
+        internal static readonly MoneyView FactoryReduceSalaryOnNonProfit = new MoneyView(0.01m);
+        internal static readonly MoneyView FactoryReduceSalaryOnMarket = new MoneyView(0.001m);
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

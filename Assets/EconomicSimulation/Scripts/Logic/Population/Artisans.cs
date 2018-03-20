@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
         private void changeProductionType()
         {
             var newProductionType = ProductionType.getAllInventedArtisanships(Country).
-                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit().isNotZero()).MaxBy(x => x.getPossibleProfit().get());
+                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit().isNotZero()).MaxBy(x => x.getPossibleProfit().Get());
 
             if (newProductionType != null)
                 if (artisansProduction == null 
@@ -172,7 +172,7 @@ namespace Nashet.EconomicSimulation
         {
             // todo doesn't include taxes. Should it?
             if (artisansProduction == null
-                || moneyIncomeThisTurn.Copy().subtract(artisansProduction.getExpences()).isZero())
+                || moneyIncomeThisTurn.Copy().Subtract(artisansProduction.getExpences(), false).isZero())
                 changeProductionType();
         }
     }

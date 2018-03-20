@@ -10,6 +10,12 @@ namespace Nashet.Utils
 {
     public static class MonoBehaviourExtensions
     {
+        public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
+        {
+            if (val.CompareTo(min) < 0) return min;
+            else if (val.CompareTo(max) > 0) return max;
+            else return val;
+        }
         static public IEnumerable<GameObject> AllParents(this GameObject that)
         {            
             GameObject nextParent;
@@ -538,7 +544,7 @@ namespace Nashet.Utils
                 return enumerable.ElementAt(index);
             }
         }
-        public static IEnumerable<T> FirstSameElements<T>(this IEnumerable<T> collection, Func<T, uint> selector)
+        public static IEnumerable<T> FirstSameElements<T>(this IEnumerable<T> collection, Func<T, float> selector)
         {
             T previousElement = collection.FirstOrDefault();
             if (previousElement != null)

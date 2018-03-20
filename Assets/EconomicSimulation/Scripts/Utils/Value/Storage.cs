@@ -43,8 +43,8 @@ namespace Nashet.ValueSpace
         static public int CostOrder(Storage x, Storage y)
         {
             //eats less memory
-            float sumX = x.get() * Game.market.getPrice(x.Product).get();
-            float sumY = y.get() * Game.market.getPrice(y.Product).get();
+            float sumX = x.get() * (float)Game.market.getCost(x.Product).Get();
+            float sumY = y.get() * (float)Game.market.getCost(y.Product).Get();
             return sumX.CompareTo(sumY);
 
             //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());

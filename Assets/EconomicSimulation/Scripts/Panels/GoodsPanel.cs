@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
             if (product != null)
             {
                 generaltext.text = product.ToString()
-                    + "\n price: " + Game.market.getPrice(product).get() + " supply: " + Game.market.getMarketSupply(product, true).get() + " consumption: " + Game.market.getBouthOnMarket(product, true).get();
+                    + "\n price: " + Game.market.getCost(product).Get() + " supply: " + Game.market.getMarketSupply(product, true).get() + " consumption: " + Game.market.getBouthOnMarket(product, true).get();
 
                                 
                 

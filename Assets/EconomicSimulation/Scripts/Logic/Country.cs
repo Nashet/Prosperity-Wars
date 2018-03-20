@@ -43,10 +43,10 @@ namespace Nashet.EconomicSimulation
         private Province capital;
         private bool alive = true;
 
-        private readonly Money soldiersWage = new Money(0f);
+        private readonly Money soldiersWage = new Money(0m);
         public readonly Value sciencePoints = new Value(0f);
         public bool failedToPaySoldiers;
-        public int autoPutInBankLimit = 2000;
+        public Money autoPutInBankLimit = new Money(2000);
 
         private readonly Procent ownershipSecurity = Procent.HundredProcent.Copy();
         /// <summary> Read only, new value</summary>
@@ -55,27 +55,27 @@ namespace Nashet.EconomicSimulation
             get { return ownershipSecurity.Copy(); }
         }
 
-        private readonly Money incomeTaxStaticticPoor = new Money(0f);
+        private readonly Money incomeTaxStaticticPoor = new Money(0m);
         public Money IncomeTaxStaticticPoor
         {
             get { return incomeTaxStaticticPoor.Copy(); }
         }
 
-        private readonly Money incomeTaxStatisticRich = new Money(0f);
+        private readonly Money incomeTaxStatisticRich = new Money(0m);
         public Money IncomeTaxStatisticRich
         {
             get { return incomeTaxStatisticRich.Copy(); }
         }
-        private readonly Money incomeTaxForeigner = new Money(0f);
+        private readonly Money incomeTaxForeigner = new Money(0m);
         public Money IncomeTaxForeigner
         {
             get { return incomeTaxForeigner.Copy(); }
         }
 
-        private readonly Money goldMinesIncome = new Money(0f);
+        private readonly Money goldMinesIncome = new Money(0m);
         public Money GoldMinesIncome { get { return goldMinesIncome.Copy(); } }
 
-        private readonly Money ownedFactoriesIncome = new Money(0f);
+        private readonly Money ownedFactoriesIncome = new Money(0m);
         public Money OwnedFactoriesIncome { get { return ownedFactoriesIncome.Copy(); } }
 
         public Money RestIncome
@@ -83,16 +83,16 @@ namespace Nashet.EconomicSimulation
             get { return moneyIncomeThisTurn.Copy().Subtract(getIncome()); }
         }
 
-        private readonly Money unemploymentSubsidiesExpense = new Money(0f);
+        private readonly Money unemploymentSubsidiesExpense = new Money(0m);
         public Money UnemploymentSubsidiesExpense { get { return unemploymentSubsidiesExpense.Copy(); } }
 
-        private readonly Money soldiersWageExpense = new Money(0f);
+        private readonly Money soldiersWageExpense = new Money(0m);
         public Money SoldiersWageExpense { get { return soldiersWageExpense.Copy(); } }
 
-        private readonly Money factorySubsidiesExpense = new Money(0f);
+        private readonly Money factorySubsidiesExpense = new Money(0m);
         public Money FactorySubsidiesExpense { get { return factorySubsidiesExpense.Copy(); } }
 
-        private readonly Money storageBuyingExpense = new Money(0f);
+        private readonly Money storageBuyingExpense = new Money(0m);
         public Money StorageBuyingExpense { get { return storageBuyingExpense.Copy(); } }
 
         private readonly float nameWeight;
@@ -390,13 +390,13 @@ namespace Nashet.EconomicSimulation
             }
             return res;
         }
-        internal void setSoldierWage(float value)
+        internal void setSoldierWage(MoneyView value)
         {
             soldiersWage.Set(value);
         }
-        internal float getSoldierWage()
+        internal MoneyView getSoldierWage()
         {
-            return soldiersWage.get();
+            return soldiersWage;
         }
         //public Procent GetAveragePop(Func<PopUnit, Procent> selector)
         //{
@@ -734,12 +734,13 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns new value
         /// </summary>        
-        internal Money getMinSalary()
+        internal MoneyView getMinSalary()
         {
             var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
             if (res.isZero())
-                res.set(Options.FactoryMinPossibleSallary);
-            return res;
+                return Options.FactoryMinPossibleSallary;
+            else
+                return res;
             //return minSalary.get();
         }
 
@@ -897,34 +898,39 @@ namespace Nashet.EconomicSimulation
             if (economy.getValue() != Economy.PlannedEconomy)
                 if (Invented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
                 {
-                    float newWage;
-                    var soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).get();
+                    Money newWage;
+                    Money soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()) .Copy();
                     if (failedToPaySoldiers)
                     {
-                        newWage = getSoldierWage() - getSoldierWage() * 0.2f;
+                        newWage = getSoldierWage().Copy().Multiply(0.8m);
+                        //getSoldierWage().Get() - getSoldierWage().Get() * 0.2m;
                     }
                     else
                     {
                         var balance = getBalance();
 
                         if (balance > 200f)
-                            newWage = getSoldierWage() + soldierAllNeedsCost * 0.002f + 1f;
+                            newWage = getSoldierWage().Copy().Add(soldierAllNeedsCost.Copy().Multiply(0.002m).Add(1m));
                         else if (balance > 50f)
-                            newWage = getSoldierWage() + soldierAllNeedsCost * 0.0005f + 0.1f;
+                            newWage = getSoldierWage().Copy().Add(soldierAllNeedsCost.Copy().Multiply(0.0005m).Add(0.1m));
                         else if (balance < -800f)
-                            newWage = 0.0f;
+                            newWage = new Money(0m);
                         else if (balance < 0f)
-                            newWage = getSoldierWage() - getSoldierWage() * 0.5f;
+                            newWage = getSoldierWage().Copy().Multiply(0.5m);
                         else
-                            newWage = getSoldierWage(); // don't change wage
+                            newWage = getSoldierWage() .Copy(); // don't change wage
                     }
-                    newWage = Mathf.Clamp(newWage, 0, soldierAllNeedsCost * 2f);
+                    //newWage = newWage.Clamp(0, soldierAllNeedsCost * 2m);
+                    var limit = soldierAllNeedsCost.Copy().Multiply(2m);
+                    if (newWage.isBiggerThan(limit))
+                        newWage.Set(limit);
                     setSoldierWage(newWage);
                 }
             // dealing with enterprises
             if (economy.getValue() == Economy.Interventionism)
                 Rand.Call(() => getAllFactories().PerformAction(
-                    x => x.ownership.HowMuchOwns(this).Copy().Subtract(x.ownership.HowMuchSelling(this)).isBiggerOrEqual(Procent._50Procent),
+                    x => x.ownership.HowMuchOwns(this).Copy().Subtract(x.ownership.HowMuchSelling(this))
+                    .isBiggerOrEqual(Procent._50Procent),
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     30);
             else
@@ -938,7 +944,7 @@ namespace Nashet.EconomicSimulation
                         var project = GetAllInvestmentProjects(this).Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)).MaxByRandom(x => x.GetMargin().get());
                         if (project != null)
                         {
-                            Value investmentCost = project.GetInvestmentCost();
+                            MoneyView investmentCost = project.GetInvestmentCost();
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
@@ -985,11 +991,13 @@ namespace Nashet.EconomicSimulation
 
             // put extra money in bank
             if (economy.getValue() != Economy.PlannedEconomy)
-                if (this.autoPutInBankLimit > 0f)
+                if (this.autoPutInBankLimit.isNotZero())
                 {
-                    float extraMoney = Cash.get() - (float)this.autoPutInBankLimit;
-                    if (extraMoney > 0f)
-                        Bank.ReceiveMoney(this, new Value(extraMoney));
+
+                    var extraMoney = Cash.Copy().Subtract(autoPutInBankLimit, false);
+                    //float extraMoney = Cash.get() - (float)this.autoPutInBankLimit;
+                    if (extraMoney.isNotZero())
+                        Bank.ReceiveMoney(this, extraMoney);
                 }
 
             //todo performance - do it not every tick?
@@ -1272,18 +1280,18 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        public Value getGDP()
+        public MoneyView getGDP()
         {
-            Value result = new Value(0);
+            Money result = new Money(0m);
             foreach (var province in ownedProvinces)
             {
                 result.Add(province.getGDP());
             }
             return result;
         }
-        internal float getGDPPer1000()
+        internal MoneyView getGDPPer1000()
         {
-            return getGDP().get() * 1000f / getFamilyPopulation();
+            return (getGDP() .Copy()).Multiply(1000m / getFamilyPopulation());
             // overflows
             //res.multiply(1000);
             //res.divide(getFamilyPopulation());
@@ -1319,13 +1327,16 @@ namespace Nashet.EconomicSimulation
         /// </summary>              
         public int getGDPRank()
         {
-            var list = new List<KeyValuePair<Country, Value>>();
-            foreach (var item in World.getAllExistingCountries())
-            {
-                list.Add(new KeyValuePair<Country, Value>(item, item.getGDP()));
-            }
-            list.Sort(ValueOrder);
-            return list.FindIndex(x => x.Key == this) + 1; // starts with zero;
+            var list = World.getAllExistingCountries().OrderByDescending(x => x.getGDP().Get());
+            return list.FindIndex(x => x == this) + 1; // starts with zero;
+
+            //var list = new List<KeyValuePair<Country, Value>>();
+            //foreach (var item in World.getAllExistingCountries())
+            //{
+            //    list.Add(new KeyValuePair<Country, Value>(item, item.getGDP()));
+            //}
+            //list.Sort(ValueOrder);
+            //return list.FindIndex(x => x.Key == this) + 1; // starts with zero;
         }
         /// <summary>
         /// Returns 0 if failed
@@ -1335,14 +1346,14 @@ namespace Nashet.EconomicSimulation
             var list = new List<KeyValuePair<Country, float>>();
             foreach (var item in World.getAllExistingCountries())
             {
-                list.Add(new KeyValuePair<Country, float>(item, item.getGDPPer1000()));
+                list.Add(new KeyValuePair<Country, float>(item, (float)item.getGDPPer1000().Get()));
             }
             list.Sort(FloatOrder);
             return list.FindIndex(x => x.Key == this) + 1; // starts with zero
         }
         public Procent getGDPShare()
         {
-            Value worldGDP = new Value(0f);
+            Money worldGDP = new Money(0m);
             foreach (var item in World.getAllExistingCountries())
             {
                 worldGDP.Add(item.getGDP());
@@ -1398,24 +1409,24 @@ namespace Nashet.EconomicSimulation
             incomeTaxForeigner.SetZero();
             countryStorageSet.SetStatisticToZero();
             failedToPaySoldiers = false;
-            incomeTaxStaticticPoor.Set(0f);
-            incomeTaxStatisticRich.Set(0f);
-            goldMinesIncome.Set(0f);
-            unemploymentSubsidiesExpense.Set(0f);
-            ownedFactoriesIncome.Set(0f);
-            factorySubsidiesExpense.Set(0f);
-            storageBuyingExpense.Set(0f);
+            incomeTaxStaticticPoor.SetZero();
+            incomeTaxStatisticRich.SetZero();
+            goldMinesIncome.SetZero();
+            unemploymentSubsidiesExpense.SetZero();
+            ownedFactoriesIncome.SetZero();
+            factorySubsidiesExpense.SetZero();
+            storageBuyingExpense.SetZero();
             soldiersWageExpense.SetZero();
         }
 
         internal float getBalance()
         {
-            return moneyIncomeThisTurn.get() - getExpenses().get();
+            return (float)(moneyIncomeThisTurn.Get() - getExpenses().Get());
         }
 
-        internal Value getExpenses()
+        internal MoneyView getExpenses()
         {
-            Value result = new Value(0f);
+            Money result = MoneyView.Zero.Copy();
             result.Add(unemploymentSubsidiesExpense);
             result.Add(factorySubsidiesExpense);
             result.Add(storageBuyingExpense);
@@ -1424,7 +1435,7 @@ namespace Nashet.EconomicSimulation
         }
         internal Money getIncome()
         {
-            Money result = new Money(0f);
+            Money result = new Money(0m);
             result.Add(incomeTaxStaticticPoor);
             result.Add(incomeTaxStatisticRich);
             result.Add(incomeTaxForeigner);
@@ -1436,7 +1447,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns true if was able to give a subsidy
         /// </summary>        
-        internal bool GiveFactorySubsidies(Consumer byWhom, Value howMuch)
+        internal bool GiveFactorySubsidies(Consumer byWhom, MoneyView howMuch)
         {
             if (CanPay(howMuch))
             {
@@ -1452,7 +1463,7 @@ namespace Nashet.EconomicSimulation
             //    factorySubsidiesExpense.Add(byWhom.Cash);
             //}
         }
-        internal void soldiersWageExpenseAdd(Value payCheck)
+        internal void soldiersWageExpenseAdd(MoneyView payCheck)
         {
             soldiersWageExpense.Add(payCheck);
         }
@@ -1473,16 +1484,16 @@ namespace Nashet.EconomicSimulation
         /// Forces payer to pay tax from taxable. Returns how much payed (new value)
         /// Don't call it manually, it called from Agent.Pay() automatically
         /// </summary>                
-        internal ReadOnlyValue TakeIncomeTaxFrom(Agent taxPayer, Value taxable, bool isPoorStrata)
+        internal MoneyView TakeIncomeTaxFrom(Agent taxPayer, MoneyView taxable, bool isPoorStrata)
         {
             var pop = taxPayer as PopUnit;
             if (pop != null
                 && pop.Type == PopType.Aristocrats
                 //&& Serfdom.IsNotAbolishedInAnyWay.checkIfTrue(Country))
                 && government.getTypedValue() == Government.Aristocracy)
-                return ReadOnlyValue.Zero; // don't pay with monarchy
+                return MoneyView.Zero; // don't pay with monarchy
             Procent tax;
-            Value statistics;
+            Money statistics;
             if (isPoorStrata)
             {
                 tax = taxationForPoor.getTypedValue().tax;
@@ -1530,19 +1541,19 @@ namespace Nashet.EconomicSimulation
                 return false;
             }
         }
-        internal void goldMinesIncomeAdd(ReadOnlyValue toAdd)
+        internal void goldMinesIncomeAdd(MoneyView toAdd)
         {
             goldMinesIncome.Add(toAdd);
         }
-        internal void unemploymentSubsidiesExpenseAdd(ReadOnlyValue toAdd)
+        internal void unemploymentSubsidiesExpenseAdd(MoneyView toAdd)
         {
             unemploymentSubsidiesExpense.Add(toAdd);
         }
-        internal void storageBuyingExpenseAdd(ReadOnlyValue toAdd)
+        internal void storageBuyingExpenseAdd(MoneyView toAdd)
         {
             storageBuyingExpense.Add(toAdd);
         }
-        internal void ownedFactoriesIncomeAdd(ReadOnlyValue toAdd)
+        internal void ownedFactoriesIncomeAdd(MoneyView toAdd)
         {
             ownedFactoriesIncome.Add(toAdd);
         }

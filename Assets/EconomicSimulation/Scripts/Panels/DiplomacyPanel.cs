@@ -42,9 +42,10 @@ namespace Nashet.EconomicSimulation
             sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation().ToString("N0")).Append("; rank: ").Append(selectedCountry.getPopulationRank());
             sb.Append(". Provinces: ").Append(selectedCountry.getSize()).Append("; rank: ").Append(selectedCountry.getSizeRank());
             //sb.Append(", str: ").Append(selectedCountry.getStregth(null));
-
-            sb.Append("\n\nGDP: ").Append(selectedCountry.getGDP().get().ToString("N3")).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
-            sb.Append("\n\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000().ToString("F3")).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
+            //.Get().ToString("N3")
+            //.ToString("F3")
+            sb.Append("\n\nGDP: ").Append(selectedCountry.getGDP()).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
+            sb.Append("\n\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
             //sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.GetAveragePop(x=>x.needsFulfilled));
             sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
             sb.Append(", loyalty: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.loyalty));

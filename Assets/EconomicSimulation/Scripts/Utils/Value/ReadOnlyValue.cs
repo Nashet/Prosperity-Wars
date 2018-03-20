@@ -3,7 +3,7 @@ using Nashet.Utils;
 
 namespace Nashet.ValueSpace
 {
-    public class ReadOnlyValue: ICopyable<Value>
+    public class ReadOnlyValue : ICopyable<Value>, IReadOnlyValue
     {
         ///<summary> storing as value as number * precision </summary>
         protected uint rawUIntValue;

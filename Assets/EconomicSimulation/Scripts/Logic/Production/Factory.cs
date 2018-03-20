@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         private bool _isOpen = false;
         private bool toRemove = false;
 
-        private readonly Money payedDividends = new Money(0f);
+        private readonly Money payedDividends = new Money(0m);
         private bool dontHireOnSubsidies, subsidized;
         private int priority = 0;
         private readonly Money salary = new Money(0);
@@ -104,7 +104,7 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        Value cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
+                        MoneyView cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
                         return agent.CanPay(cost);
                     }
                 },
@@ -114,7 +114,7 @@ namespace Nashet.EconomicSimulation
                 {
                     var sb = new StringBuilder();
                     var factory = x as Factory;
-                    Value cost = Game.market.getCost(factory.getUpgradeNeeds());
+                    MoneyView cost = Game.market.getCost(factory.getUpgradeNeeds());
                     sb.Append("Have ").Append(cost).Append(" coins");
                     sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds().getString(", "));
                     return sb.ToString();
@@ -164,7 +164,7 @@ namespace Nashet.EconomicSimulation
             conditionsBuy = new DoubleConditionsList(new List<Condition> {Economy.isNotLF, Economy.isNotPlanned,
                 new DoubleCondition ((agent, factory)=>(factory as Factory).ownership.IsOnSale(), x=>"Is on sale", true),
                 new DoubleCondition ((agent, factory)=> (agent as Agent).CanPay( (factory as Factory).ownership.GetShareMarketValue(Options.PopBuyAssetsAtTime) ),
-                    x=> "Has money to buy share", false)
+                    x=> "H.Copy() to buy share", false)
             })
             ;
 
@@ -206,7 +206,7 @@ namespace Nashet.EconomicSimulation
         /// Don't call it directly
         /// </summary>
 
-        public Factory(Province province, IShareOwner investor, ProductionType type, ReadOnlyValue cost)
+        public Factory(Province province, IShareOwner investor, ProductionType type, MoneyView cost)
             : base(type, province)
         {
             //this.buildByPlannedEconomy = buildByPlannedEconomy;
@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
 
                 ownership.Add(investor, cost);
 
-                salary.set(province.getLocalMinSalary());
+                salary.Set(province.getLocalMinSalary());
                 if (Country.economy.getValue() == Economy.PlannedEconomy)
                     setPriorityAutoWithPlannedEconomy();
                 //else
@@ -228,12 +228,12 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public Money GetInvestmentCost()
+        public MoneyView GetInvestmentCost()
         {
             if (IsOpen)
             {
-                var res = Game.market.getCost(getUpgradeNeeds());
-                res.add(Options.factoryMoneyReservePerLevel);
+                var res = Game.market.getCost(getUpgradeNeeds()) .Copy();
+                res.Add(Options.factoryMoneyReservePerLevel);
                 return res;
             }
             else
@@ -439,14 +439,14 @@ namespace Nashet.EconomicSimulation
                 {
                     var dividendsCopy = payedDividends.Copy();
                     var taxes = dividendsCopy.Copy().Multiply(Country.taxationForRich.getTypedValue().tax);
-                    dividendsCopy.subtract(taxes);
+                    dividendsCopy.Subtract(taxes);
                     return new Procent(dividendsCopy, ownership.GetMarketValue(), false);
                 }
             }
         }
-        internal Money getReopenCost()
+        internal MoneyView getReopenCost()
         {
-            return new Money(Options.factoryMoneyReservePerLevel);
+            return Options.factoryMoneyReservePerLevel;
         }
         internal int HowManyEmployed(PopUnit pop)
         {
@@ -493,8 +493,7 @@ namespace Nashet.EconomicSimulation
                 if (Economy.isMarket.checkIfTrue(Country))
                     foreach (var employee in hiredWorkForce)
                     {
-
-                        Value howMuchPay = salary.Copy().Multiply((float)employee.Value).Divide(workForcePerLevel);
+                        MoneyView howMuchPay = salary.Copy().Multiply(employee.Value).Divide(workForcePerLevel);
                         if (CanPay(howMuchPay))
                             Pay(employee.Key, howMuchPay);
                         else if (isSubsidized()
@@ -582,31 +581,31 @@ namespace Nashet.EconomicSimulation
                     && GetVacancies() > 10)// && getInputFactor() == 1)
                 {
                     // cant catch up salaries like that. Check for zero workforce?
-                    float salaryRaise = 0.001f; //1%
+                    decimal salaryRaise = 0.001m; //1%
                     if (margin.get() > 10f) //1000%
-                        salaryRaise = 0.012f;
+                        salaryRaise = 0.012m;
                     else if (margin.get() > 1f) //100%
-                        salaryRaise = 0.006f;
+                        salaryRaise = 0.006m;
                     else if (margin.get() > 0.3f) //30%
-                        salaryRaise = 0.003f;
+                        salaryRaise = 0.003m;
                     else if (margin.get() > 0.1f) //10%
-                        salaryRaise = 0.002f;
+                        salaryRaise = 0.002m;
 
-                    salary.add(salaryRaise);
+                    salary.Add(salaryRaise);
                 }
 
                 // Reduce salary on non-profit
                 if (margin.isZero()
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
                     && !isJustHiredPeople() && !isSubsidized())
-                    salary.Subtract(0.01f, false);
+                    salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
 
                 // if supply > demand
                 if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
-                    salary.Subtract(0.001f, false);
+                    salary.Subtract(Options.FactoryReduceSalaryOnMarket, false);
 
                 if (getWorkForce() == 0)// && getInputFactor() == 1)
-                    salary.set(Province.getLocalMinSalary());
+                    salary.Set(Province.getLocalMinSalary());
                 // to help factories catch up other factories salaries
                 //    salary.set(province.getLocalMinSalary());
                 // freshly built factories should rise salary to concurrency with old ones
@@ -618,7 +617,7 @@ namespace Nashet.EconomicSimulation
                 // limit salary country's min wage
                 var minSalary = Country.getMinSalary();
                 if (salary.isSmallerThan(minSalary))
-                    salary.set(minSalary);
+                    salary.Set(minSalary);
             }
         }
         /// <summary>
@@ -738,7 +737,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (loans.isNotZero())
                 {
-                    Value howMuchToReturn = loans.Copy();
+                    Money howMuchToReturn = loans.Copy();
                     if (howMuchToReturn.isSmallerOrEqual(Cash))
                         howMuchToReturn.Set(Cash);
                     Bank.ReceiveMoney(this, howMuchToReturn);
@@ -771,9 +770,12 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///new value
         /// </summary>
-        float wantsMinMoneyReserv()
+        MoneyView wantsMinMoneyReserv()
         {
-            return getExpences().get() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
+            return (getExpences() .Copy()).Multiply(Factory.xMoneyReservForResources).Add(
+                Options.factoryMoneyReservePerLevel.Copy().Multiply(level)
+                );
+            //return getExpences().get() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
         }
         public void CloseUnprofitable()
         {
@@ -813,7 +815,8 @@ namespace Nashet.EconomicSimulation
         {
             if (IsOpen)
             {
-                Value dividends = new Value(Cash.get() - wantsMinMoneyReserv(), false);
+                MoneyView dividends = Cash.Copy().Subtract(wantsMinMoneyReserv(), false);
+                //new Value(Cash.get() - wantsMinMoneyReserv(), false);
                 payedDividends.Set(dividends);
 
                 if (dividends.isNotZero())
@@ -822,7 +825,7 @@ namespace Nashet.EconomicSimulation
                     foreach (var item in ownership.GetAllShares())
                     {
                         var owner = item.Key as Agent;
-                        Value sentToOwner = dividends.Copy().Multiply(item.Value);
+                        MoneyView sentToOwner = dividends.Copy().Multiply(item.Value);
                         //Value sentToOwner = item.Value.SendProcentOf(dividends);                        
                         Pay(owner, sentToOwner);
                         //Country.TakeIncomeTax(owner, sentToOwner, false);
@@ -845,7 +848,7 @@ namespace Nashet.EconomicSimulation
         {
             var agent = byWhom as Agent;
             if (agent.Country.economy.getValue() != Economy.PlannedEconomy)
-                salary.set(Province.getLocalMinSalary());
+                salary.Set(Province.getLocalMinSalary());
             if (payMoney)
             {
                 agent.PayWithoutRecord(this, getReopenCost());
@@ -921,7 +924,7 @@ namespace Nashet.EconomicSimulation
             if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return 0f;
             else
-                return base.getProfit() - getSalaryCost().get();
+                return base.getProfit() - (float)getSalaryCost().Get();
         }
 
         public override List<Storage> getHowMuchInputProductsReservesWants()
@@ -1013,7 +1016,7 @@ namespace Nashet.EconomicSimulation
                         Country subsidizer = isSubsidized() ? Country : null;
                         foreach (Storage item in shoppingList)
                             if (item.isNotZero())
-                               Game.market.Sell(this, item, subsidizer);
+                                Game.market.Sell(this, item, subsidizer);
                     }
             }
             if (isUpgrading() || isBuilding())
@@ -1035,12 +1038,12 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (isBuilding())
-                        isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, Type.GetBuildNeeds());
+                        isBuyingComplete = Game.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, Type.GetBuildNeeds());
                     else if (isUpgrading())
-                        isBuyingComplete = Game.market.buy(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
+                        isBuyingComplete = Game.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
                     // get money from current investor, not owner
-                    Money needExtraFonds = new Money(wantsMinMoneyReserv() - Cash.get(), false);
+                    MoneyView needExtraFonds = wantsMinMoneyReserv().Copy().Subtract(Cash, false);
                     if (needExtraFonds.isNotZero())
                     {
                         var investor = currentInvestor as Agent;
@@ -1093,9 +1096,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///new value
         /// </summary>
-        override internal Money getExpences()
+        override internal MoneyView getExpences()
         {
-            return base.getExpences().Add(getSalaryCost());
+            return (base.getExpences() .Copy()).Add(getSalaryCost());
         }
         //Not necessary ti optimize -  cost 0.1% of tick
         public int getWorkForce()

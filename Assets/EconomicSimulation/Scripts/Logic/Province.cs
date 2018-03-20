@@ -465,11 +465,11 @@ namespace Nashet.EconomicSimulation
             return GetAllPopulation().Sum(x => x.getPopulation()) * Options.familySize;
         }
 
-        internal float getIncomeTax()
+        internal MoneyView getIncomeTax()
         {
-            float res = 0f;
-            allPopUnits.ForEach(x => res += x.incomeTaxPayed.get());
-            return res;
+            decimal res = 0m;
+            allPopUnits.ForEach(x => res += x.incomeTaxPayed.Get());
+            return new MoneyView(res);
         }
 
         internal void mobilize()
@@ -570,7 +570,7 @@ namespace Nashet.EconomicSimulation
                 if (Country.economy.getValue() == Economy.PlannedEconomy)
                     order = (x => x.getPriority());
                 else
-                    order = (x => x.getSalary().get());
+                    order = (x => (float)x.getSalary().Get());
 
                 foreach (List<Factory> factoryGroup in getAllFactoriesDescendingOrder(order))
                 {
@@ -791,15 +791,14 @@ namespace Nashet.EconomicSimulation
         /// \nCould auto-drop salary on minSalary of there is problems with inputs 
         /// Returns new value</summary>
 
-        internal Money getLocalMinSalary()
+        internal MoneyView getLocalMinSalary()
         {
-            Money res;
+            MoneyView res;
             if (allFactories.Count <= 1) // first enterprise in province
                 res = Country.getMinSalary();
             else
             {
-                Money minSalary;
-                minSalary = getLocalMaxSalary();
+                Money minSalary = getLocalMaxSalary() .Copy();
 
                 foreach (Factory factory in allFactories)
                     if (factory.IsOpen && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
@@ -807,7 +806,8 @@ namespace Nashet.EconomicSimulation
                         if (factory.getSalary().isSmallerThan(minSalary))
                             minSalary = factory.getSalary();
                     }
-                res = minSalary.Add(0.012f);//connected to ChangeSalary()
+                minSalary.Add(0.012m); //connected to ChangeSalary()
+                res = minSalary;
             }
             //if (res == 0f)
             //    res = Options.FactoryMinPossibleSalary;
@@ -817,7 +817,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
         /// New value
         ///</summary>
-        internal Money getLocalMaxSalary()
+        internal MoneyView getLocalMaxSalary()
         {
             if (allFactories.Count <= 1)
                 return Country.getMinSalary();
@@ -941,7 +941,7 @@ namespace Nashet.EconomicSimulation
                     }
                 case 4: //population change mode                
                     {
-                        
+
                         if (Game.selectedProvince == null)
                         {
                             float maxColor = 3000;
@@ -983,12 +983,12 @@ namespace Nashet.EconomicSimulation
                     return default(Color);
             }
         }
-        public Value getGDP()
+        public MoneyView getGDP()
         {
-            Value result = new Value(0);
+            Money result = new Money(0m);
             foreach (var producer in getAllAgents())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
-                    result.Add(Game.market.getCost(producer.getGainGoodsThisTurn()).get()); //- Game.market.getCost(producer.getConsumedTotal()).get());
+                    result.Add(Game.market.getCost(producer.getGainGoodsThisTurn())); //- Game.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
         //public Procent GetAveragePop(Func<PopUnit, Procent> selector)
@@ -1161,7 +1161,7 @@ namespace Nashet.EconomicSimulation
             else
                 return true;
         }
-        public Factory BuildFactory(IShareOwner investor, ProductionType type, ReadOnlyValue cost)
+        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost)
         {
             if (getAllFactories().Any(x => x.Type == type)) //temporally
             {
@@ -1217,7 +1217,7 @@ namespace Nashet.EconomicSimulation
                     return ReadOnlyValue.Zero;
 
                 // checks for same culture and type
-                if (getSimilarPopUnit(thisPop) != null) 
+                if (getSimilarPopUnit(thisPop) != null)
                     lifeQuality.Add(Options.PopSameCultureMigrationPreference);
 
                 if (country.getCulture() != thisPop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)

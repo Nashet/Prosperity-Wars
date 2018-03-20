@@ -91,7 +91,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else // build for money
                         {
-                            ReadOnlyValue investmentCost = Game.market.getCost(resourceToBuild);
+                            MoneyView investmentCost = Game.market.getCost(resourceToBuild);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
@@ -106,7 +106,7 @@ namespace Nashet.EconomicSimulation
                         var factory = project as Factory;// existing one                               
                         if (factory != null)
                         {
-                            Value investmentCost = factory.GetInvestmentCost();
+                            MoneyView investmentCost = factory.GetInvestmentCost();
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
@@ -122,7 +122,7 @@ namespace Nashet.EconomicSimulation
                             Owners buyShare = project as Owners;
                             if (buyShare != null) // buy part of existing factory
                             {
-                                Value investmentCost = buyShare.GetInvestmentCost();
+                                MoneyView investmentCost = buyShare.GetInvestmentCost();
                                 if (!CanPay(investmentCost))
                                     Bank.GiveLackingMoneyInCredit(this, investmentCost);
                                 if (CanPay(investmentCost))
