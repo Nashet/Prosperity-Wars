@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         {
             this.province = province;
         }
-       
+
         public Province Province
         {
             get { return province; }
@@ -62,11 +62,11 @@ namespace Nashet.EconomicSimulation
                 else
                 if (DSB.get() > Options.MarketEqualityDSB)
                     DSB.Set(Options.MarketEqualityDSB);
-                Storage realSold = new Storage(sentToMarket);
-                realSold.Multiply(DSB);
-                if (realSold.isNotZero())
+                decimal realSold = (decimal)sentToMarket.get();
+                realSold *= (decimal)DSB.get();
+                if (realSold > 0m)
                 {
-                    MoneyView cost = Game.market.getCost(realSold);
+                    MoneyView cost = Game.market.getCost(sentToMarket.Product).Copy().Multiply(realSold);
 
                     // adding unsold product
                     // assuming gainGoodsThisTurn & realSold have same product
@@ -74,12 +74,12 @@ namespace Nashet.EconomicSimulation
                         storage.add(gainGoodsThisTurn);
                     else
                         storage = new Storage(gainGoodsThisTurn);
-                    storage.Subtract(realSold.get());
+                    storage.Subtract((float)realSold);
 
                     if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
                     {
                         Game.market.Pay(this, cost);
-                        
+
                     }
                     else if (Game.market.HowMuchLacksMoneyCashOnly(cost).Get() > 10m && Game.devMode)
                         Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyCashOnly(cost)
