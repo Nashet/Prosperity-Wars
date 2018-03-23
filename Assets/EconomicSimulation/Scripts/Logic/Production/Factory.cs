@@ -446,7 +446,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money income;
                     if (basedOnProfit)
-                        income = new Money((decimal)getProfit());
+                        income = new Money((decimal)getProfit(), false);
                     else
                         income = payedDividends.Copy();
                     var taxes = income.Copy().Multiply(Country.taxationForRich.getTypedValue().tax);
@@ -605,6 +605,8 @@ namespace Nashet.EconomicSimulation
                         salaryRaise = 0.003m;
                     else if (margin.get() > 0.1f) //10%
                         salaryRaise = 0.002m;
+                    else if (margin.get() >= 0.01f) //1%
+                        salaryRaise = 0.001m;
 
                     salary.Add(salaryRaise);
                 }

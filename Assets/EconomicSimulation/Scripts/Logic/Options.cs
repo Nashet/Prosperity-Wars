@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopGrowthSpeed = new Procent(0.02f);
         public static readonly Procent PopStarvationSpeed = new Procent(0.1f);
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
-        public static readonly Procent PopEscapingSpeed = new Procent(0.02f);
+        public static readonly Procent PopEscapingSpeed = new Procent(0.04f);
         //public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
         //public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
         ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>

@@ -164,7 +164,7 @@ namespace Nashet.EconomicSimulation
                 else if (this == Government.Despotism && pop.needsFulfilled.get() < 0.1f)
                     result = new Procent(1f);
                 else if (this == Government.Tribal)
-                    result = new Procent(0.6f);
+                    result = new Procent(0.3f);
                 else
                     result = new Procent(0f);
                 return result;
@@ -542,18 +542,12 @@ namespace Nashet.EconomicSimulation
                     if (this == Economy.PlannedEconomy)
                         result = new Procent(0f); // that can be achieved only by government reform
                     else if (this == Economy.LaissezFaire)
-                    {
-                        if (this == Economy.Interventionism)
-                            result = new Procent(0.2f);
-                        else
-                            result = new Procent(0.5f);
+                    {                       
+                            result = new Procent(0.6f);
                     }
                     else if (this == Economy.Interventionism)
-                    {
-                        if (this == Economy.LaissezFaire)
-                            result = new Procent(0.2f);
-                        else
-                            result = new Procent(0.6f);
+                    {                        
+                            result = new Procent(0.7f);
                     }
                     else
                         result = new Procent(0.5f);
@@ -839,24 +833,24 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.08m);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
@@ -1010,32 +1004,32 @@ namespace Nashet.EconomicSimulation
                 }
                 else if (this == Minimal)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()) .Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()) .Copy();
+                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.08m);
                     //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
@@ -1291,9 +1285,12 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (change > 0)
-                        result = new Procent(0.8f);
+                        if (this.tax.get() > 0.6f)
+                            result = new Procent(0.4f);
+                        else
+                            result = new Procent(0.5f);
                     else
-                        result = new Procent(0f);
+                        result = new Procent(0.0f);
                 }
                 return result;
             }
