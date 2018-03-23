@@ -324,7 +324,7 @@ namespace Nashet.EconomicSimulation
                 return true;
             if (
                 ((product == Product.Metal || product == Product.MetalOre || product == Product.ColdArms) && !this.Invented(Invention.Metal))
-                || (!this.Invented(Invention.SteamPower) && (product == Product.Machinery || product == Product.Cement))
+                || (!this.Invented(Invention.SteamPower) && (product == Product.Machinery ))//|| product == Product.Cement))
                 || ((product == Product.Artillery || product == Product.Ammunition) && !this.Invented(Invention.Gunpowder))
                 || (product == Product.Firearms && !this.Invented(Invention.Firearms))
                 || (product == Product.Coal && !this.Invented(Invention.Coal))
@@ -794,7 +794,7 @@ namespace Nashet.EconomicSimulation
 
                     var proposition = ProductionType.whoCanProduce(item);
                     if (proposition != null)
-                        if (proposition.canBuildNewFactory(province, this) || province.canUpgradeFactory(proposition))
+                        if (proposition.canBuildNewFactory(province, this) || province.CanUpgradeFactory(proposition, this))
                         {
                             var found = countryStorageSet.GetFirstSubstituteStorage(item);
                             if (minFound == null || found.isSmallerThan(minFound))

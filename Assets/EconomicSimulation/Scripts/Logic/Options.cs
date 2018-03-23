@@ -69,8 +69,8 @@ namespace Nashet.EconomicSimulation
 
         internal static readonly int fabricConstructionTimeWithoutCapitalism = 20;
         internal static readonly byte FactoryInputReservInDays = 2;
-        internal static readonly int FactoryMediumTierLevels = 8 + 1;
-        internal static readonly int FactoryMediumHighLevels = 15 + 1;
+        internal static readonly int FactoryMediumTierLevels = 10; 
+        internal static readonly int FactoryMediumHighLevels = 16;
         internal static readonly MoneyView FactoryMinPossibleSallary = new Money(0.001m);
 
         //Province

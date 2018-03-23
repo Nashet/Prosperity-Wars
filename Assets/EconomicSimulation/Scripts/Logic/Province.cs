@@ -798,7 +798,7 @@ namespace Nashet.EconomicSimulation
                 res = Country.getMinSalary();
             else
             {
-                Money minSalary = getLocalMaxSalary() .Copy();
+                Money minSalary = getLocalMaxSalary().Copy();
 
                 foreach (Factory factory in allFactories)
                     if (factory.IsOpen && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
@@ -1069,7 +1069,7 @@ namespace Nashet.EconomicSimulation
         public IEnumerable<IInvestable> getAllInvestmentProjects(Agent investor)
         {
             var upgradeInvestments = getAllFactories().Where(x =>
-                    canUpgradeFactory(x.Type)
+                  x.Province.CanUpgradeFactory(x.Type, investor)
                     && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
                     );
             foreach (var item in upgradeInvestments)
@@ -1139,16 +1139,7 @@ namespace Nashet.EconomicSimulation
         //    FactoryType.getAllInventedTypes(Country, x => x.canBuildNewFactory(this) && predicate(x)).PerformAction(x => res.Add(x));
         //    return res;
         //}
-        internal bool canUpgradeFactory(ProductionType type)
-        {
-            var factory = findFactory(type);
-            if (factory == null)
-                return false;
-            if (factory.canUpgrade())
-                return true;
-            else
-                return false;
-        }
+
         public bool HasJobsFor(PopType popType)
         {
             if (!allFactories.Any(x => x.IsOpen))
@@ -1263,6 +1254,16 @@ namespace Nashet.EconomicSimulation
                 return "migrated";
             else
                 return "immigrated";
+        }
+        /// <summary>
+        ///  If byWhom == Game.Player checks money/resources availability. If not then not.
+        /// </summary>        
+        internal bool CanUpgradeFactory(ProductionType type, Agent byWhom)
+        {
+            var factory = findFactory(type);
+            if (factory == null)
+                return false;
+            return Factory.conditionsUpgrade.isAllTrue(factory, byWhom);
         }
     }
 }

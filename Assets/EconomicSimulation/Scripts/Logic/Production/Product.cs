@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
             Clothes = new Product("Clothes", 6f, type.consumerProduct),
 
             Stone = new Product("Stone", 1f, new Color(0.82f, 0.62f, 0.82f), type.industrial),//light grey
-            Cement = new Product("Cement", 2f, type.industrial),
+            //Cement = new Product("Cement", 2f, type.industrial),
 
             MetalOre = new Product("Metal ore", 3f, Color.blue, type.industrial),
             Metal = new Product("Metal", 6f, type.industrial),

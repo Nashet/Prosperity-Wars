@@ -28,8 +28,8 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>Per 1 level upgrade</summary>        
         private readonly List<Storage> upgradeResourceLowTier = new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) };
-        private readonly List<Storage> upgradeResourceMediumTier = new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Cement, 2f), new Storage(Product.Metal, 1f) };
-        private readonly List<Storage> upgradeResourceHighTier = new List<Storage> { new Storage(Product.Cement, 10f), new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) };
+        private readonly List<Storage> upgradeResourceMediumTier = new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Metal, 1f) };//, new Storage(Product.Cement, 2f)
+        private readonly List<Storage> upgradeResourceHighTier = new List<Storage> {  new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) }; //new Storage(Product.Cement, 10f),
 
 
 
@@ -81,10 +81,10 @@ namespace Nashet.EconomicSimulation
             resourceInput.Set(new Storage(Product.Fibers, 1f));
             new ProductionType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
 
-            resourceInput = new StorageSet();
-            resourceInput.Set(new Storage(Product.Fuel, 0.5f));
-            resourceInput.Set(new Storage(Product.Stone, 2f));
-            new ProductionType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
+            //resourceInput = new StorageSet();
+            //resourceInput.Set(new Storage(Product.Fuel, 0.5f));
+            //resourceInput.Set(new Storage(Product.Stone, 2f));
+            //new ProductionType("Cement factory", new Storage(Product.Cement, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Sugar, 1f));

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
-using System;
-using UnityEngine;
-using System.Linq;
+
 
 namespace Nashet.EconomicSimulation
 {
@@ -83,6 +82,9 @@ namespace Nashet.EconomicSimulation
             conOpen = new Condition(x => (x as Factory).IsOpen, "Open", false),
             conClosed = new Condition(x => !(x as Factory).IsOpen, "Closed", false),
             conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
+            conUpgradeProductsAvailable = new Condition(
+                x => (x as Factory).getUpgradeNeeds().All(y => y.Product.IsInventedByAnyOne()),  //Game.market.isAvailable( y.Product)),
+                "All upgrade products are invented", false),
 
             conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.CanPay((x as Factory).getReopenCost()), delegate (object x)
             {
@@ -96,17 +98,22 @@ namespace Nashet.EconomicSimulation
 
                 delegate (object factory, object upgrader)
                 {
-                    var agent = upgrader as Agent;
-                    var typedfactory = factory as Factory;
-                    if (agent.Country.economy.getValue() == Economy.PlannedEconomy)
+                    if (upgrader == Game.Player)
                     {
-                        return agent.Country.countryStorageSet.has(typedfactory.getUpgradeNeeds());
+                        var agent = upgrader as Agent;
+                        var typedfactory = factory as Factory;
+                        if (agent.Country.economy.getValue() == Economy.PlannedEconomy)
+                        {
+                            return agent.Country.countryStorageSet.has(typedfactory.getUpgradeNeeds());
+                        }
+                        else
+                        {
+                            MoneyView cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
+                            return agent.CanPay(cost);
+                        }
                     }
                     else
-                    {
-                        MoneyView cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
-                        return agent.CanPay(cost);
-                    }
+                        return true; // Assuming it would be checked somewhere else
                 },
 
 
@@ -123,20 +130,22 @@ namespace Nashet.EconomicSimulation
             conPlacedInOurCountry = new DoubleCondition((factory, agent) => (factory as Factory).Country == (agent as Consumer).Country,
             (factory) => "Enterprise placed in our country", true),
             ///duplicated in FactoryTypes
-            conAllowsForeignInvestments = new DoubleCondition((factory, agent) => (factory as Factory).Country == (agent as Country)
+            conAllowsForeignInvestments = new DoubleCondition((factory, agent) =>
+                (factory as Factory).Country == (agent as Country)
                 || ((factory as Factory).Country.economy.getTypedValue().AllowForeignInvestments
-                && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
+                    && agent is Country
+                    && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
                 (factory) => (factory as Factory).Country + " allows foreign investments or it isn't foreign investment", true),
-            conNotLForNotCountry = new DoubleCondition((factory, agent) => (agent as Country).economy.getValue() != Economy.LaissezFaire || !(agent is Country), (factory) => "Economy policy is not Laissez Faire", true)
+            conNotLForNotCountry = new DoubleCondition((factory, agent) => !(agent is Country) || (agent as Country).economy.getValue() != Economy.LaissezFaire, (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
 
 
         internal static readonly DoubleConditionsList
             conditionsUpgrade = new DoubleConditionsList(new List<Condition>
-            {
-            conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved, conNotLForNotCountry,
-            conHaveMoneyOrResourcesToUpgrade, conAllowsForeignInvestments
+            {// thats a universal condition now, be careful
+                conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved,
+                conNotLForNotCountry, conAllowsForeignInvestments, conHaveMoneyOrResourcesToUpgrade, conUpgradeProductsAvailable
             }),
             conditionsClose = new DoubleConditionsList(new List<Condition> { conNotBuilding, conOpen, conPlacedInOurCountry, conNotLForNotCountry }),
             conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conAllowsForeignInvestments, conNotLForNotCountry }),
@@ -901,10 +910,10 @@ namespace Nashet.EconomicSimulation
             return getSalary().Multiply(getWorkForce()).Divide(workForcePerLevel);
         }
 
-        internal bool canUpgrade()
-        {
-            return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && IsOpen;
-        }
+        //internal bool canUpgrade()
+        //{
+        //    return !isUpgrading() && !isBuilding() && level < Options.maxFactoryLevel && IsOpen;
+        //}
 
         internal void upgrade(IShareOwner byWhom)
         {
