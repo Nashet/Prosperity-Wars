@@ -596,14 +596,14 @@ namespace Nashet.EconomicSimulation
                                 toHire = unemplyedWorkForce * factoryWants / factoriesInGroupWantsTotal;
                             if (toHire > factoryWants)
                                 toHire = factoryWants;
-                            hiredInThatGroup += factory.hireWorkforce(toHire, GetAllPopulation(PopType.Workers));
+                            hiredInThatGroup += factory.hireWorkers(toHire, GetAllPopulation(PopType.Workers));
 
                             //if (popsLeft <= 0) break;
                             // don't do breaks to clear old workforce records
                         }
                         else
                         {
-                            factory.hireWorkforce(0, null);
+                            factory.hireWorkers(0, null);
                         }
                     unemplyedWorkForce -= hiredInThatGroup;
                 }

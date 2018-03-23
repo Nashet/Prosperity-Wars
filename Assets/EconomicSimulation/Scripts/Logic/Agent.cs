@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> Used to calculate income tax, now it's only for statistics </summary>
         public Money moneyIncomeThisTurn = new Money(0);
         protected readonly Money moneyIncomeLastTurn = new Money(0);
-        private readonly Money cash = new Money(0);
+        protected readonly Money cash = new Money(0);
         public MoneyView Cash { get { return cash; } }
 
 
@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable() .Copy()).Divide(Game.market.getCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Game.market.getCost(need.Product).Get()).Get());
         }
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
@@ -334,13 +334,13 @@ namespace Nashet.EconomicSimulation
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
-            Pay(whom, this.cash.Copy());
+            Pay(whom, this.cash);
         }
         internal void PayAllAvailableMoneyWithoutRecord(Agent whom)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
-            PayWithoutRecord(whom, this.cash.Copy());
+            PayWithoutRecord(whom, cash);
         }
 
 

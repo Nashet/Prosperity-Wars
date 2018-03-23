@@ -759,7 +759,7 @@ namespace Nashet.EconomicSimulation
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
-                reserve.PayWithoutRecord(this, reserve);
+                cash.Add(reserve);
             }
 
         }

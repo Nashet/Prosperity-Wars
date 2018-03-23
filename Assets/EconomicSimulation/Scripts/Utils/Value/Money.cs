@@ -48,8 +48,8 @@ namespace Nashet.ValueSpace
         }
         ///////////////////Add section
         public Money Add(MoneyView storage, bool showMessageAboutNegativeValue = true)
-        {   
-            decimal newData = data += storage.Get(); 
+        {
+            decimal newData = data += storage.Get();
             if (newData < 0m)
             {
                 if (showMessageAboutNegativeValue)
@@ -85,29 +85,10 @@ namespace Nashet.ValueSpace
                 data = this.Get() - storage.Get();
             return this;
         }
-        /// <summary>
-        /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
-        /// Doesn't pay tax, doesn't register transaction
-        /// </summary>    
-        public bool PayWithoutRecord(Agent whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
-        {
-            if (this.isBiggerOrEqual(howMuch))// It does has enough cash or deposit
-            {
-
-                (whom.Cash .Copy()).Add(howMuch);
-                this.Subtract(howMuch);
-                return true;
-            }
-            else
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Not enough money to pay in Money.payWithoutRecord");
-                return false;
-            }
-        }
+        
         public void Set(MoneyView value)
         {
-            this.data = (value .Copy()).data;
+            this.data = (value.Copy()).data;// shit
         }
         //public void Set(float value)
         //{

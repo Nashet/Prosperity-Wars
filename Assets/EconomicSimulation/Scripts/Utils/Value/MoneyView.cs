@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+
 using Nashet.Utils;
 
 namespace Nashet.ValueSpace

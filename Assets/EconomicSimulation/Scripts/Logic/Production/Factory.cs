@@ -232,7 +232,7 @@ namespace Nashet.EconomicSimulation
         {
             if (IsOpen)
             {
-                var res = Game.market.getCost(getUpgradeNeeds()) .Copy();
+                var res = Game.market.getCost(getUpgradeNeeds()).Copy();
                 res.Add(Options.factoryMoneyReservePerLevel);
                 return res;
             }
@@ -331,7 +331,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns how much factory hired in reality
         /// </summary>    
-        public int hireWorkforce(int amount, IEnumerable<PopUnit> popList)
+        public int hireWorkers(int amount, IEnumerable<PopUnit> popList)
         {
             //check on no too much workers?
             //if (amount > HowMuchWorkForceWants())
@@ -429,6 +429,13 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Procent GetMargin()
         {
+            return GetMargin(false);
+        }
+        /// <summary>
+        /// Returns new value. Includes tax, salary and modifiers. New value
+        /// </summary>        
+        private Procent GetMargin(bool basedOnProfit)
+        {
             if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return Procent.ZeroProcent.Copy();
             else
@@ -437,10 +444,14 @@ namespace Nashet.EconomicSimulation
                     return Type.GetPossibleMargin(Province);//potential margin
                 else
                 {
-                    var dividendsCopy = payedDividends.Copy();
-                    var taxes = dividendsCopy.Copy().Multiply(Country.taxationForRich.getTypedValue().tax);
-                    dividendsCopy.Subtract(taxes);
-                    return new Procent(dividendsCopy, ownership.GetMarketValue(), false);
+                    Money income;
+                    if (basedOnProfit)
+                        income = new Money((decimal)getProfit());
+                    else
+                        income = payedDividends.Copy();
+                    var taxes = income.Copy().Multiply(Country.taxationForRich.getTypedValue().tax);
+                    income.Subtract(taxes);
+                    return new Procent(income, ownership.GetMarketValue(), false);
                 }
             }
         }
@@ -573,7 +584,7 @@ namespace Nashet.EconomicSimulation
             if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
                 var unemployment = Province.GetAllPopulation().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
-                var margin = GetMargin();
+                var margin = GetMargin(true);
 
                 // rise salary to attract  workforce, including workforce from other factories
                 if (margin.isBiggerThan(Options.minMarginToRiseSalary)
@@ -582,7 +593,11 @@ namespace Nashet.EconomicSimulation
                 {
                     // cant catch up salaries like that. Check for zero workforce?
                     decimal salaryRaise = 0.001m; //1%
-                    if (margin.get() > 10f) //1000%
+                    if (margin.get() > 1000f) //100000%
+                        salaryRaise = 0.048m;
+                    else if (margin.get() > 100f) //10000%
+                        salaryRaise = 0.024m;
+                    else if (margin.get() > 10f) //1000%
                         salaryRaise = 0.012m;
                     else if (margin.get() > 1f) //100%
                         salaryRaise = 0.006m;
@@ -772,7 +787,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         MoneyView wantsMinMoneyReserv()
         {
-            return (getExpences() .Copy()).Multiply(Factory.xMoneyReservForResources).Add(
+            return (getExpences().Copy()).Multiply(Factory.xMoneyReservForResources).Add(
                 Options.factoryMoneyReservePerLevel.Copy().Multiply(level)
                 );
             //return getExpences().get() * Factory.xMoneyReservForResources + Options.factoryMoneyReservePerLevel * level;
@@ -1098,7 +1113,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         override internal MoneyView getExpences()
         {
-            return (base.getExpences() .Copy()).Add(getSalaryCost());
+            return (base.getExpences().Copy()).Add(getSalaryCost());
         }
         //Not necessary ti optimize -  cost 0.1% of tick
         public int getWorkForce()
