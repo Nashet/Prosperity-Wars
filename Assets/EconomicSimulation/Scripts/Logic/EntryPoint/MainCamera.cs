@@ -160,8 +160,8 @@ namespace Nashet.EconomicSimulation
 
                 }
 
-                if (Input.GetKeyUp(KeyCode.Space))
-                    topPanel.switchHaveToRunSimulation();
+                //if (Input.GetKeyUp(KeyCode.Space))
+                //    topPanel.switchHaveToRunSimulation();
 
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();

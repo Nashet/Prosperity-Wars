@@ -21,13 +21,8 @@ namespace Nashet.EconomicSimulation
 
         // Use this for initialization
         void Awake()
-        {
-            btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
-            btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
-            //btnPlay.image.color = GUIChanger.DisabledButtonColor; 
-            //btnPlay.interactable = false;
-            MainCamera.topPanel = this;
-            // Hide();
+        {           
+            MainCamera.topPanel = this;            
         }
         bool firstUpdate = true;
         private void Update()
@@ -124,7 +119,7 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.financePanel.Show();
         }
-        void onbtnStepClick(Button button)
+        public void onbtnStepClick(Button button)
         {
             if (Game.isRunningSimulation())
             {
@@ -136,7 +131,7 @@ namespace Nashet.EconomicSimulation
             else
                 Game.makeOneStepSimulation();
         }
-        void onbtnPlayClick(Button button)
+        public void onbtnPlayClick(Button button)
         {
             switchHaveToRunSimulation();
         }

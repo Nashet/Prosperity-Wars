@@ -148,14 +148,15 @@ namespace Nashet.EconomicSimulation
 
 
             btnBuild.interactable = ProductionType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
-
+            btnBuild.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "B" + " button");
 
             btMobilize.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btMobilize.GetComponent<ToolTipHandler>().text);
-
+            btMobilize.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "M" + " button");
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
             btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
+            btAttackThat.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "A" + " button");
             btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
         }
