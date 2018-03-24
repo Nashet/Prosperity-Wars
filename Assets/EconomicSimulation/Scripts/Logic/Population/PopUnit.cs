@@ -61,8 +61,10 @@ namespace Nashet.EconomicSimulation
         /// <summary> PopType means promotion/demotion, Province means migration/immigration, null means growth/starvation</summary>
         private readonly FixedSizeQueue<KeyValuePair<IWayOfLifeChange, int>> populationChanges = new FixedSizeQueue<KeyValuePair<IWayOfLifeChange, int>>(12, new KeyValuePair<IWayOfLifeChange, int>(null, 0));
         //private KeyValuePair<IEscapeTarget, int> lastEscaped = new KeyValuePair<IEscapeTarget, int>();
+
         //if add new fields make sure it's implemented in second constructor and in merge()  
 
+        protected int employed;
 
         static PopUnit()
         {
@@ -497,17 +499,22 @@ namespace Nashet.EconomicSimulation
         {
             return type.getAllNeedsPer1000Men().Multiply(new Value(this.getPopulation() / 1000f));
         }
-
+        internal int GetUnemployedPopulation()
+        {
+            return getPopulation() - employed;
+        }
         internal Procent getUnemployment()
         {
             if (type == PopType.Workers)
             {
-                int employed = 0;
-                foreach (Factory factory in Province.getAllFactories())
-                    employed += factory.HowManyEmployed(this);
-                if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
-                    return new Procent(0);
-                return new Procent((getPopulation() - employed) / (float)getPopulation());
+                return new Procent(GetUnemployedPopulation(), getPopulation(), false); // due to population changes that could be negative
+                //int employed = 0;
+                //foreach (Factory factory in Province.getAllFactories())
+                //    employed += factory.HowManyEmployed(this);
+                //if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
+                //    return new Procent(0);
+                //return new Procent((getPopulation() - employed) / (float)getPopulation());
+
             }
             else if (type == PopType.Farmers || type == PopType.Tribesmen)
             {
@@ -1044,10 +1051,11 @@ namespace Nashet.EconomicSimulation
             if (Country.economy.getValue() != Economy.PlannedEconomy)
             {
                 var reform = Country.unemploymentSubsidies.getValue();
-                if (getUnemployment().isNotZero() && reform != UnemploymentSubsidies.None)
+                var unemployment = getUnemployment();
+                if (unemployment.isNotZero() && reform != UnemploymentSubsidies.None)
                 {
                     var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate();
-                    MoneyView subsidy = rate.Copy().Multiply(getPopulation()).Divide(1000).Multiply(getUnemployment());
+                    MoneyView subsidy = rate.Copy().Multiply(getPopulation()).Divide(1000).Multiply(unemployment);
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (Country.CanPay(subsidy))
                     {

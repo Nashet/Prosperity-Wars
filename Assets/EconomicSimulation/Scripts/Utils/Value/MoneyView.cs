@@ -11,7 +11,7 @@ namespace Nashet.ValueSpace
         public MoneyView(decimal value, bool showMessageAboutNegativeValue = true)
         {
             if (value >= 0m)
-                data = (decimal)value;
+                data = value;
             else if (showMessageAboutNegativeValue)
             {
                 Debug.Log("Can't set negative value");

@@ -335,7 +335,7 @@ namespace Nashet.EconomicSimulation
         public void ClearWorkforce()
         {
             averageWorkersEducation.SetZero();
-            hiredWorkForce.Clear();
+            hiredWorkForce.Clear();            
         }
         /// <summary>
         /// returns how much factory hired in reality
@@ -358,14 +358,12 @@ namespace Nashet.EconomicSimulation
                 hiredLastTurn = 0;
                 popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.getPopulation()).ToList();
 
-                foreach (PopUnit pop in popList)
-
-                //for (int i = popList.Count - 1; i >= 0; i--) //revert order
-                {
-                    //var pop = popList[i];
-                    if (pop.getPopulation() >= leftToHire) // satisfied demand
+                foreach (Workers pop in popList)
+                {                    
+                    if (pop.GetUnemployedPopulation() >= leftToHire) // satisfied demand
                     {
                         hiredWorkForce.Add(pop, leftToHire);
+                        pop.Hire(this, leftToHire);
                         //hiredLastTurn = getWorkForce() - wasWorkforce;
 
                         averageWorkersEducation.AddPoportionally(hiredLastTurn, leftToHire, pop.Education);
@@ -374,11 +372,12 @@ namespace Nashet.EconomicSimulation
                         //break;
                     }
                     else
-                    {
-                        hiredWorkForce.Add(pop, pop.getPopulation()); // hire as we can                        
-                        averageWorkersEducation.AddPoportionally(hiredLastTurn, pop.getPopulation(), pop.Education);
-                        hiredLastTurn += pop.getPopulation();
-                        leftToHire -= pop.getPopulation();
+                    { var toHire = pop.GetUnemployedPopulation();
+                        hiredWorkForce.Add(pop, toHire); // hire everyone left
+                        pop.Hire(this, toHire);
+                        averageWorkersEducation.AddPoportionally(hiredLastTurn, toHire, pop.Education);
+                        hiredLastTurn += toHire;
+                        leftToHire -= toHire;
                     }
                 }
                 //hiredLastTurn = getWorkForce() - wasWorkforce;
@@ -697,6 +696,8 @@ namespace Nashet.EconomicSimulation
             }
             //todo optimize getWorkforce() calls
             int result = workForce + difference;
+            //if (result > wants)
+            //    result = wants;
             if (result < 0)
                 return 0;
             return result;

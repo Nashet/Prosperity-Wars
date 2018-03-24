@@ -49,7 +49,7 @@ namespace Nashet.ValueSpace
         ///////////////////Add section
         public Money Add(MoneyView storage, bool showMessageAboutNegativeValue = true)
         {
-            decimal newData = data += storage.Get();
+            decimal newData = data + storage.Get();
             if (newData < 0m)
             {
                 if (showMessageAboutNegativeValue)

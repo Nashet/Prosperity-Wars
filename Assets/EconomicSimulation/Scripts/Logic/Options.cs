@@ -73,6 +73,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly int FactoryMediumHighLevels = 16;
         internal static readonly MoneyView FactoryMinPossibleSallary = new Money(0.001m);
 
+        internal static readonly MoneyView FactoryReduceSalaryOnNonProfit = new MoneyView(0.01m);
+        internal static readonly MoneyView FactoryReduceSalaryOnMarket = new MoneyView(0.001m);
+
         //Province
         /// <summary>In procent of unemployed</summary>
         public static Procent ProvinceExcessWorkforce = new Procent(0.15f);
@@ -115,7 +118,7 @@ namespace Nashet.EconomicSimulation
 
 
         //ARTISANS
-        internal static readonly float ArtisansProductionModifier = 0.75f;
+        internal static readonly float ArtisansProductionModifier = 0.5f;
         internal static readonly Procent ArtisansChangeProductionRate = new Procent(0.01f);
         /// <summary> change production with needs fulfilling lower than that /// </summary>
         internal static readonly Value ArtisansChangeProductionLevel = new Value(0.3f);
@@ -177,9 +180,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopEducationRegressChance = new ReadOnlyValue(0.01f);
         internal static readonly ReadOnlyValue PopLearnByWorkingChance = new ReadOnlyValue(0.1f);
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
+
         internal static readonly Date AIFisrtAllowedAttackOnHuman = new Date(30);
-        internal static readonly MoneyView FactoryReduceSalaryOnNonProfit = new MoneyView(0.01m);
-        internal static readonly MoneyView FactoryReduceSalaryOnMarket = new MoneyView(0.001m);
+        
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

@@ -560,6 +560,12 @@ namespace Nashet.EconomicSimulation
         }
         public void BalanceEmployableWorkForce()
         {
+            foreach (var item in GetAllPopulation())
+            {
+                var worker = item as Workers;
+                if (worker != null)
+                    worker.Fire();
+            }
             // List<PopUnit> workforceList = this.GetAllPopulation(PopType.Workers).ToList();
             int unemplyedWorkForce = GetAllPopulation(PopType.Workers).Sum(x => x.getPopulation());
 
@@ -1212,7 +1218,7 @@ namespace Nashet.EconomicSimulation
                     lifeQuality.Add(Options.PopSameCultureMigrationPreference);
 
                 if (country.getCulture() != thisPop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
-                    lifeQuality.Subtract(0.3f, false);
+                    lifeQuality.Subtract(0.4f, false);
 
                 // reforms preferences
                 if (thisPop.Type.isPoorStrata())
