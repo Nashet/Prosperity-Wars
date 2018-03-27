@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>Per 1 level upgrade</summary>        
         private readonly List<Storage> upgradeResourceLowTier = new List<Storage> { new Storage(Product.Stone, 2f), new Storage(Product.Wood, 10f) };
         private readonly List<Storage> upgradeResourceMediumTier = new List<Storage> { new Storage(Product.Stone, 10f), new Storage(Product.Lumber, 3f), new Storage(Product.Metal, 1f) };//, new Storage(Product.Cement, 2f)
-        private readonly List<Storage> upgradeResourceHighTier = new List<Storage> {  new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) }; //new Storage(Product.Cement, 10f),
+        private readonly List<Storage> upgradeResourceHighTier = new List<Storage> { new Storage(Product.Metal, 4f), new Storage(Product.Machinery, 2f) }; //new Storage(Product.Cement, 10f),
 
 
 
@@ -45,6 +45,11 @@ namespace Nashet.EconomicSimulation
         internal DoubleConditionsList conditionsBuildThis;
         private readonly bool shaft;
         private readonly float nameWeight;
+
+        public bool IsRural
+        {
+            get { return (!shaft && !IsResourceProcessing()  || this ==Barnyard) && this != University; }
+        }
         static ProductionType()
         {
             new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
@@ -149,6 +154,12 @@ namespace Nashet.EconomicSimulation
         /// </summary>    
         internal ProductionType(string name, Storage basicProduction, bool shaft)
         {
+            //var product = basicProduction.Product;
+            //if (product == Product.Cattle|| product == Product.Cotton || product == Product.Fish 
+            //    || product == Product.Fruit|| product == Product.Grain 
+            //    || product == Product.Tobacco || product == Product.Wood )
+            //    _isRural = true;
+
             this.name = name;
             nameWeight = name.GetWeight();
             if (name == "Gold pit") GoldMine = this;
@@ -188,6 +199,7 @@ namespace Nashet.EconomicSimulation
             // Using: Country () , province, this <FactoryType>
             // used in BuildPanel only, only for Game.Player
             // Should be: de-facto Country, Investor, this <FactoryType> (change Economy.isNot..)
+            // Ideally: Agent, FactoryProject
             // or put it in FactoryProject
             conditionsBuildThis = new DoubleConditionsList(new List<Condition> {
                 Economy.isNotLF, Economy.isNotInterventionism, enoughMoneyOrResourcesToBuild,
@@ -205,6 +217,12 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var next in allTypes)
                 if (country.InventedFactory(next))
+                    yield return next;
+        }
+        public static IEnumerable<ProductionType> getAllInventedByAnyoneFactories()
+        {
+            foreach (var next in allTypes)
+                if (next.basicProduction.Product.IsInventedByAnyOne())
                     yield return next;
         }
         public static IEnumerable<ProductionType> getAllInventedArtisanships(Country country)
@@ -230,7 +248,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public MoneyView GetBuildCost()
         {
-            Money result = Game.market.getCost(GetBuildNeeds()) .Copy();
+            Money result = Game.market.getCost(GetBuildNeeds()).Copy();
             result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }
@@ -368,24 +386,22 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Procent GetPossibleMargin(Province province)
         {
-            var profit = getPossibleProfit(province) .Copy();
+            var profit = getPossibleProfit(province).Copy();
             var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
             profit.Subtract(taxes);
             return new Procent(profit, GetBuildCost());
         }
         /// <summary>
-        /// Doesn't care about builder reforms
+        /// 
         /// </summary>        
-        internal bool canBuildNewFactory(Province where, Agent investor)
+        internal bool canBuildNewFactory(Province where, Agent builder)
         {
             if (where.hasFactory(this))
                 return false;
             if (isResourceGathering() && basicProduction.Product != where.getResource()
-                //|| !where.Country.isInvented(basicProduction.Product)
-                || !investor.Country.InventedFactory(this)
-                //|| isManufacture() && !investor.Country.Invented(Invention.Manufactures)
-                //|| (basicProduction.Product == Product.Cattle && !investor.Country.Invented(Invention.Domestication))
-                || !allowsForeignInvestments.checkIftrue(investor, where)
+                || (builder != null && !builder.Country.InventedFactory(this)) // check it out side                
+                || (builder != null && !allowsForeignInvestments.checkIftrue(builder, where))// check it out side
+                                                                                             //|| !basicProduction.Product.IsInventedByAnyOne()
                 )
                 return false;
             return true;

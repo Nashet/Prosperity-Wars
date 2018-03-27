@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
             setResource(resource);
             colorID = icolorID;
             ID = iID;
-            fertileSoil = 10000;
+            fertileSoil = 5000;
         }
 
 
@@ -899,7 +899,12 @@ namespace Nashet.EconomicSimulation
                     return getColor();
                 case 1: //culture mode
                     //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
-                    return getMajorCulture().getColor();
+                    var culture = getMajorCulture();
+                    if (culture == null)
+                        return Color.white;
+                    else
+                        return culture.getColor();
+
                 case 2: //cores mode
                     if (Game.selectedProvince == null)
                     {
@@ -976,7 +981,7 @@ namespace Nashet.EconomicSimulation
                     }
                 case 5: //population density mode                
                     {
-                        float maxPopultion = 25000;
+                        float maxPopultion = 50000;
                         var population = GetAllPopulation().Sum(x => x.getPopulation());
 
 
@@ -1070,18 +1075,20 @@ namespace Nashet.EconomicSimulation
         }
         /// <summary>
         /// Don't use it for aristocrats
-        /// Shouldn't exist
+        /// Doesn't check if enterprise is invented, also doesn't check 
+        /// conNotLForNotCountry, conAllowsForeignInvestments, conHaveMoneyOrResourcesToUpgrade
         /// </summary>
-        public IEnumerable<IInvestable> getAllInvestmentProjects(Agent investor)
+        public IEnumerable<IInvestable> getAllInvestmentProjects()//Agent investor
         {
             var upgradeInvestments = getAllFactories().Where(x =>
-                  x.Province.CanUpgradeFactory(x.Type, investor)
-                    && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
-                    );
+                Factory.conditionsUpgrade.isAllTrue(x, null)//investor
+                                                            //x.Province.CanUpgradeFactory(x.Type, investor)
+                && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
+                );
             foreach (var item in upgradeInvestments)
                 yield return item;
 
-            var buildInvestments = ProductionType.getAllInventedFactories(Country).Where(x => x.canBuildNewFactory(this, investor));
+            var buildInvestments = ProductionType.getAllInventedByAnyoneFactories().Where(x => x.canBuildNewFactory(this, null)); //investor
             foreach (var item in buildInvestments)
                 yield return new NewFactoryProject(this, item);
 
@@ -1215,31 +1222,33 @@ namespace Nashet.EconomicSimulation
 
                 // checks for same culture and type
                 if (getSimilarPopUnit(thisPop) != null)
-                    lifeQuality.Add(Options.PopSameCultureMigrationPreference);
-
-                if (country.getCulture() != thisPop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
-                    lifeQuality.Subtract(0.4f, false);
+                    lifeQuality.Add(Options.PopSameCultureMigrationPreference);                                
 
                 // reforms preferences
                 if (thisPop.Type.isPoorStrata())
                 {
-                    lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2);
-                    lifeQuality.Add(Country.minimalWage.getValue().ID * 1);
-                    lifeQuality.Add(Country.taxationForRich.getValue().ID * 1);
+                    lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2 /100f);
+                    lifeQuality.Add(Country.minimalWage.getValue().ID * 1 / 100f);
+                    lifeQuality.Add(Country.taxationForRich.getValue().ID * 1 / 100f);
                 }
                 else if (thisPop.Type.isRichStrata())
                 {
                     if (Country.economy.getValue() == Economy.LaissezFaire)
-                        lifeQuality.Add(5f);
+                        lifeQuality.Add(0.05f);
                     else if (Country.economy.getValue() == Economy.Interventionism)
-                        lifeQuality.Add(2f);
+                        lifeQuality.Add(0.02f);
                 }
-                if (!thisPop.canVote(Country.government.getTypedValue())) // includes Minority politics
-                    lifeQuality.Subtract(-10f, false);
+                
 
                 if (thisPop.loyalty.get() < 0.3f)
-                    lifeQuality.Add(5, false);
+                    lifeQuality.Add(0.05f, false);
                 //todo - serfdom
+
+                if (!thisPop.canVote(Country.government.getTypedValue())) // includes Minority politics
+                    lifeQuality.Subtract(-0.10f, false);
+
+                if (country.getCulture() != thisPop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
+                    lifeQuality.Subtract(Options.PopMinorityMigrationBarier, false);
 
                 return lifeQuality;
             }
@@ -1269,7 +1278,8 @@ namespace Nashet.EconomicSimulation
             var factory = findFactory(type);
             if (factory == null)
                 return false;
-            return Factory.conditionsUpgrade.isAllTrue(factory, byWhom);
+            else
+                return Factory.conditionsUpgrade.isAllTrue(factory, byWhom);
         }
     }
 }

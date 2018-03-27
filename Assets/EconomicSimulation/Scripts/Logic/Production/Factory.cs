@@ -5,7 +5,7 @@ using Nashet.UnityUIUtils;
 using Nashet.Conditions;
 using Nashet.ValueSpace;
 using Nashet.Utils;
-
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
@@ -64,9 +64,19 @@ namespace Nashet.EconomicSimulation
             ((x as Factory).Province.isProducingOnEnterprises((x as Factory).Type.resourceInput)
             || ((x as Factory).Province.getResource() == Product.Grain && (x as Factory).Type == ProductionType.Barnyard)
             ),
-                  "Has input resource in this province", 0.20f, false),
+                  "Has input resource in this province", 0.35f, false),
 
-            modifierLevelBonus = new Modifier(x => ((x as Factory).GetEmploymentLevel() - 1) / 100f, "High production concentration bonus", 5f, false),
+            modifierConcentrationBonus = new Modifier(
+            //(x as Factory).GetEmploymentLevel() - 1) / 100f
+            delegate (object x)
+            {
+                var isFactory = x as Factory;
+                if (isFactory.Type.IsRural)
+                    return 0f;
+                else
+                    return isFactory.GetEmploymentLevel() - 1f;
+            },
+                "High production concentration bonus", 0.15f, false),
 
             modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).Country.Invented(Invention.Mining) && (x as Factory).Type.isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),
@@ -82,7 +92,7 @@ namespace Nashet.EconomicSimulation
             conOpen = new Condition(x => (x as Factory).IsOpen, "Open", false),
             conClosed = new Condition(x => !(x as Factory).IsOpen, "Closed", false),
             conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
-            conUpgradeProductsAvailable = new Condition(
+            conUpgradeProductsInventedByAnyone = new Condition(
                 x => (x as Factory).getUpgradeNeeds().All(y => y.Product.IsInventedByAnyOne()),  //Game.market.isAvailable( y.Product)),
                 "All upgrade products are invented", false),
 
@@ -94,8 +104,6 @@ namespace Nashet.EconomicSimulation
             }, true);
         internal static readonly DoubleCondition
             conHaveMoneyOrResourcesToUpgrade = new DoubleCondition(
-                //(factory, agent) => (agent as Agent).canPay((factory as Factory).getUpgradeCost()),
-
                 delegate (object factory, object upgrader)
                 {
                     if (upgrader == Game.Player)
@@ -131,12 +139,13 @@ namespace Nashet.EconomicSimulation
             (factory) => "Enterprise placed in our country", true),
             ///duplicated in FactoryTypes
             conAllowsForeignInvestments = new DoubleCondition((factory, agent) =>
-                (factory as Factory).Country == (agent as Country)
+                agent == null
+                || (factory as Factory).Country == (agent as Country)
                 || ((factory as Factory).Country.economy.getTypedValue().AllowForeignInvestments
                     && agent is Country
                     && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
                 (factory) => (factory as Factory).Country + " allows foreign investments or it isn't foreign investment", true),
-            conNotLForNotCountry = new DoubleCondition((factory, agent) => !(agent is Country) || (agent as Country).economy.getValue() != Economy.LaissezFaire, (factory) => "Economy policy is not Laissez Faire", true)
+            conNotLForNotCountry = new DoubleCondition((factory, agent) => agent == null || !(agent is Country) || (agent as Country).economy.getValue() != Economy.LaissezFaire, (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
 
@@ -144,8 +153,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly DoubleConditionsList
             conditionsUpgrade = new DoubleConditionsList(new List<Condition>
             {// thats a universal condition now, be careful
-                conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved,
-                conNotLForNotCountry, conAllowsForeignInvestments, conHaveMoneyOrResourcesToUpgrade, conUpgradeProductsAvailable
+                conNotUpgrading, conNotBuilding, conOpen, conMaxLevelAchieved, conUpgradeProductsInventedByAnyone,
+                conNotLForNotCountry, conAllowsForeignInvestments, conHaveMoneyOrResourcesToUpgrade,
             }),
             conditionsClose = new DoubleConditionsList(new List<Condition> { conNotBuilding, conOpen, conPlacedInOurCountry, conNotLForNotCountry }),
             conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conAllowsForeignInvestments, conNotLForNotCountry }),
@@ -182,7 +191,7 @@ namespace Nashet.EconomicSimulation
             {
            Modifier.modifierDefault1,
             new Modifier(Invention.SteamPowerInvented, x => (x as Factory).Country, 0.25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).Country, 0.25f, false),
+            new Modifier(Invention.CombustionEngineInvented, x => (x as Factory).Country, 0.5f, false),
 
             new Modifier(Economy.isStateCapitlism, x => (x as Factory).Country,  0.10f, false),
             new Modifier(Economy.isInterventionism, x => (x as Factory).Country,  0.30f, false),
@@ -192,16 +201,16 @@ namespace Nashet.EconomicSimulation
             {
                 var factory = x as Factory;
                 if (factory.Type == ProductionType.University)
-                    return (factory.AverageWorkersEducation.get() - 0.5f)  * 2f;
+                    return Mathf.Max((factory.AverageWorkersEducation.get() - 0.5f)  * 4f, -0.5f);
                 else if (factory.Type.isResourceGathering())
-                    return factory.AverageWorkersEducation.get() / 10f;
+                    return factory.AverageWorkersEducation.get() / 10f *2;
                 else
                     return factory.AverageWorkersEducation.get();
             }, "Average workforce education", 1f, false),
 
             modifierInventedMiningAndIsShaft,
             modifierHasResourceInProvince,
-            modifierLevelBonus, modifierBelongsToCountry, modifierIsSubsidised,
+            modifierConcentrationBonus, modifierBelongsToCountry, modifierIsSubsidised,
             // copied in popUnit
              new Modifier(x => Government.isPolis.checkIfTrue((x as Factory).Country)
              && (x as Factory).Country.Capital == (x as Factory).Province, "Capital of Polis", 0.50f, false),
@@ -335,7 +344,7 @@ namespace Nashet.EconomicSimulation
         public void ClearWorkforce()
         {
             averageWorkersEducation.SetZero();
-            hiredWorkForce.Clear();            
+            hiredWorkForce.Clear();
         }
         /// <summary>
         /// returns how much factory hired in reality
@@ -359,7 +368,7 @@ namespace Nashet.EconomicSimulation
                 popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.getPopulation()).ToList();
 
                 foreach (Workers pop in popList)
-                {                    
+                {
                     if (pop.GetUnemployedPopulation() >= leftToHire) // satisfied demand
                     {
                         hiredWorkForce.Add(pop, leftToHire);
@@ -372,7 +381,8 @@ namespace Nashet.EconomicSimulation
                         //break;
                     }
                     else
-                    { var toHire = pop.GetUnemployedPopulation();
+                    {
+                        var toHire = pop.GetUnemployedPopulation();
                         hiredWorkForce.Add(pop, toHire); // hire everyone left
                         pop.Hire(this, toHire);
                         averageWorkersEducation.AddPoportionally(hiredLastTurn, toHire, pop.Education);

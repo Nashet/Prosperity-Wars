@@ -35,12 +35,15 @@ namespace Nashet.EconomicSimulation
         public Procent getBusinessSecurity(IInvestable business)
         {
             var res = business.Country.OwnershipSecurity;
+
             if (business.Country != this.Country)
                 res.Multiply(Options.InvestingForeignCountrySecurity);
+
             if (business.Province != this.Province)
                 res.Multiply(Options.InvestingAnotherProvinceSecurity);
-            if (!(business is Owners)) // building, upgrading and opening requires hiring people which can be impossible
-                res.Multiply(Options.InvestorEmploymentRisk);
+
+            if (business is NewFactoryProject) // building, upgrading and opening requires hiring people which can be impossible
+                res.Multiply(Options.InvestorEmploymentSafety);
 
             return res;
         }

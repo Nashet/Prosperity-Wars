@@ -130,6 +130,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>        
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
+            allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(GetAllInvestmentProjects2);
             nameWeight = name.GetWeight();
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
@@ -324,7 +325,7 @@ namespace Nashet.EconomicSimulation
                 return true;
             if (
                 ((product == Product.Metal || product == Product.MetalOre || product == Product.ColdArms) && !this.Invented(Invention.Metal))
-                || (!this.Invented(Invention.SteamPower) && (product == Product.Machinery ))//|| product == Product.Cement))
+                || (!this.Invented(Invention.SteamPower) && (product == Product.Machinery))//|| product == Product.Cement))
                 || ((product == Product.Artillery || product == Product.Ammunition) && !this.Invented(Invention.Gunpowder))
                 || (product == Product.Firearms && !this.Invented(Invention.Firearms))
                 || (product == Product.Coal && !this.Invented(Invention.Coal))
@@ -470,7 +471,7 @@ namespace Nashet.EconomicSimulation
             if (myLastAttackDate.ContainsKey(country))
                 return myLastAttackDate[country];
             else
-                return Date.Never;
+                return Date.Never.Copy();
         }
         private bool hasCores(Country country)
         {
@@ -899,7 +900,7 @@ namespace Nashet.EconomicSimulation
                 if (Invented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
                 {
                     Money newWage;
-                    Money soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()) .Copy();
+                    Money soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
                     if (failedToPaySoldiers)
                     {
                         newWage = getSoldierWage().Copy().Multiply(0.8m);
@@ -918,7 +919,7 @@ namespace Nashet.EconomicSimulation
                         else if (balance < 0f)
                             newWage = getSoldierWage().Copy().Multiply(0.5m);
                         else
-                            newWage = getSoldierWage() .Copy(); // don't change wage
+                            newWage = getSoldierWage().Copy(); // don't change wage
                     }
                     //newWage = newWage.Clamp(0, soldierAllNeedsCost * 2m);
                     var limit = soldierAllNeedsCost.Copy().Multiply(2m);
@@ -934,22 +935,38 @@ namespace Nashet.EconomicSimulation
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     30);
             else
-            //State Capitalism invests in own country only, Interventionists. don't invests in any country
+            //State Capitalism invests in own country only, Interventionists don't invests in any country
             if (economy.getValue() == Economy.StateCapitalism)
                 Rand.Call(
                     () =>
                     {
                         // copied from Capitalist.Invest()
                         // doesn't care about risks
-                        var project = GetAllInvestmentProjects(this).Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest)).MaxByRandom(x => x.GetMargin().get());
-                        if (project != null)
+                        var project = allInvestmentProjects.Get().Where(
+                            //x => x.Value.isBiggerThan(Options.minMarginToInvest) && x.Key.CanProduce Invented
+                            delegate (KeyValuePair<IInvestable, Procent> x)
+                            {
+                                var isFactory = x.Key as Factory;
+                                if (isFactory != null)
+                                    return this.Country.InventedFactory(isFactory.Type);
+                                else
+                                {
+                                    var newFactory = x.Key as NewFactoryProject;
+                                    if (newFactory != null)
+                                        return this.Country.InventedFactory(newFactory.Type);
+                                }
+                                return true;
+                            }
+                            ).MaxByRandom(x => x.Value.get());
+                        if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.isBiggerThan(Options.minMarginToInvest))
                         {
-                            MoneyView investmentCost = project.GetInvestmentCost();
+                            MoneyView investmentCost = project.Key.GetInvestmentCost();
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
                             {
-                                Factory factory = project as Factory;
+                                project.Value.Set(Procent.Zero);
+                                Factory factory = project.Key as Factory;
                                 if (factory != null)
                                 {
                                     if (factory.IsOpen)// upgrade existing factory
@@ -959,12 +976,12 @@ namespace Nashet.EconomicSimulation
                                 }
                                 else
                                 {
-                                    Owners buyShare = project as Owners;
+                                    Owners buyShare = project.Key as Owners;
                                     if (buyShare != null) // buy part of existing factory
                                         buyShare.BuyStandardShare(this);
                                     else
                                     {
-                                        var factoryProject = project as NewFactoryProject;
+                                        var factoryProject = project.Key as NewFactoryProject;
                                         if (factoryProject != null)
                                         {
                                             Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
@@ -1291,7 +1308,7 @@ namespace Nashet.EconomicSimulation
         }
         internal MoneyView getGDPPer1000()
         {
-            return (getGDP() .Copy()).Multiply(1000m / getFamilyPopulation());
+            return (getGDP().Copy()).Multiply(1000m).Divide(getFamilyPopulation(), false);
             // overflows
             //res.multiply(1000);
             //res.divide(getFamilyPopulation());
@@ -1603,10 +1620,18 @@ namespace Nashet.EconomicSimulation
                 //item.secedeTo(country, false);
             }
         }
-        public IEnumerable<IInvestable> GetAllInvestmentProjects(Agent investor)
+        /// <summary>
+        /// Gives list of allowed IInvestable with pre-calculated Margin in Value. Doesn't check if it's invented
+        /// </summary>        
+        public readonly CashedData<Dictionary<IInvestable, Procent>> allInvestmentProjects;
+        private Dictionary<IInvestable, Procent> GetAllInvestmentProjects2()
+        {
+            return GetAllInvestmentProjects().ToDictionary(y=>y, x=>x.GetMargin());
+        }
+        private IEnumerable<IInvestable> GetAllInvestmentProjects()//Agent investor
         {
             foreach (var province in ownedProvinces)
-                foreach (var item in province.getAllInvestmentProjects(investor))
+                foreach (var item in province.getAllInvestmentProjects())//investor
                 {
                     yield return item;
                 }

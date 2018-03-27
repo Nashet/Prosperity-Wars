@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
         { }
         public Capitalists(int iamount, Culture iculture, Province where) : base(iamount, PopType.Capitalists, iculture, where)
         { }
-        
+
         public override bool canThisPromoteInto(PopType targetType)
         {
             return false;
@@ -65,17 +65,32 @@ namespace Nashet.EconomicSimulation
 
 
                 //var projects = Province.getAllInvestmentProjects().Where(x => x.GetMargin(Province).isBiggerThan(Options.minMarginToInvest));
-                var projects = World.GetAllAllowedInvestments(this.Country, this);//.Where(x => x.GetMargin().isBiggerThan(Options.minMarginToInvest));
-                var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
-
-                if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
+                var projects = World.GetAllAllowedInvestments(this).Where(
+                delegate (KeyValuePair<IInvestable, Procent> x)
                 {
-                    MoneyView investmentCost = project.GetInvestmentCost();
+                    var isFactory = x.Key as Factory;
+                    if (isFactory != null)
+                        return this.Country.InventedFactory(isFactory.Type);
+                    else
+                    {
+                        var newFactory = x.Key as NewFactoryProject;
+                        if (newFactory != null)
+                            return this.Country.InventedFactory(newFactory.Type);
+                    }
+                    return true;
+                }
+                );
+                var project = projects.MaxByRandom(x => x.Value.Multiply(getBusinessSecurity(x.Key)).get());
+
+                if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.Multiply(getBusinessSecurity(project.Key)).isBiggerThan(Options.minMarginToInvest))
+                {
+                    MoneyView investmentCost = project.Key.GetInvestmentCost();
                     if (!CanPay(investmentCost))
                         Bank.GiveLackingMoneyInCredit(this, investmentCost);
                     if (CanPay(investmentCost))
                     {
-                        Factory factory = project as Factory;
+                        project.Value.Set(Procent.Zero);
+                        Factory factory = project.Key as Factory;
                         if (factory != null)
                         {
                             if (factory.IsOpen)// upgrade existing factory
@@ -85,12 +100,12 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            Owners buyShare = project as Owners;
+                            Owners buyShare = project.Key as Owners;
                             if (buyShare != null) // buy part of existing factory
                                 buyShare.BuyStandardShare(this);
                             else
                             {
-                                var factoryProject = project as NewFactoryProject;
+                                var factoryProject = project.Key as NewFactoryProject;
                                 if (factoryProject != null)
                                 {
                                     Factory factory2 = factoryProject.Province.BuildFactory(this, factoryProject.Type, investmentCost);
@@ -104,6 +119,6 @@ namespace Nashet.EconomicSimulation
                 }
             }
             base.invest();
-        }       
+        }
     }
 }

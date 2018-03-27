@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
             if (Province.getResource() != null)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = Province.getAllInvestmentProjects(this).Where(x => x.CanProduce(Province.getResource()));
+                var projects = Province.getAllInvestmentProjects().Where(x => x.CanProduce(Province.getResource()));
                 
                 var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
                 if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))

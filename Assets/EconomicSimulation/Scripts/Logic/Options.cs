@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Value CountryBuyProductsForXDays = new Value(20f);
         internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
         internal static readonly Value CountryPopConsumptionLimitPE = new Value(40f);
-        internal static readonly int CountryInvestmentRate = 35;
+        internal static readonly int CountryInvestmentRate = 45;
         internal static readonly Procent CountryOwnershipRiskRestoreSpeed = new Procent(0.001f);
         internal static readonly Procent CountryOwnershipRiskDropOnNationalization = new Procent(0.01f);
 
@@ -131,7 +131,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Procent savePopMoneyReserv = new Procent(0.5f);//0.66666f);
         internal static readonly float PopMinLandForTribemen = 1f;
         internal static readonly float PopMinLandForFarmers = 0.25f;
-        internal static readonly float PopMinLandForTownspeople = 0.0025f;
+        internal static readonly float PopMinLandForTownspeople = 0.01f;
 
 
         internal static readonly int PopDaysUpsetByForcedReform = 30;
@@ -166,7 +166,7 @@ namespace Nashet.EconomicSimulation
         /// There is bigger chance to loose property in another province
         /// </summary>
         internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
-        internal static readonly Procent InvestorEmploymentRisk = new Procent(0.80f);
+        internal static readonly Procent InvestorEmploymentSafety = new Procent(0.70f);
         internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
         internal static readonly int PopDaysReservesBeforePuttingMoneyInBak = 10;
         /// <summary>For every nationalized enterprise</summary>
@@ -182,7 +182,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
 
         internal static readonly Date AIFisrtAllowedAttackOnHuman = new Date(30);
-        
+        internal static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.4f);
+
 
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);

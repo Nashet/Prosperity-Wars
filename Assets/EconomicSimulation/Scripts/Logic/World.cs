@@ -39,11 +39,15 @@ namespace Nashet.EconomicSimulation
             foreach (var item in allProvinces)
                 yield return item;
         }
-        static public IEnumerable<IInvestable> GetAllAllowedInvestments(Country includingCountry, Agent investor)
+        /// <summary>
+        /// Gives list of allowed IInvestable with pre-calculated Margin in Value. Doesn't check if it's invented
+        /// </summary>        
+        static public IEnumerable<KeyValuePair<IInvestable, Procent>> GetAllAllowedInvestments(Agent investor)
         {
+            Country includingCountry = investor.Country;
             var countriesAllowingInvestments = getAllExistingCountries().Where(x => x.economy.getTypedValue().AllowForeignInvestments || x == includingCountry);
             foreach (var country in countriesAllowingInvestments)
-                foreach (var item in country.GetAllInvestmentProjects(investor))
+                foreach (var item in country.allInvestmentProjects.Get())//investor
                     yield return item;
         }
 
@@ -74,7 +78,7 @@ namespace Nashet.EconomicSimulation
                     allMoney.Add(agent.Cash);
                     //var isArtisan = agent as Artisans;
                     //if (isArtisan!=null && isArtisan.)
-                }                
+                }
             }
             allMoney.Add(Game.market.Cash);
             return allMoney;
@@ -160,7 +164,7 @@ namespace Nashet.EconomicSimulation
             for (int i = 0; i < howMuchCountries; i++)
             {
                 //Game.updateStatus("Making countries.." + i);
-                
+
                 Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
                 allCultures.Add(culture);
 
@@ -169,7 +173,7 @@ namespace Nashet.EconomicSimulation
                 Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
                 //count.setBank(count.bank);
-                
+
                 country.GiveMoneyFromNoWhere(100);
             }
             Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
@@ -299,7 +303,7 @@ namespace Nashet.EconomicSimulation
             //{
             //    item.Capital.OnSecedeTo(item, false);
             //}
-            
+
 
         }
 
@@ -339,7 +343,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<PopUnit> GetAllPopulation()
         {
             foreach (var country in World.getAllExistingCountries())
-            {                
+            {
                 foreach (var item in country.GetAllPopulation())
                     yield return item;
             }
