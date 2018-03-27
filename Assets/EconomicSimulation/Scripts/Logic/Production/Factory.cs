@@ -76,7 +76,7 @@ namespace Nashet.EconomicSimulation
                 else
                     return isFactory.GetEmploymentLevel() - 1f;
             },
-                "High production concentration bonus", 0.15f, false),
+                "High production concentration bonus", 0.25f, false),
 
             modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).Country.Invented(Invention.Mining) && (x as Factory).Type.isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining.ToString()).ToString(), 0.50f, false),

@@ -115,7 +115,11 @@ namespace Nashet.EconomicSimulation
         }
         public void onAttackThatClick()
         {
-            MainCamera.militaryPanel.show(Game.selectedProvince);
+            //MainCamera.militaryPanel.show(Game.selectedProvince);
+            if (MainCamera.militaryPanel.isActiveAndEnabled)
+                MainCamera.militaryPanel.Hide();
+            else
+                MainCamera.militaryPanel.Show();
         }
 
 
@@ -156,7 +160,7 @@ namespace Nashet.EconomicSimulation
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
             btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
-            btAttackThat.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "A" + " button");
+            btAttackThat.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "T" + " button");
             btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
         }

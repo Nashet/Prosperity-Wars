@@ -114,8 +114,8 @@ namespace Nashet.EconomicSimulation
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
                     int meshNumber = getRayCastMeshNumber();
-                    //found something correct            
-                    selectProvince(meshNumber);
+                    if (meshNumber != -3)
+                        selectProvince(meshNumber);
                 }
                 if (Game.getMapMode() == 4)
                 {
@@ -242,37 +242,34 @@ namespace Nashet.EconomicSimulation
 
         internal static void selectProvince(int number)
         {
-            if (number >= 0)
+            if (number < 0 || World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
             {
-                if (World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
+                var lastSelected = Game.selectedProvince;
+                Game.selectedProvince = null;
+                if (lastSelected != null)
                 {
-
-                    var lastSelected = Game.selectedProvince;
-                    Game.selectedProvince = null;
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                     lastSelected.setBorderMaterials(true);
-
-                    provincePanel.Hide();
-
                 }
-                else // new province selected
-                {
-                    if (Game.selectedProvince != null)//deal with previous selection
-                    {
-                        Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                        Game.selectedProvince.setBorderMaterials(true);
-                    }
-                    Game.selectedProvince = World.FindProvince(number);
-                    Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
-                    provincePanel.Show();
-                    if (Game.getMapMode() == 2) //core map mode
-                        Game.redrawMapAccordingToMapMode(2);
-
-                }
-                if (buildPanel.isActiveAndEnabled)
-                    buildPanel.Refresh();
+                provincePanel.Hide();
 
             }
+            else // new province selected
+            {
+                if (Game.selectedProvince != null)//deal with previous selection
+                {
+                    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                    Game.selectedProvince.setBorderMaterials(true);
+                }
+                Game.selectedProvince = World.FindProvince(number);
+                Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
+                provincePanel.Show();
+                if (Game.getMapMode() == 2) //core map mode
+                    Game.redrawMapAccordingToMapMode(2);
+
+            }
+            if (buildPanel.isActiveAndEnabled)
+                buildPanel.Refresh();
         }
         private void closeToppestPanel()
         {
@@ -296,7 +293,7 @@ namespace Nashet.EconomicSimulation
         public void FocusOnPoint(Vector2 point)
         {
             gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
-            
+
         }
     }
 }
