@@ -143,7 +143,7 @@ namespace Nashet.EconomicSimulation
 
             education = new Education(0f);
             loyalty = new Procent(0.50f);
-            needsFulfilled = new Procent(0.50f);
+            needsFulfilled = new Procent(0.00f);
             //province = where;
         }
         /// <summary> Creates new PopUnit basing on part of other PopUnit.

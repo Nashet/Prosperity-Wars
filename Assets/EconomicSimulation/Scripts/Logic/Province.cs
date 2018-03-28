@@ -983,13 +983,15 @@ namespace Nashet.EconomicSimulation
                     {
                         float maxPopultion = 50000;
                         var population = GetAllPopulation().Sum(x => x.getPopulation());
-
-
-                        //return Color.Lerp(new Color(255f / 0xFF, 255f / 0xFD, 255f / 0xDD), new Color(255f / 0x7F, 255f / 0x33, 255f / 0x00), population / maxPopultion);
                         return Color.Lerp(Color.white, Color.red, population / maxPopultion);
-
-
                     }
+                case 6: //prosperity map
+                    {
+                        float maxColor = 0.6f;
+                        var needsfulfilling = GetAllPopulation().GetAverageProcent(x => x.needsFulfilled).get();                            
+                        return Color.Lerp(Color.white, Color.yellow, needsfulfilling / maxColor);
+                    }
+
                 default:
                     return default(Color);
             }

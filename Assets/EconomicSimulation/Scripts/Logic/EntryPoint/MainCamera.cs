@@ -157,11 +157,21 @@ namespace Nashet.EconomicSimulation
                             );
                         GetComponent<ToolTipHandler>().Show();
                     }
-
                 }
-
-                //if (Input.GetKeyUp(KeyCode.Space))
-                //    topPanel.switchHaveToRunSimulation();
+                else if (Game.getMapMode() == 6) //prosperity wars
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        GetComponent<ToolTipHandler>().Hide();
+                    else
+                    {
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));                                                        
+                        GetComponent<ToolTipHandler>().Show();
+                    }
+                }
 
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();
