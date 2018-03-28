@@ -251,7 +251,8 @@ namespace Nashet.EconomicSimulation
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                     lastSelected.setBorderMaterials(true);
                 }
-                provincePanel.Hide();
+                if (provincePanel.isActiveAndEnabled)
+                    provincePanel.Hide();
 
             }
             else // new province selected
@@ -268,7 +269,7 @@ namespace Nashet.EconomicSimulation
                     Game.redrawMapAccordingToMapMode(2);
 
             }
-            if (buildPanel.isActiveAndEnabled)
+            if (buildPanel != null && buildPanel.isActiveAndEnabled)
                 buildPanel.Refresh();
         }
         private void closeToppestPanel()

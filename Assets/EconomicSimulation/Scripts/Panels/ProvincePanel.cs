@@ -122,7 +122,6 @@ namespace Nashet.EconomicSimulation
                 MainCamera.militaryPanel.Show();
         }
 
-
         public override void Refresh()
         {
             var sb = new StringBuilder("Province name: ").Append(Game.selectedProvince);
@@ -163,6 +162,11 @@ namespace Nashet.EconomicSimulation
             btAttackThat.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "T" + " button");
             btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
+        }
+        public override void Hide()
+        {
+            base.Hide();
+            MainCamera.selectProvince(-1);
         }
     }
 }
