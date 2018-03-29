@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
     public class ProductionWindow : DragPanel, IFiltrable<Factory>
     {
         [SerializeField]
-        private ProductionWindowTable table;        
+        private ProductionWindowTable table;
         private Predicate<Factory> filterSelectedProvince;
         private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
         private Province showingProvince; // should it go to table?
@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
             Hide();
 
         }
-       
+
         public bool IsSelectedAnyProvince()
         {
             return showingProvince != null;
@@ -49,10 +49,10 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterSelectedProvince);
         }
         public override void Refresh()
-        {           
+        {
             table.Refresh();
         }
-       
+
         private readonly Predicate<Factory> filterGovernmentOwned = (x => !x.ownership.IsCountryOwnsControlPacket());
         public void OnGovernmentOwnedFilterChange(bool @checked)
         {
@@ -73,13 +73,23 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
-        private readonly Predicate<Factory> filterSubsidized = (x => !x.isSubsidized());
+        private readonly Predicate<Factory> filterSubsidized = (x => x.isSubsidized());
         public void OnFilterSubsidizedChange(bool @checked)
         {
             if (@checked)
                 RemoveFilter(filterSubsidized);
             else
                 AddFilter(filterSubsidized);
+
+            Refresh();
+        }
+        private readonly Predicate<Factory> filterInvestmentsAllowed = (x => Factory.conAllowsForeignInvestments.checkIftrue(Game.Player, x));
+        public void OnFilterInvestmentsAllowed(bool @checked)
+        {
+            if (@checked)
+                RemoveFilter(filterInvestmentsAllowed);
+            else
+                AddFilter(filterInvestmentsAllowed);
 
             Refresh();
         }
@@ -101,6 +111,7 @@ namespace Nashet.EconomicSimulation
         }
         public void ClearAllFiltres()// show all button
         {
+            table.SetContent(null);
             showingProvince = null;
             table.ClearAllFiltres();
             table.AddFilter(filterOnlyExisting);
@@ -112,6 +123,12 @@ namespace Nashet.EconomicSimulation
             //showingProvince = null;
             table.AddAllFiltres();
             RemoveFilter(filterSelectedProvince);
+            Refresh();
+        }
+        public void OnEntireWorldSelected()
+        {   
+            ClearAllFiltres();
+            table.SetContent(World.GetAllFactories);
             Refresh();
         }
     }

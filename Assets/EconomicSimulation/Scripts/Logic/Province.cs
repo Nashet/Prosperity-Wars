@@ -1064,7 +1064,8 @@ namespace Nashet.EconomicSimulation
         }
         public void OnClicked()
         {
-            MainCamera.selectProvince(this.getID());
+            //MainCamera.selectProvince(this.getID());
+            MainCamera.Instance.FocusOnProvince(this, true);
         }
         public IEnumerable<Owners> GetSales()
         {
@@ -1083,7 +1084,7 @@ namespace Nashet.EconomicSimulation
         public IEnumerable<IInvestable> getAllInvestmentProjects()//Agent investor
         {
             var upgradeInvestments = getAllFactories().Where(x =>
-                Factory.conditionsUpgrade.isAllTrue(x, null)//investor
+                Factory.conditionsUpgrade.isAllTrue(null, x)//investor
                                                             //x.Province.CanUpgradeFactory(x.Type, investor)
                 && x.GetWorkForceFulFilling().isBiggerThan(Options.minFactoryWorkforceFulfillingToInvest)
                 );
@@ -1094,7 +1095,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in buildInvestments)
                 yield return new NewFactoryProject(this, item);
 
-            foreach (var item in GetSales())
+            foreach (var item in GetSales())// fuckk
                 yield return item;
 
             var reopenEnterprises = getAllFactories().Where(x => x.IsClosed && !x.isBuilding());
@@ -1281,7 +1282,7 @@ namespace Nashet.EconomicSimulation
             if (factory == null)
                 return false;
             else
-                return Factory.conditionsUpgrade.isAllTrue(factory, byWhom);
+                return Factory.conditionsUpgrade.isAllTrue(byWhom, factory);
         }
     }
 }

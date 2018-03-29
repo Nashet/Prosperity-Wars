@@ -522,15 +522,20 @@ namespace Nashet.EconomicSimulation
             if (meshCapitalText != null) //todo WTF!!
                 UnityEngine.Object.Destroy(meshCapitalText.gameObject);
 
-            //take all money from bank
-            if (byWhom.Invented(Invention.Banking))
-                byWhom.Bank.Annex(this.Bank); // deposits transfered in province.OnSecede()
-            else
-                this.Bank.destroy(byWhom);
+            if (this != Game.Player)
+            {
+                //take all money from bank
+                if (byWhom.Invented(Invention.Banking))
+                    byWhom.Bank.Annex(this.Bank); // deposits transfered in province.OnSecede()
+                else
+                    this.Bank.destroy(byWhom);
 
-            //byWhom.storageSet.
-            this.PayAllAvailableMoney(byWhom);
-            this.Bank.OnLoanerRefusesToPay(this);
+                //byWhom.storageSet.
+
+                this.PayAllAvailableMoney(byWhom);
+
+                this.Bank.OnLoanerRefusesToPay(this);
+            }
             countryStorageSet.sendAll(byWhom.countryStorageSet);
             //foreach (var item in World.GetAllShares(this).ToList())// transfer all enterprises to local governments            
             foreach (var item in World.GetAllFactories())// transfer all enterprises to local governments            
@@ -1626,7 +1631,7 @@ namespace Nashet.EconomicSimulation
         public readonly CashedData<Dictionary<IInvestable, Procent>> allInvestmentProjects;
         private Dictionary<IInvestable, Procent> GetAllInvestmentProjects2()
         {
-            return GetAllInvestmentProjects().ToDictionary(y=>y, x=>x.GetMargin());
+            return GetAllInvestmentProjects().ToDictionary(y => y, x => x.GetMargin());
         }
         private IEnumerable<IInvestable> GetAllInvestmentProjects()//Agent investor
         {

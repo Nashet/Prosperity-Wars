@@ -38,10 +38,10 @@ namespace Nashet.EconomicSimulation
         void setGUIElementsAccesability()
         {
             string dynText;
-            upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(factory, Game.Player, out dynText);
+            upgradeButton.interactable = Factory.conditionsUpgrade.isAllTrue(Game.Player, factory, out dynText);
             upgradeButton.GetComponent<ToolTipHandler>().SetTextDynamic(() => dynText + "\n\nUpgrade makes enterprise bigger");
 
-            subidize.interactable = Factory.conditionsSubsidize.isAllTrue(factory, Game.Player, out subidize.GetComponent<ToolTipHandler>().text);
+            subidize.interactable = Factory.conditionsSubsidize.isAllTrue(Game.Player, factory, out subidize.GetComponent<ToolTipHandler>().text);
 
             if (factory.IsOpen)
                 reopenButtonflag = reopenButtonStatus.close;
@@ -50,25 +50,25 @@ namespace Nashet.EconomicSimulation
             if (reopenButtonflag == reopenButtonStatus.close)
             {
                 reopenButton.GetComponentInChildren<Text>().text = "Close enterprise";
-                reopenButton.interactable = Factory.conditionsClose.isAllTrue(factory, Game.Player, out reopenButton.GetComponent<ToolTipHandler>().text);
+                reopenButton.interactable = Factory.conditionsClose.isAllTrue(Game.Player, factory, out reopenButton.GetComponent<ToolTipHandler>().text);
             }
             else
             {
-                reopenButton.interactable = Factory.conditionsReopen.isAllTrue(factory, Game.Player, out reopenButton.GetComponent<ToolTipHandler>().text);
+                reopenButton.interactable = Factory.conditionsReopen.isAllTrue(Game.Player, factory, out reopenButton.GetComponent<ToolTipHandler>().text);
                 reopenButton.GetComponentInChildren<Text>().text = "Reopen";
             }
 
-            destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(factory, Game.Player, out destroyButton.GetComponent<ToolTipHandler>().text);
+            destroyButton.interactable = Factory.conditionsDestroy.isAllTrue(Game.Player, factory, out destroyButton.GetComponent<ToolTipHandler>().text);
 
 
-            nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(factory, Game.Player, out nationalizeButton.GetComponent<ToolTipHandler>().text);
+            nationalizeButton.interactable = Factory.conditionsNatinalize.isAllTrue(Game.Player, factory, out nationalizeButton.GetComponent<ToolTipHandler>().text);
             nationalizeButton.GetComponent<ToolTipHandler>().AddText("\nThat would make owners angry and would reduce your reputation");
 
-            this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(factory, Game.Player, out priority.GetComponent<ToolTipHandler>().text);
+            this.priority.interactable = Factory.conditionsChangePriority.isAllTrue(Game.Player, factory, out priority.GetComponent<ToolTipHandler>().text);
             priority.GetComponent<ToolTipHandler>().text += "\n\nHighest priority enterprises get workforce first";
 
-            this.subidize.interactable = Factory.conditionsSubsidize.isAllTrue(factory, Game.Player, out subidize.GetComponent<ToolTipHandler>().text);
-            this.dontHireOnSubsidies.interactable = Factory.conditionsDontHireOnSubsidies.isAllTrue(factory, Game.Player, out dontHireOnSubsidies.GetComponent<ToolTipHandler>().text);
+            this.subidize.interactable = Factory.conditionsSubsidize.isAllTrue(Game.Player, factory, out subidize.GetComponent<ToolTipHandler>().text);
+            this.dontHireOnSubsidies.interactable = Factory.conditionsDontHireOnSubsidies.isAllTrue(Game.Player, factory, out dontHireOnSubsidies.GetComponent<ToolTipHandler>().text);
 
             priority.value = factory.getPriority();
             subidize.isOn = factory.isSubsidized();
@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
             if (factory != null)
             {
                 setGUIElementsAccesability();
-                
+
                 caption.text = factory.FullName;
                 var sb = new StringBuilder();
                 sb = new StringBuilder();
@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
                 {
                     sb.Append("\nInput required: ");
                     foreach (Storage next in factory.Type.resourceInput)
-                        sb.Append(next.get()* factory.getLevel() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
+                        sb.Append(next.get() * factory.getLevel() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
                 }
                 if (factory.getConsumed().Count() > 0)
                     sb.Append("\nBought: ").Append(factory.getConsumed().ToString()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
@@ -128,7 +128,7 @@ namespace Nashet.EconomicSimulation
 
                 if (factory.loans.isNotZero())
                     sb.Append("\nLoan: ").Append(factory.loans.ToString());
-                sb.Append("\nAssets value: ").Append(factory.ownership.GetAllAssetsValue());
+                sb.Append("\nAssets value: ").Append(factory.ownership.GetAssetsValue());
                 sb.Append(", Market value: ").Append(factory.ownership.GetMarketValue());
 
 
@@ -139,12 +139,12 @@ namespace Nashet.EconomicSimulation
                 //+"\nExpenses:"
 
                 efficiencyText.text = "Efficiency: " + Factory.modifierEfficiency.getModifier(factory);
-                efficiencyText.GetComponent<ToolTipHandler>().SetTextDynamic(()=> "Efficiency: " + Factory.modifierEfficiency.GetDescription(factory));
-                
+                efficiencyText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Efficiency: " + Factory.modifierEfficiency.GetDescription(factory));
+
 
                 var owners = factory.ownership.GetAllShares().OrderByDescending(x => x.Value.get()).ToList();//.getString(" ", "\n");
                 ownership.text = "Biggest owner: " + owners[0].Key + " " + owners[0].Value + " (hover mouse for rest)";
-                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() =>"Owners:\n"+ owners.getString(" ", "\n"));
+                ownership.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owners:\n" + owners.getString(" ", "\n"));
                 RefreshBuySellButtons();
             }
         }
@@ -214,8 +214,8 @@ namespace Nashet.EconomicSimulation
         {
             //if (shownFactory.getConditionsForFactoryUpgradeFast(Game.player))
             {
-                factory.upgrade(Game.Player);                
-                MainCamera.refreshAllActive();                
+                factory.upgrade(Game.Player);
+                MainCamera.refreshAllActive();
                 if (Game.Player != factory.Country)
                     factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
             }

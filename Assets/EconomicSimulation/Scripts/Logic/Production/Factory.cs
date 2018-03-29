@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
             delegate (object x)
             {
                 var isFactory = x as Factory;
-                if (isFactory.Type.IsRural)
+                if (isFactory.Type.IsRural || isFactory.Type == ProductionType.GoldMine)
                     return 0f;
                 else
                     return isFactory.GetEmploymentLevel() - 1f;
@@ -85,26 +85,26 @@ namespace Nashet.EconomicSimulation
             modifierIsSubsidised = new Modifier((x) => (x as Factory).isSubsidized(), "Is subsidized", -0.20f, false);
 
         internal static readonly Condition
-            conNotFullyBelongsToCountry = new DoubleCondition((factory, agent) => !(factory as Factory).ownership.IsOnlyOwner(agent as IShareOwner), x => "Doesn't fully belongs to government", false),
+            conNotFullyBelongsToCountry = new DoubleCondition((agent, factory) => !(factory as Factory).ownership.IsOnlyOwner(agent as IShareOwner), x => "Doesn't fully belongs to government", false),
 
-            conNotUpgrading = new Condition(x => !(x as Factory).isUpgrading(), "Not upgrading", false),
-            conNotBuilding = new Condition(x => !(x as Factory).isBuilding(), "Not building", false),
-            conOpen = new Condition(x => (x as Factory).IsOpen, "Open", false),
-            conClosed = new Condition(x => !(x as Factory).IsOpen, "Closed", false),
-            conMaxLevelAchieved = new Condition(x => (x as Factory).getLevel() != Options.maxFactoryLevel, "Max level not achieved", false),
-            conUpgradeProductsInventedByAnyone = new Condition(
-                x => (x as Factory).getUpgradeNeeds().All(y => y.Product.IsInventedByAnyOne()),  //Game.market.isAvailable( y.Product)),
-                "All upgrade products are invented", false),
+            conNotUpgrading = new DoubleCondition((agent, factory) => !(factory as Factory).isUpgrading(), factory => "Not upgrading", false),
+            conNotBuilding = new DoubleCondition((agent, factory) => !(factory as Factory).isBuilding(), factory => "Not building", false),
+            conOpen = new DoubleCondition((agent, factory) => (factory as Factory).IsOpen, factory => "Open", false),
+            conClosed = new DoubleCondition((agent, factory) => !(factory as Factory).IsOpen, factory=>"Closed", false),
+            conMaxLevelAchieved = new DoubleCondition((agent, factory) => (factory as Factory).getLevel() != Options.maxFactoryLevel, factory => "Max level not achieved", false),
+            conUpgradeProductsInventedByAnyone = new DoubleCondition((agent, factory) => (factory as Factory).getUpgradeNeeds().All(y => y.Product.IsInventedByAnyOne()),  //Game.market.isAvailable( y.Product)),
+                factory => "All upgrade products are invented", false),
 
-            conPlayerHaveMoneyToReopen = new Condition(x => Game.Player.CanPay((x as Factory).getReopenCost()), delegate (object x)
+            conPlayerHaveMoneyToReopen = new DoubleCondition((agent, factory) => Game.Player.CanPay((factory as Factory).getReopenCost()), delegate (object x)
             {
                 var sb = new StringBuilder();
-                sb.Append("Have ").Append((x as Factory).getReopenCost()).Append(" coins");
+                //sb.Append("Have ").Append((x as Factory).getReopenCost());
+                sb.Append("Have enough money");
                 return sb.ToString();
             }, true);
         internal static readonly DoubleCondition
             conHaveMoneyOrResourcesToUpgrade = new DoubleCondition(
-                delegate (object factory, object upgrader)
+                delegate (object upgrader, object factory)
                 {
                     if (upgrader == Game.Player)
                     {
@@ -127,25 +127,26 @@ namespace Nashet.EconomicSimulation
 
                 delegate (object x)
                 {
-                    var sb = new StringBuilder();
-                    var factory = x as Factory;
-                    MoneyView cost = Game.market.getCost(factory.getUpgradeNeeds());
-                    sb.Append("Have ").Append(cost).Append(" coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds().getString(", "));
-                    return sb.ToString();
+                    //var sb = new StringBuilder();
+                    //var factory = x as Factory;
+                    //MoneyView cost = Game.market.getCost(factory.getUpgradeNeeds());
+                    //sb.Append("Have ").Append(cost).Append(" coins");
+                    //sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds().getString(", "));
+                    //return sb.ToString();
+                    return "Have enough money or (with Planned Economy) have enough resources";
                 }
                 , true),
-            conPlacedInOurCountry = new DoubleCondition((factory, agent) => (factory as Factory).Country == (agent as Consumer).Country,
+            conPlacedInOurCountry = new DoubleCondition((agent, factory) => (factory as Factory).Country == (agent as Consumer).Country,
             (factory) => "Enterprise placed in our country", true),
             ///duplicated in FactoryTypes
-            conAllowsForeignInvestments = new DoubleCondition((factory, agent) =>
+            conAllowsForeignInvestments = new DoubleCondition((agent, factory) =>
                 agent == null
                 || (factory as Factory).Country == (agent as Country)
                 || ((factory as Factory).Country.economy.getTypedValue().AllowForeignInvestments
                     && agent is Country
                     && (agent as Country).economy.getTypedValue() != Economy.PlannedEconomy),
-                (factory) => (factory as Factory).Country + " allows foreign investments or it isn't foreign investment", true),
-            conNotLForNotCountry = new DoubleCondition((factory, agent) => agent == null || !(agent is Country) || (agent as Country).economy.getValue() != Economy.LaissezFaire, (factory) => "Economy policy is not Laissez Faire", true)
+                (factory) => "Country allows foreign investments or it isn't foreign investment", true),//(factory as Factory).Country+
+            conNotLForNotCountry = new DoubleCondition((agent, factory) => agent == null || !(agent is Country) || (agent as Country).economy.getValue() != Economy.LaissezFaire, (factory) => "Economy policy is not Laissez Faire", true)
             ;
 
 
@@ -160,20 +161,19 @@ namespace Nashet.EconomicSimulation
             conditionsReopen = new DoubleConditionsList(new List<Condition> { conNotBuilding, conClosed, conPlayerHaveMoneyToReopen, conAllowsForeignInvestments, conNotLForNotCountry }),
             conditionsDestroy = new DoubleConditionsList(new List<Condition> {
             //new Condition(Economy.isNotLF, x=>(x as Producer).Country),
-             conPlacedInOurCountry }).addForSecondObject(new List<Condition> { Economy.isNotLF }),
+             conPlacedInOurCountry,  Economy.isNotLF }),//}).addForSecondObject(new List<Condition> {
 
             // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
-            conditionsNatinalize = new DoubleConditionsList(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry })
-            .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotInterventionism }),
+            conditionsNatinalize = new DoubleConditionsList(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry,
+                Economy.isNotLF, Economy.isNotInterventionism }),//}) .addForSecondObject(new List<Condition> { 
 
-            conditionsSubsidize = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
-            .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Economy.isNotPlanned }),
+            conditionsSubsidize = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry ,Economy.isNotLF, Economy.isNotNatural,
+                Economy.isNotPlanned }),//}).addForSecondObject(new List<Condition> {
 
-            conditionsDontHireOnSubsidies = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
-            .addForSecondObject(new List<Condition> { Economy.isNotLF, Economy.isNotNatural, Condition.IsNotImplemented }),
+            conditionsDontHireOnSubsidies = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry, Economy.isNotLF,
+                Economy.isNotNatural, Condition.IsNotImplemented }),//})            .addForSecondObject(new List<Condition> {
 
-            conditionsChangePriority = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry })
-            .addForSecondObject(new List<Condition> { Economy.isPlanned });
+            conditionsChangePriority = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry , Economy.isPlanned });//})            .addForSecondObject(new List<Condition> {
         internal static readonly DoubleConditionsList
             conditionsSell = new DoubleConditionsList(new List<Condition> {Economy.isNotPlanned, //todo temporally removed , Economy.isNotState
             new DoubleCondition((agent, factory)=>(factory as Factory).ownership.HasOwner(agent as IShareOwner), x=>"Has something to sale", false)
@@ -182,7 +182,8 @@ namespace Nashet.EconomicSimulation
             conditionsBuy = new DoubleConditionsList(new List<Condition> {Economy.isNotLF, Economy.isNotPlanned,
                 new DoubleCondition ((agent, factory)=>(factory as Factory).ownership.IsOnSale(), x=>"Is on sale", true),
                 new DoubleCondition ((agent, factory)=> (agent as Agent).CanPay( (factory as Factory).ownership.GetShareMarketValue(Options.PopBuyAssetsAtTime) ),
-                    x=> "H.Copy() to buy share", false)
+                    x=> "Have money to buy share", false),
+                conAllowsForeignInvestments
             })
             ;
 
@@ -612,13 +613,13 @@ namespace Nashet.EconomicSimulation
                     // cant catch up salaries like that. Check for zero workforce?
                     decimal salaryRaise = 0.001m; //1%
                     if (margin.get() > 1000f) //100000%
-                        salaryRaise = 0.048m;
+                        salaryRaise = 0.800m;
                     else if (margin.get() > 100f) //10000%
-                        salaryRaise = 0.024m;
+                        salaryRaise = 0.200m;
                     else if (margin.get() > 10f) //1000%
-                        salaryRaise = 0.012m;
+                        salaryRaise = 0.048m;
                     else if (margin.get() > 1f) //100%
-                        salaryRaise = 0.006m;
+                        salaryRaise = 0.012m;
                     else if (margin.get() > 0.3f) //30%
                         salaryRaise = 0.003m;
                     else if (margin.get() > 0.1f) //10%

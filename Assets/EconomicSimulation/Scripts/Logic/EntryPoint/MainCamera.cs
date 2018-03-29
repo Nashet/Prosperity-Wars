@@ -38,10 +38,11 @@ namespace Nashet.EconomicSimulation
         /// <summary>Limits simulation speed (in seconds)</summary>
         private readonly float simulationSpeedLimit = 0.10f;
         private float previousFrameTime;
-
+        public static MainCamera Instance;
 
         private void Start()
         {
+            Instance = this;
             focusHeight = this.transform.position.z;
         }
         void FixedUpdate()
@@ -276,8 +277,7 @@ namespace Nashet.EconomicSimulation
                 Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
                 provincePanel.Show();
                 if (Game.getMapMode() == 2) //core map mode
-                    Game.redrawMapAccordingToMapMode(2);
-
+                    Game.redrawMapAccordingToMapMode(2);                
             }
             if (buildPanel != null && buildPanel.isActiveAndEnabled)
                 buildPanel.Refresh();
