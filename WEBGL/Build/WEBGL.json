@@ -1,9 +1,14 @@
 {
-"TOTAL_MEMORY": 268435456,
+"companyName": "DefaultCompany",
+"productName": "Prosperity Wars",
 "dataUrl": "WEBGL.data.unityweb",
 "asmCodeUrl": "WEBGL.asm.code.unityweb",
 "asmMemoryUrl": "WEBGL.asm.memory.unityweb",
 "asmFrameworkUrl": "WEBGL.asm.framework.unityweb",
+"TOTAL_MEMORY": 536870912,
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
 "splashScreenStyle": "Dark",
-"backgroundColor": "#222C36"
+"backgroundColor": "#231F20",
+"cacheControl": {"dataUrl": "must-revalidate"}
 }
