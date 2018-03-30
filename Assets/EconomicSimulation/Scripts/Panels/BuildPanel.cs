@@ -108,6 +108,7 @@ namespace Nashet.EconomicSimulation
 
                 descriptionText.text = sb.ToString();
 
+                // fix that duplicate:
                 buildButton.interactable = selectedFactoryType.conditionsBuildThis.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);
                 if (!selectedFactoryType.canBuildNewFactory(Game.selectedProvince, Game.Player))
                     buildButton.interactable = false;

@@ -834,7 +834,7 @@ namespace Nashet.EconomicSimulation
                 Money minSalary = getLocalMaxSalary().Copy();
 
                 foreach (Factory factory in allFactories)
-                    if (factory.IsOpen && factory.HasAnyWorforce())//&& !factory.isJustHiredPeople()
+                    if (factory.IsOpen && factory.HasAnyWorkforce())//&& !factory.isJustHiredPeople()
                     {
                         if (factory.getSalary().isSmallerThan(minSalary))
                             minSalary = factory.getSalary();
@@ -852,13 +852,13 @@ namespace Nashet.EconomicSimulation
         ///</summary>
         internal MoneyView getLocalMaxSalary()
         {
-            if (allFactories.Count <= 1)
+            var openEnterprises = allFactories.FirstOrDefault(x => x.IsOpen);
+            //if (allFactories.Count(x=>x.IsOpen) <= 1)
+            if (openEnterprises == null)
                 return Country.getMinSalary();
             else
             {
-                Money maxSalary;
-                maxSalary = allFactories.First().getSalary();
-
+                Money maxSalary = openEnterprises.getSalary();
                 foreach (Factory fact in allFactories)
                     if (fact.IsOpen)
                     {
@@ -1014,9 +1014,13 @@ namespace Nashet.EconomicSimulation
                     }
                 case 6: //prosperity map
                     {
-                        float maxColor = 0.6f;
+                        float minValue = 0.25f;
+                        float maxValue = 0.5f - minValue;
                         var needsfulfilling = GetAllPopulation().GetAverageProcent(x => x.needsFulfilled).get();
-                        return Color.Lerp(Color.white, Color.yellow, needsfulfilling / maxColor);
+                        needsfulfilling -= minValue;
+                        if (needsfulfilling < 0f)
+                            needsfulfilling = 0f;
+                        return Color.Lerp(Color.white, Color.yellow, needsfulfilling / maxValue);
                     }
 
                 default:
@@ -1127,7 +1131,9 @@ namespace Nashet.EconomicSimulation
             foreach (var item in buildInvestments)
                 yield return new NewFactoryProject(this, item);
 
-            foreach (var item in GetSales())// fuckk
+            // Don't need extra check (notLf, allowsForeignInvestments) in 2 next circle.
+            //Because AI Countries use it only for themselves, Aristocrats use it only in won province
+            foreach (var item in GetSales())
                 yield return item;
 
             var reopenEnterprises = getAllFactories().Where(x => x.IsClosed && !x.isBuilding());

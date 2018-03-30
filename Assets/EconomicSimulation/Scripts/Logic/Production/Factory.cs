@@ -857,14 +857,6 @@ namespace Nashet.EconomicSimulation
                 daysUnprofitable = 0;
         }
 
-        public void OpenFactoriesPE()
-        {
-            if (IsClosed && !isBuilding() && Country.economy.getValue() == Economy.PlannedEconomy)
-            {
-                Rand.Call(() => open(Country, false), Options.howOftenCheckForFactoryReopenning);
-            }
-        }
-
         /// <summary>
         /// New value, readonly
         /// </summary>
@@ -983,14 +975,6 @@ namespace Nashet.EconomicSimulation
         internal int getDaysClosed()
         {
             return daysClosed;
-        }
-
-        internal override float getProfit()
-        {
-            if (Country.economy.getValue() == Economy.PlannedEconomy)
-                return 0f;
-            else
-                return base.getProfit() - (float)getSalaryCost().Get();
         }
 
         public override List<Storage> getHowMuchInputProductsReservesWants()
@@ -1179,7 +1163,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        public bool HasAnyWorforce()
+        public bool HasAnyWorkforce()
         {
             return hiredWorkForce.Count > 0;
         }

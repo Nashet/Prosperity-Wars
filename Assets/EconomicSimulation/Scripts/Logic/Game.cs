@@ -374,7 +374,10 @@ namespace Nashet.EconomicSimulation
                     foreach (Factory factory in province.getAllFactories())
                     {
                         if (country.economy.getValue() == Economy.PlannedEconomy)
-                            factory.OpenFactoriesPE();
+                        {
+                            if (country.isAI() && factory.IsClosed && !factory.isBuilding())
+                                Rand.Call(() => factory.open(country, false), Options.howOftenCheckForFactoryReopenning);
+                        }
                         else
                         {
                             factory.getMoneyForSoldProduct();
@@ -422,9 +425,21 @@ namespace Nashet.EconomicSimulation
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.Assimilate();
 
+
+                    }
+                }
+            }
+            //investments circle. Needs to be separate, otherwise cashed  investments can conflict
+            foreach (Country country in World.getAllExistingCountries())
+            {
+                foreach (var province in country.getAllProvinces())
+                {
+                    foreach (var pop in province.GetAllPopulation())
+                    {
                         if (country.economy.getValue() != Economy.PlannedEconomy)
                             Rand.Call(() => pop.invest(), Options.PopInvestRate);
                     }
+
                     if (country.isAI())
                         country.invest(province);
                     //if (Game.random.Next(3) == 0)

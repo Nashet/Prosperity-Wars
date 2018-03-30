@@ -50,7 +50,8 @@ namespace Nashet.EconomicSimulation
 
         private static readonly Modifier modifierLuxuryNeedsFulfilled, modifierCanVote, modifierCanNotVote, modifierEverydayNeedsFulfilled, modifierLifeNeedsFulfilled,
             modifierStarvation, modifierUpsetByForcedReform, modifierLifeNeedsNotFulfilled, modifierNotGivenUnemploymentSubsidies,
-            modifierMinorityPolicy;
+            modifierMinorityPolicy, modifierSomeEverydayNeedsFulfilled;
+
 
         private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.getSize() > (x as PopUnit).Country.government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
 
@@ -72,6 +73,7 @@ namespace Nashet.EconomicSimulation
             modifierStarvation = new Modifier(x => (x as PopUnit).needsFulfilled.get() < 0.20f, "Starvation", -0.3f, false);
             modifierLifeNeedsNotFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() < 0.99f, "Life needs are not satisfied", -0.2f, false);
             modifierLifeNeedsFulfilled = new Modifier(x => (x as PopUnit).getLifeNeedsFullfilling().get() > 0.99f, "Life needs are satisfied", 0.1f, false);
+            modifierSomeEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.25f, "Some everyday needs are satisfied", 0.15f, false);
             modifierEverydayNeedsFulfilled = new Modifier(x => (x as PopUnit).getEveryDayNeedsFullfilling().get() > 0.99f, "Everyday needs are satisfied", 0.15f, false);
             modifierLuxuryNeedsFulfilled = new Modifier(x => (x as PopUnit).getLuxuryNeedsFullfilling().get() > 0.99f, "Luxury needs are satisfied", 0.2f, false);
 
@@ -99,7 +101,7 @@ namespace Nashet.EconomicSimulation
             new Modifier(x => (x as PopUnit).didntGetPromisedSalary, "Didn't got promised salary", -1.0f, false),
             new Modifier (x => !(x as PopUnit).isStateCulture() &&
             (x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -1f, false),
-            modCountryIsToBig
+            modCountryIsToBig, modifierSomeEverydayNeedsFulfilled
 });
 
             // can increase performance by making separate modifiers for different popTypes
