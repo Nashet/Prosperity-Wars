@@ -71,20 +71,20 @@ namespace Nashet.EconomicSimulation
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
-            new ProductionType("Furniture factory", new Storage(Product.Furniture, 2f), resourceInput);
+            new ProductionType("Furniture factory", new Storage(Product.Furniture, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Wood, 1f));
-            new ProductionType("Sawmill", new Storage(Product.Lumber, 2f), resourceInput);
+            new ProductionType("Sawmill", new Storage(Product.Lumber, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fuel, 0.5f));
             resourceInput.Set(new Storage(Product.MetalOre, 2f));
-            new ProductionType("Metal smelter", new Storage(Product.Metal, 4f), resourceInput);
+            new ProductionType("Metal smelter", new Storage(Product.Metal, 8f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Fibers, 1f));
-            new ProductionType("Weaver factory", new Storage(Product.Clothes, 2f), resourceInput);
+            new ProductionType("Weaver factory", new Storage(Product.Clothes, 4f), resourceInput);
 
             //resourceInput = new StorageSet();
             //resourceInput.Set(new Storage(Product.Fuel, 0.5f));
@@ -93,61 +93,61 @@ namespace Nashet.EconomicSimulation
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Sugar, 1f));
-            new ProductionType("Distillery", new Storage(Product.Liquor, 2f), resourceInput);
+            new ProductionType("Distillery", new Storage(Product.Liquor, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new ProductionType("Smithery", new Storage(Product.ColdArms, 2f), resourceInput);
+            new ProductionType("Smithery", new Storage(Product.ColdArms, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Stone, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new ProductionType("Ammunition factory", new Storage(Product.Ammunition, 4f), resourceInput);
+            new ProductionType("Ammunition factory", new Storage(Product.Ammunition, 8f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new ProductionType("Firearms factory", new Storage(Product.Firearms, 4f), resourceInput);
+            new ProductionType("Firearms factory", new Storage(Product.Firearms, 8f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new ProductionType("Artillery factory", new Storage(Product.Artillery, 4f), resourceInput);
+            new ProductionType("Artillery factory", new Storage(Product.Artillery, 8f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Oil, 1f));
-            new ProductionType("Oil refinery", new Storage(Product.MotorFuel, 2f), resourceInput);
+            new ProductionType("Oil refinery", new Storage(Product.MotorFuel, 4f), resourceInput);
 
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
-            new ProductionType("Machinery factory", new Storage(Product.Machinery, 2f), resourceInput);
+            new ProductionType("Machinery factory", new Storage(Product.Machinery, 4f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Machinery, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
-            new ProductionType("Car factory", new Storage(Product.Cars, 6f), resourceInput);
+            new ProductionType("Car factory", new Storage(Product.Cars, 12f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Machinery, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Artillery, 1f));
-            new ProductionType("Tank factory", new Storage(Product.Tanks, 6f), resourceInput);
+            new ProductionType("Tank factory", new Storage(Product.Tanks, 12f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Lumber, 1f));
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Machinery, 1f));
-            new ProductionType("Airplane factory", new Storage(Product.Airplanes, 6f), resourceInput);
+            new ProductionType("Airplane factory", new Storage(Product.Airplanes, 12f), resourceInput);
 
             resourceInput = new StorageSet();
             resourceInput.Set(new Storage(Product.Metal, 1f));
             resourceInput.Set(new Storage(Product.Oil, 1f));
             resourceInput.Set(new Storage(Product.Rubber, 1f));
-            new ProductionType("Electronics factory", new Storage(Product.Electronics, 6f), resourceInput);
+            new ProductionType("Electronics factory", new Storage(Product.Electronics, 12f), resourceInput);
 
-            University = new ProductionType("University", new Storage(Product.Education, 2f), new StorageSet());
+            University = new ProductionType("University", new Storage(Product.Education, 4f), new StorageSet());
         }
         /// <summary>
         /// Basic constructor for resource getting FactoryType
