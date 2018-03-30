@@ -1,11 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using System.Linq;
 using System.Text;
-using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using UnityEngine;
+using UnityEngine.UI;
+
 namespace Nashet.EconomicSimulation
 {
     public class PopUnitPanel : DragPanel
@@ -13,14 +12,17 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
             issues, money, caption, property, populationChange;
+
         private PopUnit pop;
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.popUnitPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(600f, 53f);
             Hide();
         }
+
         public PopUnit whomShowing()
         {
             return pop;
@@ -37,9 +39,9 @@ namespace Nashet.EconomicSimulation
                 //if (Game.devMode)
                 if (pop.storage.isNotZero())
                     if (pop.Type == PopType.Aristocrats)
-                        sb.Append("\nStorage: ").Append(pop.storage.ToString());
+                        sb.Append("\nStorage: ").Append(pop.storage);
                     else
-                        sb.Append("\nUnsold: ").Append(pop.storage.ToString());
+                        sb.Append("\nUnsold: ").Append(pop.storage);
                 Artisans isArtisan = pop as Artisans;
                 if (isArtisan != null)
                 {
@@ -51,13 +53,10 @@ namespace Nashet.EconomicSimulation
                         sb.Append(isArtisan.Type.basicProduction.Product);
                 }
                 if (pop.Type == PopType.Aristocrats || pop.Type == PopType.Soldiers)
-                    sb.Append("\nGained: ").Append(pop.getGainGoodsThisTurn().ToString());
+                    sb.Append("\nGained: ").Append(pop.getGainGoodsThisTurn());
                 else
-                    sb.Append("\nProduced: ").Append(pop.getGainGoodsThisTurn().ToString());
-                sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it            
-
-
-
+                    sb.Append("\nProduced: ").Append(pop.getGainGoodsThisTurn());
+                sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
 
                 //sb.Append("\nAssimilation: ");
 
@@ -70,12 +69,12 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\nUnemployment: ").Append(pop.getUnemployment());
                 sb.Append("\nLoyalty: ").Append(pop.loyalty);
 
-                if (pop.loans.get() > 0f)
-                    sb.Append("\nLoan: ").Append(pop.loans.ToString());// hide it
-                if (pop.deposits.get() > 0f)
-                    sb.Append("\nDeposit: ").Append(pop.deposits.ToString());// hide it
-                if (Game.devMode)
-                    sb.Append("\nAge: ").Append(pop.getAge());
+                if (pop.loans.isNotZero())
+                    sb.Append("\nLoan: ").Append(pop.loans);// hide it
+                if (pop.deposits.isNotZero())
+                    sb.Append("\nDeposit: ").Append(pop.deposits);// hide it
+                                                                             //if (Game.devMode)
+                sb.Append("\nAge: ").Append(pop.getAge());
                 sb.Append("\nMobilized: ").Append(pop.getMobilized());
                 if (pop.getMovement() != null)
                     sb.Append("\nMember of ").Append(pop.getMovement());
@@ -88,22 +87,22 @@ namespace Nashet.EconomicSimulation
                 generaltext.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
+                sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling()).Append(" fulfilled");
                 lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
+                sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling()).Append(" fulfilled");
                 everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
+                sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling()).Append(" fulfilled");
                 luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Cash: ").Append(pop.Cash.ToString());
+                sb.Append("Cash: ").Append(pop.Cash);
                 money.text = sb.ToString();
                 money.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Money income: " + pop.moneyIncomeThisTurn
                 + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
@@ -131,7 +130,7 @@ namespace Nashet.EconomicSimulation
                     property.gameObject.SetActive(false);
 
                 issues.GetComponent<ToolTipHandler>().SetTextDynamic(
-                    delegate ()
+                    delegate
                     {
                         //var items = from pair in pop.getIssues()
                         //            orderby pair.Value descending

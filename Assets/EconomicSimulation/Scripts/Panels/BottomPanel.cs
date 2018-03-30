@@ -1,8 +1,6 @@
-﻿
+﻿using Nashet.UnityUIUtils;
 using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
@@ -13,16 +11,17 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private Text generalText;
+
         // Use this for initialization
-        void Awake() // used to position other windows
+        private void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars demo v0.19.1";
+            generalText.text = "Prosperity Wars demo v0.19.2";
             Hide();
-        }       
+        }
+
         public override void Refresh()
         {
-            
         }
 
         public void onStatisticsClick()
@@ -32,11 +31,11 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.StatisticPanel.Show();
         }
+
         public void onddMapModesChange(int newMapMode)
         {
             if (Game.getMapMode() != newMapMode)
                 Game.redrawMapAccordingToMapMode(newMapMode);
-
         }
     }
 }

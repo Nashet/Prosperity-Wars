@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
-using System.Linq;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Nashet.EconomicSimulation
 {
@@ -34,21 +36,25 @@ namespace Nashet.EconomicSimulation
         private Camera camera; // it's OK
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
+
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
         private readonly float simulationSpeedLimit = 0.10f;
-        private float previousFrameTime;
 
+        private float previousFrameTime;
+        public static MainCamera Instance;
 
         private void Start()
         {
-            focusHeight = this.transform.position.z;
+            Instance = this;
+            focusHeight = transform.position.z;
         }
-        void FixedUpdate()
+
+        private void FixedUpdate()
         {
             if (gameIsLoaded)
             {
-                var position = this.transform.position;
+                var position = transform.position;
                 var mapBorders = game.getMapBorders();
                 float xyCameraSpeed = 2f;
                 float zCameraSpeed = 55f;
@@ -68,8 +74,9 @@ namespace Nashet.EconomicSimulation
                 transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
             }
         }
+
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             //starts loading thread
             if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
@@ -79,7 +86,7 @@ namespace Nashet.EconomicSimulation
 #if UNITY_WEBGL
                 game.InitializeNonUnityData(); // non multi-threading
 #else
-                game.Start(); //initialize is here 
+                game.Start(); //initialize is here
 #endif
             }
             if (game != null)
@@ -91,7 +98,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Game.setUnityAPI();
 
-                    camera = this.GetComponent<Camera>();
+                    camera = GetComponent<Camera>();
                     FocusOnProvince(Game.Player.Capital, false);
                     //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
                     //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
@@ -114,8 +121,8 @@ namespace Nashet.EconomicSimulation
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
                     int meshNumber = getRayCastMeshNumber();
-                    //found something correct            
-                    selectProvince(meshNumber);
+                    if (meshNumber != -3)
+                        selectProvince(meshNumber);
                 }
                 if (Game.getMapMode() == 4)
                 {
@@ -129,7 +136,7 @@ namespace Nashet.EconomicSimulation
                             GetComponent<ToolTipHandler>().SetTextDynamic(() =>
                             "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.getPopulation())
                             + "\n" + hoveredProvince.Country.getAllPopulationChanges()
-                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))//.GroupBy(x => x.Key)
+                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
                             .getString("\n", "Total change: "));
                         else
                             GetComponent<ToolTipHandler>().SetTextDynamic(() =>
@@ -157,11 +164,21 @@ namespace Nashet.EconomicSimulation
                             );
                         GetComponent<ToolTipHandler>().Show();
                     }
-
                 }
-
-                if (Input.GetKeyUp(KeyCode.Space))
-                    topPanel.switchHaveToRunSimulation();
+                else if (Game.getMapMode() == 6) //prosperity wars
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        GetComponent<ToolTipHandler>().Hide();
+                    else
+                    {
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.getPopulation())
+                            + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
+                        GetComponent<ToolTipHandler>().Show();
+                    }
+                }
 
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();
@@ -176,20 +193,20 @@ namespace Nashet.EconomicSimulation
                     }
                 }
 
-
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(canvas, this);
                 Game.previoslySelectedProvince = Game.selectedProvince;
             }
         }
-        int getRayCastMeshNumber()
+
+        private int getRayCastMeshNumber()
         {
             //RaycastHit hit = new RaycastHit();//temp
             //int layerMask = 1 << 8;
             //DefaultRaycastLayers
             //Physics.DefaultRaycastLayers;
             RaycastHit hit;
-            if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            if (!EventSystem.current.IsPointerOverGameObject())
                 if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
                     return -1;
                 else; // go on
@@ -215,8 +232,7 @@ namespace Nashet.EconomicSimulation
             // mapPointer.transform.rotation = Quaternion.LookRotation(heading, Vector3.up) * Quaternion.Euler(-90, 0, 0);
 
             //return groundMesh.triangles[hit.triangleIndex * 3];
-            ;
-            return System.Convert.ToInt32(mesh.name);
+            return Convert.ToInt32(mesh.name);
         }
 
         internal static void refreshAllActive()
@@ -242,38 +258,35 @@ namespace Nashet.EconomicSimulation
 
         internal static void selectProvince(int number)
         {
-            if (number >= 0)
+            if (number < 0 || World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
             {
-                if (World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
+                var lastSelected = Game.selectedProvince;
+                Game.selectedProvince = null;
+                if (lastSelected != null)
                 {
-
-                    var lastSelected = Game.selectedProvince;
-                    Game.selectedProvince = null;
                     lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
                     lastSelected.setBorderMaterials(true);
-
+                }
+                if (provincePanel.isActiveAndEnabled)
                     provincePanel.Hide();
-
-                }
-                else // new province selected
-                {
-                    if (Game.selectedProvince != null)//deal with previous selection
-                    {
-                        Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                        Game.selectedProvince.setBorderMaterials(true);
-                    }
-                    Game.selectedProvince = World.FindProvince(number);
-                    Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
-                    provincePanel.Show();
-                    if (Game.getMapMode() == 2) //core map mode
-                        Game.redrawMapAccordingToMapMode(2);
-
-                }
-                if (buildPanel.isActiveAndEnabled)
-                    buildPanel.Refresh();
-
             }
+            else // new province selected
+            {
+                if (Game.selectedProvince != null)//deal with previous selection
+                {
+                    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                    Game.selectedProvince.setBorderMaterials(true);
+                }
+                Game.selectedProvince = World.FindProvince(number);
+                Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
+                provincePanel.Show();
+                if (Game.getMapMode() == 2) //core map mode
+                    Game.redrawMapAccordingToMapMode(2);
+            }
+            if (buildPanel != null && buildPanel.isActiveAndEnabled)
+                buildPanel.Refresh();
         }
+
         private void closeToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
@@ -287,16 +300,17 @@ namespace Nashet.EconomicSimulation
                 closeToppestPanel();
             }
         }
+
         public void FocusOnProvince(Province province, bool select)
         {
             gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
             if (select)
                 selectProvince(province.getID());
         }
+
         public void FocusOnPoint(Vector2 point)
         {
             gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
-            
         }
     }
 }

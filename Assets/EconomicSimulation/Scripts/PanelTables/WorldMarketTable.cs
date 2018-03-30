@@ -1,19 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
-using Nashet.UnityUIUtils;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
 {
     public class WorldMarketTable : UITableNew<Product>
     {
-        
         protected override void AddHeader()
         {
-            // Adding product name 
+            // Adding product name
             AddCell("Product");
             ////Adding production
             AddCell("Production");
@@ -30,11 +25,11 @@ namespace Nashet.EconomicSimulation
             ////Adding price
             AddCell("Price");
             ////Adding price Change
-
         }
+
         protected override void AddRow(Product product, int number)
         {
-            // Adding product name 
+            // Adding product name
             AddCell(product.ToString(), product);
             ////Adding production
             AddCell(Game.market.getProductionTotal(product, true).get().ToString(), product);
@@ -54,7 +49,7 @@ namespace Nashet.EconomicSimulation
             AddCell(Game.market.getDemandSupplyBalance(product).ToString(), product);
             //AddButton("-", product);
             ////Adding price
-            AddCell(Game.market.getPrice(product).get().ToString(), product);
+            AddCell(Game.market.getCost(product).Get().ToString(), product);
             ////Adding price Change
             //AddButton(next.loyalty.ToString(), next);
             //counter++;

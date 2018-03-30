@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-using Nashet.ValueSpace;
+﻿using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -8,9 +6,10 @@ namespace Nashet.EconomicSimulation
     {
         public Soldiers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Soldiers, where, culture, oldLife)
         { }
+
         public Soldiers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Soldiers, iculture, where)
         { }
-        
+
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats // should be officers
@@ -35,6 +34,7 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+
         internal override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
@@ -45,22 +45,21 @@ namespace Nashet.EconomicSimulation
 
         public override void produce()
         {
-
         }
 
         internal void takePayCheck()
         {
-            Value payCheck = new Value(Country.getSoldierWage());
-            payCheck.Multiply(getPopulation() / 1000f);
+            Money payCheck = Country.getSoldierWage().Copy();
+            payCheck.Multiply(getPopulation() / 1000m);
             if (Country.CanPay(payCheck))
             {
                 Country.Pay(this, payCheck);
                 Country.soldiersWageExpenseAdd(payCheck);
-                this.didntGetPromisedSalary = false;
+                didntGetPromisedSalary = false;
             }
             else
             {
-                this.didntGetPromisedSalary = true;
+                didntGetPromisedSalary = true;
                 Country.failedToPaySoldiers = true;
             }
         }

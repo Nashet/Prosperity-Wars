@@ -1,15 +1,15 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using Nashet.EconomicSimulation;
+using UnityEngine;
 
 namespace Nashet.MarchingSquares
 {
     [Serializable]
     public class Voxel
     {
-        Province state;
+        private Province state;
 
-        Vector2 position, xEdgePosition, yEdgePosition;
+        private Vector2 position, xEdgePosition, yEdgePosition;
 
         public Voxel(int x, int y, float size, Province state)
         {
@@ -23,23 +23,30 @@ namespace Nashet.MarchingSquares
             this.state = state;
             //this.state = Game.Random.Next(3) == 1;
         }
+
         public Province getState()
         {
             return state;
         }
+
         public Vector2 getPosition()
         {
             return position;
         }
+
         public Vector2 getXEdgePosition()
         {
             return xEdgePosition;
         }
+
         public Vector2 getYEdgePosition()
         {
             return yEdgePosition;
         }
-        public Voxel() { }
+
+        public Voxel()
+        {
+        }
 
         public void BecomeXDummyOf(Voxel voxel, float offset)
         {

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
-using System;
+
 namespace Nashet.UnityUIUtils
 {
     public class ToolTipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IHideable
@@ -16,9 +16,9 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private bool isDynamic;
 
-        [SerializeField]
-        private Hideable ownerWindow;
-                
+        //[SerializeField]
+        //private Hideable ownerWindow;
+
         private bool inside;
 
         /// <summary>
@@ -26,11 +26,17 @@ namespace Nashet.UnityUIUtils
         /// </summary>
         protected void Start()
         {
+            //var foundParent = gameObject.AllParents().FirstOrDefault(x => x.HasComponent<Hideable>());
+            //if (foundParent != null)
+            //{
+            //    var ownerWindow = foundParent.GetComponent<Hideable>();
+            var ownerWindow = GetComponentInParent<Hideable>();
             if (ownerWindow != null)
                 ownerWindow.Hidden += OnHiddenOwner;
+            //}
         }
-        
-        void OnHiddenOwner(Hideable eventData)
+
+        private void OnHiddenOwner(Hideable eventData)
         {
             // forces tooltip to hide
             OnPointerExit(null);
@@ -38,9 +44,10 @@ namespace Nashet.UnityUIUtils
 
         public void SetTextDynamic(Func<string> dynamicString)
         {
-            this.dynamicText = dynamicString;
+            dynamicText = dynamicString;
             isDynamic = true;
         }
+
         public void SetText(string data)
         {
             text = data;
@@ -51,14 +58,17 @@ namespace Nashet.UnityUIUtils
         {
             Show();
         }
+
         public void OnPointerExit(PointerEventData eventData)
         {
             Hide();
         }
+
         public bool IsInside()
         {
             return inside;
         }
+
         private void Update()
         {
             if (IsInside() && isDynamic)

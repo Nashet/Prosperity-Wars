@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Text;
+﻿using System.Text;
 using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -28,8 +26,9 @@ namespace Nashet.EconomicSimulation
         private CanvasGroup bankPanel;
 
         private readonly StringBuilder sb = new StringBuilder();
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.financePanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
@@ -38,6 +37,7 @@ namespace Nashet.EconomicSimulation
             autoPutInBankLimit.setExponential(x => Mathf.Pow(x, 2f), f => Mathf.Pow(f, 1f / 2f));
             Hide();
         }
+
         public override void Refresh()
         {
             sb.Clear();
@@ -85,7 +85,7 @@ namespace Nashet.EconomicSimulation
             onLoanLimitChange();
             onDepositLimitChange();
             //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
-            autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
+            autoPutInBankLimit.exponentialValue = (float)Game.Player.autoPutInBankLimit.Get();
             if (Game.Player.Invented(Invention.Banking))
                 bankPanel.interactable = true;
             else
@@ -95,8 +95,8 @@ namespace Nashet.EconomicSimulation
             }
             if (Game.Player.Invented(Invention.ProfessionalArmy))
             {
-                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).get() * 2f);
-                ssSoldiersWage.exponentialValue = Game.Player.getSoldierWage(); // could be changed by AI
+                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat((float)(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Get() * 2m));
+                ssSoldiersWage.exponentialValue = (float)Game.Player.getSoldierWage().Get(); // could be changed by AI
                 refreshSoldierWageText();
                 //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
                 //ssSoldiersWage.enabled = true;
@@ -117,6 +117,7 @@ namespace Nashet.EconomicSimulation
                 ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("");
             }
         }
+
         //public void findNoonesEterprises()
         //{
         //    foreach (var item in Province.allProvinces)
@@ -144,53 +145,59 @@ namespace Nashet.EconomicSimulation
         //}
         public void onTakeLoan()
         {
-            Value loan = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy();
+            Money loan = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy();
             if (loanLimit.value != 1f)
-                loan.Multiply(loanLimit.value);
+                loan.Multiply((decimal)loanLimit.value);
             Game.Player.Bank.GiveCredit(Game.Player, loan);
             MainCamera.refreshAllActive();
         }
+
         public void onPutInDeposit()
         {
             if (loanLimit.value == 1f)//.Copy()
-                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash);// Copye some how related to bug with self paying
+                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash);
             else
-                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash.Copy().Multiply(depositLimit.value));
+                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash.Copy().Multiply((decimal)depositLimit.value));
             MainCamera.refreshAllActive();
         }
+
         public void onLoanLimitChange()
         {
-            loanLimitText.text = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy().Multiply(loanLimit.value).ToString();
+            loanLimitText.text = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy().Multiply((decimal)loanLimit.value).ToString();
         }
 
         public void onDepositLimitChange()
         {
-            depositLimitText.text = Game.Player.Cash.Copy().Multiply(depositLimit.value).ToString();
+            depositLimitText.text = Game.Player.Cash.Copy().Multiply((decimal)depositLimit.value).ToString();
         }
+
         private void refreshSoldierWageText()
         {
             sb.Clear();
             sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
             ssSoldiersWage.GetComponentInChildren<Text>().text = sb.ToString();
         }
+
         public void onSoldierWageChange()
         {
             refreshSoldierWageText();
-            Game.Player.setSoldierWage(ssSoldiersWage.exponentialValue);
+            Game.Player.setSoldierWage(new MoneyView((decimal)ssSoldiersWage.exponentialValue));
         }
+
         public void onAutoPutInBankLimitChange()
         {
-            Game.Player.autoPutInBankLimit = (int)autoPutInBankLimit.exponentialValue;
+            Game.Player.autoPutInBankLimit.Set(new MoneyView((decimal)autoPutInBankLimit.exponentialValue));
             AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
         }
+
         public void onAutoSendMoneyToBankToggleChange()
         {
             autoPutInBankLimit.interactable = autoSendMoneyToBank.isOn;
             if (!autoSendMoneyToBank.isOn)
             {
-                Game.Player.autoPutInBankLimit = 0;
+                Game.Player.autoPutInBankLimit.SetZero();
                 //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
-                autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
+                autoPutInBankLimit.exponentialValue = (float)Game.Player.autoPutInBankLimit.Get();
             }
         }
     }

@@ -1,10 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections.Generic;
-using System;
 using Nashet.UnityUIUtils;
-using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
@@ -13,9 +9,10 @@ namespace Nashet.EconomicSimulation
         private SortOrder typeOrder, provinceOrder, productionOrder, resourcesOrder, workForceOrder, profitOrder,
             profitabilityOrder, salaryOrder, unemploymentOrder;
 
+        private Func<IEnumerable<Factory>> content;
+
         private void Start()
         {
-
             typeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
             provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
@@ -23,23 +20,35 @@ namespace Nashet.EconomicSimulation
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
             profitOrder = new SortOrder(this, x => x.getProfit());
             profitabilityOrder = new SortOrder(this, x => x.GetMargin().get());
-            salaryOrder = new SortOrder(this, x => x.getSalary().get());
+            salaryOrder = new SortOrder(this, x => (float)x.getSalary().Get());
             unemploymentOrder = new SortOrder(this, x => x.Province.getUnemployedWorkers());
         }
+
         protected override IEnumerable<Factory> ContentSelector()
         {
-            var selectedProvince = MainCamera.productionWindow.SelectedProvince;
-            if (selectedProvince == null)
-                return Game.Player.getAllFactories();
+            if (content == null)
+            {
+                var selectedProvince = MainCamera.productionWindow.SelectedProvince;
+                if (selectedProvince == null)
+                    return Game.Player.getAllFactories();
+                else
+                    return selectedProvince.getAllFactories();
+            }
             else
-                return selectedProvince.getAllFactories();
+                return content();
         }
+
+        public void SetContent(Func<IEnumerable<Factory>> content)
+        {
+            this.content = content;
+        }
+
         protected override void AddRow(Factory factory, int number)
         {
-            // Adding shownFactory name 
+            // Adding shownFactory name
             AddCell(factory.ShortName, factory);
 
-            // Adding province 
+            // Adding province
             AddCell(factory.Province.ToString(), factory.Province, () => "Click to select this province");
 
             ////Adding production
@@ -85,7 +94,7 @@ namespace Nashet.EconomicSimulation
             else
             {
                 if (factory.Country.economy.getValue() == Economy.NaturalEconomy)
-                    AddCell(factory.getSalary().ToString() + " food", factory);
+                    AddCell(factory.getSalary() + " food", factory);
                 else
                     AddCell(factory.getSalary().ToString(), factory);
             }
@@ -93,14 +102,15 @@ namespace Nashet.EconomicSimulation
             //Adding unemployment
             AddCell(factory.Province.getUnemployedWorkers().ToString("N0"), factory);
         }
+
         protected override void AddHeader()
         {
             if (typeOrder == null)
                 Start();
-            // Adding product name 
+            // Adding product name
             AddCell("Type" + typeOrder.getSymbol(), typeOrder);
 
-            // Adding province 
+            // Adding province
             AddCell("Province" + provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding production

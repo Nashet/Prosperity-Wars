@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
@@ -14,43 +14,50 @@ namespace Nashet.EconomicSimulation
         private readonly StorageSet marketPrice = new StorageSet();
 
         // todo make Better class for it? - yes
-        private Date dateOfDSB = new Date(int.MaxValue);
+        private Date dateOfDSB = Date.Never.Copy();
+
         private readonly StorageSet DSBbuffer = new StorageSet();
 
-        private Date dateOfgetSupplyOnMarket = new Date(int.MaxValue);
+        private Date dateOfgetSupplyOnMarket = Date.Never.Copy();
         private readonly StorageSet supplyOnMarket = new StorageSet();
 
-        private Date dateOfgetTotalProduction = new Date(int.MaxValue);
+        private Date dateOfgetTotalProduction = Date.Never.Copy();
         private readonly StorageSet totalProduction = new StorageSet();
 
-        private Date dateOfgetTotalConsumption = new Date(int.MaxValue);
+        private Date dateOfgetTotalConsumption = Date.Never.Copy();
         private readonly StorageSet totalConsumption = new StorageSet();
 
-        private Date dateOfgetBought = new Date(int.MaxValue);
+        private Date dateOfgetBought = Date.Never.Copy();
         private readonly StorageSet bought = new StorageSet();
 
         internal PricePool priceHistory;
         internal StorageSet sentToMarket = new StorageSet();
+
         public Market() : base(null)
         {
+        }
 
-        }
-        internal Value getPrice(Product whom)
+        /// <summary>
+        /// new value
+        /// </summary>
+        internal MoneyView getCost(Product whom)
         {
-            return marketPrice.getCheapestStorage(whom);
+            return new MoneyView((decimal)marketPrice.getCheapestStorage(whom).get());
         }
+
         internal void initialize()
         {
             priceHistory = new PricePool();
         }
+
         /// <summary>
         /// new value
         /// </summary>
         /// <param name="need"></param>
         /// <returns></returns>
-        internal Money getCost(StorageSet need)
+        internal MoneyView getCost(StorageSet need)
         {
-            Money cost = new Money(0f);
+            Money cost = new Money(0m);
             // float price;
             foreach (Storage stor in need)
             {
@@ -63,41 +70,38 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns new Value
         /// </summary>
-        internal Money getCost(List<Storage> need)
+        internal MoneyView getCost(List<Storage> need)
         {
-            Money cost = new Money(0f);
+            Money cost = new Money(0m);
             foreach (Storage stor in need)
                 cost.Add(getCost(stor));
             return cost;
         }
+
         /// <summary>
-        /// 
+        /// New value
         /// </summary>
-        internal ReadOnlyValue getCost(Storage need)
+        internal MoneyView getCost(Storage need)
         {
-            // now its fixed - getPrice() takes cheapest substitute product price instead of abstract
-            //if (need.isAbstractProduct())
-            //    Debug.Log("Can't determinate price of abstract product " + need.Product);
             if (need.Product == Product.Gold)
             {
-                var res = need.Copy().Multiply(Options.goldToCoinsConvert);
-                res.Multiply(Options.GovernmentTakesShareOfGoldOutput);
-                return res;
+                //var res = need.Copy().Multiply(Options.goldToCoinsConvert);
+                //res.Multiply(Options.GovernmentTakesShareOfGoldOutput);
+                //return res;
+                return new MoneyView((decimal)need.get());
             }
             else
-                return need.Copy().Multiply(Game.market.getPrice(need.Product));
+                return Game.market.getCost(need.Product).Copy().Multiply((decimal)need.get());
         }
-
-
-
 
         /// <summary>
         /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
-        /// </summary>    
+        /// </summary>
         internal Storage GetRandomCheapestSubstitute(Storage need)
         {
             return marketPrice.ConvertToRandomCheapestStorageProduct(need);
         }
+
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
         {
@@ -115,6 +119,7 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
         private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
         {
             Storage result = new Storage(product);
@@ -131,6 +136,7 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForSellers(Product product, Func<ICanSell, Storage> selector)
         {
@@ -148,6 +154,7 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
         {
@@ -164,6 +171,7 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
         internal Storage getBouthOnMarket(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
@@ -185,6 +193,7 @@ namespace Nashet.EconomicSimulation
             }
             return bought.GetFirstSubstituteStorage(product);
         }
+
         internal Storage getTotalConsumption(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
@@ -208,7 +217,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Only goods sent to market
         /// Based  on last turn data
-        /// </summary>    
+        /// </summary>
         internal Storage getMarketSupply(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
@@ -232,7 +241,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// All produced supplies
         /// Based  on last turn data
-        /// </summary>    
+        /// </summary>
         internal Storage getProductionTotal(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
@@ -253,6 +262,7 @@ namespace Nashet.EconomicSimulation
 
             return totalProduction.GetFirstSubstituteStorage(product);
         }
+
         //internal void ForceDSBRecalculation()
         //{
         //    //dateOfDSB--;//!!! Warning! This need to be uncommented to work properly
@@ -260,11 +270,12 @@ namespace Nashet.EconomicSimulation
         //}
         /// <summary>
         /// per 1 unit
-        /// </summary>    
+        /// </summary>
         public void SetDefaultPrice(Product pro, float inprice)
         {
             marketPrice.Set(new Storage(pro, inprice));
         }
+
         internal bool isAvailable(Product product)
         {
             if (product.isAbstract())
@@ -287,12 +298,13 @@ namespace Nashet.EconomicSimulation
                     return false;
             }
         }
+
         /// <summary>
         /// returns how much was sold de facto
         /// new version of buy-old,
         /// real deal. If not enough money to buy (including deposits) then buys some part of desired
-        /// </summary>   
-        internal Storage buy(Consumer buyer, Storage whatWantedToBuy)
+        /// </summary>
+        internal Storage Sell(Consumer buyer, Storage whatWantedToBuy)
         {
             if (whatWantedToBuy.isNotZero())
             {
@@ -306,11 +318,11 @@ namespace Nashet.EconomicSimulation
                 else
                     buying = whatWantedToBuy;
                 Storage howMuchCanConsume;
-                Value price = getPrice(buying.Product);
-                Value cost;
+                MoneyView price = getCost(buying.Product);
+                MoneyView cost;
                 if (Game.market.sentToMarket.has(buying))
                 {
-                    cost = buying.Copy().Multiply(price);
+                    cost = getCost(buying);
                     //if (cost.isNotZero())
                     //{
                     if (buyer.CanPay(cost))
@@ -323,10 +335,10 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        float val = buyer.Cash.get() / price.get();
+                        float val = (float)(buyer.Cash.Get() / price.Get());
                         val = Mathf.Floor(val * Value.Precision) / Value.Precision;
                         howMuchCanConsume = new Storage(buying.Product, val);
-                        buyer.Pay(Game.market, howMuchCanConsume.Copy().Multiply(price));
+                        buyer.Pay(Game.market, getCost(howMuchCanConsume));
                         buyer.consumeFromMarket(howMuchCanConsume);
                         if (buyer is SimpleProduction)
                             (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);
@@ -341,7 +353,7 @@ namespace Nashet.EconomicSimulation
                     Storage howMuchAvailable = new Storage(Game.market.HowMuchAvailable(buying));
                     if (howMuchAvailable.get() > 0f)
                     {
-                        cost = howMuchAvailable.Copy().Multiply(price);
+                        cost = getCost(howMuchAvailable);
                         if (buyer.CanPay(cost))
                         {
                             buyer.Pay(Game.market, cost);
@@ -352,12 +364,12 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            howMuchCanConsume = new Storage(howMuchAvailable.Product, buyer.Cash.get() / price.get());
+                            howMuchCanConsume = new Storage(howMuchAvailable.Product, (float)(buyer.Cash.Get() / price.Get()));
                             if (howMuchCanConsume.get() > howMuchAvailable.get())
                                 howMuchCanConsume.Set(howMuchAvailable.get()); // you don't buy more than there is
                             if (howMuchCanConsume.isNotZero())
                             {
-                                buyer.PayAllAvailableMoney(Game.market); //pay all money cause you don't have more                                                                     
+                                buyer.PayAllAvailableMoney(Game.market); //pay all money cause you don't have more
                                 buyer.consumeFromMarket(howMuchCanConsume);
                                 if (buyer is SimpleProduction)
                                     (buyer as SimpleProduction).getInputProductsReserve().Add(howMuchCanConsume);
@@ -373,17 +385,16 @@ namespace Nashet.EconomicSimulation
                 return whatWantedToBuy; // assuming buying is empty here
         }
 
-
         /// <summary>
         /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
-        /// </summary>    
-        public Storage Sell(Consumer forWhom, Storage need, Country subsidizer)
+        /// </summary>
+        public Storage Sell(Consumer toWhom, Storage need, Country subsidizer)
         {
-            if (forWhom.CanAfford(need) || subsidizer == null)
-                return buy(forWhom, need);
+            if (toWhom.CanAfford(need) || subsidizer == null)
+                return Sell(toWhom, need);
             //todo fix that
-            else if (subsidizer.GiveFactorySubsidies(forWhom, forWhom.HowMuchLacksMoneyIncludingDeposits(need)))
-                return buy(forWhom, need);
+            else if (subsidizer.GiveFactorySubsidies(toWhom, toWhom.HowMuchLacksMoneyIncludingDeposits(getCost(need))))
+                return Sell(toWhom, need);
             else
                 return new Storage(need.Product, 0f);
         }
@@ -398,12 +409,11 @@ namespace Nashet.EconomicSimulation
         //            buy(buyer, item, subsidizer);
         //}
 
-
         /// <summary>
         /// Buying needs in circle, by Procent in time
         /// return true if buying is zero (bought all what it wanted)
-        /// </summary>    
-        internal bool buy(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
+        /// </summary>
+        internal bool Sell(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
         {
             bool buyingIsFinished = true;
             foreach (Storage what in ofWhat)
@@ -427,7 +437,7 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// Date actual for how much produced on turn start, not how much left
-        /// </summary>   
+        /// </summary>
         //internal bool HasProducedThatMuch(Storage need)
         //{
         //    //Storage availible = findStorage(need.Product);
@@ -449,7 +459,7 @@ namespace Nashet.EconomicSimulation
         //}
         /// <summary>
         /// Based on DSB, assuming you have enough money
-        /// </summary>    
+        /// </summary>
         internal bool HasAvailable(Storage need)
         {
             //Storage availible = findStorage(need.Product);
@@ -459,7 +469,8 @@ namespace Nashet.EconomicSimulation
             if (availible.get() >= need.get()) return true;
             else return false;
         }
-        /// <summary>    
+
+        /// <summary>
         /// Based on DSB, shows how much you can get assuming you have enough money
         /// </summary>
         internal Storage HowMuchAvailable(Storage need)
@@ -480,7 +491,7 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
-        /// based on last turn data   
+        /// based on last turn data
         ///</summary>
         internal float getDemandSupplyBalance(Product product)
         {
@@ -533,13 +544,12 @@ namespace Nashet.EconomicSimulation
             //float highestChangingSpeed = 0.2f; //%
             //float highChangingSpeed = 0.04f;//%
 
-            foreach (Storage price in this.marketPrice)
+            foreach (Storage price in marketPrice)
                 if (price.Product.isTradable())
                 {
                     balance = getDemandSupplyBalance(price.Product);
-                    /// Result > 1 mean demand is higher, price should go up  
-                    /// Result fewer 1 mean supply is higher, price should go down              
-
+                    /// Result > 1 mean demand is higher, price should go up
+                    /// Result fewer 1 mean supply is higher, price should go down
 
                     priceChangeSpeed = 0;
                     if (balance >= 0.95f)//1f) //some goods can't achieve 1 dsb, like cotton for example
@@ -557,11 +567,11 @@ namespace Nashet.EconomicSimulation
         private void ChangePrice(Storage price, float HowMuch)
         {
             float newValue = HowMuch + price.get();
-            if (newValue <= 0)
-                newValue = Options.minPrice;
-            if (newValue >= Options.maxPrice)
+            if (newValue <= 0f)
+                newValue = (float)Options.minPrice.Get();
+            if (newValue >= (float)Options.maxPrice.Get())
             {
-                newValue = Options.maxPrice;
+                newValue = (float)Options.maxPrice.Get();
                 //if (getBouth(price.Product) != 0) newValue = Game.maxPrice / 20f;
             }
             price.Set(newValue);

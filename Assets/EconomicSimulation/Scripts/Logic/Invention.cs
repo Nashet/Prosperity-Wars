@@ -1,19 +1,18 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 using Nashet.Conditions;
-using Nashet.ValueSpace;
-using Nashet.Utils;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+using Nashet.ValueSpace;
+
 namespace Nashet.EconomicSimulation
 {
     public class Invention : Name, IClickable
     {
-        private readonly static List<Invention> allInventions = new List<Invention>();
+        private static readonly List<Invention> allInventions = new List<Invention>();
         private string description;
         private Value cost;
         private string inventedPhrase;
+
         public static readonly Invention Farming = new Invention("Farming", "Allows farming and farmers", new Value(100f)),
             Banking = new Invention("Banking", "Allows national bank, credits and deposits. Also allows serfdom abolishment with compensation for aristocrats", new Value(100f)),
             Manufactures = new Invention("Manufactures", "Allows building manufactures to process raw product", new Value(70f)),
@@ -39,15 +38,17 @@ namespace Nashet.EconomicSimulation
             Coal = new Invention("Coal", "Allows coal", new Value(100f)),
             Universities = new Invention("Universities", "Allows building of Universities", new Value(150f))
             ;
-        readonly public static Condition ProfessionalArmyInvented = new Condition(x => (x as Country).Invented(Invention.ProfessionalArmy), "Professional Army is invented", true);
-        readonly public static Condition SteamPowerInvented = new Condition(x => (x as Country).Invented(Invention.SteamPower), "Steam Power is invented", true);
-        readonly public static Condition CombustionEngineInvented = new Condition(x => (x as Country).Invented(Invention.CombustionEngine), "Combustion Engine is invented", true);
-        readonly public static Condition IndividualRightsInvented = new Condition(x => (x as Country).Invented(Invention.IndividualRights), "Individual Rights are invented", true);
-        readonly public static Condition BankingInvented = new Condition(x => (x as Country).Invented(Invention.Banking), "Banking is invented", true);
-        readonly public static Condition WelfareInvented = new Condition(x => (x as Country).Invented(Invention.Welfare), "Welfare is invented", true);
-        readonly public static Condition CollectivismInvented = new Condition(x => (x as Country).Invented(Invention.Collectivism), "Collectivism is invented", true);
-        readonly public static Condition ManufacturesInvented = new Condition(x => (x as Country).Invented(Invention.Manufactures), "Manufactures are invented", true);
-        readonly public static Condition ManufacturesUnInvented = new Condition(x => !(x as Country).Invented(Invention.Manufactures), "Manufactures aren't invented", true);
+
+        public static readonly Condition ProfessionalArmyInvented = new Condition(x => (x as Country).Invented(ProfessionalArmy), "Professional Army is invented", true);
+        public static readonly Condition SteamPowerInvented = new Condition(x => (x as Country).Invented(SteamPower), "Steam Power is invented", true);
+        public static readonly Condition CombustionEngineInvented = new Condition(x => (x as Country).Invented(CombustionEngine), "Combustion Engine is invented", true);
+        public static readonly Condition IndividualRightsInvented = new Condition(x => (x as Country).Invented(IndividualRights), "Individual Rights are invented", true);
+        public static readonly Condition BankingInvented = new Condition(x => (x as Country).Invented(Banking), "Banking is invented", true);
+        public static readonly Condition WelfareInvented = new Condition(x => (x as Country).Invented(Welfare), "Welfare is invented", true);
+        public static readonly Condition CollectivismInvented = new Condition(x => (x as Country).Invented(Collectivism), "Collectivism is invented", true);
+        public static readonly Condition ManufacturesInvented = new Condition(x => (x as Country).Invented(Manufactures), "Manufactures are invented", true);
+        public static readonly Condition ManufacturesUnInvented = new Condition(x => !(x as Country).Invented(Manufactures), "Manufactures aren't invented", true);
+
         internal Invention(string name, string description, Value cost) : base(name)
         {
             //this.name = name;
@@ -64,10 +65,12 @@ namespace Nashet.EconomicSimulation
                 yield return item;
             }
         }
+
         internal string getInventedPhrase()
         {
             return inventedPhrase;
         }
+
         public bool isAvailable(Country country)
         {
             if (//this == Collectivism
@@ -84,8 +87,8 @@ namespace Nashet.EconomicSimulation
                 return false;
             else
                 return true;
-
         }
+
         public override string FullName
         {
             get { return description; }
@@ -95,6 +98,7 @@ namespace Nashet.EconomicSimulation
         {
             return cost;
         }
+
         public void OnClicked()
         {
             MainCamera.inventionsPanel.selectInvention(this);

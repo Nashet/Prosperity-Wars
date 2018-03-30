@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿//using System;
+
 using System;
 using System.Collections.Generic;
-//using System;
-using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using UnityEngine;
+
 //using System.Linq;
 
 namespace Nashet.ValueSpace
@@ -20,10 +20,11 @@ namespace Nashet.ValueSpace
         public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
         {
         }
+
         protected Procent(Procent number) : base(number)
         {
-
         }
+
         public Procent(List<Storage> numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
             : this(numerator.Sum(), denominator.Sum(), showMessageAboutOperationFails) { }
 
@@ -39,28 +40,40 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("Division by zero in new Procent(float)");
-                Set(Procent.Max999);
+                Set(Max999);
             }
             else
                 Set(numerator / denominator, showMessageAboutOperationFails);
         }
+
         public Procent(int numerator, int denominator, bool showMessageAboutOperationFails = true) : base(0f)
         {
             if (denominator == 0)
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("Division by zero in Percent.makeProcent(int)");
-                Set(Procent.Max999);
+                Set(Max999);
             }
             else
                 Set(numerator / (float)denominator, showMessageAboutOperationFails);
+        }
+
+        public Procent(MoneyView numerator, MoneyView denominator, bool showMessageAboutOperationFails = true) : base(0f)
+        {
+            if (denominator.isZero())
+            {
+                if (showMessageAboutOperationFails)
+                    Debug.Log("Division by zero in Percent.makeProcent(int)");
+                Set(Max999);
+            }
+            else
+                Set((float)(numerator.Get() / denominator.Get()), showMessageAboutOperationFails);
         }
 
         internal float get50Centre()
         {
             return get() - 0.5f;
         }
-
 
         //public Procent add(Procent pro, bool showMessageAboutNegativeValue = true)
         //{
@@ -69,21 +82,23 @@ namespace Nashet.ValueSpace
         //}
         /// <summary>
         /// Calculates procent proportionally to int sizes of elements
-        /// </summary>        
+        /// </summary>
         public void AddPoportionally(int totalValculatedValue, int nextElementValue, Procent elementProcent)
         {
             if ((totalValculatedValue + nextElementValue) != 0)
                 Set(
-                    (this.get() * totalValculatedValue + elementProcent.get() * nextElementValue) / (float)(totalValculatedValue + nextElementValue)
+                    (get() * totalValculatedValue + elementProcent.get() * nextElementValue) / (float)(totalValculatedValue + nextElementValue)
                     );
         }
+
         public override string ToString()
         {
             //if (get() > 0)
-            return (get() * 100f).ToString("0.0") + "%";
+            return get().ToString("P1");
             //else
             //    return "0%";
         }
+
         /// <summary>
         /// new value
         /// </summary>
@@ -91,7 +106,6 @@ namespace Nashet.ValueSpace
         {
             return Mathf.RoundToInt(get() * value);
         }
-
 
         //override public void set(float invalue)
         //{
@@ -106,17 +120,19 @@ namespace Nashet.ValueSpace
 
         internal void clamp100()
         {
-            if (this.isBiggerThan(Procent.HundredProcent))
-                this.Set(1f);
+            if (isBiggerThan(HundredProcent))
+                Set(1f);
         }
 
         [Obsolete("Don't use that for Procent")]
         public void SendAll(Value where)
         { }
+
         public Procent Copy()
         {
             return new Procent(this);
         }
+
         public Procent Subtract(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             return base.Subtract(howMuch, showMessageAboutNegativeValue) as Procent;

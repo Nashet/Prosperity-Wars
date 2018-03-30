@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-using Nashet.ValueSpace;
+﻿using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -9,56 +7,63 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Share
     {
-        private readonly Value howMuchOwns;//default value
-        private readonly Value howMuchWantsToSell = new Value(0f);
-        public Share(ReadOnlyValue initialSumm)
+        private readonly Money howMuchOwns;//default value
+        private readonly Money howMuchWantsToSell = new Money(0m);
+
+        public Share(MoneyView initialSumm)
         {
             howMuchOwns = initialSumm.Copy();
         }
-        public void Increase(ReadOnlyValue sum)
+
+        public void Increase(MoneyView sum)
         {
             howMuchOwns.Add(sum);
         }
-        public void Decrease(ReadOnlyValue sum)
+
+        public void Decrease(MoneyView sum)
         {
             howMuchOwns.Subtract(sum);
         }
-        internal void CancelBuyOrder(ReadOnlyValue sum)
+
+        internal void CancelBuyOrder(MoneyView sum)
         {
             howMuchWantsToSell.Subtract(sum, false);
         }
+
         /// <summary>
         /// Only for read! Returns copy
-        /// </summary>        
-        public Value GetShare()
+        /// </summary>
+        public MoneyView GetShare()
         {
-            return howMuchOwns.Copy();
+            return howMuchOwns;
         }
+
         /// <summary>
         /// Only for read! Returns copy
-        /// </summary>        
-        public Value GetShareForSale()
+        /// </summary>
+        public MoneyView GetShareForSale()
         {
-            return howMuchWantsToSell.Copy();
+            return howMuchWantsToSell;
         }
-        public void SetToSell(Value sum)
+
+        public void SetToSell(MoneyView sum)
         {
-            if (howMuchOwns.get() - howMuchWantsToSell.get() - sum.get() < 0f)
+            if (howMuchOwns.Get() - howMuchWantsToSell.Get() - sum.Get() < 0m)
                 howMuchWantsToSell.Set(howMuchOwns);
             else
-                howMuchWantsToSell.Add(sum);            
+                howMuchWantsToSell.Add(sum);
         }
-        public void ReduceSale(Value sum)
+
+        public void ReduceSale(MoneyView sum)
         {
             howMuchWantsToSell.Subtract(sum, false);
             if (howMuchWantsToSell.isBiggerThan(howMuchOwns))
                 howMuchWantsToSell.Set(howMuchOwns);
         }
+
         public override string ToString()
         {
             return howMuchOwns.ToString();
         }
     }
-
-
 }

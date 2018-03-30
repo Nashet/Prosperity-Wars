@@ -1,11 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections.Generic;
-using System;
 using Nashet.UnityUIUtils;
-using Nashet.Utils;
-using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -21,10 +16,9 @@ namespace Nashet.EconomicSimulation
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
             populationOrder = new SortOrder(this, x => x.getPopulation());
-            cashOrder = new SortOrder(this, x => x.Cash.get());
+            cashOrder = new SortOrder(this, x => (float)x.Cash.Get());
 
             educationOrder = new SortOrder(this, x => x.Education.get());
-
 
             provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
             cultureOrder = new SortOrder(this, x => x.culture.GetNameWeight());
@@ -36,6 +30,7 @@ namespace Nashet.EconomicSimulation
                     return x.getMovement().GetHashCode();
             });
         }
+
         protected override IEnumerable<PopUnit> ContentSelector()
         {
             var selectedProvince = MainCamera.populationPanel.SelectedProvince;
@@ -44,6 +39,7 @@ namespace Nashet.EconomicSimulation
             else
                 return selectedProvince.GetAllPopulation();
         }
+
         protected override void AddRow(PopUnit pop, int number)
         {
             // Adding number
@@ -52,9 +48,9 @@ namespace Nashet.EconomicSimulation
             // Adding PopType
             AddCell(pop.ShortName, pop);
             ////Adding province
-            AddCell(pop.Province.ToString(), pop.Province, () => "Click to select this province" );
+            AddCell(pop.Province.ToString(), pop.Province, () => "Click to select this province");
             ////Adding population
-            AddCell(System.Convert.ToString(pop.getPopulation()), pop);
+            AddCell(Convert.ToString(pop.getPopulation()), pop);
             ////Adding culture
             AddCell(pop.culture.ToString(), pop);
 
@@ -66,9 +62,8 @@ namespace Nashet.EconomicSimulation
 
             ////Adding needs fulfilling
 
-            
             AddCell(pop.needsFulfilled.ToString(), pop,
-                //() => ert.consumedTotal.ToStringWithLines()                        
+                //() => ert.consumedTotal.ToStringWithLines()
                 () => "Consumed:\n" + pop.getConsumed().GetString("\n")
                 );
 
@@ -86,6 +81,7 @@ namespace Nashet.EconomicSimulation
             else
                 AddCell(pop.getMovement().ShortName, pop, () => pop.getMovement().ToString());
         }
+
         protected override void AddHeader()
         {
             // Adding number
@@ -104,7 +100,7 @@ namespace Nashet.EconomicSimulation
             AddCell("Culture" + cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
-            AddCell("Education"+ educationOrder.getSymbol(), educationOrder);
+            AddCell("Education" + educationOrder.getSymbol(), educationOrder);
 
             ////Adding storage
             //if (null.storage != null)

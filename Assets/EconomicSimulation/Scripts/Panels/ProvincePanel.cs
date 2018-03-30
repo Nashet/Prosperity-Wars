@@ -1,11 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System;
-using System.Text;
+﻿using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -18,8 +15,8 @@ namespace Nashet.EconomicSimulation
         private Button btnOwner, btnBuild, btAttackThat, btMobilize, btGrandIndependence;
 
         //private Province selectedProvince;
-        // Use this for initialization    
-        void Start()
+        // Use this for initialization
+        private void Start()
         {
             MainCamera.provincePanel = this;
             Hide();
@@ -33,6 +30,7 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.buildPanel.Show();
         }
+
         public void onGrantIndependenceClick()
         {
             Country whomGrant = Game.selectedProvince.getRandomCore(x => x != Game.Player && !x.isAlive());
@@ -42,6 +40,7 @@ namespace Nashet.EconomicSimulation
             whomGrant.onGrantedProvince(Game.selectedProvince);
             MainCamera.refreshAllActive();
         }
+
         public void onCountryDiplomacyClick()
         {
             if (MainCamera.diplomacyPanel.isActiveAndEnabled)
@@ -55,11 +54,13 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.diplomacyPanel.show(Game.selectedProvince.Country);
         }
+
         public void onMobilizeClick()
         {
             Game.selectedProvince.mobilize();
             MainCamera.militaryPanel.show(null);
         }
+
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
@@ -84,6 +85,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.productionWindow.Show();
             }
         }
+
         public void onPopulationDetailsClick()
         {
             if (MainCamera.populationPanel.isActiveAndEnabled)
@@ -111,13 +113,16 @@ namespace Nashet.EconomicSimulation
                 MainCamera.populationPanel.SelectProvince(Game.selectedProvince);
                 MainCamera.populationPanel.Show();
             }
-
         }
+
         public void onAttackThatClick()
         {
-            MainCamera.militaryPanel.show(Game.selectedProvince);
+            //MainCamera.militaryPanel.show(Game.selectedProvince);
+            if (MainCamera.militaryPanel.isActiveAndEnabled)
+                MainCamera.militaryPanel.Hide();
+            else
+                MainCamera.militaryPanel.Show();
         }
-
 
         public override void Refresh()
         {
@@ -125,10 +130,10 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.getID());
-                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.getAllNeighbors().getString(", "));                
+                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.getAllNeighbors().getString(", "));
             }
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
-            
+
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAllPopulation().GetAverageProcent(x => x.loyalty));
             sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
             sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
@@ -142,22 +147,28 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));
-                        
+
             Text text = btnOwner.GetComponentInChildren<Text>();
             text.text = "Owner: " + Game.selectedProvince.Country;
 
-
             btnBuild.interactable = ProductionType.allowsForeignInvestments.checkIftrue(Game.Player, Game.selectedProvince, out btnBuild.GetComponent<ToolTipHandler>().text);
-
+            btnBuild.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "B" + " button");
 
             btMobilize.interactable = Province.doesCountryOwn.checkIftrue(Game.Player, Game.selectedProvince, out btMobilize.GetComponent<ToolTipHandler>().text);
-
+            btMobilize.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "M" + " button");
 
             //if (Game.devMode)
             //    sb.Append("\nColor: ").Append(province.getColorID());
             btAttackThat.interactable = Country.canAttack.isAllTrue(Game.selectedProvince, Game.Player, out btAttackThat.GetComponent<ToolTipHandler>().text);
+            btAttackThat.GetComponent<ToolTipHandler>().AddText("\nHotkey is " + "T" + " button");
             btGrandIndependence.interactable = Province.canGetIndependence.isAllTrue(Game.selectedProvince, Game.Player, out btGrandIndependence.GetComponent<ToolTipHandler>().text);
             generaltext.text = sb.ToString();
+        }
+
+        public override void Hide()
+        {
+            base.Hide();
+            MainCamera.selectProvince(-1);
         }
     }
 }

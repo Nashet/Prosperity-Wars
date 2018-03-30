@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Nashet.ValueSpace;
 using UnityEngine;
-using Nashet.ValueSpace;
+
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
@@ -14,36 +12,37 @@ namespace Nashet.EconomicSimulation
         /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
         private Storage gainGoodsThisTurn;
 
-        /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>    
+        /// <summary>How much product actually left for now. Stores food, except for Artisans</summary>
         public Storage storage;
 
         /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
         private Storage sentToMarket;
 
         private readonly Province province;
-        /// <summary> /// Return in pieces  /// </summary>    
+        /// <summary> /// Return in pieces  /// </summary>
         //public abstract float getLocalEffectiveDemand(Product product);
 
         /// <summary>
         /// Just adds statistics
         /// </summary>
-        abstract public void produce();
-
+        public abstract void produce();
 
         protected Producer(Province province) : base(province.Country)
         {
             this.province = province;
         }
-       
+
         public Province Province
         {
             get { return province; }
         }
+
         public void calcStatistics()
         {
             Country.producedTotalAdd(gainGoodsThisTurn);
         }
-        override public void SetStatisticToZero()
+
+        public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
             if (gainGoodsThisTurn != null)
@@ -51,6 +50,7 @@ namespace Nashet.EconomicSimulation
             if (sentToMarket != null)
                 sentToMarket.SetZero();
         }
+
         //todo put it and duplicate in market?
         public void getMoneyForSoldProduct()
         {
@@ -62,11 +62,11 @@ namespace Nashet.EconomicSimulation
                 else
                 if (DSB.get() > Options.MarketEqualityDSB)
                     DSB.Set(Options.MarketEqualityDSB);
-                Storage realSold = new Storage(sentToMarket);
-                realSold.Multiply(DSB);
-                if (realSold.isNotZero())
+                decimal realSold = (decimal)sentToMarket.get();
+                realSold *= (decimal)DSB.get();
+                if (realSold > 0m)
                 {
-                    ReadOnlyValue cost = Game.market.getCost(realSold);
+                    MoneyView cost = Game.market.getCost(sentToMarket.Product).Copy().Multiply(realSold);
 
                     // adding unsold product
                     // assuming gainGoodsThisTurn & realSold have same product
@@ -74,28 +74,29 @@ namespace Nashet.EconomicSimulation
                         storage.add(gainGoodsThisTurn);
                     else
                         storage = new Storage(gainGoodsThisTurn);
-                    storage.Subtract(realSold.get());
+                    storage.Subtract((float)realSold);
 
-                    if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                    if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold))
                     {
                         Game.market.Pay(this, cost);
-                        
                     }
-                    else if (Game.market.HowMuchLacksMoneyCashOnly(cost).get() > 10f && Game.devMode)
+                    else if (Game.market.HowMuchLacksMoneyCashOnly(cost).Get() > 10m && Game.devMode)
                         Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyCashOnly(cost)
                                 + " for " + realSold); // money in market ended... Only first lucky get money
                 }
             }
         }
+
         /// <summary>
         /// Do checks outside
-        /// </summary>    
+        /// </summary>
         public void sell(Storage what)
         {
             sentToMarket.set(what);
             storage.subtract(what);
             Game.market.sentToMarket.Add(what);
         }
+
         /// <summary> Do checks outside</summary>
         public void consumeFromItself(Storage what)
         {
@@ -107,23 +108,27 @@ namespace Nashet.EconomicSimulation
         {
             return sentToMarket;
         }
+
         public Storage getSentToMarket()
         {
             return sentToMarket;
         }
+
         protected void changeProductionType(Product product)
         {
             storage = new Storage(product);
             gainGoodsThisTurn = new Storage(product);
             sentToMarket = new Storage(product);
         }
+
         /// <summary>
         /// New value
-        /// </summary>        
+        /// </summary>
         public Storage getGainGoodsThisTurn()
         {
             return gainGoodsThisTurn.Copy();
         }
+
         public void addProduct(Storage howMuch)
         {
             gainGoodsThisTurn.add(howMuch);
