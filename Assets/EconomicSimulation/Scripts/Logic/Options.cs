@@ -85,6 +85,8 @@ namespace Nashet.EconomicSimulation
 
 
         //POP MIFRATION?PROMOTION
+
+        internal static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.6f);
         internal static readonly ReadOnlyValue PopPopulationChangeChance = new ReadOnlyValue(0.1f);
 
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
@@ -182,7 +184,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
 
         internal static readonly Date AIFisrtAllowedAttackOnHuman = new Date(30);
-        internal static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.4f);
+        
 
 
 
