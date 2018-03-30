@@ -249,13 +249,13 @@ namespace Nashet.EconomicSimulation
 
         private static void makeHelloMessage()
         {
-            Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
+            Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator called 'Prosperity wars'" +
                 "\n\nCurrently there is: "
                 + "\n\tpopulation agents \\ factories \\ countries \\ national banks"
                 + "\n\tbasic trade \\ production \\ consumption \n\tbasic warfare \n\tbasic inventions"
                 + "\n\tbasic reforms (population can vote for reforms)"
                 + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
-                + "\n\tpolitical \\ culture \\ core \\ resource map mode"
+                + "\n\tpolitical \\ culture \\ core \\ resource \\ population \\ prosperity map mode"
                 + "\n\tmovements and rebellions"
                 + "\n\nYou play as " + Player.FullName + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
