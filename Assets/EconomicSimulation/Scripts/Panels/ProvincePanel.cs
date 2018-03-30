@@ -117,11 +117,12 @@ namespace Nashet.EconomicSimulation
 
         public void onAttackThatClick()
         {
-            //MainCamera.militaryPanel.show(Game.selectedProvince);
-            if (MainCamera.militaryPanel.isActiveAndEnabled)
-                MainCamera.militaryPanel.Hide();
-            else
-                MainCamera.militaryPanel.Show();
+
+            //if (MainCamera.militaryPanel.isActiveAndEnabled)
+            //    MainCamera.militaryPanel.Hide();
+            //else
+            //MainCamera.militaryPanel.Show();
+            MainCamera.militaryPanel.show(Game.selectedProvince);
         }
 
         public override void Refresh()
