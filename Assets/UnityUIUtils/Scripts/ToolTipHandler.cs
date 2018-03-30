@@ -1,9 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections;
-using System;
-using Nashet.Utils;
-using System.Linq;
 
 namespace Nashet.UnityUIUtils
 {
@@ -39,7 +36,7 @@ namespace Nashet.UnityUIUtils
             //}
         }
 
-        void OnHiddenOwner(Hideable eventData)
+        private void OnHiddenOwner(Hideable eventData)
         {
             // forces tooltip to hide
             OnPointerExit(null);
@@ -47,9 +44,10 @@ namespace Nashet.UnityUIUtils
 
         public void SetTextDynamic(Func<string> dynamicString)
         {
-            this.dynamicText = dynamicString;
+            dynamicText = dynamicString;
             isDynamic = true;
         }
+
         public void SetText(string data)
         {
             text = data;
@@ -60,14 +58,17 @@ namespace Nashet.UnityUIUtils
         {
             Show();
         }
+
         public void OnPointerExit(PointerEventData eventData)
         {
             Hide();
         }
+
         public bool IsInside()
         {
             return inside;
         }
+
         private void Update()
         {
             if (IsInside() && isDynamic)

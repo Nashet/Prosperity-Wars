@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
-using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -13,24 +11,30 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private Text captionText, generalText, property;
+
         [SerializeField]
         private Button giveControlToAi, giveControlToPlayer;
+
         [SerializeField]
         private MainCamera mainCamera;
+
         private Country selectedCountry;
-        StringBuilder sb = new StringBuilder();
+        private StringBuilder sb = new StringBuilder();
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.diplomacyPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
             Hide();
         }
+
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             //refresh();
         }
+
         public override void Refresh()
         {
             setButtonsState();
@@ -75,30 +79,36 @@ namespace Nashet.EconomicSimulation
             var found = World.GetAllShares(selectedCountry).OrderByDescending(x => x.Value.get());
             property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
         }
+
         public Country getSelectedCountry()
         {
             return selectedCountry;
         }
+
         public void show(Country count)
         {
             selectedCountry = count;
             Show();
         }
+
         private void setButtonsState()
         {
             giveControlToPlayer.interactable = selectedCountry.isAI();
             giveControlToAi.interactable = !selectedCountry.isAI();
         }
+
         public void onSurrenderClick()
         {
             Game.GivePlayerControlToAI();
             setButtonsState();
         }
+
         public void onGoToClick()
         {
             if (selectedCountry != World.UncolonizedLand)
                 mainCamera.FocusOnProvince(selectedCountry.Capital, true);
         }
+
         public void onRegainControlClick()
         {
             Game.GivePlayerControlOf(selectedCountry);

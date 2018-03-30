@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-using Nashet.ValueSpace;
+﻿using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -9,10 +7,11 @@ namespace Nashet.EconomicSimulation
         public Tribesmen(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Tribesmen, where, culture, oldLife)
         {
         }
+
         public Tribesmen(int iamount, Culture iculture, Province where) : base(iamount, PopType.Tribesmen, iculture, where)
         {
         }
-        
+
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats
@@ -23,6 +22,7 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+
         public override void produce()
         {
             Storage producedAmount;
@@ -32,7 +32,6 @@ namespace Nashet.EconomicSimulation
             else
                 producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(getPopulation()).Divide(1000).Divide(overpopulation));
 
-
             if (producedAmount.isNotZero())
             {
                 storage.add(producedAmount);
@@ -40,10 +39,12 @@ namespace Nashet.EconomicSimulation
                 calcStatistics();
             }
         }
+
         internal override bool canTrade()
         {
             return false;
         }
+
         public override bool shouldPayAristocratTax()
         {
             return true;
@@ -65,6 +66,7 @@ namespace Nashet.EconomicSimulation
             else
                 return 0;
         }
+
         public override void consumeNeeds()
         {
             //life needs First

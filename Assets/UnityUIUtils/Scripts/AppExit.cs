@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Nashet.UnityUIUtils
@@ -9,8 +7,6 @@ namespace Nashet.UnityUIUtils
     {
         public void OnPointerClick(PointerEventData eventData)
         {
-         
-        
 #if UNITY_WEBGL
         Screen.fullScreen = false;
 #else

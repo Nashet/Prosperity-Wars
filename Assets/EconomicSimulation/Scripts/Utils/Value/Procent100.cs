@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Nashet.ValueSpace
 {
@@ -42,60 +41,69 @@ namespace Nashet.ValueSpace
         {
             clamp100();
         }
+
         public void AddPoportionally(int totalValculatedValue, int nextElementValue, Procent elementProcent)
         {
             base.AddPoportionally(totalValculatedValue, nextElementValue, elementProcent);
             clamp100();
         }
+
         public Procent100 Add(float howMuch, bool showMessageAboutNegativeValue = true)
         {
             base.Add(howMuch, showMessageAboutNegativeValue);
             clamp100();
             return this;
         }
+
         public Procent100 Add(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             base.Add(howMuch, showMessageAboutNegativeValue);
             clamp100();
             return this;
         }
+
         public Procent100 Subtract(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             base.Subtract(howMuch, showMessageAboutNegativeValue);
             clamp100();
             return this;
         }
+
         public Procent100 Subtract(float howMuch, bool showMessageAboutNegativeValue = true)
         {
             base.Subtract(howMuch, showMessageAboutNegativeValue);
             clamp100();
             return this;
         }
+
         public Procent100 Multiply(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             base.Multiply(howMuch, showMessageAboutNegativeValue);
             clamp100();
             return this;
         }
+
         public Procent100 Multiply(float howMuch, bool showMessageAboutNegativeValue = true)
         {
             base.Multiply(howMuch, showMessageAboutNegativeValue);
             clamp100();
             return this;
         }
+
         public Procent100 Divide(ReadOnlyValue divider, bool showMessageAboutOperationFails = true)
         {
             base.Divide(divider, showMessageAboutOperationFails);
             clamp100();
             return this;
         }
+
         internal Procent100 Divide(int divider, bool showMessageAboutOperationFails = true)
         {
             base.Divide(divider, showMessageAboutOperationFails);
             clamp100();
             return this;
         }
-        
+
         public Procent100 Set(float newValue, bool showMessageAboutOperationFails = true)
         {
             base.Set(newValue, showMessageAboutOperationFails);

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-using Nashet.ValueSpace;
+﻿using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -8,12 +6,11 @@ namespace Nashet.EconomicSimulation
     {
         public Farmers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Farmers, where, culture, oldLife)
         { }
+
         public Farmers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Farmers, iculture, where)
         {
-            
         }
 
-        
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Aristocrats
@@ -23,10 +20,11 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+
         public override void produce()
         {
             Storage producedAmount = new Storage(Type.getBasicProduction().Product, getPopulation() * Type.getBasicProduction().get() / 1000f);
-            producedAmount.Multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero                
+            producedAmount.Multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
             if (producedAmount.isNotZero())
             {
                 addProduct(producedAmount);
@@ -46,19 +44,21 @@ namespace Nashet.EconomicSimulation
                     Country.countryStorageSet.Add(getGainGoodsThisTurn());
                 }
             }
-
         }
-        override internal bool canSellProducts()
+
+        internal override bool canSellProducts()
         {
             if (Economy.isMarket.checkIfTrue(Country))
                 return true;
             else
                 return false;
         }
+
         public override bool shouldPayAristocratTax()
         {
             return true;
         }
+
         //internal override bool getSayingYes(AbstractReformValue reform)
         //{
         //    if (reform is Government.ReformValue)

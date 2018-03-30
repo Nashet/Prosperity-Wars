@@ -7,10 +7,12 @@ namespace Nashet.Utils
         private readonly Date lastRecalculationDate = new Date(Date.Never);
         private readonly Func<T> method;
         private T lastResult;
+
         public CashedData(Func<T> method)
         {
             this.method = method;
         }
+
         public T Get()
         {
             if (lastRecalculationDate.IsToday)
@@ -21,7 +23,6 @@ namespace Nashet.Utils
                 lastResult = method();
                 return lastResult;
             }
-
         }
     }
 }

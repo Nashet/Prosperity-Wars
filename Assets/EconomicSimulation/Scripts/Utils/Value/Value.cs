@@ -1,22 +1,23 @@
-﻿using System;
+﻿using Nashet.Utils;
 using UnityEngine;
-using Nashet.Utils;
+
 namespace Nashet.ValueSpace
 {
-
     public class Value : ReadOnlyValue, ICopyable<Value>
     {
         public Value(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
         {
         }
+
         //protected
         public Value(ReadOnlyValue number) : base(number)
         {
             //   set(number); // set already have multiplier
         }
+
         /// <summary>
         /// Converts dirty float into Value format
-        /// </summary>        
+        /// </summary>
         public static float Convert(float invalue)
         {
             uint intermediate = (uint)Mathf.RoundToInt(invalue * Precision);
@@ -46,7 +47,7 @@ namespace Nashet.ValueSpace
                 Set(0);
             }
             else
-                base.rawUIntValue += (uint)Mathf.RoundToInt(howMuch * Precision);
+                rawUIntValue += (uint)Mathf.RoundToInt(howMuch * Precision);
             return this;
         }
 
@@ -56,12 +57,13 @@ namespace Nashet.ValueSpace
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract gave negative result");
-                Set(0);            
+                Set(0);
             }
             else
                 rawUIntValue -= howMuch.RawUIntValue;
             return this;
         }
+
         public Value Subtract(float howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (howMuch > get())
@@ -75,8 +77,7 @@ namespace Nashet.ValueSpace
             return this;
         }
 
-
-        /// <summary>Keeps result inside</summary>    
+        /// <summary>Keeps result inside</summary>
         public Value Multiply(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
             //if (howMuch.get() < 0)
@@ -86,7 +87,7 @@ namespace Nashet.ValueSpace
             //    value = 0;
             //}
             //else
-            Set(howMuch.get() * this.get());
+            Set(howMuch.get() * get());
             return this;
         }
 
@@ -99,11 +100,11 @@ namespace Nashet.ValueSpace
                 rawUIntValue = 0;
             }
             else
-                Set(howMuch * this.get());
+                Set(howMuch * get());
             return this;
         }
 
-        /// <summary>Keeps result inside</summary>    
+        /// <summary>Keeps result inside</summary>
         public Value Divide(ReadOnlyValue divider, bool showMessageAboutNegativeValue = true)
         {
             //if (invalue.get() <= 0)
@@ -113,7 +114,7 @@ namespace Nashet.ValueSpace
             //    value = 99999;
             //}
             //else
-                Set(this.rawUIntValue / (float)divider.RawUIntValue);
+            Set(rawUIntValue / (float)divider.RawUIntValue);
             return this;
         }
 
@@ -126,7 +127,7 @@ namespace Nashet.ValueSpace
                 rawUIntValue = 99999;
             }
             else
-                Set(this.get() / (float)divider);
+                Set(get() / (float)divider);
             return this;
         }
 
@@ -164,9 +165,8 @@ namespace Nashet.ValueSpace
         public void SendAll(Value where)
         {
             where.Add(this);
-            this.SetZero();
+            SetZero();
         }
-
 
         internal void SetZero()
         {
@@ -184,11 +184,11 @@ namespace Nashet.ValueSpace
                 rawUIntValue = 0;
             }
         }
+
         public void Set(ReadOnlyValue invalue)
         {
             rawUIntValue = invalue.RawUIntValue;
         }
-
 
         //public int Compare(Value x, Value y)
         //{

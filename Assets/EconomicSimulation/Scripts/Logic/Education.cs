@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using Nashet.ValueSpace;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Nashet.Utils;
-using System;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -35,9 +33,10 @@ namespace Nashet.EconomicSimulation
         protected Education(Procent number) : base(number)
         {
         }
+
         public void Learn()
         {
-            if (Rand.Chance(Procent.HundredProcent.Copy().Subtract(this)))
+            if (Rand.Chance(HundredProcent.Copy().Subtract(this)))
                 Add(Options.PopEducationGrowthRate);
         }
 
@@ -45,6 +44,5 @@ namespace Nashet.EconomicSimulation
         {
             return new Education(this);
         }
-
     }
 }
