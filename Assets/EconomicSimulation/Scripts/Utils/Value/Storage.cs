@@ -1,15 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
+﻿using System;
 using Nashet.EconomicSimulation;
-using Nashet.Utils;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+using UnityEngine;
+
 namespace Nashet.ValueSpace
 {
     public class Storage : Value, IClickable, ICopyable<Storage>
     {
-        static public readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
+        public static readonly Storage EmptyProduct = new Storage(Product.Grain, 0f);
 
         private Product product;
 
@@ -27,6 +26,7 @@ namespace Nashet.ValueSpace
             //value = new Value(inAmount);
             // TODO exceptions!!
         }
+
         public Storage(Product inProduct, ReadOnlyValue inAmount) : base(inAmount)
         {
             product = inProduct;
@@ -34,13 +34,13 @@ namespace Nashet.ValueSpace
 
         public Storage(Product product) : this(product, 0f)
         {
-
         }
+
         public Storage(Storage storage) : this(storage.Product, storage)
         {
-
         }
-        static public int CostOrder(Storage x, Storage y)
+
+        public static int CostOrder(Storage x, Storage y)
         {
             //eats less memory
             float sumX = x.get() * (float)Game.market.getCost(x.Product).Get();
@@ -49,16 +49,19 @@ namespace Nashet.ValueSpace
 
             //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
         }
+
         public void set(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true)
         {
             product = inProduct;
             Set(inAmount, showMessageAboutNegativeValue);
         }
+
         public void set(Storage storage)
         {
             product = storage.Product;
-            base.Set(storage);
+            Set(storage);
         }
+
         //[System.Obsolete("Method is deprecated, need product specified")]
         //override public void set(Value invalue)
         //{
@@ -75,17 +78,18 @@ namespace Nashet.ValueSpace
         //{
         //    throw new DontUseThatMethod();
         //}
-        [System.Obsolete("Method is deprecated, need product specified")]
+        [Obsolete("Method is deprecated, need product specified")]
         public Storage add(float invalue, bool showMessageAboutNegativeValue = true)
         {
-            base.Add(invalue, showMessageAboutNegativeValue);
+            Add(invalue, showMessageAboutNegativeValue);
             //throw new DontUseThatMethod(); temporally
             return this;
         }
+
         public void add(Storage storage, bool showMessageAboutNegativeValue = true)
         {
-            if (this.isExactlySameProduct(storage))
-                base.Add(storage, showMessageAboutNegativeValue);
+            if (isExactlySameProduct(storage))
+                Add(storage, showMessageAboutNegativeValue);
             else
             {
                 if (showMessageAboutNegativeValue)
@@ -97,19 +101,22 @@ namespace Nashet.ValueSpace
         {
             get { return product; }
         }
+
         public string ToStringWithoutSubstitutes()
         {
             return get() + " " + Product.ToStringWithoutSubstitutes();
         }
-        override public string ToString()
+
+        public override string ToString()
         {
             return get().ToString("N3") + " " + Product;
-
         }
+
         public void sendAll(StorageSet whom)
         {
-            this.send(whom, this);
+            send(whom, this);
         }
+
         public void sendAll(Storage another)
         {
             if (!isExactlySameProduct(another))
@@ -117,24 +124,26 @@ namespace Nashet.ValueSpace
             else
             {
                 another.add(this);
-                this.SetZero();
+                SetZero();
             }
         }
+
         /// <summary>
         /// checks inside (duplicates?)
-        /// </summary>    
+        /// </summary>
         public void send(StorageSet whom, Storage howMuch)
         {
             if (has(howMuch))
             {
                 Storage targetStorage = new Storage(howMuch);
                 whom.Add(targetStorage);
-                this.subtract(howMuch);
+                subtract(howMuch);
             }
         }
+
         /// <summary>
         /// checks inside (duplicates?),
-        /// </summary>    
+        /// </summary>
         //public void send(Storage another, float amount)
         //{
         //    if (this.Product != another.Product)
@@ -145,7 +154,7 @@ namespace Nashet.ValueSpace
 
         /// <summary>
         /// checks inside (duplicates?), returns true if succeeded
-        /// </summary>    
+        /// </summary>
         public bool send(Storage reciever, Storage amountToSend, bool showMessageAboutOperationFails = true)
         {
             if (!isExactlySameProduct(reciever))
@@ -155,7 +164,7 @@ namespace Nashet.ValueSpace
             }
             else
             {
-                if (this.isBiggerOrEqual(amountToSend))
+                if (isBiggerOrEqual(amountToSend))
                 {
                     subtract(amountToSend);
                     reciever.add(amountToSend);
@@ -171,7 +180,6 @@ namespace Nashet.ValueSpace
             }
         }
 
-
         internal Storage Multiply(float invalue, bool showMessageAboutOperationFails = true)
         {
             //if (invalue < 0f)
@@ -185,16 +193,18 @@ namespace Nashet.ValueSpace
             base.Multiply(invalue, showMessageAboutOperationFails);
             return this;
         }
+
         /// <summary>
         /// returns new value
-        /// </summary>    
+        /// </summary>
         public Storage Multiply(ReadOnlyValue invalue)
         {
             //return new Storage(this.Product, get() * invalue.get());
             base.Multiply(invalue);
             return this;
         }
-        /// <summary> Returns true if has that good or it's substitute</summary>    
+
+        /// <summary> Returns true if has that good or it's substitute</summary>
         public bool has(Storage storage)
         {
             if (!isSameProductType(storage))
@@ -205,6 +215,7 @@ namespace Nashet.ValueSpace
             else
                 return isBiggerOrEqual(storage);
         }
+
         //public bool hasSubstitute(Storage storage)
         //{
         //    if (!isSubstituteProduct(storage.Product))
@@ -216,25 +227,28 @@ namespace Nashet.ValueSpace
         //        return isBiggerOrEqual(storage);
         //}
 
-        /// <summary> Returns true if products exactly same or this is substitute for anotherStorage</summary>    
+        /// <summary> Returns true if products exactly same or this is substitute for anotherStorage</summary>
         internal bool isSameProductType(Storage anotherStorage)
         {
-            return this.Product.isSameProduct(anotherStorage.Product);
+            return Product.isSameProduct(anotherStorage.Product);
         }
+
         /// <summary> Returns true if products exactly same or this is substitute for anotherProduct</summary>
         public bool isSameProductType(Product anotherProduct)
         {
-            return this.Product.isSameProduct(anotherProduct);
+            return Product.isSameProduct(anotherProduct);
         }
-        /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>    
+
+        /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>
         internal bool isExactlySameProduct(Storage anotherStorage)
         {
-            return this.Product == anotherStorage.Product;
+            return Product == anotherStorage.Product;
         }
-        /// <summary> Returns true only if products exactly same. Does not count substitutes</summary>    
+
+        /// <summary> Returns true only if products exactly same. Does not count substitutes</summary>
         public bool isExactlySameProduct(Product anotherProduct)
         {
-            return this.Product == anotherProduct;
+            return Product == anotherProduct;
         }
 
         //internal bool isSubstituteProduct(Product product)
@@ -249,17 +263,17 @@ namespace Nashet.ValueSpace
         //[System.Obsolete("Method is deprecated, need product specified")]
         //override public Value multipleOutside(float invalue, bool showMessageAboutOperationFails = true)
         //{
-        //    throw new DontUseThatMethod();       
-        //}    
+        //    throw new DontUseThatMethod();
+        //}
         //[System.Obsolete("Method is deprecated, need product specified")]
         //override public Value multipleOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        //{     
-        //    throw new DontUseThatMethod();        
+        //{
+        //    throw new DontUseThatMethod();
         //}
         public Storage subtract(Storage storage, bool showMessageAboutNegativeValue = true)
         {
             //if (!this.isSameProductType(storage.Product))
-            if (!storage.isSameProductType(this.Product))
+            if (!storage.isSameProductType(Product))
             {
                 Debug.Log("Storage subtract Outside failed - wrong product");
                 Set(0f);
@@ -271,12 +285,13 @@ namespace Nashet.ValueSpace
                 Set(0f);
             }
             else
-                Set(this.get() - storage.get());
+                Set(get() - storage.get());
             return this;
         }
+
         public void OnClicked()
         {
-            if (!this.isAbstractProduct())
+            if (!isAbstractProduct())
                 MainCamera.tradeWindow.selectProduct((this).Product);
         }
 

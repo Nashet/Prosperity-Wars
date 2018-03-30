@@ -1,12 +1,11 @@
-﻿using UnityEngine;
-using Nashet.Utils;
+﻿using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
     public class TemporaryModifier : Name
     {
-        static readonly public TemporaryModifier recentlyConquered = new TemporaryModifier("Recently conquered");
-        static readonly public TemporaryModifier blockade = new TemporaryModifier("Blockade");
+        public static readonly TemporaryModifier recentlyConquered = new TemporaryModifier("Recently conquered");
+        public static readonly TemporaryModifier blockade = new TemporaryModifier("Blockade");
 
         //private readonly DateTime expireDate;
         public TemporaryModifier(string name) : base(name)

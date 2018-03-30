@@ -1,41 +1,41 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Nashet.UnityUIUtils;
 using Nashet.MarchingSquares;
-using Nashet.ValueSpace;
+using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using UnityEngine;
+using Random = System.Random;
 
 namespace Nashet.EconomicSimulation
 {
     public class Game : ThreadedJob
     {
-        static private readonly bool readMapFormFile = false;
-        static private MyTexture mapTexture;
-        static internal GameObject r3dTextPrefab;
+        private static readonly bool readMapFormFile = false;
+        private static MyTexture mapTexture;
+        internal static GameObject r3dTextPrefab;
 
-        static public Country Player;
+        public static Country Player;
 
-        static bool haveToRunSimulation;
-        static bool haveToStepSimulation;
+        private static bool haveToRunSimulation;
+        private static bool haveToStepSimulation;
 
-        static public System.Random Random = new System.Random();
+        public static Random Random = new Random();
 
-        static public Province selectedProvince;
-        static public Province previoslySelectedProvince;
+        public static Province selectedProvince;
+        public static Province previoslySelectedProvince;
 
-        static internal List<BattleResult> allBattles = new List<BattleResult>();
+        internal static List<BattleResult> allBattles = new List<BattleResult>();
 
-        static public readonly Market market;
+        public static readonly Market market;
 
-        static internal bool devMode = false;
-        static private int mapMode;
-        static private bool surrended = devMode;
-        static internal Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
+        internal static bool devMode = false;
+        private static int mapMode;
+        private static bool surrended = devMode;
+
+        internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
             impassableBorder;
 
-        static private VoxelGrid grid;
+        private static VoxelGrid grid;
         private readonly Rect mapBorders;
 
         static Game()
@@ -43,17 +43,19 @@ namespace Nashet.EconomicSimulation
             Product.init(); // to avoid crash based on initialization order
             market = new Market();
         }
+
         public Game()
         {
             if (readMapFormFile)
             {
-                Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;                
+                Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
                 mapTexture = new MyTexture(mapImage);
             }
             else
                 generateMapImage();
             mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
         }
+
         public void InitializeNonUnityData()
         {
             market.initialize();
@@ -89,7 +91,6 @@ namespace Nashet.EconomicSimulation
             //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
             r3dTextPrefab = GameObject.Find("3dProvinceNameText");
 
-
             World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
             World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
             Country.setUnityAPI();
@@ -103,6 +104,7 @@ namespace Nashet.EconomicSimulation
             //    item.annexTo(Game.Player);
             //}
         }
+
         public Rect getMapBorders()
         {
             return mapBorders;
@@ -129,9 +131,6 @@ namespace Nashet.EconomicSimulation
             surrended = true;
         }
 
-
-
-
         internal static int getMapMode()
         {
             return mapMode;
@@ -153,10 +152,12 @@ namespace Nashet.EconomicSimulation
         {
             return (haveToRunSimulation || haveToStepSimulation);// && !MessagePanel.IsOpenAny();
         }
+
         internal static void pauseSimulation()
         {
             haveToRunSimulation = false;
         }
+
         internal static void makeOneStepSimulation()
         {
             haveToStepSimulation = true;
@@ -167,7 +168,7 @@ namespace Nashet.EconomicSimulation
             return surrended;
         }
 
-        static void generateMapImage()
+        private static void generateMapImage()
         {
             int mapSize;
             int width;
@@ -191,15 +192,13 @@ namespace Nashet.EconomicSimulation
             //#else
             //        int mapSize = 40000;
             //        int width = 200 + Random.Next(80);
-            //#endif          
+            //#endif
             Texture2D mapImage = new Texture2D(width, mapSize / width);        // standard for webGL
-
 
             Color emptySpaceColor = Color.black;//.setAlphaToZero();
             mapImage.setColor(emptySpaceColor);
-            int amountOfProvince;
 
-            amountOfProvince = mapImage.width * mapImage.height / 140 + Game.Random.Next(5);
+            int amountOfProvince = mapImage.width * mapImage.height / 140 + Random.Next(5);
             //amountOfProvince = 400 + Game.Random.Next(100);
             for (int i = 0; i < amountOfProvince; i++)
                 mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
@@ -211,7 +210,7 @@ namespace Nashet.EconomicSimulation
             {
                 emergencyExit++;
                 emptyPixels = 0;
-                for (int j = 0; j < mapImage.height; j++) // circle by province        
+                for (int j = 0; j < mapImage.height; j++) // circle by province
                     for (int i = 0; i < mapImage.width; i++)
                     {
                         currentColor = mapImage.GetPixel(i, j);
@@ -229,10 +228,9 @@ namespace Nashet.EconomicSimulation
             Texture2D.Destroy(mapImage);
         }
 
-
         public static void prepareForNewTick()
         {
-            Game.market.sentToMarket.setZero();
+            market.sentToMarket.setZero();
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.SetStatisticToZero();
@@ -248,7 +246,8 @@ namespace Nashet.EconomicSimulation
             PopType.sortNeeds();
             Product.sortSubstitutes();
         }
-        static void makeHelloMessage()
+
+        private static void makeHelloMessage()
         {
             Message.NewMessage("Tutorial", "Hi, this is VERY early demo of game-like economy simulator" +
                 "\n\nCurrently there is: "
@@ -258,7 +257,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\tpopulation demotion \\ promotion to other classes \n\tmigration \\ immigration \\ assimilation"
                 + "\n\tpolitical \\ culture \\ core \\ resource map mode"
                 + "\n\tmovements and rebellions"
-                + "\n\nYou play as " + Game.Player.FullName + " You can try to growth economy or conquer the world."
+                + "\n\nYou play as " + Player.FullName + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
                 + "\n'Enter' key to close top window, space - to pause \\ unpause"
@@ -291,27 +290,26 @@ namespace Nashet.EconomicSimulation
                             if (movement != null)
                                 movement.onRevolutionLost();
                         }
-                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+                        if (result.getAttacker() == Player || result.getDefender() == Player)
                             result.createMessage();
                     }
                     attackerArmy.sendTo(null); // go home
                 }
                 attacker.consolidateArmies();
             }
-
-
         }
+
         internal static void simulate()
         {
-            if (Game.haveToStepSimulation)
-                Game.haveToStepSimulation = false;
+            if (haveToStepSimulation)
+                haveToStepSimulation = false;
 
             Date.Simulate();
             // strongly before PrepareForNewTick
-            Game.market.simulatePriceChangeBasingOnLastTurnData();
+            market.simulatePriceChangeBasingOnLastTurnData();
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-            Game.calcBattles();
+            calcBattles();
 
             // includes workforce balancing
             // and sets statistics to zero. Should go after price calculation
@@ -323,7 +321,7 @@ namespace Nashet.EconomicSimulation
                     foreach (var producer in province.getAllProducers())
                         producer.produce();
 
-            // big CONCUME circle   
+            // big CONCUME circle
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.consumeNeeds();
@@ -347,7 +345,7 @@ namespace Nashet.EconomicSimulation
                         item.consumeNeeds();
                 }
                 else  //consume in regular order
-                    foreach (Province province in country.getAllProvinces())//Province.allProvinces)            
+                    foreach (Province province in country.getAllProvinces())//Province.allProvinces)
                     {
                         foreach (Factory factory in province.getAllFactories())
                         {
@@ -384,7 +382,7 @@ namespace Nashet.EconomicSimulation
                         {
                             factory.getMoneyForSoldProduct();
                             factory.ChangeSalary();
-                            factory.paySalary(); // workers get gold or food here                   
+                            factory.paySalary(); // workers get gold or food here
                             factory.payDividend(); // also pays taxes inside
                             factory.CloseUnprofitable();
                             factory.ownership.CalcMarketPrice();
@@ -445,7 +443,7 @@ namespace Nashet.EconomicSimulation
                     if (country.isAI())
                         country.invest(province);
                     //if (Game.random.Next(3) == 0)
-                    //    province.consolidatePops();                
+                    //    province.consolidatePops();
                     province.RemoveDeadPops();
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
                     {

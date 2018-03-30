@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
 using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -17,20 +15,22 @@ namespace Nashet.EconomicSimulation
     {
         private readonly AbstractReformValue targetReformValue;
         private readonly AbstractReform targetReform;
+
         //private readonly Country separatism;
         private readonly List<PopUnit> members = new List<PopUnit>();
-        private bool _isInRevolt;
 
+        private bool _isInRevolt;
 
         private Movement(PopUnit firstPop, Country place) : base(place)
         {
             members.Add(firstPop);
             Country.movements.Add(this);
         }
+
         private Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : this(firstPop, place)
         {
-            this.targetReform = reform;
-            this.targetReformValue = goal;
+            targetReform = reform;
+            targetReformValue = goal;
         }
 
         public static void join(PopUnit pop)
@@ -58,6 +58,7 @@ namespace Nashet.EconomicSimulation
                 join(pop);
             }
         }
+
         public static void leave(PopUnit pop)
         {
             if (pop.getMovement() != null)
@@ -73,6 +74,7 @@ namespace Nashet.EconomicSimulation
                 pop.setMovement(null);
             }
         }
+
         /// <summary>Need it for sorting</summary>
         public int getID()
         {
@@ -84,26 +86,32 @@ namespace Nashet.EconomicSimulation
             else
                 return getGoal().ID;
         }
-        void add(PopUnit pop)
+
+        private void add(PopUnit pop)
         {
             members.Add(pop);
         }
+
         public bool isInRevolt()
         {
             return _isInRevolt;
         }
+
         public bool isValidGoal()
         {
             return targetReformValue.allowed.isAllTrue(Country, targetReformValue);
         }
+
         public AbstractReformValue getGoal()
         {
             return targetReformValue;
         }
+
         public override string ToString()
         {
             return "Movement for " + ShortName;
         }
+
         public string FullName
         {
             get
@@ -134,7 +142,6 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-
         //public bool canWinUprising()
         //{
         //    var defence = country.getDefenceForces();
@@ -143,7 +150,6 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return getMembership() > defence.getSize();
         //}
-
 
         private Procent getAverageLoyalty()
         {
@@ -161,6 +167,7 @@ namespace Nashet.EconomicSimulation
         {
             throw new NotImplementedException();
         }
+
         private void killMovement()
         {
             //foreach (var item in getAllArmies())
@@ -174,6 +181,7 @@ namespace Nashet.EconomicSimulation
             }
             //members.Clear();
         }
+
         internal void onRevolutionWon()
         {
             //demobilize();
@@ -194,7 +202,6 @@ namespace Nashet.EconomicSimulation
             }
             killMovement();
             //Country.movements.Remove(this);
-
         }
 
         internal void onRevolutionLost()
@@ -207,10 +214,12 @@ namespace Nashet.EconomicSimulation
             //_isInRevolt = false;
             //demobilize();
         }
+
         internal bool isEmpty()
         {
             return members.Count == 0;
         }
+
         public void simulate()
         {
             base.simulate();
@@ -235,13 +244,13 @@ namespace Nashet.EconomicSimulation
                 doRevolt();
             }
         }
+
         // clearing dead pops (0 population)
         //public void clearDeadPops()
         //{
         //    foreach (var item in members)
         //        if (!item.isAlive())
         //    {
-
         //    }
         //}
         private void doRevolt()
@@ -252,11 +261,12 @@ namespace Nashet.EconomicSimulation
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
-            base.mobilize(country.getAllProvinces());
+            mobilize(country.getAllProvinces());
 
             sendArmy(country.Capital, Procent.HundredProcent);
             _isInRevolt = true;
         }
+
         /// <summary>
         /// new value
         /// </summary>
@@ -283,4 +293,3 @@ namespace Nashet.EconomicSimulation
         }
     }
 }
-

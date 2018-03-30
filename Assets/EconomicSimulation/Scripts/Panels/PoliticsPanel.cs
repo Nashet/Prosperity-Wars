@@ -1,11 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
-using Nashet.Utils;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.UnityUIUtils;
+using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -38,7 +37,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.politicsPanel = this;
             voteButton.interactable = false;
@@ -48,7 +47,7 @@ namespace Nashet.EconomicSimulation
             Hide();
         }
 
-        void changeReformValue()
+        private void changeReformValue()
         {
             if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
@@ -56,10 +55,12 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
             }
         }
+
         public void onVoteClick()
         {
             changeReformValue();
         }
+
         public void onForceDecisionClick()
         {
             //uint votersSayedYes;
@@ -73,6 +74,7 @@ namespace Nashet.EconomicSimulation
 
             changeReformValue();
         }
+
         //slider.onValueChanged.AddListener(ListenerMethod);
 
         public void onChoiceValueChanged()
@@ -80,9 +82,10 @@ namespace Nashet.EconomicSimulation
             selectedReformValue = assotiateTable[dropDown.value];
             refresh(false);
         }
-        void rebuildDropDown()
+
+        private void rebuildDropDown()
         {
-            //dropDown.Hide();        
+            //dropDown.Hide();
             var toDestroy = dropDown.transform.Find("Dropdown List");
             if (toDestroy != null)
                 Destroy(toDestroy.gameObject);
@@ -94,7 +97,7 @@ namespace Nashet.EconomicSimulation
             {
                 //if (next.isAvailable(Game.player))
                 {
-                    dropDown.options.Add(new Dropdown.OptionData() { text = next.ToString() });
+                    dropDown.options.Add(new Dropdown.OptionData { text = next.ToString() });
                     assotiateTable.Add(next);
                     if (next == selectedReform.getValue())
                     {
@@ -110,24 +113,25 @@ namespace Nashet.EconomicSimulation
             dropDown.RefreshShownValue();
             //dropDown.Show();
         }
+
         public override void Refresh()
         {
             refresh(true);
         }
+
         public void selectReform(AbstractReform newSelection)
         {
             selectedReform = newSelection;
             if (newSelection == null)
                 dropDown.interactable = false;
         }
+
         private void refresh(bool callRebuildDropDown)
         {
-
             table.Refresh();
             movementsText.text = Game.Player.movements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
                 movementsText.text += "\n\n\n\n";
-
 
             movementsHorizontalScrollBar.value = 0;
             if (selectedReform == null)
@@ -140,7 +144,7 @@ namespace Nashet.EconomicSimulation
             } //did selected reform
             else
             {
-                if (callRebuildDropDown) // meaning changed whole reform            
+                if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
                 descriptionText.text = selectedReform + " reforms " + selectedReform.FullName
                + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().FullName

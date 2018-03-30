@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using System;
+
 namespace Nashet.UnityUIUtils
 {
     public class TooltipBase : MonoBehaviour
@@ -9,6 +8,7 @@ namespace Nashet.UnityUIUtils
         //manually selectable padding for the background image
         [SerializeField]
         private int horizontalPadding;
+
         [SerializeField]
         private int verticalPadding;
 
@@ -38,6 +38,7 @@ namespace Nashet.UnityUIUtils
 
         //detect canvas mode so to apply different behaviors to different canvas modes, currently only RenderMode.ScreenSpaceCamera implemented
         private int canvasMode;
+
         private RenderMode GUIMode;
 
         //the scene GUI camera
@@ -48,18 +49,22 @@ namespace Nashet.UnityUIUtils
 
         //screen viewport corners for out of screen detection
         private Vector3 lowerLeft;
+
         private Vector3 upperRight;
 
         //scale factor of proportionality to the reference resolution (1280x720)
         private float currentYScaleFactor;
+
         private float currentXScaleFactor;
 
         //standard X and Y offsets of the new tooltip
         private float defaultYOffset;
+
         private float defaultXOffset;
 
         //real on screen sizes of the tooltip object
         private float tooltipRealHeight;
+
         private float tooltipRealWidth;
 
         private static TooltipBase thatObjectLink;
@@ -67,10 +72,10 @@ namespace Nashet.UnityUIUtils
         //tooltip background image
         [SerializeField]
         private RectTransform bgImage;
+
         // Use this for initialization
         private void Awake()
         {
-
             //in this line you need to change the string in order to get your Camera //TODO MAYBE DO IT FROM THE INSPECTOR
             //GUICamera = GameObject.Find("GUICamera").GetComponent<Camera>();
             //GUICamera = (Camera)GameObject.FindWithTag("MainCamera");// MainCamera.cameraMy;
@@ -80,7 +85,7 @@ namespace Nashet.UnityUIUtils
                 GUICamera = gameControllerObject.GetComponent<Camera>();
             }
 
-            GUIMode = this.transform.parent.parent.GetComponent<Canvas>().renderMode;
+            GUIMode = transform.parent.parent.GetComponent<Canvas>().renderMode;
 
             bgImageSource = bgImage.GetComponent<Image>();
 
@@ -92,20 +97,21 @@ namespace Nashet.UnityUIUtils
 
             //hide the tooltip
             HideTooltipVisibility();
-            this.transform.parent.gameObject.SetActive(false);
+            transform.parent.gameObject.SetActive(false);
             thatObjectLink = this;
         }
+
         public bool isInside()
         {
             return inside;
         }
+
         internal void redrawDynamicString(string text)
         {
-
             //init tooltip string
             thisText.text = text;
-
         }
+
         public static TooltipBase get()
         {
             return thatObjectLink;
@@ -127,7 +133,7 @@ namespace Nashet.UnityUIUtils
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             LayoutInit();
             if (inside)
@@ -135,12 +141,11 @@ namespace Nashet.UnityUIUtils
                 //    if (GUIMode == RenderMode.ScreenSpaceCamera)
 
                 OnScreenSpaceCamera();
-
             }
         }
 
         //this function is used in order to setup the size of the tooltip by cheating on the HorizontalLayoutBehavior. The resize is done in the first update.
-        void LayoutInit()
+        private void LayoutInit()
         {
             if (firstUpdate)
             {
@@ -159,7 +164,7 @@ namespace Nashet.UnityUIUtils
         }
 
         //init basic variables on a new tooltip set
-        void NewTooltip()
+        private void NewTooltip()
         {
             firstUpdate = true;
 
@@ -168,7 +173,6 @@ namespace Nashet.UnityUIUtils
 
             //currentYScaleFactor = Screen.height / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.y;
             //currentXScaleFactor = Screen.width / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.x;
-
         }
 
         //used to visualize the tooltip one update call after it has been built (to avoid flickers)
@@ -186,6 +190,7 @@ namespace Nashet.UnityUIUtils
             thisText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
             bgImageSource.color = new Color(bgImageSource.color.r, bgImageSource.color.g, bgImageSource.color.b, 0f);
         }
+
         //position function, currently not working correctly due to the use of pivots and not manual offsets, soon to be fixed
         public void OnScreenSpaceCamera()
         {
@@ -323,14 +328,14 @@ namespace Nashet.UnityUIUtils
                     moveByY = bottomEdge * -1f;
             }
 
-            this.transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - yOffset, 0f);//
+            transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - yOffset, 0f);//
 
             //this.transform.SetParent(this.transform.parent, false);
 
-            this.transform.parent.gameObject.SetActive(true);
+            transform.parent.gameObject.SetActive(true);
             inside = true;
 
-            this.transform.parent.SetAsLastSibling();
+            transform.parent.SetAsLastSibling();
         }
 
         //call to hide tooltip when hovering out from the object
@@ -341,7 +346,7 @@ namespace Nashet.UnityUIUtils
             {
                 if (this != null)
                 {
-                    this.transform.parent.gameObject.SetActive(false);
+                    transform.parent.gameObject.SetActive(false);
                     inside = false;
                     HideTooltipVisibility();
                 }

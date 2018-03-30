@@ -1,10 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 using Nashet.UnityUIUtils;
-using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -27,8 +22,9 @@ namespace Nashet.EconomicSimulation
             //if (next.canChange())
             //    AddButton("Yep", next);
             //else
-            //    AddButton("Nope", next);           
+            //    AddButton("Nope", next);
         }
+
         protected override void AddHeader()
         {
             // Adding reform name

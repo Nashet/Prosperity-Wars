@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
-using System;
 
 namespace Nashet.UnityUIUtils
 {
@@ -10,14 +7,16 @@ namespace Nashet.UnityUIUtils
     {
         void Refresh();
     }
+
     public interface IHideable
     {
         void Hide();
-        void Show();        
+
+        void Show();
     }
-   
-    abstract public class Hideable : MonoBehaviour, IHideable
-    { 
+
+    public abstract class Hideable : MonoBehaviour, IHideable
+    {
         // declare delegate (type)
         public delegate void HideEventHandler(Hideable eventData);
 
@@ -29,30 +28,33 @@ namespace Nashet.UnityUIUtils
             gameObject.SetActive(false);
             var @event = Hidden;
             if (@event != null)// check for subscribers
-                @event(this); //fires event for all subscribers 
+                @event(this); //fires event for all subscribers
         }
-       
-        virtual public void Show()
+
+        public virtual void Show()
         {
             gameObject.SetActive(true);
         }
     }
+
     /// <summary>
     /// Represent UI object that can be refreshed and hidden
     /// </summary>
-    abstract public class Window : Hideable, IRefreshable
+    public abstract class Window : Hideable, IRefreshable
     {
         public abstract void Refresh();
-        override public void Show()
+
+        public override void Show()
         {
             base.Show();
             Refresh();
         }
     }
+
     /// <summary>
     /// Represents movable and hideable window
     /// </summary>
-    abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler
+    public abstract class DragPanel : Window, IPointerDownHandler, IDragHandler
     {
         private Vector2 pointerOffset;
         private RectTransform canvasRectTransform;
@@ -74,7 +76,7 @@ namespace Nashet.UnityUIUtils
             RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRectTransform, data.position, data.pressEventCamera, out pointerOffset);
         }
 
-        virtual public void OnDrag(PointerEventData data)
+        public virtual void OnDrag(PointerEventData data)
         {
             if (panelRectTransform == null)
                 return;
@@ -92,7 +94,6 @@ namespace Nashet.UnityUIUtils
                 GetComponent<RectTransform>().localPosition = localPointerPosition - pointerOffset;
                 //GetComponent<RectTransform>().localPosition
             }
-
         }
 
         private Vector2 ClampToWindow(PointerEventData data)
@@ -107,7 +108,6 @@ namespace Nashet.UnityUIUtils
 
             Vector2 newPointerPosition = new Vector2(clampedX, clampedY);
             return newPointerPosition;
-
         }
 
         public override void Hide()
@@ -115,7 +115,8 @@ namespace Nashet.UnityUIUtils
             panelRectTransform.SetAsFirstSibling();
             base.Hide();
         }
-        override public void Show()
+
+        public override void Show()
         {
             base.Show();
             panelRectTransform.SetAsLastSibling();

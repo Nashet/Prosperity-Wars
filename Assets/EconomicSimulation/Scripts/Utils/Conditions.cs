@@ -1,14 +1,10 @@
-﻿using UnityEngine;
-
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using System.IO;
-using System;
-using System.Text;
 using System.ComponentModel;
+using System.Text;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
+
 namespace Nashet.Conditions
 {
     public class ConditionsList
@@ -17,6 +13,7 @@ namespace Nashet.Conditions
         //internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition> { Condition.IsNotImplemented });
 
         protected List<Condition> list;
+
         /// <summary>
         /// Only for descendants
         /// </summary>
@@ -24,23 +21,26 @@ namespace Nashet.Conditions
         {
             list = new List<Condition>();
         }
+
         /// <summary>
         /// basic constructor
-        /// </summary>    
+        /// </summary>
         public ConditionsList(List<Condition> inlist)
         {
             list = inlist;
         }
+
         /// <summary>
         /// basic constructor
-        /// </summary>    
+        /// </summary>
         public ConditionsList(Condition condition)
         {
             list = new List<Condition> { condition };
         }
+
         /// <summary>
         /// copy constructor
-        /// </summary>    
+        /// </summary>
         public ConditionsList(ConditionsList conditionsList)
         {
             list = new List<Condition>(conditionsList.list);
@@ -50,11 +50,13 @@ namespace Nashet.Conditions
         {
             list.Add(condition);
         }
+
         public bool contains(Condition condition)
         {
             return list.Contains(condition);
         }
-        /// <summary>Return false if any of conditions is false, also makes description</summary>    
+
+        /// <summary>Return false if any of conditions is false, also makes description</summary>
         public bool isAllTrue(object forWhom, out string description)
         {
             string accu;
@@ -62,7 +64,6 @@ namespace Nashet.Conditions
             bool atLeastOneNoAnswer = false;
             foreach (var item in list)
             {
-
                 if (!item.checkIftrue(forWhom, out accu))
                     atLeastOneNoAnswer = true;
                 description += accu;
@@ -73,7 +74,7 @@ namespace Nashet.Conditions
                 return true;
         }
 
-        /// <summary>Return false if any of conditions is false</summary>    
+        /// <summary>Return false if any of conditions is false</summary>
         public bool isAllTrue(object forWhom)
         {
             foreach (var item in list)
@@ -81,22 +82,24 @@ namespace Nashet.Conditions
                     return false;
             return true;
         }
-
     }
 
     /// <summary>
     /// Represents condition, which can return bool value or string describing that value
-    /// </summary> 
+    /// </summary>
     public class Condition : Name
     {
         internal static readonly Condition IsNotImplemented
             //= new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
             = new Condition(delegate { return 2 * 2 == 5; }, "Feature is implemented", true);
+
         internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
 
         protected readonly Func<object, bool> checkingFunction;
+
         /// <summary>to hide junk info /// </summary>
         protected readonly bool showAchievedConditionDescribtion;
+
         protected readonly Func<object, string> dynamicString;
         protected readonly Func<object, object> changeTargetObject;
         //private readonly object dynamicStringTarget;
@@ -109,7 +112,7 @@ namespace Nashet.Conditions
 
         /// <summary>
         /// Supports dynamic string
-        /// </summary>    
+        /// </summary>
         public Condition(Func<object, bool> checkingFunction, Func<object, string> dynamicString, bool showAchievedConditionDescribtion) : base(null)
         {
             this.checkingFunction = checkingFunction;
@@ -119,19 +122,19 @@ namespace Nashet.Conditions
 
         /// <summary>
         /// Used to build Modifier on Condition (Copy constructor)
-        /// </summary>    
+        /// </summary>
         protected Condition(Condition another) : base(another.ToString())
         {
             checkingFunction = another.checkingFunction;
             showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
             dynamicString = another.dynamicString;
-            this.changeTargetObject = another.changeTargetObject;
+            changeTargetObject = another.changeTargetObject;
             //this.dynamicStringTarget = another.dynamicStringTarget;
         }
 
         /// <summary>
         /// Allows scope-changing
-        /// </summary>    
+        /// </summary>
         /// <param name="changeTargetObject"> Select another scope</param>
         public Condition(Condition another, Func<object, object> changeTargetObject) : base(another.ToString())
         {
@@ -140,6 +143,7 @@ namespace Nashet.Conditions
             showAchievedConditionDescribtion = another.showAchievedConditionDescribtion;
             dynamicString = another.dynamicString;
         }
+
         /// <summary>
         /// used in tax-like list based Modifiers
         /// </summary>
@@ -150,15 +154,15 @@ namespace Nashet.Conditions
             this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         }
 
-        /// <summary>Checks if invention is invented</summary>    
+        /// <summary>Checks if invention is invented</summary>
         //public Condition(Invention invention, bool showAchievedConditionDescribtion)
         //{
         //    check3 = x => (x as Country).isInvented(invention);
 
         //    //this.text = invention.getInventedPhrase();
-        //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;        
+        //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
         //}
-        ///// <summary>Checks if government == CheckingCountry.government</summary>    
+        ///// <summary>Checks if government == CheckingCountry.government</summary>
         //public Condition(Government.ReformValue government, bool showAchievedConditionDescribtion): base ("Government is " + government.ToString())
         //{
         //    //check3 = government.isGovernmentEqualsThat;
@@ -167,7 +171,7 @@ namespace Nashet.Conditions
         //    this.showAchievedConditionDescribtion = showAchievedConditionDescribtion;
 
         //}
-        /////// <summary>Checks if economy == CheckingCountry.economy</summary>    
+        /////// <summary>Checks if economy == CheckingCountry.economy</summary>
         //public Condition(Economy.ReformValue economy, bool showAchievedConditionDescribtion):base("Economical policy is " + economy.ToString())
         //{
         //    //check2 = economy.isEconomyEqualsThat;
@@ -188,7 +192,7 @@ namespace Nashet.Conditions
                 return ToString();
         }
 
-        /// <summary>Returns bool result and description in out description</summary>    
+        /// <summary>Returns bool result and description in out description</summary>
         internal bool checkIftrue(object forWhom, out string description)
         {
             if (changeTargetObject != null)
@@ -208,65 +212,69 @@ namespace Nashet.Conditions
             description = result;
             return answer;
         }
-        /// <summary>Returns bool result, fast version, without description</summary>    
+
+        /// <summary>Returns bool result, fast version, without description</summary>
         internal bool checkIfTrue(object forWhom)
         {
             if (changeTargetObject != null)
-                forWhom = changeTargetObject(forWhom); ;
+                forWhom = changeTargetObject(forWhom);
             return checkingFunction(forWhom);
         }
-
     }
+
     /// <summary>
     /// Supports second object to compare & dynamic string
     /// </summary>
     public class DoubleConditionsList : ConditionsList
     {
         protected List<Condition> listForSecondObject;
+
         /// <summary>
         /// basic constructor
-        /// </summary>    
+        /// </summary>
         public DoubleConditionsList(List<Condition> inlist) : base(inlist)
         {
-
         }
+
         /// <summary>
         /// basic constructor
-        /// </summary>    
+        /// </summary>
         public DoubleConditionsList(Condition condition) : base(condition)
         {
-
         }
-        public DoubleConditionsList() : base()
+
+        public DoubleConditionsList()
         {
-
         }
+
         /// <summary>
         /// copy constructor
-        /// </summary>    
+        /// </summary>
         public DoubleConditionsList(ConditionsList conditionsList) : base(conditionsList)
         {
-
         }
+
         public DoubleConditionsList addForSecondObject(List<Condition> toAdd)
         {
             listForSecondObject = toAdd;
             return this;
         }
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
         public bool isAllTrue(object forWhom, out string description)
         {
             throw new DontUseThatMethod();
-            
         }
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("use isAllTrue(object firstObject, object secondObject) instead", false)]
         public bool isAllTrue(object forWhom)
         {
-            throw new DontUseThatMethod();            
+            throw new DontUseThatMethod();
         }
-        /// <summary>Return false if any of conditions is false, supports two objects, also makes description</summary>    
+
+        /// <summary>Return false if any of conditions is false, supports two objects, also makes description</summary>
         public bool isAllTrue(object firstObject, object secondObject, out string description)
         {
             string accu;
@@ -299,7 +307,8 @@ namespace Nashet.Conditions
             else
                 return true;
         }
-        /// <summary>Return false if any of conditions is false, supports two objects</summary>    
+
+        /// <summary>Return false if any of conditions is false, supports two objects</summary>
         public bool isAllTrue(object firstObject, object secondObject)
         {
             foreach (var item in list)
@@ -325,21 +334,24 @@ namespace Nashet.Conditions
             return true;
         }
     }
+
     /// <summary>
     /// Supports second object to compare & dynamic string
     /// </summary>
     public class DoubleCondition : Condition
     {
         protected readonly Func<object, object, bool> checkingFunctionForTwoObjects;
+
         /// <summary>
         /// Supports second object to compare & dynamic string
-        /// </summary>    
+        /// </summary>
         public DoubleCondition(Func<object, object, bool> checkingFunctionForTwoObjects, Func<object, string> dynamicString, bool showAchievedConditionDescribtion)
             : base(null, dynamicString, showAchievedConditionDescribtion)
         {
             this.checkingFunctionForTwoObjects = checkingFunctionForTwoObjects;
         }
-        /// <summary>Returns bool result and description in out description, supports two objects</summary>    
+
+        /// <summary>Returns bool result and description in out description, supports two objects</summary>
         internal bool checkIftrue(object firstObject, object secondObject, out string description)
         {
             if (changeTargetObject != null)
@@ -368,34 +380,37 @@ namespace Nashet.Conditions
             description = result;
             return answer;
         }
-        /// <summary>Returns bool result, fast version, without description, supports two objects</summary>    
+
+        /// <summary>Returns bool result, fast version, without description, supports two objects</summary>
         internal bool checkIftrue(object firstObject, object secondObject)
         {
             if (changeTargetObject != null)
-                firstObject = changeTargetObject(firstObject); ;
+                firstObject = changeTargetObject(firstObject);
             return checkingFunctionForTwoObjects(firstObject, secondObject);
         }
     }
+
     public class Modifier : Condition
     {
-        static public readonly Modifier modifierDefault1 = new Modifier(x => true, "Default", 1f, true);
-        static public readonly Modifier modifierDefault100 = new Modifier(x => true, "Default", 100f, true);
-        readonly float value;
-        readonly Func<int> multiplierModifierFunction;
-        readonly Func<object, float> floatModifierFunction;
-        readonly bool showZeroModifiers;
+        public static readonly Modifier modifierDefault1 = new Modifier(x => true, "Default", 1f, true);
+        public static readonly Modifier modifierDefault100 = new Modifier(x => true, "Default", 100f, true);
+        private readonly float value;
+        private readonly Func<int> multiplierModifierFunction;
+        private readonly Func<object, float> floatModifierFunction;
+        private readonly bool showZeroModifiers;
 
         /// <summary>
         /// regular modifier
-        /// </summary>    
+        /// </summary>
         public Modifier(Func<object, bool> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(myMethodName, conditionIsTrue, true)
         {
             this.value = value;
             this.showZeroModifiers = showZeroModifiers;
         }
+
         /// <summary>
         /// regular modifier with description generated on run
-        /// </summary>    
+        /// </summary>
         public Modifier(Func<object, bool> myMethodName, Func<object, string> dynamicString, float value, bool showZeroModifiers) : base(myMethodName, dynamicString, true)
         {
             this.value = value;
@@ -404,16 +419,17 @@ namespace Nashet.Conditions
 
         /// <summary>
         /// modifier based on float function
-        /// </summary>    
+        /// </summary>
         public Modifier(Func<object, float> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
         {
             this.value = value;
             floatModifierFunction = myMethodName;
             this.showZeroModifiers = showZeroModifiers;
         }
+
         /// <summary>
         /// modifier based on int function
-        /// </summary>    
+        /// </summary>
         public Modifier(Func<int> myMethodName, string conditionIsTrue, float value, bool showZeroModifiers) : base(conditionIsTrue, true)
         {
             multiplierModifierFunction = myMethodName;
@@ -426,6 +442,7 @@ namespace Nashet.Conditions
             this.value = value;
             this.showZeroModifiers = showZeroModifiers;
         }
+
         /// <summary>
         /// Modifier where you can change scope
         /// </summary>
@@ -435,14 +452,13 @@ namespace Nashet.Conditions
             this.showZeroModifiers = showZeroModifiers;
         }
 
-        
-
         internal float getValue()
         {
             return value;
         }
+
         /// <summary>Returns bool result and description in out description
-        /// Doesn't care about showZeroModifier</summary>        
+        /// Doesn't care about showZeroModifier</summary>
         //override internal bool checkIftrue(Country forWhom, out string description)
         //{
         //    bool answer = false;
@@ -525,13 +541,14 @@ namespace Nashet.Conditions
                 }
                 else description = "";
             }
-            //else 
+            //else
             //{
             //    result = 0;
             //    description = "";
             //}
             return result;
         }
+
         internal float getModifier(object forWhom)
         {
             if (changeTargetObject != null)
@@ -550,17 +567,17 @@ namespace Nashet.Conditions
             return result;
         }
     }
+
     public class ModifiersList : ConditionsList
     {
         // basic constructor
         public ModifiersList(List<Condition> inlist) : base(inlist)
         {
-
         }
+
         //short constructor, allowing predicates of several types to be checked
         //public ModifiersList(List<AbstractCondition> inlist) : base(inlist)
         //{
-
         //}
         //internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
         //internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
@@ -586,6 +603,7 @@ namespace Nashet.Conditions
             description = text.ToString();
             return summ;
         }
+
         internal float getModifier(object forWhom)
         {
             float summ = 0f;

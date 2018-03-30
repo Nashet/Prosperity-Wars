@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
+﻿using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
 using Nashet.Utils;
-using System.Linq;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -22,10 +20,11 @@ namespace Nashet.EconomicSimulation
         private Button buildButton;
 
         private ProductionType selectedFactoryType;
-        StringBuilder sb = new StringBuilder();
+        private StringBuilder sb = new StringBuilder();
+
         //Province province;
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.buildPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -100f);
@@ -35,9 +34,10 @@ namespace Nashet.EconomicSimulation
 
         public override void Show()
         {
-            selectedFactoryType = null; // changed province           
+            selectedFactoryType = null; // changed province
             base.Show();
         }
+
         public void onBuildClick()
         {
             bool buildSomething = false;
@@ -54,7 +54,6 @@ namespace Nashet.EconomicSimulation
                     if (Game.Player != factory.Country)
                         factory.Country.changeRelation(Game.Player, Options.RelationImpactOnGovernmentInvestment.get());
                 }
-
             }
             else // non market
             {
@@ -72,16 +71,18 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            if (buildSomething == true)
+            if (buildSomething)
             {
                 selectedFactoryType = null;
                 MainCamera.refreshAllActive();
             }
         }
+
         public void selectFactoryType(ProductionType newSelection)
         {
             selectedFactoryType = newSelection;
         }
+
         public override void Refresh()
         {
             if (Game.previoslySelectedProvince != Game.selectedProvince)
@@ -106,7 +107,6 @@ namespace Nashet.EconomicSimulation
                     sb.Append(selectedFactoryType.resourceInput);
 
                 descriptionText.text = sb.ToString();
-
 
                 // fix that duplicate:
                 buildButton.interactable = selectedFactoryType.conditionsBuildThis.isAllTrue(Game.Player, Game.selectedProvince, out buildButton.GetComponent<ToolTipHandler>().text);

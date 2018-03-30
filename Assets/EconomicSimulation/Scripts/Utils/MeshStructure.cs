@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Nashet.Utils;
 using UnityEngine;
+
 namespace Nashet.MarchingSquares
 {
     public class MeshStructure
     {
-        readonly List<Vector3> vertices;
-        readonly List<int> triangles;
-        readonly List<Vector2> UVmap;
+        private readonly List<Vector3> vertices;
+        private readonly List<int> triangles;
+        private readonly List<Vector2> UVmap;
 
         public int verticesCount
         {
@@ -23,18 +24,22 @@ namespace Nashet.MarchingSquares
             triangles = new List<int>();
             UVmap = new List<Vector2>();
         }
+
         public List<Vector3> getVertices()
         {
             return vertices;
         }
+
         public List<int> getTriangles()
         {
             return triangles;
         }
+
         public List<Vector2> getUVmap()
         {
             return UVmap;
         }
+
         public void Clear()
         {
             vertices.Clear();
@@ -55,23 +60,22 @@ namespace Nashet.MarchingSquares
             triangles.Add(vertexIndex + 2);
             triangles.Add(vertexIndex + 3);
         }
+
         public void AddBorderQuad2(Vector2 a, Vector2 b)
         {
-
             //TODO put to constant
             float borderWidth = 0.4f;
             float borderWidth2 = -0.4f;
 
             AddBorderQuad(
     (Vector3)a,
-    Utils.MeshExtensions.makeArrow(a, b, borderWidth),
+    MeshExtensions.makeArrow(a, b, borderWidth),
     (Vector3)b,
-    Utils.MeshExtensions.makeArrow(b, a, borderWidth2),
+    MeshExtensions.makeArrow(b, a, borderWidth2),
     true
     );
-
-
         }
+
         public void AddBorderQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, bool addUV)
         {
             float borderHeight = 0.1f;
@@ -111,6 +115,7 @@ namespace Nashet.MarchingSquares
             //borderVertices[i * 2 + 3] = MeshExtensions.makeArrow(meshStructure.vertices[item.v2], meshStructure.vertices[item.v1], borderWidth2) + Vector3.back * borderHeight;
             //UVmap[i * 2 + 3] = new Vector2(1f, 0f);
         }
+
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
         {
             int vertexIndex = vertices.Count;

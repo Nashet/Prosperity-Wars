@@ -1,25 +1,28 @@
-﻿using UnityEngine;
-using System.Text;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using UnityEngine.Events;
-using System;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading;
 using Nashet.EconomicSimulation;
 using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
 namespace Nashet.Utils
 {
     public interface ICopyable<T>
     {
         T Copy();
     }
+
     public class CultureNameGenerator
     {
-        static ChanceBox<string> prefix;
-        static ChanceBox<string> postfix;
+        private static ChanceBox<string> prefix;
+        private static ChanceBox<string> postfix;
+
         public CultureNameGenerator()
         {
             postfix = new ChanceBox<string>();
@@ -33,7 +36,6 @@ namespace Nashet.Utils
             postfix.add("pian", 1f);
             postfix.add("vian", 1f);
             postfix.add("lian", 1.8f);
-
 
             postfix.add("", 5f);
             postfix.initiate();
@@ -50,7 +52,9 @@ namespace Nashet.Utils
             prefix.add("", 40f);
             prefix.initiate();
         }
-        StringBuilder result = new StringBuilder();
+
+        private StringBuilder result = new StringBuilder();
+
         public string generateCultureName()
         {
             result.Clear();
@@ -63,11 +67,11 @@ namespace Nashet.Utils
             return (result.ToString());
         }
     }
+
     public class CountryNameGenerator
     {
-        static ChanceBox<string> prefix;
-        static ChanceBox<string> postfix;
-
+        private static ChanceBox<string> prefix;
+        private static ChanceBox<string> postfix;
 
         public CountryNameGenerator()
         {
@@ -115,7 +119,9 @@ namespace Nashet.Utils
             prefix.add("", 80f);
             prefix.initiate();
         }
-        StringBuilder result = new StringBuilder();
+
+        private StringBuilder result = new StringBuilder();
+
         public string generateCountryName()
         {
             result.Clear();
@@ -128,12 +134,14 @@ namespace Nashet.Utils
             return (result.ToString());
         }
     }
+
     public class ProvinceNameGenerator
     {
-        static ChanceBox<string> prefix;
-        static ChanceBox<string> postfix;
-        static ChanceBox<string> vowels = new ChanceBox<string>();
-        static ChanceBox<string> consonants = new ChanceBox<string>();
+        private static ChanceBox<string> prefix;
+        private static ChanceBox<string> postfix;
+        private static ChanceBox<string> vowels = new ChanceBox<string>();
+        private static ChanceBox<string> consonants = new ChanceBox<string>();
+
         public static string generateWord(int length)
         {
             var sb = new StringBuilder();
@@ -155,6 +163,7 @@ namespace Nashet.Utils
             return UtilsMy.FirstLetterToUpper(sb.ToString());
             //return Game.threadDangerSB.ToString();
         }
+
         public ProvinceNameGenerator()
         {
             postfix = new ChanceBox<string>();
@@ -199,7 +208,6 @@ namespace Nashet.Utils
 
             postfix.add("worth", 2f);
 
-
             postfix.add("", 10f);
             postfix.initiate();
 
@@ -229,7 +237,6 @@ namespace Nashet.Utils
 
             //prefix.add("Pen", 0.6f);
             //prefix.add("Sud", 0.6f);
-
 
             prefix.add("", 60f);
             prefix.initiate();
@@ -269,7 +276,9 @@ namespace Nashet.Utils
             consonants.add("z", 0.074f);
             consonants.initiate();
         }
-        StringBuilder result = new StringBuilder();
+
+        private StringBuilder result = new StringBuilder();
+
         public string generateProvinceName()
         {
             result.Clear();
@@ -282,31 +291,38 @@ namespace Nashet.Utils
             return UtilsMy.FirstLetterToUpper(result.ToString());
         }
     }
+
     public class ChanceBox<T>
     {
-        class Mean
+        private class Mean
         {
             //KeyValuePair<string,int>
             public T element;
+
             public float weight;
+
             public Mean(T obj, float inchance)
             {
                 element = obj;
                 weight = inchance;
             }
+
             public override string ToString()
             {
-                return element.ToString() + " " + weight;
+                return element + " " + weight;
             }
         }
+
         //SortedDictionary
         //SortedDictionary<T, float> list = new SortedDictionary<T, float>();
         //todo make it dictionary
-        List<Mean> list = new List<Mean>();
+        private List<Mean> list = new List<Mean>();
+
         public void add(T obj, float chance)
         {
             list.Add(new Mean(obj, chance));
         }
+
         public void initiate()
         {
             float totalWeight = 0f;
@@ -323,7 +339,7 @@ namespace Nashet.Utils
 
             foreach (Mean next in list)
             {
-                next.weight = next.weight / totalWeight; ;
+                next.weight = next.weight / totalWeight;
                 //next.weight = next.weight / list.Count ;
             }
             for (int i = 1; i < list.Count; i++)
@@ -331,9 +347,10 @@ namespace Nashet.Utils
                 list[i].weight += list[i - 1].weight;
             }
         }
-        /// <summary>Gives random T according element weight  /// </summary>    
+
+        /// <summary>Gives random T according element weight  /// </summary>
         public T getRandom()
-        {            
+        {
             float randomNumber = Rand.getFloat(0f, 1f);
             foreach (Mean next in list)
                 if (randomNumber <= next.weight)
@@ -344,15 +361,17 @@ namespace Nashet.Utils
 
     public class PricePool
     {
-        Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
-        static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
+        private Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
+        internal static readonly int lenght = 40; // !! duplicate of DataStorage!!
+
         internal PricePool()
         {
             foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
                 if (product != Product.Gold)
                     for (int i = 0; i < lenght; i++)
-                        this.addData(product, new Value(0f));
+                        addData(product, new Value(0f));
         }
+
         internal void addData(Product product, Value indata)
         {
             DataStorageProduct cell;
@@ -363,6 +382,7 @@ namespace Nashet.Utils
             }
             cell.addData(indata);
         }
+
         //public System.Collections.IEnumerator GetEnumerator()
         //{
         //    for (int i = 0; i < pool.Count; i++)
@@ -382,28 +402,35 @@ namespace Nashet.Utils
                 return null;
         }
     }
+
     public class DataStorageProduct : DataStorage<Product>
     {
         public DataStorageProduct(Product inn) : base(inn)
         {
         }
     }
+
     public class DataStorage<IDTYPE>
     {
-        static int length = 40;
+        private static int length = 40;
+
         //todo use LinkedList<T> instead of queue?
         internal LimitedQueue<Value> data;
-        IDTYPE ID;
+
+        private IDTYPE ID;
+
         internal DataStorage(IDTYPE inn)
         {
             data = new LimitedQueue<Value>(length);
             ID = inn;
         }
+
         internal void addData(Value indata)
         {
             data.Enqueue(new Value(indata.get()));
         }
     }
+
     public class LimitedQueue<T> : Queue<T>
     {
         public int Limit { get; set; }
@@ -423,16 +450,12 @@ namespace Nashet.Utils
         }
     }
 
-
     public static class UtilsMy
     {
-
-
         public static void Clear(this StringBuilder value)
         {
             value.Length = 0;
         }
-
 
         public static string FirstLetterToUpper(string str)
         {
@@ -478,6 +501,7 @@ namespace Nashet.Utils
 
             return buttonObject;
         }
+
         private static void SetSize(RectTransform trans, Vector2 size)
         {
             Vector2 currSize = trans.rect.size;
@@ -489,6 +513,7 @@ namespace Nashet.Utils
                                       new Vector2(sizeDiff.x * (1.0f - trans.pivot.x),
                                           sizeDiff.y * (1.0f - trans.pivot.y));
         }
+
         private static GameObject CreateText(Transform parent, float x, float y,
                                          float w, float h, string message, int fontSize)
         {
@@ -517,10 +542,7 @@ namespace Nashet.Utils
 
             return textObject;
         }
-
-
     }
-
 
     public class DontUseThatMethod : Exception
     {
@@ -528,7 +550,6 @@ namespace Nashet.Utils
         /// Just create the exception
         /// </summary>
         public DontUseThatMethod()
-          : base()
         {
         }
 
@@ -563,8 +584,9 @@ namespace Nashet.Utils
         {
         }
     }
+
     //DateTime
-    //public struct Date 
+    //public struct Date
     //{
     //    int blya;
     //    public Date(int date)
@@ -573,7 +595,7 @@ namespace Nashet.Utils
     //    }
     //    /// <summary>
     //    /// copy constructor
-    //    /// </summary>    
+    //    /// </summary>
     //    public Date(Date date)
     //    {
     //        this.blya = date.blya;
@@ -614,16 +636,19 @@ namespace Nashet.Utils
             public int v1;
             public int v2;
             public int triangleIndex;
+
             public Edge(int aV1, int aV2, int aIndex)
             {
                 v1 = aV1;
                 v2 = aV2;
                 triangleIndex = aIndex;
             }
+
             public static bool operator ==(Edge c1, Edge c2)
             {
                 return (c1.v1 == c2.v1 && c1.v2 == c2.v2) || (c1.v1 == c2.v2 && c1.v2 == c2.v1);
             }
+
             public static bool operator !=(Edge c1, Edge c2)
             {
                 return (c1.v1 != c2.v1 || c1.v2 != c2.v2) && (c1.v1 != c2.v2 || c1.v2 != c2.v1);
@@ -642,8 +667,6 @@ namespace Nashet.Utils
                 result.Add(new Edge(v2, v3, i));
                 result.Add(new Edge(v3, v1, i));
             }
-
-
 
             return result;
         }
@@ -667,6 +690,7 @@ namespace Nashet.Utils
             }
             return result;
         }
+
         public static List<Edge> SortEdges(this List<Edge> aEdges)
         {
             List<Edge> result = new List<Edge>(aEdges);
@@ -691,12 +715,14 @@ namespace Nashet.Utils
             return result;
         }
     }
+
     public abstract class ThreadedJob
     {
-        private bool m_IsDone = false;
+        private bool m_IsDone;
         private string status = "Not started yet";
         private object m_Handle = new object();
-        private System.Threading.Thread m_Thread = null;
+        private Thread m_Thread;
+
         public bool IsDone
         {
             get
@@ -716,6 +742,7 @@ namespace Nashet.Utils
                 }
             }
         }
+
         public void updateStatus(String status)
         {
             lock (this.status)
@@ -723,6 +750,7 @@ namespace Nashet.Utils
                 this.status = status;
             }
         }
+
         public string getStatus()
         {
             //tmp = status;
@@ -731,11 +759,13 @@ namespace Nashet.Utils
                 return status;
             }
         }
+
         public virtual void Start()
         {
-            m_Thread = new System.Threading.Thread(Run);
+            m_Thread = new Thread(Run);
             m_Thread.Start();
         }
+
         public virtual void Abort()
         {
             m_Thread.Abort();
@@ -743,7 +773,9 @@ namespace Nashet.Utils
 
         protected abstract void ThreadFunction();
 
-        protected virtual void OnFinished() { }
+        protected virtual void OnFinished()
+        {
+        }
 
         public virtual bool Update()
         {
@@ -754,6 +786,7 @@ namespace Nashet.Utils
             }
             return false;
         }
+
         public IEnumerator WaitFor()
         {
             while (!Update())
@@ -761,53 +794,64 @@ namespace Nashet.Utils
                 yield return null;
             }
         }
+
         private void Run()
         {
             ThreadFunction();
             IsDone = true;
         }
     }
+
     public class MyTexture
     {
-        readonly int width, height;
-        readonly Color[] map;
+        private readonly int width, height;
+        private readonly Color[] map;
+
         public MyTexture(Texture2D image)
         {
             width = image.width;
             height = image.height;
             map = image.GetPixels();
         }
+
         internal int getWidth()
         {
             return width;
         }
+
         internal int getHeight()
         {
             return height;
         }
+
         internal Color GetPixel(int x, int v)
         {
             return map[x + v * width];
         }
+
         public Color getRandomPixel()
         {
             return map[Game.Random.Next((width * height) - 1)];
         }
     }
+
     public abstract class Name : INameable, ISortableName
     {
         private readonly string name;
         private readonly float nameWeight;
+
         protected Name(string name)
         {
             this.name = name;
             if (name != null)
                 nameWeight = name.GetWeight();
         }
+
         public float GetNameWeight()
         {
             return nameWeight;
         }
+
         //public string getShortName()
         //{
         //    return name;
@@ -816,10 +860,12 @@ namespace Nashet.Utils
         {
             get { return name; }
         }
+
         public virtual string FullName
         {
             get { return name + " longed"; }
         }
+
         public override string ToString()
         {
             return name;

@@ -1,14 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
 using Nashet.Utils;
-using System;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -30,8 +27,9 @@ namespace Nashet.EconomicSimulation
 
         private readonly List<Province> availableProvinces = new List<Province>();
         private Army virtualArmyToSend;
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.militaryPanel = this;
             GetComponent<RectTransform>().position = new Vector2(180f, 111);// + Screen.height);
@@ -39,14 +37,13 @@ namespace Nashet.EconomicSimulation
             //rebuildDropDown();
         }
 
-
         public override void Refresh()
         {
             refresh(true);
         }
+
         public void refresh(bool rebuildDropdown)
         {
-
             if (rebuildDropdown)
             {
                 //Game.player.homeArmy.balance(Game.player.sendingArmy, new Procent(armySendLimit.value));
@@ -68,10 +65,8 @@ namespace Nashet.EconomicSimulation
             sendingArmySizeText.text = sb.ToString();
             //sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
             sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
-
         }
 
-       
         public void onMobilizationClick()
         {
             //if (Game.Player.homeArmy.getSize() == 0)
@@ -81,6 +76,7 @@ namespace Nashet.EconomicSimulation
             //MainCamera.tradeWindow.refresh();
             refresh(false);
         }
+
         public void onDemobilizationClick()
         {
             Game.Player.demobilize();
@@ -88,6 +84,7 @@ namespace Nashet.EconomicSimulation
             //MainCamera.tradeWindow.refresh();
             refresh(false);
         }
+
         public void onSendArmyClick()
         {
             if (ddProvinceSelect.value < availableProvinces.Count)
@@ -97,6 +94,7 @@ namespace Nashet.EconomicSimulation
                 Debug.Log("Failed to send Army");
             refresh(false);
         }
+
         public void show(Province province)
         {
             Show();
@@ -110,10 +108,9 @@ namespace Nashet.EconomicSimulation
                 if (found < 0)
                     Debug.Log("Didn't find province " + province);
             }
-           
         }
 
-        void rebuildDropDown()
+        private void rebuildDropDown()
         {
             ddProvinceSelect.interactable = true;
             ddProvinceSelect.ClearOptions();
@@ -123,22 +120,23 @@ namespace Nashet.EconomicSimulation
             {
                 //if (next.isAvailable(Game.player))
                 {
-                    ddProvinceSelect.options.Add(new Dropdown.OptionData() { text = next.ToString() + " (" + next.Country + ")" });
+                    ddProvinceSelect.options.Add(new Dropdown.OptionData { text = next + " (" + next.Country + ")" });
                     availableProvinces.Add(next);
 
                     //selectedReformValue = next;
                     // selecting non empty option
-                    //ddProvinceSelect.value = count; 
+                    //ddProvinceSelect.value = count;
                     count++;
                 }
             }
             ddProvinceSelect.RefreshShownValue();
             //onddProvinceSelectValueChanged(); // need it to set correct caption in DropDown
         }
+
         public void onddProvinceSelectValueChanged()
         {
-
         }
+
         public void onArmyLimitChanged(float value)
         {
             //Game.Player.staff.consolidateArmies();
