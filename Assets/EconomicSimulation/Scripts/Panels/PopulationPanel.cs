@@ -1,10 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
+﻿using System;
 using Nashet.UnityUIUtils;
-using System;
-using System.Linq.Expressions;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
@@ -19,12 +15,14 @@ namespace Nashet.EconomicSimulation
         //private Province m_showingProvince;
 
         private Province showingProvince;
+
         public Province SelectedProvince
         {
             get { return showingProvince; }
         }
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             filterSelectedProvince = x => x.Province == showingProvince;
             MainCamera.populationPanel = this;
@@ -33,11 +31,11 @@ namespace Nashet.EconomicSimulation
             Canvas.ForceUpdateCanvases();
             Hide();
         }
-        
+
         public override void Refresh()
         {
             //if (showingProvince == null)
-            //    SetAllPopsToShow();               
+            //    SetAllPopsToShow();
             table.Refresh();
         }
 
@@ -45,10 +43,12 @@ namespace Nashet.EconomicSimulation
         {
             return showingProvince != null;
         }
+
         public bool IsSelectedProvince(Province province)
         {
             return showingProvince == province;
         }
+
         public void SelectProvince(Province province)
         {
             showingProvince = province;
@@ -57,14 +57,14 @@ namespace Nashet.EconomicSimulation
             else
                 AddFilter(filterSelectedProvince);
         }
-        //Expression<Func<PopUnit, bool>> isAdult = x => x.Type == PopType.Workers;
 
+        //Expression<Func<PopUnit, bool>> isAdult = x => x.Type == PopType.Workers;
 
         //Expression<Func<PopUnit, bool>> isMale = x => x.Type == PopType.Farmers;
         //var isAdultMale = Expression.And(isAdult, isMale);
 
-
         private readonly Predicate<PopUnit> filterWorkers = (x => x.Type != PopType.Workers);
+
         public void OnFilterWorkersChange(bool @checked)
         {
             if (@checked)
@@ -73,7 +73,9 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterWorkers);
             Refresh();
         }
+
         private readonly Predicate<PopUnit> filterFarmers = (x => x.Type != PopType.Farmers);
+
         public void OnFilterFarmersChange(bool @checked)
         {
             if (@checked)
@@ -81,8 +83,10 @@ namespace Nashet.EconomicSimulation
             else
                 AddFilter(filterFarmers);
             Refresh();
-        }        
+        }
+
         private readonly Predicate<PopUnit> filterArtisans = (x => x.Type != PopType.Artisans);
+
         public void OnFilterArtisansChange(bool @checked)
         {
             if (@checked)
@@ -91,7 +95,9 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterArtisans);
             Refresh();
         }
+
         private readonly Predicate<PopUnit> filterTribesmen = (x => x.Type != PopType.Tribesmen);
+
         public void OnFilterTribesmenChange(bool @checked)
         {
             if (@checked)
@@ -102,6 +108,7 @@ namespace Nashet.EconomicSimulation
         }
 
         private readonly Predicate<PopUnit> filterCapitalists = x => x.Type != PopType.Capitalists;
+
         public void OnFilterCapitalistsChange(bool @checked)
         {
             if (@checked)
@@ -110,7 +117,9 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterCapitalists);
             Refresh();
         }
+
         private readonly Predicate<PopUnit> filterAristocrats = x => x.Type != PopType.Aristocrats;
+
         public void OnFilterAristocratsChange(bool @checked)
         {
             if (@checked)
@@ -119,7 +128,9 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterAristocrats);
             Refresh();
         }
+
         private readonly Predicate<PopUnit> filterSoldiers = x => x.Type != PopType.Soldiers;
+
         public void OnFilterSoldiersChange(bool @checked)
         {
             if (@checked)
@@ -128,8 +139,9 @@ namespace Nashet.EconomicSimulation
                 AddFilter(filterSoldiers);
             Refresh();
         }
+
         public void AddFilter(Predicate<PopUnit> filter)
-        {            
+        {
             (table).AddFilter(filter);
         }
 
@@ -144,6 +156,7 @@ namespace Nashet.EconomicSimulation
             table.ClearAllFiltres();
             Refresh();
         }
+
         public void AddAllFiltres()// hide all button
         {
             //showingProvince = null;
@@ -151,6 +164,7 @@ namespace Nashet.EconomicSimulation
             RemoveFilter(filterSelectedProvince);
             Refresh();
         }
+
         public bool IsSetAnyFilter()
         {
             return ((IFiltrable<PopUnit>)table).IsSetAnyFilter();

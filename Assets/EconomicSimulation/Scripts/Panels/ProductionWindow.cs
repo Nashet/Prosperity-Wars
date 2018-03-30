@@ -1,10 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
+﻿using System;
 using Nashet.UnityUIUtils;
-using System.Linq.Expressions;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
@@ -12,15 +8,17 @@ namespace Nashet.EconomicSimulation
     {
         [SerializeField]
         private ProductionWindowTable table;
+
         private Predicate<Factory> filterSelectedProvince;
-        private readonly static Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
+        private static readonly Predicate<Factory> filterOnlyExisting = (x => !x.isToRemove());
         private Province showingProvince; // should it go to table?
+
         public Province SelectedProvince
         {
             get { return showingProvince; }
         }
 
-        void Start()
+        private void Start()
         {
             filterSelectedProvince = x => x.Province == showingProvince;
             MainCamera.productionWindow = this;
@@ -29,17 +27,18 @@ namespace Nashet.EconomicSimulation
             //ClearAllFiltres();
             table.AddFilter(x => !x.isToRemove());
             Hide();
-
         }
 
         public bool IsSelectedAnyProvince()
         {
             return showingProvince != null;
         }
+
         public bool IsSelectedProvince(Province province)
         {
             return showingProvince == province;
         }
+
         public void SelectProvince(Province province)
         {
             showingProvince = province;
@@ -48,12 +47,14 @@ namespace Nashet.EconomicSimulation
             else
                 AddFilter(filterSelectedProvince);
         }
+
         public override void Refresh()
         {
             table.Refresh();
         }
 
         private readonly Predicate<Factory> filterGovernmentOwned = (x => !x.ownership.IsCountryOwnsControlPacket());
+
         public void OnGovernmentOwnedFilterChange(bool @checked)
         {
             if (@checked)
@@ -63,7 +64,9 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
+
         private readonly Predicate<Factory> filterPrivateOwned = (x => x.ownership.IsCountryOwnsControlPacket());
+
         public void OnPrivateOwnedFilterChange(bool @checked)
         {
             if (@checked)
@@ -73,7 +76,9 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
+
         private readonly Predicate<Factory> filterSubsidized = (x => x.isSubsidized());
+
         public void OnFilterSubsidizedChange(bool @checked)
         {
             if (@checked)
@@ -83,7 +88,9 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
+
         private readonly Predicate<Factory> filterInvestmentsAllowed = (x => Factory.conAllowsForeignInvestments.checkIftrue(Game.Player, x));
+
         public void OnFilterInvestmentsAllowed(bool @checked)
         {
             if (@checked)
@@ -93,22 +100,27 @@ namespace Nashet.EconomicSimulation
 
             Refresh();
         }
+
         public bool IsSetAnyFilter()
         {
             return table.IsSetAnyFilter();
         }
+
         public bool IsAppliedThatFilter(Predicate<Factory> filter)
         {
             return table.IsAppliedThatFilter(filter);
         }
+
         public void AddFilter(Predicate<Factory> filter)
         {
             table.AddFilter(filter);
         }
+
         public void RemoveFilter(Predicate<Factory> filter)
         {
             table.RemoveFilter(filter);
         }
+
         public void ClearAllFiltres()// show all button
         {
             table.SetContent(null);
@@ -125,8 +137,9 @@ namespace Nashet.EconomicSimulation
             RemoveFilter(filterSelectedProvince);
             Refresh();
         }
+
         public void OnEntireWorldSelected()
-        {   
+        {
             ClearAllFiltres();
             table.SetContent(World.GetAllFactories);
             Refresh();

@@ -1,18 +1,13 @@
-﻿using UnityEngine;
-
-using System;
-using Nashet.ValueSpace;
-
-namespace Nashet.EconomicSimulation
+﻿namespace Nashet.EconomicSimulation
 {
     public class Workers : GrainGetter
     {
-        
         public Workers(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Workers, where, culture, oldLife)
         { }
+
         public Workers(int iamount, Culture iculture, Province where) : base(iamount, PopType.Workers, iculture, where)
         { }
-                
+
         public override bool canThisPromoteInto(PopType targetType)
         {
             if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
@@ -22,6 +17,7 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+
         public override void produce()
         { }
 
@@ -52,10 +48,10 @@ namespace Nashet.EconomicSimulation
         {
             employed += leftToHire;
         }
+
         internal void Fire()
         {
             employed = 0;
         }
-        
     }
 }

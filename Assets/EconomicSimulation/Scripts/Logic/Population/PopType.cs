@@ -1,33 +1,36 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using Nashet.ValueSpace;
 using Nashet.Utils;
-using System.Linq;
+using Nashet.ValueSpace;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
     public class PopType : Name, IWayOfLifeChange
     {
-        private readonly static List<PopType> allPopTypes = new List<PopType>();
+        private static readonly List<PopType> allPopTypes = new List<PopType>();
         public static readonly PopType Tribesmen, Aristocrats, Farmers, Artisans, Soldiers, Workers, Capitalists;
 
         public static Predicate<PopType> All = x => true;
-        ///<summary> per 1000 men </summary>    
+
+        ///<summary> per 1000 men </summary>
         private readonly List<Storage> lifeNeeds;//= new List<Storage>();
+
         private readonly List<Storage> everyDayNeeds;// = new List<Storage>();
         private readonly List<Storage> luxuryNeeds;// = new List<Storage>();
         private readonly List<Storage> militaryNeeds;// = new List<Storage>();
 
         ///<summary> per 1000 men </summary>
         private readonly Storage basicProduction;
+
         //private readonly string name;
         /// <summary>
         /// SHOULD not be zero!
         /// </summary>
         private readonly float strenght;
+
         private readonly float nameWeight;
+
         static PopType() // can't be private
         {
             var militaryNeeds = new List<Storage> { new Storage(Product.Food, 0.2f), new Storage(Product.Cattle, 0.2f), new Storage(Product.ColdArms, 0.2f), new Storage(Product.Firearms, 0.4f), new Storage(Product.Ammunition, 0.6f), new Storage(Product.Artillery, 0.2f), new Storage(Product.Cars, 0.2f), new Storage(Product.Tanks, 0.2f), new Storage(Product.Airplanes, 0.2f), new Storage(Product.MotorFuel, 0.6f) };
@@ -39,14 +42,13 @@ namespace Nashet.EconomicSimulation
             //***************************************next type***************************
             var aristocratsLifeNeeds = new List<Storage> { new Storage(Product.Food, 1) };
             var aristocratsEveryDayNeeds = new List<Storage> {
-
             new Storage(Product.ColdArms, 1f),
             new Storage(Product.Clothes, 1f),
             new Storage(Product.Furniture, 1f),
             new Storage(Product.Liquor, 2f),
             new Storage(Product.Electronics, 1f),
             new Storage(Product.Education, 1f)
-            ,};
+            };
             var aristocratsLuxuryNeeds = new List<Storage> {
             new Storage(Product.Fruit, 1),
             new Storage(Product.Cars, 1f),
@@ -86,7 +88,7 @@ namespace Nashet.EconomicSimulation
             //new Storage(Product.Cars, 1f),
             //new Storage(Product.MotorFuel, 1f),
             new Storage(Product.Electronics, 1f),
-            new Storage(Product.Tobacco, 1f),
+            new Storage(Product.Tobacco, 1f)
             };
                 Artisans = new PopType("Artisans", null, 1f,
                     militaryNeeds, artisansLifeNeeds, artisansEveryDayNeeds, artisansLuxuryNeeds);
@@ -135,24 +137,24 @@ namespace Nashet.EconomicSimulation
             new Storage(Product.Fruit, 2),
             new Storage(Product.Liquor, 5),
             new Storage(Product.Clothes, 4),
-            new Storage(Product.Furniture, 2),
+            new Storage(Product.Furniture, 2)
             //new Storage(Product.Wood, 1)
         };
             var soldiersLuxuryNeeds = new List<Storage> {
             new Storage(Product.Tobacco, 1f),
             new Storage(Product.Cars, 1f), // temporally
             new Storage(Product.MotorFuel, 1f),// temporally
-            new Storage(Product.Education, 1f),
+            new Storage(Product.Education, 1f)
             };
             Soldiers = new PopType("Soldiers", null, 2f,
                 militaryNeeds, soldiersLifeNeeds, soldiersEveryDayNeeds, soldiersLuxuryNeeds);
         }
+
         private PopType(string name, Storage produces, float strenght, List<Storage> militaryNeeds,
             List<Storage> lifeNeeds, List<Storage> everyDayNeeds, List<Storage> luxuryNeeds) : base(name)
         {
             this.militaryNeeds = militaryNeeds;
             this.strenght = strenght;
-
 
             basicProduction = produces;
             this.lifeNeeds = lifeNeeds;
@@ -160,11 +162,13 @@ namespace Nashet.EconomicSimulation
             this.luxuryNeeds = luxuryNeeds;
             allPopTypes.Add(this);
         }
+
         public static IEnumerable<PopType> getAllPopTypes()
         {
             foreach (var item in allPopTypes)
                 yield return item;
         }
+
         /// <summary>
         /// returns new value
         /// </summary>
@@ -173,6 +177,7 @@ namespace Nashet.EconomicSimulation
         {
             return basicProduction.Copy();
         }
+
         public bool canMobilize(Staff byWhom)
         {
             if (byWhom is Country)
@@ -185,6 +190,7 @@ namespace Nashet.EconomicSimulation
             else // movement
                 return true;
         }
+
         ///<summary> Returns copy </summary>
         public List<Storage> getMilitaryNeedsPer1000Men(Country country)
         {
@@ -197,12 +203,11 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-
         ///<summary> Returns copy </summary>
         public List<Storage> getLifeNeedsPer1000Men()
         {
             //List<Storage> result = new List<Storage>();
-            //foreach (Storage next in lifeNeeds)        
+            //foreach (Storage next in lifeNeeds)
             //    result.Add(next);
             //return result;
             var result = new List<Storage>();
@@ -211,11 +216,12 @@ namespace Nashet.EconomicSimulation
                     result.Add(new Storage(item));
             return result;
         }
+
         ///<summary> Returns copy </summary>
         public List<Storage> getEveryDayNeedsPer1000Men()
         {
             //List<Storage> result = new List<Storage>();
-            //foreach (Storage next in everyDayNeeds)            
+            //foreach (Storage next in everyDayNeeds)
             //    result.Add(next);
             //return result;
             //return everyDayNeeds;
@@ -225,13 +231,14 @@ namespace Nashet.EconomicSimulation
                     result.Add(new Storage(item));
             return result;
         }
+
         ///<summary> Returns copy </summary>
         public List<Storage> getLuxuryNeedsPer1000Men()
         {
             //List<Storage> result = new List<Storage>();
-            //foreach (Storage next in luxuryNeeds)            
+            //foreach (Storage next in luxuryNeeds)
             //    result.Add(next);
-            //return result;        
+            //return result;
             //return luxuryNeeds;
             var result = new List<Storage>();
             foreach (var item in luxuryNeeds)
@@ -239,6 +246,7 @@ namespace Nashet.EconomicSimulation
                     result.Add(new Storage(item));
             return result;
         }
+
         ///<summary> Returns copy </summary>
         public List<Storage> getAllNeedsPer1000Men()
         {
@@ -247,7 +255,8 @@ namespace Nashet.EconomicSimulation
             result.AddRange(getLuxuryNeedsPer1000Men());
             return result;
         }
-        override public string ToString()
+
+        public override string ToString()
         {
             return ShortName;
         }
@@ -266,17 +275,20 @@ namespace Nashet.EconomicSimulation
         {
             return strenght;
         }
+
         public bool canBeUnemployed()
         {
             return this == Farmers || this == Workers || this == Tribesmen;
         }
+
         /// <summary>
         /// Returns true if can produce something by himself
-        /// </summary>    
+        /// </summary>
         internal bool isProducer()
         {
             return this == Farmers || this == Tribesmen || this == Artisans;
         }
+
         /// <summary>
         /// Makes sure that pops consume product in cheap-first order
         /// </summary>
@@ -288,47 +300,47 @@ namespace Nashet.EconomicSimulation
                 item.luxuryNeeds.Sort(Storage.CostOrder);
             }
         }
+
         //internal bool HasJobsForThatPopTypeIn(Province province)
         //{
         //    return true;
         //}
-
-
 
         public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
         {
             Debug.Log("Failed");
             return ReadOnlyValue.Zero;
         }
+
         public bool CanDemoteTo(PopType targetType, Country Country)
         {
             if (this == Aristocrats)
-                if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
-                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
-                    || targetType == PopType.Tribesmen)
+                if (targetType == Farmers && Country.Invented(Invention.Farming)
+                    || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                    || targetType == Tribesmen)
                     return true;
                 else
                     return false;
             else if (this == Artisans)
                 if (//|| targetType == PopType.Farmers && !Country.isInvented(Invention.Farming)
-                targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
-                || targetType == PopType.Workers
+                targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                || targetType == Workers
                 )
                     return true;
                 else
                     return false;
             else if (this == Capitalists)
-                if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
-                || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
-                || targetType == PopType.Artisans
+                if (targetType == Farmers && Country.Invented(Invention.Farming)
+                || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+                || targetType == Artisans
                 )
                     return true;
                 else
                     return false;
             else if (this == Farmers)
-                if (targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy)
-             || targetType == PopType.Tribesmen
-             || targetType == PopType.Workers
+                if (targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy)
+             || targetType == Tribesmen
+             || targetType == Workers
                 )
                     return true;
                 else
@@ -336,22 +348,22 @@ namespace Nashet.EconomicSimulation
             else if (this == Soldiers)
                 if (//targetType == PopType.Farmers && Country.isInvented(Invention.Farming)
                 //||
-                targetType == PopType.Tribesmen
-                || targetType == PopType.Workers
+                targetType == Tribesmen
+                || targetType == Workers
                 )
                     return true;
                 else
                     return false;
             else if (this == Tribesmen)
-                if (targetType == PopType.Workers
-                    || targetType == PopType.Farmers && Country.Invented(Invention.Farming)
-                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                if (targetType == Workers
+                    || targetType == Farmers && Country.Invented(Invention.Farming)
+                    || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy))
                     return true;
                 else
                     return false;
             else if (this == Workers)
-                if (targetType == PopType.Tribesmen
-                    || targetType == PopType.Soldiers && Country.Invented(Invention.ProfessionalArmy))
+                if (targetType == Tribesmen
+                    || targetType == Soldiers && Country.Invented(Invention.ProfessionalArmy))
                     return true;
                 else
                     return false;
@@ -360,7 +372,6 @@ namespace Nashet.EconomicSimulation
                 Debug.Log("Unknown pop type");
                 return false;
             }
-
         }
     }
 }

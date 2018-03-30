@@ -1,18 +1,16 @@
-﻿using UnityEngine;
-
-using Nashet.ValueSpace;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Nashet.Utils;
-using System.Collections.Generic;
-using System;
+using Nashet.ValueSpace;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-
     public class Capitalists : Investor
     {
         public Capitalists(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Capitalists, where, culture, oldLife)
         { }
+
         public Capitalists(int iamount, Culture iculture, Province where) : base(iamount, PopType.Capitalists, iculture, where)
         { }
 
@@ -20,10 +18,12 @@ namespace Nashet.EconomicSimulation
         {
             return false;
         }
+
         public override void produce()
         {
             // Caps don't produce products directly
         }
+
         internal override bool canTrade()
         {
             if (Country.economy.getValue() == Economy.PlannedEconomy)
@@ -31,10 +31,12 @@ namespace Nashet.EconomicSimulation
             else
                 return true;
         }
+
         public override bool shouldPayAristocratTax()
         {
             return false;
         }
+
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
@@ -44,6 +46,7 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+
         internal override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
@@ -57,12 +60,11 @@ namespace Nashet.EconomicSimulation
 
         internal override void invest()
         {
-            //should I invest?                
+            //should I invest?
             if (Economy.isMarket.checkIfTrue(Country) && Country.Invented(Invention.Manufactures))
 
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-
 
                 //var projects = Province.getAllInvestmentProjects().Where(x => x.GetMargin(Province).isBiggerThan(Options.minMarginToInvest));
                 var projects = World.GetAllAllowedInvestments(this).Where(
@@ -70,12 +72,12 @@ namespace Nashet.EconomicSimulation
                 {
                     var isFactory = x.Key as Factory;
                     if (isFactory != null)
-                        return this.Country.InventedFactory(isFactory.Type);
+                        return Country.InventedFactory(isFactory.Type);
                     else
                     {
                         var newFactory = x.Key as NewFactoryProject;
                         if (newFactory != null)
-                            return this.Country.InventedFactory(newFactory.Type);
+                            return Country.InventedFactory(newFactory.Type);
                     }
                     return true;
                 }

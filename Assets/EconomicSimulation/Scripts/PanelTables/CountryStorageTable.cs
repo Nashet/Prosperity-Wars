@@ -1,11 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+
 namespace Nashet.EconomicSimulation
 {
     public class CountryStorageTable : UITableNew<Product>
@@ -17,7 +14,7 @@ namespace Nashet.EconomicSimulation
 
         protected override void AddHeader()
         {
-            // Adding product name 
+            // Adding product name
             AddCell("Product");
 
             ////Adding production
@@ -32,15 +29,15 @@ namespace Nashet.EconomicSimulation
             AddCell("Bought by gov.");
 
             AddCell("Sold by gov.");
-
         }
+
         protected override void AddRow(Product product, int number)
         {
             var needs = Game.Player.getRealAllNeeds();
-            // Adding product name 
+            // Adding product name
             if (product.isAbstract())
             {
-                AddCell(product.ToString() + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
+                AddCell(product + " total", null, () => product.getSubstitutes().ToList().getString(" or "));
 
                 ////Adding total amount
                 AddCell(Game.Player.countryStorageSet.getTotal(product).get().ToString());
@@ -69,7 +66,7 @@ namespace Nashet.EconomicSimulation
             {
                 var storage = Game.Player.countryStorageSet.GetFirstSubstituteStorage(product);
 
-                // Adding product name 
+                // Adding product name
                 AddCell(product.ToString(), storage);
 
                 ////Adding storage amount
@@ -98,6 +95,7 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
             }
         }
+
         //private void AddButtons()
         //{
         //    int counter = 0;
@@ -106,16 +104,15 @@ namespace Nashet.EconomicSimulation
         //    var elementsToShow = Product.getAll(x => x.isTradable()).ToList();
         //    var howMuchRowsShow = ReCalcSize(elementsToShow.Count);
         //    var needs = Game.Player.getRealAllNeeds();
-        //    //foreach (var product in Product.getAll())                    
+        //    //foreach (var product in Product.getAll())
         //    for (int i = 0; i < howMuchRowsShow; i++)
         //    {
         //        var product = elementsToShow[i + GetRowOffset()];
 
-
         //    }
 
         //    counter++;
-        //    //contentPanel.r                    
+        //    //contentPanel.r
         //}
     }
 }

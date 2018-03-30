@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Nashet.UnityUIUtils;
+using UnityEngine;
+using UnityEngine.UI;
+
 namespace Nashet.EconomicSimulation
 {
     public class InventionsPanel : DragPanel
@@ -20,13 +19,14 @@ namespace Nashet.EconomicSimulation
         private Invention selectedInvention;
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.inventionsPanel = this;
             inventButton.interactable = false;
             GetComponent<RectTransform>().position = new Vector2(0f, -458f + Screen.height);
             Hide();
         }
+
         public void onInventClick()
         {
             if (!Game.Player.Invented(selectedInvention) && Game.Player.sciencePoints.isBiggerOrEqual(selectedInvention.getCost()))
@@ -36,14 +36,16 @@ namespace Nashet.EconomicSimulation
                 MainCamera.topPanel.Refresh();
                 if (MainCamera.buildPanel.isActiveAndEnabled) MainCamera.buildPanel.Refresh();
                 if (MainCamera.politicsPanel.isActiveAndEnabled) MainCamera.politicsPanel.Refresh();
-                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();            
+                if (MainCamera.factoryPanel.isActiveAndEnabled) MainCamera.factoryPanel.Refresh();
                 Refresh();
             }
         }
+
         public void selectInvention(Invention newSelection)
         {
             selectedInvention = newSelection;
         }
+
         public override void Refresh()
         {
             table.Refresh();
@@ -65,16 +67,16 @@ namespace Nashet.EconomicSimulation
                 // invention available
                 if (!Game.Player.Invented(selectedInvention) && Game.Player.sciencePoints.get() >= selectedInvention.getCost().get())
                 {
-                    inventButton.GetComponentInChildren<Text>().text = "Invent " + selectedInvention.ToString();
+                    inventButton.GetComponentInChildren<Text>().text = "Invent " + selectedInvention;
                     inventButton.interactable = true;
                 }
                 else
                 {
                     inventButton.interactable = false;
                     if (Game.Player.Invented(selectedInvention))
-                        inventButton.GetComponentInChildren<Text>().text = "Already invented " + selectedInvention.ToString();
+                        inventButton.GetComponentInChildren<Text>().text = "Already invented " + selectedInvention;
                     else
-                        inventButton.GetComponentInChildren<Text>().text = "Not enough Science points to invent " + selectedInvention.ToString();
+                        inventButton.GetComponentInChildren<Text>().text = "Not enough Science points to invent " + selectedInvention;
                 }
             }
             descriptionText.text = sb.ToString();

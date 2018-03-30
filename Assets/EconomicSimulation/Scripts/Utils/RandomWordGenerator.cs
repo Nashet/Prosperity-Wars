@@ -1,31 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+
 //using System.Web;
 
 namespace RandWord.Models
 {
     public class RandomWordGenerator
     {
-
         // Settings
-        const int FirstSyllableHasStartConsonant = 60; // % 1st syllables which start with a consonant
-        const int SyllableHasStartConsonant = 50; // % syllables which start with a consonant
-        const int SyllableHasEndConsonant = 70; // % syllables which end with a consonant
-        const int StartConsonantComplex = 40; // % end consonants which are complex
-        const int EndConsonantComplex = 50; // % end consonants which are complex
-        const int FinalConsonantsModified = 30; // % modifiable end consonants which are modified
-        const int VowelComplex = 30; // % vowels which are complex
+        private const int FirstSyllableHasStartConsonant = 60; // % 1st syllables which start with a consonant
+
+        private const int SyllableHasStartConsonant = 50; // % syllables which start with a consonant
+        private const int SyllableHasEndConsonant = 70; // % syllables which end with a consonant
+        private const int StartConsonantComplex = 40; // % end consonants which are complex
+        private const int EndConsonantComplex = 50; // % end consonants which are complex
+        private const int FinalConsonantsModified = 30; // % modifiable end consonants which are modified
+        private const int VowelComplex = 30; // % vowels which are complex
 
         // Used to determine the syllable count randomly. Higher numbers mean a syllable is more likely to be chosen.
         // Index 0 is 1 syllable, index 1 is 2 syllables, etc.
-        static int[] SyllableWeights = {
+        private static int[] SyllableWeights = {
             2, // 1 syllable words
 			5, // 2 syllable words
 			3  // 3 syllable words
 		};
 
-        static int CombinedSyllableWeights;
+        private static int CombinedSyllableWeights;
 
         static RandomWordGenerator()
         {
@@ -36,11 +36,11 @@ namespace RandWord.Models
             }
         }
 
-        static char[] vowels = {
+        private static char[] vowels = {
             'a', 'e', 'i', 'o', 'u', 'y'
         };
 
-        static string[] complexVowels = {
+        private static string[] complexVowels = {
             "ai", "au",
             "ea", "ee",
             "ie",
@@ -48,12 +48,12 @@ namespace RandWord.Models
             "ua"
         };
 
-        static string[] simpleConsonants = {
+        private static string[] simpleConsonants = {
             "b", "c", "d", "g", "l", "m", "n", "p", "s", "t", "w", "z", "v"
         };
 
         // complex consonant sounds
-        static string[] startConsonants = {
+        private static string[] startConsonants = {
             "bl", "br",
             "ch", "cl", "cr",
             "dr",
@@ -72,7 +72,7 @@ namespace RandWord.Models
             "y"
         };
 
-        static string[] endConsonants = {
+        private static string[] endConsonants = {
             "ch", "ck",
             "dge",
             "fe", "ff", "ft",
@@ -88,22 +88,21 @@ namespace RandWord.Models
         };
 
         // consonants which can be modified (softening the consonant or changing the vowel) by adding an "e" to the end
-        static char[] endConsonantsModifiable = {
-            'b', 'd', 'g', 'l', 'm', 'n', 'r', 't',
+        private static char[] endConsonantsModifiable = {
+            'b', 'd', 'g', 'l', 'm', 'n', 'r', 't'
         };
 
         // consonants which must be modified if they occur at the end of a word
-        static char[] endConsonantsMustBeModified = {
+        private static char[] endConsonantsMustBeModified = {
             'c', 'l', 'v', 's'
         };
 
         // consonants where another consonant never follows mid-word
-        static char[] consonantNeverFollows = {
+        private static char[] consonantNeverFollows = {
            'b'
         };
 
-        static Random rand = new Random();
-
+        private static Random rand = new Random();
 
         // simple test - run through and
         public static void Test()
@@ -168,10 +167,9 @@ namespace RandWord.Models
                 }
             }
             return word;
-
         }
 
-        static string Syllable(string previous, bool makeItShort, bool isLast)
+        private static string Syllable(string previous, bool makeItShort, bool isLast)
         {
             bool isFirst = previous == null;
             bool lastSyllableSimple = previous != null && previous.Length < 3;
@@ -252,9 +250,8 @@ namespace RandWord.Models
             return syllable;
         }
 
-
         // Don't output any of these, in the unlikely event they get generated!
-        static string[] filtered = {
+        private static string[] filtered = {
             "allah",
             "anal",
             "anus",
@@ -298,9 +295,10 @@ namespace RandWord.Models
         };
     }
 
-    static class RandomWordExtensions
+    internal static class RandomWordExtensions
     {
-        static Random rand = new Random();
+        private static Random rand = new Random();
+
         public static string Random(this string[] source)
         {
             return source[rand.Next(source.Length - 1)];

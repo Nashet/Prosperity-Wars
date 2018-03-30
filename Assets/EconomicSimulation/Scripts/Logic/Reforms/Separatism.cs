@@ -1,7 +1,6 @@
-﻿
-using System.Collections.Generic;
-using Nashet.ValueSpace;
+﻿using System.Collections.Generic;
 using Nashet.Conditions;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -30,6 +29,7 @@ namespace Nashet.EconomicSimulation
             else
                 return found;
         }
+
         protected override Procent howIsItGoodForPop(PopUnit pop)
         {
             //return Procent.HundredProcent;

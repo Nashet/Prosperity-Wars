@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.UI;
+
 //using Nashet.EconomicSimulation;
 //using Nashet.ValueSpace;
 //using Nashet.Utils;
@@ -14,21 +13,28 @@ namespace Nashet.UnityUIUtils
     {
         void OnClicked();
     }
+
     public interface IFiltrable<T>
     {
         void AddFilter(Predicate<T> filter);
+
         void RemoveFilter(Predicate<T> filter);
+
         void ClearAllFiltres();
+
         void AddAllFiltres();
+
         bool IsSetAnyFilter();
+
         bool IsAppliedThatFilter(Predicate<T> filter);
     }
+
     //public class Filter:Predicate<T>
     //{ }
     /// <summary>
     /// Base class for UI tables. You must derive from that class your specific table. Allows only vertical scroll
     /// </summary>
-    abstract public class UITableNew<T> : MonoBehaviour, IRefreshable, IFiltrable<T>
+    public abstract class UITableNew<T> : MonoBehaviour, IRefreshable, IFiltrable<T>
     {
         [SerializeField]
         private SimpleObjectPool buttonObjectPool;
@@ -46,15 +52,18 @@ namespace Nashet.UnityUIUtils
         //
         /// <summary>in pixels</summary>
         private readonly int rowHeight = 20;
+
         private int howMuchRowsShow;
         private int rowOffset;
         private bool alreadyInUpdate;
 
-        abstract protected void AddHeader();
+        protected abstract void AddHeader();
+
         /// <summary>
         /// That method takes content from child (List<T>) and applies filter
-        /// </summary>        
-        abstract protected IEnumerable<T> ContentSelector();
+        /// </summary>
+        protected abstract IEnumerable<T> ContentSelector();
+
         private SortOrder order;
 
         private List<T> Select(List<T> source, List<Predicate<T>> filter)
@@ -66,6 +75,7 @@ namespace Nashet.UnityUIUtils
             }
             return res;
         }
+
         public void Refresh()
         {
             StartUpdate();
@@ -76,7 +86,7 @@ namespace Nashet.UnityUIUtils
                 //int counter = 0;
                 //do NOT rely on elements order!
                 //Expression<Func<EconomicSimulation.PopUnit, bool>> isAdult = x => x.popType == EconomicSimulation.PopType.Workers;
-                Func<T, bool> sheet = new Func<T, bool>(x => true);
+                Func<T, bool> sheet = x => true;
                 if (IsSetAnyFilter())
                     //elementsToShow = ContentSelector().FindAll(filters);
                     elementsToShow = Select(ContentSelector().ToList(), filters);
@@ -87,20 +97,21 @@ namespace Nashet.UnityUIUtils
                     elementsToShow = order.DoSorting(elementsToShow);
                 howMuchRowsShow = ReCalcSize(elementsToShow.Count);
                 FillRows();
-
             }
             EndUpdate();
         }
-        void SetOrder(SortOrder sortOrder)
+
+        private void SetOrder(SortOrder sortOrder)
         {
             order = sortOrder;
         }
+
         //protected void SetElementsToShow(List<T> list)
         //{
         //    elementsToShow = list;
         //    howMuchRowsShow = ReCalcSize(elementsToShow.Count);
         //}
-        abstract protected void AddRow(T type, int number);
+        protected abstract void AddRow(T type, int number);
 
         protected void FillRows()
         {
@@ -110,18 +121,22 @@ namespace Nashet.UnityUIUtils
                 AddRow(product, i);
             }
         }
+
         protected int GetRowOffset()
         {
             return rowOffset;
         }
+
         protected void StartUpdate()
         {
             alreadyInUpdate = true;
         }
+
         protected void EndUpdate()
         {
             alreadyInUpdate = false;
         }
+
         /// <summary>
         /// assuming amount of pops didn't changed
         /// </summary>
@@ -130,14 +145,15 @@ namespace Nashet.UnityUIUtils
             if (!alreadyInUpdate)
                 Refresh();
         }
+
         /// <summary>
         /// Returns how much rows should be shown. It's never bigger than totalRows
-        /// </summary>    
+        /// </summary>
         protected int ReCalcSize(int totalRows)
         {
             var rect = GetComponent<RectTransform>();
 
-            int howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header    
+            int howMuchRowsShow = (int)(rect.rect.height / rowHeight) - 1; //- header
 
             if (howMuchRowsShow > totalRows)
                 howMuchRowsShow = totalRows;
@@ -170,6 +186,7 @@ namespace Nashet.UnityUIUtils
                 newButton.GetComponent<ToolTipHandler>().SetTextDynamic(dynamicTooltip);
             }
         }
+
         //protected void AddHeader(string text, SortOrder @object = null, Func<string> dynamicTooltip = null)
         //{
         //    GameObject newButton = buttonObjectPool.GetObject();
@@ -197,6 +214,7 @@ namespace Nashet.UnityUIUtils
                 }
             }
         }
+
         //public static Predicate<T> And<T>(params Predicate<T>[] predicates)
         //{
         //    return delegate (T item)
@@ -214,6 +232,7 @@ namespace Nashet.UnityUIUtils
         //static private readonly Predicate<T> showAll = new Predicate<T>(x => true);
         ///<summary>Empty means no filters applied, showing everything</summary>
         private readonly List<Predicate<T>> filters = new List<Predicate<T>>();
+
         public void AddFilter(Predicate<T> filter)
         {
             //if (!IsAppliedThatFilter(filter))
@@ -224,6 +243,7 @@ namespace Nashet.UnityUIUtils
             if (!filters.Contains(filter))
                 filters.Add(filter);
         }
+
         public void RemoveFilter(Predicate<T> filter)
         {
             //if (IsSetAnyFilter())
@@ -238,6 +258,7 @@ namespace Nashet.UnityUIUtils
         {
             return filters.Count > 0;// != null;
         }
+
         public bool IsAppliedThatFilter(Predicate<T> filter)
         {
             //if (IsSetAnyFilter())
@@ -251,6 +272,7 @@ namespace Nashet.UnityUIUtils
             //    return false;
             return filters.Contains(filter);
         }
+
         public void ClearAllFiltres()
         {
             filters.Clear();
@@ -259,6 +281,7 @@ namespace Nashet.UnityUIUtils
                 item.isOn = true;
             }
         }
+
         public void AddAllFiltres()
         {
             //filters.Clear();// = null;//new Predicate<T
@@ -266,7 +289,6 @@ namespace Nashet.UnityUIUtils
             {
                 item.isOn = false;
             }
-
         }
 
         //private static UITableNew<T> ThatObject;
@@ -275,7 +297,8 @@ namespace Nashet.UnityUIUtils
         //}
         protected class SortOrder : IClickable
         {
-            private enum State { none, descending, ascending };
+            private enum State { none, descending, ascending }
+
             //private enum State { descending, ascending };
 
             private State orderState = State.none;
@@ -287,14 +310,17 @@ namespace Nashet.UnityUIUtils
                 this.parent = parent;
                 this.sortOrder = sortOrder;
             }
+
             protected UITableNew<T> getParent()
             {
                 return parent;
             }
+
             public bool IsOrderSet()
             {
                 return orderState != State.none;
             }
+
             //protected State getOrder()
             //{
             //    return order;
@@ -307,12 +333,14 @@ namespace Nashet.UnityUIUtils
                 getParent().SetOrder(this);
                 getParent().Refresh();
             }
+
             public string getSymbol()
             {
                 switch (orderState)
                 {
                     case State.none:
                         return " ";
+
                     case State.descending:
 #if UNITY_WEBGL
                         return " v";
@@ -339,6 +367,7 @@ namespace Nashet.UnityUIUtils
                         //if (defaultList != null)
                         //    defaultList();
                         return list.ToList();
+
                     case State.descending:
                         return list.OrderByDescending(sortOrder).ToList();
 
@@ -351,18 +380,20 @@ namespace Nashet.UnityUIUtils
                 }
             }
         }
-
     }
+
     [Serializable]
     public class Filter<T>
     {
         private UITableNew<T> parent;
         private Predicate<T> filter;
+
         public Filter(Predicate<T> filter, UITableNew<T> parent)
         {
             this.parent = parent;
             this.filter = filter;
         }
+
         public void OnFilterChange(bool @checked)
         {
             if (@checked)
@@ -372,9 +403,10 @@ namespace Nashet.UnityUIUtils
             parent.Refresh();
         }
     }
+
     /// <summary>
     /// Old version, refreshes entire table. Don't use it
-    /// </summary>    
+    /// </summary>
     //abstract public class UITable : MonoBehaviour, IRefreshable
     //{
     //    [SerializeField]
@@ -485,7 +517,6 @@ namespace Nashet.UnityUIUtils
     //        }
     //    }
 
-
     //    //abstract protected void AddButton(string text, PopUnit record);
 
     //    //public void TryTransferItemToOtherShop(Item item)
@@ -521,5 +552,5 @@ namespace Nashet.UnityUIUtils
     //    //        }
     //    //    }
     //    //}
-    //}    
+    //}
 }

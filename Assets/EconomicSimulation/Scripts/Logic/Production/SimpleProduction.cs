@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Nashet.ValueSpace;
+
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
     /// Contains common mechanics for Factory and ArtisanProduction
     /// </summary>
-    abstract public class SimpleProduction : Producer
+    public abstract class SimpleProduction : Producer
     {
         //private Agent owner;
         private readonly ProductionType type;
+
         public ProductionType Type { get { return type; } }
         private readonly StorageSet inputProductsReserve = new StorageSet();
 
@@ -23,6 +23,7 @@ namespace Nashet.EconomicSimulation
             //sentToMarket = new Storage(this.Type.basicProduction.Product);
             changeProductionType(this.type.basicProduction.Product);
         }
+
         //internal Agent getOwner()
         //{
         //    return owner;
@@ -36,9 +37,7 @@ namespace Nashet.EconomicSimulation
             return inputProductsReserve;
         }
 
-
-
-        override public string ToString()
+        public override string ToString()
         {
             return "crafting " + type.basicProduction;
         }
@@ -47,16 +46,18 @@ namespace Nashet.EconomicSimulation
         {
             throw new NotImplementedException();
         }
-        override public void SetStatisticToZero()
+
+        public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
             storage.Set(0f);
         }
+
         /// <summary>
         /// could be negative
         /// </summary>
         /// <returns></returns>
-        virtual internal float getProfit()
+        internal virtual float getProfit()
         {
             return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
         }
@@ -79,12 +80,14 @@ namespace Nashet.EconomicSimulation
                     {
                         var substitute = getInputProductsReserve().convertToBiggestStorage(next);
                         if (substitute.isNotZero())
-                            getInputProductsReserve().Subtract(substitute, false); // could be zero reserves if isJustHiredPeople() 
+                            getInputProductsReserve().Subtract(substitute, false); // could be zero reserves if isJustHiredPeople()
                     }
                     else
                         getInputProductsReserve().Subtract(next, false);
         }
-        abstract internal Procent getInputFactor();
+
+        internal abstract Procent getInputFactor();
+
         protected Procent getInputFactor(Procent multiplier)
         {
             if (multiplier.isZero())
@@ -124,7 +127,6 @@ namespace Nashet.EconomicSimulation
             //old last turn consumption checking thing
             //foreach (Storage input in realInput)
             //{
-
             //    //if (Game.market.getDemandSupplyBalance(input.Product) >= 1f)
             //    //available = input
 
@@ -158,7 +160,9 @@ namespace Nashet.EconomicSimulation
             }
             return inputFactor;
         }
-        abstract public List<Storage> getHowMuchInputProductsReservesWants();
+
+        public abstract List<Storage> getHowMuchInputProductsReservesWants();
+
         protected List<Storage> getHowMuchInputProductsReservesWants(Value multiplier)
         {
             //Value multiplier = new Value(getWorkForceFulFilling() * getLevel() * Options.FactoryInputReservInDays);
@@ -175,10 +179,11 @@ namespace Nashet.EconomicSimulation
                 {
                     howMuchWantToBuy.subtract(howMuchHave);
                     result.Add(howMuchWantToBuy);
-                }//else  - there is enough reserves, you shouldn't buy than   
+                }//else  - there is enough reserves, you shouldn't buy than
             }
             return result;
         }
+
         // Should remove market availability assumption since its goes to double- calculation?
         //public List<Storage> getRealNeeds()
         //{
@@ -211,7 +216,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        /// <summary>  Return in pieces basing on current prices and needs  /// </summary>        
+        /// <summary>  Return in pieces basing on current prices and needs  /// </summary>
         protected float getLocalEffectiveDemand(Product product, Procent multiplier)
         {
             // need to know how much i Consumed inside my needs
@@ -225,13 +230,15 @@ namespace Nashet.EconomicSimulation
                 return canAfford.get();
             }
         }
+
         /// <summary>
         ///new value
         /// </summary>
-        virtual internal MoneyView getExpences()
+        internal virtual MoneyView getExpences()
         {
             return Game.market.getCost(getConsumed());
         }
+
         public bool isAllInputProductsCollected()
         {
             var realNeeds = getRealAllNeeds();
