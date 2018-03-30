@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-
-using Nashet.ValueSpace;
+﻿using System.Linq;
 using Nashet.Utils;
-using System.Linq;
+using Nashet.ValueSpace;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
@@ -10,13 +9,15 @@ namespace Nashet.EconomicSimulation
     {
         public Aristocrats(PopUnit pop, int sizeOfNewPop, Province where, Culture culture, IWayOfLifeChange oldLife) : base(pop, sizeOfNewPop, PopType.Aristocrats, where, culture, oldLife)
         { }
+
         public Aristocrats(int iamount, Culture iculture, Province where) : base(iamount, PopType.Aristocrats, iculture, where)
         { }
-       
+
         public override bool canThisPromoteInto(PopType targetType)
         {
             return false;
         }
+
         internal void dealWithMarket()
         {
             if (storage.get() > Options.aristocratsFoodReserv)
@@ -27,10 +28,12 @@ namespace Nashet.EconomicSimulation
                 Game.market.sentToMarket.Add(howMuchSend);
             }
         }
+
         public override void produce()
         {
             //Aristocrats don't produce anything
         }
+
         internal override bool canTrade()
         {
             if (Country.economy.getValue() == Economy.PlannedEconomy)
@@ -38,14 +41,17 @@ namespace Nashet.EconomicSimulation
             else
                 return true;
         }
-        override internal bool canSellProducts()
+
+        internal override bool canSellProducts()
         {
             return true;
         }
+
         public override bool shouldPayAristocratTax()
         {
             return false;
         }
+
         internal override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
@@ -55,6 +61,7 @@ namespace Nashet.EconomicSimulation
             else
                 return false;
         }
+
         internal override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
@@ -65,6 +72,7 @@ namespace Nashet.EconomicSimulation
             else
                 return 0;
         }
+
         internal override void invest()
         {
             // Aristocrats invests only in resource factories (and banks)
@@ -72,7 +80,7 @@ namespace Nashet.EconomicSimulation
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
                 var projects = Province.getAllInvestmentProjects().Where(x => x.CanProduce(Province.getResource()));
-                
+
                 var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
                 if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {
@@ -96,14 +104,14 @@ namespace Nashet.EconomicSimulation
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
                             {
-                                var factory = Province.BuildFactory(this, factoryProject.Type, investmentCost);  // build new one              
+                                var factory = Province.BuildFactory(this, factoryProject.Type, investmentCost);  // build new one
                                 PayWithoutRecord(factory, investmentCost);
                             }
                         }
                     }
                     else
                     {
-                        var factory = project as Factory;// existing one                               
+                        var factory = project as Factory;// existing one
                         if (factory != null)
                         {
                             MoneyView investmentCost = factory.GetInvestmentCost();

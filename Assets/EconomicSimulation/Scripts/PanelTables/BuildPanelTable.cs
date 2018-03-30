@@ -1,25 +1,20 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
-using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
-
     public class BuildPanelTable : UITableNew<ProductionType>
     {
         protected override IEnumerable<ProductionType> ContentSelector()
         {
-            
             if (Game.selectedProvince == null)
                 return Enumerable.Empty<ProductionType>();
             else
                 return ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player));
         }
+
         protected override void AddRow(ProductionType factoryType, int number)
         {
             // Adding shownFactory type
@@ -31,7 +26,6 @@ namespace Nashet.EconomicSimulation
                 AddCell(factoryType.GetBuildCost().ToString(), factoryType);
             else
                 AddCell(factoryType.GetBuildNeeds().getString(""), factoryType);
-
 
             ////Adding resource needed
             //AddButton(next.resourceInput.ToString(), next);

@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Text;
+﻿using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
-using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -17,26 +15,29 @@ namespace Nashet.EconomicSimulation
         private Button btnPlay, btnStep, btnTrade;
 
         [SerializeField]
-		private Text generalText, specificText;
+        private Text generalText, specificText;
 
         // Use this for initialization
-        void Awake()
-        {           
-            MainCamera.topPanel = this;            
+        private void Awake()
+        {
+            MainCamera.topPanel = this;
         }
-        bool firstUpdate = true;
+
+        private bool firstUpdate = true;
+
         private void Update()
         {
             if (firstUpdate)
                 btnPlay.image.color = GUIChanger.DisabledButtonColor;
             firstUpdate = false;
         }
+
         public override void Refresh()
         {
             var sb = new StringBuilder();
 
             sb.Append("You rule: ").Append(Game.Player.FullName);
-            
+
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");
             sb.Append("    Month: ").Append(Date.Today);
@@ -51,6 +52,7 @@ namespace Nashet.EconomicSimulation
 
             generalText.text = sb.ToString();
         }
+
         public void onTradeClick()
         {
             if (MainCamera.tradeWindow.isActiveAndEnabled)
@@ -58,26 +60,28 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.tradeWindow.Show();
         }
+
         public void onExitClick()
         {
             Application.Quit();
         }
+
         public void onMilitaryClick()
         {
             if (MainCamera.militaryPanel.isActiveAndEnabled)
                 MainCamera.militaryPanel.Hide();
             else
                 MainCamera.militaryPanel.show(null);
-
         }
+
         public void onInventionsClick()
         {
-
             if (MainCamera.inventionsPanel.isActiveAndEnabled)
                 MainCamera.inventionsPanel.Hide();
             else
                 MainCamera.inventionsPanel.Show();
         }
+
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
@@ -91,9 +95,9 @@ namespace Nashet.EconomicSimulation
                 MainCamera.productionWindow.Show();
             }
         }
+
         public void onPopulationClick()
         {
-
             if (MainCamera.populationPanel.isActiveAndEnabled)
                 if (MainCamera.populationPanel.IsSetAnyFilter())
                     MainCamera.populationPanel.ClearAllFiltres();
@@ -105,6 +109,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.populationPanel.Show();
             }
         }
+
         public void onPoliticsClick()
         {
             if (MainCamera.politicsPanel.isActiveAndEnabled)
@@ -112,6 +117,7 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.politicsPanel.Show();
         }
+
         public void onFinanceClick()
         {
             if (MainCamera.financePanel.isActiveAndEnabled)
@@ -119,6 +125,7 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.financePanel.Show();
         }
+
         public void onbtnStepClick(Button button)
         {
             if (Game.isRunningSimulation())
@@ -131,15 +138,18 @@ namespace Nashet.EconomicSimulation
             else
                 Game.makeOneStepSimulation();
         }
+
         public void onbtnPlayClick(Button button)
         {
             switchHaveToRunSimulation();
         }
+
         public void OnFocusOnCountryClick()
         {
             if (Game.Player != null)
                 mainCamera.FocusOnProvince(Game.Player.Capital, true);
         }
+
         public void switchHaveToRunSimulation()
         {
             if (Game.isRunningSimulation())

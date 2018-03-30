@@ -1,18 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Nashet.ValueSpace;
-using Nashet.Utils;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    interface ICanSell
+    internal interface ICanSell
     {
         Storage getSentToMarket(Product product);
+
         void sell(Storage what);
+
         void getMoneyForSoldProduct();
     }
+
     /// <summary>
     /// Had to be class representing ability to sell more than 1 product
     /// but actually it contains statistics for Country
@@ -24,60 +26,67 @@ namespace Nashet.EconomicSimulation
 
         private readonly Dictionary<Product, Storage> sellIfMoreLimits = new Dictionary<Product, Storage>();
         private readonly Dictionary<Product, Storage> buyIfLessLimits = new Dictionary<Product, Storage>();
+
         /// <summary> Including enterprises, government and everything    </summary>
         private readonly Dictionary<Product, Value> producedTotal = new Dictionary<Product, Value>();
+
         /// <summary> Shows actual sells, not sent to market   </summary>
         private readonly Dictionary<Product, Value> soldByGovernment = new Dictionary<Product, Value>();
 
         public MultiSeller(float money, Country place) : base(place)
         {
             foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
-                //if (item != Product.Gold)
+            //if (item != Product.Gold)
+            {
+                if (item == Product.Grain)
                 {
-                    if (item == Product.Grain)
-                    {
-                        buyIfLessLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
-                        sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
-                    }
-                    else
-                    {
-                        buyIfLessLimits.Add(item, new Storage(item, ReadOnlyValue.Zero));
-                        sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
-                    }
-                    producedTotal.Add(item, new Value(0f));
-                    soldByGovernment.Add(item, new Value(0f));
+                    buyIfLessLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
+                    sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
                 }
+                else
+                {
+                    buyIfLessLimits.Add(item, new Storage(item, ReadOnlyValue.Zero));
+                    sellIfMoreLimits.Add(item, new Storage(item, Options.CountryMaxStorage));
+                }
+                producedTotal.Add(item, new Value(0f));
+                soldByGovernment.Add(item, new Value(0f));
+            }
         }
+
         //bool wantsToBuy?
         /// <summary>
         /// returns exception if failed
-        /// </summary>    
+        /// </summary>
         public Storage getSellIfMoreLimits(Product product)
         {
             return sellIfMoreLimits[product];
         }
+
         /// <summary>
         /// returns exception if failed
-        /// </summary>    
+        /// </summary>
         public Storage getBuyIfLessLimits(Product product)
         {
             return buyIfLessLimits[product];
         }
+
         /// <summary>
         /// returns exception if failed
-        /// </summary>    
+        /// </summary>
         public void setSellIfMoreLimits(Product product, float value)
         {
             sellIfMoreLimits[product].Set(value);
         }
+
         /// <summary>
         /// returns exception if failed
-        /// </summary>    
+        /// </summary>
         public void setBuyIfLessLimits(Product product, float value)
         {
             buyIfLessLimits[product].Set(value);
         }
-        override public void SetStatisticToZero()
+
+        public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
             sentToMarket.setZero();
@@ -91,6 +100,7 @@ namespace Nashet.EconomicSimulation
         {
             return sentToMarket.GetFirstSubstituteStorage(product);
         }
+
         /// <summary> Assuming product is abstract product</summary>
         public Storage getSentToMarketIncludingSubstituts(Product product)
         {
@@ -105,7 +115,7 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// Do checks outside
-        /// </summary>    
+        /// </summary>
         public void sell(Storage what)
         {
             sentToMarket.Add(what);
@@ -113,6 +123,7 @@ namespace Nashet.EconomicSimulation
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
             Game.market.sentToMarket.Add(what);
         }
+
         public void getMoneyForSoldProduct()
         {
             foreach (var sent in sentToMarket)
@@ -138,8 +149,7 @@ namespace Nashet.EconomicSimulation
                         //    countryStorageSet.add(unSold);
                         //}
 
-
-                        if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold)) 
+                        if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold))
                         {
                             Game.market.Pay(this, cost);
                             //Game.market.sentToMarket.subtract(realSold);
@@ -150,24 +160,28 @@ namespace Nashet.EconomicSimulation
                     }
                 }
         }
+
         internal void producedTotalAdd(Storage produced)
-        {            
+        {
             producedTotal.addMy(produced.Product, produced);
         }
+
         public ReadOnlyValue getProducedTotal(Product product)
         {
             //if (producedTotal.ContainsKey(product))
-                return producedTotal[product];
+            return producedTotal[product];
             //else
             //    return Value.Zero;
         }
+
         public ReadOnlyValue getSoldByGovernment(Product product)
         {
             if (soldByGovernment.ContainsKey(product))
                 return soldByGovernment[product];
             else
-                return Value.Zero;            
+                return Value.Zero;
         }
+
         public MoneyView getCostOfAllSellsByGovernment()
         {
             var res = new Money(0m);
@@ -177,6 +191,7 @@ namespace Nashet.EconomicSimulation
             }
             return res;
         }
+
         /// <summary> Assuming product is abstract product</summary>
         public ReadOnlyValue getProducedTotalIncludingSubstitutes(Product product)
         {
@@ -188,9 +203,10 @@ namespace Nashet.EconomicSimulation
                 }
             return new Storage(product, res);
         }
+
         /// <summary>
         /// new value
-        /// </summary>        
+        /// </summary>
         public Procent getWorldProductionShare(Product product)
         {
             var worldProduction = Game.market.getProductionTotal(product, true);

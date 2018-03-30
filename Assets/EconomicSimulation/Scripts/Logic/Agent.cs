@@ -1,76 +1,80 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Nashet.ValueSpace;
+﻿using System.Collections.Generic;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-
     /// <summary>
     /// represent ability to take loans/deposits
     /// </summary>
-    abstract public class Agent : IHasCountry, IStatisticable
+    public abstract class Agent : IHasCountry, IStatisticable
     {
         /// <summary> Used to calculate income tax, now it's only for statistics </summary>
         public Money moneyIncomeThisTurn = new Money(0);
+
         protected readonly Money moneyIncomeLastTurn = new Money(0);
         protected readonly Money cash = new Money(0);
         public MoneyView Cash { get { return cash; } }
 
-
         /// <summary> could be null</summary>
         //private Bank bank;
         public Money loans = new Money(0);
+
         public Money deposits = new Money(0);
 
         public Money incomeTaxPayed = new Money(0);
 
         public abstract void simulate();
+
         protected Country country;
+
         public Country Country
         {
             //get { return province.Country; }
             get { return country; }
         }
+
         protected Agent(Country country)
         {
             this.country = country;
         }
+
         public void OnProvinceOwnerChanged(Country newOner)
         {
             country = newOner;
         }
+
         internal void GiveMoneyFromNoWhere(decimal money)
         {
             cash.Add(money);
         }
+
         internal void GiveMoneyFromGoldPit(Storage gold)
         {
             var newMoney = new MoneyView(gold);
             cash.Add(newMoney);
             gold.SetZero();
-            this.moneyIncomeThisTurn.Add(newMoney);
+            moneyIncomeThisTurn.Add(newMoney);
             MoneyView sentToGovernment = MoneyView.CovertFromGold(gold.Copy().Multiply(Options.GovernmentTakesShareOfGoldOutput));
 
-
-            //send 50% to government            
+            //send 50% to government
             Pay(country, sentToGovernment);
             country.goldMinesIncomeAdd(sentToGovernment);
         }
+
         public virtual void SetStatisticToZero()
         {
             moneyIncomeLastTurn.Set(moneyIncomeThisTurn);
             moneyIncomeThisTurn.SetZero();
             incomeTaxPayed.SetZero();
         }
-        /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>    
+
+        /// <summary> Returns difference between moneyIncomeLastTurn and value</summary>
         //protected Value getSpendingLimit(ReadOnlyValue value)
         //{
         //    return moneyIncomeLastTurn.Copy().Subtract(value, false);
         //}
-
-
 
         public Bank Bank
         {
@@ -87,7 +91,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    this.bank = bank;
         //}
-        /// <summary> Includes deposits. New value </summary>    
+        /// <summary> Includes deposits. New value </summary>
         public MoneyView getMoneyAvailable()
         {
             if (Bank == null)
@@ -95,13 +99,14 @@ namespace Nashet.EconomicSimulation
             else
                 return cash.Copy().Add(Bank.HowMuchDepositCanReturn(this));//that's new Value
         }
+
         //new internal bool canPay(Value howMuchPay)
         //{
         //    return getMoneyTotal().isBiggerOrEqual(howMuchPay);
         //}
         ///// <summary>
         ///// depreciated
-        ///// </summary>    
+        ///// </summary>
         //private bool canPay(float howMuchPay)
         //{
         //    throw new DontUseThatMethod();
@@ -142,7 +147,7 @@ namespace Nashet.EconomicSimulation
                 realNeed = need;
 
             return CanPay(Game.market.getCost(realNeed));
-            //return realNeed.IsEqual(HowMuchCanAfford(realNeed));                
+            //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
         }
 
         internal bool CanAfford(StorageSet need)
@@ -155,6 +160,7 @@ namespace Nashet.EconomicSimulation
             }
             return true;
         }
+
         internal bool CanAfford(List<Storage> need)
         {
             foreach (Storage stor in need)
@@ -163,7 +169,8 @@ namespace Nashet.EconomicSimulation
                     return false;
             return true;
         }
-        /// <summary> Including deposits </summary>    
+
+        /// <summary> Including deposits </summary>
         internal Storage HowMuchCanAfford(Storage need)
         {
             MoneyView cost = Game.market.getCost(need);
@@ -172,6 +179,7 @@ namespace Nashet.EconomicSimulation
             else
                 return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Game.market.getCost(need.Product).Get()).Get());
         }
+
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
         //{
@@ -183,21 +191,23 @@ namespace Nashet.EconomicSimulation
         //    return new Value(need - this.cash.get());
         //}
 
-        /// <summary> Says how much money lack of desiredSum (counting cash and deposits in bank). New value. 
+        /// <summary> Says how much money lack of desiredSum (counting cash and deposits in bank). New value.
         /// Goes nut if cash + deposits >= desiredSum, no need for extra money, check that outside
-        /// </summary>        
+        /// </summary>
         internal MoneyView HowMuchLacksMoneyIncludingDeposits(MoneyView desiredSum)
         {
             return desiredSum.Copy().Subtract(getMoneyAvailable(), false);
         }
+
         /// <summary>
         /// Says how much money lack of desiredSum (counting cash only). New value
         /// Says zero if cash >= desiredSum, no need for extra money
-        /// </summary>        
+        /// </summary>
         internal MoneyView HowMuchLacksMoneyCashOnly(MoneyView desiredSum)
         {
             return desiredSum.Copy().Subtract(cash, false);
         }
+
         //internal Value HowMuchMoneyCanNotPay(Value value)
         //{
         //    return new Value(value.get() - this.cash.get());
@@ -207,7 +217,6 @@ namespace Nashet.EconomicSimulation
         //{
         //    return new Value(Game.market.getCost(need) - this.cash.get());
         //}
-
 
         //private float get()
         //{
@@ -227,11 +236,12 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return false;
         //}
-        /// <summary> Counting deposit and cash </summary>    
+        /// <summary> Counting deposit and cash </summary>
         internal bool CanPay(MoneyView howMuchPay)
         {
             return getMoneyAvailable().isBiggerOrEqual(howMuchPay);
         }
+
         internal bool CanPayCashOnly(MoneyView howMuchPay)
         {
             return cash.isBiggerOrEqual(howMuchPay);
@@ -245,7 +255,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
         /// Doesn't pay tax, doesn't register transaction
-        /// </summary>    
+        /// </summary>
         public bool PayWithoutRecord(Agent whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
@@ -253,7 +263,7 @@ namespace Nashet.EconomicSimulation
                 if (CanPayCashOnly(howMuch))
                 {
                     whom.cash.Add(howMuch);
-                    this.cash.Subtract(howMuch);
+                    cash.Subtract(howMuch);
                 }
                 else
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
@@ -266,10 +276,11 @@ namespace Nashet.EconomicSimulation
                 return false;
             }
         }
+
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposits from bank, if needed
         /// Doesn't pay tax, doesn't register transaction
-        /// </summary>    
+        /// </summary>
         public bool PayWithoutRecord(Money whom, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
@@ -277,7 +288,7 @@ namespace Nashet.EconomicSimulation
                 if (CanPayCashOnly(howMuch))
                 {
                     whom.Add(howMuch);
-                    this.cash.Subtract(howMuch);
+                    cash.Subtract(howMuch);
                 }
                 else
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
@@ -290,10 +301,11 @@ namespace Nashet.EconomicSimulation
                 return false;
             }
         }
+
         /// <summary>
         /// Checks inside. Wouldn't pay if can't. Takes back deposit from bank if needed
         /// Registers moneyIncomeThisTurn, pays tax. Returns true if was able to pay
-        /// </summary>    
+        /// </summary>
         public bool Pay(Agent incomeReceiver, MoneyView howMuch, bool showMessageAboutNegativeValue = true)
         {
             if (howMuch.isNotZero())
@@ -319,7 +331,7 @@ namespace Nashet.EconomicSimulation
                     if (popReceiver != null)
                         incomeReceiver.country.TakeIncomeTaxFrom(popReceiver, howMuchPayReally, popReceiver.Type.isPoorStrata());
                     //else // if it's not Pop than it should by dividends from enterprise..
-                    //{ 
+                    //{
                     //    //var countryPayer = incomeReceiver as Country;
                     //    //if (countryPayer != null)
                     //        incomeReceiver.Country.TakeIncomeTaxFrom(incomeReceiver, howMuchPayReally, false);
@@ -330,12 +342,14 @@ namespace Nashet.EconomicSimulation
                     return false;
             return true;
         }
+
         internal void PayAllAvailableMoney(Agent whom)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
-            Pay(whom, this.cash);
+            Pay(whom, cash);
         }
+
         internal void PayAllAvailableMoneyWithoutRecord(Agent whom)
         {
             if (Bank != null)
@@ -343,8 +357,7 @@ namespace Nashet.EconomicSimulation
             PayWithoutRecord(whom, cash);
         }
 
-
-        override public string ToString()
+        public override string ToString()
         {
             return cash.Get() + " coins";
         }

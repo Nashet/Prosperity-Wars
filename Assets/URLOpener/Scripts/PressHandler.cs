@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using System;
+﻿using System.Runtime.InteropServices;
+using UnityEngine;
 using UnityEngine.Events;
-using System.Runtime.InteropServices;
+using UnityEngine.EventSystems;
 
 namespace Nashet.UnityUIUtils
 {
@@ -13,17 +12,19 @@ namespace Nashet.UnityUIUtils
     {
         [SerializeField]
         private string url;
+
         private readonly UnityEvent OnPress = new UnityEvent();
-        
 
         private void Start()
         {
             OnPress.AddListener(() => { OpenLinkJSPlugin(url); });
         }
+
         public void OnPointerDown(PointerEventData eventData)
         {
             OnPress.Invoke();
         }
+
         private static void OpenLinkJSPlugin(string url)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -35,6 +36,5 @@ namespace Nashet.UnityUIUtils
 
         [DllImport("__Internal")]
         private static extern void openWindow(string url);
-
     }
 }

@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-using Nashet.EconomicSimulation;
-using Nashet.Utils;
-using System;
+﻿using Nashet.Utils;
+using UnityEngine;
 
 namespace Nashet.ValueSpace
 {
@@ -9,6 +7,7 @@ namespace Nashet.ValueSpace
     {
         public Money(decimal value, bool showMessageAboutNegativeValue = true) : base(value, showMessageAboutNegativeValue)
         { }
+
         public Money(MoneyView value) : base(value)
         { }
 
@@ -25,7 +24,7 @@ namespace Nashet.ValueSpace
                 return this;
             }
             else
-                return this.Multiply(1m / divider, showMessageAboutNegativeValue);
+                return Multiply(1m / divider, showMessageAboutNegativeValue);
         }
 
         public Money Multiply(Procent multiplier, bool showMessageAboutNegativeValue = true)
@@ -43,9 +42,10 @@ namespace Nashet.ValueSpace
                 SetZero();
             }
             else
-                data = multiplier * this.Get();
+                data = multiplier * Get();
             return this;
         }
+
         ///////////////////Add section
         public Money Add(MoneyView storage, bool showMessageAboutNegativeValue = true)
         {
@@ -60,6 +60,7 @@ namespace Nashet.ValueSpace
                 data = newData;
             return this;
         }
+
         public Money Add(decimal adding, bool showMessageAboutNegativeValue = true)
         {
             decimal newData = data + adding;
@@ -73,6 +74,7 @@ namespace Nashet.ValueSpace
                 data = newData;
             return this;
         }
+
         public Money Subtract(MoneyView storage, bool showMessageAboutNegativeValue = true)
         {
             if (storage.isBiggerThan(this))
@@ -82,14 +84,15 @@ namespace Nashet.ValueSpace
                 SetZero();
             }
             else
-                data = this.Get() - storage.Get();
+                data = Get() - storage.Get();
             return this;
         }
-        
+
         public void Set(MoneyView value)
         {
-            this.data = (value.Copy()).data;// shit
+            data = (value.Copy()).data;// shit
         }
+
         //public void Set(float value)
         //{
         //    this.data = (value .Copy()).data;

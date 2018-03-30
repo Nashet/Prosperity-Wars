@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-
+﻿using System;
+using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using UnityEngine;
 
 namespace Nashet.ValueSpace
 {
@@ -8,6 +9,7 @@ namespace Nashet.ValueSpace
     {
         public static MoneyView Zero = new MoneyView(0m);
         protected decimal data;
+
         public MoneyView(decimal value, bool showMessageAboutNegativeValue = true)
         {
             if (value >= 0m)
@@ -18,15 +20,18 @@ namespace Nashet.ValueSpace
                 data = 0;
             }
         }
+
         protected MoneyView(MoneyView value)
         {
             data = value.data;
         }
+
         public MoneyView(Storage value) : this((decimal)value.get())
         {
-            if (value.Product != EconomicSimulation.Product.Gold)
-                throw new System.Exception("THAT IS NOT REAL GOLD");
+            if (value.Product != Product.Gold)
+                throw new Exception("THAT IS NOT REAL GOLD");
         }
+
         public static MoneyView CovertFromGold(Storage stor)
         {
             return new MoneyView((decimal)stor.get());
@@ -66,10 +71,12 @@ namespace Nashet.ValueSpace
         {
             return data != 0m;
         }
+
         public bool isZero()
         {
             return data == 0m;
         }
+
         public bool isSmallerOrEqual(MoneyView value)
         {
             return data <= value.data;
@@ -82,12 +89,11 @@ namespace Nashet.ValueSpace
 
         public override string ToString()
         {
-            if (EconomicSimulation.Game.devMode && data < 0.001m && data != 0m)
+            if (Game.devMode && data < 0.001m && data != 0m)
                 return data.ToString("E") + " Gold";
             else
                 return data.ToString("N3") + " Gold";
         }
-
 
         //public Money Copy()
         //{

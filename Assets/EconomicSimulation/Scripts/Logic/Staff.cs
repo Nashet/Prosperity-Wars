@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -12,12 +10,14 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public abstract class Staff : Consumer, IWayOfLifeChange
     {
-        List<Army> allArmies = new List<Army>();
+        private List<Army> allArmies = new List<Army>();
+
         //protected Country place; //todo change class
         protected Staff(Country place) : base(place)
         {
             //this.place = place;
         }
+
         /// <summary>
         /// Sum of existing armies men + unmobilized reserve
         /// </summary>
@@ -26,7 +26,8 @@ namespace Nashet.EconomicSimulation
         {
             return howMuchCanMobilize(againstWho) + getAllArmiesSize();
         }
-        override public void simulate()
+
+        public override void simulate()
         {
             foreach (var item in getAllCorps())
             {
@@ -66,6 +67,7 @@ namespace Nashet.EconomicSimulation
                 size = defArmy.getSize();
             return size;
         }
+
         //public Country Country
         //{
         //    return place;
@@ -74,12 +76,14 @@ namespace Nashet.EconomicSimulation
         {
             return this != Game.Player || (this == Game.Player && Game.isPlayerSurrended());
         }
+
         public bool IsHuman
         {
             get { return !isAI(); }
         }
+
         /// <summary>
-        /// Unites all home armies in one. Assuming armies are alive, just needed to consolidate. If there is nothing to consolidate than returns empty army    
+        /// Unites all home armies in one. Assuming armies are alive, just needed to consolidate. If there is nothing to consolidate than returns empty army
         /// </summary>
         public Army consolidateArmies()
         {
@@ -90,7 +94,6 @@ namespace Nashet.EconomicSimulation
             {
                 if (allArmies.Count > 0)
                 {
-
                     foreach (Army next in allArmies)
                         if (next.getDestination() == null)
                         {
@@ -99,8 +102,7 @@ namespace Nashet.EconomicSimulation
                         }
                     //if (addConsolidatedArmyInList)
                     allArmies.Add(consolidatedArmy);
-                    allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army            
-
+                    allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
                 }
             }
             return consolidatedArmy;
@@ -108,6 +110,7 @@ namespace Nashet.EconomicSimulation
             //source.RemoveAll(armies => armies.getDestination() == null && armies != country.homeArmy && armies != country.sendingArmy);
             //allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
         }
+
         //internal void mobilize()
         //{
         //    foreach (var province in place.ownedProvinces)
@@ -131,10 +134,12 @@ namespace Nashet.EconomicSimulation
             }
             consolidateArmies();
         }
+
         public void addArmy(Army army)
         {
             allArmies.Add(army);
         }
+
         internal void demobilize()
         {
             foreach (var item in allArmies)
@@ -143,6 +148,7 @@ namespace Nashet.EconomicSimulation
             }
             allArmies.Clear();
         }
+
         internal void demobilize(Func<Corps, bool> predicate)
         {
             foreach (Army nextArmy in allArmies)
@@ -151,12 +157,13 @@ namespace Nashet.EconomicSimulation
             }
             allArmies.RemoveAll(army => army.getSize() == 0);
         }
+
         internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
         {
             allArmies.ForEach(x => x.rebelTo(popSelector, movement));
         }
 
-        override public List<Storage> getRealAllNeeds()
+        public override List<Storage> getRealAllNeeds()
         {
             //StorageSet res = new StorageSet();
             //foreach (var item in allArmies)
@@ -169,27 +176,30 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        virtual internal void sendArmy(Province possibleTarget, Procent procent)
+        internal virtual void sendArmy(Province possibleTarget, Procent procent)
         {
             consolidateArmies().balance(procent).sendTo(possibleTarget);
         }
 
-        override public void SetStatisticToZero()
+        public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
             allArmies.ForEach(x => x.setStatisticToZero());
         }
+
         internal IEnumerable<Army> getAllArmies()
         {
             foreach (var army in allArmies)
                 yield return army;
         }
+
         internal IEnumerable<Corps> getAllCorps()
         {
             foreach (var army in allArmies)
                 foreach (var corps in army.getCorps())
                     yield return corps;
         }
+
         internal IEnumerable<Army> getAttackingArmies()
         {
             foreach (var army in allArmies)
@@ -222,12 +232,12 @@ namespace Nashet.EconomicSimulation
                     foreach (var staff in country.movements)
                         yield return staff;
                 }
-
         }
+
         /// <summary>
         /// Just a plce holder, never intended to call
         /// </summary>
-        
+
         public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
         {
             throw new NotImplementedException();

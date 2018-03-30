@@ -1,35 +1,35 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System.Text;
 using System.Linq;
-using System;
-using Nashet.UnityUIUtils;
+using System.Text;
 using Nashet.Conditions;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
 namespace Nashet.EconomicSimulation
 {
     public class Army
     {
-        static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
+        private static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
+
         //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
-        static Modifier modifierMorale = new Modifier(x => (x as Army).GetAverageCorps(y => y.getMorale()).get(), "Morale", 1f, true);
+        private static Modifier modifierMorale = new Modifier(x => (x as Army).GetAverageCorps(y => y.getMorale()).get(), "Morale", 1f, true);
 
-        static Modifier modifierHorses = new Modifier(x => (x as Army).getHorsesSupply(), "Horses", 0.5f, false);
-        static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
-        static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Charged Firearms", 2f, false);
-        static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Charged Artillery", 1f, false);
+        private static Modifier modifierHorses = new Modifier(x => (x as Army).getHorsesSupply(), "Horses", 0.5f, false);
+        private static Modifier modifierColdArms = new Modifier(x => (x as Army).getColdArmsSupply(), "Cold arms", 1f, false);
+        private static Modifier modifierFirearms = new Modifier(x => (x as Army).getEquippedFirearmsSupply(), "Charged Firearms", 2f, false);
+        private static Modifier modifierArtillery = new Modifier(x => (x as Army).getEquippedArtillerySupply(), "Charged Artillery", 1f, false);
 
-        static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Fueled Cars", 2f, false);
-        static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Fueled & charged Tanks", 1f, false);
-        static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
-        static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
-        static Modifier modifierEducation = new Modifier(x => (x as Army).GetAverageCorps(y => y.getPopUnit().Education).RawUIntValue, "Education", 1f / Procent.Precision, false);
-
+        private static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Fueled Cars", 2f, false);
+        private static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Fueled & charged Tanks", 1f, false);
+        private static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
+        private static Modifier modifierLuck = new Modifier(x => (float)Math.Round(Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
+        private static Modifier modifierEducation = new Modifier(x => (x as Army).GetAverageCorps(y => y.getPopUnit().Education).RawUIntValue, "Education", 1f / Procent.Precision, false);
 
         private readonly Dictionary<PopUnit, Corps> personal;
-        Province destination;
+        private Province destination;
         private readonly Staff owner;
 
         private float getHorsesSupply()
@@ -38,12 +38,14 @@ namespace Nashet.EconomicSimulation
                 return new Procent(getConsumption(Product.Cattle), getNeeds(Product.Cattle), false).get();
             else return 0f;
         }
+
         private float getColdArmsSupply()
         {
             if (getOwner().Country.Invented(Product.ColdArms))
                 return new Procent(getConsumption(Product.ColdArms), getNeeds(Product.ColdArms), false).get();
             else return 0f;
         }
+
         private float getEquippedFirearmsSupply()
         {
             if (getOwner().Country.Invented(Product.Firearms))
@@ -53,6 +55,7 @@ namespace Nashet.EconomicSimulation
              );
             else return 0f;
         }
+
         private float getEquippedArtillerySupply()
         {
             if (getOwner().Country.Invented(Product.Artillery))
@@ -62,6 +65,7 @@ namespace Nashet.EconomicSimulation
              );
             else return 0f;
         }
+
         private float getEquippedCarsSupply()
         {
             if (getOwner().Country.Invented(Product.Cars))
@@ -71,6 +75,7 @@ namespace Nashet.EconomicSimulation
              );
             else return 0f;
         }
+
         private float getEquippedTanksSupply()
         {
             if (getOwner().Country.Invented(Product.Tanks))
@@ -81,6 +86,7 @@ namespace Nashet.EconomicSimulation
              );
             else return 0f;
         }
+
         private float getEquippedAirplanesSupply()
         {
             if (getOwner().Country.Invented(Product.Airplanes))
@@ -92,13 +98,14 @@ namespace Nashet.EconomicSimulation
             else return 0f;
         }
 
-        static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>()
+        private static ModifiersList modifierStrenght = new ModifiersList(new List<Condition>
         {
         //modifierDefenseInMountains
             Modifier.modifierDefault1, modifierInDefense,  modifierMorale, modifierHorses, modifierColdArms,
         modifierFirearms, modifierArtillery, modifierCars, modifierTanks, modifierAirplanes, modifierLuck,
         modifierEducation
         });
+
         // private Army consolidatedArmy;
 
         public Army(Staff owner)
@@ -107,17 +114,16 @@ namespace Nashet.EconomicSimulation
             personal = new Dictionary<PopUnit, Corps>();
             this.owner = owner;
         }
+
         //public Army(Army consolidatedArmy) : this(consolidatedArmy.getOwner())
-        //{ }    
+        //{ }
 
         //public static bool Any<TSource>(this IEnumerable<TSource> source);
-        void move(Corps item, Army destination)
+        private void move(Corps item, Army destination)
         {
-            if (this.personal.Remove(item.getPopUnit())) // don't remove this
+            if (personal.Remove(item.getPopUnit())) // don't remove this
                 destination.personal.Add(item.getPopUnit(), item);
         }
-
-
 
         //public Army(Army army)
         //{
@@ -134,6 +140,7 @@ namespace Nashet.EconomicSimulation
                 CorpsPool.ReleaseObject(corps);
             }
         }
+
         public void demobilize(Func<Corps, bool> predicate)
         {
             foreach (var corps in personal.Values.ToList())
@@ -143,6 +150,7 @@ namespace Nashet.EconomicSimulation
                     CorpsPool.ReleaseObject(corps);
                 }
         }
+
         internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
         {
             var takerArmy = movement.getDefenceForces();
@@ -153,10 +161,12 @@ namespace Nashet.EconomicSimulation
                     takerArmy.add(corps);
                 }
         }
+
         public void consume()
         {
             personal.PerformAction(corps => corps.Value.consume(getOwner().Country));
         }
+
         public Procent GetAverageCorps(Func<Corps, Procent> selector)
         {
             Procent result = new Procent(0);
@@ -168,6 +178,7 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
         //public Procent getAverageMorale()
         //{
         //    Procent result = new Procent(0);
@@ -192,6 +203,7 @@ namespace Nashet.EconomicSimulation
                     personal.Add(corpsToAdd.getPopUnit(), corpsToAdd);
             }
         }
+
         public void joinin(Army armyToAdd)
         {
             if (armyToAdd != this)
@@ -199,10 +211,10 @@ namespace Nashet.EconomicSimulation
                 Corps found;
                 foreach (var corpsToTransfert in armyToAdd.personal.ToList())
                     if (corpsToTransfert.Value.getSize() > 0)
-                        if (this.personal.TryGetValue(corpsToTransfert.Key, out found))
+                        if (personal.TryGetValue(corpsToTransfert.Key, out found))
                             found.add(corpsToTransfert.Value);
                         else
-                            this.personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
+                            personal.Add(corpsToTransfert.Key, corpsToTransfert.Value);
                     else
                     {
                         armyToAdd.personal.Remove(corpsToTransfert.Key);
@@ -211,20 +223,24 @@ namespace Nashet.EconomicSimulation
                 armyToAdd.personal.Clear();
             }
         }
+
         internal void remove(Corps corps)
         {
             personal.Remove(corps.getPopUnit());
         }
+
         internal int getSize()
         {
             return personal.Sum(x => x.Value.getSize());
         }
+
         internal IEnumerable<Corps> getCorps()
         {
             foreach (Corps corps in personal.Values)
                 yield return corps;
         }
-        override public string ToString()
+
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -240,6 +256,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("None");
             return sb.ToString();
         }
+
         internal string getName()
         {
             StringBuilder sb = new StringBuilder();
@@ -261,6 +278,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("None");
             return sb.ToString();
         }
+
         //private Procent getConsumption(Product prod)
         //{
         //    Procent res = new Procent(0f);
@@ -279,12 +297,12 @@ namespace Nashet.EconomicSimulation
                 res.Add(item.Value.getConsumption(prod));
             return res;
         }
+
         private StorageSet getConsumption()
         {
             var consumption = new StorageSet();
             foreach (var item in personal)
                 consumption.Add(item.Value.getConsumption());
-
 
             //    Procent res = new Procent(0f);
             //int calculatedSize = 0;
@@ -296,6 +314,7 @@ namespace Nashet.EconomicSimulation
             //return res;
             return consumption;
         }
+
         public List<Storage> getNeeds()
         {
             // StorageSet used for faster calculation
@@ -304,7 +323,8 @@ namespace Nashet.EconomicSimulation
                 res.Add(item.Value.getRealNeeds(getOwner().Country));
             return res.ToList();
         }
-        Value getNeeds(Product product)
+
+        private Value getNeeds(Product product)
         {
             Value res = new Value(0f);
             foreach (var item in personal)
@@ -312,7 +332,7 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        Dictionary<PopType, int> getAmountByTypes()
+        private Dictionary<PopType, int> getAmountByTypes()
         {
             Dictionary<PopType, int> res = new Dictionary<PopType, int>();
             //int test;
@@ -329,6 +349,7 @@ namespace Nashet.EconomicSimulation
             }
             return res;
         }
+
         /// <summary>
         /// howMuchShouldBeInSecondArmy - procent of this army. Returns second army
         /// </summary>
@@ -343,25 +364,25 @@ namespace Nashet.EconomicSimulation
             {
                 //Army sumArmy = new Army();
                 //sumArmy.add(this);
-                this.joinin(secondArmy);
-                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(this.getSize());
+                joinin(secondArmy);
+                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(getSize());
 
                 //secondArmy.clear();
 
                 int needToFullFill = secondArmyExpectedSize;
                 while (needToFullFill > 0)
                 {
-                    var corpsToBalance = this.getBiggestCorpsSmallerThan(needToFullFill);
+                    var corpsToBalance = getBiggestCorpsSmallerThan(needToFullFill);
                     if (corpsToBalance == null)
                         break;
                     else
-                        this.move(corpsToBalance, secondArmy);
+                        move(corpsToBalance, secondArmy);
                     needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
                 }
-
             }
             return secondArmy;
         }
+
         internal Army balance(Procent howMuchShouldBeInSecondArmy)
         {
             //if (howMuchShouldBeInSecondArmy.get() == 1f)
@@ -371,29 +392,29 @@ namespace Nashet.EconomicSimulation
             //}
             //else
             {
-                Army secondArmy = new Army(this.getOwner());
+                Army secondArmy = new Army(getOwner());
 
                 //Army sumArmy = new Army();
                 //sumArmy.add(this);
                 //this.joinin(secondArmy);
-                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(this.getSize());
+                int secondArmyExpectedSize = howMuchShouldBeInSecondArmy.getProcentOf(getSize());
 
                 //secondArmy.clear();
 
                 int needToFullFill = secondArmyExpectedSize;
                 while (needToFullFill > 0)
                 {
-                    var corpsToBalance = this.getBiggestCorpsSmallerThan(needToFullFill);
+                    var corpsToBalance = getBiggestCorpsSmallerThan(needToFullFill);
                     if (corpsToBalance == null)
                         break;
                     else
-                        this.move(corpsToBalance, secondArmy);
+                        move(corpsToBalance, secondArmy);
                     needToFullFill = secondArmyExpectedSize - secondArmy.getSize();
                 }
                 return secondArmy;
             }
         }
-        
+
         internal BattleResult attack(Province prov)
         {
             var enemy = prov.Country;
@@ -404,10 +425,11 @@ namespace Nashet.EconomicSimulation
             enemy.consolidateArmies();
             return attack(enemy.getDefenceForces());
         }
+
         /// <summary>
         /// returns true if attacker is winner
-        /// </summary>    
-        BattleResult attack(Army defender)
+        /// </summary>
+        private BattleResult attack(Army defender)
         {
             Army attacker = this;
             int initialAttackerSize = attacker.getSize();
@@ -416,9 +438,9 @@ namespace Nashet.EconomicSimulation
             bool attackerWon;
             BattleResult result;
             string attackerBonus;
-            var attackerModifier = Army.modifierStrenght.getModifier(attacker, out attackerBonus);
+            var attackerModifier = modifierStrenght.getModifier(attacker, out attackerBonus);
             string defenderBonus;
-            var defenderModifier = Army.modifierStrenght.getModifier(defender, out defenderBonus);
+            var defenderModifier = modifierStrenght.getModifier(defender, out defenderBonus);
 
             if (attacker.getStrenght(attackerModifier) > defender.getStrenght(defenderModifier))
             {
@@ -443,9 +465,8 @@ namespace Nashet.EconomicSimulation
                     attacker.destination, false, attackerBonus, defenderBonus);
                 return r;
             }
-            else //defender.getStrenght() > attacker.getStrenght()  
+            else //defender.getStrenght() > attacker.getStrenght()
             {
-
                 attackerWon = false;
                 float winnerLossUnConverted;
                 if (defender.getStrenght(defenderModifier) > 0f)
@@ -460,10 +481,12 @@ namespace Nashet.EconomicSimulation
             }
             return result;
         }
+
         public Staff getOwner()
         {
             return owner;
         }
+
         //public void setOwner(Staff country)
         //{
         //    owner = country;
@@ -486,9 +509,10 @@ namespace Nashet.EconomicSimulation
             }
             return totalLoss;
         }
+
         /// <summary>
         /// argument is NOT men, but they strength
-        /// </summary>    
+        /// </summary>
         private int takeLossUnconverted(float lossStrenght, IWayOfLifeChange reason)
         {
             int totalMenLoss = 0;
@@ -502,7 +526,6 @@ namespace Nashet.EconomicSimulation
                 {
                     foreach (var corp in personal.ToList())
                     {
-
                         var corpsStrenght = corp.Value.Type.getStrenght();
                         if (corpsStrenght * armyStrenghtModifier > 0)//(corp.Value.Type.getStrenght() > 0f)
                         {
@@ -516,14 +539,17 @@ namespace Nashet.EconomicSimulation
             }
             return totalMenLoss;
         }
+
         public bool isInDefense()
         {
             return destination == null;
         }
+
         public float getStrenghtModifier()
         {
             return modifierStrenght.getModifier(this);
         }
+
         private float getStrenght(float armyStrenghtModifier)
         {
             float result = 0;
@@ -534,14 +560,12 @@ namespace Nashet.EconomicSimulation
 
         private Corps getBiggestCorpsSmallerThan(int secondArmyExpectedSize)
         {
-
             var smallerCorps = personal.Where(x => x.Value.getSize() <= secondArmyExpectedSize);
             if (smallerCorps.Count() == 0)
                 return null;
             else
                 return smallerCorps.MaxBy(x => x.Value.getSize()).Value;
         }
-
 
         //internal Army split(Procent howMuchShouldBeInSecondArmy)
         //{
@@ -561,8 +585,6 @@ namespace Nashet.EconomicSimulation
         //        return null;
         //}
 
-
-
         internal void sendTo(Province province)
         {
             destination = province;
@@ -578,5 +600,5 @@ namespace Nashet.EconomicSimulation
             foreach (var corps in personal)
                 corps.Value.setStatisticToZero();
         }
-    }    
+    }
 }

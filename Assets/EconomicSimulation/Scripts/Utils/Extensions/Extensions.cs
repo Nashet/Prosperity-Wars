@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
 using System.Linq;
 using System.Text;
 using Nashet.EconomicSimulation;
 using Nashet.ValueSpace;
+using UnityEngine;
+
 namespace Nashet.Utils
 {
     public static class MonoBehaviourExtensions
@@ -16,8 +16,9 @@ namespace Nashet.Utils
             else if (val.CompareTo(max) > 0) return max;
             else return val;
         }
-        static public IEnumerable<GameObject> AllParents(this GameObject that)
-        {            
+
+        public static IEnumerable<GameObject> AllParents(this GameObject that)
+        {
             GameObject nextParent;
             if (that.transform.parent == null)
                 nextParent = null;
@@ -32,35 +33,40 @@ namespace Nashet.Utils
                     nextParent = nextParent.transform.parent.gameObject;
             }
         }
-        static public bool HasComponent<T>(this MonoBehaviour that)
+
+        public static bool HasComponent<T>(this MonoBehaviour that)
         {
             if (that.GetComponent<T>() == null)
                 return false;
             else
                 return true;
         }
-        static public bool HasComponent<T>(this GameObject that)
+
+        public static bool HasComponent<T>(this GameObject that)
         {
             if (that.GetComponent<T>() == null)
                 return false;
             else
                 return true;
         }
-        static public bool HasComponentInParent<T>(this GameObject that)
+
+        public static bool HasComponentInParent<T>(this GameObject that)
         {
             if (that.transform.parent == null || that.transform.parent.GetComponent<T>() == null)
                 return false;
             else
                 return true;
         }
-        static public bool HasComponentInParent<T>(this MonoBehaviour that)
+
+        public static bool HasComponentInParent<T>(this MonoBehaviour that)
         {
             if (that.transform.parent == null || that.transform.parent.GetComponent<T>() == null)
                 return false;
             else
                 return true;
         }
-        static public bool HasComponentInParentParent<T>(this MonoBehaviour that)
+
+        public static bool HasComponentInParentParent<T>(this MonoBehaviour that)
         {
             if (that.transform.parent == null || that.transform.parent.parent == null || that.transform.parent.parent.GetComponent<T>() == null)
                 return false;
@@ -68,6 +74,7 @@ namespace Nashet.Utils
                 return true;
         }
     }
+
     public static class Texture2DExtensions
     {
         public static Texture2D FlipTexture(Texture2D original)
@@ -76,7 +83,6 @@ namespace Nashet.Utils
 
             int xN = original.width;
             int yN = original.height;
-
 
             for (int i = 0; i < xN; i++)
             {
@@ -89,6 +95,7 @@ namespace Nashet.Utils
 
             return flipped;
         }
+
         public static bool isDifferentColor(this Texture2D image, int thisx, int thisy, int x, int y)
         {
             if (image.GetPixel(thisx, thisy) != image.GetPixel(x, y))
@@ -96,21 +103,23 @@ namespace Nashet.Utils
             else
                 return false;
         }
+
         public static void setColor(this Texture2D image, Color color)
         {
-            for (int j = 0; j < image.height; j++) // cicle by province        
+            for (int j = 0; j < image.height; j++) // cicle by province
                 for (int i = 0; i < image.width; i++)
                     image.SetPixel(i, j, color);
         }
 
         public static void setAlphaToMax(this Texture2D image)
         {
-            for (int j = 0; j < image.height; j++) // cicle by province        
+            for (int j = 0; j < image.height; j++) // cicle by province
                 for (int i = 0; i < image.width; i++)
                     // if (image.GetPixel(i, j) != Color.black)
                     image.SetPixel(i, j, image.GetPixel(i, j).setAlphaToMax());
         }
-        static void drawSpot(Texture2D image, int x, int y, Color color)
+
+        private static void drawSpot(Texture2D image, int x, int y, Color color)
         {
             int straightBorderChance = 4;// 5;
                                          //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
@@ -121,10 +130,12 @@ namespace Nashet.Utils
                     if (image.GetPixel(x, y) == Color.black)
                         image.SetPixel(x, y, color.setAlphaToZero());
         }
+
         public static bool coordinatesExist(this Texture2D image, int x, int y)
         {
             return (x >= 0 && x < image.width && y >= 0 && y < image.height);
         }
+
         public static bool isRightTopCorner(this Texture2D image, int x, int y)
         {
             if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
@@ -136,6 +147,7 @@ namespace Nashet.Utils
             else
                 return false;
         }
+
         public static bool isRightBottomCorner(this Texture2D image, int x, int y)
         {
             if (image.coordinatesExist(x + 1, y) && image.GetPixel(x + 1, y) != image.GetPixel(x, y)
@@ -147,6 +159,7 @@ namespace Nashet.Utils
             else
                 return false;
         }
+
         public static bool isLeftTopCorner(this Texture2D image, int x, int y)
         {
             if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
@@ -158,6 +171,7 @@ namespace Nashet.Utils
             else
                 return false;
         }
+
         public static bool isLeftBottomCorner(this Texture2D image, int x, int y)
         {
             if (image.coordinatesExist(x - 1, y) && image.GetPixel(x - 1, y) != image.GetPixel(x, y)
@@ -178,21 +192,24 @@ namespace Nashet.Utils
             drawSpot(image, x + 1, y, color);
             drawSpot(image, x, y - 1, color);
             drawSpot(image, x, y + 1, color);
-
         }
+
         public static int getRandomX(this Texture2D image)
         {
             return Game.Random.Next(0, image.width);
         }
+
         public static Color getRandomPixel(this Texture2D image)
         {
             return image.GetPixel(image.getRandomX(), image.getRandomY());
         }
+
         public static int getRandomY(this Texture2D image)
         {
             return Game.Random.Next(0, image.height);
         }
     }
+
     /// <summary>!! Broken. Assuming product is abstract product</summary>
     public static class ListStorageExtensions
     {
@@ -211,6 +228,7 @@ namespace Nashet.Utils
                 }
             return new Storage(product, res);
         }
+
         public static Storage getStorage(this List<Storage> list, Product product)
         {
             foreach (Storage stor in list)
@@ -218,6 +236,7 @@ namespace Nashet.Utils
                     return stor;
             return new Storage(product, 0f);
         }
+
         public static Storage GetFirstSubstituteStorage(this List<Storage> list, Product product)
         {
             if (product.isAbstract())
@@ -230,6 +249,7 @@ namespace Nashet.Utils
                 return list.Find(x => x.Product == product);
             return new Storage(product, 0f);
         }
+
         public static List<Storage> Multiply(this List<Storage> list, Value value)
         {
             foreach (var item in list)
@@ -238,6 +258,7 @@ namespace Nashet.Utils
             }
             return list;
         }
+
         public static Value Sum(this List<Storage> list)
         {
             Value sum = new Value(0f);
@@ -247,6 +268,7 @@ namespace Nashet.Utils
             }
             return sum;
         }
+
         /// <summary>
         /// Does dip copy
         /// </summary>
@@ -259,6 +281,7 @@ namespace Nashet.Utils
             return res;
         }
     }
+
     public static class CollectionExtensions
     {
         //public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
@@ -282,6 +305,7 @@ namespace Nashet.Utils
             else
                 dictionary.Add(what, size);
         }
+
         public static void addMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))
@@ -289,6 +313,7 @@ namespace Nashet.Utils
             else
                 dictionary.Add(what, value);
         }
+
         public static void setMy<T>(this Dictionary<T, Value> dictionary, T what, Value value)
         {
             if (dictionary.ContainsKey(what))
@@ -296,6 +321,7 @@ namespace Nashet.Utils
             else
                 dictionary.Add(what, value);
         }
+
         public static void AddIfNotNull<T>(this List<T> list, T what)
         {
             if (!what.Equals(default(T)))
@@ -306,22 +332,23 @@ namespace Nashet.Utils
         {
             if (source.Remove(item)) // don't remove this
                 destination.Add(item);
-
         }
 
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
         {
             return source.MinBy(selector, null);
         }
+
         public static void PerformAction<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, Action<TSource> action)
         {
             foreach (var item in source)
                 if (predicate(item))
                     action(item);
         }
+
         /// <summary>
         /// New value
-        /// </summary>        
+        /// </summary>
         public static Procent GetAverageProcent(this IEnumerable<PopUnit> source, Func<PopUnit, Procent> selector)
         {
             Procent result = new Procent(0f);
@@ -333,14 +360,16 @@ namespace Nashet.Utils
             }
             return result;
         }
+
         public static void PerformAction<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
         {
             foreach (var item in source)
                 action(item);
         }
+
         /// <summary>
         /// Returns default() if there is source is empty
-        /// </summary>        
+        /// </summary>
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
@@ -371,6 +400,7 @@ namespace Nashet.Utils
                 return min;
             }
         }
+
         /// <summary>
         /// Returns default() if there is source is empty
         /// </summary>
@@ -379,6 +409,7 @@ namespace Nashet.Utils
         {
             return source.MaxBy(selector, null);
         }
+
         //public static string ToString<TSource, TKey>(this IEnumerable<TSource> source,
         //       Func<TSource, TKey> selector)
         //{
@@ -387,7 +418,7 @@ namespace Nashet.Utils
 
         /// <summary>
         /// Returns the maximal element of the given sequence, based on
-        /// the given projection and the specified comparer for projected values.     /// 
+        /// the given projection and the specified comparer for projected values.     ///
         /// </summary>
         /// <remarks>
         /// If more than one element has the maximal projected value, the first
@@ -400,7 +431,7 @@ namespace Nashet.Utils
         /// <param name="selector">Selector to use to pick the results to compare</param>
         /// <param name="comparer">Comparer to use to compare projected values</param>
         /// <returns>The maximal element, according to the projection.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/> 
+        /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="selector"/>
         /// or <paramref name="comparer"/> is null</exception>
         /// <exception cref="InvalidOperationException"><paramref name="source"/> is empty</exception>
 
@@ -408,7 +439,7 @@ namespace Nashet.Utils
             Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             //if (source == null) throw new ArgumentNullException(nameof(source)); //todo fix exception
-            //if (selector == null) throw new ArgumentNullException(nameof(selector)); 
+            //if (selector == null) throw new ArgumentNullException(nameof(selector));
             //todo fix exception
             comparer = comparer ?? Comparer<TKey>.Default;
 
@@ -433,6 +464,7 @@ namespace Nashet.Utils
                 return max;
             }
         }
+
         public static TSource MaxByRandom<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector)
         {
@@ -476,6 +508,7 @@ namespace Nashet.Utils
             }
             return reslist.Random();
         }
+
         //private static System.Random rng = new System.Random();
 
         public static void Shuffle<T>(this IList<T> list)
@@ -490,6 +523,7 @@ namespace Nashet.Utils
                 list[n] = value;
             }
         }
+
         ///<summary>Finds the index of the first item matching an expression in an enumerable.</summary>
         ///<param name="items">The enumerable to search.</param>
         ///<param name="predicate">The expression to test the items against.</param>
@@ -507,11 +541,13 @@ namespace Nashet.Utils
             }
             return -1;
         }
+
         ///<summary>Finds the index of the first occurrence of an item in an enumerable.</summary>
         ///<param name="items">The enumerable to search.</param>
         ///<param name="item">The item to find.</param>
         ///<returns>The index of the first matching item, or -1 if the item was not found.</returns>
         public static int IndexOf<T>(this IEnumerable<T> items, T item) { return items.FindIndex(i => EqualityComparer<T>.Default.Equals(item, i)); }
+
         //public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
         //{
         //    if (target == null)
@@ -524,14 +560,14 @@ namespace Nashet.Utils
         //}
         /// <summary>
         /// returns default(T) if fails
-        /// </summary>    
+        /// </summary>
         //public static T Random<T>(this List<T> source)
         //{
         //    if (source == null || source.Count == 0)
         //        return default(T);
         //    return source[Game.Random.Next(source.Count)];
 
-        //}        
+        //}
 
         public static T Random<T>(this IEnumerable<T> enumerable)
         {
@@ -544,6 +580,7 @@ namespace Nashet.Utils
                 return enumerable.ElementAt(index);
             }
         }
+
         public static IEnumerable<T> FirstSameElements<T>(this IEnumerable<T> collection, Func<T, float> selector)
         {
             T previousElement = collection.FirstOrDefault();
@@ -552,15 +589,15 @@ namespace Nashet.Utils
                     if (selector(item) == selector(previousElement))
                         yield return item;
         }
+
         /// <summary>
         ///returns an empty List<T> if didn't find anything
-        /// </summary>    
+        /// </summary>
         //public static T Random<T>(this List<T> source, Predicate<T> predicate)
         //{
         //    return source.FindAll(predicate).Random();
-        //    //return source.ElementAt(Game.random.Next(source.Count));    
+        //    //return source.ElementAt(Game.random.Next(source.Count));
         //}
-
 
         public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
             Func<TKey, TValue, bool> predicate)
@@ -571,8 +608,8 @@ namespace Nashet.Utils
                 dic.Remove(key);
             }
         }
-
     }
+
     public static class GetStringExtensions
     {
         public static string GetString(this Dictionary<Product, Storage> collection, String lineBreaker)
@@ -594,6 +631,7 @@ namespace Nashet.Utils
             else
                 return "none";
         }
+
         public static string getString(this IEnumerable<Storage> list, string lineBreaker)
         {
             if (list.Any(x => x.isNotZero()))
@@ -620,9 +658,10 @@ namespace Nashet.Utils
             else
                 return "none";
         }
+
         /// <summary>
         /// Uses FullName instead of standard ToString()
-        /// </summary>    
+        /// </summary>
         public static string getString(this IEnumerable<Movement> source)
         {
             StringBuilder sb = new StringBuilder();
@@ -691,6 +730,7 @@ namespace Nashet.Utils
             else
                 return "none";
         }
+
         //public static string ToString<T, V>(this KeyValuePair<T, V> source, string separator)
         //{
         //    return source.Key + separator + source.Value;
@@ -780,11 +820,11 @@ namespace Nashet.Utils
                                 Debug.Log("Unknown WayOfLifeChange");
                         }
                     }
-
                 }
             }
             return sb.ToString();
         }
+
         //public static string getString(this IEnumerable<IGrouping<IWayOfLifeChange, KeyValuePair<IWayOfLifeChange, int>>> source, string lineBreaker)
         public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, string totalString)
         {
@@ -797,7 +837,6 @@ namespace Nashet.Utils
             Key = group,
             Sum = element.Sum(everyElement => everyElement.Value)
             //.Sum(x => x.Value))
-
         }).OrderByDescending(x => Math.Abs(x.Sum));
             //only null or province
             if (query.Count() == 0)
@@ -819,6 +858,7 @@ namespace Nashet.Utils
             sb.Append(totalString).Append(total);
             return sb.ToString();
         }
+
         public static string getString(this IEnumerable<KeyValuePair<IWayOfLifeChange, int>> source, string lineBreaker, PopUnit pop, string totalString)
         {
             if (!source.Any(x => x.Value != 0))
@@ -844,7 +884,6 @@ namespace Nashet.Utils
             return sb.ToString();
         }
 
-
         public static string getString(IEnumerable<KeyValuePair<TemporaryModifier, Date>> dictionary)
         {
             if (dictionary.Count() == 0)
@@ -866,6 +905,7 @@ namespace Nashet.Utils
             return sb.ToString();
         }
     }
+
     public static class ColorExtensions
     {
         public static Color getNegative(this Color color)
@@ -877,11 +917,13 @@ namespace Nashet.Utils
         {
             return new Color((float)Game.Random.NextDouble(), (float)Game.Random.NextDouble(), (float)Game.Random.NextDouble(), 1f);
         }
+
         public static Color setAlphaToZero(this Color color)
         {
             color.a = 0f;
             return color;
         }
+
         public static Color getAlmostSameColor(this Color color)
         {
             float maxDeviation = 0.02f;//not including
@@ -892,23 +934,24 @@ namespace Nashet.Utils
             result.g = color.g + deviation;
             result.b = color.b + deviation;
 
-
             return result;
         }
+
         public static bool isSameColorsWithoutAlpha(this Color colorA, Color colorB)
         {
             if (colorA.b == colorB.b && colorA.g == colorB.g && colorA.r == colorB.r)
                 return true;
             else
                 return false;
-
         }
+
         public static Color setAlphaToMax(this Color color)
         {
             color.a = 1f;
             return color;
         }
     }
+
     public static class MeshExtensions
     {
         public static bool hasDuplicateOfEdge(this Mesh mesh, int pointA, int pointB)
@@ -930,6 +973,7 @@ namespace Nashet.Utils
             }
             return false;
         }
+
         public static List<EdgeHelpers.Edge> getBorders(this Mesh mesh, List<EdgeHelpers.Edge> edges)
         {
             List<EdgeHelpers.Edge> res = new List<EdgeHelpers.Edge>();
@@ -968,6 +1012,7 @@ namespace Nashet.Utils
             }
             return result;
         }
+
         public static bool isSameEdge(this Mesh mesh, int a, int b, int c, int d)
         {
             //if ( (mesh.vertices[a] == mesh.vertices[c] && mesh.vertices[b] == mesh.vertices[d])
@@ -1011,10 +1056,10 @@ namespace Nashet.Utils
             }
             else
             {
-
                 return false;
             }
         }
+
         //public static List<int> getPerimeterVertexNumbers2(this Mesh mesh)
         //{
         //    //for (int i = 0; i < mesh.triangles.Count(); i += 6)
@@ -1025,7 +1070,7 @@ namespace Nashet.Utils
             List<int> vertexNumbers = new List<int>();
             for (int i = 0; i < mesh.triangles.Count(); i += 6)
             //for (int i = 0; i < 17; i += 6)
-            //int i = 0;        
+            //int i = 0;
             {
                 if (!mesh.hasDuplicateOfEdge(
                 mesh.triangles[i + 5],
@@ -1034,7 +1079,6 @@ namespace Nashet.Utils
                     vertexNumbers.Add(mesh.triangles[i + 5]);
                     vertexNumbers.Add(mesh.triangles[i + 1]);
                 }
-
 
                 if (!mesh.hasDuplicateOfEdge(
                 mesh.triangles[i + 1],
@@ -1052,7 +1096,6 @@ namespace Nashet.Utils
                     vertexNumbers.Add(mesh.triangles[i + 0]);
                 }
 
-
                 if (!mesh.hasDuplicateOfEdge(
                mesh.triangles[i + 0],
                mesh.triangles[i + 5]))
@@ -1060,8 +1103,6 @@ namespace Nashet.Utils
                     vertexNumbers.Add(mesh.triangles[i + 0]);
                     vertexNumbers.Add(mesh.triangles[i + 5]);
                 }
-
-
             }
             //List<int> realVertexNumbers = new List<int>();
             //for (int i = 1; i < vertexNumbers.Count - 1; i += 2)
@@ -1075,6 +1116,7 @@ namespace Nashet.Utils
             //vertexNumbers.AddRange(realVertexNumbers);
             return vertexNumbers;
         }
+
         public static bool isTwoLinesTouchEachOther(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
         {
             if (isLinesParallel(a, b, c, d))
@@ -1085,10 +1127,12 @@ namespace Nashet.Utils
             else
                 return false;
         }
+
         public static float getLineSlope2D(Vector3 a, Vector3 b)
         {
             return (b.y - a.y) / (b.x - a.x);
         }
+
         public static bool isLinesParallel(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
         {
             var slope1 = getLineSlope2D(a, b);
@@ -1096,11 +1140,11 @@ namespace Nashet.Utils
             //return Mathf.Abs(slope1 - slope2) < 0.001f;
             return slope1 == slope2 || (float.IsInfinity(slope1) && float.IsInfinity(slope2));
 
-            //if 
+            //if
         }
+
         public static bool isPointLiesOnLine(Vector3 point, Vector3 a, Vector3 b)
         {
-
             float AB = Mathf.Sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y) + (b.z - a.z) * (b.z - a.z));
             float AP = Mathf.Sqrt((point.x - a.x) * (point.x - a.x) + (point.y - a.y) * (point.y - a.y) + (point.z - a.z) * (point.z - a.z));
             float PB = Mathf.Sqrt((b.x - point.x) * (b.x - point.x) + (b.y - point.y) * (b.y - point.y) + (b.z - point.z) * (b.z - point.z));
@@ -1114,6 +1158,7 @@ namespace Nashet.Utils
             else
                 return false;
         }
+
         //public static Vector3[] getPerimeterVerices2(this Mesh mesh, bool removeDuplicates)
         //{
         //    take each edge from this mesh
@@ -1142,6 +1187,7 @@ namespace Nashet.Utils
 
             return res.ToArray();
         }
+
         public static Vector3 makeArrow(Vector3 arrowStart, Vector3 arrowEnd, float arrowBaseWidth) // true - water
         {
             //Vector3 directionPoint, leftBasePoint, rightBasePoint;
@@ -1157,8 +1203,6 @@ namespace Nashet.Utils
             leftBasePoint.Normalize();
             leftBasePoint = leftBasePoint * arrowBaseWidth;
 
-
-
             //rightBasePoint = leftBasePoint * -1f;
             //rightBasePoint += arrowStart;
             leftBasePoint += arrowStart;
@@ -1166,8 +1210,8 @@ namespace Nashet.Utils
 
             return leftBasePoint;
         }
-
     }
+
     public static class DateExtensions
     {
         //public static int getYearsSince(this DateTime date2)

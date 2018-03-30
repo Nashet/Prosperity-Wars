@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-
+﻿using System.Text;
 using Nashet.UnityUIUtils;
-using System.Text;
 using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
@@ -9,13 +7,16 @@ namespace Nashet.EconomicSimulation
     //[MenuItem("Tools/MyTool/Do It in C#")]
     public class BattleResult
     {
-        readonly Staff attacker, defender;
+        private readonly Staff attacker, defender;
+
         //Army attackerArmy, attackerLoss, defenderArmy, defenderLoss;
-        int attackerArmy, attackerLoss, defenderArmy, defenderLoss;
-        bool result;
-        Province place;
-        StringBuilder sb = new StringBuilder();
-        string attackerBonus; string defenderBonus;
+        private int attackerArmy, attackerLoss, defenderArmy, defenderLoss;
+
+        private bool result;
+        private Province place;
+        private StringBuilder sb = new StringBuilder();
+        private string attackerBonus; private string defenderBonus;
+
         //public BattleResult(Country attacker, Country defender, Army attackerArmy, Army attackerLoss, Army defenderArmy, Army defenderLoss, bool result)
         public BattleResult(Staff attacker, Staff defender, int attackerArmy, int attackerLoss, int defenderArmy, int defenderLoss,
             Province place, bool result, string attackerBonus, string defenderBonus)
@@ -29,13 +30,13 @@ namespace Nashet.EconomicSimulation
             this.defenderBonus = defenderBonus;
             this.attackerBonus = attackerBonus;
             //Game.allBattles.Add(this);
-
         }
 
         internal bool isAttackerWon()
         {
             return result;
         }
+
         internal bool isDefenderWon()
         {
             return !result;
