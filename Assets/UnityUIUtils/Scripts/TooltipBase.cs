@@ -53,8 +53,10 @@ namespace Nashet.UnityUIUtils
         private Vector3 upperRight;
 
         //scale factor of proportionality to the reference resolution (1280x720)
+        [SerializeField]
         private float currentYScaleFactor;
 
+        [SerializeField]
         private float currentXScaleFactor;
 
         //standard X and Y offsets of the new tooltip
@@ -203,8 +205,8 @@ namespace Nashet.UnityUIUtils
             float val;
 
             //store the new offset to impose in case of out of screen
-            float yOffSet = 0f;
-            float xOffSet = 0f;
+            //float yOffSet = 0f;
+            //float xOffSet = 0f;
 
             //hidede due to different Cameracoords
             //check for right edge of screen
@@ -298,39 +300,63 @@ namespace Nashet.UnityUIUtils
             //my new fit in window logic - nash
             // check right edge
             //var ter = GetC<RectTransform>();
-            var rt = transform.parent.parent.GetComponentInParent<RectTransform>();
+            //var rt = transform.parent.parent.GetComponentInParent<RectTransform>();
 
-            var rightEdge = newPos.x + tooltipRealWidth / 2f;
-            var leftEdge = newPos.x - tooltipRealWidth / 2f;
+            //var rightEdge = newPos.x + tooltipRealWidth / 2f;
+            //var leftEdge = newPos.x - tooltipRealWidth / 2f;
 
-            var topEdge = newPos.y - yOffset;
-            var bottomEdge = newPos.y - tooltipRealHeight - yOffset;
+            //var topEdge = newPos.y - yOffset;
+            //var bottomEdge = newPos.y - tooltipRealHeight - yOffset;
 
-            float moveByX = 0f, moveByY = 0f;
-            if (rightEdge > rt.rect.width)
-            {
-                moveByX = rt.rect.width - rightEdge;
-            }
-            else
-            {
-                if (leftEdge < 0)
+            //float moveByX = 0f, moveByY = 0f;
+            //if (rightEdge > rt.rect.width)
+            //{
+            //    moveByX = rt.rect.width - rightEdge;
+            //}
+            //else
+            //{
+            //    if (leftEdge < 0)
 
-                    moveByX = leftEdge * -1f;
-            }
-            if (topEdge > rt.rect.height)
-            {
-                moveByY = rt.rect.height - topEdge;
-            }
-            else
-            {
-                if (bottomEdge < 0)
+            //        moveByX = leftEdge * -1f;
+            //}
+            //if (topEdge > rt.rect.height)
+            //{
+            //    moveByY = rt.rect.height - topEdge;
+            //}
+            //else
+            //{
+            //    if (bottomEdge < 0)
 
-                    moveByY = bottomEdge * -1f;
-            }
+            //        moveByY = bottomEdge * -1f;
+            //}
 
-            transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - yOffset, 0f);//
+            //transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - yOffset, 0f);//
 
             //this.transform.SetParent(this.transform.parent, false);
+            //var rect = GetComponent<RectTransform>();
+            //rect.localPosition = localPointerPosition - pointerOffset;
+            var rect = transform.parent.GetComponent<RectTransform>();
+            rect.position = new Vector2(newPos.x - tooltipRealWidth / 2f, newPos.y - tooltipRealHeight -yOffset);
+            if (rect.position.x < 0)
+            {
+                rect.position = new Vector3(0, rect.position.y, rect.position.z);
+            }
+
+            if (rect.position.y < 0)
+            {
+                rect.position = new Vector3(rect.position.x, 0, rect.position.z);
+            }
+
+            if (rect.position.x > Screen.width - rect.sizeDelta.x)
+            {
+                rect.position = new Vector3(Screen.width - rect.sizeDelta.x, rect.position.y, rect.position.z);
+            }
+
+            if (rect.position.y > Screen.height - rect.sizeDelta.y)
+            {
+                rect.position = new Vector3(rect.position.x, Screen.height - rect.sizeDelta.y, rect.position.z);
+            }
+            
 
             transform.parent.gameObject.SetActive(true);
             inside = true;

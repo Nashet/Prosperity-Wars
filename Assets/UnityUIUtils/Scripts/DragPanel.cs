@@ -80,20 +80,15 @@ namespace Nashet.UnityUIUtils
         {
             if (panelRectTransform == null)
                 return;
-
-            //Vector2 pointerPostion = ClampToWindow(data);
-            //Vector2 ert;
+            
             Vector2 localPointerPosition;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                //canvasRectTransform, pointerPostion, data.pressEventCamera, out localPointerPosition
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(                
                 canvasRectTransform, data.position, data.pressEventCamera, out localPointerPosition
             ))
             {
-                var rect = GetComponent<RectTransform>();
-                //ert = localPointerPosition - pointerOffset;
-                //panelRectTransform.localPosition = ert;
+                var rect = GetComponent<RectTransform>();               
                 rect.localPosition = localPointerPosition - pointerOffset;
-                //GetComponent<RectTransform>().localPosition
+                
                 if (rect.position.x < 0)
                 {
                     rect.position = new Vector3(0, rect.position.y, rect.position.z);
