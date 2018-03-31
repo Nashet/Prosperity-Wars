@@ -140,8 +140,8 @@ namespace Nashet.UnityUIUtils
         {
             base.Show();
             panelRectTransform.SetAsLastSibling();
-            var rect = GetComponent<RectTransform>();
-            rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
+            //var rect = GetComponent<RectTransform>();
+            //rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
         }
     }
 }

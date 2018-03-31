@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
             slBuyIfLessThan.setExponential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
             slSellIfMoreThan.setExponential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
             MainCamera.tradeWindow = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(-775f, -642);                
             Hide();
         }
 

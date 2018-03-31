@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
         private void Start()
         {
             MainCamera.StatisticPanel = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -100f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(20f, -460f);
             //show(false);
             Canvas.ForceUpdateCanvases();
             Hide();
