@@ -89,10 +89,30 @@ namespace Nashet.UnityUIUtils
                 canvasRectTransform, data.position, data.pressEventCamera, out localPointerPosition
             ))
             {
+                var rect = GetComponent<RectTransform>();
                 //ert = localPointerPosition - pointerOffset;
                 //panelRectTransform.localPosition = ert;
-                GetComponent<RectTransform>().localPosition = localPointerPosition - pointerOffset;
+                rect.localPosition = localPointerPosition - pointerOffset;
                 //GetComponent<RectTransform>().localPosition
+                if (rect.position.x < 0)
+                {
+                    rect.position = new Vector3(0, rect.position.y, rect.position.z);
+                }
+
+                if (rect.position.y < 0)
+                {
+                    rect.position = new Vector3(rect.position.x, 0, rect.position.z);
+                }
+
+                if (rect.position.x > Screen.width - rect.sizeDelta.x)
+                {
+                    rect.position = new Vector3(Screen.width - rect.sizeDelta.x, rect.position.y, rect.position.z);
+                }
+
+                if (rect.position.y > Screen.height - rect.sizeDelta.y)
+                {
+                    rect.position = new Vector3(rect.position.x, Screen.height - rect.sizeDelta.y, rect.position.z);
+                }
             }
         }
 
@@ -120,6 +140,8 @@ namespace Nashet.UnityUIUtils
         {
             base.Show();
             panelRectTransform.SetAsLastSibling();
+            var rect = GetComponent<RectTransform>();
+            rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
         }
     }
 }

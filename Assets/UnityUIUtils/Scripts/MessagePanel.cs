@@ -131,6 +131,8 @@ namespace Nashet.UnityUIUtils
             lastDragPosition = transform.localPosition;
             GUIChanger.Apply(gameObject);
             showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
+            var rect = GetComponent<RectTransform>();
+            rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
         }
 
         public override void OnDrag(PointerEventData data) // need it to place windows in stair-order

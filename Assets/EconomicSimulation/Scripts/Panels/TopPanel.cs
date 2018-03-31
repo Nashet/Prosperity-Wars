@@ -86,7 +86,7 @@ namespace Nashet.EconomicSimulation
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
             {
-                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince)
+                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince) 
                     && Game.selectedProvince != null)
                 {
                     MainCamera.productionWindow.ClearAllFiltres();
