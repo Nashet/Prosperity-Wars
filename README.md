@@ -20,7 +20,7 @@ Main principles of that simulation are:
 * governments can put extra money in bank
 * governments can compete by wars
 
-## What it has now (v0.19.0)
+## What it has now (v0.19.2)
  - provinces and countries (generated randomly)
  - movements and Rebellions
  - factories and national banks
@@ -31,7 +31,7 @@ Main principles of that simulation are:
  - basic reforms (population can vote for reforms)
  - population demotion\promotion to other classes
  - migration\immigration\assimilation
- - political\culture\core\resource\population map mode
+ - political\culture\core\resource\population\prosperity map mode
  - basic diplomacy (only relations for now)
  - [substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
  - [planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
@@ -58,4 +58,4 @@ I would love to have other people providing ideas, code or questions.  You may:
 License is GPL-3.0
 
 ## How to build
-Project is build with Unity 5.4.2f2 - Unity 5.6.1f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene
+Since 0.19.2 version the project is build with Unity 2017.40f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene
