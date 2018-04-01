@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         private void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.19.2";
+            generalText.text = "Prosperity Wars v0.19.3";
             Hide();
         }
 
@@ -36,6 +36,16 @@ namespace Nashet.EconomicSimulation
         {
             if (Game.getMapMode() != newMapMode)
                 Game.redrawMapAccordingToMapMode(newMapMode);
+        }
+        [SerializeField]
+        private GameObject debugWindowPrefab;
+        public void OnDebugWindowOpen()
+        {
+            if (!DebugWindow.Exist)
+            {
+                var window = Instantiate(debugWindowPrefab, transform.parent);
+                window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
+            }
         }
     }
 }
