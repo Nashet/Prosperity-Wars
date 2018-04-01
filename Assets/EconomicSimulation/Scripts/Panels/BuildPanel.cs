@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
         private void Start()
         {
             MainCamera.buildPanel = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -100f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(50f, -340f);
             buildButton.interactable = false;
             Hide();
         }
