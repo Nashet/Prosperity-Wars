@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         private void Start()
         {
             MainCamera.diplomacyPanel = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 45);
             Hide();
         }
 

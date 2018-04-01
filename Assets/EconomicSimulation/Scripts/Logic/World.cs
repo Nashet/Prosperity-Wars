@@ -197,6 +197,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (province.Country == UncolonizedLand)
                 {
+                    //1500-2000
                     new Tribesmen(PopUnit.getRandomPopulationAmount(1500, 2000), province.Country.getCulture(), province);
                 }
                 else
