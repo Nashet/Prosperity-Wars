@@ -10,6 +10,8 @@ namespace Nashet.EconomicSimulation
 {
     public class Game : ThreadedJob
     {
+        internal static bool devMode = false;
+
         private static readonly bool readMapFormFile = false;
         private static MyTexture mapTexture;
         internal static GameObject r3dTextPrefab;
@@ -27,8 +29,7 @@ namespace Nashet.EconomicSimulation
         internal static List<BattleResult> allBattles = new List<BattleResult>();
 
         public static readonly Market market;
-
-        internal static bool devMode = false;
+                
         private static int mapMode;
         private static bool surrended = devMode;
 
