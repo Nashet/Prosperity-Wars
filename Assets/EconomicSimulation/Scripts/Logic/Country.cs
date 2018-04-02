@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
         public readonly List<Movement> movements = new List<Movement>();
 
-        private readonly string name;
+        private string name;
         private readonly Culture culture;
         private readonly Color nationalColor;
         private Province capital;
@@ -203,6 +203,11 @@ namespace Nashet.EconomicSimulation
 
                 //markInvented(Invention.Collectivism);
             }
+        }
+
+        internal void SetName(string v)
+        {
+            name = v;
         }
 
         private void ressurect(Province province, Government.ReformValue newGovernment)
@@ -983,17 +988,17 @@ namespace Nashet.EconomicSimulation
                             {
                                 var isFactory = x.Key as Factory;
                                 if (isFactory != null)
-                                    return Country.InventedFactory(isFactory.Type);
+                                    return InventedFactory(isFactory.Type);
                                 else
                                 {
                                     var newFactory = x.Key as NewFactoryProject;
                                     if (newFactory != null)
-                                        return Country.InventedFactory(newFactory.Type);
+                                        return InventedFactory(newFactory.Type);
                                 }
                                 return true;
                             }
                             ).MaxByRandom(x => x.Value.get());
-                        if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.isBiggerThan(Options.minMarginToInvest))
+                        if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.isBiggerThan(Options.minMarginToInvest.Copy().Multiply(Options.InvestorEmploymentSafety)))
                         {
                             MoneyView investmentCost = project.Key.GetInvestmentCost();
                             if (!CanPay(investmentCost))

@@ -48,7 +48,7 @@
 /* Container holding the image and the text */
 .container {
     position: relative;
-    text-align: center;
+    text-align: left;
     color: black;
 font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 	font-size: 22px;
@@ -68,7 +68,7 @@ font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 /* Top left text */
 .top-left {
     position: absolute;
-    top: 210px;
+    top: 160px;
     left: 120px;
 }
 
