@@ -186,6 +186,7 @@ namespace Nashet.EconomicSimulation
             }
             Game.Player = allCountries[1]; // not wild Tribes, DONT touch that
 
+            allCountries.Random().SetName("Zacharia");
             //foreach (var pro in allProvinces)
             //    if (pro.Country == null)
             //        pro.InitialOwner(World.UncolonizedLand);

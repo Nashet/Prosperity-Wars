@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
         public readonly List<Movement> movements = new List<Movement>();
 
-        private readonly string name;
+        private string name;
         private readonly Culture culture;
         private readonly Color nationalColor;
         private Province capital;
@@ -203,6 +203,11 @@ namespace Nashet.EconomicSimulation
 
                 //markInvented(Invention.Collectivism);
             }
+        }
+
+        internal void SetName(string v)
+        {
+            name = v;
         }
 
         private void ressurect(Province province, Government.ReformValue newGovernment)

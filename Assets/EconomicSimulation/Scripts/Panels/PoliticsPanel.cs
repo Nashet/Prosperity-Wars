@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
             voteButton.interactable = false;
             dropDown.interactable = false;
             forceDecisionButton.interactable = false;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(15f, 15f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(15f, 45f);
             Hide();
         }
 
