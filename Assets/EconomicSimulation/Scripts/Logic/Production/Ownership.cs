@@ -349,7 +349,8 @@ namespace Nashet.EconomicSimulation
                         shareToBuy.Value.ReduceSale(cost);
 
                         var boughtProcent = new Procent(cost, parent.ownership.totallyInvested);
-                        //Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key);
+                        if (Game.logInvestments)
+                            Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key + " awaiting " + GetMargin() + " margin");
                     }
                 }
             }

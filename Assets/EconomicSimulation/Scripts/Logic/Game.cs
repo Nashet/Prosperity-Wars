@@ -10,7 +10,8 @@ namespace Nashet.EconomicSimulation
 {
     public class Game : ThreadedJob
     {
-        internal static bool devMode = false;
+        public static bool devMode = false;
+        public static bool logInvestments = false;
 
         private static readonly bool readMapFormFile = false;
         private static MyTexture mapTexture;

@@ -163,7 +163,7 @@ namespace Nashet.EconomicSimulation
             conditionsDestroy = new DoubleConditionsList(new List<Condition> {
             //new Condition(Economy.isNotLF, x=>(x as Producer).Country),
              conPlacedInOurCountry,  Economy.isNotLF }),//}).addForSecondObject(new List<Condition> {
-            // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
+                                                        // (status == Economy.PlannedEconomy || status == Economy.NaturalEconomy || status == Economy.StateCapitalism)
             conditionsNatinalize = new DoubleConditionsList(new List<Condition> { conNotFullyBelongsToCountry, conPlacedInOurCountry,
                 Economy.isNotLF, Economy.isNotInterventionism }),//}) .addForSecondObject(new List<Condition> {
             conditionsSubsidize = new DoubleConditionsList(new List<Condition> { conPlacedInOurCountry ,Economy.isNotLF, Economy.isNotNatural,
@@ -239,8 +239,8 @@ namespace Nashet.EconomicSimulation
                 salary.Set(province.getLocalMinSalary());
                 if (Country.economy.getValue() == Economy.PlannedEconomy)
                     setPriorityAutoWithPlannedEconomy();
-                //else
-                //    Debug.Log(investor + " invested " + cost + " in building new " + this);
+                if (Game.logInvestments)
+                    Debug.Log(investor + " invested " + cost + " in building new " + this +" awaiting " + type.GetPossibleMargin(province)+ " margin");
             }
         }
 
@@ -908,7 +908,8 @@ namespace Nashet.EconomicSimulation
             {
                 agent.PayWithoutRecord(this, getReopenCost());
                 ownership.Add(byWhom, getReopenCost());
-                //Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this);
+                if (Game.logInvestments)
+                    Debug.Log(byWhom + " invested " + getReopenCost() + " in reopening " + this + " awaiting " + this.Type.GetPossibleMargin(Province) + " margin");
             }
             _isOpen = true;
             daysUnprofitable = 0;
@@ -956,10 +957,12 @@ namespace Nashet.EconomicSimulation
                 var cost = Game.market.getCost(getUpgradeNeeds());
                 (byWhom as Agent).PayWithoutRecord(this, cost);
                 ownership.Add(byWhom, cost);
-                //Debug.Log(byWhom + " invested " + cost + " in upgrading " + this);
+                if (Game.logInvestments)
+                    Debug.Log(byWhom + " invested " + cost + " in upgrading " + this + " awaiting " + GetMargin() + " margin");
             }
-            //else
-            //    Debug.Log(byWhom + " invested in upgrading " + this);
+            else
+                if (Game.logInvestments)
+                Debug.Log(byWhom + " invested in upgrading " + this);
         }
 
         internal int getDaysInConstruction()

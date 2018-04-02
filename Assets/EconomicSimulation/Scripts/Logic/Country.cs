@@ -983,17 +983,17 @@ namespace Nashet.EconomicSimulation
                             {
                                 var isFactory = x.Key as Factory;
                                 if (isFactory != null)
-                                    return Country.InventedFactory(isFactory.Type);
+                                    return InventedFactory(isFactory.Type);
                                 else
                                 {
                                     var newFactory = x.Key as NewFactoryProject;
                                     if (newFactory != null)
-                                        return Country.InventedFactory(newFactory.Type);
+                                        return InventedFactory(newFactory.Type);
                                 }
                                 return true;
                             }
                             ).MaxByRandom(x => x.Value.get());
-                        if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.isBiggerThan(Options.minMarginToInvest))
+                        if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.isBiggerThan(Options.minMarginToInvest.Copy().Multiply(Options.InvestorEmploymentSafety)))
                         {
                             MoneyView investmentCost = project.Key.GetInvestmentCost();
                             if (!CanPay(investmentCost))

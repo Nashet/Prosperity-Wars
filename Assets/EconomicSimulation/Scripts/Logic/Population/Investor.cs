@@ -38,8 +38,8 @@ namespace Nashet.EconomicSimulation
             if (business.Country != Country)
                 res.Multiply(Options.InvestingForeignCountrySecurity);
 
-            if (business.Province != Province)
-                res.Multiply(Options.InvestingAnotherProvinceSecurity);
+            //if (business.Province != Province)
+            //    res.Multiply(Options.InvestingAnotherProvinceSecurity);
 
             if (business is NewFactoryProject) // building, upgrading and opening requires hiring people which can be impossible
                 res.Multiply(Options.InvestorEmploymentSafety);
