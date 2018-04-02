@@ -75,6 +75,12 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private RectTransform bgImage;
 
+        private void Start()
+        {
+            var image =transform.parent.GetComponent<Image>();
+            image.color = GUIChanger.DarkestColor;
+        }
+
         // Use this for initialization
         private void Awake()
         {
