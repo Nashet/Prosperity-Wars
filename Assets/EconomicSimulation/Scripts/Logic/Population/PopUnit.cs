@@ -109,23 +109,23 @@ namespace Nashet.EconomicSimulation
             Modifier.modifierDefault1,
             new Modifier(x=>(x as PopUnit).Province.getOverpopulationAdjusted(x as PopUnit), "Overpopulation", -1f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).Country, 0.25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.25f, false),
+            new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.5f, false),
 
             new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
             new Modifier(Economy.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
             new Modifier(Economy.isLF, x=>(x as PopUnit).Country,  0.50f, false),
             new Modifier(Economy.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
-            new Modifier(x=>(x as PopUnit).Education.RawUIntValue, "Education",  1f / Procent.Precision, true),
+            new Modifier(x=>(x as PopUnit).Education.RawUIntValue, "Education",  2f / Procent.Precision, true),
 
             //new Modifier(Serfdom.Allowed,  -20f, false)
 
             // copied in Factory
              new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).Country)
-             && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 1f, false),
+             && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 0.5f, false),
              new Modifier(x=>(x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).Country.government.getValue() == Government.Tribal
-             && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.5f, false),
-             new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.30f, false) // remove this?
+             && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.3f, false),
+             new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.20f, false) // remove this?
         });
         }
 
