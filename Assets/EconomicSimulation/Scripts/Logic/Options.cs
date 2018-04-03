@@ -90,7 +90,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.6f);
         internal static readonly ReadOnlyValue PopPopulationChangeChance = new ReadOnlyValue(0.1f);
 
-        ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
+        ///<summary> When popUnit can't fulfill needs it would demote to another class</summary>
         public static readonly Procent PopNeedsEscapingLimit = new Procent(0.333f);//0.33f
 
         /// <summary> New life should this better to start escaping</summary>
@@ -103,7 +103,8 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopStarvationSpeed = new Procent(0.1f);
 
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
-        public static readonly Procent PopEscapingSpeed = new Procent(0.04f);
+        public static readonly Procent PopDemotingSpeed = new Procent(0.04f);
+        public static readonly Procent PopMigrationSpeed = new Procent(0.08f);
 
         //public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
         //public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);

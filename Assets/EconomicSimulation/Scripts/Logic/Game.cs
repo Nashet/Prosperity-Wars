@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
         internal static List<BattleResult> allBattles = new List<BattleResult>();
 
         public static readonly Market market;
-                
+
         private static int mapMode;
         private static bool surrended = devMode;
 
@@ -419,15 +419,19 @@ namespace Nashet.EconomicSimulation
 
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.Growth();
+
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.Promote();
+
+                        if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
+                            if (Rand.Chance(Options.PopPopulationChangeChance))
+                                pop.ChangeLife(pop.GetAllPossibleDemotions().MaxBy(x => x.Value.get()).Key, Options.PopDemotingSpeed);
+
                         if (Rand.Chance(Options.PopPopulationChangeChance))
-                            if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
-                                pop.FindBetterLife();
+                            pop.ChangeLife(pop.GetAllPossibleMigrations().MaxBy(x => x.Value.get()).Key, Options.PopMigrationSpeed);
+
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.Assimilate();
-
-
                     }
                 }
             }

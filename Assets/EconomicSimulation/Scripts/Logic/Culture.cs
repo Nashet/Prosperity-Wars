@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Just a place holder, not used
         /// </summary>
-        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
+        public ReadOnlyValue getLifeQuality(PopUnit pop)
         {
             throw new NotImplementedException();
         }

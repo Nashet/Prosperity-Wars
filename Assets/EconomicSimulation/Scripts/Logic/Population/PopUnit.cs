@@ -996,7 +996,7 @@ namespace Nashet.EconomicSimulation
 
         public void Promote()
         {
-            int promotionSize = getPromotionSize();
+            int promotionSize = GetPopulationChangeAmount(Options.PopPromotionSpeed);
             bool isPromoted = false;
             if (wantsToPromote() && promotionSize > 0 && getPopulation() >= promotionSize)
             {
@@ -1012,18 +1012,29 @@ namespace Nashet.EconomicSimulation
             if (!isPromoted)
                 populationChanges.EnqueueEmpty();
         }
-
-        public int getPromotionSize()
+        
+        /// <summary>
+        /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
+        /// Result could be zero
+        /// </summary>
+        public int GetPopulationChangeAmount(ReadOnlyValue procent)
         {
-            int result = (int)(getPopulation() * Options.PopPromotionSpeed.get());
+            int result = (int)(getPopulation() * procent.get());
             if (result > 0)
                 return result;
-            else
-            if (//Province.hasAnotherPop(this.type) &&
-                getAge() > Options.PopAgeLimitToWipeOut)
-                return getPopulation();// wipe-out
-            else
+            else if (result < 0)
+            {
+                Debug.Log("Population change Can't be negative"); //todo what about dead pops?
                 return 0;
+            }
+            else
+            {
+                if (//Province.hasAnotherPop(this.type) &&
+                    getAge() > Options.PopAgeLimitToWipeOut)
+                    return getPopulation();// wipe-out
+                else
+                    return 0;
+            }
         }
 
         public bool wantsToPromote()
@@ -1121,19 +1132,22 @@ namespace Nashet.EconomicSimulation
             return result;
             //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Migrate()
+        {
 
+        }
         /// <summary>
         /// Splits pops. New pops changes life in richest way - by demotion, migration or immigration
         /// </summary>
-        public void FindBetterLife()
+        public void ChangeLife(IWayOfLifeChange lifeChange, ReadOnlyValue procent)
         {
             bool FoundBetterLife = false;
-            int escapeSize = getEscapeSize();
-            if (escapeSize > 0)// && this.getPopulation() >= escapeSize)
+            int escapeSize = GetPopulationChangeAmount(procent);
+            if (escapeSize > 0)
             {
-                //var escapeTarget = findEscapeTarget(predicate);
-                var lifeChange = GetAllPossibleLifeChanges().MaxBy(x => x.Value.get()).Key;
-
                 if (lifeChange != null)
                 {
                     FoundBetterLife = true;
@@ -1157,38 +1171,66 @@ namespace Nashet.EconomicSimulation
                 populationChanges.EnqueueEmpty();// register time passed
         }
 
-        /// <summary>
-        /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
-        /// Result could be zero
-        /// </summary>
-        public int getEscapeSize()
-        {
-            int result = (int)(getPopulation() * Options.PopEscapingSpeed.get());
-            if (result > 0)
-                return result;
-            else if (result < 0)
-            {
-                Debug.Log("Can't be negative"); //todo what about dead pops?
-                return 0;
-            }
-            else
-            {
-                if (//Province.hasAnotherPop(this.type) &&
-                    getAge() > Options.PopAgeLimitToWipeOut)
-                    return getPopulation();// wipe-out
-                else
-                    return 0;
-            }
-        }
+        
 
-        private IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleLifeChanges()
+        //private IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleLifeChanges()
+        //{
+        //    //***********migration inside country***********
+        //    if (type == PopType.Farmers || type == PopType.Workers || type == PopType.Tribesmen)
+        //        foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country == Country))
+        //        //foreach (var proposedNewProvince in Country.getAllProvinces())
+        //        {
+        //            var targetPriority = proposedNewProvince.getLifeQuality(this, Type);//province.getAverageNeedsFulfilling(this.type);
+
+        //            if (targetPriority.isNotZero())
+        //                yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
+        //        }
+        //    // ***********immigration***********
+        //    //where to g0?
+        //    // where life is rich and I where I have some rights
+        //    if (type != PopType.Aristocrats && type != PopType.Capitalists) // redo
+
+        //        foreach (var country in World.getAllExistingCountries())
+        //            //if (
+        //            //(country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+        //            //&& country != this.Country)
+        //            //foreach (var proposedNewProvince in country.getAllProvinces())
+        //            //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
+        //            //province =>
+        //            //province.Country != this.Country && province.Country != World.UncolonizedLand
+        //            //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+        //            //))
+
+        //            foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != Country))
+        //            {
+        //                var targetPriority = proposedNewProvince.getLifeQuality(this, Type);
+        //                if (targetPriority.isNotZero())
+        //                    yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
+        //            }
+        //    // ***********demotion***********
+        //    foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => type.CanDemoteTo(x, Country)))
+        //    {
+        //        var targetPriority = Province.getLifeQuality(this, proposedNewType);
+        //        if (targetPriority.isNotZero())
+        //            yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
+        //    }
+        //    // ***********promotion***********
+        //    //foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisPromoteInto(x)))
+        //    //{
+        //    //    var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
+        //    //    if (targetPriority.isNotZero())
+        //    //        yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
+        //    //}
+        //}
+
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleMigrations()
         {
             //***********migration inside country***********
             if (type == PopType.Farmers || type == PopType.Workers || type == PopType.Tribesmen)
                 foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country == Country))
                 //foreach (var proposedNewProvince in Country.getAllProvinces())
                 {
-                    var targetPriority = proposedNewProvince.getLifeQuality(this, Type);//province.getAverageNeedsFulfilling(this.type);
+                    var targetPriority = proposedNewProvince.getLifeQuality(this);//province.getAverageNeedsFulfilling(this.type);
 
                     if (targetPriority.isNotZero())
                         yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
@@ -1211,24 +1253,21 @@ namespace Nashet.EconomicSimulation
 
                     foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != Country))
                     {
-                        var targetPriority = proposedNewProvince.getLifeQuality(this, Type);
+                        var targetPriority = proposedNewProvince.getLifeQuality(this);
                         if (targetPriority.isNotZero())
                             yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
                     }
+        }
+
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleDemotions()
+        {
             // ***********demotion***********
             foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => type.CanDemoteTo(x, Country)))
             {
-                var targetPriority = Province.getLifeQuality(this, proposedNewType);
+                var targetPriority = proposedNewType.getLifeQuality(this);
                 if (targetPriority.isNotZero())
                     yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
             }
-            // ***********promotion***********
-            //foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisPromoteInto(x)))
-            //{
-            //    var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
-            //    if (targetPriority.isNotZero())
-            //        yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
-            //}
         }
 
         internal void Assimilate()

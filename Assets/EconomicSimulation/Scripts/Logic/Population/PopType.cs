@@ -306,10 +306,23 @@ namespace Nashet.EconomicSimulation
         //    return true;
         //}
 
-        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
+        public ReadOnlyValue getLifeQuality(PopUnit pop)
         {
-            Debug.Log("Failed");
-            return ReadOnlyValue.Zero;
+            if (!pop.Province.HasJobsFor(this))
+                return ReadOnlyValue.Zero;
+            else
+            {
+                var lifeQuality = pop.Province.getAverageNeedsFulfilling(this);
+
+                if (!lifeQuality.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier))
+                    return ReadOnlyValue.Zero;
+
+                // checks for same culture and type
+                if (pop.Province.getSimilarPopUnit(pop) != null)
+                    lifeQuality.Add(Options.PopSameCultureMigrationPreference);
+
+                return lifeQuality;
+            }
         }
 
         public bool CanDemoteTo(PopType targetType, Country Country)
