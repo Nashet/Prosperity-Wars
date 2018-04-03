@@ -1193,11 +1193,13 @@ namespace Nashet.EconomicSimulation
 
         public bool HasJobsFor(PopType popType)
         {
-            if (!allFactories.Any(x => x.IsOpen))
-                return false;
             if (popType == PopType.Workers)
+            {
+                if (!allFactories.Any(x => x.IsOpen))
+                    return false;
                 return GetAllPopulation().Where(x => x.Type == PopType.Workers)
                         .GetAverageProcent(x => x.getUnemployment()).isSmallerThan(Options.PopMigrationUnemploymentLimit);
+            }
             else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
                 return GetOverpopulation().isSmallerThan(Procent.HundredProcent);
             else
@@ -1261,6 +1263,7 @@ namespace Nashet.EconomicSimulation
                 return ReadOnlyValue.Zero;
             else
             {
+                // common part
                 var lifeQuality = getAverageNeedsFulfilling(pop.Type);
 
                 if (!lifeQuality.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier))
@@ -1270,8 +1273,14 @@ namespace Nashet.EconomicSimulation
                 if (getSimilarPopUnit(pop) != null)
                     lifeQuality.Add(Options.PopSameCultureMigrationPreference);
 
-                //that has point only if it's immigration, not migration
-                if (this.Country != pop.Country)
+
+                if (this.Country == pop.Country)
+                // migration part
+                {
+                    if (!pop.isStateCulture() && !isCoreFor(pop))
+                        lifeQuality.Subtract(0.2f);
+                }
+                else // immigration part
                 {
                     // reforms preferences
                     if (pop.Type.isPoorStrata())
@@ -1292,13 +1301,14 @@ namespace Nashet.EconomicSimulation
                         lifeQuality.Add(0.05f, false);
                     //todo - serfdom
 
-                    if (!pop.canVote(Country.government.getTypedValue())) // includes Minority politics
+                    if (!pop.canVote(Country.government.getTypedValue())) // includes Minority politics, but not only
                         lifeQuality.Subtract(-0.10f, false);
 
                     if (country.getCulture() != pop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
                         //lifeQuality.Subtract(Options.PopMinorityMigrationBarier, false);
                         return ReadOnlyValue.Zero;
                 }
+
                 return lifeQuality;
             }
         }

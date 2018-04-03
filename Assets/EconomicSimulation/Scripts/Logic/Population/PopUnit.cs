@@ -1276,12 +1276,9 @@ namespace Nashet.EconomicSimulation
             if (!isStateCulture())
             {
                 int assimilationSize = getAssimilationSize();
-                if (assimilationSize > 0 && getPopulation() >= assimilationSize)
+                if (assimilationSize > 0 )
                 {
-                    //assimilate(Country.getCulture(), assimilationSize);
-
                     makeVirtualPop(type, this, assimilationSize, Province, Country.getCulture(), culture);
-
                     populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(Country.getCulture(), assimilationSize * -1));
                     isAssimilated = true;
                 }

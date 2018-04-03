@@ -111,10 +111,10 @@ namespace Nashet.EconomicSimulation
         ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
         public static readonly Procent PopPromotionSpeed = new Procent(0.02f);
 
-        public static readonly Procent PopAssimilationSpeed = new Procent(0.02f);
-        public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.01f);
+        public static readonly Procent PopAssimilationSpeed = new Procent(0.04f);
+        public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.02f);
 
-        ///<summary> Pop wouldn't select new life if there is unemployment hire than</summary>
+        ///<summary> Pop wouldn't select new life if there is unemployment higher than</summary>
         internal static readonly ReadOnlyValue PopMigrationUnemploymentLimit = new ReadOnlyValue(0.1f);
 
         internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.1f);
