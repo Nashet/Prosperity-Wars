@@ -1460,25 +1460,7 @@ namespace Nashet.EconomicSimulation
             list.Sort(IntOrder);
             return list.FindIndex(x => x.Key == this) + 1; // starts with zero
         }
-
-        public List<KeyValuePair<Culture, Procent>> getCultures()
-        {
-            var cultures = new Dictionary<Culture, int>();
-            var totalPopulation = GetAllPopulation().Sum(x => x.getPopulation());
-            foreach (var item in GetAllPopulation())
-            {
-                cultures.AddMy(item.culture, item.getPopulation());
-            }
-            var result = new List<KeyValuePair<Culture, Procent>>();
-            foreach (var item in cultures)
-            {
-                result.Add(new KeyValuePair<Culture, Procent>(item.Key, new Procent(item.Value, totalPopulation)));
-            }
-            result.Sort(ProcentOrder);
-            return result;
-        }
-
-        //****************************
+                
         public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
