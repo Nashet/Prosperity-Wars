@@ -75,8 +75,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly int FactoryMediumHighLevels = 16;
         internal static readonly MoneyView FactoryMinPossibleSallary = new Money(0.001m);
 
-        internal static readonly MoneyView FactoryReduceSalaryOnNonProfit = new MoneyView(0.01m);
-        internal static readonly MoneyView FactoryReduceSalaryOnMarket = new MoneyView(0.001m);
+        internal static readonly Procent FactoryReduceSalaryOnNonProfit = new Procent(0.8f);//0.01m);
+        internal static readonly Procent FactoryReduceSalaryOnMarket = new Procent(0.9f);//0.001m);
 
         //Province
         /// <summary>In procent of unemployed</summary>

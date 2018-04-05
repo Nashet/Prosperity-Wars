@@ -201,8 +201,8 @@ namespace Nashet.EconomicSimulation
                     //1500-2000
                     //new Tribesmen(PopUnit.getRandomPopulationAmount(300, 400), province.Country.getCulture(), province);
                     //new Aristocrats(PopUnit.getRandomPopulationAmount(300, 400), province.Country.getCulture(), province);
-                    //new Tribesmen(PopUnit.getRandomPopulationAmount(1500, 2000), province.Country.getCulture(), province);
-                    new Tribesmen(PopUnit.getRandomPopulationAmount(2000, 2500), province.Country.getCulture(), province);
+                    new Tribesmen(PopUnit.getRandomPopulationAmount(1500, 2000), province.Country.getCulture(), province);
+                    //new Tribesmen(PopUnit.getRandomPopulationAmount(2000, 2500), province.Country.getCulture(), province);
                 }
                 else
                 {

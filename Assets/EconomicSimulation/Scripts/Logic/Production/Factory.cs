@@ -240,7 +240,7 @@ namespace Nashet.EconomicSimulation
                 if (Country.economy.getValue() == Economy.PlannedEconomy)
                     setPriorityAutoWithPlannedEconomy();
                 if (Game.logInvestments)
-                    Debug.Log(investor + " invested " + cost + " in building new " + this +" awaiting " + type.GetPossibleMargin(province)+ " margin");
+                    Debug.Log(investor + " invested " + cost + " in building new " + this + " awaiting " + type.GetPossibleMargin(province) + " margin");
             }
         }
 
@@ -547,8 +547,11 @@ namespace Nashet.EconomicSimulation
                             Pay(employee.Key, howMuchPay);
                         else
                         {
-                            //todo else don't pay if there is nothing to pay
-                            close();
+                            salary.Multiply(Options.FactoryReduceSalaryOnNonProfit);
+                            var minSalary = Country.getMinSalary();
+                            if (salary.isSmallerThan(minSalary))
+                                salary.Set(minSalary);
+                            //close();
                             return;
                         }
                     }
@@ -622,27 +625,33 @@ namespace Nashet.EconomicSimulation
                 var margin = GetMargin(true);
 
                 // rise salary to attract  workforce, including workforce from other factories
-                if (margin.isBiggerThan(Options.minMarginToRiseSalary)
+                if (margin.isBiggerOrEqual(Options.minMarginToRiseSalary)
                     && unemployment.isSmallerThan(Options.ProvinceLackWorkforce) //demand >= supply
                     && GetVacancies() > 10)// && getInputFactor() == 1)
                 {
                     // cant catch up salaries like that. Check for zero workforce?
-                    decimal salaryRaise = 0.001m; //1%
-                    if (margin.get() > 1000f) //100000%
-                        salaryRaise = 0.800m;
-                    else if (margin.get() > 100f) //10000%
-                        salaryRaise = 0.200m;
-                    else if (margin.get() > 10f) //1000%
-                        salaryRaise = 0.048m;
-                    else if (margin.get() > 1f) //100%
-                        salaryRaise = 0.012m;
-                    else if (margin.get() > 0.3f) //30%
-                        salaryRaise = 0.003m;
-                    else if (margin.get() > 0.1f) //10%
-                        salaryRaise = 0.002m;
-                    else if (margin.get() >= 0.01f) //1%
-                        salaryRaise = 0.001m;
+                    //decimal salaryRaise = 0.001m; //1%
 
+                    var salaryRaise = salary.Copy();
+                    //if (margin.get() > 1000f) //100000%
+                    //    salaryRaise.Multiply(0.800m);
+                    //else
+                    //if (margin.get() > 100f) //10000%
+                    //    salaryRaise.Multiply(0.05m);
+                    //else 
+                    
+                    if (margin.get() > 10f) //1000%
+                        salaryRaise.Multiply(0.1m);
+                    //else if (margin.get() > 1f) //100%
+                    //    salaryRaise.Multiply(0.12m);
+                    //else if (margin.get() > 0.3f) //30%
+                    //    salaryRaise.Multiply(0.03m);
+                    //else if (margin.get() > 0.1f) //10%
+                    //    salaryRaise.Multiply(0.02m);
+                    else
+                    if (margin.get() >= 0.01f) //1%
+                        salaryRaise.Multiply(0.05m);
+                    salaryRaise.Add(0.001m);
                     salary.Add(salaryRaise);
                 }
 
@@ -650,11 +659,13 @@ namespace Nashet.EconomicSimulation
                 if (margin.isZero()
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
                     && !isJustHiredPeople() && !isSubsidized())
-                    salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
+                    //salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
+                    salary.Multiply(Options.FactoryReduceSalaryOnNonProfit, false);
 
                 // if supply > demand
                 if (unemployment.isBiggerThan(Options.ProvinceExcessWorkforce))
-                    salary.Subtract(Options.FactoryReduceSalaryOnMarket, false);
+                    //salary.Subtract(Options.FactoryReduceSalaryOnMarket, false);
+                    salary.Multiply(Options.FactoryReduceSalaryOnMarket, false);
 
                 if (getWorkForce() == 0)// && getInputFactor() == 1)
                     salary.Set(Province.getLocalMinSalary());
