@@ -727,13 +727,16 @@ namespace Nashet.EconomicSimulation
                 needsFulfilled.Add(everyDayNeedsFulfilled);
 
                 // buy luxury needs
+                bool hasAnyLuxuryNeeds = false;
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
                     var luxuryNeeds = getRealLuxuryNeeds();
 
                     //Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                     bool someLuxuryProductUnavailable = false;
-                    var luxuryNeedsConsumed = new List<Storage>();
+                    List<Storage> luxuryNeedsConsumed = null;
+                    if (luxuryNeeds.Count > 0)
+                        luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
                         var consumed = Game.market.Sell(this, nextNeed, null);
@@ -742,6 +745,7 @@ namespace Nashet.EconomicSimulation
                         else
                         {
                             luxuryNeedsConsumed.Add(consumed);
+                            hasAnyLuxuryNeeds = true;
                             if (consumed.Product == Product.Education && consumed.isBiggerOrEqual(nextNeed))
                                 education.Learn();
                         }
@@ -751,7 +755,7 @@ namespace Nashet.EconomicSimulation
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
                     // I also can limit regular luxury consumption but should I?:
-                    if (!someLuxuryProductUnavailable
+                    if (!someLuxuryProductUnavailable && hasAnyLuxuryNeeds
                         && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
                         MoneyView spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
@@ -842,7 +846,6 @@ namespace Nashet.EconomicSimulation
         public override void consumeNeeds()
         {
             //life needs First
-
             if (canTrade())
             {
                 consumeNeedsWithMarket();
@@ -1012,7 +1015,7 @@ namespace Nashet.EconomicSimulation
             if (!isPromoted)
                 populationChanges.EnqueueEmpty();
         }
-        
+
         /// <summary>
         /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
         /// Result could be zero
@@ -1171,7 +1174,7 @@ namespace Nashet.EconomicSimulation
                 populationChanges.EnqueueEmpty();// register time passed
         }
 
-        
+
 
         //private IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleLifeChanges()
         //{
@@ -1276,7 +1279,7 @@ namespace Nashet.EconomicSimulation
             if (!isStateCulture())
             {
                 int assimilationSize = getAssimilationSize();
-                if (assimilationSize > 0 )
+                if (assimilationSize > 0)
                 {
                     makeVirtualPop(type, this, assimilationSize, Province, Country.getCulture(), culture);
                     populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(Country.getCulture(), assimilationSize * -1));
