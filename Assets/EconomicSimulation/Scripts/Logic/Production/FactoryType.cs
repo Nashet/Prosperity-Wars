@@ -357,7 +357,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView getPossibleProfit(Province province)
         {
-            if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
+            if (Game.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
                 return new MoneyView(0); // no demand for result product
             Money income = Game.market.getCost(basicProduction).Copy();
             income.Multiply((decimal)Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
@@ -377,7 +377,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView getPossibleProfit()
         {
-            if (Game.market.getDemandSupplyBalance(basicProduction.Product) == Options.MarketZeroDSB)
+            if (Game.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
                 return new MoneyView(0); // no demand for result product
             MoneyView income = Game.market.getCost(basicProduction);
 

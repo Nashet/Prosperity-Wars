@@ -61,7 +61,7 @@
   <Class Name="Nashet.EconomicSimulation.PopUnit" Collapsed="true">
     <Position X="28.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QCDFgEiFMYgUQexGxFIhHMECi4hVEOowgaQlUi0YNyQ=</HashCode>
+      <HashCode>QCDFgEiFMYgUQexExFIhHMECi4hREOowgaQl0i0YNyQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\PopUnit.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -255,7 +255,7 @@
   <Class Name="Nashet.EconomicSimulation.Market" Collapsed="true">
     <Position X="19.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABIAgBUAAgCIABCAQCGKAAABSQACFQAAgAEAQEQAACA=</HashCode>
+      <HashCode>ABIAgBUAAoCIABCAQCGKAAABSQACFQAAgAEAQEQAACA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -278,7 +278,7 @@
   <Class Name="Nashet.EconomicSimulation.Options" Collapsed="true">
     <Position X="56" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ISAjmVQFkQQUQrgInrK0ghGCQLpGhkjZQbmIGjAlDNY=</HashCode>
+      <HashCode>IyAjmVQFlQQUQrgInrK0ghGCQLpGhkiZQbmIGjAlDNY=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Options.cs</FileName>
     </TypeIdentifier>
   </Class>

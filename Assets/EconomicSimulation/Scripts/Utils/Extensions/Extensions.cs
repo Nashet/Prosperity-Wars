@@ -260,8 +260,10 @@ namespace Nashet.Utils
         }
 
         public static Value Sum(this List<Storage> list)
-        {
+        {            
             Value sum = new Value(0f);
+            if (list == null)
+                return sum;
             foreach (var item in list)
             {
                 sum.Add(item);

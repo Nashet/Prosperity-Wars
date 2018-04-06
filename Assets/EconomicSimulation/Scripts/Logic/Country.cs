@@ -1133,7 +1133,8 @@ namespace Nashet.EconomicSimulation
                     if (howMuchHave.isBiggerThan(maxLimit))
                     {
                         var howMuchToSell = howMuchHave.Copy().subtract(maxLimit);
-                        sell(howMuchToSell);
+                        if (howMuchToSell.isNotZero())
+                            sell(howMuchToSell);
                     }
                     else
                     {
@@ -1202,7 +1203,8 @@ namespace Nashet.EconomicSimulation
                     var toSell = countryStorageSet.GetFirstSubstituteStorage(product).Copy().subtract(desiredMaximum, false);
                     if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                     {
-                        sell(toSell);//go sell
+                        if (toSell.isNotZero())
+                            sell(toSell);//go sell
                     }
                 }
             }
@@ -1460,7 +1462,7 @@ namespace Nashet.EconomicSimulation
             list.Sort(IntOrder);
             return list.FindIndex(x => x.Key == this) + 1; // starts with zero
         }
-                
+
         public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();

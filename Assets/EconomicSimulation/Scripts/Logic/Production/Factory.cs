@@ -1022,7 +1022,10 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (Economy.isMarket.checkIfTrue(Country))
-                        sell(getGainGoodsThisTurn());
+                    {
+                        if (getGainGoodsThisTurn().isNotZero())
+                            sell(getGainGoodsThisTurn());
+                    }
                     else if (Country.economy.getValue() == Economy.NaturalEconomy)
                     {
                         // todo Send product proportionally to all owners? with NE?
@@ -1031,7 +1034,8 @@ namespace Nashet.EconomicSimulation
                         //    storage.sendAll(countryOwner.countryStorageSet);
                         //else // assuming owner is aristocrat/capitalist
                         {
-                            sell(getGainGoodsThisTurn());
+                            if (getGainGoodsThisTurn().isNotZero())
+                                sell(getGainGoodsThisTurn());
                         }
                     }
                     else if (Country.economy.getValue() == Economy.PlannedEconomy)

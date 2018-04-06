@@ -29,6 +29,7 @@ namespace Nashet.EconomicSimulation
             Exist = true;
             devModeToggle.isOn = Game.devMode;
             logInvestmentsToggle.isOn = Game.logInvestments;
+            logMarketFailsToggle.isOn = Game.logMarket;
         }
 
         public override void Hide()
@@ -48,6 +49,8 @@ namespace Nashet.EconomicSimulation
         }
 
         public void OnLogMarketFailsChange(bool value)
-        { }
+        {
+            Game.logMarket = value;
+        }
     }
 }

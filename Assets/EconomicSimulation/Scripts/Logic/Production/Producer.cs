@@ -56,11 +56,10 @@ namespace Nashet.EconomicSimulation
         {
             if (sentToMarket.get() > 0f)
             {
-                Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.Product));
+                Value DSB = new Value(Game.market.getDemandSupplyBalance(sentToMarket.Product, false));
                 if (DSB.get() == Options.MarketInfiniteDSB)
                     DSB.SetZero(); // real DSB is unknown
-                else
-                if (DSB.get() > Options.MarketEqualityDSB)
+                else if (DSB.get() > Options.MarketEqualityDSB)
                     DSB.Set(Options.MarketEqualityDSB);
                 decimal realSold = (decimal)sentToMarket.get();
                 realSold *= (decimal)DSB.get();
@@ -80,9 +79,14 @@ namespace Nashet.EconomicSimulation
                     {
                         Game.market.Pay(this, cost);
                     }
-                    else if (Game.market.HowMuchLacksMoneyCashOnly(cost).Get() > 10m && Game.devMode)
-                        Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyCashOnly(cost)
-                                + " for " + realSold); // money in market ended... Only first lucky get money
+                    else
+                    {
+                        if (Game.devMode)// && Game.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                            Debug.Log("Failed market - lacks " + Game.market.HowMuchLacksMoneyIncludingDeposits(cost)
+                                    + " for " + realSold + " " + sentToMarket.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
+                        Game.market.PayAllAvailableMoney(this);
+
+                    }
                 }
             }
         }
@@ -95,6 +99,8 @@ namespace Nashet.EconomicSimulation
             sentToMarket.set(what);
             storage.subtract(what);
             Game.market.sentToMarket.Add(what);
+            if (Game.logMarket)
+                Debug.Log(this + " sent to market " + what + " costing " + Game.market.getCost(what));
         }
 
         /// <summary> Do checks outside</summary>
@@ -106,7 +112,7 @@ namespace Nashet.EconomicSimulation
 
         public Storage getSentToMarket(Product product)
         {
-            return sentToMarket;
+            return getSentToMarket();
         }
 
         public Storage getSentToMarket()

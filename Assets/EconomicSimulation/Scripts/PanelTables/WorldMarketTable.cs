@@ -46,7 +46,7 @@ namespace Nashet.EconomicSimulation
             AddCell(Game.market.getBouthOnMarket(product, true).get().ToString(), product);
 
             ////Adding effective Demand/Supply
-            AddCell(Game.market.getDemandSupplyBalance(product).ToString(), product);
+            AddCell(Game.market.getDemandSupplyBalance(product, false).ToString(), product);
             //AddButton("-", product);
             ////Adding price
             AddCell(Game.market.getCost(product).Get().ToString(), product);

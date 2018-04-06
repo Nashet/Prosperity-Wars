@@ -12,6 +12,7 @@ namespace Nashet.EconomicSimulation
     {
         public static bool devMode = false;
         public static bool logInvestments = false;
+        public static bool logMarket = false;
 
         private static readonly bool readMapFormFile = false;
         private static MyTexture mapTexture;
@@ -232,7 +233,8 @@ namespace Nashet.EconomicSimulation
 
         public static void prepareForNewTick()
         {
-            market.sentToMarket.setZero();
+            market.SetStatisticToZero();
+
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.SetStatisticToZero();
@@ -307,8 +309,10 @@ namespace Nashet.EconomicSimulation
                 haveToStepSimulation = false;
 
             Date.Simulate();
-            // strongly before PrepareForNewTick
-            market.simulatePriceChangeBasingOnLastTurnData();
+            if (Game.devMode)
+                Debug.Log("New date! - "+ Date.Today);
+                // strongly before PrepareForNewTick
+                market.simulatePriceChangeBasingOnLastTurnData();
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
             calcBattles();
@@ -366,6 +370,21 @@ namespace Nashet.EconomicSimulation
                             pop.consumeNeeds();
                         }
                     }
+            }
+            //force DSB recalculation
+            Game.market.getDemandSupplyBalance(null, true);
+            if (Game.logMarket)
+            {
+                ValueSpace.Money res = new ValueSpace.Money(0m);
+                foreach (var product in Product.getAll())
+
+                    res.Add(market.getCost(market.getMarketSupply(product, true)).Copy().Multiply((decimal)market.getDemandSupplyBalance(product, false))
+                        );
+                if (!Game.market.moneyIncomeThisTurn.IsEqual(res))
+                {
+                    Debug.Log("Market income: " + Game.market.moneyIncomeThisTurn + " total: " + market.Cash);
+                    Debug.Log("Should pay: " + res);
+                }
             }
             // big AFTER all and get money for sold circle
             foreach (Country country in World.getAllExistingCountries())
@@ -425,7 +444,7 @@ namespace Nashet.EconomicSimulation
 
                         if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
                             if (Rand.Chance(Options.PopPopulationChangeChance))
-                                pop.ChangeLife(pop.GetAllPossibleDemotions().Where(x=>x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopDemotingSpeed);
+                                pop.ChangeLife(pop.GetAllPossibleDemotions().Where(x => x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopDemotingSpeed);
 
                         if (Rand.Chance(Options.PopPopulationChangeChance))
                             pop.ChangeLife(pop.GetAllPossibleMigrations().Where(x => x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopMigrationSpeed);

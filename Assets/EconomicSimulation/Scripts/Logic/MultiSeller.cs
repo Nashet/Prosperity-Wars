@@ -129,19 +129,19 @@ namespace Nashet.EconomicSimulation
             foreach (var sent in sentToMarket)
                 if (sent.isNotZero())
                 {
-                    Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.Product));
+                    Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.Product, false));
                     if (DSB.get() == Options.MarketInfiniteDSB)
                         DSB.SetZero();// real DSB is unknown
                     else
                     if (DSB.get() > Options.MarketEqualityDSB)
                         DSB.Set(Options.MarketEqualityDSB);
-                    Storage realSold = new Storage(sent);
-                    realSold.Multiply(DSB);
-                    if (realSold.isNotZero())
+                    decimal realSold = (decimal)sent.get();
+                    realSold *= (decimal)DSB.get();
+                    if (realSold > 0m)
                     {
-                        MoneyView cost = Game.market.getCost(realSold);
+                        MoneyView cost = Game.market.getCost(sent.Product).Copy().Multiply(realSold); //Game.market.getCost(realSold);
                         //soldByGovernment.addMy(realSold.Product, realSold);
-                        soldByGovernment[realSold.Product].Set(realSold);
+                        soldByGovernment[sent.Product].Set((float)realSold);
                         //returning back unsold product
                         //if (sent.isBiggerThan(realSold))
                         //{
@@ -154,9 +154,13 @@ namespace Nashet.EconomicSimulation
                             Game.market.Pay(this, cost);
                             //Game.market.sentToMarket.subtract(realSold);
                         }
-                        else if (Game.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m && Game.devMode)
-                            Debug.Log("Failed market - can't pay " + Game.market.HowMuchLacksMoneyIncludingDeposits(cost)
-                                + " for " + realSold); // money in market ended... Only first lucky get money
+                        else
+                        {                            
+                            if (Game.devMode)// && Game.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                                Debug.Log("Failed market (country) - lacks " + Game.market.HowMuchLacksMoneyIncludingDeposits(cost)
+                                    + " for " + realSold + " " + sent.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
+                            Game.market.PayAllAvailableMoney(this);
+                        }
                     }
                 }
         }

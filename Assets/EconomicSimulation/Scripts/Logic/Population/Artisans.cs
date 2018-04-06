@@ -49,12 +49,14 @@ namespace Nashet.EconomicSimulation
                         artisansProduction.produce();
                         if (Economy.isMarket.checkIfTrue(Country))
                         {
-                            sell(getGainGoodsThisTurn());
+                            if (getGainGoodsThisTurn().isNotZero())
+                                sell(getGainGoodsThisTurn());
                         }
                         else if (Country.economy.getValue() == Economy.NaturalEconomy)
                         {
                             // send to market?
-                            sell(getGainGoodsThisTurn());
+                            if (getGainGoodsThisTurn().isNotZero())
+                                sell(getGainGoodsThisTurn());
                         }
                         else if (Country.economy.getValue() == Economy.PlannedEconomy)
                         {

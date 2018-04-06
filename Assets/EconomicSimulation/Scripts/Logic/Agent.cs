@@ -260,19 +260,19 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
-                if (CanPayCashOnly(howMuch))
-                {
-                    whom.cash.Add(howMuch);
-                    cash.Subtract(howMuch);
-                }
-                else
+                if (!CanPayCashOnly(howMuch))
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
+
+                whom.cash.Add(howMuch);
+                cash.Subtract(howMuch);
                 return true;
             }
             else
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+                    Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord2 " + whom
+                        + " has " + getMoneyAvailable());
+                //PayAllAvailableMoneyWithoutRecord(whom);
                 return false;
             }
         }
@@ -285,19 +285,17 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
-                if (CanPayCashOnly(howMuch))
-                {
-                    whom.Add(howMuch);
-                    cash.Subtract(howMuch);
-                }
-                else
-                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
+                if (!CanPayCashOnly(howMuch))
+                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));                
+                    
                 return true;
             }
             else
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+                    Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord " + whom
+                        + " has " + getMoneyAvailable());
+                //PayWithoutRecord(whom, getMoneyAvailable());
                 return false;
             }
         }

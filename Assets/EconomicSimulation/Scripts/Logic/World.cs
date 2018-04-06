@@ -235,6 +235,7 @@ namespace Nashet.EconomicSimulation
                     new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
+                    //break;
                 }
             }
         }
