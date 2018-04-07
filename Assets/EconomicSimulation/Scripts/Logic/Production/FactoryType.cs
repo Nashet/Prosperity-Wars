@@ -55,7 +55,7 @@ namespace Nashet.EconomicSimulation
             new ProductionType("Forestry", new Storage(Product.Wood, 2f), false);
             new ProductionType("Gold pit", new Storage(Product.Gold, 2f * Options.goldToCoinsConvert), true);
             new ProductionType("Metal pit", new Storage(Product.MetalOre, 2f), true);
-            new ProductionType("Coal pit", new Storage(Product.Coal, 3f), true);
+            new ProductionType("Coal pit", new Storage(Product.Coal, 6f), true);
             new ProductionType("Cotton farm", new Storage(Product.Cotton, 2f), false);
             new ProductionType("Quarry", new Storage(Product.Stone, 2f), true);
             new ProductionType("Orchard", new Storage(Product.Fruit, 2f), false);

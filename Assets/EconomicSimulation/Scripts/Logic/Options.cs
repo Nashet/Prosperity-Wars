@@ -61,7 +61,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
         internal static readonly MoneyView factoryMoneyReservePerLevel = new MoneyView(20m);
-        internal static readonly Procent minMarginToRiseSalary = new Procent(0.01f);
+        internal static readonly ReadOnlyValue FactoryMarginToRiseSalary = new ReadOnlyValue(0.01f);
+        internal static readonly ReadOnlyValue FactoryMarginToDecreaseSalary = new ReadOnlyValue(0.005f);
+
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
 
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;

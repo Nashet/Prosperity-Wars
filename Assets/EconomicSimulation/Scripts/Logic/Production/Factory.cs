@@ -618,16 +618,15 @@ namespace Nashet.EconomicSimulation
         public void ChangeSalary()
         {
             //Should be rise salary if: small unemployment, has profit, need has other resources
-
             if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
                 var unemployment = Province.GetAllPopulation().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
                 var margin = GetMargin(true);
 
                 // rise salary to attract  workforce, including workforce from other factories
-                if (margin.isBiggerOrEqual(Options.minMarginToRiseSalary)
+                if (margin.isBiggerOrEqual(Options.FactoryMarginToRiseSalary)
                     && unemployment.isSmallerThan(Options.ProvinceLackWorkforce) //demand >= supply
-                    && GetVacancies() > 10)// && getInputFactor() == 1)
+                    && GetVacancies() > 0)// && getInputFactor() == 1)
                 {
                     // cant catch up salaries like that. Check for zero workforce?
                     //decimal salaryRaise = 0.001m; //1%
@@ -656,7 +655,7 @@ namespace Nashet.EconomicSimulation
                 }
 
                 // Reduce salary on non-profit
-                if (margin.isZero()
+                if (margin.isSmallerThan(Options.FactoryMarginToDecreaseSalary)
                     && daysUnprofitable >= Options.minDaysBeforeSalaryCut
                     && !isJustHiredPeople() && !isSubsidized())
                     //salary.Subtract(Options.FactoryReduceSalaryOnNonProfit, false);
