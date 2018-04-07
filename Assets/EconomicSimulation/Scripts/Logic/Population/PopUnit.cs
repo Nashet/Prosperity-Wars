@@ -755,21 +755,20 @@ namespace Nashet.EconomicSimulation
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
                     // I also can limit regular luxury consumption but should I?:
-                    if (!someLuxuryProductUnavailable && hasAnyLuxuryNeeds
-                        && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
+                    if (!someLuxuryProductUnavailable && hasAnyLuxuryNeeds)
+                        //&& Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
                         MoneyView spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                         MoneyView spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
-
-                        //getSpendingLimit(spentMoneyOnAllNeeds);//
+                        // if gain more than consumed then spent it on extra luxury consumption                        
 
                         MoneyView spentOnUnlimitedConsumption;
                         if (Cash.isBiggerThan(spendingLimit))
                             spentOnUnlimitedConsumption = spendingLimit; // don't spent more than gained
                         else
-                            spentOnUnlimitedConsumption = Cash;
+                            spentOnUnlimitedConsumption = Cash; // don't spent savings on extra luxury consumption
 
-                        if (spentOnUnlimitedConsumption.Get() > 5m)// to avoid zero values
+                        if (spentOnUnlimitedConsumption.isNotZero())// to avoid zero values
                         {
                             // how much pop wants to spent on unlimited consumption. Pop should spent Cash only..
                             float buyExtraGoodsMultiplier = (float)(spentOnUnlimitedConsumption.Get() / luxuryNeedsCost.Get());

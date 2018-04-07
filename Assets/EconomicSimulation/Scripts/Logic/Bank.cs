@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
         {
             if (taker.Country.Invented(Invention.Banking))// find money in bank?
             {
-                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.Cash, false);
+                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false); 
                 if (lackOfSum.isNotZero())
                     return GiveCredit(taker, lackOfSum);
                 else
@@ -171,7 +171,7 @@ namespace Nashet.EconomicSimulation
             var howMuchReturn = agent.deposits.Copy();//initialization
 
             var wantedResrve = Cash.Copy().Subtract(GetMinimalReservs(), false); //defaults to zero if there is no money to give
-
+                                                                                 // doesn't account bank's deposits
             if (howMuchReturn.isBiggerThan(wantedResrve))
                 howMuchReturn.Set(wantedResrve);
 
@@ -240,7 +240,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView HowBigCreditCanGive(Agent whom)
         {
-            MoneyView maxSum = Cash.Copy().Subtract(GetMinimalReservs(), false);
+            MoneyView maxSum = Cash.Copy().Subtract(GetMinimalReservs(), false); // don't take in account banks deposits
             //if (whom.deposits.isBiggerThan(maxSum))
             //{
             //    maxSum = whom.deposits.Copy(); // sets maxSum to deposits size

@@ -93,8 +93,8 @@ namespace Nashet.EconomicSimulation
                 artisansProduction.PayWithoutRecord(this, artisansProduction.Cash);
 
                 // consuming made in artisansProduction.consumeNeeds()
-                // here is data transfering
-                // todo rework data transfering from artisans?
+                // here is data transferring
+                // todo rework data transferring from artisans?
                 getConsumedInMarket().Add(artisansProduction.getConsumedInMarket());
                 getConsumed().Add(artisansProduction.getConsumed());
                 getConsumedLastTurn().Add(artisansProduction.getConsumedLastTurn());

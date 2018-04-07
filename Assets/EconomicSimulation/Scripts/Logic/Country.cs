@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
         private readonly Money storageBuyingExpense = new Money(0m);
         public Money StorageBuyingExpense { get { return storageBuyingExpense.Copy(); } }
 
-        private readonly float nameWeight;
+        private float nameWeight;
 
         private TextMesh meshCapitalText;
         private Material borderMaterial;
@@ -134,7 +134,7 @@ namespace Nashet.EconomicSimulation
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(GetAllInvestmentProjects2);
-            nameWeight = name.GetWeight();
+            SetName(name);            
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
             country = this;
@@ -167,7 +167,7 @@ namespace Nashet.EconomicSimulation
             taxationForPoor = new TaxationForPoor(this);
             taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
-            this.name = name;
+            
 
             this.culture = culture;
             nationalColor = color;
@@ -205,9 +205,10 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void SetName(string v)
+        internal void SetName(string name)
         {
-            name = v;
+            nameWeight = name.GetWeight();
+            this.name = name;            
         }
 
         private void ressurect(Province province, Government.ReformValue newGovernment)
@@ -1579,10 +1580,10 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                var hadMoney = taxPayer.Cash.Copy();
-                taxPayer.incomeTaxPayed.Add(taxPayer.Cash);
-                statistics.Add(taxPayer.Cash);
-                moneyIncomeThisTurn.Add(taxPayer.Cash);
+                var hadMoney = taxPayer.getMoneyAvailable().Copy();
+                taxPayer.incomeTaxPayed.Add(taxPayer.getMoneyAvailable());
+                statistics.Add(taxPayer.getMoneyAvailable());
+                moneyIncomeThisTurn.Add(taxPayer.getMoneyAvailable());
                 taxPayer.PayAllAvailableMoneyWithoutRecord(this);
                 return hadMoney;
             }

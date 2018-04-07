@@ -357,7 +357,7 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            return cash.Get() + " coins";
+            return "Agent "+ cash.Get();
         }
     }
 }

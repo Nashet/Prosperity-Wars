@@ -817,7 +817,7 @@ namespace Nashet.EconomicSimulation
             // send remaining money to owners
             foreach (var item in ownership.GetAllShares())
             {
-                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), false);
+                Pay(item.Key as Agent, Cash.Copy().Multiply(item.Value), false); // enterprises don't put money in bank
                 //pay(item.Key as Agent, item.Value.SendProcentOf(Cash), false);
             }
 
