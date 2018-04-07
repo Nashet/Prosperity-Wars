@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using UnityEngine;
@@ -41,13 +42,19 @@ namespace Nashet.EconomicSimulation
             if (!Game.Player.isAlive())
                 sb.Append(" (destroyed by enemies, but could rise again)");
             sb.Append("    Month: ").Append(Date.Today);
-            //sb.Append("\nEng: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
-            sb.Append("\nMoney: ").Append(Game.Player.Cash)
-            .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
 
             if (Game.Player.isAlive())
                 sb.Append("   Population: ").Append(Game.Player.getFamilyPopulation().ToString("N0"))
-                .Append("   Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
+                    .Append(" (")
+                    .Append(Game.Player.getAllPopulationChanges().Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
+                    .Sum(x=>x.Value).ToString("+0;-0;0"))
+                    .Append(")");
+
+            sb.Append("\nMoney: ").Append(Game.Player.Cash)
+            .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+
+            if (Game.Player.isAlive())                
+                sb.Append("   Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
                 .Append("   Education: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.Education));
 
             generalText.text = sb.ToString();
