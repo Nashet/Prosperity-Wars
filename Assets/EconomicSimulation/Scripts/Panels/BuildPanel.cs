@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
                 Storage needFood = resourceToBuild.GetFirstSubstituteStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.market.getCost(resourceToBuild));
+                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, World.market.getCost(resourceToBuild));
                     Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);

@@ -18,6 +18,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Text generalText, specificText;
 
+        [SerializeField]
+        private World world;
         // Use this for initialization
         private void Awake()
         {
@@ -142,15 +144,12 @@ namespace Nashet.EconomicSimulation
 
         public void onbtnStepClick(Button button)
         {
-            if (Game.isRunningSimulation())
-            {
-                Game.pauseSimulation();
-                button.image.color = GUIChanger.DisabledButtonColor;
-                Text text = button.GetComponentInChildren<Text>();
-                text.text = "Pause";
+            if (world.IsRunning)
+            {                
+                switchHaveToRunSimulation();
             }
             else
-                Game.makeOneStepSimulation();
+                world.MakeOneStepSimulation();
         }
 
         public void onbtnPlayClick(Button button)
@@ -166,12 +165,12 @@ namespace Nashet.EconomicSimulation
 
         public void switchHaveToRunSimulation()
         {
-            if (Game.isRunningSimulation())
-                Game.pauseSimulation();
+            if (world.IsRunning)
+                world.PauseSimulation();
             else
-                Game.continueSimulation();
+                world.ResumeSimulation();
 
-            if (Game.isRunningSimulation())
+            if (world.IsRunning)
             {
                 //btnPlay.interactable = true;
                 btnPlay.image.color = GUIChanger.ButtonsColor;

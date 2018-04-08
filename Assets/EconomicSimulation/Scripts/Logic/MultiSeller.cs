@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
             sentToMarket.Add(what);
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
-            Game.market.sentToMarket.Add(what);
+            World.market.sentToMarket.Add(what);
         }
 
         public void getMoneyForSoldProduct()
@@ -129,7 +129,7 @@ namespace Nashet.EconomicSimulation
             foreach (var sent in sentToMarket)
                 if (sent.isNotZero())
                 {
-                    Value DSB = new Value(Game.market.getDemandSupplyBalance(sent.Product, false));
+                    Value DSB = new Value(World.market.getDemandSupplyBalance(sent.Product, false));
                     if (DSB.get() == Options.MarketInfiniteDSB)
                         DSB.SetZero();// real DSB is unknown
                     else
@@ -139,7 +139,7 @@ namespace Nashet.EconomicSimulation
                     realSold *= (decimal)DSB.get();
                     if (realSold > 0m)
                     {
-                        MoneyView cost = Game.market.getCost(sent.Product).Copy().Multiply(realSold); //Game.market.getCost(realSold);
+                        MoneyView cost = World.market.getCost(sent.Product).Copy().Multiply(realSold); //World.market.getCost(realSold);
                         //soldByGovernment.addMy(realSold.Product, realSold);
                         soldByGovernment[sent.Product].Set((float)realSold);
                         //returning back unsold product
@@ -149,17 +149,17 @@ namespace Nashet.EconomicSimulation
                         //    countryStorageSet.add(unSold);
                         //}
 
-                        if (Game.market.CanPay(cost)) //&& Game.market.tmpMarketStorage.has(realSold))
+                        if (World.market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
                         {
-                            Game.market.Pay(this, cost);
-                            //Game.market.sentToMarket.subtract(realSold);
+                            World.market.Pay(this, cost);
+                            //World.market.sentToMarket.subtract(realSold);
                         }
                         else
                         {                            
-                            if (Game.devMode)// && Game.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
-                                Debug.Log("Failed market (country) - lacks " + Game.market.HowMuchLacksMoneyIncludingDeposits(cost)
+                            if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                                Debug.Log("Failed market (country) - lacks " + World.market.HowMuchLacksMoneyIncludingDeposits(cost)
                                     + " for " + realSold + " " + sent.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
-                            Game.market.PayAllAvailableMoney(this);
+                            World.market.PayAllAvailableMoney(this);
                         }
                     }
                 }
@@ -191,7 +191,7 @@ namespace Nashet.EconomicSimulation
             var res = new Money(0m);
             foreach (var item in soldByGovernment)
             {
-                res.Add(Game.market.getCost(new Storage(item.Key, item.Value)));
+                res.Add(World.market.getCost(new Storage(item.Key, item.Value)));
             }
             return res;
         }
@@ -213,7 +213,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Procent getWorldProductionShare(Product product)
         {
-            var worldProduction = Game.market.getProductionTotal(product, true);
+            var worldProduction = World.market.getProductionTotal(product, true);
             if (worldProduction.isZero())
                 return Procent.ZeroProcent.Copy();
             else

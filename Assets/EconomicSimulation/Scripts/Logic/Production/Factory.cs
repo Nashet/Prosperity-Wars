@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
             conOpen = new DoubleCondition((agent, factory) => (factory as Factory).IsOpen, factory => "Open", false),
             conClosed = new DoubleCondition((agent, factory) => !(factory as Factory).IsOpen, factory => "Closed", false),
             conMaxLevelAchieved = new DoubleCondition((agent, factory) => (factory as Factory).getLevel() != Options.maxFactoryLevel, factory => "Max level not achieved", false),
-            conUpgradeProductsInventedByAnyone = new DoubleCondition((agent, factory) => (factory as Factory).getUpgradeNeeds().All(y => y.Product.IsInventedByAnyOne()),  //Game.market.isAvailable( y.Product)),
+            conUpgradeProductsInventedByAnyone = new DoubleCondition((agent, factory) => (factory as Factory).getUpgradeNeeds().All(y => y.Product.IsInventedByAnyOne()),  //World.market.isAvailable( y.Product)),
                 factory => "All upgrade products are invented", false),
 
             conPlayerHaveMoneyToReopen = new DoubleCondition((agent, factory) => Game.Player.CanPay((factory as Factory).getReopenCost()), delegate
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            MoneyView cost = Game.market.getCost(typedfactory.getUpgradeNeeds());
+                            MoneyView cost = World.market.getCost(typedfactory.getUpgradeNeeds());
                             return agent.CanPay(cost);
                         }
                     }
@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
                 {
                     //var sb = new StringBuilder();
                     //var factory = x as Factory;
-                    //MoneyView cost = Game.market.getCost(factory.getUpgradeNeeds());
+                    //MoneyView cost = World.market.getCost(factory.getUpgradeNeeds());
                     //sb.Append("Have ").Append(cost).Append(" coins");
                     //sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(factory.getUpgradeNeeds().getString(", "));
                     //return sb.ToString();
@@ -248,7 +248,7 @@ namespace Nashet.EconomicSimulation
         {
             if (IsOpen)
             {
-                var res = Game.market.getCost(getUpgradeNeeds()).Copy();
+                var res = World.market.getCost(getUpgradeNeeds()).Copy();
                 res.Add(Options.factoryMoneyReservePerLevel);
                 return res;
             }
@@ -964,7 +964,7 @@ namespace Nashet.EconomicSimulation
             constructionNeeds.Add(getUpgradeNeeds());
             if ((byWhom as Agent).Country.economy.getValue() != Economy.PlannedEconomy)
             {
-                var cost = Game.market.getCost(getUpgradeNeeds());
+                var cost = World.market.getCost(getUpgradeNeeds());
                 (byWhom as Agent).PayWithoutRecord(this, cost);
                 ownership.Add(byWhom, cost);
                 if (Game.logInvestments)
@@ -1080,13 +1080,13 @@ namespace Nashet.EconomicSimulation
                     else
                     {
                         //if (isSubsidized())
-                        //    Game.market.SellList(this, new StorageSet(shoppingList), Country);
+                        //    World.market.SellList(this, new StorageSet(shoppingList), Country);
                         //else
-                        //    Game.market.SellList(this, new StorageSet(shoppingList), null);
+                        //    World.market.SellList(this, new StorageSet(shoppingList), null);
                         Country subsidizer = isSubsidized() ? Country : null;
                         foreach (Storage item in shoppingList)
                             if (item.isNotZero())
-                                Game.market.Sell(this, item, subsidizer);
+                                World.market.Sell(this, item, subsidizer);
                     }
             }
             if (isUpgrading() || isBuilding())
@@ -1108,9 +1108,9 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (isBuilding())
-                        isBuyingComplete = Game.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, Type.GetBuildNeeds());
+                        isBuyingComplete = World.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, Type.GetBuildNeeds());
                     else if (isUpgrading())
-                        isBuyingComplete = Game.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
+                        isBuyingComplete = World.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
                     // get money from current investor, not owner
                     MoneyView needExtraFonds = wantsMinMoneyReserv().Copy().Subtract(Cash, false);

@@ -18,6 +18,9 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private float zCameraSpeed = 55f;
 
+        [SerializeField]
+        private World world;
+
         private float focusHeight;
 
         public static TopPanel topPanel;
@@ -194,11 +197,11 @@ namespace Nashet.EconomicSimulation
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();
 
-                if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
+                if (world.IsRunning && !MessagePanel.IsOpenAny())
                 {
                     if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
-                        Game.simulate();
+                        World.simulate();
                         previousFrameTime = Time.time;
                         refreshAllActive();
                     }

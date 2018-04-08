@@ -250,7 +250,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public MoneyView GetBuildCost()
         {
-            Money result = Game.market.getCost(GetBuildNeeds()).Copy();
+            Money result = World.market.getCost(GetBuildNeeds()).Copy();
             result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }
@@ -357,17 +357,17 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView getPossibleProfit(Province province)
         {
-            if (Game.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
+            if (World.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
                 return new MoneyView(0); // no demand for result product
-            Money income = Game.market.getCost(basicProduction).Copy();
+            Money income = World.market.getCost(basicProduction).Copy();
             income.Multiply((decimal)Factory.modifierEfficiency.getModifier(new Factory(province, null, this, null)), false);
             var outCome = new Money(0m);// = province.getLocalMinSalary();//salary
             if (hasInput())
             {
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Game.market.isAvailable(inputProduct.Product))
+                    if (!World.market.isAvailable(inputProduct.Product))
                         return new MoneyView(0);// inputs are unavailable
-                outCome.Add(Game.market.getCost(resourceInput));
+                outCome.Add(World.market.getCost(resourceInput));
             }
             return income.Subtract(outCome, false);
         }
@@ -377,18 +377,18 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView getPossibleProfit()
         {
-            if (Game.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
+            if (World.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
                 return new MoneyView(0); // no demand for result product
-            MoneyView income = Game.market.getCost(basicProduction);
+            MoneyView income = World.market.getCost(basicProduction);
 
             if (hasInput())
             {
                 // change to minimal hire limits
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Game.market.isAvailable(inputProduct.Product))
+                    if (!World.market.isAvailable(inputProduct.Product))
                         return new MoneyView(0);// inputs are unavailable
 
-                return income.Copy().Subtract(Game.market.getCost(resourceInput), false);
+                return income.Copy().Subtract(World.market.getCost(resourceInput), false);
             }
             return income;
         }

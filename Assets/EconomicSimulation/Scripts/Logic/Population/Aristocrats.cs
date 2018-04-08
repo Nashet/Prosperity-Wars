@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
                 Storage howMuchSend = new Storage(storage.Product, storage.get() - Options.aristocratsFoodReserv);
                 storage.send(getSentToMarket(), howMuchSend);
                 //sentToMarket.set(howMuchSend);
-                Game.market.sentToMarket.Add(howMuchSend);
+                World.market.sentToMarket.Add(howMuchSend);
             }
         }
 
@@ -93,13 +93,13 @@ namespace Nashet.EconomicSimulation
                         // try to build for grain
                         if (storage.has(resourceToBuild))
                         {
-                            var factory = Province.BuildFactory(this, factoryProject.Type, Game.market.getCost(resourceToBuild));
+                            var factory = Province.BuildFactory(this, factoryProject.Type, World.market.getCost(resourceToBuild));
                             storage.send(factory.getInputProductsReserve(), resourceToBuild);
                             factory.constructionNeeds.setZero();
                         }
                         else // build for money
                         {
-                            MoneyView investmentCost = Game.market.getCost(resourceToBuild);
+                            MoneyView investmentCost = World.market.getCost(resourceToBuild);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))

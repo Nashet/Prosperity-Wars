@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
             foreach (var item in getAll().Where(x => !x.isAbstract()))
                 if (item != Gold)
                 {
-                    Game.market.SetDefaultPrice(item, (float)item.defaultPrice.Get());
+                    World.market.SetDefaultPrice(item, (float)item.defaultPrice.Get());
                 }
         }
 
@@ -257,10 +257,10 @@ namespace Nashet.EconomicSimulation
         public static int CostOrder(Product x, Product y)
         {
             //eats less memory
-            float sumX = (float)Game.market.getCost(x).Get();
-            float sumY = (float)Game.market.getCost(y).Get();
+            float sumX = (float)World.market.getCost(x).Get();
+            float sumY = (float)World.market.getCost(y).Get();
             return sumX.CompareTo(sumY);
-            //return Game.market.getCost(x).get().CompareTo(Game.market.getCost(y).get());
+            //return World.market.getCost(x).get().CompareTo(World.market.getCost(y).get());
         }
 
         /// <summary>
@@ -351,7 +351,7 @@ namespace Nashet.EconomicSimulation
         //            return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
         //        else
         //        {
-        //            Money res = Game.market.getCost(type.resourceInput) .Copy();
+        //            Money res = World.market.getCost(type.resourceInput) .Copy();
         //            res.Multiply(Options.defaultPriceLimitMultiplier);
         //            res.Divide(type.basicProduction.get());
         //            return res;

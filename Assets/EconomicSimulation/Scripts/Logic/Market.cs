@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
-    /// Represent World market, currently exists only in 1 instance (Game.market)
+    /// Represent World market, currently exists only in 1 instance (World.market)
     /// </summary>
     public class Market : Agent//: PrimitiveStorageSet
     {
@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
             // float price;
             foreach (Storage stor in need)
             {
-                //price = Game.market.findPrice(stor.Product).get();
+                //price = World.market.findPrice(stor.Product).get();
                 cost.Add(getCost(stor));
             }
             return cost;
@@ -91,7 +91,7 @@ namespace Nashet.EconomicSimulation
                 return new MoneyView((decimal)need.get());
             }
             else
-                return Game.market.getCost(need.Product).Copy().Multiply((decimal)need.get());
+                return World.market.getCost(need.Product).Copy().Multiply((decimal)need.get());
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace Nashet.EconomicSimulation
 
         private void Ssssel(Consumer buyer, MoneyView cost, Storage sale)
         {
-            buyer.Pay(Game.market, cost);
+            buyer.Pay(World.market, cost);
             buyer.consumeFromMarket(sale);
             var isSP = buyer as SimpleProduction;
             if (isSP != null)
@@ -335,7 +335,7 @@ namespace Nashet.EconomicSimulation
                 MoneyView price = getCost(sale.Product);
                 MoneyView cost;
 
-                if (Game.market.sentToMarket.has(sale))
+                if (World.market.sentToMarket.has(sale))
                 {
                     cost = getCost(sale);
 
@@ -362,7 +362,7 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     // assuming available < buying
-                    Storage howMuchAvailable = new Storage(Game.market.HowMuchAvailable(sale));
+                    Storage howMuchAvailable = new Storage(World.market.HowMuchAvailable(sale));
                     if (howMuchAvailable.isNotZero())
                     {
                         cost = getCost(howMuchAvailable);

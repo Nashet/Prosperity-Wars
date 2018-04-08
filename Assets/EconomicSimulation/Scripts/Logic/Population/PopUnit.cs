@@ -698,7 +698,7 @@ namespace Nashet.EconomicSimulation
                     needsFulfilled.Set(Options.PopOneThird);
                 }
                 else
-                    needsFulfilled.Set(Game.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
+                    needsFulfilled.Set(World.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
             }
             if (type != PopType.Aristocrats)
                 storage.SetZero();
@@ -714,7 +714,7 @@ namespace Nashet.EconomicSimulation
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in getRealEveryDayNeeds())
                 {
-                    var consumed = Game.market.Sell(this, need, null);
+                    var consumed = World.market.Sell(this, need, null);
                     if (consumed.isNotZero())
                     {
                         everyDayNeedsConsumed.Add(consumed);
@@ -739,7 +739,7 @@ namespace Nashet.EconomicSimulation
                         luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
-                        var consumed = Game.market.Sell(this, nextNeed, null);
+                        var consumed = World.market.Sell(this, nextNeed, null);
                         if (consumed.isZero())
                             someLuxuryProductUnavailable = true;
                         else
@@ -750,7 +750,7 @@ namespace Nashet.EconomicSimulation
                                 education.Learn();
                         }
                     }
-                    MoneyView luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost = World.market.getCost(luxuryNeeds);
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
@@ -775,13 +775,13 @@ namespace Nashet.EconomicSimulation
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.Multiply(buyExtraGoodsMultiplier);
-                                var consumed = Game.market.Sell(this, nextNeed, null);
+                                var consumed = World.market.Sell(this, nextNeed, null);
                                 if (consumed.isNotZero())
                                     luxuryNeedsConsumed.Add(consumed);
                             }
                         }
                     }
-                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds(), false);
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
@@ -1318,7 +1318,7 @@ namespace Nashet.EconomicSimulation
             if (Country.Invented(Invention.Banking))
             {
                 MoneyView extraMoney = Cash.Copy().Subtract(
-                    Game.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
+                    World.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
                     , false);
                 if (extraMoney.isNotZero())
                     Bank.ReceiveMoney(this, extraMoney);

@@ -878,40 +878,40 @@ namespace Nashet.EconomicSimulation
                     return Money.Zero;
                 else if (this == Scanty)
                 {
-                    MoneyView result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    MoneyView result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result;
                 }
                 else if (this == Minimal)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.08m);
-                    //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
+                    //Value luxuryCost = World.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
                     return result;
@@ -1073,40 +1073,40 @@ namespace Nashet.EconomicSimulation
                     return MoneyView.Zero;
                 else if (this == Scanty)
                 {
-                    MoneyView result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    MoneyView result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result;
                 }
                 else if (this == Minimal)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Game.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Game.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = World.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = World.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.08m);
-                    //Value luxuryCost = Game.market.getCost(PopType.workers.luxuryNeedsPer1000);
+                    //Value luxuryCost = World.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
                     //result.add(luxuryCost);
                     return result;

@@ -1033,7 +1033,7 @@ namespace Nashet.EconomicSimulation
             Money result = new Money(0m);
             foreach (var producer in getAllAgents())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
-                    result.Add(Game.market.getCost(producer.getGainGoodsThisTurn())); //- Game.market.getCost(producer.getConsumedTotal()).get());
+                    result.Add(World.market.getCost(producer.getGainGoodsThisTurn())); //- World.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
 
@@ -1278,7 +1278,7 @@ namespace Nashet.EconomicSimulation
                 // migration part
                 {
                     if (!pop.isStateCulture() && !isCoreFor(pop))
-                        lifeQuality.Subtract(0.2f);
+                        lifeQuality.Subtract(0.2f, false);
                 }
                 else // immigration part
                 {

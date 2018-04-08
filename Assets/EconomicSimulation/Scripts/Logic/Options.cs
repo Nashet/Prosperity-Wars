@@ -170,14 +170,14 @@ namespace Nashet.EconomicSimulation
         internal static readonly float PopTwoThird = 0.666f;
 
         // INVESTING
-        internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.95f);
+        internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.90f);
 
         /// <summary>
         /// There is bigger chance to loose property in another province
         /// </summary>
-        internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
+        internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.95f);
 
-        internal static readonly Procent InvestorEmploymentSafety = new Procent(0.70f);
+        internal static readonly Procent InvestorEmploymentSafety = new Procent(0.80f);
         internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
         internal static readonly int PopDaysReservesBeforePuttingMoneyInBak = 10;
 

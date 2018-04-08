@@ -58,9 +58,9 @@ namespace Nashet.EconomicSimulation
         {
             consumed.Add(what);
             consumedInMarket.Add(what);
-            Game.market.sentToMarket.Subtract(what);
+            World.market.sentToMarket.Subtract(what);
             if (Game.logMarket)
-                Debug.Log(this + " consumed from market " + what + " costing " + Game.market.getCost(what));
+                Debug.Log(this + " consumed from market " + what + " costing " + World.market.getCost(what));
         }
 
         public void consumeFromCountryStorage(List<Storage> what, Country country)

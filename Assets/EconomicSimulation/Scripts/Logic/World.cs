@@ -18,14 +18,34 @@ namespace Nashet.EconomicSimulation
         internal static readonly Country UncolonizedLand;
         private static World thisObject;
 
+        private static bool haveToRunSimulation;
+        private static bool haveToStepSimulation;
+
+        internal static List<BattleResult> allBattles = new List<BattleResult>();
+
+        public static Market market;
+
         public static World Get
         {
             get { return thisObject; }
         }
 
+        static World()
+        {
+            //Product.init(); // to avoid crash based on initialization order
+            market = new Market();
+
+            var culture = new Culture("Ancient tribes", Color.yellow);
+            allCultures.Add(culture);
+            UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
+            allCountries.Add(UncolonizedLand);
+            UncolonizedLand.government.setValue(Government.Tribal);
+            UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
+        }
+
         private void Start()
         {
-            thisObject = this;
+            thisObject = this;            
         }
 
         public static IEnumerable<Country> getAllExistingCountries()
@@ -83,7 +103,7 @@ namespace Nashet.EconomicSimulation
                     //if (isArtisan!=null && isArtisan.)
                 }
             }
-            allMoney.Add(Game.market.Cash);
+            allMoney.Add(World.market.Cash);
             return allMoney;
         }
 
@@ -147,17 +167,7 @@ namespace Nashet.EconomicSimulation
                 if (anyProvince.getColorID() == color)
                     return true;
             return false;
-        }
-
-        static World()
-        {
-            var culture = new Culture("Ancient tribes", Color.yellow);
-            allCultures.Add(culture);
-            UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
-            allCountries.Add(UncolonizedLand);
-            UncolonizedLand.government.setValue(Government.Tribal);
-            UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
-        }
+        }               
 
         internal static void CreateCountries()
         {
@@ -372,6 +382,263 @@ namespace Nashet.EconomicSimulation
             foreach (var item in GetAllPopulation())
                 foreach (var record in item.getAllPopulationChanges())
                     yield return record;
+        }
+
+        internal static void simulate()
+        {
+            if (haveToStepSimulation)
+                haveToStepSimulation = false;
+
+            Date.Simulate();
+            if (Game.devMode)
+                Debug.Log("New date! - " + Date.Today);
+            // strongly before PrepareForNewTick
+            World.market.simulatePriceChangeBasingOnLastTurnData();
+
+            // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
+            calcBattles();
+
+            // includes workforce balancing
+            // and sets statistics to zero. Should go after price calculation
+            prepareForNewTick();
+
+            // big PRODUCE circle
+            foreach (Country country in World.getAllExistingCountries())
+                foreach (Province province in country.getAllProvinces())
+                    foreach (var producer in province.getAllProducers())
+                        producer.produce();
+
+            // big CONCUME circle
+            foreach (Country country in World.getAllExistingCountries())
+            {
+                country.consumeNeeds();
+                if (country.economy.getValue() == Economy.PlannedEconomy)
+                {
+                    //consume in PE order
+                    foreach (Factory factory in country.getAllFactories())
+                        factory.consumeNeeds();
+
+                    if (country.Invented(Invention.ProfessionalArmy))
+                        foreach (var item in country.GetAllPopulation(PopType.Soldiers))
+                            item.consumeNeeds();
+
+                    foreach (var item in country.GetAllPopulation(PopType.Workers))
+                        item.consumeNeeds();
+
+                    foreach (var item in country.GetAllPopulation(PopType.Farmers))
+                        item.consumeNeeds();
+
+                    foreach (var item in country.GetAllPopulation(PopType.Tribesmen))
+                        item.consumeNeeds();
+                }
+                else  //consume in regular order
+                    foreach (Province province in country.getAllProvinces())//Province.allProvinces)
+                    {
+                        foreach (Factory factory in province.getAllFactories())
+                        {
+                            factory.consumeNeeds();
+                        }
+                        foreach (PopUnit pop in province.GetAllPopulation())
+                        {
+                            //That placed here to avoid issues with Aristocrats and Clerics
+                            //Otherwise Aristocrats starts to consume BEFORE they get all what they should
+                            if (country.serfdom.getValue() == Serfdom.Allowed || country.serfdom.getValue() == Serfdom.Brutal)
+                                if (pop.shouldPayAristocratTax())
+                                    pop.payTaxToAllAristocrats();
+                        }
+                        foreach (PopUnit pop in province.GetAllPopulation())
+                        {
+                            pop.consumeNeeds();
+                        }
+                    }
+            }
+            //force DSB recalculation
+            World.market.getDemandSupplyBalance(null, true);
+            if (Game.logMarket)
+            {
+                ValueSpace.Money res = new ValueSpace.Money(0m);
+                foreach (var product in Product.getAll())
+
+                    res.Add(World.market.getCost(World.market.getMarketSupply(product, true)).Copy().Multiply((decimal)World.market.getDemandSupplyBalance(product, false))
+                        );
+                if (!World.market.moneyIncomeThisTurn.IsEqual(res))
+                {
+                    Debug.Log("Market income: " + World.market.moneyIncomeThisTurn + " total: " + World.market.Cash);
+                    Debug.Log("Should pay: " + res);
+                }
+            }
+            // big AFTER all and get money for sold circle
+            foreach (Country country in World.getAllExistingCountries())
+            {
+                country.getMoneyForSoldProduct();
+                foreach (Province province in country.getAllProvinces())//Province.allProvinces)
+                {
+                    foreach (Factory factory in province.getAllFactories())
+                    {
+                        if (country.economy.getValue() == Economy.PlannedEconomy)
+                        {
+                            if (country.isAI() && factory.IsClosed && !factory.isBuilding())
+                                Rand.Call(() => factory.open(country, false), Options.howOftenCheckForFactoryReopenning);
+                        }
+                        else
+                        {
+                            factory.getMoneyForSoldProduct();
+                            factory.ChangeSalary();
+                            factory.paySalary(); // workers get gold or food here
+                            factory.payDividend(); // also pays taxes inside
+                            factory.CloseUnprofitable();
+                            factory.ownership.CalcMarketPrice();
+                            Rand.Call(() =>
+                            {
+                                factory.ownership.SellLowMarginShares();
+                            }, 20);
+                        }
+                    }
+                    province.DestroyAllMarkedfactories();
+                    // get pop's income section:
+                    foreach (PopUnit pop in province.GetAllPopulation())
+                    {
+                        if (pop.Type == PopType.Workers)
+                            pop.LearnByWork();
+                        if (pop.canSellProducts())
+                            pop.getMoneyForSoldProduct();
+                        pop.takeUnemploymentSubsidies();
+                        if (country.Invented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
+                        // don't need salary with PE
+                        {
+                            var soldier = pop as Soldiers;
+                            if (soldier != null)
+                                soldier.takePayCheck();
+                        }
+                        //because income come only after consuming, and only after FULL consumption
+                        //if (pop.canTrade() && pop.hasToPayGovernmentTaxes())
+                        // POps who can't trade will pay tax BEFORE consumption, not after
+                        // Otherwise pops who can't trade avoid tax
+                        // pop.Country.TakeIncomeTax(pop, pop.moneyIncomethisTurn, pop.Type.isPoorStrata());//pop.payTaxes();
+                        pop.calcLoyalty();
+
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.Growth();
+
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.Promote();
+
+                        if (pop.needsFulfilled.isSmallerOrEqual(Options.PopNeedsEscapingLimit))
+                            if (Rand.Chance(Options.PopPopulationChangeChance))
+                                pop.ChangeLife(pop.GetAllPossibleDemotions().Where(x => x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopDemotingSpeed);
+
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.ChangeLife(pop.GetAllPossibleMigrations().Where(x => x.Value.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier)).MaxBy(x => x.Value.get()).Key, Options.PopMigrationSpeed);
+
+                        if (Rand.Chance(Options.PopPopulationChangeChance))
+                            pop.Assimilate();
+                    }
+                }
+            }
+            //investments circle. Needs to be separate, otherwise cashed  investments can conflict
+            foreach (Country country in World.getAllExistingCountries())
+            {
+                foreach (var province in country.getAllProvinces())
+                {
+                    foreach (var pop in province.GetAllPopulation())
+                    {
+                        if (country.economy.getValue() != Economy.PlannedEconomy)
+                            Rand.Call(() => pop.invest(), Options.PopInvestRate);
+                    }
+
+                    if (country.isAI())
+                        country.invest(province);
+                    //if (Game.random.Next(3) == 0)
+                    //    province.consolidatePops();
+                    province.RemoveDeadPops();
+                    foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
+                    {
+                        PopUnit targetToMerge = pop.Province.getSimilarPopUnit(pop);
+                        if (targetToMerge == null)
+                            pop.Province.RegisterPop(pop);
+                        else
+                            targetToMerge.mergeIn(pop);
+                    }
+
+                    PopUnit.PopListToAddToGeneralList.Clear();
+                    province.simulate();
+                }
+                country.simulate();
+                if (country.isAI())
+                    country.AIThink();
+            }
+        }
+
+        public static void prepareForNewTick()
+        {
+            World.market.SetStatisticToZero();
+
+            foreach (Country country in World.getAllExistingCountries())
+            {
+                country.SetStatisticToZero();
+                foreach (Province province in country.getAllProvinces())
+                {
+                    province.BalanceEmployableWorkForce();
+                    {
+                        foreach (var item in province.getAllAgents())
+                            item.SetStatisticToZero();
+                    }
+                }
+            }
+            PopType.sortNeeds();
+            Product.sortSubstitutes();
+        }
+
+        private static void calcBattles()
+        {
+            foreach (Staff attacker in Staff.getAllStaffs().ToList())
+            {
+                foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
+                {
+                    var movement = attacker as Movement;
+                    if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
+                    {
+                        var result = attackerArmy.attack(attackerArmy.getDestination());
+                        if (result.isAttackerWon())
+                        {
+                            if (movement == null)
+                                (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
+                            //attackerArmy.getDestination().secedeTo(attacker as Country, true);
+                            else
+                                movement.onRevolutionWon();
+                        }
+                        else if (result.isDefenderWon())
+                        {
+                            if (movement != null)
+                                movement.onRevolutionLost();
+                        }
+                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+                            result.createMessage();
+                    }
+                    attackerArmy.sendTo(null); // go home
+                }
+                attacker.consolidateArmies();
+            }
+        }
+
+        internal void ResumeSimulation()
+        {
+            haveToRunSimulation = true;
+        }
+
+        internal bool IsRunning
+        {
+            get { return (haveToRunSimulation || haveToStepSimulation); }// && !MessagePanel.IsOpenAny();
+        }
+
+        internal void PauseSimulation()
+        {
+            haveToRunSimulation = false;
+        }
+
+        internal void MakeOneStepSimulation()
+        {
+            haveToStepSimulation = true;
         }
     }
 }
