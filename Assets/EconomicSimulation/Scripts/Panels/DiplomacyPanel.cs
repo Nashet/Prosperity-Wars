@@ -60,7 +60,10 @@ namespace Nashet.EconomicSimulation
             sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
             sb.Append("\n\nState culture: ").Append(selectedCountry.getCulture());
-            sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
+            sb.Append("\nCultures: ").Append(selectedCountry.GetAllPopulation().Group(x => x.culture, y => y.getPopulation())
+                .OrderByDescending(x => x.Value.get()).ToString(", ", 5));
+            sb.Append("\nClasses: ").Append(selectedCountry.GetAllPopulation().Group(x => x.Type, y => y.getPopulation())
+                .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
             if (Game.devMode)
                 sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());
 

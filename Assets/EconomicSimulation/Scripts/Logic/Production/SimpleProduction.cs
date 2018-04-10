@@ -113,7 +113,7 @@ namespace Nashet.EconomicSimulation
             //old DSB
             //foreach (Storage input in realInput)
             //{
-            //    available = Game.market.HowMuchAvailable(input);
+            //    available = World.market.HowMuchAvailable(input);
             //    if (available.get() < input.get())
             //        input.set(available);
             //}
@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
             //old last turn consumption checking thing
             //foreach (Storage input in realInput)
             //{
-            //    //if (Game.market.getDemandSupplyBalance(input.Product) >= 1f)
+            //    //if (World.market.getDemandSupplyBalance(input.Product) >= 1f)
             //    //available = input
 
             //    available = consumedLastTurn.findStorage(input.Product);
@@ -241,7 +241,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal virtual MoneyView getExpences()
         {
-            return Game.market.getCost(getConsumed());
+            return World.market.getCost(getConsumed());
         }
 
         public bool isAllInputProductsCollected()

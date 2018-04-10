@@ -141,12 +141,12 @@ namespace Nashet.EconomicSimulation
         {
             Storage realNeed;
             if (need.isAbstractProduct())
-                //realNeed = new Storage(Game.market.getCheapestSubstitute(need).Product, need);
-                realNeed = Game.market.GetRandomCheapestSubstitute(need);
+                //realNeed = new Storage(World.market.getCheapestSubstitute(need).Product, need);
+                realNeed = World.market.GetRandomCheapestSubstitute(need);
             else
                 realNeed = need;
 
-            return CanPay(Game.market.getCost(realNeed));
+            return CanPay(World.market.getCost(realNeed));
             //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
         }
 
@@ -173,17 +173,17 @@ namespace Nashet.EconomicSimulation
         /// <summary> Including deposits </summary>
         internal Storage HowMuchCanAfford(Storage need)
         {
-            MoneyView cost = Game.market.getCost(need);
+            MoneyView cost = World.market.getCost(need);
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Game.market.getCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(World.market.getCost(need.Product).Get()).Get());
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
         //{
-        //    return new Value(Game.market.getCost(need).get() - this.cash.get());
+        //    return new Value(World.market.getCost(need).get() - this.cash.get());
         //}
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(float need)
@@ -215,7 +215,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(Storage need)
         //{
-        //    return new Value(Game.market.getCost(need) - this.cash.get());
+        //    return new Value(World.market.getCost(need) - this.cash.get());
         //}
 
         //private float get()
@@ -260,19 +260,19 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
-                if (CanPayCashOnly(howMuch))
-                {
-                    whom.cash.Add(howMuch);
-                    cash.Subtract(howMuch);
-                }
-                else
+                if (!CanPayCashOnly(howMuch))
                     Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
+
+                whom.cash.Add(howMuch);
+                cash.Subtract(howMuch);
                 return true;
             }
             else
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+                    Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord2 " + whom
+                        + " has " + getMoneyAvailable());
+                //PayAllAvailableMoneyWithoutRecord(whom);
                 return false;
             }
         }
@@ -285,19 +285,17 @@ namespace Nashet.EconomicSimulation
         {
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
-                if (CanPayCashOnly(howMuch))
-                {
-                    whom.Add(howMuch);
-                    cash.Subtract(howMuch);
-                }
-                else
-                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
+                if (!CanPayCashOnly(howMuch))
+                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));                
+                    
                 return true;
             }
             else
             {
                 if (showMessageAboutNegativeValue)
-                    Debug.Log("Not enough money to pay in Agent.payWithoutRecord");
+                    Debug.Log(this + " doesn't have " + howMuch + " to pay in Agent.payWithoutRecord " + whom
+                        + " has " + getMoneyAvailable());
+                //PayWithoutRecord(whom, getMoneyAvailable());
                 return false;
             }
         }
@@ -359,7 +357,7 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            return cash.Get() + " coins";
+            return "Agent "+ cash.Get();
         }
     }
 }

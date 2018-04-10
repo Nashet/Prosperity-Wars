@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
@@ -39,7 +42,7 @@ namespace Nashet.EconomicSimulation
             else
                 return selectedProvince.GetAllPopulation();
         }
-
+        private readonly StringBuilder sb = new StringBuilder();
         protected override void AddRow(PopUnit pop, int number)
         {
             // Adding number
@@ -47,10 +50,20 @@ namespace Nashet.EconomicSimulation
 
             // Adding PopType
             AddCell(pop.ShortName, pop);
+
             ////Adding province
             AddCell(pop.Province.ToString(), pop.Province, () => "Click to select this province");
-            ////Adding population
-            AddCell(Convert.ToString(pop.getPopulation()), pop);
+
+
+            ////Adding population            
+            sb.Clear();
+            sb.Append(pop.getPopulation());
+            int populationChange = pop.getAllPopulationChanges().Sum(x => x.Value);
+            if (populationChange != 0)
+                sb.Append(" (").Append(populationChange.ToString("+0;-0")).Append(")");
+                
+            AddCell(sb.ToString(), pop);
+
             ////Adding culture
             AddCell(pop.culture.ToString(), pop);
 

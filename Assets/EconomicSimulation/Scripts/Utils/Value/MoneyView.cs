@@ -89,8 +89,9 @@ namespace Nashet.ValueSpace
 
         public override string ToString()
         {
-            if (Game.devMode && data < 0.001m && data != 0m)
-                return data.ToString("E") + " Gold";
+            //Game.devMode &&
+            if ( data < 0.001m && data != 0m)
+                return (data * 1000m).ToString("N3") + " Gold bites";
             else
                 return data.ToString("N3") + " Gold";
         }

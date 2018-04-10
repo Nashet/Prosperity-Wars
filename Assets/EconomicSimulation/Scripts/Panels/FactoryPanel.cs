@@ -105,7 +105,7 @@ namespace Nashet.EconomicSimulation
                         sb.Append(next.get() * factory.getLevel() * factory.GetWorkForceFulFilling().get()).Append(" ").Append(next.Product).Append(";");
                 }
                 if (factory.getConsumed().Count() > 0)
-                    sb.Append("\nBought: ").Append(factory.getConsumed()).Append(" Cost: ").Append(Game.market.getCost(factory.getConsumed()));
+                    sb.Append("\nBought: ").Append(factory.getConsumed()).Append(" Cost: ").Append(World.market.getCost(factory.getConsumed()));
                 //if (Game.devMode)
                 //    sb.Append("\nConsumed LT: ").Append(factory.getConsumedLastTurn());
 

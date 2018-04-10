@@ -1033,7 +1033,7 @@ namespace Nashet.EconomicSimulation
             Money result = new Money(0m);
             foreach (var producer in getAllAgents())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
-                    result.Add(Game.market.getCost(producer.getGainGoodsThisTurn())); //- Game.market.getCost(producer.getConsumedTotal()).get());
+                    result.Add(World.market.getCost(producer.getGainGoodsThisTurn())); //- World.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
 
@@ -1193,11 +1193,13 @@ namespace Nashet.EconomicSimulation
 
         public bool HasJobsFor(PopType popType)
         {
-            if (!allFactories.Any(x => x.IsOpen))
-                return false;
             if (popType == PopType.Workers)
+            {
+                if (!allFactories.Any(x => x.IsOpen))
+                    return false;
                 return GetAllPopulation().Where(x => x.Type == PopType.Workers)
                         .GetAverageProcent(x => x.getUnemployment()).isSmallerThan(Options.PopMigrationUnemploymentLimit);
+            }
             else if (popType == PopType.Farmers || popType == PopType.Tribesmen)
                 return GetOverpopulation().isSmallerThan(Procent.HundredProcent);
             else
@@ -1252,45 +1254,60 @@ namespace Nashet.EconomicSimulation
             get { return this + ", " + Country; }
         }
 
-        public ReadOnlyValue getLifeQuality(PopUnit thisPop, PopType proposedType)
+        /// <summary>
+        /// Assuming that Type is same, province is changing
+        /// </summary>        
+        public ReadOnlyValue getLifeQuality(PopUnit pop)
         {
-            if (!HasJobsFor(proposedType))
+            if (!HasJobsFor(pop.Type))
                 return ReadOnlyValue.Zero;
             else
             {
-                var lifeQuality = getAverageNeedsFulfilling(proposedType);
+                // common part
+                var lifeQuality = getAverageNeedsFulfilling(pop.Type);
 
-                if (!lifeQuality.isBiggerThan(thisPop.needsFulfilled, Options.PopNeedsEscapingBarrier))
+                if (!lifeQuality.isBiggerThan(pop.needsFulfilled, Options.PopNeedsEscapingBarrier))
                     return ReadOnlyValue.Zero;
 
                 // checks for same culture and type
-                if (getSimilarPopUnit(thisPop) != null)
+                if (getSimilarPopUnit(pop) != null)
                     lifeQuality.Add(Options.PopSameCultureMigrationPreference);
 
-                // reforms preferences
-                if (thisPop.Type.isPoorStrata())
+
+                if (this.Country == pop.Country)
+                // migration part
                 {
-                    lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2 / 100f);
-                    lifeQuality.Add(Country.minimalWage.getValue().ID * 1 / 100f);
-                    lifeQuality.Add(Country.taxationForRich.getValue().ID * 1 / 100f);
+                    if (!pop.isStateCulture() && !isCoreFor(pop))
+                        lifeQuality.Subtract(0.2f, false);
                 }
-                else if (thisPop.Type.isRichStrata())
+                else // immigration part
                 {
-                    if (Country.economy.getValue() == Economy.LaissezFaire)
-                        lifeQuality.Add(0.05f);
-                    else if (Country.economy.getValue() == Economy.Interventionism)
-                        lifeQuality.Add(0.02f);
+                    // reforms preferences
+                    if (pop.Type.isPoorStrata())
+                    {
+                        lifeQuality.Add(Country.unemploymentSubsidies.getValue().ID * 2 / 100f);
+                        lifeQuality.Add(Country.minimalWage.getValue().ID * 1 / 100f);
+                        lifeQuality.Add(Country.taxationForRich.getValue().ID * 1 / 100f);
+                    }
+                    else if (pop.Type.isRichStrata())
+                    {
+                        if (Country.economy.getValue() == Economy.LaissezFaire)
+                            lifeQuality.Add(0.05f);
+                        else if (Country.economy.getValue() == Economy.Interventionism)
+                            lifeQuality.Add(0.02f);
+                    }
+
+                    if (pop.loyalty.get() < 0.3f)
+                        lifeQuality.Add(0.05f, false);
+                    //todo - serfdom
+
+                    if (!pop.canVote(Country.government.getTypedValue())) // includes Minority politics, but not only
+                        lifeQuality.Subtract(-0.10f, false);
+
+                    if (country.getCulture() != pop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
+                        //lifeQuality.Subtract(Options.PopMinorityMigrationBarier, false);
+                        return ReadOnlyValue.Zero;
                 }
-
-                if (thisPop.loyalty.get() < 0.3f)
-                    lifeQuality.Add(0.05f, false);
-                //todo - serfdom
-
-                if (!thisPop.canVote(Country.government.getTypedValue())) // includes Minority politics
-                    lifeQuality.Subtract(-0.10f, false);
-
-                if (country.getCulture() != thisPop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
-                    lifeQuality.Subtract(Options.PopMinorityMigrationBarier, false);
 
                 return lifeQuality;
             }

@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         private void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.19.4";
+            generalText.text = "Prosperity Wars v0.20.0";
             Hide();
         }
 
@@ -46,6 +46,38 @@ namespace Nashet.EconomicSimulation
                 var window = Instantiate(debugWindowPrefab, transform.parent);
                 window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
             }
+        }
+        
+        
+        public void OnScrollLeft()
+        {
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            cameraScript.Move(-1f, 0f, 0f);
+        }
+        public void OnScrollRight()
+        {
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            cameraScript.Move(1f, 0f, 0f);
+        }
+        public void OnScrollUp()
+        {
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            cameraScript.Move(0f, 1f, 0f);
+        }
+        public void OnScrollDown()
+        {
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            cameraScript.Move(0f, -1f, 0f);
+        }
+        public void OnScaleIn()
+        {
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            cameraScript.Move(0f, 0f, 0.2f);
+        }
+        public void OnScaleOut()
+        {
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            cameraScript.Move(0f, 0f, -0.2f);
         }
     }
 }

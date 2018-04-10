@@ -61,7 +61,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly int howOftenCheckForFactoryReopenning = 30;
 
         internal static readonly MoneyView factoryMoneyReservePerLevel = new MoneyView(20m);
-        internal static readonly Procent minMarginToRiseSalary = new Procent(0.01f);
+        internal static readonly ReadOnlyValue FactoryMarginToRiseSalary = new ReadOnlyValue(0.01f);
+        internal static readonly ReadOnlyValue FactoryMarginToDecreaseSalary = new ReadOnlyValue(0.005f);
+
         internal static readonly float factoryEachLevelEfficiencyBonus = 0.05f;
 
         //internal static float factoryHaveResourceInProvinceBonus = 0.2f;
@@ -75,8 +77,8 @@ namespace Nashet.EconomicSimulation
         internal static readonly int FactoryMediumHighLevels = 16;
         internal static readonly MoneyView FactoryMinPossibleSallary = new Money(0.001m);
 
-        internal static readonly MoneyView FactoryReduceSalaryOnNonProfit = new MoneyView(0.01m);
-        internal static readonly MoneyView FactoryReduceSalaryOnMarket = new MoneyView(0.001m);
+        internal static readonly Procent FactoryReduceSalaryOnNonProfit = new Procent(0.8f);//0.01m);
+        internal static readonly Procent FactoryReduceSalaryOnMarket = new Procent(0.9f);//0.001m);
 
         //Province
         /// <summary>In procent of unemployed</summary>
@@ -90,7 +92,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopMinorityMigrationBarier = new ReadOnlyValue(0.6f);
         internal static readonly ReadOnlyValue PopPopulationChangeChance = new ReadOnlyValue(0.1f);
 
-        ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
+        ///<summary> When popUnit can't fulfill needs it would demote to another class</summary>
         public static readonly Procent PopNeedsEscapingLimit = new Procent(0.333f);//0.33f
 
         /// <summary> New life should this better to start escaping</summary>
@@ -103,17 +105,18 @@ namespace Nashet.EconomicSimulation
         public static readonly Procent PopStarvationSpeed = new Procent(0.1f);
 
         ///<summary> When popUnit can't fulfill needs it would demote to another class or migrate/immigrate</summary>
-        public static readonly Procent PopEscapingSpeed = new Procent(0.04f);
+        public static readonly Procent PopDemotingSpeed = new Procent(0.04f);
+        public static readonly Procent PopMigrationSpeed = new Procent(0.08f);
 
         //public static readonly Procent PopMigrationSpeed = new Procent(0.01f);
         //public static readonly Procent PopImmigrationSpeed = new Procent(0.01f);
         ///<summary> promotion  - when popUnit has chance to get better place in hierarchy</summary>
         public static readonly Procent PopPromotionSpeed = new Procent(0.02f);
 
-        public static readonly Procent PopAssimilationSpeed = new Procent(0.02f);
-        public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.01f);
+        public static readonly Procent PopAssimilationSpeed = new Procent(0.04f);
+        public static readonly Procent PopAssimilationSpeedWithEquality = new Procent(0.02f);
 
-        ///<summary> Pop wouldn't select new life if there is unemployment hire than</summary>
+        ///<summary> Pop wouldn't select new life if there is unemployment higher than</summary>
         internal static readonly ReadOnlyValue PopMigrationUnemploymentLimit = new ReadOnlyValue(0.1f);
 
         internal static readonly ReadOnlyValue PopMigrationToUnknowAreaChance = new ReadOnlyValue(0.1f);
@@ -167,14 +170,14 @@ namespace Nashet.EconomicSimulation
         internal static readonly float PopTwoThird = 0.666f;
 
         // INVESTING
-        internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.95f);
+        internal static readonly Procent InvestingForeignCountrySecurity = new Procent(0.80f);
 
         /// <summary>
         /// There is bigger chance to loose property in another province
         /// </summary>
         internal static readonly Procent InvestingAnotherProvinceSecurity = new Procent(0.90f);
 
-        internal static readonly Procent InvestorEmploymentSafety = new Procent(0.70f);
+        internal static readonly Procent InvestorEmploymentSafety = new Procent(0.80f);
         internal static readonly Procent RelationImpactOnGovernmentInvestment = new Procent(0.05f);
         internal static readonly int PopDaysReservesBeforePuttingMoneyInBak = 10;
 

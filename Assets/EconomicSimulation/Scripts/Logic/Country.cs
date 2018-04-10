@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
         private readonly Money storageBuyingExpense = new Money(0m);
         public Money StorageBuyingExpense { get { return storageBuyingExpense.Copy(); } }
 
-        private readonly float nameWeight;
+        private float nameWeight;
 
         private TextMesh meshCapitalText;
         private Material borderMaterial;
@@ -134,7 +134,7 @@ namespace Nashet.EconomicSimulation
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
         {
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(GetAllInvestmentProjects2);
-            nameWeight = name.GetWeight();
+            SetName(name);            
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
             country = this;
@@ -167,7 +167,7 @@ namespace Nashet.EconomicSimulation
             taxationForPoor = new TaxationForPoor(this);
             taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
-            this.name = name;
+            
 
             this.culture = culture;
             nationalColor = color;
@@ -205,9 +205,10 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void SetName(string v)
+        internal void SetName(string name)
         {
-            name = v;
+            nameWeight = name.GetWeight();
+            this.name = name;            
         }
 
         private void ressurect(Province province, Government.ReformValue newGovernment)
@@ -815,7 +816,7 @@ namespace Nashet.EconomicSimulation
                 var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.GetBuildNeeds());
                 if (buildNeeds != null)
                 {
-                    var newFactory = province.BuildFactory(this, propositionFactory, Game.market.getCost(buildNeeds));
+                    var newFactory = province.BuildFactory(this, propositionFactory, World.market.getCost(buildNeeds));
                     consumeFromCountryStorage(buildNeeds, this);
                     return true;
                     //newFactory.constructionNeeds.setZero();
@@ -940,7 +941,7 @@ namespace Nashet.EconomicSimulation
                 if (Invented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
                 {
                     Money newWage;
-                    Money soldierAllNeedsCost = Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
+                    Money soldierAllNeedsCost = World.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
                     if (failedToPaySoldiers)
                     {
                         newWage = getSoldierWage().Copy().Multiply(0.8m);
@@ -980,6 +981,13 @@ namespace Nashet.EconomicSimulation
                 Rand.Call(
                     () =>
                     {
+                        if (Game.logInvestments)
+                        {
+                            var c = allInvestmentProjects.Get().ToList();
+                            c = c.OrderByDescending(x => x.Value.get()).ToList();
+                            var d = c.MaxBy(x => x.Value.get());
+                            var e = c.MaxByRandom(x => x.Value.get());
+                        }
                         // copied from Capitalist.Invest()
                         // doesn't care about risks
                         var project = allInvestmentProjects.Get().Where(
@@ -994,6 +1002,13 @@ namespace Nashet.EconomicSimulation
                                     var newFactory = x.Key as NewFactoryProject;
                                     if (newFactory != null)
                                         return InventedFactory(newFactory.Type);
+                                    else
+                                    {
+                                        var isBuyingShare = x.Key as Owners;
+                                        if (isBuyingShare != null)
+                                            if (isBuyingShare.HowMuchSelling(this).isNotZero())
+                                                return false;
+                                    }
                                 }
                                 return true;
                             }
@@ -1133,7 +1148,8 @@ namespace Nashet.EconomicSimulation
                     if (howMuchHave.isBiggerThan(maxLimit))
                     {
                         var howMuchToSell = howMuchHave.Copy().subtract(maxLimit);
-                        sell(howMuchToSell);
+                        if (howMuchToSell.isNotZero())
+                            sell(howMuchToSell);
                     }
                     else
                     {
@@ -1202,7 +1218,8 @@ namespace Nashet.EconomicSimulation
                     var toSell = countryStorageSet.GetFirstSubstituteStorage(product).Copy().subtract(desiredMaximum, false);
                     if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                     {
-                        sell(toSell);//go sell
+                        if (toSell.isNotZero())
+                            sell(toSell);//go sell
                     }
                 }
             }
@@ -1255,11 +1272,11 @@ namespace Nashet.EconomicSimulation
 
         private void buyNeeds(Storage toBuy)
         {
-            Storage realyBougth = Game.market.Sell(this, toBuy, null);
+            Storage realyBougth = World.market.Sell(this, toBuy, null);
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);
-                storageBuyingExpenseAdd(Game.market.getCost(realyBougth));
+                storageBuyingExpenseAdd(World.market.getCost(realyBougth));
             }
         }
 
@@ -1461,24 +1478,6 @@ namespace Nashet.EconomicSimulation
             return list.FindIndex(x => x.Key == this) + 1; // starts with zero
         }
 
-        public List<KeyValuePair<Culture, Procent>> getCultures()
-        {
-            var cultures = new Dictionary<Culture, int>();
-            var totalPopulation = GetAllPopulation().Sum(x => x.getPopulation());
-            foreach (var item in GetAllPopulation())
-            {
-                cultures.AddMy(item.culture, item.getPopulation());
-            }
-            var result = new List<KeyValuePair<Culture, Procent>>();
-            foreach (var item in cultures)
-            {
-                result.Add(new KeyValuePair<Culture, Procent>(item.Key, new Procent(item.Value, totalPopulation)));
-            }
-            result.Sort(ProcentOrder);
-            return result;
-        }
-
-        //****************************
         public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
@@ -1595,10 +1594,10 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                var hadMoney = taxPayer.Cash.Copy();
-                taxPayer.incomeTaxPayed.Add(taxPayer.Cash);
-                statistics.Add(taxPayer.Cash);
-                moneyIncomeThisTurn.Add(taxPayer.Cash);
+                var hadMoney = taxPayer.getMoneyAvailable().Copy();
+                taxPayer.incomeTaxPayed.Add(taxPayer.getMoneyAvailable());
+                statistics.Add(taxPayer.getMoneyAvailable());
+                moneyIncomeThisTurn.Add(taxPayer.getMoneyAvailable());
                 taxPayer.PayAllAvailableMoneyWithoutRecord(this);
                 return hadMoney;
             }

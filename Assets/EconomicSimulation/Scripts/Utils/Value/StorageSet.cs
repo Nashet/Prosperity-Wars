@@ -329,7 +329,7 @@ namespace Nashet.ValueSpace
         /// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>
         internal Storage getCheapestStorage(Product what)
         {
-            return getStorage(what, CollectionExtensions.MinBy, x => (float)Game.market.getCost(x.Product).Get());
+            return getStorage(what, CollectionExtensions.MinBy, x => (float)World.market.getCost(x.Product).Get());
         }
 
         /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
@@ -364,9 +364,9 @@ namespace Nashet.ValueSpace
                 if (!x.isTradable()) // skip uninvented
                     return false;
                 // take available products
-                return Game.market.sentToMarket.has(new Storage(x, abstractProduct));
+                return World.market.sentToMarket.has(new Storage(x, abstractProduct));
             })
-            .FirstSameElements(x => (float)Game.market.getCost(x).Get()).Random();
+            .FirstSameElements(x => (float)World.market.getCost(x).Get()).Random();
             if (randomCheapestProduct == null)
                 return null;
             else
@@ -378,7 +378,7 @@ namespace Nashet.ValueSpace
             //    {
             //        Storage newStor = new Storage(substitute, abstractProduct);
             //        // check for availability
-            //        if (Game.market.sentToMarket.has(newStor))
+            //        if (World.market.sentToMarket.has(newStor))
             //            return newStor;
             //    }
             //return null;
@@ -390,7 +390,7 @@ namespace Nashet.ValueSpace
         public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct)
         {
             var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
-            .FirstSameElements(x => (float)Game.market.getCost(x).Get()).Random();
+            .FirstSameElements(x => (float)World.market.getCost(x).Get()).Random();
 
             if (randomCheapestProduct == null)
                 return null;

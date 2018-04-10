@@ -12,6 +12,15 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Canvas canvas;
 
+        [SerializeField]
+        private float xyCameraSpeed = 2f;
+
+        [SerializeField]
+        private float zCameraSpeed = 55f;
+
+        [SerializeField]
+        private World world;
+
         private float focusHeight;
 
         public static TopPanel topPanel;
@@ -50,28 +59,33 @@ namespace Nashet.EconomicSimulation
             focusHeight = transform.position.z;
         }
 
+        public void Move(float xMove, float yMove, float zMove)
+        {
+
+            var position = transform.position;
+            var mapBorders = game.getMapBorders();
+            
+            
+            if (xMove * xyCameraSpeed + position.x < mapBorders.x
+                || xMove * xyCameraSpeed + position.x > mapBorders.width)
+                xMove = 0;
+            
+            if (yMove * xyCameraSpeed + position.y < mapBorders.y
+                || yMove * xyCameraSpeed + position.y > mapBorders.height)
+                yMove = 0;
+           
+            zMove = zMove * zCameraSpeed;
+            if (position.z + zMove > -40f
+                || position.z + zMove < -500f)
+                zMove = 0f;
+            transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
+        }
+
         private void FixedUpdate()
         {
             if (gameIsLoaded)
             {
-                var position = transform.position;
-                var mapBorders = game.getMapBorders();
-                float xyCameraSpeed = 2f;
-                float zCameraSpeed = 55f;
-                float xMove = Input.GetAxis("Horizontal");
-                if (xMove * xyCameraSpeed + position.x < mapBorders.x
-                    || xMove * xyCameraSpeed + position.x > mapBorders.width)
-                    xMove = 0;
-                float yMove = Input.GetAxis("Vertical");
-                if (yMove * xyCameraSpeed + position.y < mapBorders.y
-                    || yMove * xyCameraSpeed + position.y > mapBorders.height)
-                    yMove = 0;
-                float zMove = Input.GetAxis("Mouse ScrollWheel");
-                zMove = zMove * zCameraSpeed;
-                if (position.z + zMove > -40f
-                    || position.z + zMove < -500f)
-                    zMove = 0f;
-                transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
+                Move(0, 0, Input.GetAxis("Mouse ScrollWheel"));
             }
         }
 
@@ -183,11 +197,11 @@ namespace Nashet.EconomicSimulation
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();
 
-                if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
+                if (world.IsRunning && !MessagePanel.IsOpenAny())
                 {
                     if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
-                        Game.simulate();
+                        World.simulate();
                         previousFrameTime = Time.time;
                         refreshAllActive();
                     }

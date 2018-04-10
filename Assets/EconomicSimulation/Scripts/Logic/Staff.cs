@@ -235,10 +235,9 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
-        /// Just a plce holder, never intended to call
+        /// Just a place holder, never intended to call. Just need it to record battle deaths
         /// </summary>
-
-        public ReadOnlyValue getLifeQuality(PopUnit pop, PopType proposedType)
+        public ReadOnlyValue getLifeQuality(PopUnit pop)
         {
             throw new NotImplementedException();
         }

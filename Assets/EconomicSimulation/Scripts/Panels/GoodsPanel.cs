@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
             if (product != null)
             {
                 generaltext.text = product
-                    + "\n price: " + Game.market.getCost(product).Get() + " supply: " + Game.market.getMarketSupply(product, true).get() + " consumption: " + Game.market.getBouthOnMarket(product, true).get();
+                    + "\n price: " + World.market.getCost(product).Get() + " supply: " + World.market.getMarketSupply(product, true).get() + " consumption: " + World.market.getBouthOnMarket(product, true).get();
 
                 Color32[] resetColorArray = graphTexture.GetPixels32();
 
@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
                 graphTexture.SetPixels32(resetColorArray);
                 graphTexture.Apply();
 
-                var dataStorage = Game.market.priceHistory.getPool(product);
+                var dataStorage = World.market.priceHistory.getPool(product);
                 if (dataStorage != null)
                 {
                     var priceArray = dataStorage.data.ToArray();
@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
                     graphTexture.Apply();
                     priceGraph.texture = graphTexture;
 
-                    //foreach (Value price in Game.market.priceHistory)
+                    //foreach (Value price in World.market.priceHistory)
                     //    //graphTexture.d;;
                     //    ;
                     //priceGraph.texture = graphTexture;

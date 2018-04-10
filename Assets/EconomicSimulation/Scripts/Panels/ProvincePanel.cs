@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using UnityEngine;
@@ -136,16 +137,24 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
 
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAllPopulation().GetAverageProcent(x => x.loyalty));
-            sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
+            //sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
             sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
             sb.Append("\nResource: ");
             if (Game.selectedProvince.getResource() == null)
                 sb.Append("none ");
             else
                 sb.Append(Game.selectedProvince.getResource());
-            sb.Append("\nTerrain: ").Append(Game.selectedProvince.getTerrain());
-            sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.GetOverpopulation());
+            //sb.Append("\nTerrain: ").Append(Game.selectedProvince.getTerrain());
+            //sb.Append("\nRural overpopulation: ").Append(Game.selectedProvince.GetOverpopulation());
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
+            
+
+            sb.Append("\nCultures: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.culture, y => y.getPopulation())
+                .OrderByDescending(x => x.Value.get()).ToString(", ", 2));
+
+            sb.Append("\nClasses: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.Type, y => y.getPopulation())
+                .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
+
             if (Game.selectedProvince.getModifiers().Count > 0)
                 sb.Append("\nModifiers: ").Append(GetStringExtensions.getString(Game.selectedProvince.getModifiers()));
 

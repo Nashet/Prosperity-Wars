@@ -93,10 +93,9 @@ namespace Nashet.ValueSpace
 
         public override string ToString()
         {
-            //if (get() > 0)
-            return get().ToString("P1");
-            //else
-            //    return "0%";
+            return (get()*100f).ToString("f1") + "%";
+            //return get().ToString("P1");
+            //return String.Format("{0:1%}", get());
         }
 
         /// <summary>

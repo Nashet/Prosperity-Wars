@@ -109,23 +109,23 @@ namespace Nashet.EconomicSimulation
             Modifier.modifierDefault1,
             new Modifier(x=>(x as PopUnit).Province.getOverpopulationAdjusted(x as PopUnit), "Overpopulation", -1f, false),
             new Modifier(Invention.SteamPowerInvented, x=>(x as PopUnit).Country, 0.25f, false),
-            new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.25f, false),
+            new Modifier(Invention.CombustionEngineInvented, x=>(x as PopUnit).Country, 0.5f, false),
 
             new Modifier(Economy.isStateCapitlism, x=>(x as PopUnit).Country,  0.10f, false),
             new Modifier(Economy.isInterventionism, x=>(x as PopUnit).Country,  0.30f, false),
             new Modifier(Economy.isLF, x=>(x as PopUnit).Country,  0.50f, false),
             new Modifier(Economy.isPlanned, x=>(x as PopUnit).Country,  -0.10f, false),
-            new Modifier(x=>(x as PopUnit).Education.RawUIntValue, "Education",  1f / Procent.Precision, true),
+            new Modifier(x=>(x as PopUnit).Education.RawUIntValue, "Education",  2f / Procent.Precision, true),
 
             //new Modifier(Serfdom.Allowed,  -20f, false)
 
             // copied in Factory
              new Modifier(x => Government.isPolis.checkIfTrue((x as PopUnit).Country)
-             && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 1f, false),
+             && (x as PopUnit).Country.Capital == (x as PopUnit).Province, "Capital of Polis", 0.5f, false),
              new Modifier(x=>(x as PopUnit).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(x=>(x as PopUnit).Country.government.getValue() == Government.Tribal
-             && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.5f, false),
-             new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.30f, false) // remove this?
+             && (x as PopUnit).type!=PopType.Tribesmen, "Government is Tribal", -0.3f, false),
+             new Modifier(Government.isDespotism, x=>(x as PopUnit).Country, -0.20f, false) // remove this?
         });
         }
 
@@ -698,7 +698,7 @@ namespace Nashet.EconomicSimulation
                     needsFulfilled.Set(Options.PopOneThird);
                 }
                 else
-                    needsFulfilled.Set(Game.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
+                    needsFulfilled.Set(World.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
             }
             if (type != PopType.Aristocrats)
                 storage.SetZero();
@@ -714,7 +714,7 @@ namespace Nashet.EconomicSimulation
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in getRealEveryDayNeeds())
                 {
-                    var consumed = Game.market.Sell(this, need, null);
+                    var consumed = World.market.Sell(this, need, null);
                     if (consumed.isNotZero())
                     {
                         everyDayNeedsConsumed.Add(consumed);
@@ -727,58 +727,61 @@ namespace Nashet.EconomicSimulation
                 needsFulfilled.Add(everyDayNeedsFulfilled);
 
                 // buy luxury needs
+                bool hasAnyLuxuryNeeds = false;
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
                     var luxuryNeeds = getRealLuxuryNeeds();
 
                     //Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                     bool someLuxuryProductUnavailable = false;
-                    var luxuryNeedsConsumed = new List<Storage>();
+                    List<Storage> luxuryNeedsConsumed = null;
+                    if (luxuryNeeds.Count > 0)
+                        luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
-                        var consumed = Game.market.Sell(this, nextNeed, null);
+                        var consumed = World.market.Sell(this, nextNeed, null);
                         if (consumed.isZero())
                             someLuxuryProductUnavailable = true;
                         else
                         {
                             luxuryNeedsConsumed.Add(consumed);
+                            hasAnyLuxuryNeeds = true;
                             if (consumed.Product == Product.Education && consumed.isBiggerOrEqual(nextNeed))
                                 education.Learn();
                         }
                     }
-                    MoneyView luxuryNeedsCost = Game.market.getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost = World.market.getCost(luxuryNeeds);
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
                     // I also can limit regular luxury consumption but should I?:
-                    if (!someLuxuryProductUnavailable
-                        && Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
+                    if (!someLuxuryProductUnavailable && hasAnyLuxuryNeeds)
+                        //&& Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
                         MoneyView spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                         MoneyView spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
-
-                        //getSpendingLimit(spentMoneyOnAllNeeds);//
+                        // if gain more than consumed then spent it on extra luxury consumption                        
 
                         MoneyView spentOnUnlimitedConsumption;
                         if (Cash.isBiggerThan(spendingLimit))
                             spentOnUnlimitedConsumption = spendingLimit; // don't spent more than gained
                         else
-                            spentOnUnlimitedConsumption = Cash;
+                            spentOnUnlimitedConsumption = Cash; // don't spent savings on extra luxury consumption
 
-                        if (spentOnUnlimitedConsumption.Get() > 5m)// to avoid zero values
+                        if (spentOnUnlimitedConsumption.isNotZero())// to avoid zero values
                         {
                             // how much pop wants to spent on unlimited consumption. Pop should spent Cash only..
                             float buyExtraGoodsMultiplier = (float)(spentOnUnlimitedConsumption.Get() / luxuryNeedsCost.Get());
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.Multiply(buyExtraGoodsMultiplier);
-                                var consumed = Game.market.Sell(this, nextNeed, null);
+                                var consumed = World.market.Sell(this, nextNeed, null);
                                 if (consumed.isNotZero())
                                     luxuryNeedsConsumed.Add(consumed);
                             }
                         }
                     }
-                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds(), false);
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
@@ -842,7 +845,6 @@ namespace Nashet.EconomicSimulation
         public override void consumeNeeds()
         {
             //life needs First
-
             if (canTrade())
             {
                 consumeNeedsWithMarket();
@@ -996,7 +998,7 @@ namespace Nashet.EconomicSimulation
 
         public void Promote()
         {
-            int promotionSize = getPromotionSize();
+            int promotionSize = GetPopulationChangeAmount(Options.PopPromotionSpeed);
             bool isPromoted = false;
             if (wantsToPromote() && promotionSize > 0 && getPopulation() >= promotionSize)
             {
@@ -1013,17 +1015,28 @@ namespace Nashet.EconomicSimulation
                 populationChanges.EnqueueEmpty();
         }
 
-        public int getPromotionSize()
+        /// <summary>
+        /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
+        /// Result could be zero
+        /// </summary>
+        public int GetPopulationChangeAmount(ReadOnlyValue procent)
         {
-            int result = (int)(getPopulation() * Options.PopPromotionSpeed.get());
+            int result = (int)(getPopulation() * procent.get());
             if (result > 0)
                 return result;
-            else
-            if (//Province.hasAnotherPop(this.type) &&
-                getAge() > Options.PopAgeLimitToWipeOut)
-                return getPopulation();// wipe-out
-            else
+            else if (result < 0)
+            {
+                Debug.Log("Population change Can't be negative"); //todo what about dead pops?
                 return 0;
+            }
+            else
+            {
+                if (//Province.hasAnotherPop(this.type) &&
+                    getAge() > Options.PopAgeLimitToWipeOut)
+                    return getPopulation();// wipe-out
+                else
+                    return 0;
+            }
         }
 
         public bool wantsToPromote()
@@ -1121,19 +1134,22 @@ namespace Nashet.EconomicSimulation
             return result;
             //return (int)Mathf.RoundToInt(this.population * PopUnit.growthSpeed.get());
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Migrate()
+        {
 
+        }
         /// <summary>
         /// Splits pops. New pops changes life in richest way - by demotion, migration or immigration
         /// </summary>
-        public void FindBetterLife()
+        public void ChangeLife(IWayOfLifeChange lifeChange, ReadOnlyValue procent)
         {
             bool FoundBetterLife = false;
-            int escapeSize = getEscapeSize();
-            if (escapeSize > 0)// && this.getPopulation() >= escapeSize)
+            int escapeSize = GetPopulationChangeAmount(procent);
+            if (escapeSize > 0)
             {
-                //var escapeTarget = findEscapeTarget(predicate);
-                var lifeChange = GetAllPossibleLifeChanges().MaxBy(x => x.Value.get()).Key;
-
                 if (lifeChange != null)
                 {
                     FoundBetterLife = true;
@@ -1157,38 +1173,66 @@ namespace Nashet.EconomicSimulation
                 populationChanges.EnqueueEmpty();// register time passed
         }
 
-        /// <summary>
-        /// Returns amount of people who wants change their lives (by demotion\migration\immigration)
-        /// Result could be zero
-        /// </summary>
-        public int getEscapeSize()
-        {
-            int result = (int)(getPopulation() * Options.PopEscapingSpeed.get());
-            if (result > 0)
-                return result;
-            else if (result < 0)
-            {
-                Debug.Log("Can't be negative"); //todo what about dead pops?
-                return 0;
-            }
-            else
-            {
-                if (//Province.hasAnotherPop(this.type) &&
-                    getAge() > Options.PopAgeLimitToWipeOut)
-                    return getPopulation();// wipe-out
-                else
-                    return 0;
-            }
-        }
 
-        private IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleLifeChanges()
+
+        //private IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleLifeChanges()
+        //{
+        //    //***********migration inside country***********
+        //    if (type == PopType.Farmers || type == PopType.Workers || type == PopType.Tribesmen)
+        //        foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country == Country))
+        //        //foreach (var proposedNewProvince in Country.getAllProvinces())
+        //        {
+        //            var targetPriority = proposedNewProvince.getLifeQuality(this, Type);//province.getAverageNeedsFulfilling(this.type);
+
+        //            if (targetPriority.isNotZero())
+        //                yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
+        //        }
+        //    // ***********immigration***********
+        //    //where to g0?
+        //    // where life is rich and I where I have some rights
+        //    if (type != PopType.Aristocrats && type != PopType.Capitalists) // redo
+
+        //        foreach (var country in World.getAllExistingCountries())
+        //            //if (
+        //            //(country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+        //            //&& country != this.Country)
+        //            //foreach (var proposedNewProvince in country.getAllProvinces())
+        //            //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
+        //            //province =>
+        //            //province.Country != this.Country && province.Country != World.UncolonizedLand
+        //            //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+        //            //))
+
+        //            foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != Country))
+        //            {
+        //                var targetPriority = proposedNewProvince.getLifeQuality(this, Type);
+        //                if (targetPriority.isNotZero())
+        //                    yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
+        //            }
+        //    // ***********demotion***********
+        //    foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => type.CanDemoteTo(x, Country)))
+        //    {
+        //        var targetPriority = Province.getLifeQuality(this, proposedNewType);
+        //        if (targetPriority.isNotZero())
+        //            yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
+        //    }
+        //    // ***********promotion***********
+        //    //foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisPromoteInto(x)))
+        //    //{
+        //    //    var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
+        //    //    if (targetPriority.isNotZero())
+        //    //        yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
+        //    //}
+        //}
+
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleMigrations()
         {
             //***********migration inside country***********
             if (type == PopType.Farmers || type == PopType.Workers || type == PopType.Tribesmen)
                 foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country == Country))
                 //foreach (var proposedNewProvince in Country.getAllProvinces())
                 {
-                    var targetPriority = proposedNewProvince.getLifeQuality(this, Type);//province.getAverageNeedsFulfilling(this.type);
+                    var targetPriority = proposedNewProvince.getLifeQuality(this);//province.getAverageNeedsFulfilling(this.type);
 
                     if (targetPriority.isNotZero())
                         yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
@@ -1211,24 +1255,21 @@ namespace Nashet.EconomicSimulation
 
                     foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != Country))
                     {
-                        var targetPriority = proposedNewProvince.getLifeQuality(this, Type);
+                        var targetPriority = proposedNewProvince.getLifeQuality(this);
                         if (targetPriority.isNotZero())
                             yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewProvince, targetPriority);
                     }
+        }
+
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, ReadOnlyValue>> GetAllPossibleDemotions()
+        {
             // ***********demotion***********
             foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => type.CanDemoteTo(x, Country)))
             {
-                var targetPriority = Province.getLifeQuality(this, proposedNewType);
+                var targetPriority = proposedNewType.getLifeQuality(this);
                 if (targetPriority.isNotZero())
                     yield return new KeyValuePair<IWayOfLifeChange, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
             }
-            // ***********promotion***********
-            //foreach (PopType proposedNewType in PopType.getAllPopTypes().Where(x => canThisPromoteInto(x)))
-            //{
-            //    var targetPriority = Province.getEscapeValueFor(this, proposedNewType);
-            //    if (targetPriority.isNotZero())
-            //        yield return new KeyValuePair<IEscapeTarget, ReadOnlyValue>(proposedNewType, targetPriority);//.getAverageNeedsFulfilling(type));
-            //}
         }
 
         internal void Assimilate()
@@ -1237,12 +1278,9 @@ namespace Nashet.EconomicSimulation
             if (!isStateCulture())
             {
                 int assimilationSize = getAssimilationSize();
-                if (assimilationSize > 0 && getPopulation() >= assimilationSize)
+                if (assimilationSize > 0)
                 {
-                    //assimilate(Country.getCulture(), assimilationSize);
-
                     makeVirtualPop(type, this, assimilationSize, Province, Country.getCulture(), culture);
-
                     populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(Country.getCulture(), assimilationSize * -1));
                     isAssimilated = true;
                 }
@@ -1280,7 +1318,7 @@ namespace Nashet.EconomicSimulation
             if (Country.Invented(Invention.Banking))
             {
                 MoneyView extraMoney = Cash.Copy().Subtract(
-                    Game.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
+                    World.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
                     , false);
                 if (extraMoney.isNotZero())
                     Bank.ReceiveMoney(this, extraMoney);

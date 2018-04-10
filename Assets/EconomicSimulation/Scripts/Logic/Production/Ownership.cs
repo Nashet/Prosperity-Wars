@@ -67,29 +67,28 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public bool Transfer(IShareOwner oldOwner, IShareOwner newOwner, MoneyView amount)
         {
-            //if (IsCorrectData(share.get()))
-            //{
             var share = new Procent(amount, GetMarketValue());
-            var toTranfert = GetAssetsValue().Copy().Multiply(share);
+            var toTransfer = GetAssetsValue().Copy().Multiply(share); // ownership is stored in money
 
             Share oldOwnerAsset;
             if (ownership.TryGetValue(oldOwner, out oldOwnerAsset))
             {
-                if (oldOwnerAsset.GetShare().isBiggerOrEqual(toTranfert)) // has enough to transfert
+                if (oldOwnerAsset.GetShare().isBiggerOrEqual(toTransfer)) // has enough to transfer
                 {
                     Share newOwnerAsset;
                     if (ownership.TryGetValue(newOwner, out newOwnerAsset))
-                        newOwnerAsset.Increase(toTranfert);
+                        newOwnerAsset.Increase(toTransfer);
                     else
-                        ownership.Add(newOwner, new Share(toTranfert));
+                        ownership.Add(newOwner, new Share(toTransfer));
 
-                    Remove(oldOwner, toTranfert);
+                    Remove(oldOwner, toTransfer);
                     return true;
                 }
                 else
                 {
                     TransferAll(oldOwner, newOwner);
-                    Debug.Log("Not enough property to transfer");
+                    if (Game.logInvestments)
+                        Debug.Log("Not enough property to transfer"); // reduce payment in that case, transfer data in non-market value
                     return false;
                 }
             }
@@ -215,13 +214,13 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Readonly !!
         /// </summary>
-        internal Procent HowMuchSelling(IShareOwner owner)
+        internal ReadOnlyValue HowMuchSelling(IShareOwner owner)
         {
             Share record;
             if (ownership.TryGetValue(owner, out record))
                 return new Procent(record.GetShareForSale(), GetAssetsValue());
             else
-                return Procent.ZeroProcent.Copy();
+                return Procent.ZeroProcent;
         }
 
         /// <summary>
@@ -253,6 +252,7 @@ namespace Nashet.EconomicSimulation
             Share record;
             if (ownership.TryGetValue(owner, out record))
             {
+                Debug.Log("Canceling buying order " + owner + " " + share);
                 var value = GetShareAssetsValue(share);
                 record.CancelBuyOrder(value);
             }
@@ -343,14 +343,15 @@ namespace Nashet.EconomicSimulation
 
                     if (buyingAgent.Pay(shareToBuy.Key as Agent, cost))
                     {
+                        if (Game.logInvestments)
+                        {
+                            var boughtProcent = new Procent(cost, parent.ownership.totallyInvested);
+                            Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key + " awaiting " + GetMargin() + " margin");
+                        }
                         Transfer(shareToBuy.Key, buyer, cost);
                         //reduce onSale amount on successful deal
 
                         shareToBuy.Value.ReduceSale(cost);
-
-                        var boughtProcent = new Procent(cost, parent.ownership.totallyInvested);
-                        if (Game.logInvestments)
-                            Debug.Log(buyer + " bough " + boughtProcent + " shares (" + cost + ") of " + parent + " from " + shareToBuy.Key + " awaiting " + GetMargin() + " margin");
                     }
                 }
             }
