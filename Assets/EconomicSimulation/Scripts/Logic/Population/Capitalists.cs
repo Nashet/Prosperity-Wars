@@ -78,6 +78,13 @@ namespace Nashet.EconomicSimulation
                         var newFactory = x.Key as NewFactoryProject;
                         if (newFactory != null)
                             return Country.InventedFactory(newFactory.Type);
+                        else
+                        {
+                            var isBuyingShare = x.Key as Owners;
+                            if (isBuyingShare != null)
+                                if (isBuyingShare.HowMuchSelling(this).isNotZero())
+                                    return false;
+                        }
                     }
                     return true;
                 }

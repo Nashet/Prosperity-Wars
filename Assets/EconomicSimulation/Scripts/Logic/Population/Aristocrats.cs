@@ -83,7 +83,7 @@ namespace Nashet.EconomicSimulation
                 var projects = Province.getAllInvestmentProjects().Where(
                    //x => x.CanProduce(Province.getResource())
                    delegate (IInvestable x)
-                   {
+                   {                       
                        if (!x.CanProduce(Province.getResource()))
                            return false;
                        var isFactory = x as Factory;
@@ -94,6 +94,13 @@ namespace Nashet.EconomicSimulation
                            var newFactory = x as NewFactoryProject;
                            if (newFactory != null)
                                return Country.InventedFactory(newFactory.Type);
+                           else
+                           {
+                               var isBuyingShare = x as Owners;
+                               if (isBuyingShare != null)
+                                   if (isBuyingShare.HowMuchSelling(this).isNotZero())
+                                       return false;
+                           }
                        }
                        return true;
                    }

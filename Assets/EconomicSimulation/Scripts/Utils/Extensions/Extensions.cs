@@ -483,6 +483,8 @@ namespace Nashet.Utils
         public static TSource MaxByRandom<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector)
         {
+            //var res = source.Max(selector);
+            //return source.Where(x => selector(x).Equals(res)).Random();
             var res = source.MaxBy(selector);
             return source.Where(x => selector(x).Equals(selector(res))).Random();
         }
