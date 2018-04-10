@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
@@ -79,8 +80,31 @@ namespace Nashet.EconomicSimulation
             if (Province.getResource() != null)
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
-                var projects = Province.getAllInvestmentProjects().Where(x => x.CanProduce(Province.getResource()));
-
+                var projects = Province.getAllInvestmentProjects().Where(
+                   //x => x.CanProduce(Province.getResource())
+                   delegate (IInvestable x)
+                   {
+                       if (!x.CanProduce(Province.getResource()))
+                           return false;
+                       var isFactory = x as Factory;
+                       if (isFactory != null)
+                           return Country.InventedFactory(isFactory.Type);
+                       else
+                       {
+                           var newFactory = x as NewFactoryProject;
+                           if (newFactory != null)
+                               return Country.InventedFactory(newFactory.Type);
+                       }
+                       return true;
+                   }
+                   );
+                if (Game.logInvestments)
+                {
+                    var c = projects.ToList();
+                    c = c.OrderByDescending(x => x.GetMargin().get()).ToList();
+                    var d = c.MaxBy(x => x.GetMargin().get());
+                    var e = c.MaxByRandom(x => x.GetMargin().get());
+                }
                 var project = projects.MaxByRandom(x => x.GetMargin().Multiply(getBusinessSecurity(x)).get());
                 if (project != null && project.GetMargin().Multiply(getBusinessSecurity(project)).isBiggerThan(Options.minMarginToInvest))
                 {

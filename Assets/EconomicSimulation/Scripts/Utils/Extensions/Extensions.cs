@@ -260,7 +260,7 @@ namespace Nashet.Utils
         }
 
         public static Value Sum(this List<Storage> list)
-        {            
+        {
             Value sum = new Value(0f);
             if (list == null)
                 return sum;
@@ -300,11 +300,11 @@ namespace Nashet.Utils
         //    else
         //        dictionary.Add(what, size);
         //}
-        public static IEnumerable<KeyValuePair<Tkey, Procent>> Group<T, Tkey>(this IEnumerable<T> collection, Func<T, Tkey> keySelector, Func <T, int> sumBy)
+        public static IEnumerable<KeyValuePair<Tkey, Procent>> Group<T, Tkey>(this IEnumerable<T> collection, Func<T, Tkey> keySelector, Func<T, int> sumBy)
         {
             var totalPopulation = collection.Sum(x => sumBy(x));
             var query = collection.GroupBy(
-        toBeKey => keySelector( toBeKey),
+        toBeKey => keySelector(toBeKey),
         (group, element) => new KeyValuePair<Tkey, Procent>
         (
              group,
@@ -483,45 +483,8 @@ namespace Nashet.Utils
         public static TSource MaxByRandom<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector)
         {
-            IComparer<TKey> comparer = Comparer<TKey>.Default;
-            TKey maxKey;
-            using (var sourceIterator = source.GetEnumerator())
-            {
-                if (!sourceIterator.MoveNext())
-                {
-                    return default(TSource);
-                }
-                var max = sourceIterator.Current;
-                maxKey = selector(max);
-                while (sourceIterator.MoveNext())
-                {
-                    var candidate = sourceIterator.Current;
-                    var candidateProjected = selector(candidate);
-                    if (comparer.Compare(candidateProjected, maxKey) > 0)
-                    {
-                        max = candidate;
-                        maxKey = candidateProjected;
-                    }
-                }
-            }
-            var reslist = new List<TSource>();
-            //var foundMaximum = source.MaxBy(selector);
-            using (var sourceIterator = source.GetEnumerator())
-            {
-                if (!sourceIterator.MoveNext())
-                {
-                    return default(TSource);
-                }
-                do
-                {
-                    var candidate = sourceIterator.Current;
-                    var candidateProjected = selector(candidate);
-                    if (maxKey.Equals(candidateProjected))
-                        reslist.Add(candidate);
-                }
-                while (sourceIterator.MoveNext());
-            }
-            return reslist.Random();
+            var res = source.MaxBy(selector);
+            return source.Where(x => selector(x).Equals(selector(res))).Random();
         }
 
         //private static System.Random rng = new System.Random();

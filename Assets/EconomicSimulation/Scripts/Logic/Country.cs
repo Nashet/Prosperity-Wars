@@ -981,6 +981,13 @@ namespace Nashet.EconomicSimulation
                 Rand.Call(
                     () =>
                     {
+                        if (Game.logInvestments)
+                        {
+                            var c = allInvestmentProjects.Get().ToList();
+                            c = c.OrderByDescending(x => x.Value.get()).ToList();
+                            var d = c.MaxBy(x => x.Value.get());
+                            var e = c.MaxByRandom(x => x.Value.get());
+                        }
                         // copied from Capitalist.Invest()
                         // doesn't care about risks
                         var project = allInvestmentProjects.Get().Where(

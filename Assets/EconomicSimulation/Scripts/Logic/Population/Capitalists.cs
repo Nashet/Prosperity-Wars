@@ -82,9 +82,18 @@ namespace Nashet.EconomicSimulation
                     return true;
                 }
                 );
-                var project = projects.MaxByRandom(x => x.Value.Multiply(getBusinessSecurity(x.Key)).get());
+                if (Game.logInvestments)
+                {
+                    var c = projects.ToList();
+                    c = c.OrderByDescending(x => x.Value.get()).ToList();
+                    var d = c.MaxBy(x => x.Value.get());
+                    var e = c.MaxByRandom(x => x.Value.get());
+                    var f = c.MaxByRandom(x => x.Value.Copy().Multiply(getBusinessSecurity(x.Key)).get());
+                    c.Any();
+                }
+                var project = projects.MaxByRandom(x => x.Value.Copy().Multiply(getBusinessSecurity(x.Key)).get());
 
-                if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.Multiply(getBusinessSecurity(project.Key)).isBiggerThan(Options.minMarginToInvest))
+                if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.Copy().Multiply(getBusinessSecurity(project.Key)).isBiggerThan(Options.minMarginToInvest))
                 {
                     MoneyView investmentCost = project.Key.GetInvestmentCost();
                     if (!CanPay(investmentCost))
