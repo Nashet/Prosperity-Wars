@@ -1,9 +1,9 @@
 # Economic simulation
 
 ## Demo
-[Project now has patreon page](https://www.patreon.com/economicsimulation) where you can help contributing in this project
+[There is early browser demo of this game](https://nashet.github.io/Prosperity-Wars/WEBGL/index.html) (about 6MB download, some devices are not supported)
 
-[There is early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (about 6MB download, some devices are not supported)
+[Project now has patreon page](https://www.patreon.com/economicsimulation) where you can help contributing in this project
 
 And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
 
