@@ -479,7 +479,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money income;
                     if (basedOnProfit)
-                        income = new Money((decimal)getProfit(), false);
+                        income = new Money(getProfit(), false);
                     else
                         income = payedDividends.Copy();
                     var taxes = income.Copy().Multiply(Country.taxationForRich.getTypedValue().tax);
@@ -724,12 +724,12 @@ namespace Nashet.EconomicSimulation
                 if (Country.economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
                 {
                     //fire people if unprofitable.
-                    if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                         difference = -1 * maxHiringSpeed;
 
                     // just don't hire more..
                     //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-                    if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
                         difference = 0;
                 }
             }

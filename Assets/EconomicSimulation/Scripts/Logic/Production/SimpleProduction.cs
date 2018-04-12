@@ -56,15 +56,15 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// could be negative
         /// </summary>        
-        internal float getProfit()
+        internal decimal getProfit()
 
         {
             //return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
             if (Country.economy.getValue() == Economy.PlannedEconomy)
-                return 0f;
+                return 0m;
             else
                 //return base.getProfit() - (float)getSalaryCost().Get();
-                return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
+                return moneyIncomeThisTurn.Get() - getExpences().Get();
         }
 
         /// <summary>

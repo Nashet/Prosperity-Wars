@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
         private readonly Province province;
 
         public NewFactoryProject(Province province, ProductionType type)
-        {
+        {            
             Type = type;
             this.province = province;
         }
