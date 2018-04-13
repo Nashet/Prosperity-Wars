@@ -28,7 +28,13 @@ namespace Nashet.ValueSpace
         public Procent(List<Storage> numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
             : this(numerator.Sum(), denominator.Sum(), showMessageAboutOperationFails) { }
 
+        public Procent(List<Storage> numerator, IEnumerable<Storage> denominator, bool showMessageAboutOperationFails = true)
+            : this(numerator.Sum(), denominator.Sum(), showMessageAboutOperationFails) { }
+
         public Procent(StorageSet numerator, List<Storage> denominator, bool showMessageAboutOperationFails = true)
+            : this(numerator.GetTotalQuantity(), denominator.Sum(), showMessageAboutOperationFails) { }
+
+        public Procent(StorageSet numerator, IEnumerable<Storage> denominator, bool showMessageAboutOperationFails = true)
             : this(numerator.GetTotalQuantity(), denominator.Sum(), showMessageAboutOperationFails) { }
 
         public Procent(ReadOnlyValue numerator, ReadOnlyValue denominator, bool showMessageAboutOperationFails = true)

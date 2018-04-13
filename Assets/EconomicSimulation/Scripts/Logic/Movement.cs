@@ -137,7 +137,7 @@ namespace Nashet.EconomicSimulation
             int res = 0;
             foreach (var item in members)
             {
-                res += item.getPopulation();
+                res += item.population.Get();
             }
             return res;
         }
@@ -157,8 +157,8 @@ namespace Nashet.EconomicSimulation
             int calculatedSize = 0;
             foreach (var item in members)
             {
-                result.AddPoportionally(calculatedSize, item.getPopulation(), item.loyalty);
-                calculatedSize += item.getPopulation();
+                result.AddPoportionally(calculatedSize, item.population.Get(), item.loyalty);
+                calculatedSize += item.population.Get();
             }
             return result;
         }

@@ -164,7 +164,7 @@ namespace Nashet.EconomicSimulation
             allArmies.ForEach(x => x.rebelTo(popSelector, movement));
         }
 
-        public override List<Storage> getRealAllNeeds()
+        public override IEnumerable<Storage> getRealAllNeeds()
         {
             //StorageSet res = new StorageSet();
             //foreach (var item in allArmies)
@@ -172,7 +172,7 @@ namespace Nashet.EconomicSimulation
 
             // assuming all corps has same needs
             var res = PopType.Soldiers.getMilitaryNeedsPer1000Men(Country);
-            var multiplier = new Value(getAllArmiesSize() / 1000f);
+            var multiplier = getAllArmiesSize() / 1000f;
             res.Multiply(multiplier);
             return res;
         }

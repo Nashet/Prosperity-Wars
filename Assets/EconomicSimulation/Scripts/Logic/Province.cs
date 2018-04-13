@@ -441,11 +441,11 @@ namespace Nashet.EconomicSimulation
 
             foreach (var pop in allPopUnits)
                 //if (cultures.ContainsKey(pop.culture))
-                //    cultures[pop.culture] += pop.getPopulation();
+                //    cultures[pop.culture] += pop.population.Get();
                 //else
-                //    cultures.Add(pop.culture, pop.getPopulation());
-                cultures.AddMy(pop.culture, pop.getPopulation());
-            ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.getPopulation()));
+                //    cultures.Add(pop.culture, pop.population.Get());
+                cultures.AddMy(pop.culture, pop.population.Get());
+            ///allPopUnits.ForEach(x=>cultures.Add(x.culture, x.population.Get()));
             return cultures.MaxBy(y => y.Value).Key as Culture;
         }
 
@@ -453,7 +453,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    int result = 0;
         //    foreach (PopUnit pop in allPopUnits)
-        //        result += pop.getPopulation();
+        //        result += pop.population.Get();
         //    return result;
         //}
         //public int getMenPopulationEmployable()
@@ -461,7 +461,7 @@ namespace Nashet.EconomicSimulation
         //    int result = 0;
         //    foreach (PopUnit pop in allPopUnits)
         //        if (pop.Type.canBeUnemployed())
-        //            result += pop.getPopulation();
+        //            result += pop.population.Get();
         //    return result;
         //}
 
@@ -482,7 +482,7 @@ namespace Nashet.EconomicSimulation
         public int getFamilyPopulation()
         {
             //return getMenPopulation() * Options.familySize;
-            return GetAllPopulation().Sum(x => x.getPopulation()) * Options.familySize;
+            return GetAllPopulation().Sum(x => x.population.Get()) * Options.familySize;
         }
 
         internal MoneyView getIncomeTax()
@@ -515,10 +515,10 @@ namespace Nashet.EconomicSimulation
         {
             int aristoctratAmount = 0;
             foreach (Aristocrats aristocrats in GetAllPopulation(PopType.Aristocrats))
-                aristoctratAmount += aristocrats.getPopulation();
+                aristoctratAmount += aristocrats.population.Get();
             foreach (Aristocrats aristocrat in GetAllPopulation(PopType.Aristocrats))
             {
-                Storage howMuch = new Storage(fromWho.Product, taxTotalToPay.get() * (float)aristocrat.getPopulation() / (float)aristoctratAmount);
+                Storage howMuch = new Storage(fromWho.Product, taxTotalToPay.get() * (float)aristocrat.population.Get() / (float)aristoctratAmount);
                 fromWho.send(aristocrat.storage, howMuch);
                 aristocrat.addProduct(howMuch);
                 aristocrat.dealWithMarket();
@@ -588,7 +588,7 @@ namespace Nashet.EconomicSimulation
                     worker.Fire();
             }
             // List<PopUnit> workforceList = this.GetAllPopulation(PopType.Workers).ToList();
-            int unemplyedWorkForce = GetAllPopulation(PopType.Workers).Sum(x => x.getPopulation());
+            int unemplyedWorkForce = GetAllPopulation(PopType.Workers).Sum(x => x.population.Get());
 
             if (unemplyedWorkForce > 0)
             {
@@ -701,8 +701,8 @@ namespace Nashet.EconomicSimulation
         //        if (predicate(item.Type))
         //        {
         //            if (item.Type.canBeUnemployed())
-        //                result.AddPoportionally(calculatedBase, item.getPopulation(), item.getUnemployedProcent());
-        //            calculatedBase += item.getPopulation();
+        //                result.AddPoportionally(calculatedBase, item.population.Get(), item.getUnemployedProcent());
+        //            calculatedBase += item.population.Get();
         //        }
         //    }
         //    return result;
@@ -718,7 +718,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal int getUnemployedWorkers()
         {
-            int totalWorkforce = GetAllPopulation(PopType.Workers).Sum(x => x.getPopulation());
+            int totalWorkforce = GetAllPopulation(PopType.Workers).Sum(x => x.population.Get());
             if (totalWorkforce == 0)
                 return 0;
             int employed = allFactories.Sum(x => x.getWorkForce());
@@ -810,11 +810,11 @@ namespace Nashet.EconomicSimulation
             float usedLand = 0f;
             foreach (PopUnit pop in allPopUnits)
                 if (pop.Type == PopType.Tribesmen)
-                    usedLand += pop.getPopulation() * Options.PopMinLandForTribemen;
+                    usedLand += pop.population.Get() * Options.PopMinLandForTribemen;
                 else if (pop.Type == PopType.Farmers)
-                    usedLand += pop.getPopulation() * Options.PopMinLandForFarmers;
+                    usedLand += pop.population.Get() * Options.PopMinLandForFarmers;
                 else
-                    usedLand += pop.getPopulation() * Options.PopMinLandForTownspeople;
+                    usedLand += pop.population.Get() * Options.PopMinLandForTownspeople;
 
             return new Procent(usedLand, fertileSoil);
         }
@@ -874,8 +874,8 @@ namespace Nashet.EconomicSimulation
         //    if (allPopUnits.Count > 14)
         //    //get some small pop and merge it into bigger
         //    {
-        //        PopUnit popToMerge = GetAllPopulation().Where(x => x.getPopulation() < Options.PopSizeConsolidationLimit).Random();
-        //        //PopUnit popToMerge = getSmallerPop((x) => x.getPopulation() < Options.PopSizeConsolidationLimit);
+        //        PopUnit popToMerge = GetAllPopulation().Where(x => x.population.Get() < Options.PopSizeConsolidationLimit).Random();
+        //        //PopUnit popToMerge = getSmallerPop((x) => x.population.Get() < Options.PopSizeConsolidationLimit);
         //        if (popToMerge != null)
         //        {
         //            PopUnit targetPop = this.getBiggerPop(x => x.isStateCulture() == popToMerge.isStateCulture()
@@ -890,12 +890,12 @@ namespace Nashet.EconomicSimulation
 
         private PopUnit getBiggerPop(Predicate<PopUnit> predicate)
         {
-            return allPopUnits.FindAll(predicate).MaxBy(x => x.getPopulation());
+            return allPopUnits.FindAll(predicate).MaxBy(x => x.population.Get());
         }
 
         private PopUnit getSmallerPop(Predicate<PopUnit> predicate)
         {
-            return allPopUnits.FindAll(predicate).MinBy(x => x.getPopulation());
+            return allPopUnits.FindAll(predicate).MinBy(x => x.population.Get());
         }
 
         internal bool hasAnotherPop(PopType type)
@@ -1009,7 +1009,7 @@ namespace Nashet.EconomicSimulation
                 case 5: //population density mode
                     {
                         float maxPopultion = 50000;
-                        var population = GetAllPopulation().Sum(x => x.getPopulation());
+                        var population = GetAllPopulation().Sum(x => x.population.Get());
                         return Color.Lerp(Color.white, Color.red, population / maxPopultion);
                     }
                 case 6: //prosperity map
@@ -1043,8 +1043,8 @@ namespace Nashet.EconomicSimulation
         //    int calculatedPopulation = 0;
         //    foreach (PopUnit pop in allPopUnits)
         //    {
-        //        result.AddPoportionally(calculatedPopulation, pop.getPopulation(), selector(pop));
-        //        calculatedPopulation += pop.getPopulation();
+        //        result.AddPoportionally(calculatedPopulation, pop.population.Get(), selector(pop));
+        //        calculatedPopulation += pop.population.Get();
         //    }
         //    return result;
         //}
@@ -1087,8 +1087,8 @@ namespace Nashet.EconomicSimulation
             //foreach (PopUnit pop in GetAllPopulation(type))
             //// get middle needs fulfilling according to pop weight
             //{
-            //    allPopulation += pop.getPopulation();
-            //    result.Add(pop.needsFulfilled.Copy().Multiply(pop.getPopulation()));
+            //    allPopulation += pop.population.Get();
+            //    result.Add(pop.needsFulfilled.Copy().Multiply(pop.population.Get()));
             //}
             //if (allPopulation > 0)
             //    return result.Divide(allPopulation);

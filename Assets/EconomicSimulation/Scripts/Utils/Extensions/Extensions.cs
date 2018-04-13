@@ -258,8 +258,16 @@ namespace Nashet.Utils
             }
             return list;
         }
+        public static List<Storage> Multiply(this List<Storage> list, float value)
+        {
+            foreach (var item in list)
+            {
+                item.Multiply(value);
+            }
+            return list;
+        }
 
-        public static Value Sum(this List<Storage> list)
+        public static Value Sum(this IEnumerable<Storage> list)
         {
             Value sum = new Value(0f);
             if (list == null)
@@ -370,8 +378,8 @@ namespace Nashet.Utils
             int calculatedPopulation = 0;
             foreach (var item in source)
             {
-                result.AddPoportionally(calculatedPopulation, item.getPopulation(), selector(item));
-                calculatedPopulation += item.getPopulation();
+                result.AddPoportionally(calculatedPopulation, item.population.Get(), selector(item));
+                calculatedPopulation += item.population.Get();
             }
             return result;
         }

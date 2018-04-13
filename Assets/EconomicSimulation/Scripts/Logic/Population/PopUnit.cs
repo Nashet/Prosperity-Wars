@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Predicate<PopUnit> All = x => true;
 
         public readonly Procent loyalty;
-        private int population;
+        public readonly Population population;
         private int mobilized;
 
         private readonly PopType type;
@@ -136,8 +136,9 @@ namespace Nashet.EconomicSimulation
         {
             where.RegisterPop(this);
             born = new Date(Date.Today);
-            population = amount;
+            
             type = popType;
+            population = new Population(amount, this);
             this.culture = culture;
 
             education = new Education(0f);
@@ -159,13 +160,14 @@ namespace Nashet.EconomicSimulation
 
             // here should be careful copying of popUnit data
             //And careful editing of old unit
-            Procent newPopShare = new Procent(sizeOfNewPop, source.getPopulation());
+            Procent newPopShare = new Procent(sizeOfNewPop, source.population.Get());
 
             //Own PopUnit fields:
             loyalty = new Procent(source.loyalty.get());
-            population = sizeOfNewPop;
+            type = newPopType;
+            population = new Population(sizeOfNewPop, this);
             // if source pop is gonna be dead..
-            if (source.population - sizeOfNewPop <= 0 && type == PopType.Aristocrats || type == PopType.Capitalists)
+            if (source.population.Get() - sizeOfNewPop <= 0 && type == PopType.Aristocrats || type == PopType.Capitalists)
             //secede property... to new pop..
             //todo - can optimize it, double run on List
             {
@@ -180,7 +182,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             mobilized = 0;
-            type = newPopType;
+           
             this.culture = culture;
             education = new Education(source.education.get());
             needsFulfilled = new Procent(source.needsFulfilled.get());
@@ -237,7 +239,7 @@ namespace Nashet.EconomicSimulation
             getConsumedInMarket().setZero();// = new PrimitiveStorageSet();
 
             //kill in the end
-            source.ChangePopulation(-1 * sizeOfNewPop);
+            source.population.Change(-1 * sizeOfNewPop);
         }
 
         /// <summary>
@@ -250,14 +252,14 @@ namespace Nashet.EconomicSimulation
             //carefully summing 2 pops..
             populationChanges.Add(source.populationChanges);
             //Own PopUnit fields:
-            loyalty.AddPoportionally(getPopulation(), source.getPopulation(), source.loyalty);
-            ChangePopulation(source.getPopulation());
+            loyalty.AddPoportionally(population.Get(), source.population.Get(), source.loyalty);
+            
 
             mobilized += source.mobilized;
             //type = newPopType; don't change that
             //culture = source.culture; don't change that
-            education.AddPoportionally(getPopulation(), source.getPopulation(), source.education);
-            needsFulfilled.AddPoportionally(getPopulation(), source.getPopulation(), source.needsFulfilled);
+            education.AddPoportionally(population.Get(), source.population.Get(), source.education);
+            needsFulfilled.AddPoportionally(population.Get(), source.population.Get(), source.needsFulfilled);
             //daysUpsetByForcedReform = 0; don't change that
             //didntGetPromisedUnemloymentSubsidy = false; don't change that
 
@@ -301,16 +303,17 @@ namespace Nashet.EconomicSimulation
                     isSourceInvestor.getOwnedFactories().PerformAction(x => x.ownership.TransferAll(isSourceInvestor, Country));
             }
 
+            population.Change(source.population.Get());
             // basically, killing that unit. Currently that object is linked in PopUnit.PopListToAddInGeneralList only so don't worry
-            source.deleteData();
+            source.Kill();
         }
 
         /// <summary>
         /// Sets population to zero as a mark to delete this Pop
         /// </summary>
-        protected virtual void deleteData()
+        public virtual void Kill()
         {
-            population = 0;
+            population.Delete();
             //province.allPopUnits.Remove(this); // gives exception
             //Game.popsToShowInPopulationPanel.Remove(this);
             if (MainCamera.popUnitPanel.whomShowing() == this)
@@ -360,11 +363,6 @@ namespace Nashet.EconomicSimulation
             return born.getYearsSince();
         }
 
-        public int getPopulation()
-        {
-            return population;
-        }
-
         internal int howMuchCanMobilize(Staff byWhom, Staff againstWho)
         {
             int howMuchCanMobilizeTotal = 0;
@@ -374,16 +372,16 @@ namespace Nashet.EconomicSimulation
                 //if (this.loyalty.isBiggerOrEqual(Options.PopMinLoyaltyToMobilizeForGovernment))
                 {
                     if (type == PopType.Soldiers)
-                        howMuchCanMobilizeTotal = (int)(getPopulation() * 0.5);
+                        howMuchCanMobilizeTotal = (int)(population.Get() * 0.5);
                     else
-                        howMuchCanMobilizeTotal = (int)(getPopulation() * loyalty.get() * Options.ArmyMobilizationFactor);
+                        howMuchCanMobilizeTotal = (int)(population.Get() * loyalty.get() * Options.ArmyMobilizationFactor);
                 }
             }
             else
             {
                 if (byWhom == getMovement())
-                    //howMuchCanMobilizeTotal = (int)(getPopulation() * (Procent.HundredProcent.get() - loyalty.get()) * Options.ArmyMobilizationFactor);
-                    howMuchCanMobilizeTotal = (int)Procent.HundredProcent.Copy().Subtract(loyalty).Multiply(getPopulation()).Multiply(Options.ArmyMobilizationFactor).get();
+                    //howMuchCanMobilizeTotal = (int)(population.Get() * (Procent.HundredProcent.get() - loyalty.get()) * Options.ArmyMobilizationFactor);
+                    howMuchCanMobilizeTotal = (int)Procent.HundredProcent.Copy().Subtract(loyalty).Multiply(population.Get()).Multiply(Options.ArmyMobilizationFactor).get();
                 else
                     howMuchCanMobilizeTotal = 0;
             }
@@ -425,9 +423,9 @@ namespace Nashet.EconomicSimulation
 
         internal void takeLoss(int loss, IWayOfLifeChange reason)
         {
-            //int newPopulation = getPopulation() - (int)(loss * Options.PopAttritionFactor);
+            //int newPopulation = population.Get() - (int)(loss * Options.PopAttritionFactor);
             var change = -1 * (int)(loss * Options.PopAttritionFactor);
-            ChangePopulation(change);
+            population.Change(change);
             populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(reason, change));
             mobilized -= loss;
             if (mobilized < 0)
@@ -477,7 +475,7 @@ namespace Nashet.EconomicSimulation
 
         internal bool isAlive()
         {
-            return getPopulation() > 0;
+            return population.Get() > 0;
         }
 
         /// <summary>
@@ -485,7 +483,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         //private List<Storage> getNeedsInCommon(List<Storage> needs)
         //{
-        //    Value multiplier = new Value(this.getPopulation() / 1000f);
+        //    Value multiplier = new Value(this.population.Get() / 1000f);
         //    foreach (Storage next in needs)
         //    {
         //        Storage nStor = new Storage(next.Product, next.get());
@@ -494,42 +492,24 @@ namespace Nashet.EconomicSimulation
         //    return needs;
         //}
 
-        public List<Storage> getRealLifeNeeds()
-        {
-            return type.getLifeNeedsPer1000Men().Multiply(new Value(getPopulation() / 1000f));
-        }
 
-        public List<Storage> getRealEveryDayNeeds()
-        {
-            return type.getEveryDayNeedsPer1000Men().Multiply(new Value(getPopulation() / 1000f));
-        }
-
-        public List<Storage> getRealLuxuryNeeds()
-        {
-            return type.getLuxuryNeedsPer1000Men().Multiply(new Value(getPopulation() / 1000f));
-        }
-
-        public override List<Storage> getRealAllNeeds()
-        {
-            return type.getAllNeedsPer1000Men().Multiply(new Value(getPopulation() / 1000f));
-        }
 
         internal int GetUnemployedPopulation()
         {
-            return getPopulation() - employed;
+            return population.Get() - employed;
         }
 
         internal Procent getUnemployment()
         {
             if (type == PopType.Workers)
             {
-                return new Procent(GetUnemployedPopulation(), getPopulation(), false); // due to population changes that could be negative
+                return new Procent(GetUnemployedPopulation(), population.Get(), false); // due to population changes that could be negative
                 //int employed = 0;
                 //foreach (Factory factory in Province.getAllFactories())
                 //    employed += factory.HowManyEmployed(this);
-                //if (getPopulation() - employed <= 0) //happening due population change by growth/demotion
+                //if (population.Get() - employed <= 0) //happening due population change by growth/demotion
                 //    return new Procent(0);
-                //return new Procent((getPopulation() - employed) / (float)getPopulation());
+                //return new Procent((population.Get() - employed) / (float)population.Get());
             }
             else if (type == PopType.Farmers || type == PopType.Tribesmen)
             {
@@ -658,7 +638,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// !!Recursion is here!! Used for NE consumption
         /// </summary>
-        private void consumeEveryDayAndLuxury(List<Storage> needs, byte howDeep)
+        private void consumeEveryDayAndLuxury(IEnumerable<Storage> needs, byte howDeep)
         {
             howDeep--;
             //List<Storage> needs = getEveryDayNeeds();
@@ -669,7 +649,7 @@ namespace Nashet.EconomicSimulation
                     //consumedTotal.add(need);
                     consumeFromItself(need); // todo fails if is abstract
                     needsFulfilled.Set(2f / 3f);
-                    if (howDeep != 0) consumeEveryDayAndLuxury(getRealLuxuryNeeds(), howDeep);
+                    if (howDeep != 0) consumeEveryDayAndLuxury(population.getRealLuxuryNeeds(), howDeep);
                 }
                 else
                 {
@@ -685,7 +665,7 @@ namespace Nashet.EconomicSimulation
         {
             //buy life needs
             MoneyView moneyWasBeforeLifeNeedsConsumption = getMoneyAvailable();
-            foreach (Storage need in getRealLifeNeeds())
+            foreach (Storage need in population.getRealLifeNeeds())
             {
                 if (storage.has(need))// don't need to buy on market
                 {
@@ -712,7 +692,7 @@ namespace Nashet.EconomicSimulation
 
                 //Value moneyWasBeforeEveryDayNeedsConsumption = getMoneyAvailable();
                 var everyDayNeedsConsumed = new List<Storage>();
-                foreach (Storage need in getRealEveryDayNeeds())
+                foreach (Storage need in population.getRealEveryDayNeeds())
                 {
                     var consumed = World.market.Sell(this, need, null);
                     if (consumed.isNotZero())
@@ -722,7 +702,7 @@ namespace Nashet.EconomicSimulation
                             education.Learn();
                     }
                 }
-                var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+                var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, population.getRealEveryDayNeeds());
                 everyDayNeedsFulfilled.Divide(Options.PopStrataWeight);
                 needsFulfilled.Add(everyDayNeedsFulfilled);
 
@@ -730,12 +710,12 @@ namespace Nashet.EconomicSimulation
                 bool hasAnyLuxuryNeeds = false;
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    var luxuryNeeds = getRealLuxuryNeeds();
+                    var luxuryNeeds = population.getRealLuxuryNeeds();
 
                     //Value moneyWasBeforeLuxuryNeedsConsumption = getMoneyAvailable();
                     bool someLuxuryProductUnavailable = false;
                     List<Storage> luxuryNeedsConsumed = null;
-                    if (luxuryNeeds.Count > 0)
+                    if (!luxuryNeeds.IsEmpty())
                         luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
@@ -756,7 +736,7 @@ namespace Nashet.EconomicSimulation
                     // unlimited luxury spending should be limited by money income and already spent money
                     // I also can limit regular luxury consumption but should I?:
                     if (!someLuxuryProductUnavailable && hasAnyLuxuryNeeds)
-                        //&& Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
+                    //&& Cash.isBiggerThan(Options.PopUnlimitedConsumptionLimit))  // need that to avoid poor pops
                     {
                         MoneyView spentMoneyOnAllNeeds = moneyWasBeforeLifeNeedsConsumption.Copy().Subtract(getMoneyAvailable(), false);// moneyWas - Cash.get() could be < 0 due to taking money from deposits
                         MoneyView spendingLimit = moneyIncomeLastTurn.Copy().Subtract(spentMoneyOnAllNeeds, false);//limit is income minus expenses minus reserves
@@ -781,7 +761,7 @@ namespace Nashet.EconomicSimulation
                             }
                         }
                     }
-                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds(), false);
+                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, population.getRealLuxuryNeeds(), false);
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
@@ -789,7 +769,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        protected void consumeWithNaturalEconomy(List<Storage> lifeNeeds)
+        protected void consumeWithNaturalEconomy(IEnumerable<Storage> lifeNeeds)
         {
             Country.TakeNaturalTax(this, Country.taxationForPoor.getTypedValue().tax); //payTaxes(); // that is here because pop should pay taxes from all income
             foreach (Storage need in lifeNeeds)
@@ -803,7 +783,7 @@ namespace Nashet.EconomicSimulation
 
                     consumeFromItself(realConsumption);
                     needsFulfilled.Set(1f / 3f);
-                    consumeEveryDayAndLuxury(getRealEveryDayNeeds(), 2);
+                    consumeEveryDayAndLuxury(population.getRealEveryDayNeeds(), 2);
                 }
                 else
                 {
@@ -817,7 +797,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns list of actually consumed
         /// </summary>
-        private List<Storage> consumeWithPlannedEconomy(List<Storage> needs)
+        private List<Storage> consumeWithPlannedEconomy(IEnumerable<Storage> needs)
         {
             var consumed = new List<Storage>();
             foreach (var need in needs)
@@ -852,29 +832,29 @@ namespace Nashet.EconomicSimulation
             else if (Country.economy.getValue() == Economy.PlannedEconomy)//non - market consumption
             {
                 // todo - !! - check for substitutes
-                consumeWithPlannedEconomy(getRealLifeNeeds());
-                var lifeNeedsFulfilled = new Procent(getConsumed(), getRealLifeNeeds());
+                consumeWithPlannedEconomy(population.getRealLifeNeeds());
+                var lifeNeedsFulfilled = new Procent(getConsumed(), population.getRealLifeNeeds());
                 lifeNeedsFulfilled.Divide(Options.PopStrataWeight);
                 needsFulfilled.Set(lifeNeedsFulfilled);
 
-                var everyDayNeedsConsumed = consumeWithPlannedEconomy(getRealEveryDayNeeds());
+                var everyDayNeedsConsumed = consumeWithPlannedEconomy(population.getRealEveryDayNeeds());
                 if (getLifeNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, getRealEveryDayNeeds());
+                    var everyDayNeedsFulfilled = new Procent(everyDayNeedsConsumed, population.getRealEveryDayNeeds());
                     everyDayNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(everyDayNeedsFulfilled);
                 }
 
-                var luxuryNeedsConsumed = consumeWithPlannedEconomy(getRealLuxuryNeeds());
+                var luxuryNeedsConsumed = consumeWithPlannedEconomy(population.getRealLuxuryNeeds());
                 if (getEveryDayNeedsFullfilling().isBiggerOrEqual(Procent.HundredProcent))
                 {
-                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, getRealLuxuryNeeds());
+                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, population.getRealLuxuryNeeds());
                     luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
                     needsFulfilled.Add(luxuryNeedsFulfilled);
                 }
             }
             else
-                consumeWithNaturalEconomy(getRealLifeNeeds());
+                consumeWithNaturalEconomy(population.getRealLifeNeeds());
         }
 
         /// <summary>
@@ -1000,7 +980,7 @@ namespace Nashet.EconomicSimulation
         {
             int promotionSize = GetPopulationChangeAmount(Options.PopPromotionSpeed);
             bool isPromoted = false;
-            if (wantsToPromote() && promotionSize > 0 && getPopulation() >= promotionSize)
+            if (wantsToPromote() && promotionSize > 0 && population.Get() >= promotionSize)
             {
                 var promoteTo = getRichestPromotionTarget();
                 //promote(promotedTo, promotionSize);
@@ -1021,7 +1001,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public int GetPopulationChangeAmount(ReadOnlyValue procent)
         {
-            int result = (int)(getPopulation() * procent.get());
+            int result = (int)(population.Get() * procent.get());
             if (result > 0)
                 return result;
             else if (result < 0)
@@ -1033,7 +1013,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (//Province.hasAnotherPop(this.type) &&
                     getAge() > Options.PopAgeLimitToWipeOut)
-                    return getPopulation();// wipe-out
+                    return population.Get();// wipe-out
                 else
                     return 0;
             }
@@ -1070,17 +1050,14 @@ namespace Nashet.EconomicSimulation
         //    }
         //}
 
-        private void ChangePopulation(int change)
-        {
-            var newPopulation = getPopulation() + change;
-            if (newPopulation > 0)
-                population = newPopulation;
-            else
-                deleteData();
-            //throw new NotImplementedException();
-            //because pool aren't implemented yet
-            //Pool.ReleaseObject(this);
-        }
+        //private void ChangePopulation(int change)
+        //{            
+        //    var newPopulation = population.Get() + change;
+        //    if (newPopulation > 0)
+        //        population.Change(change);
+        //    else
+        //        deleteData();
+        //}
 
         internal void takeUnemploymentSubsidies()
         {
@@ -1093,7 +1070,7 @@ namespace Nashet.EconomicSimulation
                 if (unemployment.isNotZero() && reform != UnemploymentSubsidies.None)
                 {
                     var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate();
-                    MoneyView subsidy = rate.Copy().Multiply(getPopulation()).Divide(1000).Multiply(unemployment);
+                    MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000).Multiply(unemployment);
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (Country.CanPay(subsidy))
                     {
@@ -1109,26 +1086,29 @@ namespace Nashet.EconomicSimulation
         public void Growth()
         {
             var growth = getGrowthSize();
-            ChangePopulation(growth);
+
             if (growth == 0)
                 populationChanges.EnqueueEmpty();
             else
+            {
+                population.Change(growth);
                 populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(null, growth));
+            }
         }
 
         public int getGrowthSize()
         {
             int result = 0;
             if (needsFulfilled.get() >= 0.33f) // positive growth
-                result = Mathf.RoundToInt(Options.PopGrowthSpeed.get() * getPopulation());
+                result = Mathf.RoundToInt(Options.PopGrowthSpeed.get() * population.Get());
             else
                 if (needsFulfilled.get() >= 0.20f) // zero growth
                 result = 0;
             else if (type != PopType.Farmers) //starvation
             {
-                result = Mathf.RoundToInt(Options.PopStarvationSpeed.get() * getPopulation() * -1);
-                if (result * -1 > getPopulation()) // total starvation
-                    result = getPopulation(); // wipe out
+                result = Mathf.RoundToInt(Options.PopStarvationSpeed.get() * population.Get() * -1);
+                if (result * -1 > population.Get()) // total starvation
+                    result = population.Get(); // wipe out
             }
 
             return result;
@@ -1297,16 +1277,16 @@ namespace Nashet.EconomicSimulation
             {
                 int assimilationSize;
                 if (Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
-                    assimilationSize = (int)(getPopulation() * Options.PopAssimilationSpeedWithEquality.get());
+                    assimilationSize = (int)(population.Get() * Options.PopAssimilationSpeedWithEquality.get());
                 else
-                    assimilationSize = (int)(getPopulation() * Options.PopAssimilationSpeed.get());
+                    assimilationSize = (int)(population.Get() * Options.PopAssimilationSpeed.get());
 
                 if (assimilationSize > 0)
                     return assimilationSize;
                 else
                 {
                     if (getAge() > Options.PopAgeLimitToWipeOut)
-                        return getPopulation(); // wipe-out
+                        return population.Get(); // wipe-out
                     else
                         return 0;
                 }
@@ -1374,7 +1354,7 @@ namespace Nashet.EconomicSimulation
             //foreach  Province.getAllFactories()
 
             var employed = Province.getAllFactories().Where(x => !x.Type.isResourceGathering() && x.IsOpen).Sum(x => x.HowManyEmployed(this));
-            return new Procent(employed, population);
+            return new Procent(employed, population.Get());
 
             //Province.getAllFactories().PerformAction(x =>
             //{
@@ -1398,6 +1378,10 @@ namespace Nashet.EconomicSimulation
                 && education.isSmallerThan(Options.PopLearnByWorkingLimit)
                 && GetEmployedOnProcessingEnterprise().get() > 0.9f)
                 education.Add(0.001f);
+        }
+        public override IEnumerable<Storage> getRealAllNeeds()
+        {
+            return population.getRealAllNeeds();
         }
     }
 }

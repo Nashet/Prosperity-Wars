@@ -37,13 +37,7 @@ namespace Nashet.EconomicSimulation
         {
         }
 
-        /// <summary>
-        /// new value
-        /// </summary>
-        internal MoneyView getCost(Product whom)
-        {
-            return new MoneyView((decimal)marketPrice.getCheapestStorage(whom).get());
-        }
+        
 
         internal void initialize()
         {
@@ -79,6 +73,16 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>
+        /// returns new Value
+        /// </summary>
+        internal MoneyView getCost(IEnumerable<Storage> need)
+        {
+            Money cost = new Money(0m);
+            foreach (Storage stor in need)
+                cost.Add(getCost(stor));
+            return cost;
+        }
+        /// <summary>
         /// New value
         /// </summary>
         internal MoneyView getCost(Storage need)
@@ -93,7 +97,13 @@ namespace Nashet.EconomicSimulation
             else
                 return World.market.getCost(need.Product).Copy().Multiply((decimal)need.get());
         }
-
+        /// <summary>
+        /// new value
+        /// </summary>
+        internal MoneyView getCost(Product whom)
+        {
+            return new MoneyView((decimal)marketPrice.getCheapestStorage(whom).get());
+        }
         /// <summary>
         /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
         /// </summary>
