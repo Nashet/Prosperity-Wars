@@ -149,10 +149,10 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             
 
-            sb.Append("\nCultures: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.culture, y => y.getPopulation())
+            sb.Append("\nCultures: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.culture, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 2));
 
-            sb.Append("\nClasses: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.Type, y => y.getPopulation())
+            sb.Append("\nClasses: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.Type, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
 
             if (Game.selectedProvince.getModifiers().Count > 0)

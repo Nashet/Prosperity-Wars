@@ -160,8 +160,8 @@ namespace Nashet.EconomicSimulation
             }
             return true;
         }
-
-        internal bool CanAfford(List<Storage> need)
+                
+        internal bool CanAfford(IEnumerable<Storage> need)
         {
             foreach (Storage stor in need)
                 //if (HowMuchCanAfford(stor).isSmallerThan(stor))

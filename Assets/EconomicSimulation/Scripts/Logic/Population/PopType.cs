@@ -204,56 +204,66 @@ namespace Nashet.EconomicSimulation
         }
 
         ///<summary> Returns copy </summary>
-        public List<Storage> getLifeNeedsPer1000Men()
+        public IEnumerable<Storage> getLifeNeedsPer1000Men()
         {
             //List<Storage> result = new List<Storage>();
             //foreach (Storage next in lifeNeeds)
             //    result.Add(next);
             //return result;
-            var result = new List<Storage>();
+            //var result = new List<Storage>();
             foreach (var item in lifeNeeds)
                 if (item.Product.IsInventedByAnyOne())
-                    result.Add(new Storage(item));
-            return result;
+                    yield return item;
+            //        result.Add(new Storage(item));
+            //return result;
         }
 
         ///<summary> Returns copy </summary>
-        public List<Storage> getEveryDayNeedsPer1000Men()
+        public IEnumerable<Storage> getEveryDayNeedsPer1000Men()
         {
             //List<Storage> result = new List<Storage>();
             //foreach (Storage next in everyDayNeeds)
             //    result.Add(next);
             //return result;
             //return everyDayNeeds;
-            var result = new List<Storage>();
+            //var result = new List<Storage>();
             foreach (var item in everyDayNeeds)
                 if (item.Product.IsInventedByAnyOne())
-                    result.Add(new Storage(item));
-            return result;
+                    yield return item;
+            //      result.Add(new Storage(item));
+            //return result;
         }
 
         ///<summary> Returns copy </summary>
-        public List<Storage> getLuxuryNeedsPer1000Men()
+        public IEnumerable<Storage> getLuxuryNeedsPer1000Men()
         {
             //List<Storage> result = new List<Storage>();
             //foreach (Storage next in luxuryNeeds)
             //    result.Add(next);
             //return result;
             //return luxuryNeeds;
-            var result = new List<Storage>();
+            //var result = new List<Storage>();
             foreach (var item in luxuryNeeds)
                 if (item.Product.IsInventedByAnyOne())
-                    result.Add(new Storage(item));
-            return result;
+                    //result.Add(new Storage(item));
+                    yield return item;
+            //return result;
         }
 
         ///<summary> Returns copy </summary>
-        public List<Storage> getAllNeedsPer1000Men()
+        public IEnumerable<Storage> getAllNeedsPer1000Men()
         {
-            var result = getLifeNeedsPer1000Men();
-            result.AddRange(getEveryDayNeedsPer1000Men());
-            result.AddRange(getLuxuryNeedsPer1000Men());
-            return result;
+            //var result = getLifeNeedsPer1000Men();
+            //result.AddRange(getEveryDayNeedsPer1000Men());
+            //result.AddRange(getLuxuryNeedsPer1000Men());
+            //return result;
+            foreach (var item in getLifeNeedsPer1000Men())
+                yield return item;
+            foreach (var item in getEveryDayNeedsPer1000Men())
+                yield return item;
+            foreach (var item in getLuxuryNeedsPer1000Men())
+                yield return item;
+
         }
 
         public override string ToString()

@@ -56,15 +56,15 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// could be negative
         /// </summary>        
-        internal float getProfit()
+        internal decimal getProfit()
 
         {
             //return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
             if (Country.economy.getValue() == Economy.PlannedEconomy)
-                return 0f;
+                return 0m;
             else
                 //return base.getProfit() - (float)getSalaryCost().Get();
-                return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
+                return moneyIncomeThisTurn.Get() - getExpences().Get();
         }
 
         /// <summary>
@@ -205,20 +205,37 @@ namespace Nashet.EconomicSimulation
         //    return result;
         //}
 
-        protected List<Storage> getRealNeeds(Value multiplier)
+        protected IEnumerable<Storage> getRealNeeds(Value multiplier)
         {
             //Value multiplier = new Value(getEfficiency(false).get() * getLevel());
             if (type.isResourceGathering())
-                return null;
-            List<Storage> result = new List<Storage>();
+               yield return null;
+            //List<Storage> result = new List<Storage>();
 
             foreach (Storage next in type.resourceInput)
             {
                 Storage nStor = new Storage(next.Product, next.get());
                 nStor.Multiply(multiplier);
-                result.Add(nStor);
+                //result.Add(nStor);
+                yield return nStor;
             }
-            return result;
+            //return result;
+        }
+        protected IEnumerable<Storage> getRealNeeds(float multiplier)
+        {
+            //Value multiplier = new Value(getEfficiency(false).get() * getLevel());
+            if (type.isResourceGathering())
+                yield return null;
+            //List<Storage> result = new List<Storage>();
+
+            foreach (Storage next in type.resourceInput)
+            {
+                Storage nStor = new Storage(next.Product, next.get());
+                nStor.Multiply(multiplier);
+                //result.Add(nStor);
+                yield return nStor;
+            }
+            //return result;
         }
 
         /// <summary>  Return in pieces basing on current prices and needs  /// </summary>

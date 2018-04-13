@@ -28,9 +28,9 @@ namespace Nashet.EconomicSimulation
             Storage producedAmount;
             var overpopulation = Province.GetOverpopulation();
             if (overpopulation.isSmallerOrEqual(Procent.HundredProcent)) // all is OK
-                producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(getPopulation()).Divide(1000));
+                producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(population.Get()).Divide(1000));
             else
-                producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(getPopulation()).Divide(1000).Divide(overpopulation));
+                producedAmount = new Storage(Type.getBasicProduction().Product, Type.getBasicProduction().Multiply(population.Get()).Divide(1000).Divide(overpopulation));
 
             if (producedAmount.isNotZero())
             {
@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
         {
             //life needs First
             // Don't need education
-            consumeWithNaturalEconomy(getRealLifeNeeds());
+            consumeWithNaturalEconomy(population.getRealLifeNeeds());
         }
     }
 }

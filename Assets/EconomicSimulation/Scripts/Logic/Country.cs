@@ -429,8 +429,8 @@ namespace Nashet.EconomicSimulation
         //    foreach (var province in ownedProvinces)
         //        foreach (var pop in province.allPopUnits)
         //        {
-        //            result.AddPoportionally(calculatedPopulation, pop.getPopulation(), selector(pop));
-        //            calculatedPopulation += pop.getPopulation();
+        //            result.AddPoportionally(calculatedPopulation, pop.population.Get(), selector(pop));
+        //            calculatedPopulation += pop.population.Get();
         //        }
         //    return result;
         //}
@@ -441,8 +441,8 @@ namespace Nashet.EconomicSimulation
         //    foreach (var province in ownedProvinces)
         //        foreach (var pop in province.allPopUnits)
         //        {
-        //            result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.loyalty);
-        //            calculatedPopulation += pop.getPopulation();
+        //            result.addPoportionally(calculatedPopulation, pop.population.Get(), pop.loyalty);
+        //            calculatedPopulation += pop.population.Get();
         //        }
         //    return result;
         //}
@@ -453,8 +453,8 @@ namespace Nashet.EconomicSimulation
         //    foreach (var province in ownedProvinces)
         //        foreach (var pop in province.allPopUnits)
         //        {
-        //            result.addPoportionally(calculatedPopulation, pop.getPopulation(), pop.needsFulfilled);
-        //            calculatedPopulation += pop.getPopulation();
+        //            result.addPoportionally(calculatedPopulation, pop.population.Get(), pop.needsFulfilled);
+        //            calculatedPopulation += pop.population.Get();
         //        }
         //    return result;
         //}
@@ -480,7 +480,7 @@ namespace Nashet.EconomicSimulation
             return BadboyCountry;
         }
 
-        //todo performance hit 132 calls 183kb 82 ms
+        //todo performance hit 7% 420 calls 1.4mb 82 ms
         private bool isThreatenBy(Country country)
         {
             if (country == this)
@@ -676,7 +676,7 @@ namespace Nashet.EconomicSimulation
         internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
         {
             // calculate how much of population wants selected reform
-            int totalPopulation = GetAllPopulation().Sum(x => x.getPopulation());
+            int totalPopulation = GetAllPopulation().Sum(x => x.population.Get());
             int votingPopulation = 0;
             int populationSayedYes = 0;
             int votersSayedYes = 0;
@@ -689,15 +689,15 @@ namespace Nashet.EconomicSimulation
                     {
                         if (pop.getSayingYes(reform))
                         {
-                            votersSayedYes += pop.getPopulation();// * pop.getVotingPower();
-                            populationSayedYes += pop.getPopulation();// * pop.getVotingPower();
+                            votersSayedYes += pop.population.Get();// * pop.getVotingPower();
+                            populationSayedYes += pop.population.Get();// * pop.getVotingPower();
                         }
-                        votingPopulation += pop.getPopulation();// * pop.getVotingPower();
+                        votingPopulation += pop.population.Get();// * pop.getVotingPower();
                     }
                     else
                     {
                         if (pop.getSayingYes(reform))
-                            populationSayedYes += pop.getPopulation();// * pop.getVotingPower();
+                            populationSayedYes += pop.population.Get();// * pop.getVotingPower();
                     }
                 }
             if (totalPopulation != 0)
@@ -723,7 +723,7 @@ namespace Nashet.EconomicSimulation
         /// <param name="reform"></param>
         internal Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
         {
-            int totalPopulation = GetAllPopulation().Sum(x => x.getPopulation());
+            int totalPopulation = GetAllPopulation().Sum(x => x.population.Get());
             int votingPopulation = 0;
             int populationSayedYes = 0;
             int votersSayedYes = 0;
@@ -757,9 +757,9 @@ namespace Nashet.EconomicSimulation
                     foreach (PopUnit pop in province.GetAllPopulation(type))
                         if (pop.getSayingYes(reform))
                         {
-                            divisionPopulationResult[type] += pop.getPopulation();// * pop.getVotingPower();
+                            divisionPopulationResult[type] += pop.population.Get();// * pop.getVotingPower();
                             if (pop.canVote())
-                                divisionVotersResult[type] += pop.getPopulation();// * pop.getVotingPower();
+                                divisionVotersResult[type] += pop.population.Get();// * pop.getVotingPower();
                         }
                 }
             }
@@ -1289,7 +1289,7 @@ namespace Nashet.EconomicSimulation
         //foreach (var item in ownedProvinces)
         //{
         //    //int population = item.getMenPopulationEmployable();
-        //    int population = item.GetAllPopulation().Where(x => x.Type.canBeUnemployed()).Sum(x=>x.getPopulation());
+        //    int population = item.GetAllPopulation().Where(x => x.Type.canBeUnemployed()).Sum(x=>x.population.Get());
         //    result.AddPoportionally(calculatedBase, population, item.getUnemployment(PopType.All));
         //    //result.AddPoportionally(calculatedBase,(float) population, item.GetAllPopulation().Sum(x=>x.getUnemployedProcent().get()));
         //    calculatedBase += population;
@@ -1306,14 +1306,14 @@ namespace Nashet.EconomicSimulation
         internal int getFamilyPopulation()
         {
             //return  getMenPopulation() * Options.familySize;
-            return GetAllPopulation().Sum(x => x.getPopulation()) * Options.familySize;
+            return GetAllPopulation().Sum(x => x.population.Get()) * Options.familySize;
         }
 
         public int getPopulationAmountByType(PopType ipopType)
         {
             int result = 0;
             foreach (Province province in ownedProvinces)
-                result += province.GetAllPopulation(ipopType).Sum(x => x.getPopulation());
+                result += province.GetAllPopulation(ipopType).Sum(x => x.population.Get());
             return result;
         }
 

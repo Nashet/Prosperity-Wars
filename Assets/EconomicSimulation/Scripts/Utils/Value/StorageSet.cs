@@ -366,7 +366,7 @@ namespace Nashet.ValueSpace
                 // take available products
                 return World.market.sentToMarket.has(new Storage(x, abstractProduct));
             })
-            .FirstSameElements(x => (float)World.market.getCost(x).Get()).Random();
+            .FirstSameElements(x => (float)World.market.getCost(x).Get()).ToList().Random();
             if (randomCheapestProduct == null)
                 return null;
             else
@@ -390,7 +390,7 @@ namespace Nashet.ValueSpace
         public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct)
         {
             var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
-            .FirstSameElements(x => (float)World.market.getCost(x).Get()).Random();
+            .FirstSameElements(x => (float)World.market.getCost(x).Get()).ToList().Random();
 
             if (randomCheapestProduct == null)
                 return null;

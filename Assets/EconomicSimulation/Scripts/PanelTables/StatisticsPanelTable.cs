@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
         public void Awake()// start doesn't work somehow
         {
             countryOrder = new SortOrder(this, x => x.GetNameWeight());
-            populationOrder = new SortOrder(this, x => x.GetAllPopulation().Sum(y => y.getPopulation()));
+            populationOrder = new SortOrder(this, x => x.GetAllPopulation().Sum(y => y.population.Get()));
             GDPOrder = new SortOrder(this, x => (float)x.getGDP().Get());
             GDPPerCapitaOrder = new SortOrder(this, x => (float)x.getGDPPer1000().Get());
             unemploymentOrder = new SortOrder(this, x => x.GetAllPopulation().GetAverageProcent(y => y.getUnemployment()).get());

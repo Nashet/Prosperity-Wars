@@ -161,6 +161,26 @@ namespace Nashet.EconomicSimulation
                 }
         }
 
+        internal void ResumeSimulation()
+        {
+            haveToRunSimulation = true;
+        }
+
+        internal bool IsRunning
+        {
+            get { return (haveToRunSimulation || haveToStepSimulation); }// && !MessagePanel.IsOpenAny();
+        }
+
+        internal void PauseSimulation()
+        {
+            haveToRunSimulation = false;
+        }
+
+        internal void MakeOneStepSimulation()
+        {
+            haveToStepSimulation = true;
+        }
+
         public static bool isProvinceCreated(Color color)
         {
             foreach (Province anyProvince in allProvinces)
@@ -384,6 +404,58 @@ namespace Nashet.EconomicSimulation
                     yield return record;
         }
 
+        private static void calcBattles()
+        {
+            foreach (Staff attacker in Staff.getAllStaffs().ToList())
+            {
+                foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
+                {
+                    var movement = attacker as Movement;
+                    if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
+                    {
+                        var result = attackerArmy.attack(attackerArmy.getDestination());
+                        if (result.isAttackerWon())
+                        {
+                            if (movement == null)
+                                (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
+                            //attackerArmy.getDestination().secedeTo(attacker as Country, true);
+                            else
+                                movement.onRevolutionWon();
+                        }
+                        else if (result.isDefenderWon())
+                        {
+                            if (movement != null)
+                                movement.onRevolutionLost();
+                        }
+                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+                            result.createMessage();
+                    }
+                    attackerArmy.sendTo(null); // go home
+                }
+                attacker.consolidateArmies();
+            }
+        }
+
+        public static void prepareForNewTick()
+        {
+            World.market.SetStatisticToZero();
+
+            foreach (Country country in World.getAllExistingCountries())
+            {
+                country.SetStatisticToZero();
+                foreach (Province province in country.getAllProvinces())
+                {
+                    province.BalanceEmployableWorkForce();
+                    {
+                        foreach (var item in province.getAllAgents())
+                            item.SetStatisticToZero();
+                    }
+                }
+            }
+            PopType.sortNeeds();
+            Product.sortSubstitutes();
+        }
+
         internal static void simulate()
         {
             if (haveToStepSimulation)
@@ -567,78 +639,6 @@ namespace Nashet.EconomicSimulation
                 if (country.isAI())
                     country.AIThink();
             }
-        }
-
-        public static void prepareForNewTick()
-        {
-            World.market.SetStatisticToZero();
-
-            foreach (Country country in World.getAllExistingCountries())
-            {
-                country.SetStatisticToZero();
-                foreach (Province province in country.getAllProvinces())
-                {
-                    province.BalanceEmployableWorkForce();
-                    {
-                        foreach (var item in province.getAllAgents())
-                            item.SetStatisticToZero();
-                    }
-                }
-            }
-            PopType.sortNeeds();
-            Product.sortSubstitutes();
-        }
-
-        private static void calcBattles()
-        {
-            foreach (Staff attacker in Staff.getAllStaffs().ToList())
-            {
-                foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
-                {
-                    var movement = attacker as Movement;
-                    if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
-                    {
-                        var result = attackerArmy.attack(attackerArmy.getDestination());
-                        if (result.isAttackerWon())
-                        {
-                            if (movement == null)
-                                (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
-                            //attackerArmy.getDestination().secedeTo(attacker as Country, true);
-                            else
-                                movement.onRevolutionWon();
-                        }
-                        else if (result.isDefenderWon())
-                        {
-                            if (movement != null)
-                                movement.onRevolutionLost();
-                        }
-                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-                            result.createMessage();
-                    }
-                    attackerArmy.sendTo(null); // go home
-                }
-                attacker.consolidateArmies();
-            }
-        }
-
-        internal void ResumeSimulation()
-        {
-            haveToRunSimulation = true;
-        }
-
-        internal bool IsRunning
-        {
-            get { return (haveToRunSimulation || haveToStepSimulation); }// && !MessagePanel.IsOpenAny();
-        }
-
-        internal void PauseSimulation()
-        {
-            haveToRunSimulation = false;
-        }
-
-        internal void MakeOneStepSimulation()
-        {
-            haveToStepSimulation = true;
-        }
+        }                
     }
 }

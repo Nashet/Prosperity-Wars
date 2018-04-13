@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
-            profitOrder = new SortOrder(this, x => x.getProfit());
+            profitOrder = new SortOrder(this, x => (float)x.getProfit());
             profitabilityOrder = new SortOrder(this, x => x.GetMargin().get());
             salaryOrder = new SortOrder(this, x => (float)x.getSalary().Get());
             unemploymentOrder = new SortOrder(this, x => x.Province.getUnemployedWorkers());

@@ -80,23 +80,23 @@ namespace Nashet.UnityUIUtils
         {
             if (panelRectTransform == null)
                 return;
-            
+
             Vector2 localPointerPosition;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(                
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRectTransform, data.position, data.pressEventCamera, out localPointerPosition
             ))
             {
-                var rect = GetComponent<RectTransform>();               
+                var rect = GetComponent<RectTransform>();
                 rect.localPosition = localPointerPosition - pointerOffset;
-                
+
                 if (rect.position.x < 0)
                 {
                     rect.position = new Vector3(0, rect.position.y, rect.position.z);
                 }
-
-                if (rect.position.y < 0)
+                var bottomPanelRect = EconomicSimulation.MainCamera.bottomPanel.GetComponent<RectTransform>();
+                if (rect.position.y < bottomPanelRect.rect.height - 5)
                 {
-                    rect.position = new Vector3(rect.position.x, 0, rect.position.z);
+                    rect.position = new Vector3(rect.position.x, bottomPanelRect.rect.height - 5, rect.position.z);
                 }
 
                 if (rect.position.x > Screen.width - rect.sizeDelta.x)
@@ -104,9 +104,10 @@ namespace Nashet.UnityUIUtils
                     rect.position = new Vector3(Screen.width - rect.sizeDelta.x, rect.position.y, rect.position.z);
                 }
 
-                if (rect.position.y > Screen.height - rect.sizeDelta.y)
+                var topPanelRect = EconomicSimulation.MainCamera.topPanel.GetComponent<RectTransform>();
+                if (rect.position.y > Screen.height - topPanelRect.rect.height - rect.sizeDelta.y + 5)
                 {
-                    rect.position = new Vector3(rect.position.x, Screen.height - rect.sizeDelta.y, rect.position.z);
+                    rect.position = new Vector3(rect.position.x, Screen.height - topPanelRect.rect.height - rect.sizeDelta.y + 5, rect.position.z);
                 }
             }
         }

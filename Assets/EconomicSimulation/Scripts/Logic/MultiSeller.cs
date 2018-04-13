@@ -156,7 +156,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {                            
-                            if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                            //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
                                 Debug.Log("Failed market (country) - lacks " + World.market.HowMuchLacksMoneyIncludingDeposits(cost)
                                     + " for " + realSold + " " + sent.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
                             World.market.PayAllAvailableMoney(this);

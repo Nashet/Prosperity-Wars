@@ -10,5 +10,5 @@
 "webglContextAttributes": {"preserveDrawingBuffer": false},
 "splashScreenStyle": "Dark",
 "backgroundColor": "#231F20",
-"cacheControl": {"dataUrl": "must-revalidate"}
+"cacheControl": {"default": "must-revalidate"}
 }

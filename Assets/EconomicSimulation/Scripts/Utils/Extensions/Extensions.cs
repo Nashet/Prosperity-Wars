@@ -258,8 +258,16 @@ namespace Nashet.Utils
             }
             return list;
         }
+        public static List<Storage> Multiply(this List<Storage> list, float value)
+        {
+            foreach (var item in list)
+            {
+                item.Multiply(value);
+            }
+            return list;
+        }
 
-        public static Value Sum(this List<Storage> list)
+        public static Value Sum(this IEnumerable<Storage> list)
         {
             Value sum = new Value(0f);
             if (list == null)
@@ -370,8 +378,8 @@ namespace Nashet.Utils
             int calculatedPopulation = 0;
             foreach (var item in source)
             {
-                result.AddPoportionally(calculatedPopulation, item.getPopulation(), selector(item));
-                calculatedPopulation += item.getPopulation();
+                result.AddPoportionally(calculatedPopulation, item.population.Get(), selector(item));
+                calculatedPopulation += item.population.Get();
             }
             return result;
         }
@@ -483,12 +491,43 @@ namespace Nashet.Utils
         public static TSource MaxByRandom<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> selector)
         {
-            //var res = source.Max(selector);
-            //return source.Where(x => selector(x).Equals(res)).Random();
-            var res = source.MaxBy(selector);
-            return source.Where(x => selector(x).Equals(selector(res))).Random();
+            if (source.IsEmpty())
+                return default(TSource);
+            var res = source.Max(selector);
+            return source.Where(x => selector(x).Equals(res)).Random();
+            //var res = source.MaxBy(selector);
+            //return source.Where(x => selector(x).Equals(selector(res))).Random();
         }
 
+        public static T Random<T>(this IList<T> collection)
+        {
+            if (collection.Count == 0)
+                return default(T);
+            else if (collection.Count == 1)
+                return collection[0];
+            else
+            {
+                int index = Rand.random2.Next(collection.Count);
+                return collection[index];
+            }
+        }
+
+        public static T Random<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable.IsEmpty())// || count == 0)
+                return default(T);
+            else
+            {
+                var count = enumerable.Count();
+                int index = Rand.random2.Next(count);
+                return enumerable.ElementAt(index);
+            }
+        }
+
+        public static bool IsEmpty<T>(this IEnumerable<T> source)
+        {
+            return !source.Any();
+        }
         //private static System.Random rng = new System.Random();
 
         public static void Shuffle<T>(this IList<T> list)
@@ -549,18 +588,7 @@ namespace Nashet.Utils
 
         //}
 
-        public static T Random<T>(this IEnumerable<T> enumerable)
-        {
-            var count = enumerable.Count();
-            if (enumerable == Enumerable.Empty<T>() || count == 0)
-                return default(T);
-            else
-            {
-                int index = Rand.random2.Next(count);
-                return enumerable.ElementAt(index);
-            }
-        }
-
+        
         public static IEnumerable<T> FirstSameElements<T>(this IEnumerable<T> collection, Func<T, float> selector)
         {
             T previousElement = collection.FirstOrDefault();

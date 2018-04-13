@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
             unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
-            populationOrder = new SortOrder(this, x => x.getPopulation());
+            populationOrder = new SortOrder(this, x => x.population.Get());
             cashOrder = new SortOrder(this, x => (float)x.Cash.Get());
 
             educationOrder = new SortOrder(this, x => x.Education.get());
@@ -57,7 +57,7 @@ namespace Nashet.EconomicSimulation
 
             ////Adding population            
             sb.Clear();
-            sb.Append(pop.getPopulation());
+            sb.Append(pop.population.Get());
             int populationChange = pop.getAllPopulationChanges().Sum(x => x.Value);
             if (populationChange != 0)
                 sb.Append(" (").Append(populationChange.ToString("+0;-0")).Append(")");

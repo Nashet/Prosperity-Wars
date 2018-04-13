@@ -18,9 +18,9 @@ namespace Nashet.EconomicSimulation
             //changeProductionType();
         }
 
-        protected override void deleteData()
+        public override void Kill()
         {
-            base.deleteData();
+            base.Kill();
             artisansProduction = null;
         }
 

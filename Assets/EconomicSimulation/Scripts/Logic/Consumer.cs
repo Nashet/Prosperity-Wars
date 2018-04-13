@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public abstract void consumeNeeds();
 
-        public abstract List<Storage> getRealAllNeeds();
+        public abstract IEnumerable<Storage> getRealAllNeeds();
 
         protected Consumer(Country country) : base(country)
         {

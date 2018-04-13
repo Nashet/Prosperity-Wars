@@ -12,24 +12,24 @@ namespace Nashet.EconomicSimulation
             this.artisan = artisan;
         }
 
-        public override List<Storage> getRealAllNeeds()
+        public override IEnumerable<Storage> getRealAllNeeds()
         {
-            return getRealNeeds(new Value(artisan.getPopulation() / 1000f));
+            return getRealNeeds(artisan.population.Get() / 1000f);
         }
 
         /// <summary>  Return in pieces basing on current prices and needs  /// </summary>
         //override public float getLocalEffectiveDemand(Product product)
         //{
-        //    return getLocalEffectiveDemand(product, new Procent(owner.getPopulation() / 1000f));
+        //    return getLocalEffectiveDemand(product, new Procent(owner.population.Get() / 1000f));
         //}
         public override List<Storage> getHowMuchInputProductsReservesWants()
         {
-            return getHowMuchInputProductsReservesWants(new Value(artisan.getPopulation() / 1000f * Options.FactoryInputReservInDays));
+            return getHowMuchInputProductsReservesWants(new Value(artisan.population.Get() / 1000f * Options.FactoryInputReservInDays));
         }
 
         internal override Procent getInputFactor()
         {
-            return getInputFactor(new Procent(artisan.getPopulation() / 1000f));
+            return getInputFactor(new Procent(artisan.population.Get() / 1000f));
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public override void produce()
         {
-            base.produce(new Value(artisan.getPopulation() * PopUnit.modEfficiency.getModifier(artisan) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
+            base.produce(new Value(artisan.population.Get() * PopUnit.modEfficiency.getModifier(artisan) * Options.ArtisansProductionModifier * getInputFactor().get() / 1000f));
             if (getGainGoodsThisTurn().isNotZero())
             {
                 artisan.addProduct(getGainGoodsThisTurn());

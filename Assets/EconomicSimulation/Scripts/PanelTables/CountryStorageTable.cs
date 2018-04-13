@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
 
         protected override void AddRow(Product product, int number)
         {
-            var needs = Game.Player.getRealAllNeeds();
+            var needs = Game.Player.getRealAllNeeds().ToList();
             // Adding product name
             if (product.isAbstract())
             {

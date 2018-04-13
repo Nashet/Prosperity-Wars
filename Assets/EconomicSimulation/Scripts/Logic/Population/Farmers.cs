@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
 
         public override void produce()
         {
-            Storage producedAmount = new Storage(Type.getBasicProduction().Product, getPopulation() * Type.getBasicProduction().get() / 1000f);
+            Storage producedAmount = new Storage(Type.getBasicProduction().Product, population.Get() * Type.getBasicProduction().get() / 1000f);
             producedAmount.Multiply(modEfficiency.getModifier(this), false); // could be negative with bad modifiers, defaults to zero
             if (producedAmount.isNotZero())
             {

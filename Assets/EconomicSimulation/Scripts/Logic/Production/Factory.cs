@@ -371,7 +371,7 @@ namespace Nashet.EconomicSimulation
             {
                 int leftToHire = amount;
                 hiredLastTurn = 0;
-                popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.getPopulation()).ToList();
+                popList = popList.OrderByDescending(x => x.Education.get()).ThenBy(x => x.population.Get()).ToList();
 
                 foreach (Workers pop in popList)
                 {
@@ -479,7 +479,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Money income;
                     if (basedOnProfit)
-                        income = new Money((decimal)getProfit(), false);
+                        income = new Money(getProfit(), false);
                     else
                         income = payedDividends.Copy();
                     var taxes = income.Copy().Multiply(Country.taxationForRich.getTypedValue().tax);
@@ -528,7 +528,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    if (IsOpen && !Type.isResourceGathering() && Rand.Chance(Options.PopLearnByWorkingChance))
         //        foreach (var employee in hiredWorkForce)
-        //            if (employee.Value > employee.Key.getPopulation() * 0.75f)
+        //            if (employee.Value > employee.Key.population.Get() * 0.75f)
         //                employee.Key.LearnByWork();
         //}
         internal void paySalary()
@@ -724,12 +724,12 @@ namespace Nashet.EconomicSimulation
                 if (Country.economy.getValue() != Economy.PlannedEconomy)// commies don't care about profits
                 {
                     //fire people if unprofitable.
-                    if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
+                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && daysUnprofitable >= Options.minDaysBeforeSalaryCut)// && getWorkForce() >= Options.maxFactoryFireHireSpeed)
                         difference = -1 * maxHiringSpeed;
 
                     // just don't hire more..
                     //if ((getProfit() < 0f || inputFactor < 0.95f) && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
-                    if (getProfit() < 0f && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
+                    if (getProfit() < 0m && !isSubsidized() && !isJustHiredPeople() && workForce > 0)
                         difference = 0;
                 }
             }
@@ -752,9 +752,9 @@ namespace Nashet.EconomicSimulation
             return new Procent(getWorkForce(), workForcePerLevel * level, false);
         }
 
-        public override List<Storage> getRealAllNeeds()
+        public override IEnumerable<Storage> getRealAllNeeds()
         {
-            return getRealNeeds(new Value(getEfficiency(false).get() * getLevel()));
+            return getRealNeeds(getEfficiency(false).get() * getLevel());
         }
 
         /// <summary>  Return in pieces basing on current prices and needs  /// </summary>

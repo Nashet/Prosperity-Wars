@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
                 var sb = new StringBuilder();
                 caption.text = pop.ToString();
                 //sb.Append(pop);
-                sb.Append("Population: ").Append(pop.getPopulation());
+                sb.Append("Population: ").Append(pop.population.Get());
                 //if (Game.devMode)
                 if (pop.storage.isNotZero())
                     if (pop.Type == PopType.Aristocrats)
@@ -88,17 +88,17 @@ namespace Nashet.EconomicSimulation
 
                 sb.Clear();
                 sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling()).Append(" fulfilled");
-                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.population.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling()).Append(" fulfilled");
-                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.population.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
                 sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling()).Append(" fulfilled");
-                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.population.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();

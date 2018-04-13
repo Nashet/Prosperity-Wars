@@ -14,9 +14,9 @@ namespace Nashet.EconomicSimulation
         {
         }
 
-        protected override void deleteData()
+        public override void Kill()
         {
-            base.deleteData();
+            base.Kill();
             //secede property... to government
             getOwnedFactories().PerformAction(x => x.ownership.TransferAll(this, Country));
         }
