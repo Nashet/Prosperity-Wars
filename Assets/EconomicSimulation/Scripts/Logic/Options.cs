@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
         internal static readonly Value CountryBuyProductsForXDays = new Value(20f);
         internal static readonly Value CountrySaveProductsDaysMaximum = new Value(40f);
         internal static readonly Value CountryPopConsumptionLimitPE = new Value(40f);
-        internal static readonly int CountryInvestmentRate = 45;
+        
         internal static readonly Procent CountryOwnershipRiskRestoreSpeed = new Procent(0.001f);
         internal static readonly Procent CountryOwnershipRiskDropOnNationalization = new Procent(0.01f);
 
@@ -186,7 +186,8 @@ namespace Nashet.EconomicSimulation
 
         internal static readonly Procent PopBuyAssetsAtTime = new Procent(0.05f);
         internal static readonly Procent PopMarginToSellShares = new Procent(0.005f);
-        internal static readonly int PopInvestRate = 15;
+        internal static readonly int PopInvestRate = 25;
+        internal static readonly int CountryInvestmentRate = 55;
 
         //EDUCATION
         internal static readonly Procent PopEducationGrowthRate = new Procent(0.002f);

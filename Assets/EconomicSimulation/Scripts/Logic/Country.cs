@@ -480,7 +480,7 @@ namespace Nashet.EconomicSimulation
             return BadboyCountry;
         }
 
-        //todo performance hit 132 calls 183kb 82 ms
+        //todo performance hit 7% 420 calls 1.4mb 82 ms
         private bool isThreatenBy(Country country)
         {
             if (country == this)
