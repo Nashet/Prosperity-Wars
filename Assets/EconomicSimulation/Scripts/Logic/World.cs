@@ -45,7 +45,7 @@ namespace Nashet.EconomicSimulation
 
         private void Start()
         {
-            thisObject = this;            
+            thisObject = this;
         }
 
         public static IEnumerable<Country> getAllExistingCountries()
@@ -187,7 +187,7 @@ namespace Nashet.EconomicSimulation
                 if (anyProvince.getColorID() == color)
                     return true;
             return false;
-        }               
+        }
 
         internal static void CreateCountries()
         {
@@ -639,6 +639,6 @@ namespace Nashet.EconomicSimulation
                 if (country.isAI())
                     country.AIThink();
             }
-        }                
+        }
     }
 }

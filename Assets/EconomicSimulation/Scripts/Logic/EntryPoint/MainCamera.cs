@@ -13,10 +13,10 @@ namespace Nashet.EconomicSimulation
         private Canvas canvas;
 
         [SerializeField]
-        private float xyCameraSpeed = 2f;
+        private float xzCameraSpeed = 2f;
 
         [SerializeField]
-        private float zCameraSpeed = 55f;
+        private float yCameraSpeed = -2f;
 
         [SerializeField]
         private World world;
@@ -64,28 +64,28 @@ namespace Nashet.EconomicSimulation
 
             var position = transform.position;
             var mapBorders = game.getMapBorders();
-            
-            
-            if (xMove * xyCameraSpeed + position.x < mapBorders.x
-                || xMove * xyCameraSpeed + position.x > mapBorders.width)
+
+
+            if (xMove * xzCameraSpeed + position.x < mapBorders.x
+                || xMove * xzCameraSpeed + position.x > mapBorders.width)
                 xMove = 0;
-            
-            if (yMove * xyCameraSpeed + position.y < mapBorders.y
-                || yMove * xyCameraSpeed + position.y > mapBorders.height)
-                yMove = 0;
-           
-            zMove = zMove * zCameraSpeed;
-            if (position.z + zMove > -40f
-                || position.z + zMove < -500f)
-                zMove = 0f;
-            transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
+
+            if (zMove * xzCameraSpeed + position.z < mapBorders.y
+                || zMove * xzCameraSpeed + position.z > mapBorders.height)
+                zMove = 0;
+
+            yMove = yMove * yCameraSpeed;
+            if (position.y + yMove < 40f
+                || position.y + yMove > 500f)
+                yMove = 0f;
+            transform.Translate(xMove * xzCameraSpeed, yMove , zMove * xzCameraSpeed, Space.World);
         }
 
         private void FixedUpdate()
         {
             if (gameIsLoaded)
             {
-                Move(0, 0, Input.GetAxis("Mouse ScrollWheel"));
+                Move(0, Input.GetAxis("Mouse ScrollWheel"), 0);
             }
         }
 
@@ -317,7 +317,7 @@ namespace Nashet.EconomicSimulation
 
         public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
+            gameObject.transform.position = new Vector3(province.getPosition().x, focusHeight, province.getPosition().y);
             if (select)
                 selectProvince(province.getID());
         }

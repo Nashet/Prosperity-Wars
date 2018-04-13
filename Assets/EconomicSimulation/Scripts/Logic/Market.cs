@@ -60,18 +60,7 @@ namespace Nashet.EconomicSimulation
             }
             return cost;
         }
-
-        /// <summary>
-        /// returns new Value
-        /// </summary>
-        internal MoneyView getCost(List<Storage> need)
-        {
-            Money cost = new Money(0m);
-            foreach (Storage stor in need)
-                cost.Add(getCost(stor));
-            return cost;
-        }
-
+        
         /// <summary>
         /// returns new Value
         /// </summary>
@@ -82,6 +71,7 @@ namespace Nashet.EconomicSimulation
                 cost.Add(getCost(stor));
             return cost;
         }
+
         /// <summary>
         /// New value
         /// </summary>

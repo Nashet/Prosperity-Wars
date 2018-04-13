@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
@@ -59,6 +59,7 @@ namespace Nashet.EconomicSimulation
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
+            
             if (!devMode)
                 makeHelloMessage();
             updateStatus("Finishing generation..");
@@ -98,6 +99,11 @@ namespace Nashet.EconomicSimulation
             //{
             //    item.annexTo(Game.Player);
             //}
+            //Quaternion.Ro(90f, Vector3.right);
+            World.Get.transform.Rotate(Vector3.right* 90f);
+            //World.Get.transform.rotation.SetAxisAngle(Vector3.right, 90f);
+            //del.x = 90f;
+            //World.Get.transform.rotation = del;
         }
 
         public Rect getMapBorders()
