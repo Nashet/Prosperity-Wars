@@ -111,7 +111,7 @@ namespace Nashet.EconomicSimulation
             groundMeshCollider.sharedMesh = landMesh;
 
             position = setProvinceCenter(meshStructure);
-            
+
 
             setLabel();
 
@@ -1343,6 +1343,21 @@ namespace Nashet.EconomicSimulation
                 return false;
             else
                 return Factory.conditionsUpgrade.isAllTrue(byWhom, factory);
+        }
+
+        public static int FindByCollider(Collider collider)
+        {
+            if (collider != null)
+            {
+                MeshCollider meshCollider = collider as MeshCollider;
+                if (meshCollider == null || meshCollider.sharedMesh == null)
+                    return -2;
+                Mesh mesh = meshCollider.sharedMesh;
+                int provinceNumber = Convert.ToInt32(mesh.name);
+                return provinceNumber;
+            }
+            else
+                return -1;
         }
     }
 }

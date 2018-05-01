@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
                 xMove = 0;
 
             if (yMove * xzCameraSpeed + position.y < mapBorders.y
-                || yMove * xzCameraSpeed + position.y> mapBorders.height)
+                || yMove * xzCameraSpeed + position.y > mapBorders.height)
                 yMove = 0;
 
             zMove = zMove * yCameraSpeed;
@@ -133,21 +133,26 @@ namespace Nashet.EconomicSimulation
 
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
-                    int meshNumber = getRayCastMeshNumber();
-                    if (meshNumber != -3)
-                        if (meshNumber <= World.GetAllProvinces().Count())
-                            selectProvince(meshNumber);
+                    var collider = getRayCastMeshNumber();
+                    if (collider != null)
+                    {
+                        int provinceNumber = Province.FindByCollider(collider);
+                        if (provinceNumber > 0)
+                        {
+                            selectProvince(provinceNumber);
+                        }
                         else
                         {
-                            var unit = Unit.FindByID(meshNumber);
-                            if (!Game.selectedUnits.Contains(unit))
-                                Game.selectedUnits.Add(unit);
+                            var unit = collider.transform.GetComponent<Unit>();
+                            if (unit != null)
+                                unit.OnClick();//
                         }
+                    }
                 }
 
                 if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1))
                 {
-                    int meshNumber = getRayCastMeshNumber();
+                    int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
                     if (meshNumber > 0)
                         Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
                 }
@@ -178,7 +183,7 @@ namespace Nashet.EconomicSimulation
 
             if (Game.getMapMode() == 4)
             {
-                int meshNumber = getRayCastMeshNumber();
+                int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
                 if (hoveredProvince == null)
                     GetComponent<ToolTipHandler>().Hide();
@@ -202,7 +207,7 @@ namespace Nashet.EconomicSimulation
             }
             else if (Game.getMapMode() == 5)
             {
-                int meshNumber = getRayCastMeshNumber();
+                int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
                 if (hoveredProvince == null)
                     GetComponent<ToolTipHandler>().Hide();
@@ -219,7 +224,7 @@ namespace Nashet.EconomicSimulation
             }
             else if (Game.getMapMode() == 6) //prosperity wars
             {
-                int meshNumber = getRayCastMeshNumber();
+                int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
                 if (hoveredProvince == null)
                     GetComponent<ToolTipHandler>().Hide();
@@ -233,25 +238,26 @@ namespace Nashet.EconomicSimulation
             }
         }
         // remake it to return mesh collider, on which will be chosen object
-        private int getRayCastMeshNumber()
+        private Collider getRayCastMeshNumber()
         {
             RaycastHit hit;
             if (EventSystem.current.IsPointerOverGameObject())
-                return -3; //hovering over UI
+                return null;// -3; //hovering over UI
             else
             {
                 if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-                    return -1;
+                    return null;// -1;
             }
 
-            MeshCollider meshCollider = hit.collider as MeshCollider;
+            //MeshCollider meshCollider = hit.collider as MeshCollider;
 
-            if (meshCollider == null || meshCollider.sharedMesh == null)
-                return -2;
-            Mesh mesh = meshCollider.sharedMesh;
+            //if (meshCollider == null || meshCollider.sharedMesh == null)
+            //    return -2;
+            //Mesh mesh = meshCollider.sharedMesh;
 
-            //return mesh;
-            return Convert.ToInt32(mesh.name);
+
+            //return Convert.ToInt32(mesh.name);
+            return hit.collider;
         }
 
         internal static void refreshAllActive()
