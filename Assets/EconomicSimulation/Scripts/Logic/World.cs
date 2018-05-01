@@ -24,6 +24,7 @@ namespace Nashet.EconomicSimulation
         internal static List<BattleResult> allBattles = new List<BattleResult>();
 
         public static Market market;
+        public GameObject UnitPrefab;
 
         public static World Get
         {

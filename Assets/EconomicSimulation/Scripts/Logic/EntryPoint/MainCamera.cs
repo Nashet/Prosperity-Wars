@@ -16,7 +16,7 @@ namespace Nashet.EconomicSimulation
         private float xzCameraSpeed = 2f;
 
         [SerializeField]
-        private float yCameraSpeed = -2f;
+        private float yCameraSpeed = -55f;
 
         [SerializeField]
         private World world;
@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
             if (position.y + yMove < 40f
                 || position.y + yMove > 500f)
                 yMove = 0f;
-            transform.Translate(xMove * xzCameraSpeed, yMove , zMove * xzCameraSpeed, Space.World);
+            transform.Translate(xMove * xzCameraSpeed, yMove, zMove * xzCameraSpeed, Space.World);
         }
 
         private void FixedUpdate()
@@ -127,75 +127,31 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameIsLoaded)
             {
-                if (Game.getMapMode() != 0
-                    //&& Date.Today.isDivisible(Options.MapRedrawRate)
-                    )
-                    Game.redrawMapAccordingToMapMode(Game.getMapMode());
+                RefreshMap();
+
+                if (Input.GetKeyDown(KeyCode.Return))
+                    closeToppestPanel();
 
                 if (Input.GetMouseButtonDown(0)) // clicked and released left button
                 {
                     int meshNumber = getRayCastMeshNumber();
                     if (meshNumber != -3)
-                        selectProvince(meshNumber);
-                }
-                if (Game.getMapMode() == 4)
-                {
-                    int meshNumber = getRayCastMeshNumber();
-                    var hoveredProvince = World.FindProvince(meshNumber);
-                    if (hoveredProvince == null)
-                        GetComponent<ToolTipHandler>().Hide();
-                    else
-                    {
-                        if (Game.selectedProvince == null)
-                            GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                            "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.population.Get())
-                            + "\n" + hoveredProvince.Country.getAllPopulationChanges()
-                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
-                            .getString("\n", "Total change: "));
+                        if (meshNumber <= World.GetAllProvinces().Count())
+                            selectProvince(meshNumber);
                         else
-                            GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                            + "\n" + hoveredProvince.getAllPopulationChanges()
-                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
-                            .getString("\n", "Total change: ")
-                            );
-                        GetComponent<ToolTipHandler>().Show();
-                    }
-                }
-                else if (Game.getMapMode() == 5)
-                {
-                    int meshNumber = getRayCastMeshNumber();
-                    var hoveredProvince = World.FindProvince(meshNumber);
-                    if (hoveredProvince == null)
-                        GetComponent<ToolTipHandler>().Hide();
-                    else
-                    {
-                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                            + "\nChange: " + hoveredProvince.getAllPopulationChanges()
-                            .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
-                            + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
-                            );
-                        GetComponent<ToolTipHandler>().Show();
-                    }
-                }
-                else if (Game.getMapMode() == 6) //prosperity wars
-                {
-                    int meshNumber = getRayCastMeshNumber();
-                    var hoveredProvince = World.FindProvince(meshNumber);
-                    if (hoveredProvince == null)
-                        GetComponent<ToolTipHandler>().Hide();
-                    else
-                    {
-                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                            "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                            + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
-                        GetComponent<ToolTipHandler>().Show();
-                    }
+                        {
+                            var unit = Unit.FindByID(meshNumber);
+                            if (!Game.selectedUnits.Contains(unit))
+                                Game.selectedUnits.Add(unit);
+                        }
                 }
 
-                if (Input.GetKeyDown(KeyCode.Return))
-                    closeToppestPanel();
+                if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1))
+                {
+                    int meshNumber = getRayCastMeshNumber();
+                    if (meshNumber > 0)
+                        Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
+                }
 
                 if (world.IsRunning && !MessagePanel.IsOpenAny())
                 {
@@ -213,18 +169,81 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        private int getRayCastMeshNumber()
+        private void RefreshMap()
         {
-            //RaycastHit hit = new RaycastHit();//temp
-            //int layerMask = 1 << 8;
-            //DefaultRaycastLayers
-            //Physics.DefaultRaycastLayers;
+            if (Game.getMapMode() != 0
+                    //&& Date.Today.isDivisible(Options.MapRedrawRate)
+                    )
+                Game.redrawMapAccordingToMapMode(Game.getMapMode());
+
+
+            if (Game.getMapMode() == 4)
+            {
+                int meshNumber = getRayCastMeshNumber();
+                var hoveredProvince = World.FindProvince(meshNumber);
+                if (hoveredProvince == null)
+                    GetComponent<ToolTipHandler>().Hide();
+                else
+                {
+                    if (Game.selectedProvince == null)
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\n" + hoveredProvince.Country.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
+                        .getString("\n", "Total change: "));
+                    else
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\n" + hoveredProvince.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
+                        .getString("\n", "Total change: ")
+                        );
+                    GetComponent<ToolTipHandler>().Show();
+                }
+            }
+            else if (Game.getMapMode() == 5)
+            {
+                int meshNumber = getRayCastMeshNumber();
+                var hoveredProvince = World.FindProvince(meshNumber);
+                if (hoveredProvince == null)
+                    GetComponent<ToolTipHandler>().Hide();
+                else
+                {
+                    GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\nChange: " + hoveredProvince.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
+                        + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
+                        );
+                    GetComponent<ToolTipHandler>().Show();
+                }
+            }
+            else if (Game.getMapMode() == 6) //prosperity wars
+            {
+                int meshNumber = getRayCastMeshNumber();
+                var hoveredProvince = World.FindProvince(meshNumber);
+                if (hoveredProvince == null)
+                    GetComponent<ToolTipHandler>().Hide();
+                else
+                {
+                    GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
+                    GetComponent<ToolTipHandler>().Show();
+                }
+            }
+        }
+        // remake it to return mesh collider, on which will be chosen object
+        private int getRayCastMeshNumber()
+        {            
             RaycastHit hit;
-            if (!EventSystem.current.IsPointerOverGameObject())
+            if (EventSystem.current.IsPointerOverGameObject())
+                return -3; //hovering over UI
+            else
+            {
                 if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-                    return -1;
-                else; // go on
-            else return -3; //hovering over UI
+                    return -1;                
+            }
 
             MeshCollider meshCollider = hit.collider as MeshCollider;
 
@@ -232,20 +251,7 @@ namespace Nashet.EconomicSimulation
                 return -2;
             Mesh mesh = meshCollider.sharedMesh;
 
-            //Vector3[] vertices = mesh.vertices;
-            //int[] triangles = mesh.triangles;
-
-            //Vector3 p0 = vertices[triangles[hit.triangleIndex * 3 + 0]];
-
-            //mapPointer.transform.position = p0;
-            //// Gets a vector that points from the player's position to the target's.
-            //Vector3 heading = mapPointer.transform.position - Vector3.zero;
-            //heading.Normalize();
-
-            // mapPointer.transform.position += heading * 50;
-            // mapPointer.transform.rotation = Quaternion.LookRotation(heading, Vector3.up) * Quaternion.Euler(-90, 0, 0);
-
-            //return groundMesh.triangles[hit.triangleIndex * 3];
+            //return mesh;
             return Convert.ToInt32(mesh.name);
         }
 

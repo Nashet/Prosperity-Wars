@@ -54,7 +54,7 @@ namespace Nashet.EconomicSimulation
         private Vector3 position;
         private Color color;
 
-        private GameObject rootGameObject;
+        private GameObject gameObject;
         private MeshRenderer meshRenderer;
 
         private Country country;
@@ -84,15 +84,15 @@ namespace Nashet.EconomicSimulation
             //this.meshStructure = meshStructure;
 
             //spawn object
-            rootGameObject = new GameObject(string.Format("{0}", getID()));
+            gameObject = new GameObject(string.Format("{0}", getID()));
 
             //Add Components
-            var meshFilter = rootGameObject.AddComponent<MeshFilter>();
-            meshRenderer = rootGameObject.AddComponent<MeshRenderer>();
+            var meshFilter = gameObject.AddComponent<MeshFilter>();
+            meshRenderer = gameObject.AddComponent<MeshRenderer>();
 
             // in case you want the new gameobject to be a child
             // of the gameobject that your script is attached to
-            rootGameObject.transform.parent = World.Get.transform;
+            gameObject.transform.parent = World.Get.transform;
 
             var landMesh = meshFilter.mesh;
             landMesh.Clear();
@@ -107,10 +107,12 @@ namespace Nashet.EconomicSimulation
 
             meshRenderer.material.color = color;
 
-            MeshCollider groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            MeshCollider groundMeshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
             groundMeshCollider.sharedMesh = landMesh;
 
             position = setProvinceCenter(meshStructure);
+            
+
             setLabel();
 
             // setting neighbors
@@ -129,7 +131,7 @@ namespace Nashet.EconomicSimulation
                 meshFilter = borderObject.AddComponent<MeshFilter>();
                 MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
 
-                borderObject.transform.parent = rootGameObject.transform;
+                borderObject.transform.parent = gameObject.transform;
 
                 Mesh borderMesh = meshFilter.mesh;
                 borderMesh.Clear();
@@ -158,7 +160,7 @@ namespace Nashet.EconomicSimulation
 
         public GameObject getRootGameObject()
         {
-            return rootGameObject;
+            return gameObject;
         }
 
         public void setBorderMaterial(Material material)
@@ -743,12 +745,12 @@ namespace Nashet.EconomicSimulation
 
         internal void setLabel()
         {
-            LODGroup group = rootGameObject.AddComponent<LODGroup>();
+            LODGroup group = gameObject.AddComponent<LODGroup>();
 
             // Add 4 LOD levels
             LOD[] lods = new LOD[1];
             Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
-            txtMeshTransform.SetParent(rootGameObject.transform, false);
+            txtMeshTransform.SetParent(gameObject.transform, false);
             Renderer[] renderers = new Renderer[1];
             renderers[0] = txtMeshTransform.GetComponent<Renderer>();
             lods[0] = new LOD(0.25F, renderers);
