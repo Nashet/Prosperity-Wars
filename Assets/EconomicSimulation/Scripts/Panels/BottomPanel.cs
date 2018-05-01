@@ -62,23 +62,23 @@ namespace Nashet.EconomicSimulation
         }
         public void OnScrollUp()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            var cameraScript = Camera.main.GetComponent<MainCamera>();            
             cameraScript.Move(0f, 0f, 1f);
         }
         public void OnScrollDown()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
+            var cameraScript = Camera.main.GetComponent<MainCamera>();            
             cameraScript.Move(0f, 0f, -1f);
         }
         public void OnScaleIn()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(0f, 0.2f, 0f);
+            var cameraScript = Camera.main.GetComponent<MainCamera>();            
+            cameraScript.Move(0f, -0.1f, 0f);
         }
         public void OnScaleOut()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();
-            cameraScript.Move(0f, -0.2f, 0f);
+            var cameraScript = Camera.main.GetComponent<MainCamera>();            
+            cameraScript.Move(0f, 0.1f, 0f);
         }
         public void OnTest()
         {

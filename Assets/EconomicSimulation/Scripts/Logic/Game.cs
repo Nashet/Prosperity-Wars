@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
             //    item.annexTo(Game.Player);
             //}
             //Quaternion.Ro(90f, Vector3.right);
-            World.Get.transform.Rotate(Vector3.right* 90f);
+            //World.Get.transform.Rotate(Vector3.right* 90f);
             //World.Get.transform.rotation.SetAxisAngle(Vector3.right, 90f);
             //del.x = 90f;
             //World.Get.transform.rotation = del;

@@ -59,9 +59,8 @@ namespace Nashet.EconomicSimulation
             focusHeight = transform.position.z;
         }
 
-        public void Move(float xMove, float yMove, float zMove)
+        public void Move(float xMove, float zMove, float yMove)
         {
-
             var position = transform.position;
             var mapBorders = game.getMapBorders();
 
@@ -70,22 +69,22 @@ namespace Nashet.EconomicSimulation
                 || xMove * xzCameraSpeed + position.x > mapBorders.width)
                 xMove = 0;
 
-            if (zMove * xzCameraSpeed + position.z < mapBorders.y
-                || zMove * xzCameraSpeed + position.z > mapBorders.height)
-                zMove = 0;
+            if (yMove * xzCameraSpeed + position.y < mapBorders.y
+                || yMove * xzCameraSpeed + position.y> mapBorders.height)
+                yMove = 0;
 
-            yMove = yMove * yCameraSpeed;
-            if (position.y + yMove < 40f
-                || position.y + yMove > 500f)
-                yMove = 0f;
-            transform.Translate(xMove * xzCameraSpeed, yMove, zMove * xzCameraSpeed, Space.World);
+            zMove = zMove * yCameraSpeed;
+            if (position.z + zMove > -40f
+                || position.z + zMove < -500f)
+                zMove = 0f;
+            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, zMove, Space.World);
         }
 
         private void FixedUpdate()
         {
             if (gameIsLoaded)
             {
-                Move(0, Input.GetAxis("Mouse ScrollWheel"), 0);
+                Move(0f, Input.GetAxis("Mouse ScrollWheel"), 0f);
             }
         }
 
@@ -235,14 +234,14 @@ namespace Nashet.EconomicSimulation
         }
         // remake it to return mesh collider, on which will be chosen object
         private int getRayCastMeshNumber()
-        {            
+        {
             RaycastHit hit;
             if (EventSystem.current.IsPointerOverGameObject())
                 return -3; //hovering over UI
             else
             {
                 if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-                    return -1;                
+                    return -1;
             }
 
             MeshCollider meshCollider = hit.collider as MeshCollider;
@@ -323,7 +322,7 @@ namespace Nashet.EconomicSimulation
 
         public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x, focusHeight, province.getPosition().y);
+            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
             if (select)
                 selectProvince(province.getID());
         }
