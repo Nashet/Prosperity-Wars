@@ -2,6 +2,7 @@
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using Nashet.ValueSpace;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,29 +36,39 @@ namespace Nashet.EconomicSimulation
                 var sb = new StringBuilder();
                 caption.text = pop.ToString();
                 //sb.Append(pop);
-                sb.Append("Population: ").Append(pop.population.Get());
-                //if (Game.devMode)
-                if (pop.storage.isNotZero())
-                    if (pop.Type == PopType.Aristocrats)
-                        sb.Append("\nStorage: ").Append(pop.storage);
-                    else
-                        sb.Append("\nUnsold: ").Append(pop.storage);
                 Artisans isArtisan = pop as Artisans;
+                sb.Append("Population: ").Append(pop.population.Get());
                 if (isArtisan != null)
                 {
-                    sb.Append(", input products:  ").Append(isArtisan.getInputProducts());
-                    sb.Append("\nProducing: ");
+                    sb.Append(", Producing: ");
                     if (isArtisan.Type == null)
                         sb.Append("nothing");
                     else
                         sb.Append(isArtisan.Type.basicProduction.Product);
                 }
+                //if (Game.devMode)
                 if (pop.Type == PopType.Aristocrats || pop.Type == PopType.Soldiers)
                     sb.Append("\nGained: ").Append(pop.getGainGoodsThisTurn());
                 else
                     sb.Append("\nProduced: ").Append(pop.getGainGoodsThisTurn());
-                sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
+                if (pop.storage.isNotZero())
+                    if (pop.Type == PopType.Aristocrats)
+                        sb.Append(", Storage: ").Append(pop.storage);
+                    else
+                        sb.Append(", Unsold: ").Append(pop.storage);
+                
+                if (isArtisan != null)
+                {
+                    sb.Append("\nInput required: ");
+                    foreach (Storage next in isArtisan.GetResurceInput() )
+                        sb.Append(next.get() * isArtisan.population.Get() / Population.PopulationMultiplier).Append(" ").Append(next.Product).Append(";");
 
+                    sb.Append("\nStockpile:  ").Append(isArtisan.getInputProducts()).Append(", Resource availability: ").Append(isArtisan.getInputFactor());                    
+                }
+                
+                //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
+                sb.Append("\nConsumed: ").Append(pop.getConsumed());
+                sb.Append("\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
                 //sb.Append("\nAssimilation: ");
 
                 //if (pop.culture != pop.Country.getCulture() && pop.getAssimilationSize() > 0)
@@ -66,19 +77,23 @@ namespace Nashet.EconomicSimulation
                 //    sb.Append("none");
 
                 //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
-                sb.Append("\nUnemployment: ").Append(pop.getUnemployment());
-                sb.Append("\nLoyalty: ").Append(pop.loyalty);
+                sb.Append("\n\nLoyalty: ").Append(pop.loyalty);
+                sb.Append("\nUnemployment: ").Append(pop.getUnemployment());                
+                sb.Append("\nEducation: ").Append(pop.Education);
+                sb.Append("\nCulture: ").Append(pop.culture);
+                if (!pop.isStateCulture())
+                    sb.Append(", minority");
+                               
+                                                                             //if (Game.devMode)
+                sb.Append("\n\nAge: ").Append(pop.getAge());
+                sb.Append("\nMobilized: ").Append(pop.getMobilized());
+                if (pop.getMovement() != null)
+                    sb.Append("\nMember of ").Append(pop.getMovement());
 
                 if (pop.loans.isNotZero())
                     sb.Append("\nLoan: ").Append(pop.loans);// hide it
                 if (pop.deposits.isNotZero())
                     sb.Append("\nDeposit: ").Append(pop.deposits);// hide it
-                                                                             //if (Game.devMode)
-                sb.Append("\nAge: ").Append(pop.getAge());
-                sb.Append("\nMobilized: ").Append(pop.getMobilized());
-                if (pop.getMovement() != null)
-                    sb.Append("\nMember of ").Append(pop.getMovement());
-                sb.Append("\nConsumed: ").Append(pop.getConsumed());
 
                 //if (Game.devMode)
                 //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(World.market.getCost(pop.getConsumedLastTurn())

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 
@@ -67,6 +68,11 @@ namespace Nashet.EconomicSimulation
                     //   changeProductionType();
                 }
             }
+        }
+
+        internal StorageSet GetResurceInput()
+        {
+            return artisansProduction.Type.resourceInput;
         }
 
         public override void consumeNeeds()
@@ -161,6 +167,13 @@ namespace Nashet.EconomicSimulation
                 return null;
             else
                 return artisansProduction.getInputProductsReserve();
+        }
+        public Procent getInputFactor()
+        {
+            if (artisansProduction == null)
+                return null;
+            else
+                return artisansProduction.getInputFactor();
         }
 
         public override void SetStatisticToZero()

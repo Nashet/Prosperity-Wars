@@ -130,10 +130,10 @@ namespace Nashet.EconomicSimulation
                 //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
                 {
                     neighbors.Add(neighbor);
-                    var newNode = new Pathfinding.PointNode(AstarPath.active);
-                    newNode.gameObject = txtMeshGl;
-                    graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
-                    //new Pathfinding.PointNode(neighbor),
+                    //var newNode = new Pathfinding.PointNode(AstarPath.active);
+                    //newNode.gameObject = txtMeshGl;
+                    //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
+                    
                 }
 
                 GameObject borderObject = new GameObject("Border with " + neighbor);
