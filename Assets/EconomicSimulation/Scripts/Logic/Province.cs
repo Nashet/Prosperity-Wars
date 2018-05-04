@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName, INameable
+    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
     {
         public enum TerrainTypes
         {
@@ -35,6 +35,7 @@ namespace Nashet.EconomicSimulation
             }
         , true);
 
+
         public static readonly Predicate<Province> All = x => true;
 
         private Province here
@@ -42,6 +43,7 @@ namespace Nashet.EconomicSimulation
             get { return this; }
         }
 
+        GameObject txtMeshGl;
         private readonly int ID;
         private readonly Color colorID;
 
@@ -115,6 +117,9 @@ namespace Nashet.EconomicSimulation
 
             setLabel();
 
+            var graph = World.Get.GetComponent<AstarPath>();
+
+
             // setting neighbors
             //making meshes for border
             foreach (var border in neighborBorders)
@@ -122,8 +127,14 @@ namespace Nashet.EconomicSimulation
                 //each color is one neighbor (non repeating)
                 var neighbor = border.Key;
                 if (!(getTerrain() == TerrainTypes.Mountains && neighbor.terrain == TerrainTypes.Mountains))
-                    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                {
                     neighbors.Add(neighbor);
+                    var newNode = new Pathfinding.PointNode(AstarPath.active);
+                    newNode.gameObject = txtMeshGl;
+                    graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
+                    //new Pathfinding.PointNode(neighbor),
+                }
 
                 GameObject borderObject = new GameObject("Border with " + neighbor);
 
@@ -749,14 +760,17 @@ namespace Nashet.EconomicSimulation
 
             // Add 4 LOD levels
             LOD[] lods = new LOD[1];
-            Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
+            txtMeshGl = GameObject.Instantiate(Game.r3dTextPrefab);
+            Transform txtMeshTransform = txtMeshGl.transform;
             txtMeshTransform.SetParent(gameObject.transform, false);
             Renderer[] renderers = new Renderer[1];
             renderers[0] = txtMeshTransform.GetComponent<Renderer>();
             lods[0] = new LOD(0.25F, renderers);
 
             txtMeshTransform.position = getPosition();
-            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
+
+            
+            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();            
 
             txtMesh.text = ToString();
             txtMesh.color = Color.black; // Set the text's color to red
