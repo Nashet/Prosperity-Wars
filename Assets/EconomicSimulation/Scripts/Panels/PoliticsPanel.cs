@@ -63,15 +63,13 @@ namespace Nashet.EconomicSimulation
 
         public void onForceDecisionClick()
         {
-            //uint votersSayedYes;
             foreach (PopUnit pop in Game.Player.GetAllPopulation())
-                if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
+            {
+                if (pop.canVote() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
                 {
-                    //votersSayedYes = pop.getSayingYes(selectedReformValue);
-                    //if (pop.getSayYesProcent(selectedReformValue) < Options.votingPassBillLimit)
                     pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                 }
-
+            }
             changeReformValue();
         }
 

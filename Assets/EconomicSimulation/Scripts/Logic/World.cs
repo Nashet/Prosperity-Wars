@@ -421,7 +421,13 @@ namespace Nashet.EconomicSimulation
                                 (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
                             //attackerArmy.getDestination().secedeTo(attacker as Country, true);
                             else
-                                movement.onRevolutionWon();
+                            {
+                                if (movement.getReformType() == null)//separatists
+                                    movement.onRevolutionWon();
+                                else
+                                    movement.getReformType().setValue(movement.getGoal());
+
+                            }
                         }
                         else if (result.isDefenderWon())
                         {

@@ -99,15 +99,29 @@ namespace Nashet.EconomicSimulation
         {
             description = indescription;
             country.reforms.Add(this);
+            this.country = country;
         }
-
+        private readonly Country country;
         internal abstract bool isAvailable(Country country);
 
         public abstract IEnumerator GetEnumerator();
 
         internal abstract bool canChange();
 
-        internal abstract void setValue(AbstractReformValue selectedReformValue);
+        internal virtual void setValue(AbstractReformValue selectedReformValue)
+        {
+            foreach (PopUnit pop in country.GetAllPopulation())
+                if (pop.getSayingYes(selectedReformValue))
+                {
+                    pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
+                    pop.loyalty.clamp100();
+                }
+            var isThereSuchMovement = country.movements.Find(x => x.getGoal() == selectedReformValue);
+            if (isThereSuchMovement != null)
+            {
+                isThereSuchMovement.onRevolutionWon();                
+            }
+        }
 
         public override string FullName
         {
@@ -321,6 +335,7 @@ namespace Nashet.EconomicSimulation
 
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             reform = (ReformValue)selectedReform;
             country.setPrefix();
 
@@ -628,6 +643,7 @@ namespace Nashet.EconomicSimulation
         // todo add OnReformEnacted?
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
             if (status == LaissezFaire)
             {
@@ -814,6 +830,7 @@ namespace Nashet.EconomicSimulation
 
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
@@ -1019,6 +1036,7 @@ namespace Nashet.EconomicSimulation
 
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
@@ -1197,6 +1215,7 @@ namespace Nashet.EconomicSimulation
         //}
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
@@ -1316,13 +1335,14 @@ namespace Nashet.EconomicSimulation
         }
 
         public override IEnumerator GetEnumerator()
-        {
+        {            
             foreach (ReformValue f in PossibleStatuses)
                 yield return f;
         }
 
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
@@ -1437,13 +1457,14 @@ namespace Nashet.EconomicSimulation
         }
 
         public override IEnumerator GetEnumerator()
-        {
+        {            
             foreach (ReformValue f in PossibleStatuses)
                 yield return f;
         }
 
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
@@ -1558,6 +1579,7 @@ namespace Nashet.EconomicSimulation
 
         internal override void setValue(AbstractReformValue selectedReform)
         {
+            base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 

@@ -106,6 +106,10 @@ namespace Nashet.EconomicSimulation
         {
             return targetReformValue;
         }
+        public AbstractReform getReformType()
+        {
+            return targetReform;
+        }
 
         public override string ToString()
         {
@@ -179,29 +183,30 @@ namespace Nashet.EconomicSimulation
                 leave(pop);
                 //pop.setMovement(null);
             }
+            Country.movements.Remove(this);
             //members.Clear();
         }
 
         internal void onRevolutionWon()
-        {
+        {            
             //demobilize();
             //_isInRevolt = false;
             if (targetReform == null) // meaning separatism
             {
-                var separatists = targetReformValue as Separatism;
-                separatists.Country.onSeparatismWon(Country);
+                var separatists = getGoal() as Separatism;
+                separatists.Country.onSeparatismWon(country);
                 if (!separatists.Country.isAI())
                     Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.getPosition());
             }
-            else
-                targetReform.setValue(targetReformValue);
+            //else
+            //    targetReform.setValue(getGoal());
+            //Country.movements.Remove(this);
             foreach (var pop in members)
             {
                 pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionWon);
                 pop.loyalty.clamp100();
             }
             killMovement();
-            //Country.movements.Remove(this);
         }
 
         internal void onRevolutionLost()

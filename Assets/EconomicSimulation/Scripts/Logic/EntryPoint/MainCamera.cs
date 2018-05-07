@@ -145,9 +145,11 @@ namespace Nashet.EconomicSimulation
                         {
                             var unit = collider.transform.GetComponent<Unit>();
                             if (unit != null)
-                                unit.OnClick();//
+                                unit.OnClick();//                            
                         }
                     }
+                    else
+                        selectProvince(-1);
                 }
 
                 if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1))
