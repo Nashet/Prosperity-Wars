@@ -131,7 +131,7 @@ namespace Nashet.EconomicSimulation
                 if (Input.GetKeyDown(KeyCode.Return))
                     closeToppestPanel();
 
-                if (Input.GetMouseButtonDown(0)) // clicked and released left button
+                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())//hovering over UI) 
                 {
                     var collider = getRayCastMeshNumber();
                     if (collider != null)
@@ -243,6 +243,7 @@ namespace Nashet.EconomicSimulation
         private Collider getRayCastMeshNumber()
         {
             RaycastHit hit;
+
             if (EventSystem.current.IsPointerOverGameObject())
                 return null;// -3; //hovering over UI
             else
@@ -250,15 +251,6 @@ namespace Nashet.EconomicSimulation
                 if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
                     return null;// -1;
             }
-
-            //MeshCollider meshCollider = hit.collider as MeshCollider;
-
-            //if (meshCollider == null || meshCollider.sharedMesh == null)
-            //    return -2;
-            //Mesh mesh = meshCollider.sharedMesh;
-
-
-            //return Convert.ToInt32(mesh.name);
             return hit.collider;
         }
 
