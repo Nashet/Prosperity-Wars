@@ -54,11 +54,11 @@ public class Graph : MonoBehaviour
         {
             throw new ArgumentNullException();
         }
-                
+
 
         // If the start and end are same node, we can return the start node
         if (start == end)
-        {            
+        {
             return null;
         }
 
@@ -143,8 +143,14 @@ public class Graph : MonoBehaviour
                 }
             }
         }
-        if (path!=null)
-            path.Bake();
+
+        if (path != null)
+        {
+            if (path.nodes.Count == 0)
+                path = null;
+            else
+                path.Bake();
+        }
         return path;
     }
 
