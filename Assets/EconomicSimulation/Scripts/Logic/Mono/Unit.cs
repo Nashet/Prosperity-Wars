@@ -7,10 +7,7 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     [SerializeField]
-    private GameObject destination;
-    //[SerializeField]
-    //private Province position;
-    // Use this for initialization
+    private Province currentProvince;    
 
     [SerializeField]
     private int ID;
@@ -18,12 +15,20 @@ public class Unit : MonoBehaviour
     [SerializeField]
     private GameObject SelectionPart;
 
+    [SerializeField]
+    private Path path;
+
+    //[SerializeField]
+    private LineRenderer lineRenderer;
+
     Animator m_Animator;
+
     private readonly static List<Unit> allUnits = new List<Unit>();
     void Start()
     {
         m_Animator = GetComponent<Animator>();
         allUnits.Add(this);
+        lineRenderer = GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -41,15 +46,20 @@ public class Unit : MonoBehaviour
         //}
     }
 
-    internal void SetPosition(Vector3 position)
-    {
-        transform.position = position;
-        //destination = transform.parent.gameObject;
+    internal void SetPosition(Province province)
+    {        
+        transform.position = Game.selectedProvince.getPosition();
+        currentProvince = province;
     }
 
-    internal void SendTo(Province province)
+    internal void SendTo(Province destinationProvince)
     {
-        var destination = province.getPosition();        
+        path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince);
+
+        lineRenderer.positionCount = path.nodes.Count;
+        lineRenderer.SetPositions(path.GetVector3Nodes());
+
+        var destination = destinationProvince.getPosition();
         this.transform.LookAt(destination, Vector3.back);
         var m_ForwardAmount = 1f;
         m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);

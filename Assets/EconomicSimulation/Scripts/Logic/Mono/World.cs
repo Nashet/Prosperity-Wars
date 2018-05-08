@@ -31,6 +31,7 @@ namespace Nashet.EconomicSimulation
             get { return thisObject; }
         }
 
+        public Graph graph;
         static World()
         {
             //Product.init(); // to avoid crash based on initialization order

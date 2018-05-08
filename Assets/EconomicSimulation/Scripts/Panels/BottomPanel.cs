@@ -85,12 +85,8 @@ namespace Nashet.EconomicSimulation
             //gameObject = new GameObject(string.Format("{0}", getID()),);
 
             var unitObject = GameObject.Instantiate(World.Get.UnitPrefab, World.Get.transform);
-            var temp = Game.selectedProvince.getPosition();
-            Vector3 position;
-            position.x = temp.x;
-            position.y = temp.y;
-            position.z = temp.z;
-            unitObject.GetComponent<Unit>().SetPosition(position);
+           
+            unitObject.GetComponent<Unit>().SetPosition(Game.selectedProvince);
             unitObject.name = (World.GetAllProvinces().Count() + Random.Range(0, 2000)).ToString();
 
             MeshCollider meshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;

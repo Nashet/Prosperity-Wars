@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -45,7 +46,7 @@ public class Path
 
 	/// <summary>
 	/// Bake the path.
-	/// Making the path ready for usage, Such as caculating the length.
+	/// Making the path ready for usage, Such as calculating the length.
 	/// </summary>
 	public virtual void Bake ()
 	{
@@ -58,7 +59,7 @@ public class Path
 			{
 				Node connection = node.connections [ j ];
 				
-				// Don't calcualte calculated nodes
+				// Don't calculate calculated nodes
 				if ( m_Nodes.Contains ( connection ) && !calculated.Contains ( connection ) )
 				{
 					
@@ -70,12 +71,23 @@ public class Path
 		}
 	}
 
-	/// <summary>
-	/// Returns a string that represents the current object.
-	/// </summary>
-	/// <returns>A string that represents the current object.</returns>
-	/// <filterpriority>2</filterpriority>
-	public override string ToString ()
+    internal Vector3[] GetVector3Nodes()
+    {
+        Vector3[] array = new Vector3[nodes.Count];
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            array[i] = nodes[i].Province.getPosition();
+            array[i].z = -2f;
+        }
+        return array;
+    }
+
+    /// <summary>
+    /// Returns a string that represents the current object.
+    /// </summary>
+    /// <returns>A string that represents the current object.</returns>
+    /// <filterpriority>2</filterpriority>
+    public override string ToString ()
 	{
 		return string.Format (
 			"Nodes: {0}\nLength: {1}",

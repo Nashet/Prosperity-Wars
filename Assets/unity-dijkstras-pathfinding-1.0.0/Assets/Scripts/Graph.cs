@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nashet.EconomicSimulation;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,13 +29,23 @@ public class Graph : MonoBehaviour
 		}
 	}
 
-	/// <summary>
+    /// <summary>
 	/// Gets the shortest path from the starting Node to the ending Node.
 	/// </summary>
 	/// <returns>The shortest path.</returns>
 	/// <param name="start">Start Node.</param>
 	/// <param name="end">End Node.</param>
-	public virtual Path GetShortestPath ( Node start, Node end )
+	public virtual Path GetShortestPath(Province start, Province end)
+    {
+        return GetShortestPath(start.getRootGameObject().GetComponent<Node>(), end.getRootGameObject().GetComponent<Node>());
+    }
+    /// <summary>
+    /// Gets the shortest path from the starting Node to the ending Node.
+    /// </summary>
+    /// <returns>The shortest path.</returns>
+    /// <param name="start">Start Node.</param>
+    /// <param name="end">End Node.</param>
+    public virtual Path GetShortestPath ( Node start, Node end )
 	{
 		
 		// We don't accept null arguments
@@ -127,5 +138,9 @@ public class Graph : MonoBehaviour
 		path.Bake ();
 		return path;
 	}
-	
+
+    public void AddNode(Node node)
+    {
+        m_Nodes.Add(node);
+    }
 }

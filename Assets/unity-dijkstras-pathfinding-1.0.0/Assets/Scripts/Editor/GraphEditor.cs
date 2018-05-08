@@ -55,15 +55,15 @@ public class GraphEditor : Editor
 
 	public override void OnInspectorGUI ()
 	{
-		m_Graph.nodes.Clear ();
-		foreach ( Transform child in m_Graph.transform )
-		{
-			Node node = child.GetComponent<Node> ();
-			if ( node != null )
-			{
-				m_Graph.nodes.Add ( node );
-			}
-		}
+		//m_Graph.nodes.Clear ();
+		//foreach ( Transform child in m_Graph.transform )
+		//{
+		//	Node node = child.GetComponent<Node> ();
+		//	if ( node != null )
+		//	{
+		//		m_Graph.nodes.Add ( node );
+		//	}
+		//}
 		base.OnInspectorGUI ();
 		EditorGUILayout.Separator ();
 		m_From = ( Node )EditorGUILayout.ObjectField ( "From", m_From, typeof ( Node ), true );

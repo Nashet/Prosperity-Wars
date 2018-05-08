@@ -114,9 +114,9 @@ namespace Nashet.EconomicSimulation
 
             position = setProvinceCenter(meshStructure);
 
-
             setLabel();
 
+            
             //var graph = World.Get.GetComponent<AstarPath>();
 
 
@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
                     //var newNode = new Pathfinding.PointNode(AstarPath.active);
                     //newNode.gameObject = txtMeshGl;
                     //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
-                    
+
                 }
 
                 GameObject borderObject = new GameObject("Border with " + neighbor);
@@ -157,6 +157,7 @@ namespace Nashet.EconomicSimulation
 
                 bordersMeshes.Add(neighbor, meshRenderer);
             }
+            var node = gameObject.AddComponent<Node>();            
         }
 
         internal TerrainTypes getTerrain()
@@ -769,8 +770,8 @@ namespace Nashet.EconomicSimulation
 
             txtMeshTransform.position = getPosition();
 
-            
-            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();            
+
+            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
             txtMesh.text = ToString();
             txtMesh.color = Color.black; // Set the text's color to red

@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
@@ -22,13 +22,13 @@ namespace Nashet.EconomicSimulation
         internal static GameObject r3dTextPrefab;
 
         public static Country Player;
-        
+
         public static Random Random = new Random();
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
         public static List<Unit> selectedUnits = new List<Unit>();
-        
+
 
         private static int mapMode;
         private static bool surrended = devMode;
@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
-            
+
             if (!devMode)
                 makeHelloMessage();
             updateStatus("Finishing generation..");
@@ -88,6 +88,13 @@ namespace Nashet.EconomicSimulation
             r3dTextPrefab = GameObject.Find("3dProvinceNameText");
 
             World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            foreach (var item in World.GetAllProvinces())
+            {
+                var node = item.getRootGameObject().GetComponent<Node>();
+                node.Set(item, item.getAllNeighbors());
+                World.Get.graph.AddNode(node);
+            }
+
             World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
             Country.setUnityAPI();
             //seaProvinces = null;
@@ -144,7 +151,7 @@ namespace Nashet.EconomicSimulation
                 item.updateColor(item.getColorAccordingToMapMode());
         }
 
-        
+
 
         internal static bool isPlayerSurrended()
         {
@@ -211,7 +218,7 @@ namespace Nashet.EconomicSimulation
             Texture2D.Destroy(mapImage);
         }
 
-        
+
 
         private static void makeHelloMessage()
         {
