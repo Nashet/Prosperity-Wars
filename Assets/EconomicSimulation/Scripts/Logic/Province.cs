@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
 
             setLabel();
 
-            var graph = World.Get.GetComponent<AstarPath>();
+            //var graph = World.Get.GetComponent<AstarPath>();
 
 
             // setting neighbors
