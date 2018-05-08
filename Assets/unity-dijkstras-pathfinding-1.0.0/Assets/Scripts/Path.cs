@@ -73,11 +73,11 @@ public class Path
 
     internal Vector3[] GetVector3Nodes()
     {
-        Vector3[] array = new Vector3[nodes.Count];
+        Vector3[] array = new Vector3[nodes.Count+1];
         for (int i = 0; i < nodes.Count; i++)
         {
-            array[i] = nodes[i].Province.getPosition();
-            array[i].z = -2f;
+            array[i+1] = nodes[i].Province.getPosition();
+            array[i + 1].z = -2f;
         }
         return array;
     }

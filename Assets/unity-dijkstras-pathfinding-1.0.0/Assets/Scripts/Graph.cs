@@ -35,17 +35,18 @@ public class Graph : MonoBehaviour
 	/// <returns>The shortest path.</returns>
 	/// <param name="start">Start Node.</param>
 	/// <param name="end">End Node.</param>
-	public virtual Path GetShortestPath(Province start, Province end)
+	public virtual Path GetShortestPath(Province start, Province end, Predicate<Province> predicate = null)
     {
-        return GetShortestPath(start.getRootGameObject().GetComponent<Node>(), end.getRootGameObject().GetComponent<Node>());
+        return GetShortestPath(start.getRootGameObject().GetComponent<Node>(), end.getRootGameObject().GetComponent<Node>(), predicate);
     }
+
     /// <summary>
     /// Gets the shortest path from the starting Node to the ending Node.
     /// </summary>
     /// <returns>The shortest path.</returns>
     /// <param name="start">Start Node.</param>
     /// <param name="end">End Node.</param>
-    public virtual Path GetShortestPath(Node start, Node end)
+    public virtual Path GetShortestPath(Node start, Node end, Predicate<Province> predicate = null)
     {
 
         // We don't accept null arguments
@@ -53,15 +54,12 @@ public class Graph : MonoBehaviour
         {
             throw new ArgumentNullException();
         }
-
-        // The final path
-        Path path = new Path();
+                
 
         // If the start and end are same node, we can return the start node
         if (start == end)
-        {
-            path.nodes.Add(start);
-            return path;
+        {            
+            return null;
         }
 
         // The list of unvisited nodes
@@ -75,12 +73,19 @@ public class Graph : MonoBehaviour
 
         for (int i = 0; i < m_Nodes.Count; i++)
         {
-            Node node = m_Nodes[i];
-            unvisited.Add(node);
 
-            // Setting the node distance to Infinity
-            distances.Add(node, float.MaxValue);
+            Node node = m_Nodes[i];
+            if (predicate == null || predicate(node.Province))
+            {
+                unvisited.Add(node);
+
+                // Setting the node distance to Infinity
+                distances.Add(node, float.MaxValue);
+            }
         }
+
+        // The final path
+        Path path = new Path();
 
         // Set the starting Node distance to zero
         distances[start] = 0f;
@@ -93,7 +98,7 @@ public class Graph : MonoBehaviour
             // Getting the Node with smallest distance
             Node current = unvisited[0];
 
-            // Remove the current node from unvisisted list
+            // Remove the current node from unvisited list
             unvisited.Remove(current);
 
             // When the current node is equal to the end node, then we can break and return the path
@@ -112,7 +117,7 @@ public class Graph : MonoBehaviour
                 }
 
                 // Insert the source onto the final result
-                path.nodes.Insert(0, current);
+                //path.nodes.Insert(0, current);
                 break;
             }
 
@@ -120,22 +125,26 @@ public class Graph : MonoBehaviour
             for (int i = 0; i < current.connections.Count; i++)
             {
                 Node neighbor = current.connections[i];
-
-                // Getting the distance between the current node and the connection (neighbor)
-                float length = Vector3.Distance(current.transform.position, neighbor.transform.position);
-
-                // The distance from start node to this connection (neighbor) of current node
-                float alt = distances[current] + length;
-
-                // A shorter path to the connection (neighbor) has been found
-                if (alt < distances[neighbor])
+                if (predicate == null || predicate(neighbor.Province))
                 {
-                    distances[neighbor] = alt;
-                    previous[neighbor] = current;
+
+                    // Getting the distance between the current node and the connection (neighbor)
+                    float length = Vector3.Distance(current.transform.position, neighbor.transform.position);
+
+                    // The distance from start node to this connection (neighbor) of current node
+                    float alt = distances[current] + length;
+
+                    // A shorter path to the connection (neighbor) has been found
+                    if (alt < distances[neighbor])
+                    {
+                        distances[neighbor] = alt;
+                        previous[neighbor] = current;
+                    }
                 }
             }
         }
-        path.Bake();
+        if (path!=null)
+            path.Bake();
         return path;
     }
 

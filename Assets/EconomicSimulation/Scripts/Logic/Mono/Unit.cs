@@ -7,13 +7,13 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     [SerializeField]
-    private Province currentProvince;    
+    private Province currentProvince;
 
     [SerializeField]
     private int ID;
 
     [SerializeField]
-    private GameObject SelectionPart;
+    private GameObject selectionPart;
 
     [SerializeField]
     private Path path;
@@ -28,41 +28,62 @@ public class Unit : MonoBehaviour
     {
         m_Animator = GetComponent<Animator>();
         allUnits.Add(this);
-        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer = selectionPart.GetComponent<LineRenderer>();
+        selectionPart.SetActive(false);
+        World.DayPassed += DayPassed;
+    }
+
+    private void DayPassed(object sender, EventArgs e)
+    {
+        if (path != null)
+        {
+            if (path.nodes.Count > 0)
+            {
+                currentProvince = path.nodes[0].Province;
+                path.nodes.RemoveAt(0);
+                transform.position = currentProvince.getPosition();
+            }
+            if (path.nodes.Count==0)
+                path = null;
+            UpdateStatus();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (destination == null)
-        //{
-        //    m_Animator.SetFloat("Forward", 0f, 0.1f, Time.deltaTime);
-        //}
-        //else
-        //{
-        //    transform.LookAt(destination.transform, Vector3.back);
-        //    var m_ForwardAmount = 1f;
-        //    m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
-        //}
+
     }
 
+    /// <summary>
+    /// initializer
+    /// </summary>
     internal void SetPosition(Province province)
-    {        
-        transform.position = Game.selectedProvince.getPosition();
+    {
+        transform.position = province.getPosition();
         currentProvince = province;
     }
-
+    
     internal void SendTo(Province destinationProvince)
     {
-        path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince);
-
-        lineRenderer.positionCount = path.nodes.Count;
-        lineRenderer.SetPositions(path.GetVector3Nodes());
-
-        var destination = destinationProvince.getPosition();
-        this.transform.LookAt(destination, Vector3.back);
-        var m_ForwardAmount = 1f;
-        m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
+        path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince, x => x.Country == currentProvince.Country);
+        UpdateStatus();
+    }
+    private void UpdateStatus()
+    {
+        if (path == null)
+        {
+            lineRenderer.positionCount = 0;
+            m_Animator.SetFloat("Forward", 0f);
+        }
+        else
+        {
+            lineRenderer.positionCount = path.nodes.Count + 1;
+            lineRenderer.SetPositions(path.GetVector3Nodes());
+            lineRenderer.SetPosition(0, currentProvince.getPosition());
+            this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
+            m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
+        }
     }
     public void Simulate()
     { }
@@ -82,11 +103,11 @@ public class Unit : MonoBehaviour
     private void Select()
     {
         Game.selectedUnits.Add(this);
-        SelectionPart.SetActive(true);
+        selectionPart.SetActive(true);
     }
     private void DeSelect()
     {
         Game.selectedUnits.Remove(this);
-        SelectionPart.SetActive(false);
+        selectionPart.SetActive(false);
     }
 }

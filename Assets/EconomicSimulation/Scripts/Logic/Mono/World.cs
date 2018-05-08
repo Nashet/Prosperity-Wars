@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
@@ -475,6 +476,13 @@ namespace Nashet.EconomicSimulation
             // strongly before PrepareForNewTick
             World.market.simulatePriceChangeBasingOnLastTurnData();
 
+            // rise event on day passed
+            EventHandler handler = DayPassed;
+            if (handler != null)
+            {
+                handler(World.Get, null);
+            }
+
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
             calcBattles();
 
@@ -648,5 +656,6 @@ namespace Nashet.EconomicSimulation
                     country.AIThink();
             }
         }
+        public static event EventHandler DayPassed;
     }
 }
