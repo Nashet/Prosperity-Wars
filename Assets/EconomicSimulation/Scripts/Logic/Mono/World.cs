@@ -480,7 +480,7 @@ namespace Nashet.EconomicSimulation
             EventHandler handler = DayPassed;
             if (handler != null)
             {
-                handler(World.Get, null);
+                handler(World.Get, EventArgs.Empty);
             }
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
@@ -657,5 +657,6 @@ namespace Nashet.EconomicSimulation
             }
         }
         public static event EventHandler DayPassed;
+        
     }
 }

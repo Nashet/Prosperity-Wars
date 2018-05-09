@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nashet.UnityUIUtils
@@ -18,6 +19,8 @@ namespace Nashet.UnityUIUtils
 
         private Button button;
 
+        private static List<HotKey> AllHotKeys = new List<HotKey>();
+
         //private ToolTipHandler tooltip;
         private void Start()
         {
@@ -27,6 +30,9 @@ namespace Nashet.UnityUIUtils
                 var tooltip = GetComponent<ToolTipHandler>();
                 tooltip.AddText("\nHotkey is " + key + " button");
             }
+            var duplicateKey = AllHotKeys.Find(x => x.key == this.key);
+            if (duplicateKey != null)
+            AllHotKeys.Add(this);
         }
 
         // Update is called once per frame

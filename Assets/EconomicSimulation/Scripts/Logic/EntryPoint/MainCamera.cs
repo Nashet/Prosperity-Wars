@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
 
-        private Camera camera; // it's OK
+        
         private Game game;
         public static bool gameIsLoaded; // remove public after deletion of MyTable class
 
@@ -111,7 +111,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Game.setUnityAPI();
 
-                    camera = GetComponent<Camera>();
+                    
                     FocusOnProvince(Game.Player.Capital, false);
                     //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
                     //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
@@ -129,32 +129,11 @@ namespace Nashet.EconomicSimulation
                 RefreshMap();
 
                 if (Input.GetKeyDown(KeyCode.Return))
-                    closeToppestPanel();
-
-                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())//hovering over UI) 
-                {
-                    var collider = getRayCastMeshNumber();
-                    if (collider != null)
-                    {
-                        int provinceNumber = Province.FindByCollider(collider);
-                        if (provinceNumber > 0)
-                        {
-                            selectProvince(provinceNumber);
-                        }
-                        else
-                        {
-                            var unit = collider.transform.GetComponent<Unit>();
-                            if (unit != null)
-                                unit.OnClick();//                            
-                        }
-                    }
-                    else
-                        selectProvince(-1);
-                }
+                    closeToppestPanel();               
 
                 if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1))
                 {
-                    int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
+                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                     if (meshNumber > 0)
                         Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
                 }
@@ -185,7 +164,7 @@ namespace Nashet.EconomicSimulation
 
             if (Game.getMapMode() == 4)
             {
-                int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
+                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
                 if (hoveredProvince == null)
                     GetComponent<ToolTipHandler>().Hide();
@@ -209,7 +188,7 @@ namespace Nashet.EconomicSimulation
             }
             else if (Game.getMapMode() == 5)
             {
-                int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
+                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
                 if (hoveredProvince == null)
                     GetComponent<ToolTipHandler>().Hide();
@@ -226,7 +205,7 @@ namespace Nashet.EconomicSimulation
             }
             else if (Game.getMapMode() == 6) //prosperity wars
             {
-                int meshNumber = Province.FindByCollider(getRayCastMeshNumber());
+                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
                 if (hoveredProvince == null)
                     GetComponent<ToolTipHandler>().Hide();
@@ -239,20 +218,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        // remake it to return mesh collider, on which will be chosen object
-        private Collider getRayCastMeshNumber()
-        {
-            RaycastHit hit;
-
-            if (EventSystem.current.IsPointerOverGameObject())
-                return null;// -3; //hovering over UI
-            else
-            {
-                if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-                    return null;// -1;
-            }
-            return hit.collider;
-        }
+        
 
         internal static void refreshAllActive()
         {

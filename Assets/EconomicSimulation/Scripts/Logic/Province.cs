@@ -116,7 +116,7 @@ namespace Nashet.EconomicSimulation
 
             setLabel();
 
-            
+
             //var graph = World.Get.GetComponent<AstarPath>();
 
 
@@ -157,7 +157,7 @@ namespace Nashet.EconomicSimulation
 
                 bordersMeshes.Add(neighbor, meshRenderer);
             }
-            var node = gameObject.AddComponent<Node>();            
+            var node = gameObject.AddComponent<Node>();
         }
 
         internal TerrainTypes getTerrain()
@@ -326,9 +326,16 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Secedes province to Taker. Also kills old province owner if it was last province
         /// Call it only from Country.TakeProvince()
-        /// </summary>
+        /// </summary>        
         public void OnSecedeTo(Country taker, bool addModifier)
         {
+            // rise event on day passed
+            EventHandler<OwnerChangedEventArgs> handler = OwnerChanged;
+            if (handler != null)
+            {
+                handler(this, new OwnerChangedEventArgs { oldOwner = Country });
+            }
+
             Country oldCountry = Country;
             // transfer government owned factories
             // don't do government property revoking for now
@@ -1374,5 +1381,10 @@ namespace Nashet.EconomicSimulation
             else
                 return -1;
         }
-    }
+        public static event EventHandler<OwnerChangedEventArgs> OwnerChanged;
+        public class OwnerChangedEventArgs : EventArgs
+        {
+            public Country oldOwner { get; set; }
+        }
+    }    
 }

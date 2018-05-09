@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -31,6 +32,18 @@ public class Unit : MonoBehaviour
         lineRenderer = selectionPart.GetComponent<LineRenderer>();
         selectionPart.SetActive(false);
         World.DayPassed += DayPassed;
+        Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
+        gameObject.SetActive(true);
+    }
+
+    private void CheckPathOnProvinceOwnerChanged(object sender, Province.OwnerChangedEventArgs e)
+    {
+        if (e.oldOwner == currentProvince.Country && path != null && path.nodes.Any(x => x.Province == sender))//changed owner, probably, on our way
+        {
+            path = null;
+            UpdateStatus();
+        }
+
     }
 
     private void DayPassed(object sender, EventArgs e)
@@ -43,7 +56,7 @@ public class Unit : MonoBehaviour
                 path.nodes.RemoveAt(0);
                 transform.position = currentProvince.getPosition();
             }
-            if (path.nodes.Count==0)
+            if (path.nodes.Count == 0)
                 path = null;
             UpdateStatus();
         }
@@ -63,7 +76,7 @@ public class Unit : MonoBehaviour
         transform.position = province.getPosition();
         currentProvince = province;
     }
-    
+
     internal void SendTo(Province destinationProvince)
     {
         path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince, x => x.Country == currentProvince.Country);
@@ -93,19 +106,13 @@ public class Unit : MonoBehaviour
         return allUnits.Find(x => Int32.Parse(x.name) == meshNumber);
     }
 
-    internal void OnClick()
-    {
-        if (Game.selectedUnits.Contains(this))
-            DeSelect();
-        else
-            Select();
-    }
-    private void Select()
+    
+    public void Select()
     {
         Game.selectedUnits.Add(this);
         selectionPart.SetActive(true);
     }
-    private void DeSelect()
+    public void DeSelect()
     {
         Game.selectedUnits.Remove(this);
         selectionPart.SetActive(false);
