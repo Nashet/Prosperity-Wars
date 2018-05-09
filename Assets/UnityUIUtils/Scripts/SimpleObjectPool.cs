@@ -55,7 +55,7 @@ namespace Nashet.UnityUIUtils
             // otherwise, create a new instance
             else
             {
-                spawnedGameObject = (GameObject)Instantiate(pooledPrefab);
+                spawnedGameObject = Instantiate(pooledPrefab);
 
                 // add the PooledObject component to the prefab so we know it came from this pool
                 PooledObject pooledObject = spawnedGameObject.AddComponent<PooledObject>();

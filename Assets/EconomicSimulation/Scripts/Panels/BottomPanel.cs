@@ -84,16 +84,10 @@ namespace Nashet.EconomicSimulation
         {
             //gameObject = new GameObject(string.Format("{0}", getID()),);
 
-            var unitObject = GameObject.Instantiate(World.Get.UnitPrefab, World.Get.transform);
+            var unitObject = Instantiate(World.Get.UnitPrefab, World.Get.transform);
            
             unitObject.GetComponent<Unit>().SetPosition(Game.selectedProvince);
             unitObject.name = (World.GetAllProvinces().Count() + Random.Range(0, 2000)).ToString();
-
-            MeshCollider meshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-            //meshCollider.sharedMesh = unitObject.GetComponent<Mesh>();
-            // in case you want the new gameobject to be a child
-            // of the gameobject that your script is attached to
-            //gameObject.transform.parent = World.Get.transform;
         }
     }
 }

@@ -114,7 +114,7 @@ namespace Nashet.UnityUIUtils
             if (messagePanelPrefab == null)
                 messagePanelPrefab = Resources.Load("Prefabs\\MessagePanel", typeof(GameObject)) as GameObject;
             Message message = Message.PopAndDeleteMessage();
-            GameObject newObject = (GameObject)Instantiate(messagePanelPrefab);
+            GameObject newObject = Instantiate(messagePanelPrefab);
             newObject.transform.SetParent(canvas.transform, true);
 
             MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();

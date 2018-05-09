@@ -5,6 +5,7 @@ using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -132,7 +133,7 @@ namespace Nashet.EconomicSimulation
         /// Don't call it directly, only from World.cs
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
-        {
+        {            
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(GetAllInvestmentProjects2);
             SetName(name);            
             foreach (var each in Invention.getAll())
@@ -278,6 +279,7 @@ namespace Nashet.EconomicSimulation
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
                 country.ownedProvinces[0].setBorderMaterials(false);
                 country.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
+                country.Flag = Nashet.Flag.Generate(128, 128);
             }
             World.UncolonizedLand.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
         }
@@ -799,6 +801,8 @@ namespace Nashet.EconomicSimulation
                     return name + " " + government.getPrefix();
             }
         }
+
+        public Texture2D Flag { get; private set; }
 
         public override string ToString()
         {

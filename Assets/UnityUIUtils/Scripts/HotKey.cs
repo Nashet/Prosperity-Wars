@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace Nashet.UnityUIUtils
 {
+
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(ToolTipHandler))]
     public class HotKey : MonoBehaviour
@@ -32,6 +33,7 @@ namespace Nashet.UnityUIUtils
             }
             var duplicateKey = AllHotKeys.Find(x => x.key == this.key);
             if (duplicateKey != null)
+                Debug.LogError("We got shortcut duplication on " + this.key + " : " + this.button + " and " + duplicateKey.button);
             AllHotKeys.Add(this);
         }
 

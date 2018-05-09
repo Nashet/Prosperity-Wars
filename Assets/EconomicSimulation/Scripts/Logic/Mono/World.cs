@@ -25,14 +25,17 @@ namespace Nashet.EconomicSimulation
         internal static List<BattleResult> allBattles = new List<BattleResult>();
 
         public static Market market;
+        public Graph graph;
+
         public GameObject UnitPrefab;
+        public GameObject UnitPanelPrefab;
+        public Transform WorldSpaceCanvas;
 
         public static World Get
         {
             get { return thisObject; }
         }
 
-        public Graph graph;
         static World()
         {
             //Product.init(); // to avoid crash based on initialization order
