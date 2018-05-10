@@ -1,4 +1,5 @@
 ﻿using Nashet.EconomicSimulation;
+using Nashet.UnityUIUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Nashet.EconomicSimulation
         private Path path;
 
         [SerializeField]
-        private float unitPanelYOffset=-2f;
+        private float unitPanelYOffset = -2f;
 
         //[SerializeField]
         private LineRenderer lineRenderer;
@@ -50,7 +51,7 @@ namespace Nashet.EconomicSimulation
             var panelPosition = gameObject.transform.position;
             panelPosition.y += unitPanelYOffset;
             panelPosition.z = -1f;
-            unitPanelObject.transform.position = panelPosition;            
+            unitPanelObject.transform.position = panelPosition;
         }
 
         private void CheckPathOnProvinceOwnerChanged(object sender, Province.OwnerChangedEventArgs e)
@@ -59,6 +60,7 @@ namespace Nashet.EconomicSimulation
             {
                 path = null;
                 UpdateStatus();
+                Message.NewMessage(this + " arrived!", "Commander, " + this + " stopped at " + currentProvince + " province", "Fine", false, currentProvince.getPosition());
             }
 
         }
@@ -73,17 +75,14 @@ namespace Nashet.EconomicSimulation
                     path.nodes.RemoveAt(0);
                     transform.position = currentProvince.getPosition();
                     SetUnitPanel();
+                    if (path.nodes.Count == 0)
+                    {
+                        path = null;
+                        Message.NewMessage(this + " arrived!", "Commander, "+this + " arrived to " + currentProvince+ " province", "Fine", false, currentProvince.getPosition());
+                    }
+                    UpdateStatus();
                 }
-                if (path.nodes.Count == 0)
-                    path = null;
-                UpdateStatus();
             }
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
 
         /// <summary>
@@ -134,6 +133,10 @@ namespace Nashet.EconomicSimulation
         {
             Game.selectedUnits.Remove(this);
             selectionPart.SetActive(false);
+        }
+        public override string ToString()
+        {
+            return "Army";
         }
     }
 }

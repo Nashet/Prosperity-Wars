@@ -633,17 +633,17 @@ namespace Nashet.EconomicSimulation
 
         internal void setCapitalTextMesh(Province province)
         {
-            Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
+            Transform txtMeshTransform = GameObject.Instantiate(Game.r3DCountryTextPrefab).transform;
             txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
 
             Vector3 capitalTextPosition = province.getPosition();
             capitalTextPosition.y += 2f;
-            capitalTextPosition.z -= 5f;
+            //capitalTextPosition.z -= 5f;
             txtMeshTransform.position = capitalTextPosition;
 
             meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
             meshCapitalText.text = FullName;
-            meshCapitalText.fontSize *= 2;
+           // meshCapitalText.fontSize *= 2;
             if (this == Game.Player)
             {
                 meshCapitalText.color = Color.blue;

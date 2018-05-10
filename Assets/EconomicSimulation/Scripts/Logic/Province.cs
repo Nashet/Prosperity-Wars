@@ -104,8 +104,9 @@ namespace Nashet.EconomicSimulation
             landMesh.RecalculateNormals();
             landMesh.RecalculateBounds();
             landMesh.name = getID().ToString();
+            //meshRenderer.material = Material.fI
 
-            meshRenderer.material.shader = Shader.Find("Standard");
+            meshRenderer.material.shader = Shader.Find("Standard");// Province");
 
             meshRenderer.material.color = color;
 
@@ -768,20 +769,26 @@ namespace Nashet.EconomicSimulation
 
             // Add 4 LOD levels
             LOD[] lods = new LOD[1];
-            txtMeshGl = GameObject.Instantiate(Game.r3dTextPrefab);
+            txtMeshGl = GameObject.Instantiate(Game.r3DProvinceTextPrefab);
             Transform txtMeshTransform = txtMeshGl.transform;
             txtMeshTransform.SetParent(gameObject.transform, false);
             Renderer[] renderers = new Renderer[1];
             renderers[0] = txtMeshTransform.GetComponent<Renderer>();
             lods[0] = new LOD(0.25F, renderers);
 
-            txtMeshTransform.position = getPosition();
-
+            var position = getPosition(); 
+            position.z -= 0.001f;
+            txtMeshTransform.position = position;
+            
 
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
             txtMesh.text = ToString();
             txtMesh.color = Color.black; // Set the text's color to red
+
+            //renderers[0].material.shader = Shader.Find("3DText");
+
+
             group.SetLODs(lods);
 #if UNITY_WEBGL
             group.size = 20; //was 30 for webgl

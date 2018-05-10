@@ -19,7 +19,8 @@ namespace Nashet.EconomicSimulation
 
         private static readonly bool readMapFormFile = false;
         private static MyTexture mapTexture;
-        internal static GameObject r3dTextPrefab;
+        internal static GameObject r3DProvinceTextPrefab;
+        internal static GameObject r3DCountryTextPrefab;
 
         public static Country Player;
 
@@ -85,7 +86,8 @@ namespace Nashet.EconomicSimulation
             impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
 
             //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-            r3dTextPrefab = GameObject.Find("3dProvinceNameText");
+            r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
+            r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
             World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
             foreach (var item in World.GetAllProvinces())
