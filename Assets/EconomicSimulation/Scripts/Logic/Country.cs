@@ -275,7 +275,7 @@ namespace Nashet.EconomicSimulation
                     country.moveCapitalTo(country.ownedProvinces[0]);
                 //if (capital != null) // not null-country
 
-                country.borderMaterial = new Material(Game.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
+                country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
                 country.ownedProvinces[0].setBorderMaterials(false);
                 country.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
@@ -633,7 +633,7 @@ namespace Nashet.EconomicSimulation
 
         internal void setCapitalTextMesh(Province province)
         {
-            Transform txtMeshTransform = GameObject.Instantiate(Game.r3DCountryTextPrefab).transform;
+            Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
             txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
 
             Vector3 capitalTextPosition = province.getPosition();

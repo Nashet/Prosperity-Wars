@@ -27,9 +27,7 @@ namespace Nashet.EconomicSimulation
         public static Market market;
         public Graph graph;
 
-        public GameObject UnitPrefab;
-        public GameObject UnitPanelPrefab;
-        public Transform WorldSpaceCanvas;
+        
 
         public static World Get
         {

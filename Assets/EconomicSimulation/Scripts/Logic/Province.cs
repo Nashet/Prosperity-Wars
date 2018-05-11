@@ -153,7 +153,7 @@ namespace Nashet.EconomicSimulation
                 borderMesh.uv = border.Value.getUVmap().ToArray();
                 borderMesh.RecalculateNormals();
                 borderMesh.RecalculateBounds();
-                meshRenderer.material = Game.defaultProvinceBorderMaterial;
+                meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
                 borderMesh.name = "Border with " + neighbor;
 
                 bordersMeshes.Add(neighbor, meshRenderer);
@@ -191,28 +191,28 @@ namespace Nashet.EconomicSimulation
                     if (Country == border.Key.Country)
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
-                            border.Value.material = Game.defaultProvinceBorderMaterial;
+                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
                         if (border.Key != Game.selectedProvince || reWriteSelection)
-                            border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                     }
                     else
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
                             if (Country == World.UncolonizedLand)
-                                border.Value.material = Game.defaultProvinceBorderMaterial;
+                                border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
                             else
                                 border.Value.material = Country.getBorderMaterial();
                         if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.Country != null)
                             if (border.Key.Country == World.UncolonizedLand)
-                                border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                                border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                             else
                                 border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
                     }
                 }
                 else
                 {
-                    border.Value.material = Game.impassableBorder;
-                    border.Key.bordersMeshes[this].material = Game.impassableBorder;
+                    border.Value.material = LinksManager.Get.impassableBorder;
+                    border.Key.bordersMeshes[this].material = LinksManager.Get.impassableBorder;
                 }
             }
 
@@ -769,7 +769,7 @@ namespace Nashet.EconomicSimulation
 
             // Add 4 LOD levels
             LOD[] lods = new LOD[1];
-            txtMeshGl = GameObject.Instantiate(Game.r3DProvinceTextPrefab);
+            txtMeshGl = GameObject.Instantiate(LinksManager.Get.r3DProvinceTextPrefab);
             Transform txtMeshTransform = txtMeshGl.transform;
             txtMeshTransform.SetParent(gameObject.transform, false);
             Renderer[] renderers = new Renderer[1];
@@ -778,8 +778,7 @@ namespace Nashet.EconomicSimulation
 
             var position = getPosition(); 
             position.z -= 0.001f;
-            txtMeshTransform.position = position;
-            
+            txtMeshTransform.position = position;            
 
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 

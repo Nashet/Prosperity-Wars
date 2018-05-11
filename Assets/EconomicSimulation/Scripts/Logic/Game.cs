@@ -13,14 +13,13 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = true;
+        public static bool devMode = false;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
         private static readonly bool readMapFormFile = false;
         private static MyTexture mapTexture;
-        internal static GameObject r3DProvinceTextPrefab;
-        internal static GameObject r3DCountryTextPrefab;
+        
 
         public static Country Player;
 
@@ -34,8 +33,7 @@ namespace Nashet.EconomicSimulation
         private static int mapMode;
         private static bool surrended = devMode;
 
-        internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
-            impassableBorder;
+        
 
         private static VoxelGrid grid;
         private readonly Rect mapBorders;
@@ -74,20 +72,20 @@ namespace Nashet.EconomicSimulation
         {
             // Assigns a material named "Assets/Resources/..." to the object.
             //defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-            defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
+            //defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
 
-            //defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-            defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+            ////defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+            //defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
 
-            //selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
-            selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+            ////selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
+            //selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
 
-            //impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
-            impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
+            ////impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
+            //impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
 
             //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-            r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
-            r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
+            //r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
+            //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
             World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
             foreach (var item in World.GetAllProvinces())

@@ -41,7 +41,7 @@ namespace Nashet.EconomicSimulation
             World.DayPassed += DayPassed;
             Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
             gameObject.SetActive(true);
-            unitPanelObject = Instantiate(World.Get.UnitPanelPrefab, World.Get.WorldSpaceCanvas);
+            unitPanelObject = Instantiate(LinksManager.Get.UnitPanelPrefab, LinksManager.Get.WorldSpaceCanvas);
             unitPanel = unitPanelObject.GetComponent<UnitPanel>();
             unitPanel.Set(currentProvince.Country.Flag);
             SetUnitPanel();

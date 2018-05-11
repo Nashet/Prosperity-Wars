@@ -249,7 +249,7 @@ namespace Nashet.EconomicSimulation
                 Game.selectedProvince = null;
                 if (lastSelected != null)
                 {
-                    lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                    lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
                     lastSelected.setBorderMaterials(true);
                 }
                 if (provincePanel.isActiveAndEnabled)
@@ -259,11 +259,11 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.selectedProvince != null)//deal with previous selection
                 {
-                    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                    Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
                     Game.selectedProvince.setBorderMaterials(true);
                 }
                 Game.selectedProvince = World.FindProvince(number);
-                Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
+                Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
