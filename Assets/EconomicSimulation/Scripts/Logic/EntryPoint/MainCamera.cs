@@ -9,8 +9,7 @@ namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
     {
-        [SerializeField]
-        private Canvas canvas;
+
 
         [SerializeField]
         private float xzCameraSpeed = 2f;
@@ -18,8 +17,6 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private float yCameraSpeed = -55f;
 
-        [SerializeField]
-        private World world;
 
         private float focusHeight;
 
@@ -42,20 +39,20 @@ namespace Nashet.EconomicSimulation
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
 
-        
+
         private Game game;
-        public static bool gameIsLoaded; // remove public after deletion of MyTable class
+        private static bool gameLoadingIsFinished;
 
         //[SerializeField]
         /// <summary>Limits simulation speed (in seconds)</summary>
         private readonly float simulationSpeedLimit = 0.10f;
 
         private float previousFrameTime;
-        public static MainCamera Instance;
+        public static MainCamera Get;
 
         private void Start()
         {
-            Instance = this;
+            Get = this;
             focusHeight = transform.position.z;
         }
 
@@ -82,54 +79,60 @@ namespace Nashet.EconomicSimulation
 
         private void FixedUpdate()
         {
-            if (gameIsLoaded)
+            if (gameLoadingIsFinished)
             {
                 Move(0f, Input.GetAxis("Mouse ScrollWheel"), 0f);
             }
         }
 
+        private void LoadGame()
+        {
+            Application.runInBackground = true;
+            game = new Game();
+#if UNITY_WEBGL
+            game.InitializeNonUnityData(); // non multi-threading
+#else
+            game.Start(); //initialize is here
+#endif
+        }
+        private void OnGameLoaded()
+        {
+            Game.setUnityAPI();
+
+
+            FocusOnProvince(Game.Player.Capital, false);
+            loadingPanel.Hide();
+            topPanel.Show();
+            bottomPanel.Show();
+            gameLoadingIsFinished = true;
+        }
         // Update is called once per frame
         private void Update()
         {
             //starts loading thread
             if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
             {
-                Application.runInBackground = true;
-                game = new Game();
-#if UNITY_WEBGL
-                game.InitializeNonUnityData(); // non multi-threading
-#else
-                game.Start(); //initialize is here
-#endif
+                LoadGame();
             }
-            if (game != null)
+            else
 #if UNITY_WEBGL
-                if (!gameIsLoaded)  // non multi-threading
+            if (!gameLoadingIsFinished)  // non multi-threading
 #else
-                if (game.IsDone && !gameIsLoaded)
+            if (game.IsDone && !gameLoadingIsFinished)
 #endif
-                {
-                    Game.setUnityAPI();
-
-                    
-                    FocusOnProvince(Game.Player.Capital, false);
-                    //gameObject.transform.position = new Vector3(Game.Player.Capital.getPosition().x,
-                    //    Game.Player.Capital.getPosition().y, gameObject.transform.position.z);
-                    loadingPanel.Hide();
-                    topPanel.Show();
-                    bottomPanel.Show();
-                    gameIsLoaded = true;
-                }
+            {
+                OnGameLoaded();
+            }
 #if !UNITY_WEBGL
                 else // multi-threading
                     loadingPanel.updateStatus(game.getStatus());
 #endif
-            if (gameIsLoaded)
+            if (gameLoadingIsFinished)
             {
                 RefreshMap();
 
                 if (Input.GetKeyDown(KeyCode.Return))
-                    closeToppestPanel();               
+                    closeToppestPanel();
 
                 if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1))
                 {
@@ -138,7 +141,7 @@ namespace Nashet.EconomicSimulation
                         Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
                 }
 
-                if (world.IsRunning && !MessagePanel.IsOpenAny())
+                if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
                     if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
@@ -149,7 +152,7 @@ namespace Nashet.EconomicSimulation
                 }
 
                 if (Message.HasUnshownMessages())
-                    MessagePanel.showMessageBox(canvas, this);
+                    MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
                 Game.previoslySelectedProvince = Game.selectedProvince;
             }
         }
@@ -218,7 +221,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        
+
 
         internal static void refreshAllActive()
         {
@@ -275,7 +278,7 @@ namespace Nashet.EconomicSimulation
         private void closeToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
-            var lastChild = canvas.transform.GetChild(canvas.transform.childCount - 1);
+            var lastChild = LinksManager.Get.CameraLayerCanvas.transform.GetChild(LinksManager.Get.CameraLayerCanvas.transform.childCount - 1);
             var panel = lastChild.GetComponent<DragPanel>();
             if (panel != null)
                 panel.Hide();

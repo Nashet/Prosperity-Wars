@@ -63,7 +63,7 @@ namespace Nashet.UnityUIUtils
         public void Awake()
         {
             Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas != null)
+            //if (canvas != null)
             {
                 canvasRectTransform = canvas.transform as RectTransform;
                 panelRectTransform = transform as RectTransform;

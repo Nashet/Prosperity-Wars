@@ -1129,7 +1129,7 @@ namespace Nashet.EconomicSimulation
         public void OnClicked()
         {
             //MainCamera.selectProvince(this.getID());
-            MainCamera.Instance.FocusOnProvince(this, true);
+            MainCamera.Get.FocusOnProvince(this, true);
         }
 
         public IEnumerable<Owners> GetSales()

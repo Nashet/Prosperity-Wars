@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         private static readonly List<Culture> allCultures = new List<Culture>();
 
         internal static readonly Country UncolonizedLand;
-        private static World thisObject;
+        
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
@@ -27,11 +27,15 @@ namespace Nashet.EconomicSimulation
         public static Market market;
         public Graph graph;
 
-        
 
+        private static World thisObject;
         public static World Get
         {
             get { return thisObject; }
+        }
+        private void Start()
+        {
+            thisObject = this;
         }
 
         static World()
@@ -45,12 +49,7 @@ namespace Nashet.EconomicSimulation
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.setValue(Government.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
-        }
-
-        private void Start()
-        {
-            thisObject = this;
-        }
+        }       
 
         public static IEnumerable<Country> getAllExistingCountries()
         {

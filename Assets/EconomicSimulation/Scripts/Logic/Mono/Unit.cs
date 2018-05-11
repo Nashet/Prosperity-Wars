@@ -46,6 +46,7 @@ namespace Nashet.EconomicSimulation
             unitPanel.Set(currentProvince.Country.Flag);
             SetUnitPanel();
         }
+
         private void SetUnitPanel()
         {
             var panelPosition = gameObject.transform.position;
@@ -99,6 +100,7 @@ namespace Nashet.EconomicSimulation
             path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince, x => x.Country == currentProvince.Country);
             UpdateStatus();
         }
+
         private void UpdateStatus()
         {
             if (path == null)
@@ -128,12 +130,17 @@ namespace Nashet.EconomicSimulation
         {
             Game.selectedUnits.Add(this);
             selectionPart.SetActive(true);
+            
+            ArmiesSelectionWindow.Get.Show();
         }
+
         public void DeSelect()
         {
             Game.selectedUnits.Remove(this);
             selectionPart.SetActive(false);
+            ArmiesSelectionWindow.Get.Refresh();
         }
+
         public override string ToString()
         {
             return "Army";
