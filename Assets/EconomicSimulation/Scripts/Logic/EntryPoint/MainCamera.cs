@@ -129,17 +129,7 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameLoadingIsFinished)
             {
-                RefreshMap();
-
-                if (Input.GetKeyDown(KeyCode.Return))
-                    closeToppestPanel();
-
-                if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1))
-                {
-                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
-                    if (meshNumber > 0)
-                        Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
-                }
+                RefreshMap();                
 
                 if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
@@ -153,7 +143,7 @@ namespace Nashet.EconomicSimulation
 
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
-                Game.previoslySelectedProvince = Game.selectedProvince;
+                
             }
         }
 
@@ -275,7 +265,7 @@ namespace Nashet.EconomicSimulation
                 buildPanel.Refresh();
         }
 
-        private void closeToppestPanel()
+        public void closeToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
             var lastChild = LinksManager.Get.CameraLayerCanvas.transform.GetChild(LinksManager.Get.CameraLayerCanvas.transform.childCount - 1);

@@ -128,10 +128,12 @@ namespace Nashet.EconomicSimulation
 
         public void Select()
         {
-            Game.selectedUnits.Add(this);
-            selectionPart.SetActive(true);
-            
-            ArmiesSelectionWindow.Get.Show();
+            if (!Game.selectedUnits.Contains(this))
+            {
+                Game.selectedUnits.Add(this);
+                selectionPart.SetActive(true);
+                ArmiesSelectionWindow.Get.Show();
+            }            
         }
 
         public void DeSelect()

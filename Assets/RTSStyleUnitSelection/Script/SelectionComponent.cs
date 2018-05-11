@@ -4,9 +4,12 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Nashet.EconomicSimulation;
+
 using Nashet.Utils;
 using UnityEngine.EventSystems;
+//namespace Nashet.EconomicSimulation
+//{
+using Nashet.EconomicSimulation;
 
 public class SelectionComponent : MonoBehaviour
 {
@@ -15,6 +18,8 @@ public class SelectionComponent : MonoBehaviour
 
     //public GameObject selectionCirclePrefab;
     private static Camera camera; // it's OK
+    [SerializeField]
+    private KeyCode AdditionKey;
 
     private void Start()
     {
@@ -23,46 +28,34 @@ public class SelectionComponent : MonoBehaviour
 
     void Update()
     {
-        // If we press the left mouse button, begin selection and remember the location of the mouse
-        if (Input.GetMouseButtonDown(0))
-        {
-            isSelecting = true;
-            mousePosition1 = Input.mousePosition;
-
-            //foreach (var selectableObject in FindObjectsOfType<Unit>())
-            //{
-            //    if (selectableObject.selectionCircle != null)
-            //    {
-            //        Destroy(selectableObject.selectionCircle.gameObject);
-            //        selectableObject.selectionCircle = null;
-            //    }
-            //}
-        }
-        // If we let go of the left mouse button, end selection
         if (Input.GetMouseButtonUp(0))
         {
-            if (mousePosition1 != Input.mousePosition)
+            if (!EventSystem.current.IsPointerOverGameObject())//!hovering over UI) 
             {
-                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
-                foreach (var selectableObject in FindObjectsOfType<Unit>())
-                {
-                    if (IsWithinSelectionBounds(selectableObject.gameObject))
-                    {
-                        selectableObject.GetComponent<Unit>().Select();
-                    }
-                }
-
-                //var sb = new StringBuilder();
-                //sb.AppendLine(string.Format("Selecting [{0}] Units", selectedObjects.Count));
-                //foreach (var selectedObject in selectedObjects)
-                //    sb.AppendLine("-> " + selectedObject.gameObject.name);
-                //Debug.Log(sb.ToString());
-
-
+                SelectUnitOrProvince();
             }
-            isSelecting = false;
+            if (isSelecting)
+                EndFrameSelection();// If we let go of the left mouse button, end selection
+        }
+        else
+        {
+            // If we press the left mouse button, begin selection and remember the location of the mouse
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+            {
+                StartFrameSelection();
+            }
         }
 
+        if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1)) // MOUSE RIGHT BUTTON
+        {
+            int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+            if (meshNumber > 0) // send armies to another province
+                Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
+        }
+        if (Input.GetKeyDown(KeyCode.Return)) // enter key
+            MainCamera.Get.closeToppestPanel();
+
+        Game.previoslySelectedProvince = Game.selectedProvince;
         // Highlight all objects within the selection box
         //if (isSelecting)
         //{
@@ -87,48 +80,79 @@ public class SelectionComponent : MonoBehaviour
         //        }
         //    }
         //}
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())//hovering over UI) 
+    }
+
+    private void StartFrameSelection()
+    {
+        isSelecting = true;
+        mousePosition1 = Input.mousePosition;
+    }
+
+    private void EndFrameSelection()
+    {
+        if (mousePosition1 != Input.mousePosition)
         {
-            var collider = getRayCastMeshNumber();
-            if (collider != null)
+            if (!Input.GetKey(AdditionKey))
+                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+            foreach (var selectableObject in FindObjectsOfType<Unit>())
             {
-                int provinceNumber = Province.FindByCollider(collider);
-                if (provinceNumber > 0)
+                if (IsWithinSelectionBounds(selectableObject.gameObject))
                 {
-                    MainCamera.selectProvince(provinceNumber);
+                    selectableObject.GetComponent<Unit>().Select();
+                }
+            }
+
+            //var sb = new StringBuilder();
+            //sb.AppendLine(string.Format("Selecting [{0}] Units", selectedObjects.Count));
+            //foreach (var selectedObject in selectedObjects)
+            //    sb.AppendLine("-> " + selectedObject.gameObject.name);
+            //Debug.Log(sb.ToString());
+        }
+        isSelecting = false;
+    }
+
+    private void SelectUnitOrProvince()
+    {
+        var collider = getRayCastMeshNumber();
+        if (collider != null)
+        {
+            int provinceNumber = Province.FindByCollider(collider);
+            if (provinceNumber > 0)
+            {
+                MainCamera.selectProvince(provinceNumber);
+                if (!Input.GetKey(AdditionKey)) // don't de select units if shift is pressed
                     Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
-                }
-                else
-                {
-                    var unit = collider.transform.GetComponent<Unit>();
-                    if (unit != null)
-                    {
-                        if (Input.GetKey(KeyCode.LeftShift))
-                        {
-                            if (Game.selectedUnits.Contains(unit))
-                                unit.DeSelect();
-                            else
-                                unit.Select();
-                        }
-                        else
-                        {
-                            if (Game.selectedUnits.Count > 0)
-                            {
-                                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
-                            }
-                            unit.Select();
-                        }
-                    }
-                }
             }
             else
             {
-                MainCamera.selectProvince(-1);
-                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+                var unit = collider.transform.GetComponent<Unit>();
+                if (unit != null)
+                {
+                    if (Input.GetKey(AdditionKey))
+                    {
+                        if (Game.selectedUnits.Contains(unit))
+                            unit.DeSelect();
+                        else
+                            unit.Select();
+                    }
+                    else
+                    {
+                        if (Game.selectedUnits.Count > 0)
+                        {
+                            Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+                        }
+                        unit.Select();
+                    }
+                }
             }
         }
+        else
+        {
+            MainCamera.selectProvince(-1);
+            if (!Input.GetKey(AdditionKey))
+                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+        }
     }
-
     public bool IsWithinSelectionBounds(GameObject gameObject)
     {
         if (!isSelecting)
@@ -170,3 +194,4 @@ public class SelectionComponent : MonoBehaviour
         return hit.collider;
     }
 }
+//}
