@@ -31,6 +31,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 /[Rr]eleases/
+/[Ss]creens/
 /[Rr]eserv/
 
 # my edits

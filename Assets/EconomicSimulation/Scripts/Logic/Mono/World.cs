@@ -333,7 +333,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public static void Create(MyTexture map, bool isMapGenerated)
         {
-            //FactoryType.getResourceTypes(); // FORCING FactoryType to initializate?
+            //FactoryType.getResourceTypes(); // FORCING FactoryType to initialize?
 
             // remake it on messages?
             //Game.updateStatus("Reading provinces..");

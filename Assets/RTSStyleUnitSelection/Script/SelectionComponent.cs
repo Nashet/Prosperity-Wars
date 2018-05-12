@@ -48,9 +48,18 @@ public class SelectionComponent : MonoBehaviour
 
         if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1)) // MOUSE RIGHT BUTTON
         {
-            int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+            var collider = SelectionComponent.getRayCastMeshNumber();
+            int meshNumber = Province.FindByCollider(collider);
             if (meshNumber > 0) // send armies to another province
                 Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
+            else // better do here sort of collider layer, hitting provinces only
+            {
+                var unit = collider.transform.GetComponent<Unit>();
+                if (unit != null)
+                {
+                    Game.selectedUnits.PerformAction(x => x.SendTo(unit.currentProvince));
+                }
+            }
         }
         if (Input.GetKeyDown(KeyCode.Return)) // enter key
             MainCamera.Get.closeToppestPanel();

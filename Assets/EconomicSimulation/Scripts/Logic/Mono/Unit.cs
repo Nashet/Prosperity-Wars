@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     public class Unit : MonoBehaviour
     {
         [SerializeField]
-        private Province currentProvince;
+        public Province currentProvince;
 
         [SerializeField]
         private int ID;
@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
 
         internal void SendTo(Province destinationProvince)
         {
-            path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince, x => x.Country == currentProvince.Country);
+            path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince, x => x.Country == currentProvince.Country || x.Country == World.UncolonizedLand);
             UpdateStatus();
         }
 
@@ -133,7 +133,7 @@ namespace Nashet.EconomicSimulation
                 Game.selectedUnits.Add(this);
                 selectionPart.SetActive(true);
                 ArmiesSelectionWindow.Get.Show();
-            }            
+            }
         }
 
         public void DeSelect()
