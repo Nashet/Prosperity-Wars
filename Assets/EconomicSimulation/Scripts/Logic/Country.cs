@@ -5,6 +5,7 @@ using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -132,7 +133,7 @@ namespace Nashet.EconomicSimulation
         /// Don't call it directly, only from World.cs
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
-        {
+        {            
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(GetAllInvestmentProjects2);
             SetName(name);            
             foreach (var each in Invention.getAll())
@@ -274,10 +275,11 @@ namespace Nashet.EconomicSimulation
                     country.moveCapitalTo(country.ownedProvinces[0]);
                 //if (capital != null) // not null-country
 
-                country.borderMaterial = new Material(Game.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
+                country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
                 country.ownedProvinces[0].setBorderMaterials(false);
                 country.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
+                country.Flag = Nashet.Flag.Generate(128, 128);
             }
             World.UncolonizedLand.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
         }
@@ -631,17 +633,17 @@ namespace Nashet.EconomicSimulation
 
         internal void setCapitalTextMesh(Province province)
         {
-            Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
+            Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
             txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
 
             Vector3 capitalTextPosition = province.getPosition();
             capitalTextPosition.y += 2f;
-            capitalTextPosition.z -= 5f;
+            //capitalTextPosition.z -= 5f;
             txtMeshTransform.position = capitalTextPosition;
 
             meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
             meshCapitalText.text = FullName;
-            meshCapitalText.fontSize *= 2;
+           // meshCapitalText.fontSize *= 2;
             if (this == Game.Player)
             {
                 meshCapitalText.color = Color.blue;
@@ -799,6 +801,8 @@ namespace Nashet.EconomicSimulation
                     return name + " " + government.getPrefix();
             }
         }
+
+        public Texture2D Flag { get; private set; }
 
         public override string ToString()
         {

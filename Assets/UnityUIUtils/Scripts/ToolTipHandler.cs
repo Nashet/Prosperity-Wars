@@ -25,15 +25,10 @@ namespace Nashet.UnityUIUtils
         /// Need that to use in descendant
         /// </summary>
         protected void Start()
-        {
-            //var foundParent = gameObject.AllParents().FirstOrDefault(x => x.HasComponent<Hideable>());
-            //if (foundParent != null)
-            //{
-            //    var ownerWindow = foundParent.GetComponent<Hideable>();
+        {            
             var ownerWindow = GetComponentInParent<Hideable>();
             if (ownerWindow != null)
-                ownerWindow.Hidden += OnHiddenOwner;
-            //}
+                ownerWindow.Hidden += OnHiddenOwner;         
         }
 
         private void OnHiddenOwner(Hideable eventData)

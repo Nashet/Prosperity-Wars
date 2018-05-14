@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName, INameable
+    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
     {
         public enum TerrainTypes
         {
@@ -35,6 +35,7 @@ namespace Nashet.EconomicSimulation
             }
         , true);
 
+
         public static readonly Predicate<Province> All = x => true;
 
         private Province here
@@ -42,6 +43,7 @@ namespace Nashet.EconomicSimulation
             get { return this; }
         }
 
+        GameObject txtMeshGl;
         private readonly int ID;
         private readonly Color colorID;
 
@@ -54,7 +56,7 @@ namespace Nashet.EconomicSimulation
         private Vector3 position;
         private Color color;
 
-        private GameObject rootGameObject;
+        private GameObject gameObject;
         private MeshRenderer meshRenderer;
 
         private Country country;
@@ -84,15 +86,15 @@ namespace Nashet.EconomicSimulation
             //this.meshStructure = meshStructure;
 
             //spawn object
-            rootGameObject = new GameObject(string.Format("{0}", getID()));
+            gameObject = new GameObject(string.Format("{0}", getID()));
 
             //Add Components
-            var meshFilter = rootGameObject.AddComponent<MeshFilter>();
-            meshRenderer = rootGameObject.AddComponent<MeshRenderer>();
+            var meshFilter = gameObject.AddComponent<MeshFilter>();
+            meshRenderer = gameObject.AddComponent<MeshRenderer>();
 
             // in case you want the new gameobject to be a child
             // of the gameobject that your script is attached to
-            rootGameObject.transform.parent = World.Get.transform;
+            gameObject.transform.parent = World.Get.transform;
 
             var landMesh = meshFilter.mesh;
             landMesh.Clear();
@@ -102,16 +104,22 @@ namespace Nashet.EconomicSimulation
             landMesh.RecalculateNormals();
             landMesh.RecalculateBounds();
             landMesh.name = getID().ToString();
+            //meshRenderer.material = Material.fI
 
-            meshRenderer.material.shader = Shader.Find("Standard");
+            meshRenderer.material.shader = Shader.Find("Standard");// Province");
 
             meshRenderer.material.color = color;
 
-            MeshCollider groundMeshCollider = rootGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            MeshCollider groundMeshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
             groundMeshCollider.sharedMesh = landMesh;
 
             position = setProvinceCenter(meshStructure);
+
             setLabel();
+
+
+            //var graph = World.Get.GetComponent<AstarPath>();
+
 
             // setting neighbors
             //making meshes for border
@@ -120,8 +128,14 @@ namespace Nashet.EconomicSimulation
                 //each color is one neighbor (non repeating)
                 var neighbor = border.Key;
                 if (!(getTerrain() == TerrainTypes.Mountains && neighbor.terrain == TerrainTypes.Mountains))
-                    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                {
                     neighbors.Add(neighbor);
+                    //var newNode = new Pathfinding.PointNode(AstarPath.active);
+                    //newNode.gameObject = txtMeshGl;
+                    //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
+
+                }
 
                 GameObject borderObject = new GameObject("Border with " + neighbor);
 
@@ -129,7 +143,7 @@ namespace Nashet.EconomicSimulation
                 meshFilter = borderObject.AddComponent<MeshFilter>();
                 MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
 
-                borderObject.transform.parent = rootGameObject.transform;
+                borderObject.transform.parent = gameObject.transform;
 
                 Mesh borderMesh = meshFilter.mesh;
                 borderMesh.Clear();
@@ -139,11 +153,12 @@ namespace Nashet.EconomicSimulation
                 borderMesh.uv = border.Value.getUVmap().ToArray();
                 borderMesh.RecalculateNormals();
                 borderMesh.RecalculateBounds();
-                meshRenderer.material = Game.defaultProvinceBorderMaterial;
+                meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
                 borderMesh.name = "Border with " + neighbor;
 
                 bordersMeshes.Add(neighbor, meshRenderer);
             }
+            var node = gameObject.AddComponent<Node>();
         }
 
         internal TerrainTypes getTerrain()
@@ -158,7 +173,7 @@ namespace Nashet.EconomicSimulation
 
         public GameObject getRootGameObject()
         {
-            return rootGameObject;
+            return gameObject;
         }
 
         public void setBorderMaterial(Material material)
@@ -176,28 +191,28 @@ namespace Nashet.EconomicSimulation
                     if (Country == border.Key.Country)
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
-                            border.Value.material = Game.defaultProvinceBorderMaterial;
+                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
                         if (border.Key != Game.selectedProvince || reWriteSelection)
-                            border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                     }
                     else
                     {
                         if (this != Game.selectedProvince || reWriteSelection)
                             if (Country == World.UncolonizedLand)
-                                border.Value.material = Game.defaultProvinceBorderMaterial;
+                                border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
                             else
                                 border.Value.material = Country.getBorderMaterial();
                         if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.Country != null)
                             if (border.Key.Country == World.UncolonizedLand)
-                                border.Key.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
+                                border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                             else
                                 border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
                     }
                 }
                 else
                 {
-                    border.Value.material = Game.impassableBorder;
-                    border.Key.bordersMeshes[this].material = Game.impassableBorder;
+                    border.Value.material = LinksManager.Get.impassableBorder;
+                    border.Key.bordersMeshes[this].material = LinksManager.Get.impassableBorder;
                 }
             }
 
@@ -312,9 +327,16 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Secedes province to Taker. Also kills old province owner if it was last province
         /// Call it only from Country.TakeProvince()
-        /// </summary>
+        /// </summary>        
         public void OnSecedeTo(Country taker, bool addModifier)
         {
+            // rise event on day passed
+            EventHandler<OwnerChangedEventArgs> handler = OwnerChanged;
+            if (handler != null)
+            {
+                handler(this, new OwnerChangedEventArgs { oldOwner = Country });
+            }
+
             Country oldCountry = Country;
             // transfer government owned factories
             // don't do government property revoking for now
@@ -743,21 +765,29 @@ namespace Nashet.EconomicSimulation
 
         internal void setLabel()
         {
-            LODGroup group = rootGameObject.AddComponent<LODGroup>();
+            LODGroup group = gameObject.AddComponent<LODGroup>();
 
             // Add 4 LOD levels
             LOD[] lods = new LOD[1];
-            Transform txtMeshTransform = GameObject.Instantiate(Game.r3dTextPrefab).transform;
-            txtMeshTransform.SetParent(rootGameObject.transform, false);
+            txtMeshGl = GameObject.Instantiate(LinksManager.Get.r3DProvinceTextPrefab);
+            Transform txtMeshTransform = txtMeshGl.transform;
+            txtMeshTransform.SetParent(gameObject.transform, false);
             Renderer[] renderers = new Renderer[1];
             renderers[0] = txtMeshTransform.GetComponent<Renderer>();
             lods[0] = new LOD(0.25F, renderers);
 
-            txtMeshTransform.position = getPosition();
+            var position = getPosition(); 
+            position.z -= 0.003f;
+            txtMeshTransform.position = position;            
+
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
             txtMesh.text = ToString();
             txtMesh.color = Color.black; // Set the text's color to red
+
+            //renderers[0].material.shader = Shader.Find("3DText");
+
+
             group.SetLODs(lods);
 #if UNITY_WEBGL
             group.size = 20; //was 30 for webgl
@@ -1099,7 +1129,7 @@ namespace Nashet.EconomicSimulation
         public void OnClicked()
         {
             //MainCamera.selectProvince(this.getID());
-            MainCamera.Instance.FocusOnProvince(this, true);
+            MainCamera.Get.FocusOnProvince(this, true);
         }
 
         public IEnumerable<Owners> GetSales()
@@ -1342,5 +1372,25 @@ namespace Nashet.EconomicSimulation
             else
                 return Factory.conditionsUpgrade.isAllTrue(byWhom, factory);
         }
-    }
+
+        public static int FindByCollider(Collider collider)
+        {
+            if (collider != null)
+            {
+                MeshCollider meshCollider = collider as MeshCollider;
+                if (meshCollider == null || meshCollider.sharedMesh == null)
+                    return -2;
+                Mesh mesh = meshCollider.sharedMesh;
+                int provinceNumber = Convert.ToInt32(mesh.name);
+                return provinceNumber;
+            }
+            else
+                return -1;
+        }
+        public static event EventHandler<OwnerChangedEventArgs> OwnerChanged;
+        public class OwnerChangedEventArgs : EventArgs
+        {
+            public Country oldOwner { get; set; }
+        }
+    }    
 }

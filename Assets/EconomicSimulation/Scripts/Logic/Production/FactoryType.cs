@@ -349,7 +349,7 @@ namespace Nashet.EconomicSimulation
 
         internal bool hasInput()
         {
-            return resourceInput != null;
+            return resourceInput != null && resourceInput.Count() != 0;
         }
 
         /// <summary>

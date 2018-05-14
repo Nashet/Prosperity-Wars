@@ -18,6 +18,9 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private MainCamera mainCamera;
 
+        [SerializeField]
+        private RawImage flag;
+
         private Country selectedCountry;
         private StringBuilder sb = new StringBuilder();
 
@@ -88,10 +91,11 @@ namespace Nashet.EconomicSimulation
             return selectedCountry;
         }
 
-        public void show(Country count)
+        public void show(Country country)
         {
-            selectedCountry = count;
+            selectedCountry = country;
             Show();
+            flag.texture = country.Flag;
         }
 
         private void setButtonsState()

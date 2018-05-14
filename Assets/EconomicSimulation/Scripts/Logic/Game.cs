@@ -19,22 +19,21 @@ namespace Nashet.EconomicSimulation
 
         private static readonly bool readMapFormFile = false;
         private static MyTexture mapTexture;
-        internal static GameObject r3dTextPrefab;
+        
 
         public static Country Player;
-        
+
         public static Random Random = new Random();
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
+        public static List<Unit> selectedUnits = new List<Unit>();
 
-        
 
         private static int mapMode;
         private static bool surrended = devMode;
 
-        internal static Material defaultCountryBorderMaterial, defaultProvinceBorderMaterial, selectedProvinceBorderMaterial,
-            impassableBorder;
+        
 
         private static VoxelGrid grid;
         private readonly Rect mapBorders;
@@ -59,6 +58,7 @@ namespace Nashet.EconomicSimulation
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
+
             if (!devMode)
                 makeHelloMessage();
             updateStatus("Finishing generation..");
@@ -72,21 +72,29 @@ namespace Nashet.EconomicSimulation
         {
             // Assigns a material named "Assets/Resources/..." to the object.
             //defaultCountryBorderMaterial = Resources.Load("materials/CountryBorder", typeof(Material)) as Material;
-            defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
+            //defaultCountryBorderMaterial = GameObject.Find("CountryBorderMaterial").GetComponent<MeshRenderer>().material;
 
-            //defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
-            defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+            ////defaultProvinceBorderMaterial = Resources.Load("materials/ProvinceBorder", typeof(Material)) as Material;
+            //defaultProvinceBorderMaterial = GameObject.Find("ProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
 
-            //selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
-            selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
+            ////selectedProvinceBorderMaterial = Resources.Load("materials/SelectedProvinceBorder", typeof(Material)) as Material;
+            //selectedProvinceBorderMaterial = GameObject.Find("SelectedProvinceBorderMaterial").GetComponent<MeshRenderer>().material;
 
-            //impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
-            impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
+            ////impassableBorder = Resources.Load("materials/ImpassableBorder", typeof(Material)) as Material;
+            //impassableBorder = GameObject.Find("ImpassableBorderMaterial").GetComponent<MeshRenderer>().material;
 
             //r3dTextPrefab = (GameObject)Resources.Load("prefabs/3dProvinceNameText", typeof(GameObject));
-            r3dTextPrefab = GameObject.Find("3dProvinceNameText");
+            //r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
+            //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
             World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            foreach (var item in World.GetAllProvinces())
+            {
+                var node = item.getRootGameObject().GetComponent<Node>();
+                node.Set(item, item.getAllNeighbors());
+                World.Get.graph.AddNode(node);
+            }
+
             World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
             Country.setUnityAPI();
             //seaProvinces = null;
@@ -98,6 +106,11 @@ namespace Nashet.EconomicSimulation
             //{
             //    item.annexTo(Game.Player);
             //}
+            //Quaternion.Ro(90f, Vector3.right);
+            //World.Get.transform.Rotate(Vector3.right* 90f);
+            //World.Get.transform.rotation.SetAxisAngle(Vector3.right, 90f);
+            //del.x = 90f;
+            //World.Get.transform.rotation = del;
         }
 
         public Rect getMapBorders()
@@ -138,7 +151,7 @@ namespace Nashet.EconomicSimulation
                 item.updateColor(item.getColorAccordingToMapMode());
         }
 
-        
+
 
         internal static bool isPlayerSurrended()
         {
@@ -205,7 +218,7 @@ namespace Nashet.EconomicSimulation
             Texture2D.Destroy(mapImage);
         }
 
-        
+
 
         private static void makeHelloMessage()
         {

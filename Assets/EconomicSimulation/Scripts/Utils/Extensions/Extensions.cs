@@ -632,7 +632,7 @@ namespace Nashet.Utils
                         if (!isFirstRow)
                             sb.Append(lineBreaker);
                         isFirstRow = false;
-                        sb.Append(item.Key).Append(" ").Append(item.Value.get());
+                        sb.Append(item.Value.get()).Append(" ").Append(item.Key);
                     }
                 return sb.ToString();
             }

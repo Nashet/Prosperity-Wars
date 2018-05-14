@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
 {
     public class Population
     {
-        private static readonly float PopulationMultiplier = 1000f;
+        public static readonly float PopulationMultiplier = 1000f;
         private int population;
         private readonly PopUnit pop;
 

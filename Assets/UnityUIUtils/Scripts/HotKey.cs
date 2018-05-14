@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nashet.UnityUIUtils
 {
+
     [RequireComponent(typeof(Button))]
     [RequireComponent(typeof(ToolTipHandler))]
     public class HotKey : MonoBehaviour
@@ -18,6 +20,8 @@ namespace Nashet.UnityUIUtils
 
         private Button button;
 
+        private static List<HotKey> AllHotKeys = new List<HotKey>();
+
         //private ToolTipHandler tooltip;
         private void Start()
         {
@@ -27,6 +31,10 @@ namespace Nashet.UnityUIUtils
                 var tooltip = GetComponent<ToolTipHandler>();
                 tooltip.AddText("\nHotkey is " + key + " button");
             }
+            var duplicateKey = AllHotKeys.Find(x => x.key == this.key);
+            if (duplicateKey != null)
+                Debug.LogError("We got shortcut duplication on " + this.key + " : " + this.button + " and " + duplicateKey.button);
+            AllHotKeys.Add(this);
         }
 
         // Update is called once per frame

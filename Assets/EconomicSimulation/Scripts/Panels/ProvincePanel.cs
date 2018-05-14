@@ -138,7 +138,7 @@ namespace Nashet.EconomicSimulation
 
             sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAllPopulation().GetAverageProcent(x => x.loyalty));
             //sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
-            sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
+            //sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
             sb.Append("\nResource: ");
             if (Game.selectedProvince.getResource() == null)
                 sb.Append("none ");
