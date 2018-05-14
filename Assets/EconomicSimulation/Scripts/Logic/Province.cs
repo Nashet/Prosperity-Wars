@@ -777,7 +777,7 @@ namespace Nashet.EconomicSimulation
             lods[0] = new LOD(0.25F, renderers);
 
             var position = getPosition(); 
-            position.z -= 0.001f;
+            position.z -= 0.003f;
             txtMeshTransform.position = position;            
 
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
