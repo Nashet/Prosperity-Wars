@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
             {
                 item.reMobilize(this);
             }
-            //if (Game.Random.Next(20) == 1)
+            //if (Rand.random2.Next(20) == 1)
             //    ;
         }
 

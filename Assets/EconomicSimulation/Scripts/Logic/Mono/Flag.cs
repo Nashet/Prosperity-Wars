@@ -25,7 +25,7 @@ namespace Nashet
         enum StripesDirection { horizontal, vertical }
         public static Texture2D Generate(int textureWidth, int textureHeight)
         {
-            int stripesAmount = Rand.random2.Next(3) + 1;
+            int stripesAmount = Rand.Get.Next(3) + 1;
             int stripeSize = textureWidth / stripesAmount;
             var res = new Texture2D(textureWidth, textureHeight);
             //for (int i = 0; i < stripesAmount; i++)

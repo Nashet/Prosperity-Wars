@@ -52,7 +52,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             else // change movement
-                if (Game.Random.Next(Options.PopChangeMovementRate) == 1)
+                if (Rand.Get.Next(Options.PopChangeMovementRate) == 1)
             {
                 leave(pop);
                 join(pop);

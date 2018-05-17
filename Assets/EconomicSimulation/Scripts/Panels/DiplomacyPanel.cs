@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
         private Text captionText, generalText, property;
 
         [SerializeField]
-        private Button giveControlToAi, giveControlToPlayer;
+        private Button giveControlToAi, giveControlToPlayer, declareWar;
 
         [SerializeField]
         private MainCamera mainCamera;
@@ -102,12 +102,23 @@ namespace Nashet.EconomicSimulation
         {
             giveControlToPlayer.interactable = selectedCountry.isAI();
             giveControlToAi.interactable = !selectedCountry.isAI();
+
+            declareWar.interactable = !Diplomacy.IsInWar(Game.Player, this.selectedCountry);
         }
 
         public void onSurrenderClick()
         {
             Game.GivePlayerControlToAI();
             setButtonsState();
+        }
+
+        public void OnDeclareWar()
+        {
+            if (Game.Player != this.selectedCountry && !Diplomacy.IsInWar(Game.Player, this.selectedCountry))
+            {
+                Diplomacy.DeclareWar(Game.Player, this.selectedCountry);
+                Refresh();
+            }
         }
 
         public void onGoToClick()

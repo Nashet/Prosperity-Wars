@@ -24,7 +24,7 @@
   <Class Name="Nashet.EconomicSimulation.Artisans" Collapsed="true">
     <Position X="30.75" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAQQAAIAAgEQAABAgAAAAAABCEAAAAQAAAAQQAgA=</HashCode>
+      <HashCode>AAAAAwQAAMAAgAQCABAgAAAAAABCEAAAAQAAAAQQAgA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\Artisans.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -45,7 +45,7 @@
   <Class Name="Nashet.EconomicSimulation.Investor" Collapsed="true">
     <Position X="27.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAEAAAQAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAEAAAAAAAAAAAAAAAEAAAQAAAAAAAAAAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\Investor.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -61,7 +61,7 @@
   <Class Name="Nashet.EconomicSimulation.PopUnit" Collapsed="true">
     <Position X="28.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QCDFgEiFMYgUQexExFIhHMECi4hREOowgaQl0i0YNyQ=</HashCode>
+      <HashCode>QCDFgEiFMcgUQexExFAhGMECi4hREOowgaQl0C0YNCQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\PopUnit.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -233,14 +233,14 @@
   <Class Name="Nashet.EconomicSimulation.MainCamera" Collapsed="true">
     <Position X="52.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABQUAAAAkigEQAIEAAVAAgAGAABABAY4ygFAAAAAAAA=</HashCode>
+      <HashCode>ABQUQAAAkqgEQAJAAAVAAgAEAEBABAK4igFAACAAAAE=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\EntryPoint\MainCamera.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Game" Collapsed="true">
     <Position X="49" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEIBAAACgAMAGhIDAKEkgBEEARAIBCgABgAEAQAgGCQ=</HashCode>
+      <HashCode>AAADAAACgAMAGhIAAKAEgAAEAAAIBAAAAgAEAQAgICQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Game.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -255,14 +255,14 @@
   <Class Name="Nashet.EconomicSimulation.Market" Collapsed="true">
     <Position X="19.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABIAgBUAAoCIABCAQCGKAAABSQACFQAAgAEAQEQAACA=</HashCode>
+      <HashCode>ABIAgBUAAoCIABCUQCGKAAABSQACFQAAgAEAQEQAACA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Movement" Collapsed="true">
     <Position X="42" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACgAAICEAAQIBAAAEQWAAIQBCACAAAQCQUQ=</HashCode>
+      <HashCode>AAAAAAAAACgAAICEAAQIBAAAEQWAAIQBCBCAAAQCQUQ=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Movement.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -278,14 +278,14 @@
   <Class Name="Nashet.EconomicSimulation.Options" Collapsed="true">
     <Position X="56" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IyAjmVQFlQQUQrgInrK0ghGCQLpGhkiZQbmIGjAlDNY=</HashCode>
+      <HashCode>IyAjiVQFlQQUQrgMnrK0ghGCQLpGhkiZQbmIOjAlDNY=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Options.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Nashet.EconomicSimulation.Province" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="56" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>HAEBKkRGoCegkaiaA4iQeCyAFQYoABHSGcSQgFRnQA4=</HashCode>
+      <HashCode>HAEBKkRGoiegkaiaA4iQeCSAFQYoABHSG8SQgFR3QA4=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Province.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -301,8 +301,8 @@
   <Class Name="Nashet.EconomicSimulation.World" Collapsed="true">
     <Position X="52.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IQJBABAgACWAAABIgoAQAIAAAAAAEEAAAIAIAAAAABA=</HashCode>
-      <FileName>Assets\EconomicSimulation\Scripts\Logic\World.cs</FileName>
+      <HashCode>IQJRABAgACWAAQBLgoAwQIEACQAAEGAACIAIQAAACBA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Mono\World.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="Nashet.EconomicSimulation.IOwnerShip&lt;T, V&gt;" Collapsed="true">
@@ -327,7 +327,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="Nashet.EconomicSimulation.IEscapeTarget" Collapsed="true">
-    <Position X="48.5" Y="4.75" Width="1.5" />
+    <Position X="47.75" Y="5.75" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>

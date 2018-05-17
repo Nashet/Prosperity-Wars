@@ -6,7 +6,7 @@ using Nashet.Conditions;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
-using Random = UnityEngine.Random;
+//using Random = UnityEngine.Random;
 
 namespace Nashet.EconomicSimulation
 {
@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
         private static Modifier modifierCars = new Modifier(x => (x as Army).getEquippedCarsSupply(), "Fueled Cars", 2f, false);
         private static Modifier modifierTanks = new Modifier(x => (x as Army).getEquippedTanksSupply(), "Fueled & charged Tanks", 1f, false);
         private static Modifier modifierAirplanes = new Modifier(x => (x as Army).getEquippedAirplanesSupply(), "Fueled & charged Airplanes", 1f, false);
-        private static Modifier modifierLuck = new Modifier(x => (float)Math.Round(Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
+        private static Modifier modifierLuck = new Modifier(x => (float)Math.Round(UnityEngine.Random.Range(-0.5f, 0.5f), 2), "Luck", 1f, false);
         private static Modifier modifierEducation = new Modifier(x => (x as Army).GetAverageCorps(y => y.getPopUnit().Education).RawUIntValue, "Education", 1f / Procent.Precision, false);
 
         private readonly Dictionary<PopUnit, Corps> personal;

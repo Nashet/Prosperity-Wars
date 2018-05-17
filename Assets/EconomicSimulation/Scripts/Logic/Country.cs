@@ -919,12 +919,12 @@ namespace Nashet.EconomicSimulation
         {
             // attacking neighbors
             if (!isOnlyCountry())
-                if (Game.Random.Next(10) == 1)
+                if (Rand.Get.Next(10) == 1)
                 {
                     var thisStrength = getStrengthExluding(null);
                     var possibleTarget = getAllNeighborProvinces().Distinct().MinBy(x => getRelationTo(x.Country).get());
                     if (possibleTarget != null
-                        && (getRelationTo(possibleTarget.Country).get() < 1f || Game.Random.Next(200) == 1)
+                        && (getRelationTo(possibleTarget.Country).get() < 1f || Rand.Get.Next(200) == 1)
                         && thisStrength > 0
                         && (getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
                         && (thisStrength > possibleTarget.Country.getStrengthExluding(null) * 0.25f
@@ -938,11 +938,11 @@ namespace Nashet.EconomicSimulation
                         sendArmy(possibleTarget, Procent.HundredProcent);
                     }
                 }
-            if (Game.Random.Next(90) == 1)
+            if (Rand.Get.Next(90) == 1)
                 aiInvent();
             // changing salary for soldiers
             if (economy.getValue() != Economy.PlannedEconomy)
-                if (Invented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
+                if (Invented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
                 {
                     Money newWage;
                     Money soldierAllNeedsCost = World.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();

@@ -21,7 +21,7 @@ namespace Nashet.MarchingSquares
             yEdgePosition = position;
             yEdgePosition.y += size * 0.5f;
             this.state = state;
-            //this.state = Game.Random.Next(3) == 1;
+            //this.state = Rand.random2.Next(3) == 1;
         }
 
         public Province getState()

@@ -138,7 +138,7 @@ namespace Nashet.EconomicSimulation
             //todo move it in seaProvinces
             if (addLakes)
             {
-                int howMuchLakes = allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
+                int howMuchLakes = allProvinces.Count / Options.ProvinceLakeShance + Rand.Get.Next(3);
                 for (int i = 0; i < howMuchLakes; i++)
                     allProvinces.Remove(allProvinces.Random());
             }
@@ -198,7 +198,7 @@ namespace Nashet.EconomicSimulation
             var cultureNameGenerator = new CultureNameGenerator();
             //int howMuchCountries =3;
             int howMuchCountries = allProvinces.Count / Options.ProvincesPerCountry;
-            howMuchCountries += Game.Random.Next(6);
+            howMuchCountries += Rand.Get.Next(6);
             if (howMuchCountries < 8)
                 howMuchCountries = 8;
 
@@ -302,12 +302,12 @@ namespace Nashet.EconomicSimulation
                 if (!res.Contains(seaProvince))
                     res.Add(seaProvince);
 
-                if (Game.Random.Next(3) == 1)
+                if (Rand.Get.Next(3) == 1)
                 {
                     seaProvince = FindProvince(mapTexture.getRandomPixel());
                     if (!res.Contains(seaProvince))
                         res.Add(seaProvince);
-                    if (Game.Random.Next(20) == 1)
+                    if (Rand.Get.Next(20) == 1)
                     {
                         seaProvince = FindProvince(mapTexture.getRandomPixel());
                         if (!res.Contains(seaProvince))
@@ -636,7 +636,7 @@ namespace Nashet.EconomicSimulation
 
                     if (country.isAI())
                         country.invest(province);
-                    //if (Game.random.Next(3) == 0)
+                    //if (Rand.random2.Next(3) == 0)
                     //    province.consolidatePops();
                     province.RemoveDeadPops();
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)

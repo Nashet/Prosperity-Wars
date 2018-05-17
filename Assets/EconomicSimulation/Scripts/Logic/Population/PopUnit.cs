@@ -469,7 +469,7 @@ namespace Nashet.EconomicSimulation
 
         public static int getRandomPopulationAmount(int minGeneratedPopulation, int maxGeneratedPopulation)
         {
-            int randomPopulation = minGeneratedPopulation + Game.Random.Next(maxGeneratedPopulation - minGeneratedPopulation);
+            int randomPopulation = minGeneratedPopulation + Rand.Get.Next(maxGeneratedPopulation - minGeneratedPopulation);
             return randomPopulation;
         }
 

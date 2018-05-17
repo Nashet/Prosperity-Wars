@@ -125,7 +125,7 @@ namespace Nashet.Utils
                                          //if (x >= 0 && x < image.width && y >= 0 && y < image.height)
 
             if (image.coordinatesExist(x, y))
-                if (Game.Random.Next(straightBorderChance) != 1)
+                if (Rand.Get.Next(straightBorderChance) != 1)
                     //if (image.GetPixel(x, y).a != 1f || image.GetPixel(x, y) == Color.black)
                     if (image.GetPixel(x, y) == Color.black)
                         image.SetPixel(x, y, color.setAlphaToZero());
@@ -196,7 +196,7 @@ namespace Nashet.Utils
 
         public static int getRandomX(this Texture2D image)
         {
-            return Game.Random.Next(0, image.width);
+            return Rand.Get.Next(0, image.width);
         }
 
         public static Color getRandomPixel(this Texture2D image)
@@ -206,7 +206,7 @@ namespace Nashet.Utils
 
         public static int getRandomY(this Texture2D image)
         {
-            return Game.Random.Next(0, image.height);
+            return Rand.Get.Next(0, image.height);
         }
     }
 
@@ -507,7 +507,7 @@ namespace Nashet.Utils
                 return collection[0];
             else
             {
-                int index = Rand.random2.Next(collection.Count);
+                int index = Rand.Get.Next(collection.Count);
                 return collection[index];
             }
         }
@@ -519,7 +519,7 @@ namespace Nashet.Utils
             else
             {
                 var count = enumerable.Count();
-                int index = Rand.random2.Next(count);
+                int index = Rand.Get.Next(count);
                 return enumerable.ElementAt(index);
             }
         }
@@ -536,7 +536,7 @@ namespace Nashet.Utils
             while (n > 1)
             {
                 n--;
-                int k = Rand.random2.Next(n + 1);
+                int k = Rand.Get.Next(n + 1);
                 T value = list[k];
                 list[k] = list[n];
                 list[n] = value;
@@ -584,7 +584,7 @@ namespace Nashet.Utils
         //{
         //    if (source == null || source.Count == 0)
         //        return default(T);
-        //    return source[Game.Random.Next(source.Count)];
+        //    return source[Rand.random2.Next(source.Count)];
 
         //}
 
@@ -604,7 +604,7 @@ namespace Nashet.Utils
         //public static T Random<T>(this List<T> source, Predicate<T> predicate)
         //{
         //    return source.FindAll(predicate).Random();
-        //    //return source.ElementAt(Game.random.Next(source.Count));
+        //    //return source.ElementAt(Rand.random2.Next(source.Count));
         //}
 
         public static void RemoveAll<TKey, TValue>(this IDictionary<TKey, TValue> dic,
@@ -937,7 +937,7 @@ namespace Nashet.Utils
 
         public static Color getRandomColor()
         {
-            return new Color((float)Game.Random.NextDouble(), (float)Game.Random.NextDouble(), (float)Game.Random.NextDouble(), 1f);
+            return new Color((float)Rand.Get.NextDouble(), (float)Rand.Get.NextDouble(), (float)Rand.Get.NextDouble(), 1f);
         }
 
         public static Color setAlphaToZero(this Color color)

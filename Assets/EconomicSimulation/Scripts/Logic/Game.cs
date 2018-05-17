@@ -4,7 +4,6 @@ using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using UnityEngine;
-using Random = System.Random;
 
 namespace Nashet.EconomicSimulation
 {
@@ -13,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
@@ -23,7 +22,7 @@ namespace Nashet.EconomicSimulation
 
         public static Country Player;
 
-        public static Random Random = new Random();
+        ///public static Random Random = new Random();
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
@@ -166,7 +165,7 @@ namespace Nashet.EconomicSimulation
             if (devMode)
             {
                 mapSize = 20000;
-                width = 150 + Random.Next(60);
+                width = 150 + Rand.Get.Next(60);
             }
             else
             {
@@ -175,7 +174,7 @@ namespace Nashet.EconomicSimulation
                 //mapSize = 30000;
                 //width = 180 + Random.Next(65);
                 mapSize = 40000;
-                width = 250 + Random.Next(40);
+                width = 250 + Rand.Get.Next(40);
             }
             // 140 is sqrt of 20000
             //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
@@ -188,8 +187,8 @@ namespace Nashet.EconomicSimulation
             Color emptySpaceColor = Color.black;//.setAlphaToZero();
             mapImage.setColor(emptySpaceColor);
 
-            int amountOfProvince = mapImage.width * mapImage.height / 140 + Random.Next(5);
-            //amountOfProvince = 400 + Game.Random.Next(100);
+            int amountOfProvince = mapImage.width * mapImage.height / 140 + Rand.Get.Next(5);
+            //amountOfProvince = 400 + Rand.random2.Next(100);
             for (int i = 0; i < amountOfProvince; i++)
                 mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 

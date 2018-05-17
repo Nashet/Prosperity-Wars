@@ -264,7 +264,7 @@ namespace Nashet.EconomicSimulation
 
         public void simulate()
         {
-            if (Game.Random.Next(Options.ProvinceChanceToGetCore) == 1)
+            if (Rand.Get.Next(Options.ProvinceChanceToGetCore) == 1)
                 if (neighbors.Any(x => x.isCoreFor(Country)) && !cores.Contains(Country) && getMajorCulture() == Country.getCulture())
                     cores.Add(Country);
             // modifiers.LastOrDefault()
