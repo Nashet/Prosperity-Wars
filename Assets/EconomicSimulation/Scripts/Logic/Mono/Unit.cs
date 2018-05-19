@@ -1,25 +1,23 @@
 ﻿using Nashet.EconomicSimulation;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
-    public class Unit : MonoBehaviour
+    public class Unit : MonoBehaviour, IHasCountry, IHasProvince
     {
-        [SerializeField]
-        public Province currentProvince;
-
-        [SerializeField]
-        private int ID;
+        //[SerializeField]
+        //private int ID;
+        //[SerializeField]
+        //private Province province;
 
         [SerializeField]
         private GameObject selectionPart;
-
-        [SerializeField]
-        private Path path;
 
         [SerializeField]
         private float unitPanelYOffset = -2f;
@@ -31,90 +29,77 @@ namespace Nashet.EconomicSimulation
         private UnitPanel unitPanel;
         Animator m_Animator;
 
+
         private readonly static List<Unit> allUnits = new List<Unit>();
-        void Start()
+
+        public Army NextArmy
+        {
+            get
+            {
+                return Game.Player.getAllArmies().Where(x => x.Province == Province).Random();
+            }
+        }
+
+        public Province Province { get; private set; }
+
+        public Country Country { get; private set; }
+
+        void Awake()
         {
             m_Animator = GetComponent<Animator>();
             allUnits.Add(this);
             lineRenderer = selectionPart.GetComponent<LineRenderer>();
             selectionPart.SetActive(false);
-            World.DayPassed += DayPassed;
-            Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
+
+
             gameObject.SetActive(true);
             unitPanelObject = Instantiate(LinksManager.Get.UnitPanelPrefab, LinksManager.Get.WorldSpaceCanvas);
             unitPanel = unitPanelObject.GetComponent<UnitPanel>();
-            unitPanel.Set(currentProvince.Country.Flag);
-            SetUnitPanel();
+            //unitPanel.Set(currentProvince.Country.Flag);
+            //SetUnitPanel();
+        }
+        public static Unit Create(Army army)
+        {
+            var unitObject = GameObject.Instantiate(LinksManager.Get.UnitPrefab, World.Get.transform);
+            unitObject.name = (World.GetAllProvinces().Count() + UnityEngine.Random.Range(0, 2000)).ToString();
+
+            unitObject.transform.position = army.Position;
+
+            var unit = unitObject.GetComponent<Unit>();
+            unit.Province = army.Province;
+            unit.Country = army.getOwner().Country;
+            unit.SetUnitPanel(army);
+
+            return unit;
         }
 
-        private void SetUnitPanel()
+        internal void Select()
+        {
+            selectionPart.SetActive(true);
+            ArmiesSelectionWindow.Get.Show();
+        }
+
+        internal void DeSelect()
+        {
+            selectionPart.SetActive(false);
+            ArmiesSelectionWindow.Get.Refresh();
+        }
+
+        private void SetUnitPanel(Army army)
         {
             var panelPosition = gameObject.transform.position;
             panelPosition.y += unitPanelYOffset;
             panelPosition.z = -1f;
             unitPanelObject.transform.position = panelPosition;
-        }
+            UpdateShield();
 
-        private void CheckPathOnProvinceOwnerChanged(object sender, Province.OwnerChangedEventArgs e)
+            unitPanel.SetFlag(army.getOwner().Country.Flag);
+        }
+        public static IEnumerable<Unit> AllUnits()
         {
-            if (e.oldOwner == currentProvince.Country && path != null && path.nodes.Any(x => x.Province == sender))//changed owner, probably, on our way
+            foreach (var item in allUnits)
             {
-                path = null;
-                UpdateStatus();
-                Message.NewMessage(this + " arrived!", "Commander, " + this + " stopped at " + currentProvince + " province", "Fine", false, currentProvince.getPosition());
-            }
-
-        }
-
-        private void DayPassed(object sender, EventArgs e)
-        {
-            if (path != null)
-            {
-                if (path.nodes.Count > 0)
-                {
-                    currentProvince = path.nodes[0].Province;
-                    path.nodes.RemoveAt(0);
-                    transform.position = currentProvince.getPosition();
-                    SetUnitPanel();
-                    if (path.nodes.Count == 0)
-                    {
-                        path = null;
-                        Message.NewMessage(this + " arrived!", "Commander, "+this + " arrived to " + currentProvince+ " province", "Fine", false, currentProvince.getPosition());
-                    }
-                    UpdateStatus();
-                }
-            }
-        }
-
-        /// <summary>
-        /// initializer
-        /// </summary>
-        internal void SetPosition(Province province)
-        {
-            transform.position = province.getPosition();
-            currentProvince = province;
-        }
-
-        internal void SendTo(Province destinationProvince)
-        {
-            path = World.Get.graph.GetShortestPath(currentProvince, destinationProvince, x => x.Country == currentProvince.Country || x.Country == World.UncolonizedLand);
-            UpdateStatus();
-        }
-
-        private void UpdateStatus()
-        {
-            if (path == null)
-            {
-                lineRenderer.positionCount = 0;
-                m_Animator.SetFloat("Forward", 0f);
-            }
-            else
-            {
-                lineRenderer.positionCount = path.nodes.Count + 1;
-                lineRenderer.SetPositions(path.GetVector3Nodes());
-                lineRenderer.SetPosition(0, currentProvince.getPosition());
-                this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
-                m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
+                yield return item;
             }
         }
         public void Simulate()
@@ -126,26 +111,27 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        public void Select()
-        {
-            if (!Game.selectedUnits.Contains(this))
-            {
-                Game.selectedUnits.Add(this);
-                selectionPart.SetActive(true);
-                ArmiesSelectionWindow.Get.Show();
-            }
-        }
 
-        public void DeSelect()
-        {
-            Game.selectedUnits.Remove(this);
-            selectionPart.SetActive(false);
-            ArmiesSelectionWindow.Get.Refresh();
-        }
 
         public override string ToString()
         {
             return "Army";
+        }
+
+        internal void UpdateShield()
+        {
+            int count = 0;
+            //var sb = new StringBuilder();
+            int size = 0;
+            foreach (var item in Country.getAllArmies().Where(x => x.Province == this.Province))
+            {
+                size += item.getSize();
+                count++;
+            }
+            if (count > 1)
+                unitPanel.SetText(size + ":" + count);
+            else
+                unitPanel.SetText(size.ToString());
         }
     }
 }

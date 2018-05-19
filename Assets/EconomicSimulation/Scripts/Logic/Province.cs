@@ -35,6 +35,34 @@ namespace Nashet.EconomicSimulation
             }
         , true);
 
+        internal void SelectUnit()
+        {
+            var unit = Unit.AllUnits().First(x => x.Province == this);
+            unit.Select();
+
+            //if (Game.selectedUnits.Any(x=>x.Province == this))
+            //
+            //
+            //private void UpdateStatus()
+            //{
+            //    if (path == null)
+            //    {
+            //        lineRenderer.positionCount = 0;
+            //        m_Animator.SetFloat("Forward", 0f);
+            //    }
+            //    else
+            //    {
+            //        lineRenderer.positionCount = path.nodes.Count + 1;
+            //        lineRenderer.SetPositions(path.GetVector3Nodes());
+            //        lineRenderer.SetPosition(0, currentProvince.getPosition());
+            //        this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
+            //        m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
+            //    }
+            //}
+            //transform.position = currentProvince.getPosition();
+            //SetUnitPanel();
+            //UpdateStatus();
+        }
 
         public static readonly Predicate<Province> All = x => true;
 
@@ -776,9 +804,9 @@ namespace Nashet.EconomicSimulation
             renderers[0] = txtMeshTransform.GetComponent<Renderer>();
             lods[0] = new LOD(0.25F, renderers);
 
-            var position = getPosition(); 
+            var position = getPosition();
             position.z -= 0.003f;
-            txtMeshTransform.position = position;            
+            txtMeshTransform.position = position;
 
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
@@ -1392,5 +1420,5 @@ namespace Nashet.EconomicSimulation
         {
             public Country oldOwner { get; set; }
         }
-    }    
+    }
 }

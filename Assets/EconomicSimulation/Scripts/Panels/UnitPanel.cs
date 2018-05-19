@@ -7,14 +7,21 @@ namespace Nashet.EconomicSimulation
 {
     public class UnitPanel : MonoBehaviour
     {
+        //[SerializeField]
+        //private Unit unit;
+
         [SerializeField]
-        private Unit unit;
+        private Text panelText;
 
         [SerializeField]
         private RawImage flag;
-        public void Set(Texture2D flag)
+        public void SetFlag(Texture2D flag)
         {
             this.flag.texture = flag;
+        }
+        public void SetText(string text)
+        {
+            panelText.text = text;
         }
     }
 }

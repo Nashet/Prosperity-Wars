@@ -57,7 +57,7 @@ public class SelectionComponent : MonoBehaviour
                 var unit = collider.transform.GetComponent<Unit>();
                 if (unit != null)
                 {
-                    Game.selectedUnits.PerformAction(x => x.SendTo(unit.currentProvince));
+                    Game.selectedUnits.PerformAction(x => x.SendTo(null));
                 }
             }
         }
@@ -103,11 +103,11 @@ public class SelectionComponent : MonoBehaviour
         {
             if (!Input.GetKey(AdditionKey))
                 Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
-            foreach (var selectableObject in FindObjectsOfType<Unit>())
+            foreach (var selectableObject in Game.Player.getAllArmies())
             {
-                if (IsWithinSelectionBounds(selectableObject.gameObject))
+                if (IsWithinSelectionBounds(selectableObject.Position))
                 {
-                    selectableObject.GetComponent<Unit>().Select();
+                    selectableObject.Select();
                 }
             }
 
@@ -134,15 +134,17 @@ public class SelectionComponent : MonoBehaviour
             }
             else
             {
-                var unit = collider.transform.GetComponent<Unit>();
-                if (unit != null)
+                var unit= collider.transform.GetComponent<Unit>();
+
+                var army = unit.NextArmy;
+                if (army != null)
                 {
                     if (Input.GetKey(AdditionKey))
                     {
-                        if (Game.selectedUnits.Contains(unit))
-                            unit.DeSelect();
+                        if (Game.selectedUnits.Contains(army))
+                            army.DeSelect();
                         else
-                            unit.Select();
+                            army.Select();
                     }
                     else
                     {
@@ -150,7 +152,7 @@ public class SelectionComponent : MonoBehaviour
                         {
                             Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
                         }
-                        unit.Select();
+                        army.Select();
                     }
                 }
             }
@@ -162,14 +164,14 @@ public class SelectionComponent : MonoBehaviour
                 Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
         }
     }
-    public bool IsWithinSelectionBounds(GameObject gameObject)
+    public bool IsWithinSelectionBounds(Vector3 position)
     {
         if (!isSelecting)
             return false;
 
         var camera = Camera.main;
         var viewportBounds = Utils.GetViewportBounds(camera, mousePosition1, Input.mousePosition);
-        return viewportBounds.Contains(camera.WorldToViewportPoint(gameObject.transform.position));
+        return viewportBounds.Contains(camera.WorldToViewportPoint(position));
     }
 
     void OnGUI()

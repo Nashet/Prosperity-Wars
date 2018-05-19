@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
         private readonly StringBuilder sb = new StringBuilder();
 
         private readonly List<Province> availableProvinces = new List<Province>();
-        private Army virtualArmyToSend;
+        //private Army virtualArmyToSend;
 
         // Use this for initialization
         private void Start()
@@ -54,17 +54,17 @@ namespace Nashet.EconomicSimulation
             sb.Append("Military of ").Append(Game.Player);
             captionText.text = sb.ToString();
 
-            sb.Clear();
-            sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
-            allArmySizeText.text = sb.ToString();
+            //sb.Clear();
+            //sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
+            //allArmySizeText.text = sb.ToString();
 
-            if (virtualArmyToSend == null)
-                virtualArmyToSend = new Army(Game.Player);
-            sb.Clear();
-            sb.Append("Sending army: ").Append(virtualArmyToSend.getName());
-            sendingArmySizeText.text = sb.ToString();
-            //sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
-            sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
+            //if (virtualArmyToSend == null)
+            //    virtualArmyToSend = new Army(Game.Player);
+            //sb.Clear();
+            //sb.Append("Sending army: ").Append(virtualArmyToSend.getName());
+            //sendingArmySizeText.text = sb.ToString();
+            ////sendArmy.interactable = virtualArmyToSend == "0" ? false : true;
+            //sendArmy.interactable = virtualArmyToSend.getSize() > 0 ? true : false;
         }
 
         public void onMobilizationClick()
@@ -80,7 +80,7 @@ namespace Nashet.EconomicSimulation
         public void onDemobilizationClick()
         {
             Game.Player.demobilize();
-            virtualArmyToSend.demobilize();
+            //virtualArmyToSend.demobilize();
             //MainCamera.tradeWindow.refresh();
             refresh(false);
         }
@@ -138,13 +138,9 @@ namespace Nashet.EconomicSimulation
         }
 
         public void onArmyLimitChanged(float value)
-        {
-            //Game.Player.staff.consolidateArmies();
-            //actually creates new army here
-            //virtualArmyToSend = (Game.Player.staff.consolidateArmies().getSize() * value).ToString("0");
-            virtualArmyToSend = Game.Player.consolidateArmies().balance(new Procent(value));
-            //virtualArmyToSend = del.getShortName();
-            refresh(false);
+        {            
+            //virtualArmyToSend = Game.Player.consolidateArmies().balance(new Procent(value));
+            //refresh(false);
         }
     }
 }
