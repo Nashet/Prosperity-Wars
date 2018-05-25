@@ -11,8 +11,15 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Army : PreArmy
+    public class Army : Name
     {
+        [SerializeField]
+        protected Path path;
+
+        protected readonly Staff owner;
+
+        protected Unit unit;
+
         private static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
 
         //static Modifier modifierDefenseInMountains = new Modifier(x => (x as Army).isInDefense() && (x as Army).getDestination()!=null && (x as Army).getDestination().getTerrain() == TerrainTypes.Mountains, "Defense in mountains", 0.2f, false);
@@ -31,7 +38,12 @@ namespace Nashet.EconomicSimulation
 
         private readonly Dictionary<PopUnit, Corps> personal;
 
+        public Vector3 Position
+        {
+            get { return Province.getPosition(); }
+        }
 
+        public Province Province { get; internal set; }
         private float getHorsesSupply()
         {
             if (getOwner().Country.Invented(Invention.Domestication))
@@ -110,8 +122,13 @@ namespace Nashet.EconomicSimulation
 
         // private Army consolidatedArmy;
 
-        public Army(Staff owner, Province where) : base(owner, where)
+        public Army(Staff owner, Province where) : base(null)
         {
+            Province = where;
+            owner.addArmy(this);
+            this.owner = owner;
+
+
             World.DayPassed += DayPassed;
             Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
             personal = new Dictionary<PopUnit, Corps>();
@@ -119,13 +136,18 @@ namespace Nashet.EconomicSimulation
                 if (pop.Type.canMobilize(owner) && pop.howMuchCanMobilize(owner, null) > 0)
                     //newArmy.add(item.mobilize(this));
                     this.add(Corps.mobilize(owner, pop));
-            var unit = Unit.AllUnits().FirstOrDefault(x => x.Province == where);
-            if (unit == null)
-            {
-                Unit.Create(this);
-            }
-            else
-                unit.UpdateShield();
+
+            var unitObject = Unit.Create(this);
+            unit = unitObject.GetComponent<Unit>();
+            //unit.UpdateShield();
+            Redraw(null);
+            //var unit = Unit.AllUnits().FirstOrDefault(x => x.Province == where);
+            //if (unit == null)
+            //{
+            //    Unit.Create(this);
+            //}
+            //else
+            //    unit.UpdateShield();
 
         }
 
@@ -602,10 +624,7 @@ namespace Nashet.EconomicSimulation
         //        return null;
         //}
 
-        internal void sendTo(Province province) // todo fix army
-        {
-            Province = province;
-        }
+
 
 
         internal void setStatisticToZero()
@@ -618,7 +637,7 @@ namespace Nashet.EconomicSimulation
             if (e.oldOwner == Province.Country && path != null && path.nodes.Any(x => x.Province == sender))//changed owner, probably, on our way
             {
                 path = null;
-                Redraw();
+                Redraw(null);
                 Message.NewMessage(this + " arrived!", "Commander, " + this + " stopped at " + Province + " province", "Fine", false, Province.getPosition());
             }
 
@@ -632,6 +651,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (path.nodes.Count > 0)
                 {
+                    var oldProvince = Province;
                     Province = path.nodes[0].Province;
                     path.nodes.RemoveAt(0);
 
@@ -640,8 +660,64 @@ namespace Nashet.EconomicSimulation
                         path = null;
                         Message.NewMessage(this + " arrived!", "Commander, " + this + " arrived to " + Province + " province", "Fine", false, Province.getPosition());
                     }
-
+                    Redraw(oldProvince);
                 }
+            }
+        }
+        internal void SendTo(Province destinationProvince)
+        {
+            if (destinationProvince != null)
+                path = World.Get.graph.GetShortestPath(Province, destinationProvince, x => x.Country == Province.Country || x.Country == World.UncolonizedLand);
+            Redraw(null);
+        }
+
+        public void Select()
+        {
+            if (!Game.selectedUnits.Contains(this))
+            {
+                Game.selectedUnits.Add(this);
+                //Province.SelectUnit();
+                //var unit = Unit.AllUnits().Where(x => x.Province == this.Province).Random();
+                unit.Select();
+                //IsSelected
+            }
+        }
+
+        public void DeSelect()
+        {
+            Game.selectedUnits.Remove(this);
+            unit.DeSelect();
+            //selectionPart.SetActive(false);
+            //Province.SelectUnit();
+        }
+
+
+        protected void Redraw(Province oldProvince)
+        {
+            if (oldProvince != null)
+                oldProvince.units.Remove(unit);
+            if (!Province.units.Contains(unit))
+                Province.units.Add(unit);
+            if (path == null)
+            {
+                unit.Stop(Province);
+            }
+            else
+            {
+                unit.Move(path, Province);
+            }
+        }
+        public static string SizeToString(int size)
+        {
+            if (size < 1000)
+                return size.ToString();
+            else
+                return (size / 1000).ToString() + "k";
+        }
+        public override string ShortName
+        {
+            get {
+                return SizeToString(getSize());
             }
         }
     }

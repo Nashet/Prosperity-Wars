@@ -856,7 +856,7 @@ namespace Nashet.Utils
         //{
         //    return name;
         //}
-        public string ShortName
+        public virtual string ShortName
         {
             get { return name; }
         }

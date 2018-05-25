@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public float getAllArmiesSize()
-        {            
+        {
             int size = getDefenceForces();
             //if (defArmy != null)
             //    size = defArmy.getSize();
@@ -128,14 +128,14 @@ namespace Nashet.EconomicSimulation
             foreach (var province in source)
             {
                 Army newArmy = new Army(this, province);
-                
+
             }
             //consolidateArmies();
         }
 
-        public void addArmy(PreArmy army)
+        public void addArmy(Army army)
         {
-            allArmies.Add(army as Army);
+            allArmies.Add(army);
         }
 
         internal void demobilize()
@@ -214,7 +214,7 @@ namespace Nashet.EconomicSimulation
         /// <returns></returns>
         internal int getDefenceForces()
         {
-            return allArmies.Sum(x=>x.getSize());
+            return allArmies.Sum(x => x.getSize());
             //Army a = allArmies.Find(x => x.getSize() > 0 && x.getDestination() == null);
             //if (a == null)
             //    return new Army(this);

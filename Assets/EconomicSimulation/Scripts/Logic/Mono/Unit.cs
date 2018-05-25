@@ -75,6 +75,7 @@ namespace Nashet.EconomicSimulation
 
         internal void Select()
         {
+
             selectionPart.SetActive(true);
             ArmiesSelectionWindow.Get.Show();
         }
@@ -92,8 +93,8 @@ namespace Nashet.EconomicSimulation
             panelPosition.z = -1f;
             unitPanelObject.transform.position = panelPosition;
             UpdateShield();
-
-            unitPanel.SetFlag(army.getOwner().Country.Flag);
+            if (army != null)
+                unitPanel.SetFlag(army.getOwner().Country.Flag);
         }
         public static IEnumerable<Unit> AllUnits()
         {
@@ -129,9 +130,50 @@ namespace Nashet.EconomicSimulation
                 count++;
             }
             if (count > 1)
-                unitPanel.SetText(size + ":" + count);
+                unitPanel.SetText(Army.SizeToString(size) + ":" + count);
             else
-                unitPanel.SetText(size.ToString());
+                unitPanel.SetText(Army.SizeToString(size));
+        }
+
+
+        internal void Stop(Province where)
+        {
+            Province = where;
+
+            transform.position = where.getPosition();
+            //unitPanel.Move(where);            
+            
+            lineRenderer.positionCount = 0;
+            m_Animator.SetFloat("Forward", 0f);
+            if (where.units.Count > 1)
+                for (int i = 0; i < where.units.Count-1; i++)
+                {
+                    where.units[i].unitPanel.Hide();
+                }
+            else
+                where.units[0].unitPanel.Show();
+            SetUnitPanel(null);
+        }
+
+        internal void Move(Path path, Province where)
+        {
+            Province = where;
+            transform.position = where.getPosition();
+
+            //unitPanel.Move(where);
+            lineRenderer.positionCount = path.nodes.Count + 1;
+            lineRenderer.SetPositions(path.GetVector3Nodes());
+            lineRenderer.SetPosition(0, where.getPosition());//currentProvince.getPosition()
+            this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
+            m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
+            if (where.units.Count > 1)
+                for (int i = 0; i < where.units.Count - 1; i++)
+                {
+                    where.units[i].unitPanel.Hide();
+                }
+            else
+                where.units[0].unitPanel.Show();
+            SetUnitPanel(null);
         }
     }
 }

@@ -33,36 +33,7 @@ namespace Nashet.EconomicSimulation
                 else
                     return (x as Country).FullName + " owns that province";
             }
-        , true);
-
-        internal void SelectUnit()
-        {
-            var unit = Unit.AllUnits().First(x => x.Province == this);
-            unit.Select();
-
-            //if (Game.selectedUnits.Any(x=>x.Province == this))
-            //
-            //
-            //private void UpdateStatus()
-            //{
-            //    if (path == null)
-            //    {
-            //        lineRenderer.positionCount = 0;
-            //        m_Animator.SetFloat("Forward", 0f);
-            //    }
-            //    else
-            //    {
-            //        lineRenderer.positionCount = path.nodes.Count + 1;
-            //        lineRenderer.SetPositions(path.GetVector3Nodes());
-            //        lineRenderer.SetPosition(0, currentProvince.getPosition());
-            //        this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
-            //        m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
-            //    }
-            //}
-            //transform.position = currentProvince.getPosition();
-            //SetUnitPanel();
-            //UpdateStatus();
-        }
+        , true);      
 
         public static readonly Predicate<Province> All = x => true;
 
@@ -86,6 +57,8 @@ namespace Nashet.EconomicSimulation
 
         private GameObject gameObject;
         private MeshRenderer meshRenderer;
+
+        public List<Unit> units = new List<Unit>();
 
         private Country country;
 
@@ -1419,6 +1392,10 @@ namespace Nashet.EconomicSimulation
         public class OwnerChangedEventArgs : EventArgs
         {
             public Country oldOwner { get; set; }
+        }
+        public void RefreshUnitShield()
+        {
+
         }
     }
 }
