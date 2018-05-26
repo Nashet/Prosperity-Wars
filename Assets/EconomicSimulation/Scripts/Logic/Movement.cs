@@ -246,7 +246,7 @@ namespace Nashet.EconomicSimulation
                     //&& getStrength(Country) > Options.PopMinStrengthToRevolt
                     )//&& isValidGoal()) do it in before battle
             {
-                doRevolt();
+                //doRevolt(); todo army fix
             }
         }
 

@@ -47,7 +47,8 @@ namespace Nashet.EconomicSimulation
         private readonly Color colorID;
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
-
+        private readonly List<Factory> allFactories = new List<Factory>();
+        public List<Army> armies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         private readonly List<Province> neighbors = new List<Province>();
 
@@ -56,13 +57,10 @@ namespace Nashet.EconomicSimulation
         private Color color;
 
         private GameObject gameObject;
-        private MeshRenderer meshRenderer;
-
-        public List<Unit> units = new List<Unit>();
+        private MeshRenderer meshRenderer;        
 
         private Country country;
-
-        private readonly List<Factory> allFactories = new List<Factory>();
+       
 
         private readonly int fertileSoil;
         private readonly List<Country> cores = new List<Country>();

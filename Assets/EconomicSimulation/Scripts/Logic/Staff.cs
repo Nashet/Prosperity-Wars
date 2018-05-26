@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
+using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
@@ -127,8 +128,12 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var province in source)
             {
-                Army newArmy = new Army(this, province);
-
+                foreach (var pop in province.GetAllPopulation())
+                    if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0) // mirrored in Army
+                    {
+                        Army newArmy = new Army(this, province);
+                        break;
+                    }
             }
             //consolidateArmies();
         }
@@ -176,6 +181,7 @@ namespace Nashet.EconomicSimulation
 
         internal virtual void sendArmy(Province possibleTarget, Procent procent)
         {
+            allArmies.PerformAction(x => x.SendTo(possibleTarget));
             //consolidateArmies().balance(procent).sendTo(possibleTarget);
         }
 
@@ -256,5 +262,12 @@ namespace Nashet.EconomicSimulation
         //    Army virtualArmy = consolidateArmies(false).getVirtualArmy(procent);
         //    return virtualArmy;
         //}
+        public void KillArmy(Army army)
+        {
+            army.Province.armies.Remove(army);
+            allArmies.Remove(army);
+            UnityEngine.Object.Destroy(army.unit.gameObject);            
+        }
+
     }
 }

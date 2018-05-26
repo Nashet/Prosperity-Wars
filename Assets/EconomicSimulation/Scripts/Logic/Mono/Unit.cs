@@ -145,13 +145,13 @@ namespace Nashet.EconomicSimulation
             
             lineRenderer.positionCount = 0;
             m_Animator.SetFloat("Forward", 0f);
-            if (where.units.Count > 1)
-                for (int i = 0; i < where.units.Count-1; i++)
+            if (where.armies.Count > 1)
+                for (int i = 0; i < where.armies.Count-1; i++)
                 {
-                    where.units[i].unitPanel.Hide();
+                    where.armies[i].unit.unitPanel.Hide();
                 }
             else
-                where.units[0].unitPanel.Show();
+                where.armies[0].unit.unitPanel.Show();
             SetUnitPanel(null);
         }
 
@@ -166,14 +166,18 @@ namespace Nashet.EconomicSimulation
             lineRenderer.SetPosition(0, where.getPosition());//currentProvince.getPosition()
             this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
             m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
-            if (where.units.Count > 1)
-                for (int i = 0; i < where.units.Count - 1; i++)
+            if (where.armies.Count > 1)
+                for (int i = 0; i < where.armies.Count - 1; i++)
                 {
-                    where.units[i].unitPanel.Hide();
+                    where.armies[i].unit.unitPanel.Hide();
                 }
             else
-                where.units[0].unitPanel.Show();
+                where.armies[0].unit.unitPanel.Show();
             SetUnitPanel(null);
+        }
+        private void OnDestroy()
+        {
+            Destroy(unitPanelObject);            
         }
     }
 }

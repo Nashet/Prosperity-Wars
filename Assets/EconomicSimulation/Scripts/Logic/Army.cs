@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
 
         protected readonly Staff owner;
 
-        protected Unit unit;
+        public Unit unit;
 
         private static Modifier modifierInDefense = new Modifier(x => (x as Army).isInDefense(), "Is in defense", 0.5f, false);
 
@@ -129,10 +129,10 @@ namespace Nashet.EconomicSimulation
             this.owner = owner;
 
 
-            World.DayPassed += DayPassed;
+            World.DayPassed += OnDayPassed;
             Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
             personal = new Dictionary<PopUnit, Corps>();
-            foreach (var pop in where.GetAllPopulation())
+            foreach (var pop in where.GetAllPopulation()) //mirrored in Staff. mobilization
                 if (pop.Type.canMobilize(owner) && pop.howMuchCanMobilize(owner, null) > 0)
                     //newArmy.add(item.mobilize(this));
                     this.add(Corps.mobilize(owner, pop));
@@ -492,19 +492,29 @@ namespace Nashet.EconomicSimulation
                 int attackerLoss = attacker.takeLossUnconverted(winnerLossUnConverted, defender.owner);
                 int loserLoss = defender.takeLoss(defender.getSize(), attacker.owner);
 
+                defender.owner.KillArmy(defender);
+                attacker.Redraw(null);
+
                 result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
                 , initialDefenderSize, loserLoss, attacker.Province, attackerWon, attackerBonus, defenderBonus);
+
+                var isCountryOwner = owner as Country;
+                if (isCountryOwner != null && isCountryOwner != Province.Country)
+                    isCountryOwner.TakeProvince(Province, true);
             }
             else if (attacker.getStrenght(attackerModifier) == defender.getStrenght(defenderModifier))
             {
                 attacker.takeLoss(attacker.getSize(), defender.owner);
                 defender.takeLoss(defender.getSize(), attacker.owner);
 
-                var r = new BattleResult(attacker.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(),
+                defender.owner.KillArmy(defender);
+                attacker.owner.KillArmy(attacker);
+                defender.Redraw(null);
+                attacker.Redraw(null);
+                result = new BattleResult(attacker.getOwner(), defender.getOwner(), attacker.getSize(), attacker.getSize(), defender.getSize(), defender.getSize(),
                     attacker.Province, false, attackerBonus, defenderBonus);
-                return r;
             }
-            else //defender.getStrenght() > attacker.getStrenght()
+            else // defender win
             {
                 attackerWon = false;
                 float winnerLossUnConverted;
@@ -515,11 +525,17 @@ namespace Nashet.EconomicSimulation
                 int defenderLoss = defender.takeLossUnconverted(winnerLossUnConverted, attacker.owner);
 
                 int attackerLoss = attacker.takeLoss(attacker.getSize(), defender.owner);
+
+                attacker.owner.KillArmy(attacker);
+                defender.Redraw(null);
+
                 result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
                 , initialDefenderSize, defenderLoss, attacker.Province, attackerWon, attackerBonus, defenderBonus);
             }
+
             return result;
         }
+
 
         public Staff getOwner()
         {
@@ -638,14 +654,14 @@ namespace Nashet.EconomicSimulation
             {
                 path = null;
                 Redraw(null);
-                Message.NewMessage(this + " arrived!", "Commander, " + this + " stopped at " + Province + " province", "Fine", false, Province.getPosition());
+                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.getPosition());
             }
 
         }
 
 
 
-        private void DayPassed(object sender, EventArgs e)
+        private void OnDayPassed(object sender, EventArgs e)
         {
             if (path != null)
             {
@@ -658,16 +674,23 @@ namespace Nashet.EconomicSimulation
                     if (path.nodes.Count == 0)
                     {
                         path = null;
-                        Message.NewMessage(this + " arrived!", "Commander, " + this + " arrived to " + Province + " province", "Fine", false, Province.getPosition());
+                        if (owner == Game.Player)
+                            Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " arrived to " + Province + " province", "Fine", false, Province.getPosition());
                     }
-                    Redraw(oldProvince);
+                    foreach (var item in Province.armies.Where(x => x.owner != owner).ToList())
+                    {
+                        this.attack(item).createMessage();
+                    }
+                    
+                    if (getSize() > 0) // todo change to alive check
+                        Redraw(oldProvince);
                 }
             }
         }
         internal void SendTo(Province destinationProvince)
         {
             if (destinationProvince != null)
-                path = World.Get.graph.GetShortestPath(Province, destinationProvince, x => x.Country == Province.Country || x.Country == World.UncolonizedLand);
+                path = World.Get.graph.GetShortestPath(Province, destinationProvince);//,x => x.Country == owner || Diplomacy.IsInWar(x.Country, owner.Country) || x.Country == World.UncolonizedLand
             Redraw(null);
         }
 
@@ -695,9 +718,9 @@ namespace Nashet.EconomicSimulation
         protected void Redraw(Province oldProvince)
         {
             if (oldProvince != null)
-                oldProvince.units.Remove(unit);
-            if (!Province.units.Contains(unit))
-                Province.units.Add(unit);
+                oldProvince.armies.Remove(this);
+            if (!Province.armies.Contains(this))
+                Province.armies.Add(this);
             if (path == null)
             {
                 unit.Stop(Province);
@@ -716,8 +739,16 @@ namespace Nashet.EconomicSimulation
         }
         public override string ShortName
         {
-            get {
+            get
+            {
                 return SizeToString(getSize());
+            }
+        }
+        public override string FullName
+        {
+            get
+            {
+                return SizeToString(getSize()) + " army";
             }
         }
     }

@@ -30,7 +30,7 @@ namespace Nashet.EconomicSimulation
 
 
         private static int mapMode;
-        private static bool surrended = devMode;
+        private static bool surrended = false;
 
         
 
