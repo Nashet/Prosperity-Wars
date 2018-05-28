@@ -14,6 +14,11 @@ namespace Nashet.EconomicSimulation
     {
         private List<Army> allArmies = new List<Army>();
 
+        /// <summary>
+        /// how much armies created ever
+        /// </summary>
+        public int armyCount;
+
         //protected Country place; //todo change class
         protected Staff(Country place) : base(place)
         {
@@ -131,7 +136,8 @@ namespace Nashet.EconomicSimulation
                 foreach (var pop in province.GetAllPopulation())
                     if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0) // mirrored in Army
                     {
-                        Army newArmy = new Army(this, province);
+                        armyCount++;
+                        Army newArmy = new Army(this, province, this + "'s " + armyCount.ToString() + "th");
                         break;
                     }
             }
@@ -145,11 +151,11 @@ namespace Nashet.EconomicSimulation
 
         internal void demobilize()
         {
-            foreach (var item in allArmies)
+            foreach (var item in allArmies.ToList())
             {
                 item.demobilize();
             }
-            allArmies.Clear();
+            //allArmies.Clear();
         }
 
         internal void demobilize(Func<Corps, bool> predicate)
@@ -181,7 +187,7 @@ namespace Nashet.EconomicSimulation
 
         internal virtual void sendArmy(Province possibleTarget, Procent procent)
         {
-            allArmies.PerformAction(x => x.SendTo(possibleTarget));
+            allArmies.PerformAction(x => x.SetPathTo(possibleTarget));
             //consolidateArmies().balance(procent).sendTo(possibleTarget);
         }
 
@@ -264,8 +270,10 @@ namespace Nashet.EconomicSimulation
         //}
         public void KillArmy(Army army)
         {
+            army.DeSelect();
             army.Province.armies.Remove(army);
             allArmies.Remove(army);
+            World.DayPassed -= army.MoveArmy;
             UnityEngine.Object.Destroy(army.unit.gameObject);            
         }
 

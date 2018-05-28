@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
         public void onMobilizeClick()
         {
             Game.selectedProvince.mobilize();
-            MainCamera.militaryPanel.show(null);
+            //MainCamera.militaryPanel.show(null);
         }
 
         public void onEnterprisesClick()

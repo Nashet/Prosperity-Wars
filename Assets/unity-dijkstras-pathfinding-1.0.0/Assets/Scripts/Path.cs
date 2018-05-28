@@ -97,4 +97,12 @@ public class Path
             length);
     }
 
+    internal void Add(Path path)
+    {
+        if (path != null)
+        {
+            nodes.AddRange(path.nodes);
+            Bake();
+        }
+    }
 }

@@ -60,9 +60,9 @@ namespace Nashet.EconomicSimulation
         }
         public static Unit Create(Army army)
         {
-            var unitObject = GameObject.Instantiate(LinksManager.Get.UnitPrefab, World.Get.transform);
-            unitObject.name = (World.GetAllProvinces().Count() + UnityEngine.Random.Range(0, 2000)).ToString();
-
+            var unitObject = GameObject.Instantiate(LinksManager.Get.UnitPrefab, LinksManager.Get.ArmiesHolder.transform);
+            unitObject.name = army.FullName; //(World.GetAllProvinces().Count() + UnityEngine.Random.Range(0, 2000)).ToString();
+            //army.getOwner()+"'s "
             unitObject.transform.position = army.Position;
 
             var unit = unitObject.GetComponent<Unit>();
@@ -142,11 +142,11 @@ namespace Nashet.EconomicSimulation
 
             transform.position = where.getPosition();
             //unitPanel.Move(where);            
-            
+
             lineRenderer.positionCount = 0;
             m_Animator.SetFloat("Forward", 0f);
             if (where.armies.Count > 1)
-                for (int i = 0; i < where.armies.Count-1; i++)
+                for (int i = 0; i < where.armies.Count - 1; i++)
                 {
                     where.armies[i].unit.unitPanel.Hide();
                 }
@@ -177,7 +177,7 @@ namespace Nashet.EconomicSimulation
         }
         private void OnDestroy()
         {
-            Destroy(unitPanelObject);            
+            Destroy(unitPanelObject);
         }
     }
 }

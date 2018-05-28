@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
-        public static List<Army> selectedUnits = new List<Army>();
+        public static List<Army> selectedArmies = new List<Army>();
 
 
         private static int mapMode;
