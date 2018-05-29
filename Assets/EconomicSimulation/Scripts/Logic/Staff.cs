@@ -149,22 +149,22 @@ namespace Nashet.EconomicSimulation
             allArmies.Add(army);
         }
 
-        internal void demobilize()
-        {
-            foreach (var item in allArmies.ToList())
-            {
-                item.demobilize();
-            }
-            //allArmies.Clear();
-        }
+        //internal void demobilize()
+        //{
+        //    foreach (var item in allArmies.ToList())
+        //    {
+        //        item.demobilize();
+        //    }
+        //    //allArmies.Clear();
+        //}
 
-        internal void demobilize(Func<Corps, bool> predicate)
+        internal void demobilize(Func<Corps, bool> predicate=null)
         {
-            foreach (Army nextArmy in allArmies)
+            foreach (Army nextArmy in allArmies.ToList())
             {
                 nextArmy.demobilize(predicate);
             }
-            allArmies.RemoveAll(army => army.getSize() == 0);
+            //allArmies.RemoveAll(army => army.getSize() == 0);
         }
 
         internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
@@ -271,10 +271,11 @@ namespace Nashet.EconomicSimulation
         public void KillArmy(Army army)
         {
             army.DeSelect();
-            army.Province.armies.Remove(army);
+            army.Province.standingArmies.Remove(army);
             allArmies.Remove(army);
             World.DayPassed -= army.MoveArmy;
-            UnityEngine.Object.Destroy(army.unit.gameObject);            
+            UnityEngine.Object.Destroy(army.unit.gameObject);
+            Game.provincesToRedraw.Add(army.Province);
         }
 
     }

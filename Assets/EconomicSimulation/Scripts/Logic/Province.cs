@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
         private readonly List<Factory> allFactories = new List<Factory>();
-        public List<Army> armies = new List<Army>(); // military units
+        public List<Army> standingArmies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         private readonly List<Province> neighbors = new List<Province>();
 
@@ -66,6 +66,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Country> cores = new List<Country>();
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
+        
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
         //private readonly float nameWeight;
@@ -1390,10 +1391,6 @@ namespace Nashet.EconomicSimulation
         public class OwnerChangedEventArgs : EventArgs
         {
             public Country oldOwner { get; set; }
-        }
-        public void RefreshUnitShield()
-        {
-
         }
     }
 }

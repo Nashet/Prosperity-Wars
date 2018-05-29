@@ -129,21 +129,24 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameLoadingIsFinished)
             {
-                RefreshMap();                
+                RefreshMap();
 
                 if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
                     if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
                         World.simulate();
+                        //Unit.RedrawAll();
+
                         previousFrameTime = Time.time;
                         refreshAllActive();
                     }
                 }
-
+                if (Game.provincesToRedraw.Count > 0)
+                    Unit.RedrawAll();
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
-                
+
             }
         }
 

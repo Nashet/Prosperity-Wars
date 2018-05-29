@@ -60,11 +60,15 @@ namespace Nashet.EconomicSimulation
             {
                 Game.selectedArmies[0].JoinIn(Game.selectedArmies[1]);
             }
+            Refresh();
+            Game.provincesToRedraw.Add(Game.selectedArmies[0].Province);
         }
         public void OnSplitClick()
         {
             Game.selectedArmies.First().balance(Procent._50Procent);
-            Game.selectedArmies.First().Redraw(null);
+            Game.provincesToRedraw.Add(Game.selectedArmies.First().Province);
+            Refresh();
+            //Game.selectedArmies.First().Redraw(null);
         }
         public void OnDemobilizeClick()
         {

@@ -9,12 +9,8 @@ using System.Text;
 using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
-    public class Unit : MonoBehaviour, IHasCountry, IHasProvince
+    public class Unit : MonoBehaviour, IHasProvince//, IHasCountry
     {
-        //[SerializeField]
-        //private int ID;
-        //[SerializeField]
-        //private Province province;
 
         [SerializeField]
         private GameObject selectionPart;
@@ -26,7 +22,7 @@ namespace Nashet.EconomicSimulation
         private LineRenderer lineRenderer;
 
         private GameObject unitPanelObject;
-        private UnitPanel unitPanel;
+        public UnitPanel unitPanel;
         Animator m_Animator;
 
 
@@ -42,7 +38,7 @@ namespace Nashet.EconomicSimulation
 
         public Province Province { get; private set; }
 
-        public Country Country { get; private set; }
+        //public Country Country { get; private set; }
 
         void Awake()
         {
@@ -67,8 +63,8 @@ namespace Nashet.EconomicSimulation
 
             var unit = unitObject.GetComponent<Unit>();
             unit.Province = army.Province;
-            unit.Country = army.getOwner().Country;
-            unit.SetUnitPanel(army);
+            //unit.Country = army.getOwner().Country;
+            unit.SetUnitShield(army);
 
             return unit;
         }
@@ -86,13 +82,13 @@ namespace Nashet.EconomicSimulation
             ArmiesSelectionWindow.Get.Refresh();
         }
 
-        private void SetUnitPanel(Army army)
+        private void SetUnitShield(Army army)
         {
             var panelPosition = gameObject.transform.position;
             panelPosition.y += unitPanelYOffset;
             panelPosition.z = -1f;
             unitPanelObject.transform.position = panelPosition;
-            UpdateShield();
+            UpdateUnitShield(army.Province);
             if (army != null)
                 unitPanel.SetFlag(army.getOwner().Country.Flag);
         }
@@ -119,12 +115,12 @@ namespace Nashet.EconomicSimulation
             return "Army";
         }
 
-        internal void UpdateShield()
+        internal void UpdateUnitShield(Province province)//static
         {
             int count = 0;
             //var sb = new StringBuilder();
             int size = 0;
-            foreach (var item in Country.getAllArmies().Where(x => x.Province == this.Province))
+            foreach (var item in province.standingArmies)
             {
                 size += item.getSize();
                 count++;
@@ -136,45 +132,60 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        internal void Stop(Province where)
+        internal static void RedrawAll()
         {
-            Province = where;
-
-            transform.position = where.getPosition();
-            //unitPanel.Move(where);            
-
-            lineRenderer.positionCount = 0;
-            m_Animator.SetFloat("Forward", 0f);
-            if (where.armies.Count > 1)
-                for (int i = 0; i < where.armies.Count - 1; i++)
+            foreach (var province in Game.provincesToRedraw)
+            {
+                foreach (var army in province.standingArmies)
                 {
-                    where.armies[i].unit.unitPanel.Hide();
+                    army.unit.Province = province;
+                    army.unit.transform.position = province.getPosition();
+                    if (army.Path == null)
+                    {
+                        army.unit.Stop();
+                    }
+                    else
+                    {
+                        army.unit.Move(army.Path);
+                    }
+                    army.unit.SetUnitShield(army);
                 }
-            else
-                where.armies[0].unit.unitPanel.Show();
-            SetUnitPanel(null);
+                if (province.standingArmies.Count > 1)
+                    for (int i = 0; i < province.standingArmies.Count - 1; i++)
+                    {
+                        province.standingArmies[i].unit.unitPanel.Hide();
+                    }
+                else if (province.standingArmies.Count == 1)
+                    province.standingArmies[0].unit.unitPanel.Show();
+            }
+            Game.provincesToRedraw.Clear();
         }
 
-        internal void Move(Path path, Province where)
+        private void Move(Path path)
         {
-            Province = where;
-            transform.position = where.getPosition();
-
-            //unitPanel.Move(where);
             lineRenderer.positionCount = path.nodes.Count + 1;
             lineRenderer.SetPositions(path.GetVector3Nodes());
-            lineRenderer.SetPosition(0, where.getPosition());//currentProvince.getPosition()
+            lineRenderer.SetPosition(0, Province.getPosition());//currentProvince.getPosition()
             this.transform.LookAt(path.nodes[0].Province.getPosition(), Vector3.back);
             m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
-            if (where.armies.Count > 1)
-                for (int i = 0; i < where.armies.Count - 1; i++)
-                {
-                    where.armies[i].unit.unitPanel.Hide();
-                }
-            else
-                where.armies[0].unit.unitPanel.Show();
-            SetUnitPanel(null);
+                                                 //if (where.armies.Count > 1)
+                                                 //    for (int i = 0; i < where.armies.Count - 1; i++)
+                                                 //    {
+                                                 //        where.armies[i].unit.unitPanel.Hide();
+                                                 //    }
+                                                 //else
+                                                 //    where.armies[0].unit.unitPanel.Show();
+
         }
+
+        private void Stop()
+        {
+            lineRenderer.positionCount = 0;
+            m_Animator.SetFloat("Forward", 0f);
+
+            //SetUnitPanel(null);
+        }
+
         private void OnDestroy()
         {
             Destroy(unitPanelObject);

@@ -47,29 +47,9 @@ public class SelectionComponent : MonoBehaviour
         }
 
         // MOUSE RIGHT BUTTON clicked
-        if (!Game.selectedArmies.IsEmpty() && Input.GetMouseButtonDown(1)) 
+        if (!Game.selectedArmies.IsEmpty() && Input.GetMouseButtonDown(1))
         {
-            
-            var collider = SelectionComponent.getRayCastMeshNumber();
-            if (collider != null)
-            {
-                Province sendToPovince = null;
-                int meshNumber = Province.FindByCollider(collider);
-                if (meshNumber > 0) // send armies to another province
-                    sendToPovince = World.FindProvince(meshNumber);
-                else // better do here sort of collider layer, hitting provinces only
-                {
-                    var unit = collider.transform.GetComponent<Unit>();
-                    if (unit != null)
-                    {
-                        sendToPovince = unit.Province;
-                    }
-                }
-                if (Input.GetKey(AdditionKey))
-                    Game.selectedArmies.PerformAction(x => x.AddToPath(sendToPovince));
-                else
-                    Game.selectedArmies.PerformAction(x => x.SetPathTo(sendToPovince));
-            }
+            SendUnitTo();
         }
         if (Input.GetKeyDown(KeyCode.Return)) // enter key
             MainCamera.Get.closeToppestPanel();
@@ -100,7 +80,36 @@ public class SelectionComponent : MonoBehaviour
         //    }
         //}
     }
+    private void SendUnitTo()
+    {
+        var collider = getRayCastMeshNumber();
+        if (collider != null)
+        {
+            Province sendToPovince = null;
+            int meshNumber = Province.FindByCollider(collider);
+            if (meshNumber > 0) // send armies to another province
+                sendToPovince = World.FindProvince(meshNumber);
+            else // better do here sort of collider layer, hitting provinces only
+            {
+                var unit = collider.transform.GetComponent<Unit>();
+                if (unit != null)
+                {
+                    sendToPovince = unit.Province;
+                }
+            }
+            var addPath = Input.GetKey(AdditionKey);
 
+            foreach (var item in Game.selectedArmies)
+            {
+                if (addPath)
+                    item.AddToPath(sendToPovince);
+                else
+                    item.SetPathTo(sendToPovince);
+                Game.provincesToRedraw.Add(item.Province);
+            }
+            //Unit.RedrawAll();
+        }
+    }
     private void StartFrameSelection()
     {
         isSelecting = true;
