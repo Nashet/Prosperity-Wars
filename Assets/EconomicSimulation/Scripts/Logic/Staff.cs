@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     public abstract class Staff : Consumer, IWayOfLifeChange
     {
         private List<Army> allArmies = new List<Army>();
-
+        public readonly Dictionary<Country, Date> LastAttackDate = new Dictionary<Country, Date>();
         /// <summary>
         /// how much armies created ever
         /// </summary>
@@ -133,12 +133,12 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var province in source)
             {
-                foreach (var pop in province.GetAllPopulation())
-                    if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0) // mirrored in Army
+                // mirrored in Army
+                if (province.GetAllPopulation().Any(x=>x.Type.canMobilize(this) && x.howMuchCanMobilize(this, null) > 0))
+                    //if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0) 
                     {
                         armyCount++;
-                        Army newArmy = new Army(this, province, this + "'s " + armyCount.ToString() + "th");
-                        break;
+                        Army newArmy = new Army(this, province, this + "'s " + armyCount.ToString() + "th");                        
                     }
             }
             //consolidateArmies();
@@ -271,12 +271,19 @@ namespace Nashet.EconomicSimulation
         public void KillArmy(Army army)
         {
             army.DeSelect();
-            army.Province.standingArmies.Remove(army);
+            army.Province.RemoveArmy(army);
             allArmies.Remove(army);
             World.DayPassed -= army.MoveArmy;
             UnityEngine.Object.Destroy(army.unit.gameObject);
-            Game.provincesToRedraw.Add(army.Province);
+            Game.armiesToRedraw.Add(army.Province);
+            //Debug.Log("Killed army " + army);
         }
-
+        public Date getLastAttackDateOn(Country country)
+        {
+            if (LastAttackDate.ContainsKey(country))
+                return LastAttackDate[country];
+            else
+                return Date.Never.Copy();
+        }
     }
 }

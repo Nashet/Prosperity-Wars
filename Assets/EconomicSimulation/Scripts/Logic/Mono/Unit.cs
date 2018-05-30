@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
             int count = 0;
             //var sb = new StringBuilder();
             int size = 0;
-            foreach (var item in province.standingArmies)
+            foreach (var item in province.AllStandingArmies())
             {
                 size += item.getSize();
                 count++;
@@ -134,31 +134,34 @@ namespace Nashet.EconomicSimulation
 
         internal static void RedrawAll()
         {
-            foreach (var province in Game.provincesToRedraw)
+            foreach (var province in Game.armiesToRedraw)
             {
-                foreach (var army in province.standingArmies)
-                {
-                    army.unit.Province = province;
-                    army.unit.transform.position = province.getPosition();
-                    if (army.Path == null)
+                foreach (var army in province.AllStandingArmies())
+                    //if (army.unit != null)
                     {
-                        army.unit.Stop();
+                        army.unit.Province = province;
+                        army.unit.transform.position = province.getPosition();// here it says that unit is destroyed
+                        if (army.Path == null)
+                        {
+                            army.unit.Stop();
+                        }
+                        else
+                        {
+                            army.unit.Move(army.Path);
+                        }
+                        army.unit.SetUnitShield(army);
                     }
-                    else
+                    //else
+                    //    Debug.Log("Bugged army " + army);
+                if (province.AllStandingArmies().Count() > 1)
+                    for (int i = 0; i < province.AllStandingArmies().Count() - 1; i++)
                     {
-                        army.unit.Move(army.Path);
+                        province.AllStandingArmies().ElementAt(i).unit.unitPanel.Hide();
                     }
-                    army.unit.SetUnitShield(army);
-                }
-                if (province.standingArmies.Count > 1)
-                    for (int i = 0; i < province.standingArmies.Count - 1; i++)
-                    {
-                        province.standingArmies[i].unit.unitPanel.Hide();
-                    }
-                else if (province.standingArmies.Count == 1)
-                    province.standingArmies[0].unit.unitPanel.Show();
+                else if (province.AllStandingArmies().Count() == 1)
+                    province.AllStandingArmies().ElementAt(0).unit.unitPanel.Show();
             }
-            Game.provincesToRedraw.Clear();
+            Game.armiesToRedraw.Clear();
         }
 
         private void Move(Path path)

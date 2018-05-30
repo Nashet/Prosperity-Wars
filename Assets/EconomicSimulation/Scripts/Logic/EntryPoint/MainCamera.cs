@@ -142,7 +142,7 @@ namespace Nashet.EconomicSimulation
                         refreshAllActive();
                     }
                 }
-                if (Game.provincesToRedraw.Count > 0)
+                if (Game.armiesToRedraw.Count > 0)
                     Unit.RedrawAll();
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);

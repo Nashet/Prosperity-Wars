@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Province> ownedProvinces = new List<Province>();
 
         private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-        private readonly Dictionary<Country, Date> myLastAttackDate = new Dictionary<Country, Date>();
+        
         private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
@@ -493,13 +493,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        public Date getLastAttackDateOn(Country country)
-        {
-            if (myLastAttackDate.ContainsKey(country))
-                return myLastAttackDate[country];
-            else
-                return Date.Never.Copy();
-        }
+       
 
         private bool hasCores(Country country)
         {
@@ -587,12 +581,7 @@ namespace Nashet.EconomicSimulation
 
         internal override void sendArmy(Province target, Procent procent)
         {
-            base.sendArmy(target, procent);
-            //myLastAttackDate.AddMy(target.Country, Game.date);
-            if (myLastAttackDate.ContainsKey(target.Country))
-                myLastAttackDate[target.Country].set(Date.Today);
-            else
-                myLastAttackDate.Add(target.Country, Date.Today.Copy());
+            base.sendArmy(target, procent);                        
         }
 
         //internal bool canAttack(Province province)

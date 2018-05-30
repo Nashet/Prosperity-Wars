@@ -12,7 +12,8 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = true;
+        public static bool devMode = false;
+        private static bool surrended = true;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
@@ -26,12 +27,12 @@ namespace Nashet.EconomicSimulation
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
-        public static List<Province> provincesToRedraw = new List<Province>();
+        public static List<Province> armiesToRedraw = new List<Province>();
         public static List<Army> selectedArmies = new List<Army>();
 
 
         private static int mapMode;
-        private static bool surrended = false;
+        
 
         
 

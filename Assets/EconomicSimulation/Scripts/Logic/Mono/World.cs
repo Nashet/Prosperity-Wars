@@ -407,43 +407,43 @@ namespace Nashet.EconomicSimulation
                     yield return record;
         }
 
-        private static void calcBattles()
-        {
-            //foreach (Staff attacker in Staff.getAllStaffs().ToList())
-            //{
-            //    foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
-            //    {
-            //        var movement = attacker as Movement;
-            //        if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
-            //        {
-            //            var result = attackerArmy.attack(attackerArmy.getDestination());
-            //            if (result.isAttackerWon())
-            //            {
-            //                if (movement == null)
-            //                    (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
-            //                //attackerArmy.getDestination().secedeTo(attacker as Country, true);
-            //                else
-            //                {
-            //                    if (movement.getReformType() == null)//separatists
-            //                        movement.onRevolutionWon();
-            //                    else
-            //                        movement.getReformType().setValue(movement.getGoal());
+        //private static void calcBattles()
+        //{
+        //    //foreach (Staff attacker in Staff.getAllStaffs().ToList())
+        //    //{
+        //    //    foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
+        //    //    {
+        //    //        var movement = attacker as Movement;
+        //    //        if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
+        //    //        {
+        //    //            var result = attackerArmy.attack(attackerArmy.getDestination());
+        //    //            if (result.isAttackerWon())
+        //    //            {
+        //    //                if (movement == null)
+        //    //                    (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
+        //    //                //attackerArmy.getDestination().secedeTo(attacker as Country, true);
+        //    //                else
+        //    //                {
+        //    //                    if (movement.getReformType() == null)//separatists
+        //    //                        movement.onRevolutionWon();
+        //    //                    else
+        //    //                        movement.getReformType().setValue(movement.getGoal());
 
-            //                }
-            //            }
-            //            else if (result.isDefenderWon())
-            //            {
-            //                if (movement != null)
-            //                    movement.onRevolutionLost();
-            //            }
-            //            if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-            //                result.createMessage();
-            //        }
-            //        attackerArmy.sendTo(null); // go home
-            //    }
-            //    //attacker.consolidateArmies();
-            //}
-        }
+        //    //                }
+        //    //            }
+        //    //            else if (result.isDefenderWon())
+        //    //            {
+        //    //                if (movement != null)
+        //    //                    movement.onRevolutionLost();
+        //    //            }
+        //    //            if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+        //    //                result.createMessage();
+        //    //        }
+        //    //        attackerArmy.sendTo(null); // go home
+        //    //    }
+        //    //    //attacker.consolidateArmies();
+        //    //}
+        //}
 
         public static void prepareForNewTick()
         {
@@ -484,7 +484,7 @@ namespace Nashet.EconomicSimulation
             }
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-            calcBattles();
+            //calcBattles();
 
             // includes workforce balancing
             // and sets statistics to zero. Should go after price calculation

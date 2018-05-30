@@ -48,7 +48,24 @@ namespace Nashet.EconomicSimulation
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
         private readonly List<Factory> allFactories = new List<Factory>();
-        public List<Army> standingArmies = new List<Army>(); // military units
+        private List<Army> standingArmies = new List<Army>(); // military units
+
+        public IEnumerable<Army> AllStandingArmies()
+        {
+            foreach (var item in standingArmies)
+            {
+                yield return item;
+            }
+        }
+        public void AddArmy(Army army)
+        {
+            standingArmies.Add(army);
+            //Debug.Log("Added " + army);
+        }
+        public void RemoveArmy(Army army)
+        {
+            standingArmies.Remove(army);
+        }
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         private readonly List<Province> neighbors = new List<Province>();
 
