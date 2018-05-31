@@ -12,8 +12,8 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = true;
-        private static bool surrended = true;
+        public static bool devMode = false;
+        private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
@@ -27,9 +27,9 @@ namespace Nashet.EconomicSimulation
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
-        public static List<Province> armiesToRedraw = new List<Province>();
+        public static List<Province> provincesToRedrawArmies = new List<Province>();
         public static List<Army> selectedArmies = new List<Army>();
-
+        public static List<Province> playerVisibleProvinces = new List<Province>();
 
         private static int mapMode;
         
@@ -234,7 +234,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\nYou play as " + Player.FullName + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
-                + "\n'Enter' key to close top window, space - to pause \\ unpause"
+                + "\n'Enter' key to close top window, space - to pause \\ unpause, left alt - to add command"
                 + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
                 , "Ok", false);

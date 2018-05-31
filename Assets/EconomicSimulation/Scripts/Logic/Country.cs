@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         internal readonly UnemploymentSubsidies unemploymentSubsidies;
         internal readonly TaxationForPoor taxationForPoor;
         internal readonly TaxationForRich taxationForRich;
-
+        public readonly Dictionary<Country, Date> LastAttackDate = new Dictionary<Country, Date>();
         /// <summary> could be null</summary>
         private readonly Bank bank;
 
@@ -1727,6 +1727,13 @@ namespace Nashet.EconomicSimulation
             foreach (var item in GetAllPopulation())
                 foreach (var record in item.getAllPopulationChanges())
                     yield return record;
+        }
+        public Date getLastAttackDateOn(Country country)
+        {
+            if (LastAttackDate.ContainsKey(country))
+                return LastAttackDate[country];
+            else
+                return Date.Never.Copy();
         }
     }
 }

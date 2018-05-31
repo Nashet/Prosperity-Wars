@@ -294,6 +294,10 @@ namespace Nashet.Utils
 
     public static class CollectionExtensions
     {
+        public static IEnumerable<T> Yield<T>(this T item)
+        {
+            yield return item;
+        }
         //public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
         //{
         //    foreach (var keyValue in dictionary)

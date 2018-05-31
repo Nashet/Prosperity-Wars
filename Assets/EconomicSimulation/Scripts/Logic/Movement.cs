@@ -208,11 +208,13 @@ namespace Nashet.EconomicSimulation
             }
             else
             {
-                if (!Country.isAI())
-                    Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.getPosition());
-                
                 if (setReform)
+                {
                     targetReform.setValue(getGoal());//to avoid recursion            
+                    if (!Country.isAI())
+                        Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.getPosition());
+                }
+                
             }
             foreach (var pop in members)
             {

@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
         private Dropdown ddProvinceSelect;
 
         [SerializeField]
-        private Text allArmySizeText, captionText, sendingArmySizeText;
+        private Text allArmySizeText, captionText, sendingArmySizeText, newText;
 
         [SerializeField]
         private Slider armySendLimit;
@@ -53,7 +53,9 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Military of ").Append(Game.Player);
             captionText.text = sb.ToString();
+            var armiesToShow=Game.Player.getAllArmies().OrderByDescending(x=>x.getSize());
 
+            newText.text = "Your armies:\n\n" + armiesToShow.getString("\n\n");
             //sb.Clear();
             //sb.Append("Home army: ").Append(Game.Player.getDefenceForces().getName());
             //allArmySizeText.text = sb.ToString();

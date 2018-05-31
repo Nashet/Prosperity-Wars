@@ -105,7 +105,7 @@ public class SelectionComponent : MonoBehaviour
                     item.AddToPath(sendToPovince);
                 else
                     item.SetPathTo(sendToPovince);
-                Game.armiesToRedraw.Add(item.Province);
+                Game.provincesToRedrawArmies.Add(item.Province);
             }
             //Unit.RedrawAll();
         }

@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
-    public class Unit : MonoBehaviour, IHasProvince//, IHasCountry
+    public class Unit : Hideable, IHasProvince//, IHasCountry//MonoBehaviour,
     {
 
         [SerializeField]
@@ -92,6 +92,7 @@ namespace Nashet.EconomicSimulation
             unitPanel.SetFlag(flag);
             //UpdateUnitShieldText(army.Province);
         }
+
         public static IEnumerable<Unit> AllUnits()
         {
             foreach (var item in allUnits)
@@ -99,6 +100,7 @@ namespace Nashet.EconomicSimulation
                 yield return item;
             }
         }
+
         public void Simulate()
         { }
 
@@ -134,7 +136,7 @@ namespace Nashet.EconomicSimulation
 
         internal static void RedrawAll()
         {
-            foreach (var province in Game.armiesToRedraw)
+            foreach (var province in Game.provincesToRedrawArmies)
             {
                 foreach (var army in province.AllStandingArmies())
                 //if (army.unit != null)
@@ -162,7 +164,7 @@ namespace Nashet.EconomicSimulation
                 else if (province.AllStandingArmies().Count() == 1)
                     province.AllStandingArmies().ElementAt(0).unit.unitPanel.Show();
             }
-            Game.armiesToRedraw.Clear();
+            Game.provincesToRedrawArmies.Clear();
         }
 
         private void Move(Path path)

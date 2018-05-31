@@ -84,6 +84,7 @@ namespace Nashet.EconomicSimulation
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
         
+
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
         //private readonly float nameWeight;
@@ -233,20 +234,6 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            //foreach (var neighbor in neighbors)
-            //    if (Country == neighbor.Country)
-            //    {
-            //        this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
-            //        neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
-            //    }
-            //    else
-            //    {
-            //        {
-            //            this.bordersMeshes[neighbor].material = Country.getBorderMaterial();
-            //            if (neighbor.Country != null)
-            //                neighbor.bordersMeshes[this].material = neighbor.Country.getBorderMaterial();
-            //        }
-            //    }
         }
 
         /// <summary>

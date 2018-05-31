@@ -142,8 +142,8 @@ namespace Nashet.EconomicSimulation
 
             var unitObject = Unit.Create(this);
             unit = unitObject.GetComponent<Unit>();
-            
-            Game.armiesToRedraw.Add(where);
+
+            Game.provincesToRedrawArmies.Add(where);
             //OnMoveArmy(this, EventArgs.Empty);
             foreach (var enemyArmy in Province.AllStandingArmies().Where(x => x.owner != owner).ToList())
             {
@@ -266,7 +266,7 @@ namespace Nashet.EconomicSimulation
                     }
                 armyToAdd.personal.Clear();
                 armyToAdd.owner.KillArmy(armyToAdd);
-                Game.armiesToRedraw.Add(Province);
+                Game.provincesToRedrawArmies.Add(Province);
                 //Province.RedrawLocalArmies();
             }
         }
@@ -289,27 +289,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal string getName()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            int size = getSize();
-            if (size > 0)
-            {
-                //foreach (var next in getAmountByTypes())
-                //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
-                sb.Append(getAmountByTypes().getString(": ", ", "));
-                sb.Append(", Total size: ").Append(getSize());
-                sb.Append(", Morale: ").Append(GetAverageCorps(x => x.getMorale()));
-                sb.Append(", Provision: ").Append(getConsumption());
-                //string str;
-                //modifierStrenght.getModifier(this, out str);
-                //sb.Append(" Bonuses: ").Append(str);
-            }
-            else
-                sb.Append("None");
-            return sb.ToString();
-        }
+        
 
         //private Procent getConsumption(Product prod)
         //{
@@ -484,7 +464,7 @@ namespace Nashet.EconomicSimulation
                 result = new BattleResult(attacker.getOwner(), defender.getOwner(), initialAttackerSize, attackerLoss
                 , initialDefenderSize, defenderLoss, attacker.Province, attackerWon, attackerBonus, defenderBonus);
             }
-            Game.armiesToRedraw.Add(defender.Province);
+            Game.provincesToRedrawArmies.Add(defender.Province);
 
             if (attacker.getSize() == 0)
                 attacker.owner.KillArmy(attacker);
@@ -610,7 +590,7 @@ namespace Nashet.EconomicSimulation
             if (e.oldOwner == Province.Country && Path != null && Path.nodes.Any(x => x.Province == sender))//changed owner, probably, on our way
             {
                 Path = null;
-                Game.armiesToRedraw.Add(Province);
+                Game.provincesToRedrawArmies.Add(Province);
                 //Province.RedrawLocalArmies(); 
                 Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.getPosition());
             }
@@ -627,16 +607,13 @@ namespace Nashet.EconomicSimulation
                         var oldProvince = Province;
                         Province = Path.nodes[0].Province;
                         Path.nodes.RemoveAt(0);
-
-
                         oldProvince.RemoveArmy(this);
+
                         if (!Province.AllStandingArmies().Contains(this))
                             Province.AddArmy(this);
 
-
                         if (Game.selectedArmies.Contains(this))
                             ArmiesSelectionWindow.Get.Refresh();// need that ti check if units Ok to merge
-
 
                         if (Path.nodes.Count == 0)
                         {
@@ -646,26 +623,31 @@ namespace Nashet.EconomicSimulation
                         }
 
 
-                        if (Province.Country != owner) // thats attacking
+                        if (owner != Province.Country) // thats attacking
                         {
-                            if (owner.LastAttackDate.ContainsKey(Province.Country))
-                                owner.LastAttackDate[Province.Country].set(Date.Today);
-                            else
-                                owner.LastAttackDate.Add(Province.Country, Date.Today.Copy());
-
-
                             if (Province.Country.isAI())
                             {
-                                Province.Country.mobilize(Province.Country.getAllProvinces());
-                                Province.Country.getAllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
+                                if (Province.Country == World.UncolonizedLand)
+                                    Province.Country.mobilize(Province.Yield());
+                                else
+                                {
+                                    Province.Country.mobilize(Province.Country.getAllProvinces());
+                                    Province.Country.getAllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
+                                }
                             }
                             var attackerIsCountry = owner as Country;
                             if (attackerIsCountry != null)
+                            {
                                 Province.Country.changeRelation(attackerIsCountry, -0.5f);
+                                if (attackerIsCountry.LastAttackDate.ContainsKey(Province.Country))
+                                    attackerIsCountry.LastAttackDate[Province.Country].set(Date.Today);
+                                else
+                                    attackerIsCountry.LastAttackDate.Add(Province.Country, Date.Today.Copy());
+                            }
                         }
 
 
-                        foreach (var enemyArmy in Province.AllStandingArmies().Where(x => x.owner != owner).ToList())
+                        foreach (var enemyArmy in Province.AllStandingArmies().Where(x => x.owner != owner && (x.owner is Country || owner is Country)).ToList())
                         {
 
                             if (enemyArmy.getSize() > 0)
@@ -678,10 +660,15 @@ namespace Nashet.EconomicSimulation
                         {
                             var isCountryOwner = owner as Country;
                             if (isCountryOwner != null && isCountryOwner != Province.Country)
+                            {
+                                if (Province.Country == Game.Player && !Game.isPlayerSurrended())
+                                    Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.getPosition());
                                 isCountryOwner.TakeProvince(Province, true);
+
+                            }
                         }
-                        Game.armiesToRedraw.Add(oldProvince);
-                        Game.armiesToRedraw.Add(Province);
+                        Game.provincesToRedrawArmies.Add(oldProvince);
+                        Game.provincesToRedrawArmies.Add(Province);
                     }
                 }
                 if (owner.isAI())
@@ -702,7 +689,7 @@ namespace Nashet.EconomicSimulation
             else //if (destinationProvince != )
             {
                 Path.Add(World.Get.graph.GetShortestPath(Path.nodes.Last().Province, destinationProvince));
-                Game.armiesToRedraw.Add(Province);
+                Game.provincesToRedrawArmies.Add(Province);
                 //                Province.RedrawLocalArmies();
             }
         }
@@ -712,7 +699,7 @@ namespace Nashet.EconomicSimulation
                 Path = null;
             else
                 Path = World.Get.graph.GetShortestPath(Province, destinationProvince);//,x => x.Country == owner || Diplomacy.IsInWar(x.Country, owner.Country) || x.Country == World.UncolonizedLand
-            Game.armiesToRedraw.Add(Province);
+            Game.provincesToRedrawArmies.Add(Province);
             //Province.RedrawLocalArmies();
         }
 
@@ -735,9 +722,65 @@ namespace Nashet.EconomicSimulation
             //selectionPart.SetActive(false);
             //Province.SelectUnit();
         }
+                
+        private Path path;
+        public Path Path
+        {
+            get
+            {
+                return path;
+            }
+            private set
+            {
+                path = value;
+                //if (path == null)
+                //{
+                //    unit.Stop(Province);
+                //}
+                //else
+                //{
+                //    unit.Move(path, Province);
+                //}
+            }
+        }
+        internal string getName()
+        {
+            StringBuilder sb = new StringBuilder();
 
+            int size = getSize();
+            if (size > 0)
+            {
+                //foreach (var next in getAmountByTypes())
+                //    sb.Append(next.Value).Append(" ").Append(next.Key).Append(", ");
+                sb.Append(getAmountByTypes().getString(": ", ", "));
+                sb.Append(", Total size: ").Append(getSize());
+                sb.Append(", Morale: ").Append(GetAverageCorps(x => x.getMorale()));
+                sb.Append(", Provision: ").Append(getConsumption());
+                //string str;
+                //modifierStrenght.getModifier(this, out str);
+                //sb.Append(" Bonuses: ").Append(str);
+            }
+            else
+                sb.Append("None");
+            return sb.ToString();
+        }
+        public override string ToString()
+        {
+            //StringBuilder sb = new StringBuilder();
 
-
+            //int size = getSize();
+            //if (size > 0)
+            //{
+            //    foreach (var next in personal)
+            //        if (next.Value.getSize() > 0)
+            //            sb.Append(next.Value).Append(", ");
+            //    sb.Append("Total size is ").Append(getSize());
+            //}
+            //else
+            //    sb.Append("None");
+            //return sb.ToString();
+            return base.ShortName + " army - " + getName();
+        }
         public static string SizeToString(int size)
         {
             if (size < 1000)
@@ -759,41 +802,5 @@ namespace Nashet.EconomicSimulation
                 return this + " army (" + SizeToString(getSize()) + ")";
             }
         }
-        private Path path;
-        public Path Path
-        {
-            get
-            {
-                return path;
-            }
-            private set
-            {
-                path = value;
-                //if (path == null)
-                //{
-                //    unit.Stop(Province);
-                //}
-                //else
-                //{
-                //    unit.Move(path, Province);
-                //}
-            }
-        }
-        //public override string ToString()
-        //{
-        //    StringBuilder sb = new StringBuilder();
-
-        //    int size = getSize();
-        //    if (size > 0)
-        //    {
-        //        foreach (var next in personal)
-        //            if (next.Value.getSize() > 0)
-        //                sb.Append(next.Value).Append(", ");
-        //        sb.Append("Total size is ").Append(getSize());
-        //    }
-        //    else
-        //        sb.Append("None");
-        //    return sb.ToString();
-        //}
     }
 }

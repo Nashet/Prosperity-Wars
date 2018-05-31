@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         private static readonly List<Culture> allCultures = new List<Culture>();
 
         internal static readonly Country UncolonizedLand;
-        
+
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
@@ -49,7 +49,27 @@ namespace Nashet.EconomicSimulation
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.setValue(Government.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
-        }       
+        }
+
+        public static IEnumerable<Army> AllArmies()
+        {
+            foreach (var country in World.getAllExistingCountries())
+            {
+                foreach (var army in country.getAllArmies())
+                {
+                    yield return army;
+                }
+                foreach (var movement in country.movements)
+                    foreach (var army in movement.getAllArmies())
+                    {
+                        yield return army;
+                    }
+            }
+            foreach (var army in UncolonizedLand.getAllArmies())
+            {
+                yield return army;
+            }
+        }
 
         public static IEnumerable<Country> getAllExistingCountries()
         {
@@ -657,6 +677,6 @@ namespace Nashet.EconomicSimulation
             }
         }
         public static event EventHandler DayPassed;
-        
+
     }
 }

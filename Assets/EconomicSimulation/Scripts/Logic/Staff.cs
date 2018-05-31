@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
     public abstract class Staff : Consumer, IWayOfLifeChange
     {
         private List<Army> allArmies = new List<Army>();
-        public readonly Dictionary<Country, Date> LastAttackDate = new Dictionary<Country, Date>();
+        
         /// <summary>
         /// how much armies created ever
         /// </summary>
@@ -275,15 +275,9 @@ namespace Nashet.EconomicSimulation
             allArmies.Remove(army);
             World.DayPassed -= army.OnMoveArmy;
             UnityEngine.Object.Destroy(army.unit.gameObject);
-            Game.armiesToRedraw.Add(army.Province);
+            Game.provincesToRedrawArmies.Add(army.Province);
             //Debug.Log("Killed army " + army);
         }
-        public Date getLastAttackDateOn(Country country)
-        {
-            if (LastAttackDate.ContainsKey(country))
-                return LastAttackDate[country];
-            else
-                return Date.Never.Copy();
-        }
+        
     }
 }
