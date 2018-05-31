@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         /// how much armies created ever
         /// </summary>
         public int armyCount;
-
+        public Texture2D Flag { get; protected set; }
         //protected Country place; //todo change class
         protected Staff(Country place) : base(place)
         {
@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        internal virtual void sendArmy(Province possibleTarget, Procent procent)
+        internal virtual void sendAllArmies(Province possibleTarget, Procent procent)
         {
             allArmies.PerformAction(x => x.SetPathTo(possibleTarget));
             //consolidateArmies().balance(procent).sendTo(possibleTarget);
@@ -273,7 +273,7 @@ namespace Nashet.EconomicSimulation
             army.DeSelect();
             army.Province.RemoveArmy(army);
             allArmies.Remove(army);
-            World.DayPassed -= army.MoveArmy;
+            World.DayPassed -= army.OnMoveArmy;
             UnityEngine.Object.Destroy(army.unit.gameObject);
             Game.armiesToRedraw.Add(army.Province);
             //Debug.Log("Killed army " + army);

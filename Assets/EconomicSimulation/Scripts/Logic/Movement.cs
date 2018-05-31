@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
@@ -20,17 +21,21 @@ namespace Nashet.EconomicSimulation
         private readonly List<PopUnit> members = new List<PopUnit>();
 
         private bool _isInRevolt;
+        private int siegeCapitalTurns;
 
-        private Movement(PopUnit firstPop, Country place) : base(place)
+        //private Movement(PopUnit firstPop, Country place) : base(place)
+        //{
+        //    members.Add(firstPop);
+        //    Country.movements.Add(this);
+        //}
+
+        private Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : base(place)// : this(firstPop, place)
         {
             members.Add(firstPop);
             Country.movements.Add(this);
-        }
-
-        private Movement(AbstractReform reform, AbstractReformValue goal, PopUnit firstPop, Country place) : this(firstPop, place)
-        {
             targetReform = reform;
             targetReformValue = goal;
+            Flag = Nashet.Flag.Rebels;
         }
 
         public static void join(PopUnit pop)
@@ -174,10 +179,10 @@ namespace Nashet.EconomicSimulation
 
         private void killMovement()
         {
-            //foreach (var item in getAllArmies())
-            //{
-            //    item.demobilize();
-            //}
+            foreach (var item in getAllArmies().ToArray())
+            {
+                item.demobilize();
+            }
             foreach (var pop in members.ToArray())
             {
                 leave(pop);
@@ -186,21 +191,29 @@ namespace Nashet.EconomicSimulation
             Country.movements.Remove(this);
             //members.Clear();
         }
-
-        internal void onRevolutionWon()
-        {            
-            //demobilize();
-            //_isInRevolt = false;
+        internal void OnSeparatistsWon()
+        {
+            var separatists = getGoal() as Separatism;
+            separatists.Country.onSeparatismWon(country);
+            if (!separatists.Country.isAI())
+                Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.getPosition());
+        }
+        internal void onRevolutionWon(bool setReform)
+        {
+            siegeCapitalTurns = 0;
+            _isInRevolt = false;
             if (targetReform == null) // meaning separatism
             {
-                var separatists = getGoal() as Separatism;
-                separatists.Country.onSeparatismWon(country);
-                if (!separatists.Country.isAI())
-                    Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.getPosition());
+                OnSeparatistsWon();
             }
-            //else
-            //    targetReform.setValue(getGoal());
-            //Country.movements.Remove(this);
+            else
+            {
+                if (!Country.isAI())
+                    Message.NewMessage("Rebels won", "Now you have " + targetReformValue, "Ok", false, Game.Player.Capital.getPosition());
+                
+                if (setReform)
+                    targetReform.setValue(getGoal());//to avoid recursion            
+            }
             foreach (var pop in members)
             {
                 pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionWon);
@@ -216,7 +229,7 @@ namespace Nashet.EconomicSimulation
                 pop.loyalty.Add(Options.PopLoyaltyBoostOnRevolutionLost);
                 pop.loyalty.clamp100();
             }
-            //_isInRevolt = false;
+            _isInRevolt = false;
             //demobilize();
         }
 
@@ -225,28 +238,51 @@ namespace Nashet.EconomicSimulation
             return members.Count == 0;
         }
 
-        public void simulate()
+        public void Simulate()
         {
-            base.simulate();
-            //assuming movement already won or lost
-            if (isInRevolt())
-            {
-                _isInRevolt = false;
-                demobilize();
-            }
             if (!isValidGoal())
             {
                 killMovement();
                 return;
             }
+            base.simulate();
+            //assuming movement already won or lost
+            //if (isInRevolt())
+            //{
+            //    _isInRevolt = false;
+            //    demobilize();
+            //}
+
+
 
             //&& canWinUprising())
-            if (getRelativeStrength(Country).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
-                    && getAverageLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
+            if (isInRevolt())
+            {
+                if (getAllArmies().Count() == 0)
+                    onRevolutionLost();
+                if (getAllArmies().Any(x => x.Province == Country.Capital))
+                    siegeCapitalTurns++;
+                else
+                    siegeCapitalTurns = 0;
+                if (siegeCapitalTurns > Options.ArmyTimeToOccupy)
+                {
+                    
+                    //if (targetReform == null) // meaning separatism
+                        onRevolutionWon(true);
+                    //else
+                    //    getReformType().setValue(getGoal()); // just to avoid recursion
+                }
+            }
+            else
+            {
+                if (getRelativeStrength(Country).isBiggerOrEqual(Options.MovementStrenthToStartRebellion)
+                && getAverageLoyalty().isSmallerThan(Options.PopLoyaltyLimitToRevolt)
                     //&& getStrength(Country) > Options.PopMinStrengthToRevolt
                     )//&& isValidGoal()) do it in before battle
-            {
-                //doRevolt(); todo army fix
+                {
+                    StartUprising();
+                }
+
             }
         }
 
@@ -258,17 +294,20 @@ namespace Nashet.EconomicSimulation
         //    {
         //    }
         //}
-        private void doRevolt()
+        private void StartUprising()
         {
             //revolt
             if (country == Game.Player && !Game.Player.isAI())
-                Message.NewMessage("Revolution is coming", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.getPosition());
+                Message.NewMessage("Revolution is on", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.getPosition());
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
             mobilize(country.getAllProvinces());
 
-            sendArmy(country.Capital, Procent.HundredProcent);
+            //if (targetReformValue is Separatism)
+            //    ;
+            //else
+            sendAllArmies(country.Capital, Procent.HundredProcent);
             _isInRevolt = true;
         }
 

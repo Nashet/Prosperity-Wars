@@ -198,7 +198,9 @@ namespace Nashet.EconomicSimulation
         internal static readonly ReadOnlyValue PopLearnByWorkingLimit = new ReadOnlyValue(0.25f);
 
         internal static readonly Date AIFisrtAllowedAttackOnHuman = new Date(30);
-        
+
+        public static readonly int ArmyTimeToOccupy = 12;
+
 
         //internal static readonly Procent PopMinLoyaltyToMobilizeForGovernment = new Procent(0.12f);
     }

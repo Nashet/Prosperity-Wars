@@ -579,9 +579,9 @@ namespace Nashet.EconomicSimulation
             get { return capital; }
         }
 
-        internal override void sendArmy(Province target, Procent procent)
+        internal override void sendAllArmies(Province target, Procent procent)
         {
-            base.sendArmy(target, procent);                        
+            base.sendAllArmies(target, procent);                        
         }
 
         //internal bool canAttack(Province province)
@@ -791,7 +791,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public Texture2D Flag { get; private set; }
+        
 
         public override string ToString()
         {
@@ -924,7 +924,7 @@ namespace Nashet.EconomicSimulation
                         )
                     {
                         mobilize(ownedProvinces);
-                        sendArmy(possibleTarget, Procent.HundredProcent);
+                        sendAllArmies(possibleTarget, Procent.HundredProcent);
                     }
                 }
             if (Rand.Get.Next(90) == 1)
@@ -1074,7 +1074,7 @@ namespace Nashet.EconomicSimulation
             //movements
             movements.RemoveAll(x => x.isEmpty());
             foreach (var item in movements.ToArray())
-                item.simulate();
+                item.Simulate();
             if (economy.getValue() == Economy.LaissezFaire)
                 Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }

@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
         {
             if (ddProvinceSelect.value < availableProvinces.Count)
                 // province here shouldn't be null
-                Game.Player.sendArmy(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+                Game.Player.sendAllArmies(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
             else
                 Debug.Log("Failed to send Army");
             refresh(false);

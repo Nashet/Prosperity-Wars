@@ -64,7 +64,8 @@ namespace Nashet.EconomicSimulation
             var unit = unitObject.GetComponent<Unit>();
             unit.Province = army.Province;
             //unit.Country = army.getOwner().Country;
-            unit.SetUnitShield(army);
+            unit.SetUnitShield(army.getOwner().Flag);
+            unit.UpdateUnitShieldText(army.Province);
 
             return unit;
         }
@@ -82,15 +83,14 @@ namespace Nashet.EconomicSimulation
             ArmiesSelectionWindow.Get.Refresh();
         }
 
-        private void SetUnitShield(Army army)
+        private void SetUnitShield(Texture2D flag)
         {
             var panelPosition = gameObject.transform.position;
             panelPosition.y += unitPanelYOffset;
             panelPosition.z = -1f;
             unitPanelObject.transform.position = panelPosition;
-            UpdateUnitShield(army.Province);
-            if (army != null)
-                unitPanel.SetFlag(army.getOwner().Country.Flag);
+            unitPanel.SetFlag(flag);
+            //UpdateUnitShieldText(army.Province);
         }
         public static IEnumerable<Unit> AllUnits()
         {
@@ -115,7 +115,7 @@ namespace Nashet.EconomicSimulation
             return "Army";
         }
 
-        internal void UpdateUnitShield(Province province)//static
+        internal void UpdateUnitShieldText(Province province)//static
         {
             int count = 0;
             //var sb = new StringBuilder();
@@ -137,22 +137,23 @@ namespace Nashet.EconomicSimulation
             foreach (var province in Game.armiesToRedraw)
             {
                 foreach (var army in province.AllStandingArmies())
-                    //if (army.unit != null)
+                //if (army.unit != null)
+                {
+                    army.unit.Province = province;
+                    army.unit.transform.position = province.getPosition();// here it says that unit is destroyed
+                    if (army.Path == null)
                     {
-                        army.unit.Province = province;
-                        army.unit.transform.position = province.getPosition();// here it says that unit is destroyed
-                        if (army.Path == null)
-                        {
-                            army.unit.Stop();
-                        }
-                        else
-                        {
-                            army.unit.Move(army.Path);
-                        }
-                        army.unit.SetUnitShield(army);
+                        army.unit.Stop();
                     }
-                    //else
-                    //    Debug.Log("Bugged army " + army);
+                    else
+                    {
+                        army.unit.Move(army.Path);
+                    }
+                    army.unit.SetUnitShield(army.getOwner().Flag);
+                    army.unit.UpdateUnitShieldText(army.Province);
+                }
+                //else
+                //    Debug.Log("Bugged army " + army);
                 if (province.AllStandingArmies().Count() > 1)
                     for (int i = 0; i < province.AllStandingArmies().Count() - 1; i++)
                     {

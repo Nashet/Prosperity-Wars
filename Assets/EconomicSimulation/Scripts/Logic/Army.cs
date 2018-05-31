@@ -132,7 +132,7 @@ namespace Nashet.EconomicSimulation
             this.owner = owner;
 
 
-            World.DayPassed += MoveArmy;
+            World.DayPassed += OnMoveArmy;
             //Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
             personal = new Dictionary<PopUnit, Corps>();
             foreach (var pop in where.GetAllPopulation()) //mirrored in Staff. mobilization
@@ -142,18 +142,17 @@ namespace Nashet.EconomicSimulation
 
             var unitObject = Unit.Create(this);
             unit = unitObject.GetComponent<Unit>();
-            //unit.UpdateShield();
+            
             Game.armiesToRedraw.Add(where);
-            //where.RedrawLocalArmies();
-            MoveArmy(this, EventArgs.Empty);
-            //var unit = Unit.AllUnits().FirstOrDefault(x => x.Province == where);
-            //if (unit == null)
-            //{
-            //    Unit.Create(this);
-            //}
-            //else
-            //    unit.UpdateShield();
+            //OnMoveArmy(this, EventArgs.Empty);
+            foreach (var enemyArmy in Province.AllStandingArmies().Where(x => x.owner != owner).ToList())
+            {
 
+                if (enemyArmy.getSize() > 0)
+                {
+                    this.attack(enemyArmy).createMessage();
+                }
+            }
         }
 
         //public Army(Army consolidatedArmy) : this(consolidatedArmy.getOwner())
@@ -617,7 +616,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void MoveArmy(object sender, EventArgs e)
+        public void OnMoveArmy(object sender, EventArgs e)
         {
             if (getSize() > 0)
             {
@@ -635,18 +634,19 @@ namespace Nashet.EconomicSimulation
                             Province.AddArmy(this);
 
 
-
                         if (Game.selectedArmies.Contains(this))
-                            ArmiesSelectionWindow.Get.Refresh();
+                            ArmiesSelectionWindow.Get.Refresh();// need that ti check if units Ok to merge
+
+
                         if (Path.nodes.Count == 0)
                         {
                             Path = null;
-                            if (owner == Game.Player && !Game.isPlayerSurrended())
-                                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " arrived to " + Province + " province", "Fine", false, Province.getPosition());
+                            //if (owner == Game.Player && !Game.isPlayerSurrended())
+                            //    Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " arrived to " + Province + " province", "Fine", false, Province.getPosition());
                         }
 
 
-                        if (Province.Country != owner)
+                        if (Province.Country != owner) // thats attacking
                         {
                             if (owner.LastAttackDate.ContainsKey(Province.Country))
                                 owner.LastAttackDate[Province.Country].set(Date.Today);
@@ -654,18 +654,24 @@ namespace Nashet.EconomicSimulation
                                 owner.LastAttackDate.Add(Province.Country, Date.Today.Copy());
 
 
-
-                            Province.Country.mobilize(Province.Country.getAllProvinces());
+                            if (Province.Country.isAI())
+                            {
+                                Province.Country.mobilize(Province.Country.getAllProvinces());
+                                Province.Country.getAllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
+                            }
                             var attackerIsCountry = owner as Country;
                             if (attackerIsCountry != null)
                                 Province.Country.changeRelation(attackerIsCountry, -0.5f);
                         }
 
+
                         foreach (var enemyArmy in Province.AllStandingArmies().Where(x => x.owner != owner).ToList())
                         {
 
                             if (enemyArmy.getSize() > 0)
+                            {
                                 this.attack(enemyArmy).createMessage();
+                            }
                         }
 
                         if (getSize() > 0) // todo change to alive check
