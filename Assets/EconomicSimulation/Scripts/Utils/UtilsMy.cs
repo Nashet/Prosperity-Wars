@@ -60,8 +60,8 @@ namespace Nashet.Utils
             result.Clear();
             result.Append(prefix.getRandom());
 
-            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
+            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
+            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
             result.Append(postfix.getRandom());
 
             return (result.ToString());
@@ -127,8 +127,8 @@ namespace Nashet.Utils
             result.Clear();
             result.Append(prefix.getRandom());
 
-            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
+            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
+            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
             result.Append(postfix.getRandom());
 
             return (result.ToString());
@@ -145,19 +145,19 @@ namespace Nashet.Utils
         public static string generateWord(int length)
         {
             var sb = new StringBuilder();
-            if (Game.Random.Next(10) == 1)
+            if (Rand.Get.Next(10) == 1)
             {
                 sb.Append(vowels.getRandom());
-                if (Game.Random.Next(2) == 1)
+                if (Rand.Get.Next(2) == 1)
                     sb.Append(consonants.getRandom());
             }
-            //if (Game.random.Next(6) == 1)
+            //if (Rand.random2.Next(6) == 1)
             //    Game.threadDangerSB.Append(consonants.getRandom());
 
             for (int i = 0; i < length; i += 2)
             {
                 sb.Append(consonants.getRandom()).Append(vowels.getRandom());
-                if (Game.Random.Next(5) == 1 || length == 2)
+                if (Rand.Get.Next(5) == 1 || length == 2)
                     sb.Append(consonants.getRandom());
             }
             return UtilsMy.FirstLetterToUpper(sb.ToString());
@@ -283,9 +283,9 @@ namespace Nashet.Utils
         {
             result.Clear();
             result.Append(prefix.getRandom());
-            if (Game.Random.Next(3) == 1) result.Append(generateWord(Game.Random.Next(2, 5)));
+            if (Rand.Get.Next(3) == 1) result.Append(generateWord(Rand.Get.Next(2, 5)));
             else
-                result.Append(generateWord(Game.Random.Next(3, 5)));
+                result.Append(generateWord(Rand.Get.Next(3, 5)));
             result.Append(postfix.getRandom());
 
             return UtilsMy.FirstLetterToUpper(result.ToString());
@@ -831,7 +831,7 @@ namespace Nashet.Utils
 
         public Color getRandomPixel()
         {
-            return map[Game.Random.Next((width * height) - 1)];
+            return map[Rand.Get.Next((width * height) - 1)];
         }
     }
 
@@ -856,7 +856,7 @@ namespace Nashet.Utils
         //{
         //    return name;
         //}
-        public string ShortName
+        public virtual string ShortName
         {
             get { return name; }
         }

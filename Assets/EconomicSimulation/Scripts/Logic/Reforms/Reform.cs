@@ -119,7 +119,7 @@ namespace Nashet.EconomicSimulation
             var isThereSuchMovement = country.movements.Find(x => x.getGoal() == selectedReformValue);
             if (isThereSuchMovement != null)
             {
-                isThereSuchMovement.onRevolutionWon();                
+                isThereSuchMovement.onRevolutionWon(false);                
             }
         }
 

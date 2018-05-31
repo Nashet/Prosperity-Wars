@@ -9,23 +9,35 @@ namespace Nashet
 {
     public class Flag : MonoBehaviour
     {
-
-        void Start()
+        [SerializeField]
+        private  Texture2D rebels;
+        private static Flag thisObject;
+        public static Flag Get
         {
-
+            get { return thisObject; }
+        }
+        private void Start()
+        {
+            thisObject = this;
+        }
+        public static Texture2D Rebels
+        {
+            get
+            {
+                //if (Get.rebels == null)
+                //    ;
+                return Get.rebels;
+            }
+            //private set
+            //{
+            //    rebels = value;
+            //}
         }
 
-
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
         enum StripesDirection { horizontal, vertical }
         public static Texture2D Generate(int textureWidth, int textureHeight)
         {
-            int stripesAmount = Rand.random2.Next(3) + 1;
+            int stripesAmount = Rand.Get.Next(3) + 1;
             int stripeSize = textureWidth / stripesAmount;
             var res = new Texture2D(textureWidth, textureHeight);
             //for (int i = 0; i < stripesAmount; i++)

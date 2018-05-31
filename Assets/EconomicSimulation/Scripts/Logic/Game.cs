@@ -4,7 +4,6 @@ using Nashet.MarchingSquares;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
 using UnityEngine;
-using Random = System.Random;
 
 namespace Nashet.EconomicSimulation
 {
@@ -14,6 +13,7 @@ namespace Nashet.EconomicSimulation
     public class Game : ThreadedJob
     {
         public static bool devMode = false;
+        private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
@@ -23,15 +23,16 @@ namespace Nashet.EconomicSimulation
 
         public static Country Player;
 
-        public static Random Random = new Random();
+        ///public static Random Random = new Random();
 
         public static Province selectedProvince;
         public static Province previoslySelectedProvince;
-        public static List<Unit> selectedUnits = new List<Unit>();
-
+        public static List<Province> provincesToRedrawArmies = new List<Province>();
+        public static List<Army> selectedArmies = new List<Army>();
+        public static List<Province> playerVisibleProvinces = new List<Province>();
 
         private static int mapMode;
-        private static bool surrended = devMode;
+        
 
         
 
@@ -166,7 +167,7 @@ namespace Nashet.EconomicSimulation
             if (devMode)
             {
                 mapSize = 20000;
-                width = 150 + Random.Next(60);
+                width = 150 + Rand.Get.Next(60);
             }
             else
             {
@@ -175,7 +176,7 @@ namespace Nashet.EconomicSimulation
                 //mapSize = 30000;
                 //width = 180 + Random.Next(65);
                 mapSize = 40000;
-                width = 250 + Random.Next(40);
+                width = 250 + Rand.Get.Next(40);
             }
             // 140 is sqrt of 20000
             //int width = 30 + Random.Next(12);   // 140 is sqrt of 20000
@@ -188,8 +189,8 @@ namespace Nashet.EconomicSimulation
             Color emptySpaceColor = Color.black;//.setAlphaToZero();
             mapImage.setColor(emptySpaceColor);
 
-            int amountOfProvince = mapImage.width * mapImage.height / 140 + Random.Next(5);
-            //amountOfProvince = 400 + Game.Random.Next(100);
+            int amountOfProvince = mapImage.width * mapImage.height / 140 + Rand.Get.Next(5);
+            //amountOfProvince = 400 + Rand.random2.Next(100);
             for (int i = 0; i < amountOfProvince; i++)
                 mapImage.SetPixel(mapImage.getRandomX(), mapImage.getRandomY(), ColorExtensions.getRandomColor());
 
@@ -233,7 +234,7 @@ namespace Nashet.EconomicSimulation
                 + "\n\nYou play as " + Player.FullName + " You can try to growth economy or conquer the world."
                 + "\n\nOr, You can give control to AI and watch it"
                 + "\n\nTry arrows or WASD for scrolling map and mouse wheel for scale"
-                + "\n'Enter' key to close top window, space - to pause \\ unpause"
+                + "\n'Enter' key to close top window, space - to pause \\ unpause, left alt - to add command"
                 + "\n\n\nI have now Patreon page where I post about that game development. Try red button below!"
                 + "\nAlso I would be thankful if you will share info about this project"
                 , "Ok", false);

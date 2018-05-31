@@ -18,7 +18,7 @@ namespace Nashet.EconomicSimulation
         internal readonly UnemploymentSubsidies unemploymentSubsidies;
         internal readonly TaxationForPoor taxationForPoor;
         internal readonly TaxationForRich taxationForRich;
-
+        public readonly Dictionary<Country, Date> LastAttackDate = new Dictionary<Country, Date>();
         /// <summary> could be null</summary>
         private readonly Bank bank;
 
@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Province> ownedProvinces = new List<Province>();
 
         private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-        private readonly Dictionary<Country, Date> myLastAttackDate = new Dictionary<Country, Date>();
+        
         private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
@@ -493,13 +493,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        public Date getLastAttackDateOn(Country country)
-        {
-            if (myLastAttackDate.ContainsKey(country))
-                return myLastAttackDate[country];
-            else
-                return Date.Never.Copy();
-        }
+       
 
         private bool hasCores(Country country)
         {
@@ -585,14 +579,9 @@ namespace Nashet.EconomicSimulation
             get { return capital; }
         }
 
-        internal override void sendArmy(Province target, Procent procent)
+        internal override void sendAllArmies(Province target, Procent procent)
         {
-            base.sendArmy(target, procent);
-            //myLastAttackDate.AddMy(target.Country, Game.date);
-            if (myLastAttackDate.ContainsKey(target.Country))
-                myLastAttackDate[target.Country].set(Date.Today);
-            else
-                myLastAttackDate.Add(target.Country, Date.Today.Copy());
+            base.sendAllArmies(target, procent);                        
         }
 
         //internal bool canAttack(Province province)
@@ -802,7 +791,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public Texture2D Flag { get; private set; }
+        
 
         public override string ToString()
         {
@@ -919,12 +908,12 @@ namespace Nashet.EconomicSimulation
         {
             // attacking neighbors
             if (!isOnlyCountry())
-                if (Game.Random.Next(10) == 1)
+                if (Rand.Get.Next(10) == 1)
                 {
                     var thisStrength = getStrengthExluding(null);
                     var possibleTarget = getAllNeighborProvinces().Distinct().MinBy(x => getRelationTo(x.Country).get());
                     if (possibleTarget != null
-                        && (getRelationTo(possibleTarget.Country).get() < 1f || Game.Random.Next(200) == 1)
+                        && (getRelationTo(possibleTarget.Country).get() < 1f || Rand.Get.Next(200) == 1)
                         && thisStrength > 0
                         && (getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
                         && (thisStrength > possibleTarget.Country.getStrengthExluding(null) * 0.25f
@@ -935,14 +924,14 @@ namespace Nashet.EconomicSimulation
                         )
                     {
                         mobilize(ownedProvinces);
-                        sendArmy(possibleTarget, Procent.HundredProcent);
+                        sendAllArmies(possibleTarget, Procent.HundredProcent);
                     }
                 }
-            if (Game.Random.Next(90) == 1)
+            if (Rand.Get.Next(90) == 1)
                 aiInvent();
             // changing salary for soldiers
             if (economy.getValue() != Economy.PlannedEconomy)
-                if (Invented(Invention.ProfessionalArmy) && Game.Random.Next(10) == 1)
+                if (Invented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
                 {
                     Money newWage;
                     Money soldierAllNeedsCost = World.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
@@ -1085,7 +1074,7 @@ namespace Nashet.EconomicSimulation
             //movements
             movements.RemoveAll(x => x.isEmpty());
             foreach (var item in movements.ToArray())
-                item.simulate();
+                item.Simulate();
             if (economy.getValue() == Economy.LaissezFaire)
                 Rand.Call(() => getAllFactories().PerformAction(x => x.ownership.SetToSell(this, Procent.HundredProcent, false)), 30);
         }
@@ -1738,6 +1727,13 @@ namespace Nashet.EconomicSimulation
             foreach (var item in GetAllPopulation())
                 foreach (var record in item.getAllPopulationChanges())
                     yield return record;
+        }
+        public Date getLastAttackDateOn(Country country)
+        {
+            if (LastAttackDate.ContainsKey(country))
+                return LastAttackDate[country];
+            else
+                return Date.Never.Copy();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Nashet.EconomicSimulation
         public Transform WorldSpaceCanvas;
         public GameObject r3DProvinceTextPrefab, r3DCountryTextPrefab;
         public GameObject ArmiesSelectionWindowPrefab;
+        public GameObject ArmiesHolder;
         [SerializeField]
         public Canvas CameraLayerCanvas;
 

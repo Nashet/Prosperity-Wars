@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
         Country Country { get; }
     }
 
-    public interface IHasGetProvince
+    public interface IHasProvince
     {
         Province Province { get; }
     }
@@ -20,7 +20,7 @@ namespace Nashet.EconomicSimulation
         //string getWayOfLifeString(PopUnit pop);
     }
 
-    public interface IInvestable : IHasCountry, IHasGetProvince
+    public interface IInvestable : IHasCountry, IHasProvince
     {
         /// <summary>
         /// Includes tax (1 country only), salary and modifiers. Doesn't include risks. New value

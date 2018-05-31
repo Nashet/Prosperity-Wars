@@ -6,7 +6,7 @@ namespace Nashet.Utils
     public class Rand : Random
     {
         //public static readonly UnityEngine.Random random = new UnityEngine.Random();
-        public static readonly Random random2 = new Random();
+        public static readonly Random Get = new Random();
 
         //public static bool Chance(int chance)
         //{
@@ -16,7 +16,7 @@ namespace Nashet.Utils
         {
             //float m = (maxValue - minValue) ;
 
-            return (float)(random2.NextDouble()) * (maxValue - minValue) + minValue;
+            return (float)(Get.NextDouble()) * (maxValue - minValue) + minValue;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Nashet.Utils
             //    return false;
             //else
             //excluding Procent.Precision
-            return random2.Next(Procent.Precision) < chance.RawUIntValue;
+            return Get.Next(Procent.Precision) < chance.RawUIntValue;
         }
 
         internal static bool Call(Action action, int chance)

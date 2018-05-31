@@ -129,21 +129,47 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameLoadingIsFinished)
             {
-                RefreshMap();                
+                RefreshMap();
 
                 if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
                     if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
                         World.simulate();
+                        //Unit.RedrawAll();
+
                         previousFrameTime = Time.time;
                         refreshAllActive();
                     }
                 }
 
+                if (Game.provincesToRedrawArmies.Count > 0)
+                {                    
+                    Unit.RedrawAll();
+                }
+                Game.playerVisibleProvinces.Clear();
+                Game.playerVisibleProvinces.AddRange(Game.Player.getAllProvinces());
+                Game.Player.getAllNeighborProvinces().PerformAction(
+                    x => !Game.playerVisibleProvinces.Contains(x),
+                    x => Game.playerVisibleProvinces.Add(x));
+                
+                    foreach (var army in World.AllArmies())
+                    {
+                        if (Game.playerVisibleProvinces.Contains(army.Province))
+                        {
+                            army.unit.Show();
+                            army.unit.unitPanel.Show();
+                        }
+                        else
+                        {
+                            army.unit.Hide();
+                            army.unit.unitPanel.Hide();
+                        }
+                    }
+                
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
-                
+
             }
         }
 

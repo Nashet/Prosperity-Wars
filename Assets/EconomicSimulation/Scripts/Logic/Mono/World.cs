@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         private static readonly List<Culture> allCultures = new List<Culture>();
 
         internal static readonly Country UncolonizedLand;
-        
+
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
@@ -49,7 +49,27 @@ namespace Nashet.EconomicSimulation
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.setValue(Government.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
-        }       
+        }
+
+        public static IEnumerable<Army> AllArmies()
+        {
+            foreach (var country in World.getAllExistingCountries())
+            {
+                foreach (var army in country.getAllArmies())
+                {
+                    yield return army;
+                }
+                foreach (var movement in country.movements)
+                    foreach (var army in movement.getAllArmies())
+                    {
+                        yield return army;
+                    }
+            }
+            foreach (var army in UncolonizedLand.getAllArmies())
+            {
+                yield return army;
+            }
+        }
 
         public static IEnumerable<Country> getAllExistingCountries()
         {
@@ -138,7 +158,7 @@ namespace Nashet.EconomicSimulation
             //todo move it in seaProvinces
             if (addLakes)
             {
-                int howMuchLakes = allProvinces.Count / Options.ProvinceLakeShance + Game.Random.Next(3);
+                int howMuchLakes = allProvinces.Count / Options.ProvinceLakeShance + Rand.Get.Next(3);
                 for (int i = 0; i < howMuchLakes; i++)
                     allProvinces.Remove(allProvinces.Random());
             }
@@ -198,7 +218,7 @@ namespace Nashet.EconomicSimulation
             var cultureNameGenerator = new CultureNameGenerator();
             //int howMuchCountries =3;
             int howMuchCountries = allProvinces.Count / Options.ProvincesPerCountry;
-            howMuchCountries += Game.Random.Next(6);
+            howMuchCountries += Rand.Get.Next(6);
             if (howMuchCountries < 8)
                 howMuchCountries = 8;
 
@@ -302,12 +322,12 @@ namespace Nashet.EconomicSimulation
                 if (!res.Contains(seaProvince))
                     res.Add(seaProvince);
 
-                if (Game.Random.Next(3) == 1)
+                if (Rand.Get.Next(3) == 1)
                 {
                     seaProvince = FindProvince(mapTexture.getRandomPixel());
                     if (!res.Contains(seaProvince))
                         res.Add(seaProvince);
-                    if (Game.Random.Next(20) == 1)
+                    if (Rand.Get.Next(20) == 1)
                     {
                         seaProvince = FindProvince(mapTexture.getRandomPixel());
                         if (!res.Contains(seaProvince))
@@ -407,43 +427,43 @@ namespace Nashet.EconomicSimulation
                     yield return record;
         }
 
-        private static void calcBattles()
-        {
-            foreach (Staff attacker in Staff.getAllStaffs().ToList())
-            {
-                foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
-                {
-                    var movement = attacker as Movement;
-                    if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
-                    {
-                        var result = attackerArmy.attack(attackerArmy.getDestination());
-                        if (result.isAttackerWon())
-                        {
-                            if (movement == null)
-                                (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
-                            //attackerArmy.getDestination().secedeTo(attacker as Country, true);
-                            else
-                            {
-                                if (movement.getReformType() == null)//separatists
-                                    movement.onRevolutionWon();
-                                else
-                                    movement.getReformType().setValue(movement.getGoal());
+        //private static void calcBattles()
+        //{
+        //    foreach (Staff attacker in Staff.getAllStaffs().ToList())
+        //    {
+        //        foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
+        //        {
+        //            var movement = attacker as Movement;
+        //            if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
+        //            {
+        //                var result = attackerArmy.attack(attackerArmy.getDestination());
+        //                if (result.isAttackerWon())
+        //                {
+        //                    if (movement == null)
+        //                        (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
+        //                    //attackerArmy.getDestination().secedeTo(attacker as Country, true);
+        //                    else
+        //                    {
+        //                        if (movement.getReformType() == null)//separatists
+        //                            movement.onRevolutionWon();
+        //                        else
+        //                            movement.getReformType().setValue(movement.getGoal());
 
-                            }
-                        }
-                        else if (result.isDefenderWon())
-                        {
-                            if (movement != null)
-                                movement.onRevolutionLost();
-                        }
-                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-                            result.createMessage();
-                    }
-                    attackerArmy.sendTo(null); // go home
-                }
-                attacker.consolidateArmies();
-            }
-        }
+        //                    }
+        //                }
+        //                else if (result.isDefenderWon())
+        //                {
+        //                    if (movement != null)
+        //                        movement.onRevolutionLost();
+        //                }
+        //                if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+        //                    result.createMessage();
+        //            }
+        //            attackerArmy.sendTo(null); // go home
+        //        }
+        //        //attacker.consolidateArmies();
+        //    }
+        //}
 
         public static void prepareForNewTick()
         {
@@ -484,7 +504,7 @@ namespace Nashet.EconomicSimulation
             }
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-            calcBattles();
+            //calcBattles();
 
             // includes workforce balancing
             // and sets statistics to zero. Should go after price calculation
@@ -636,7 +656,7 @@ namespace Nashet.EconomicSimulation
 
                     if (country.isAI())
                         country.invest(province);
-                    //if (Game.random.Next(3) == 0)
+                    //if (Rand.random2.Next(3) == 0)
                     //    province.consolidatePops();
                     province.RemoveDeadPops();
                     foreach (PopUnit pop in PopUnit.PopListToAddToGeneralList)
@@ -657,6 +677,6 @@ namespace Nashet.EconomicSimulation
             }
         }
         public static event EventHandler DayPassed;
-        
+
     }
 }
