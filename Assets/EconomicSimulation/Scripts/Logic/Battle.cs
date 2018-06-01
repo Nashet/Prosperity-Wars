@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
             if (attacker.IsHuman && isAttackerWon())
             {
                 //.Append(" owned by ").Append(place.Country)
-                sb.Append("Our glorious army attacked ").Append(place)
+                sb.Append("Our glorious army attacked ").Append(defender).Append("'s army in ").Append(place)
                     .Append(" with army of ").Append(attackerArmy).Append(" men.");
                 sb.Append(" Modifiers: ").Append(attackerBonus);
                 sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
             else if (attacker.IsHuman && isDefenderWon())
             {
                 //.Append(" owned by ").Append(place.Country)
-                sb.Append("Our glorious army attacked ").Append(place)
+                sb.Append("Our glorious army attacked ").Append(defender).Append("'s army in ").Append(place)
                     .Append(" with army of ").Append(attackerArmy).Append(" men");
                 sb.Append(" Modifiers: ").Append(attackerBonus);
                 sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);

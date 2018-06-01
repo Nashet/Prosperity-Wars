@@ -144,7 +144,7 @@ namespace Nashet.EconomicSimulation
             unit = unitObject.GetComponent<Unit>();
 
             Game.provincesToRedrawArmies.Add(where);
-            //OnMoveArmy(this, EventArgs.Empty);
+            OnMoveArmy(this, EventArgs.Empty);
             foreach (var enemyArmy in Province.AllStandingArmies().Where(x => x.owner != owner).ToList())
             {
 
@@ -631,8 +631,8 @@ namespace Nashet.EconomicSimulation
                                     Province.Country.mobilize(Province.Yield());
                                 else
                                 {
-                                    Province.Country.mobilize(Province.Country.getAllProvinces());
-                                    Province.Country.getAllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
+                                    Province.Country.mobilize(Province.Country.AllProvinces());
+                                    Province.Country.AllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
                                 }
                             }
                             var attackerIsCountry = owner as Country;
@@ -693,12 +693,12 @@ namespace Nashet.EconomicSimulation
                 //                Province.RedrawLocalArmies();
             }
         }
-        internal void SetPathTo(Province destinationProvince)
+        internal void SetPathTo(Province destinationProvince, Predicate<Province> predicate = null)
         {
             if (destinationProvince == null)
                 Path = null;
             else
-                Path = World.Get.graph.GetShortestPath(Province, destinationProvince);//,x => x.Country == owner || Diplomacy.IsInWar(x.Country, owner.Country) || x.Country == World.UncolonizedLand
+                Path = World.Get.graph.GetShortestPath(Province, destinationProvince, predicate);//,x => x.Country == owner || Diplomacy.IsInWar(x.Country, owner.Country) || x.Country == World.UncolonizedLand
             Game.provincesToRedrawArmies.Add(Province);
             //Province.RedrawLocalArmies();
         }

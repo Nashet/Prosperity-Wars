@@ -22,7 +22,7 @@ namespace Nashet.EconomicSimulation
         //protected Country place; //todo change class
         protected Staff(Country place) : base(place)
         {
-            //this.place = place;
+            
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
         public float howMuchCanMobilize(Staff againstWho)
         {
             float result = 0f;
-            foreach (var province in country.getAllProvinces())
+            foreach (var province in Country.AllProvinces())
                 foreach (var pop in province.GetAllPopulation())
                     if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);
@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        internal virtual void sendAllArmies(Province possibleTarget, Procent procent)
+        internal virtual void sendAllArmies(Province possibleTarget)
         {
             allArmies.PerformAction(x => x.SetPathTo(possibleTarget));
             //consolidateArmies().balance(procent).sendTo(possibleTarget);
@@ -197,7 +197,7 @@ namespace Nashet.EconomicSimulation
             allArmies.ForEach(x => x.setStatisticToZero());
         }
 
-        internal IEnumerable<Army> getAllArmies()
+        internal IEnumerable<Army> AllArmies()
         {
             foreach (var army in allArmies)
                 yield return army;

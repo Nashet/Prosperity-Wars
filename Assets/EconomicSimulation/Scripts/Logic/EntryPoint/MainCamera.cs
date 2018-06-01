@@ -144,15 +144,16 @@ namespace Nashet.EconomicSimulation
                 }
 
                 if (Game.provincesToRedrawArmies.Count > 0)
-                {                    
+                {
                     Unit.RedrawAll();
                 }
-                Game.playerVisibleProvinces.Clear();
-                Game.playerVisibleProvinces.AddRange(Game.Player.getAllProvinces());
-                Game.Player.getAllNeighborProvinces().PerformAction(
-                    x => !Game.playerVisibleProvinces.Contains(x),
-                    x => Game.playerVisibleProvinces.Add(x));
-                
+                if (Game.devMode == false)
+                {
+                    Game.playerVisibleProvinces.Clear();
+                    Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
+                    Game.Player.AllNeighborProvinces().Distinct().PerformAction(
+                        x => Game.playerVisibleProvinces.Add(x));
+
                     foreach (var army in World.AllArmies())
                     {
                         if (Game.playerVisibleProvinces.Contains(army.Province))
@@ -166,7 +167,15 @@ namespace Nashet.EconomicSimulation
                             army.unit.unitPanel.Hide();
                         }
                     }
-                
+                }
+                else
+                {
+                    foreach (var army in World.AllArmies())
+                    {
+                        army.unit.Show();
+                        army.unit.unitPanel.Show();
+                    }
+                }
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 

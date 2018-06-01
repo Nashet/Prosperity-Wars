@@ -35,6 +35,7 @@ namespace Nashet.EconomicSimulation
 
         public MultiSeller(float money, Country place) : base(place)
         {
+            //Country = place;
             foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
             //if (item != Product.Gold)
             {

@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
         {
             get
             {
-                return Game.Player.getAllArmies().Where(x => x.Province == Province).Random();
+                return Game.Player.AllArmies().Where(x => x.Province == Province).Random();
             }
         }
 
