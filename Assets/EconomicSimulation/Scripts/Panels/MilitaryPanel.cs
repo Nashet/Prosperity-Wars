@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Military of ").Append(Game.Player);
             captionText.text = sb.ToString();
-            var armiesToShow=Game.Player.getAllArmies().OrderByDescending(x=>x.getSize());
+            var armiesToShow=Game.Player.AllArmies().OrderByDescending(x=>x.getSize());
 
             newText.text = "Your armies:\n\n" + armiesToShow.getString("\n\n");
             //sb.Clear();
@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
         {
             //if (Game.Player.homeArmy.getSize() == 0)
             //  Game.Player.homeArmy = new Army(Game.Player);
-            Game.Player.mobilize(Game.Player.getAllProvinces());
+            Game.Player.mobilize(Game.Player.AllProvinces());
             //onArmyLimitChanged(0f);
             //MainCamera.tradeWindow.refresh();
             refresh(false);
@@ -89,12 +89,12 @@ namespace Nashet.EconomicSimulation
 
         public void onSendArmyClick()
         {
-            if (ddProvinceSelect.value < availableProvinces.Count)
-                // province here shouldn't be null
-                Game.Player.sendAllArmies(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
-            else
-                Debug.Log("Failed to send Army");
-            refresh(false);
+            //if (ddProvinceSelect.value < availableProvinces.Count)
+            //    // province here shouldn't be null
+            //    Game.Player.sendAllArmies(availableProvinces[ddProvinceSelect.value], new Procent(armySendLimit.value));
+            //else
+            //    Debug.Log("Failed to send Army");
+            //refresh(false);
         }
 
         public void show(Province province)
@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
             Show();
             if (province != null)
             {
-                var list = Game.Player.getAllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight());
+                var list = Game.Player.AllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight());
                 //var found = list.IndexOf(province);
                 var found = list.FindIndex(x => x == province);
 
@@ -118,7 +118,7 @@ namespace Nashet.EconomicSimulation
             ddProvinceSelect.ClearOptions();
             byte count = 0;
             availableProvinces.Clear();
-            foreach (Province next in Game.Player.getAllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight()))
+            foreach (Province next in Game.Player.AllNeighborProvinces().Distinct().Where(x => Country.canAttack.isAllTrue(x, Game.Player)).OrderBy(x => x.Country.GetNameWeight()))
             {
                 //if (next.isAvailable(Game.player))
                 {

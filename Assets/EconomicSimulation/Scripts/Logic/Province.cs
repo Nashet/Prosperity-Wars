@@ -793,11 +793,11 @@ namespace Nashet.EconomicSimulation
 
 
             group.SetLODs(lods);
-#if UNITY_WEBGL
+//#if UNITY_WEBGL
             group.size = 20; //was 30 for webgl
-#else
-            group.size = 20; // for others
-#endif
+//#else
+            //group.size = 20; // for others
+//#endif
             //group.RecalculateBounds();
         }
 

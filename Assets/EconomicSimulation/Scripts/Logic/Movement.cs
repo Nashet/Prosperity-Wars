@@ -179,7 +179,7 @@ namespace Nashet.EconomicSimulation
 
         private void killMovement()
         {
-            foreach (var item in getAllArmies().ToArray())
+            foreach (var item in AllArmies().ToArray())
             {
                 item.demobilize();
             }
@@ -194,8 +194,8 @@ namespace Nashet.EconomicSimulation
         internal void OnSeparatistsWon()
         {
             var separatists = getGoal() as Separatism;
-            separatists.Country.onSeparatismWon(country);
-            if (!separatists.Country.isAI())
+            separatists.Country.onSeparatismWon(Country);
+            if (!Country.isAI())//separatists.C
                 Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.getPosition());
         }
         internal void onRevolutionWon(bool setReform)
@@ -260,9 +260,9 @@ namespace Nashet.EconomicSimulation
             //&& canWinUprising())
             if (isInRevolt())
             {
-                if (getAllArmies().Count() == 0)
+                if (AllArmies().Count() == 0)
                     onRevolutionLost();
-                if (getAllArmies().Any(x => x.Province == Country.Capital))
+                if (AllArmies().Any(x => x.Province == Country.Capital))
                     siegeCapitalTurns++;
                 else
                     siegeCapitalTurns = 0;
@@ -299,17 +299,17 @@ namespace Nashet.EconomicSimulation
         private void StartUprising()
         {
             //revolt
-            if (country == Game.Player && !Game.Player.isAI())
+            if (Country == Game.Player && !Game.Player.isAI())
                 Message.NewMessage("Revolution is on", "People rebelled demanding " + targetReformValue + "\n\nTheir army is moving to our capital", "Ok", false, Game.Player.Capital.getPosition());
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
-            mobilize(country.getAllProvinces());
+            mobilize(Country.AllProvinces());
 
             //if (targetReformValue is Separatism)
             //    ;
             //else
-            sendAllArmies(country.Capital, Procent.HundredProcent);
+            sendAllArmies(Country.Capital);
             _isInRevolt = true;
         }
 

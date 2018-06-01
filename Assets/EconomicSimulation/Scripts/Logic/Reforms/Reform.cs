@@ -453,7 +453,7 @@ namespace Nashet.EconomicSimulation
                 //nationalization
                 country.Bank.Nationalize();
 
-                foreach (var province in country.getAllProvinces())
+                foreach (var province in country.AllProvinces())
                 {
                     onReformEnacted(province);
                 }

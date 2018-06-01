@@ -26,31 +26,31 @@ namespace Nashet.Utils
         public CultureNameGenerator()
         {
             postfix = new ChanceBox<string>();
-            postfix.add("nian", 1.6f);
-            postfix.add("rian", 1f);
-            postfix.add("man", 3.0f);
-            postfix.add("men", 2.2f);
-            postfix.add("tian", 1f);
-            postfix.add("sian", 1.5f);
+            postfix.Add("nian", 1.6f);
+            postfix.Add("rian", 1f);
+            postfix.Add("man", 3.0f);
+            postfix.Add("men", 2.2f);
+            postfix.Add("tian", 1f);
+            postfix.Add("sian", 1.5f);
 
-            postfix.add("pian", 1f);
-            postfix.add("vian", 1f);
-            postfix.add("lian", 1.8f);
+            postfix.Add("pian", 1f);
+            postfix.Add("vian", 1f);
+            postfix.Add("lian", 1.8f);
 
-            postfix.add("", 5f);
-            postfix.initiate();
+            postfix.Add("", 5f);
+            postfix.Initiate();
 
             prefix = new ChanceBox<string>();
 
-            prefix.add("South ", 0.3f);
-            prefix.add("West ", 0.3f);
-            prefix.add("North ", 0.3f);
-            prefix.add("East ", 0.3f);
-            prefix.add("Great ", 0.8f);
-            prefix.add("Upper ", 0.2f);
-            prefix.add("Middle ", 0.1f);
-            prefix.add("", 40f);
-            prefix.initiate();
+            prefix.Add("South ", 0.3f);
+            prefix.Add("West ", 0.3f);
+            prefix.Add("North ", 0.3f);
+            prefix.Add("East ", 0.3f);
+            prefix.Add("Great ", 0.8f);
+            prefix.Add("Upper ", 0.2f);
+            prefix.Add("Middle ", 0.1f);
+            prefix.Add("", 40f);
+            prefix.Initiate();
         }
 
         private StringBuilder result = new StringBuilder();
@@ -58,11 +58,11 @@ namespace Nashet.Utils
         public string generateCultureName()
         {
             result.Clear();
-            result.Append(prefix.getRandom());
+            result.Append(prefix.GetRandom());
 
             //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
             result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
-            result.Append(postfix.getRandom());
+            result.Append(postfix.GetRandom());
 
             return (result.ToString());
         }
@@ -76,48 +76,48 @@ namespace Nashet.Utils
         public CountryNameGenerator()
         {
             postfix = new ChanceBox<string>();
-            postfix.add("burg", 1.2f);
+            postfix.Add("burg", 1.2f);
 
-            postfix.add("hill", 0.31f);
+            postfix.Add("hill", 0.31f);
 
-            postfix.add("land", 1.0f);
-            postfix.add("lands", 1.2f);
-            postfix.add("landia", 0.3f);
-            postfix.add("stan", 0.3f);
+            postfix.Add("land", 1.0f);
+            postfix.Add("lands", 1.2f);
+            postfix.Add("landia", 0.3f);
+            postfix.Add("stan", 0.3f);
 
-            postfix.add("lia", 1.8f);
-            postfix.add("mia", 0.1f);
-            postfix.add("nia", 1.1f);
-            postfix.add("sia", 1.1f);
-            postfix.add("cia", 1.1f);
-            postfix.add("ria", 1.1f);
+            postfix.Add("lia", 1.8f);
+            postfix.Add("mia", 0.1f);
+            postfix.Add("nia", 1.1f);
+            postfix.Add("sia", 1.1f);
+            postfix.Add("cia", 1.1f);
+            postfix.Add("ria", 1.1f);
 
-            postfix.add("stad", 0.3f);
+            postfix.Add("stad", 0.3f);
 
-            postfix.add("holm", 0.3f);
-            postfix.add("bruck", 0.3f);
+            postfix.Add("holm", 0.3f);
+            postfix.Add("bruck", 0.3f);
 
-            postfix.add("berg", 1f);
+            postfix.Add("berg", 1f);
 
-            postfix.add("polis", 2f);
-            postfix.add("", 10f);
-            postfix.initiate();
+            postfix.Add("polis", 2f);
+            postfix.Add("", 10f);
+            postfix.Initiate();
 
             prefix = new ChanceBox<string>();
 
-            prefix.add("South ", 0.3f);
-            prefix.add("West ", 0.3f);
-            prefix.add("North ", 0.3f);
-            prefix.add("East ", 0.3f);
-            prefix.add("Holy ", 0.1f);
-            prefix.add("Great ", 0.8f);
-            prefix.add("Saint ", 0.2f);
-            prefix.add("Dark ", 0.01f);
-            prefix.add("Upper ", 0.2f);
-            prefix.add("Middle ", 0.1f);
+            prefix.Add("South ", 0.3f);
+            prefix.Add("West ", 0.3f);
+            prefix.Add("North ", 0.3f);
+            prefix.Add("East ", 0.3f);
+            prefix.Add("Holy ", 0.1f);
+            prefix.Add("Great ", 0.8f);
+            prefix.Add("Saint ", 0.2f);
+            prefix.Add("Dark ", 0.01f);
+            prefix.Add("Upper ", 0.2f);
+            prefix.Add("Middle ", 0.1f);
 
-            prefix.add("", 80f);
-            prefix.initiate();
+            prefix.Add("", 80f);
+            prefix.Initiate();
         }
 
         private StringBuilder result = new StringBuilder();
@@ -125,11 +125,11 @@ namespace Nashet.Utils
         public string generateCountryName()
         {
             result.Clear();
-            result.Append(prefix.getRandom());
+            result.Append(prefix.GetRandom());
 
             //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
             result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
-            result.Append(postfix.getRandom());
+            result.Append(postfix.GetRandom());
 
             return (result.ToString());
         }
@@ -147,18 +147,18 @@ namespace Nashet.Utils
             var sb = new StringBuilder();
             if (Rand.Get.Next(10) == 1)
             {
-                sb.Append(vowels.getRandom());
+                sb.Append(vowels.GetRandom());
                 if (Rand.Get.Next(2) == 1)
-                    sb.Append(consonants.getRandom());
+                    sb.Append(consonants.GetRandom());
             }
             //if (Rand.random2.Next(6) == 1)
             //    Game.threadDangerSB.Append(consonants.getRandom());
 
             for (int i = 0; i < length; i += 2)
             {
-                sb.Append(consonants.getRandom()).Append(vowels.getRandom());
+                sb.Append(consonants.GetRandom()).Append(vowels.GetRandom());
                 if (Rand.Get.Next(5) == 1 || length == 2)
-                    sb.Append(consonants.getRandom());
+                    sb.Append(consonants.GetRandom());
             }
             return UtilsMy.FirstLetterToUpper(sb.ToString());
             //return Game.threadDangerSB.ToString();
@@ -167,64 +167,64 @@ namespace Nashet.Utils
         public ProvinceNameGenerator()
         {
             postfix = new ChanceBox<string>();
-            postfix.add("burg", 2.2f);
-            postfix.add("bridge", 0.1f);
-            postfix.add("coln", 0.2f);
+            postfix.Add("burg", 2.2f);
+            postfix.Add("bridge", 0.1f);
+            postfix.Add("coln", 0.2f);
 
-            postfix.add("field", 2f);
-            postfix.add("hill", 1f);
-            postfix.add("ford", 0.5f);
-            postfix.add("land", 2.5f);
-            postfix.add("landia", 0.3f);
-            postfix.add("lia", 2.5f);
-            postfix.add("mia", 0.1f);
-            postfix.add("stad", 0.3f);
+            postfix.Add("field", 2f);
+            postfix.Add("hill", 1f);
+            postfix.Add("ford", 0.5f);
+            postfix.Add("land", 2.5f);
+            postfix.Add("landia", 0.3f);
+            postfix.Add("lia", 2.5f);
+            postfix.Add("mia", 0.1f);
+            postfix.Add("stad", 0.3f);
 
-            postfix.add("holm", 1f);
-            postfix.add("bruck", 0.3f);
-            postfix.add("bridge", 0.3f);
-            postfix.add("berg", 1f);
-            postfix.add(" Creek", 1f);
-            postfix.add(" Lakes", 1.5f);
-            postfix.add(" Falls", 1f);
-            postfix.add("rock", 2f);
-            postfix.add("ville", 2f);
-            postfix.add("polis", 2f);
+            postfix.Add("holm", 1f);
+            postfix.Add("bruck", 0.3f);
+            postfix.Add("bridge", 0.3f);
+            postfix.Add("berg", 1f);
+            postfix.Add(" Creek", 1f);
+            postfix.Add(" Lakes", 1.5f);
+            postfix.Add(" Falls", 1f);
+            postfix.Add("rock", 2f);
+            postfix.Add("ville", 2f);
+            postfix.Add("polis", 2f);
 
-            postfix.add("lyn", 2f);
-            postfix.add("minster", 0.1f);
-            postfix.add("ton", 2f);
-            postfix.add("bury", 2f);
-            postfix.add("wich", 1f);
+            postfix.Add("lyn", 2f);
+            postfix.Add("minster", 0.1f);
+            postfix.Add("ton", 2f);
+            postfix.Add("bury", 2f);
+            postfix.Add("wich", 1f);
 
-            postfix.add("caster", 0.1f);
-            postfix.add("ham", 2f);
-            postfix.add("mouth", 2f);
+            postfix.Add("caster", 0.1f);
+            postfix.Add("ham", 2f);
+            postfix.Add("mouth", 2f);
 
-            postfix.add("ness", 2f);
-            postfix.add("pool", 2f);
-            postfix.add("stead", 2f);
-            postfix.add("wick", 1f);
+            postfix.Add("ness", 2f);
+            postfix.Add("pool", 2f);
+            postfix.Add("stead", 2f);
+            postfix.Add("wick", 1f);
 
-            postfix.add("worth", 2f);
+            postfix.Add("worth", 2f);
 
-            postfix.add("", 10f);
-            postfix.initiate();
+            postfix.Add("", 10f);
+            postfix.Initiate();
 
             prefix = new ChanceBox<string>();
-            prefix.add("Fort ", 0.5f);
-            prefix.add("South ", 0.3f);
-            prefix.add("West ", 0.3f);
-            prefix.add("North ", 0.3f);
-            prefix.add("East ", 0.3f);
-            prefix.add("Saint ", 0.1f);
-            prefix.add("Great ", 0.2f);
-            prefix.add("Dark ", 0.01f);
-            prefix.add("Upper ", 0.2f);
-            prefix.add("Middle ", 0.1f);
+            prefix.Add("Fort ", 0.5f);
+            prefix.Add("South ", 0.3f);
+            prefix.Add("West ", 0.3f);
+            prefix.Add("North ", 0.3f);
+            prefix.Add("East ", 0.3f);
+            prefix.Add("Saint ", 0.1f);
+            prefix.Add("Great ", 0.2f);
+            prefix.Add("Dark ", 0.01f);
+            prefix.Add("Upper ", 0.2f);
+            prefix.Add("Middle ", 0.1f);
 
-            prefix.add("Gate ", 0.2f);
-            prefix.add("Kings ", 0.3f);
+            prefix.Add("Gate ", 0.2f);
+            prefix.Add("Kings ", 0.3f);
             //prefix.add("Knock", 0.6f);
             //prefix.add("Ling", 0.6f);
             //prefix.add("Weald", 0.6f);
@@ -238,43 +238,43 @@ namespace Nashet.Utils
             //prefix.add("Pen", 0.6f);
             //prefix.add("Sud", 0.6f);
 
-            prefix.add("", 60f);
-            prefix.initiate();
+            prefix.Add("", 60f);
+            prefix.Initiate();
 
-            vowels.add("a", 8.167f);
-            vowels.add("e", 12.702f);
-            vowels.add("i", 6.966f);
-            vowels.add("o", 7.507f);
-            vowels.add("u", 2.758f);
+            vowels.Add("a", 8.167f);
+            vowels.Add("e", 12.702f);
+            vowels.Add("i", 6.966f);
+            vowels.Add("o", 7.507f);
+            vowels.Add("u", 2.758f);
             //vowels.add("a", 8.167f);
-            vowels.initiate();
+            vowels.Initiate();
 
-            consonants.add("b", 1.492f);
-            consonants.add("c", 2.782f);
-            consonants.add("d", 4.253f);
+            consonants.Add("b", 1.492f);
+            consonants.Add("c", 2.782f);
+            consonants.Add("d", 4.253f);
 
-            consonants.add("f", 2.228f);
-            consonants.add("g", 2.015f);
-            consonants.add("h", 0.1f); //IRL -  6.094f);
+            consonants.Add("f", 2.228f);
+            consonants.Add("g", 2.015f);
+            consonants.Add("h", 0.1f); //IRL -  6.094f);
 
-            consonants.add("j", 0.03f);//0.153f);
-            consonants.add("k", 0.772f);
-            consonants.add("l", 4.025f);
-            consonants.add("m", 2.406f);
-            consonants.add("n", 6.749f);
+            consonants.Add("j", 0.03f);//0.153f);
+            consonants.Add("k", 0.772f);
+            consonants.Add("l", 4.025f);
+            consonants.Add("m", 2.406f);
+            consonants.Add("n", 6.749f);
 
-            consonants.add("p", 1.929f);
-            consonants.add("q", 0.095f);
-            consonants.add("r", 5.987f);
-            consonants.add("s", 6.327f);
-            consonants.add("t", 9.056f);
+            consonants.Add("p", 1.929f);
+            consonants.Add("q", 0.095f);
+            consonants.Add("r", 5.987f);
+            consonants.Add("s", 6.327f);
+            consonants.Add("t", 9.056f);
 
-            consonants.add("v", 0.978f);
-            consonants.add("w", 2.360f);
-            consonants.add("x", 0.150f);
-            consonants.add("y", 0.174f); //IRL 1.974f
-            consonants.add("z", 0.074f);
-            consonants.initiate();
+            consonants.Add("v", 0.978f);
+            consonants.Add("w", 2.360f);
+            consonants.Add("x", 0.150f);
+            consonants.Add("y", 0.174f); //IRL 1.974f
+            consonants.Add("z", 0.074f);
+            consonants.Initiate();
         }
 
         private StringBuilder result = new StringBuilder();
@@ -282,16 +282,20 @@ namespace Nashet.Utils
         public string generateProvinceName()
         {
             result.Clear();
-            result.Append(prefix.getRandom());
+            result.Append(prefix.GetRandom());
             if (Rand.Get.Next(3) == 1) result.Append(generateWord(Rand.Get.Next(2, 5)));
             else
                 result.Append(generateWord(Rand.Get.Next(3, 5)));
-            result.Append(postfix.getRandom());
+            result.Append(postfix.GetRandom());
 
             return UtilsMy.FirstLetterToUpper(result.ToString());
         }
     }
 
+    /// <summary>
+    /// Redo input to dictionary
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ChanceBox<T>
     {
         private class Mean
@@ -318,12 +322,12 @@ namespace Nashet.Utils
         //todo make it dictionary
         private List<Mean> list = new List<Mean>();
 
-        public void add(T obj, float chance)
+        public void Add(T obj, float chance)
         {
             list.Add(new Mean(obj, chance));
         }
 
-        public void initiate()
+        public void Initiate()
         {
             float totalWeight = 0f;
 
@@ -349,7 +353,7 @@ namespace Nashet.Utils
         }
 
         /// <summary>Gives random T according element weight  /// </summary>
-        public T getRandom()
+        public T GetRandom()
         {
             float randomNumber = Rand.getFloat(0f, 1f);
             foreach (Mean next in list)

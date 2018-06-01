@@ -55,17 +55,17 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var country in World.getAllExistingCountries())
             {
-                foreach (var army in country.getAllArmies())
+                foreach (var army in country.AllArmies())
                 {
                     yield return army;
                 }
                 foreach (var movement in country.movements)
-                    foreach (var army in movement.getAllArmies())
+                    foreach (var army in movement.AllArmies())
                     {
                         yield return army;
                     }
             }
-            foreach (var army in UncolonizedLand.getAllArmies())
+            foreach (var army in UncolonizedLand.AllArmies())
             {
                 yield return army;
             }
@@ -472,7 +472,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.SetStatisticToZero();
-                foreach (Province province in country.getAllProvinces())
+                foreach (Province province in country.AllProvinces())
                 {
                     province.BalanceEmployableWorkForce();
                     {
@@ -512,7 +512,7 @@ namespace Nashet.EconomicSimulation
 
             // big PRODUCE circle
             foreach (Country country in World.getAllExistingCountries())
-                foreach (Province province in country.getAllProvinces())
+                foreach (Province province in country.AllProvinces())
                     foreach (var producer in province.getAllProducers())
                         producer.produce();
 
@@ -540,7 +540,7 @@ namespace Nashet.EconomicSimulation
                         item.consumeNeeds();
                 }
                 else  //consume in regular order
-                    foreach (Province province in country.getAllProvinces())//Province.allProvinces)
+                    foreach (Province province in country.AllProvinces())//Province.allProvinces)
                     {
                         foreach (Factory factory in province.getAllFactories())
                         {
@@ -579,7 +579,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.getMoneyForSoldProduct();
-                foreach (Province province in country.getAllProvinces())//Province.allProvinces)
+                foreach (Province province in country.AllProvinces())//Province.allProvinces)
                 {
                     foreach (Factory factory in province.getAllFactories())
                     {
@@ -646,7 +646,7 @@ namespace Nashet.EconomicSimulation
             //investments circle. Needs to be separate, otherwise cashed  investments can conflict
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var province in country.getAllProvinces())
+                foreach (var province in country.AllProvinces())
                 {
                     foreach (var pop in province.GetAllPopulation())
                     {

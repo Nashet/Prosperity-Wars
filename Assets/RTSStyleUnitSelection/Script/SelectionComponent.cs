@@ -122,7 +122,7 @@ public class SelectionComponent : MonoBehaviour
         {
             if (!Input.GetKey(AdditionKey))
                 Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
-            foreach (var selectableObject in Game.Player.getAllArmies())
+            foreach (var selectableObject in Game.Player.AllArmies())
             {
                 if (IsWithinSelectionBounds(selectableObject.Position))
                 {

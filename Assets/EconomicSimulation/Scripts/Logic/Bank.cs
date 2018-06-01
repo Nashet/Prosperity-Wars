@@ -16,12 +16,12 @@ namespace Nashet.EconomicSimulation
 
         public string FullName
         {
-            get { return "Bank of " + country.ShortName; }
+            get { return "Bank of " + Country.ShortName; }
         }
 
         public string ShortName
         {
-            get { return "Bank of " + country.ShortName; }
+            get { return "Bank of " + Country.ShortName; }
         }
 
         public Bank(Country country) : base(country)
@@ -263,10 +263,10 @@ namespace Nashet.EconomicSimulation
 
         public void Nationalize()
         {
-            country.Bank.PayAllAvailableMoney(country);
-            country.Bank.givenCredits.SetZero();
-            country.loans.SetZero();
-            country.deposits.SetZero();
+            Country.Bank.PayAllAvailableMoney(Country);
+            Country.Bank.givenCredits.SetZero();
+            Country.loans.SetZero();
+            Country.deposits.SetZero();
         }
     }
 }

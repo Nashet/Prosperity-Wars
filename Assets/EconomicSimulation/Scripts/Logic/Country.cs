@@ -29,7 +29,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Province> ownedProvinces = new List<Province>();
 
         private readonly Dictionary<Country, Procent> opinionOf = new Dictionary<Country, Procent>();
-        
+
         private readonly Dictionary<Invention, bool> inventions = new Dictionary<Invention, bool>();
 
         public readonly List<AbstractReform> reforms = new List<AbstractReform>();
@@ -133,9 +133,9 @@ namespace Nashet.EconomicSimulation
         /// Don't call it directly, only from World.cs
         /// </summary>
         public Country(string name, Culture culture, Color color, Province capital, float money) : base(money, null)
-        {            
+        {
             allInvestmentProjects = new CashedData<Dictionary<IInvestable, Procent>>(GetAllInvestmentProjects2);
-            SetName(name);            
+            SetName(name);
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
             country = this;
@@ -168,7 +168,7 @@ namespace Nashet.EconomicSimulation
             taxationForPoor = new TaxationForPoor(this);
             taxationForRich = new TaxationForRich(this);
             minorityPolicy = new MinorityPolicy(this);
-            
+
 
             this.culture = culture;
             nationalColor = color;
@@ -209,13 +209,13 @@ namespace Nashet.EconomicSimulation
         internal void SetName(string name)
         {
             nameWeight = name.GetWeight();
-            this.name = name;            
+            this.name = name;
         }
 
-        private void ressurect(Province province, Government.ReformValue newGovernment)
+        private void ressurect(Province capital, Government.ReformValue newGovernment)
         {
             alive = true;
-            moveCapitalTo(province);
+            MoveCapitalTo(capital);
             government.setValue(newGovernment);
             setPrefix();
         }
@@ -246,11 +246,22 @@ namespace Nashet.EconomicSimulation
             if (oldCountry.ownedProvinces.Count == 0)
                 oldCountry.OnKillCountry(this);
             else if (province == oldCountry.Capital)
-                oldCountry.moveCapitalTo(oldCountry.getRandomOwnedProvince());
+            {                
+                oldCountry.MoveCapitalTo(oldCountry.ChooseNewCapital());
+            }
 
             government.onReformEnacted(province);
         }
 
+        private Province ChooseNewCapital()
+        {
+            var newCapital = AllProvinces().Where(x => x.isCoreFor(this)).MaxBy(x => x.getFamilyPopulation());
+            if (newCapital == null)
+                newCapital = AllProvinces().Where(x => x.getMajorCulture() == this.culture).MaxBy(x => x.getFamilyPopulation());
+            if (newCapital == null)
+                newCapital = AllProvinces().Random();
+            return newCapital;
+        }
         internal void onSeparatismWon(Country oldCountry)
         {
             foreach (var item in oldCountry.ownedProvinces.ToList())
@@ -259,7 +270,7 @@ namespace Nashet.EconomicSimulation
                     TakeProvince(item, false);
                     //item.secedeTo(this, false);
                 }
-            ressurect(getRandomOwnedProvince(), government.getTypedValue());
+            ressurect(ChooseNewCapital(), government.getTypedValue());
             foreach (var item in oldCountry.getInvented()) // copying inventions
             {
                 markInvented(item.Key);
@@ -272,16 +283,16 @@ namespace Nashet.EconomicSimulation
             {
                 // can't do it before cause graphics isn't loaded
                 if (country != World.UncolonizedLand)
-                    country.moveCapitalTo(country.ownedProvinces[0]);
+                    country.MoveCapitalTo(country.ownedProvinces[0]);
                 //if (capital != null) // not null-country
 
                 country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
                 country.ownedProvinces[0].setBorderMaterials(false);
-                country.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
+                country.AllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
                 country.Flag = Nashet.Flag.Generate(128, 128);
             }
-            World.UncolonizedLand.getAllProvinces().PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
+            World.UncolonizedLand.AllProvinces().PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
         }
 
         internal int getSize()
@@ -493,7 +504,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-       
+
 
         private bool hasCores(Country country)
         {
@@ -579,9 +590,9 @@ namespace Nashet.EconomicSimulation
             get { return capital; }
         }
 
-        internal override void sendAllArmies(Province target, Procent procent)
+        internal override void sendAllArmies(Province target)
         {
-            base.sendAllArmies(target, procent);                        
+            base.sendAllArmies(target);
         }
 
         //internal bool canAttack(Province province)
@@ -592,12 +603,29 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Has duplicates!
         /// </summary>
-        internal IEnumerable<Province> getAllNeighborProvinces()
+        internal IEnumerable<Province> AllNeighborProvinces()
         {
             //var res = Enumerable.Empty<Province>();
             foreach (var province in ownedProvinces)
                 foreach (var neighbor in province.getAllNeighbors().Where(p => p.Country != this))
                     yield return neighbor;
+
+            //List<Province> result = new List<Province>();
+            //foreach (var province in ownedProvinces)
+            //    result.AddRange(
+            //        province.getAllNeighbors().Where(p => p.Country != this && !result.Contains(p))
+            //        );
+            //return result;
+        }
+        /// <summary>
+        /// Has duplicates!
+        /// </summary>
+        internal IEnumerable<Country> AllNeighborCountries()
+        {
+            //var res = Enumerable.Empty<Province>();
+            foreach (var province in ownedProvinces)
+                foreach (var neighbor in province.getAllNeighbors().Where(neigbor => neigbor.Country != this))
+                    yield return neighbor.Country;
 
             //List<Province> result = new List<Province>();
             //foreach (var province in ownedProvinces)
@@ -615,10 +643,7 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        internal Province getRandomOwnedProvince()
-        {
-            return ownedProvinces.Random();
-        }
+
 
         internal void setCapitalTextMesh(Province province)
         {
@@ -632,7 +657,7 @@ namespace Nashet.EconomicSimulation
 
             meshCapitalText = txtMeshTransform.GetComponent<TextMesh>();
             meshCapitalText.text = FullName;
-           // meshCapitalText.fontSize *= 2;
+            // meshCapitalText.fontSize *= 2;
             if (this == Game.Player)
             {
                 meshCapitalText.color = Color.blue;
@@ -645,7 +670,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void moveCapitalTo(Province newCapital)
+        internal void MoveCapitalTo(Province newCapital)
         {
             if (meshCapitalText == null)
                 setCapitalTextMesh(newCapital);
@@ -791,7 +816,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        
+
 
         public override string ToString()
         {
@@ -908,23 +933,42 @@ namespace Nashet.EconomicSimulation
         {
             // attacking neighbors
             if (!isOnlyCountry())
-                if (Rand.Get.Next(10) == 1)
+                if (Rand.Get.Next(6) == 1)
                 {
-                    var thisStrength = getStrengthExluding(null);
-                    var possibleTarget = getAllNeighborProvinces().Distinct().MinBy(x => getRelationTo(x.Country).get());
-                    if (possibleTarget != null
-                        && (getRelationTo(possibleTarget.Country).get() < 1f || Rand.Get.Next(200) == 1)
-                        && thisStrength > 0
-                        && (getAverageMorale().get() > 0.5f || getAllArmiesSize() == 0)
-                        && (thisStrength > possibleTarget.Country.getStrengthExluding(null) * 0.25f
-                            || possibleTarget.Country == World.UncolonizedLand
-                            || possibleTarget.Country.isAI() && getStrengthExluding(null) > possibleTarget.Country.getStrengthExluding(null) * 0.1f)
-                        && canAttack.isAllTrue(possibleTarget, this)
-                        && (possibleTarget.Country.isAI() || Options.AIFisrtAllowedAttackOnHuman.isPassed())
-                        )
+                    if ((getAverageMorale().get() > 0.3f) || getAllArmiesSize() == 0)// because zero army has zero morale
                     {
-                        mobilize(ownedProvinces);
-                        sendAllArmies(possibleTarget, Procent.HundredProcent);
+                        var thisStrength = getStrengthExluding(null);
+                        if (thisStrength > 0)
+                        {
+                            var targetCountry = AllNeighborCountries().Distinct()
+                                .Where(x => getRelationTo(x).get() < 0.9f || Rand.Get.Next(200) == 1)
+                                .MinBy(x => getRelationTo(x.Country).get());
+
+
+                            var targetPool = AllNeighborProvinces().Distinct().Where(x => x.Country == targetCountry).ToList();
+                            var targetProvince = targetPool.Where(x => x.isCoreFor(this)).FirstOrDefault();
+                            if (targetProvince == null)
+                                targetProvince = targetPool.Where(x => x.getMajorCulture() == this.getCulture()).FirstOrDefault();
+                            if (targetProvince == null)
+                                targetProvince = targetPool.Random();
+
+                            if (targetProvince != null
+                            && (thisStrength > targetProvince.Country.getStrengthExluding(null) * 0.25f
+                                || targetProvince.Country == World.UncolonizedLand
+                                || targetProvince.Country.isAI() && getStrengthExluding(null) > targetProvince.Country.getStrengthExluding(null) * 0.1f)
+                            && canAttack.isAllTrue(targetProvince, this)
+                            && (targetProvince.Country.isAI() || Options.AIFisrtAllowedAttackOnHuman.isPassed())
+                            )
+                            {
+                                mobilize(ownedProvinces);
+                                foreach (var army in AllArmies())
+                                {
+                                    army.SetPathTo(targetProvince, x=>x.Country==this|| x.Country==targetCountry);
+                                    //if (army.Path==null)
+                                }
+                                
+                            }
+                        }
                     }
                 }
             if (Rand.Get.Next(90) == 1)
@@ -1223,7 +1267,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public override void consumeNeeds()
         {
-            foreach (var item in getAllArmies())
+            foreach (var item in AllArmies())
             {
                 item.consume();
             }
@@ -1328,7 +1372,7 @@ namespace Nashet.EconomicSimulation
                     yield return pops;
         }
 
-        public IEnumerable<Province> getAllProvinces()
+        public IEnumerable<Province> AllProvinces()
         {
             foreach (var province in ownedProvinces)
                 yield return province;
