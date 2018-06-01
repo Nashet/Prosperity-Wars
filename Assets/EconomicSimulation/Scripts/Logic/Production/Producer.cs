@@ -7,7 +7,7 @@ namespace Nashet.EconomicSimulation
     /// Represents anyone who can produce, store and sell product (1 product)
     /// also linked to Province
     /// </summary>
-    public abstract class Producer : Consumer, ICanSell, IHasGetProvince
+    public abstract class Producer : Consumer, ICanSell, IHasProvince
     {
         /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
         private Storage gainGoodsThisTurn;

@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         private static readonly List<Culture> allCultures = new List<Culture>();
 
         internal static readonly Country UncolonizedLand;
-        
+
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
@@ -49,7 +49,27 @@ namespace Nashet.EconomicSimulation
             allCountries.Add(UncolonizedLand);
             UncolonizedLand.government.setValue(Government.Tribal);
             UncolonizedLand.economy.setValue(Economy.NaturalEconomy);
-        }       
+        }
+
+        public static IEnumerable<Army> AllArmies()
+        {
+            foreach (var country in World.getAllExistingCountries())
+            {
+                foreach (var army in country.getAllArmies())
+                {
+                    yield return army;
+                }
+                foreach (var movement in country.movements)
+                    foreach (var army in movement.getAllArmies())
+                    {
+                        yield return army;
+                    }
+            }
+            foreach (var army in UncolonizedLand.getAllArmies())
+            {
+                yield return army;
+            }
+        }
 
         public static IEnumerable<Country> getAllExistingCountries()
         {
@@ -407,43 +427,43 @@ namespace Nashet.EconomicSimulation
                     yield return record;
         }
 
-        private static void calcBattles()
-        {
-            foreach (Staff attacker in Staff.getAllStaffs().ToList())
-            {
-                foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
-                {
-                    var movement = attacker as Movement;
-                    if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
-                    {
-                        var result = attackerArmy.attack(attackerArmy.getDestination());
-                        if (result.isAttackerWon())
-                        {
-                            if (movement == null)
-                                (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
-                            //attackerArmy.getDestination().secedeTo(attacker as Country, true);
-                            else
-                            {
-                                if (movement.getReformType() == null)//separatists
-                                    movement.onRevolutionWon();
-                                else
-                                    movement.getReformType().setValue(movement.getGoal());
+        //private static void calcBattles()
+        //{
+        //    foreach (Staff attacker in Staff.getAllStaffs().ToList())
+        //    {
+        //        foreach (var attackerArmy in attacker.getAttackingArmies().ToList())
+        //        {
+        //            var movement = attacker as Movement;
+        //            if (movement == null || movement.isValidGoal()) // movements attack only if goal is still valid
+        //            {
+        //                var result = attackerArmy.attack(attackerArmy.getDestination());
+        //                if (result.isAttackerWon())
+        //                {
+        //                    if (movement == null)
+        //                        (attacker as Country).TakeProvince(attackerArmy.getDestination(), true);
+        //                    //attackerArmy.getDestination().secedeTo(attacker as Country, true);
+        //                    else
+        //                    {
+        //                        if (movement.getReformType() == null)//separatists
+        //                            movement.onRevolutionWon();
+        //                        else
+        //                            movement.getReformType().setValue(movement.getGoal());
 
-                            }
-                        }
-                        else if (result.isDefenderWon())
-                        {
-                            if (movement != null)
-                                movement.onRevolutionLost();
-                        }
-                        if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
-                            result.createMessage();
-                    }
-                    attackerArmy.sendTo(null); // go home
-                }
-                attacker.consolidateArmies();
-            }
-        }
+        //                    }
+        //                }
+        //                else if (result.isDefenderWon())
+        //                {
+        //                    if (movement != null)
+        //                        movement.onRevolutionLost();
+        //                }
+        //                if (result.getAttacker() == Game.Player || result.getDefender() == Game.Player)
+        //                    result.createMessage();
+        //            }
+        //            attackerArmy.sendTo(null); // go home
+        //        }
+        //        //attacker.consolidateArmies();
+        //    }
+        //}
 
         public static void prepareForNewTick()
         {
@@ -484,7 +504,7 @@ namespace Nashet.EconomicSimulation
             }
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
-            calcBattles();
+            //calcBattles();
 
             // includes workforce balancing
             // and sets statistics to zero. Should go after price calculation
@@ -657,6 +677,6 @@ namespace Nashet.EconomicSimulation
             }
         }
         public static event EventHandler DayPassed;
-        
+
     }
 }

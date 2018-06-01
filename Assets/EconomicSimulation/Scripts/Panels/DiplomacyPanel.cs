@@ -68,7 +68,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nClasses: ").Append(selectedCountry.GetAllPopulation().Group(x => x.Type, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
             if (Game.devMode)
-                sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());
+                sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces());
 
             if (selectedCountry == Game.Player)
                 sb.Append("\n\nOpinion of myself: I'm cool!");

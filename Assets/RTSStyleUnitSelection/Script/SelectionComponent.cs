@@ -46,20 +46,10 @@ public class SelectionComponent : MonoBehaviour
             }
         }
 
-        if (!Game.selectedUnits.IsEmpty() && Input.GetMouseButtonDown(1)) // MOUSE RIGHT BUTTON
+        // MOUSE RIGHT BUTTON clicked
+        if (!Game.selectedArmies.IsEmpty() && Input.GetMouseButtonDown(1))
         {
-            var collider = SelectionComponent.getRayCastMeshNumber();
-            int meshNumber = Province.FindByCollider(collider);
-            if (meshNumber > 0) // send armies to another province
-                Game.selectedUnits.PerformAction(x => x.SendTo(World.FindProvince(meshNumber)));
-            else // better do here sort of collider layer, hitting provinces only
-            {
-                var unit = collider.transform.GetComponent<Unit>();
-                if (unit != null)
-                {
-                    Game.selectedUnits.PerformAction(x => x.SendTo(unit.currentProvince));
-                }
-            }
+            SendUnitTo();
         }
         if (Input.GetKeyDown(KeyCode.Return)) // enter key
             MainCamera.Get.closeToppestPanel();
@@ -90,7 +80,36 @@ public class SelectionComponent : MonoBehaviour
         //    }
         //}
     }
+    private void SendUnitTo()
+    {
+        var collider = getRayCastMeshNumber();
+        if (collider != null)
+        {
+            Province sendToPovince = null;
+            int meshNumber = Province.FindByCollider(collider);
+            if (meshNumber > 0) // send armies to another province
+                sendToPovince = World.FindProvince(meshNumber);
+            else // better do here sort of collider layer, hitting provinces only
+            {
+                var unit = collider.transform.GetComponent<Unit>();
+                if (unit != null)
+                {
+                    sendToPovince = unit.Province;
+                }
+            }
+            var addPath = Input.GetKey(AdditionKey);
 
+            foreach (var item in Game.selectedArmies)
+            {
+                if (addPath)
+                    item.AddToPath(sendToPovince);
+                else
+                    item.SetPathTo(sendToPovince);
+                Game.provincesToRedrawArmies.Add(item.Province);
+            }
+            //Unit.RedrawAll();
+        }
+    }
     private void StartFrameSelection()
     {
         isSelecting = true;
@@ -102,12 +121,12 @@ public class SelectionComponent : MonoBehaviour
         if (mousePosition1 != Input.mousePosition)
         {
             if (!Input.GetKey(AdditionKey))
-                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
-            foreach (var selectableObject in FindObjectsOfType<Unit>())
+                Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+            foreach (var selectableObject in Game.Player.getAllArmies())
             {
-                if (IsWithinSelectionBounds(selectableObject.gameObject))
+                if (IsWithinSelectionBounds(selectableObject.Position))
                 {
-                    selectableObject.GetComponent<Unit>().Select();
+                    selectableObject.Select();
                 }
             }
 
@@ -130,27 +149,29 @@ public class SelectionComponent : MonoBehaviour
             {
                 MainCamera.selectProvince(provinceNumber);
                 if (!Input.GetKey(AdditionKey)) // don't de select units if shift is pressed
-                    Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+                    Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
             }
             else
             {
                 var unit = collider.transform.GetComponent<Unit>();
-                if (unit != null)
+
+                var army = unit.NextArmy;
+                if (army != null)
                 {
                     if (Input.GetKey(AdditionKey))
                     {
-                        if (Game.selectedUnits.Contains(unit))
-                            unit.DeSelect();
+                        if (Game.selectedArmies.Contains(army))
+                            army.DeSelect();
                         else
-                            unit.Select();
+                            army.Select();
                     }
                     else
                     {
-                        if (Game.selectedUnits.Count > 0)
+                        if (Game.selectedArmies.Count > 0)
                         {
-                            Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+                            Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
                         }
-                        unit.Select();
+                        army.Select();
                     }
                 }
             }
@@ -159,17 +180,17 @@ public class SelectionComponent : MonoBehaviour
         {
             MainCamera.selectProvince(-1);
             if (!Input.GetKey(AdditionKey))
-                Game.selectedUnits.ToList().PerformAction(x => x.DeSelect());
+                Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
         }
     }
-    public bool IsWithinSelectionBounds(GameObject gameObject)
+    public bool IsWithinSelectionBounds(Vector3 position)
     {
         if (!isSelecting)
             return false;
 
         var camera = Camera.main;
         var viewportBounds = Utils.GetViewportBounds(camera, mousePosition1, Input.mousePosition);
-        return viewportBounds.Contains(camera.WorldToViewportPoint(gameObject.transform.position));
+        return viewportBounds.Contains(camera.WorldToViewportPoint(position));
     }
 
     void OnGUI()

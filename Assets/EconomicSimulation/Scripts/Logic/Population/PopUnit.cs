@@ -316,9 +316,10 @@ namespace Nashet.EconomicSimulation
             population.Delete();
             //province.allPopUnits.Remove(this); // gives exception
             //Game.popsToShowInPopulationPanel.Remove(this);
+            //remove from population panel.. Would do it automatically
             if (MainCamera.popUnitPanel.whomShowing() == this)
                 MainCamera.popUnitPanel.Hide();
-            //remove from population panel.. Would do it automatically
+            
 
             PayAllAvailableMoney(Bank); // just in case if there is something
             Bank.OnLoanerRefusesToPay(this);

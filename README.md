@@ -1,11 +1,11 @@
 # Economic simulation
 
 ## Demo
-[Project now has patreon page](https://www.patreon.com/economicsimulation) where you can help contributing in this project
+[There is early browser demo of this game](https://nashet.github.io/Prosperity-Wars/WEBGL/index.html) (about 6MB download, some devices are not supported)
 
-[There is early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (about 6MB download, some devices are not supported)
+[Project now has patreon page](https://www.patreon.com/ProsperityWars) where you can help contributing in this project
 
-And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster
+And there is standalone windows version in [releases](https://github.com/Nashet/Prosperity-Wars/releases), which runs faster
 
 ## Description
 I'm a huge fan of Victoria 2 game but I was disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation, I decided to try to make my own.
@@ -20,7 +20,7 @@ Main principles of that simulation are:
 * governments can put extra money in bank
 * governments can compete by wars
 
-## What it has now (v0.19.2)
+## What it has now (v0.20.1)
  - provinces and countries (generated randomly)
  - movements and Rebellions
  - factories and national banks
@@ -58,4 +58,4 @@ I would love to have other people providing ideas, code or questions.  You may:
 License is GPL-3.0
 
 ## How to build
-Since 0.19.2 version the project is build with Unity 2017.40f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene
+Since 0.19.2 version the project is build with Unity 2017.40f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene.

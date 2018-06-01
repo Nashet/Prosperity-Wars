@@ -33,8 +33,7 @@ namespace Nashet.EconomicSimulation
                 else
                     return (x as Country).FullName + " owns that province";
             }
-        , true);
-
+        , true);      
 
         public static readonly Predicate<Province> All = x => true;
 
@@ -48,7 +47,25 @@ namespace Nashet.EconomicSimulation
         private readonly Color colorID;
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
+        private readonly List<Factory> allFactories = new List<Factory>();
+        private List<Army> standingArmies = new List<Army>(); // military units
 
+        public IEnumerable<Army> AllStandingArmies()
+        {
+            foreach (var item in standingArmies)
+            {
+                yield return item;
+            }
+        }
+        public void AddArmy(Army army)
+        {
+            standingArmies.Add(army);
+            //Debug.Log("Added " + army);
+        }
+        public void RemoveArmy(Army army)
+        {
+            standingArmies.Remove(army);
+        }
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         private readonly List<Province> neighbors = new List<Province>();
 
@@ -57,16 +74,17 @@ namespace Nashet.EconomicSimulation
         private Color color;
 
         private GameObject gameObject;
-        private MeshRenderer meshRenderer;
+        private MeshRenderer meshRenderer;        
 
         private Country country;
-
-        private readonly List<Factory> allFactories = new List<Factory>();
+       
 
         private readonly int fertileSoil;
         private readonly List<Country> cores = new List<Country>();
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
+        
+
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
         //private readonly float nameWeight;
@@ -216,20 +234,6 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            //foreach (var neighbor in neighbors)
-            //    if (Country == neighbor.Country)
-            //    {
-            //        this.bordersMeshes[neighbor].material = Game.defaultProvinceBorderMaterial;
-            //        neighbor.bordersMeshes[this].material = Game.defaultProvinceBorderMaterial;
-            //    }
-            //    else
-            //    {
-            //        {
-            //            this.bordersMeshes[neighbor].material = Country.getBorderMaterial();
-            //            if (neighbor.Country != null)
-            //                neighbor.bordersMeshes[this].material = neighbor.Country.getBorderMaterial();
-            //        }
-            //    }
         }
 
         /// <summary>
@@ -776,9 +780,9 @@ namespace Nashet.EconomicSimulation
             renderers[0] = txtMeshTransform.GetComponent<Renderer>();
             lods[0] = new LOD(0.25F, renderers);
 
-            var position = getPosition(); 
+            var position = getPosition();
             position.z -= 0.003f;
-            txtMeshTransform.position = position;            
+            txtMeshTransform.position = position;
 
             TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
 
@@ -1392,5 +1396,5 @@ namespace Nashet.EconomicSimulation
         {
             public Country oldOwner { get; set; }
         }
-    }    
+    }
 }
