@@ -20,6 +20,7 @@ public class SelectionComponent : MonoBehaviour
     private static Camera camera; // it's OK
     [SerializeField]
     private KeyCode AdditionKey;
+    private int nextArmyToSelect;
 
     private void Start()
     {
@@ -155,7 +156,7 @@ public class SelectionComponent : MonoBehaviour
             {
                 var unit = collider.transform.GetComponent<Unit>();
 
-                var army = unit.NextArmy;
+                var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
                 if (army != null)
                 {
                     if (Input.GetKey(AdditionKey))

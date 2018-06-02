@@ -359,5 +359,5 @@ namespace Nashet.EconomicSimulation
         {
             return "Agent "+ cash.Get();
         }
-    }
+    }    
 }

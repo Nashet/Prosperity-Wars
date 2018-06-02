@@ -26,15 +26,7 @@ namespace Nashet.EconomicSimulation
         Animator m_Animator;
 
 
-        private readonly static List<Unit> allUnits = new List<Unit>();
-
-        public Army NextArmy
-        {
-            get
-            {
-                return Game.Player.AllArmies().Where(x => x.Province == Province).Random();
-            }
-        }
+        private readonly static List<Unit> allUnits = new List<Unit>();       
 
         public Province Province { get; private set; }
 

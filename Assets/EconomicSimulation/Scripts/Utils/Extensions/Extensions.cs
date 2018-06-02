@@ -298,6 +298,19 @@ namespace Nashet.Utils
         {
             yield return item;
         }
+        public static T Next<T>(this IEnumerable<T> collection, ref int number)
+        {
+            if (collection.IsEmpty())
+                return default(T);
+            var res = collection.ElementAtOrDefault(number);
+            if (res == null)
+            {
+                number = 0;
+                res = collection.ElementAtOrDefault(number);
+            }
+            number++;
+            return res;
+        }
         //public static void ForEach<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Action<TKey, TValue> invokeMe)
         //{
         //    foreach (var keyValue in dictionary)
