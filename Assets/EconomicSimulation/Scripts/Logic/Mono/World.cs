@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
 
         internal static List<BattleResult> allBattles = new List<BattleResult>();
 
-        public static Market market;
+        //public static Market market;
         public Graph graph;
 
 
@@ -76,6 +76,13 @@ namespace Nashet.EconomicSimulation
             foreach (var country in allCountries)
                 if (country.isAlive() && country != UncolonizedLand)
                     yield return country;
+        }
+
+        public static IEnumerable<Market> AllMarkets()
+        {
+            foreach (var country in getAllExistingCountries())
+
+                yield return country.market;
         }
 
         public static IEnumerable<Province> GetAllProvinces()

@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.Utils;
+using Nashet.ValueSpace;
 using UnityEngine;
 
 namespace Nashet.EconomicSimulation
@@ -90,6 +91,11 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
+        public Market GetReachestMarket(Storage need)
+        {
+            return World.AllMarkets().MaxBy(x => x.getCost(need.Product).Get());
+
+        }
 
         /// <summary>
         /// Do checks outside
@@ -98,9 +104,9 @@ namespace Nashet.EconomicSimulation
         {
             sentToMarket.set(what);
             storage.subtract(what);
-            World.market.sentToMarket.Add(what);
-            if (Game.logMarket)
-                Debug.Log(this + " sent to market " + what + " costing " + World.market.getCost(what));
+            GetReachestMarket(what).sentToMarket.Add(what);
+            //if (Game.logMarket)
+            //    Debug.Log(this + " sent to market " + what + " costing " + World.market.getCost(what));
         }
 
         /// <summary> Do checks outside</summary>

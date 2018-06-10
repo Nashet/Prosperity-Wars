@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
         {
             where.RegisterPop(this);
             born = new Date(Date.Today);
-            
+
             type = popType;
             population = new Population(amount, this);
             this.culture = culture;
@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             mobilized = 0;
-           
+
             this.culture = culture;
             education = new Education(source.education.get());
             needsFulfilled = new Procent(source.needsFulfilled.get());
@@ -253,7 +253,7 @@ namespace Nashet.EconomicSimulation
             populationChanges.Add(source.populationChanges);
             //Own PopUnit fields:
             loyalty.AddPoportionally(population.Get(), source.population.Get(), source.loyalty);
-            
+
 
             mobilized += source.mobilized;
             //type = newPopType; don't change that
@@ -319,7 +319,7 @@ namespace Nashet.EconomicSimulation
             //remove from population panel.. Would do it automatically
             if (MainCamera.popUnitPanel.whomShowing() == this)
                 MainCamera.popUnitPanel.Hide();
-            
+
 
             PayAllAvailableMoney(Bank); // just in case if there is something
             Bank.OnLoanerRefusesToPay(this);
@@ -679,7 +679,7 @@ namespace Nashet.EconomicSimulation
                     needsFulfilled.Set(Options.PopOneThird);
                 }
                 else
-                    needsFulfilled.Set(World.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
+                    needsFulfilled.Set(Buy(need).Divide(need).Divide(Options.PopStrataWeight));
             }
             if (type != PopType.Aristocrats)
                 storage.SetZero();
@@ -695,7 +695,7 @@ namespace Nashet.EconomicSimulation
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in population.getRealEveryDayNeeds())
                 {
-                    var consumed = World.market.Sell(this, need, null);
+                    var consumed =Buy(need);
                     if (consumed.isNotZero())
                     {
                         everyDayNeedsConsumed.Add(consumed);
@@ -720,7 +720,7 @@ namespace Nashet.EconomicSimulation
                         luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
-                        var consumed = World.market.Sell(this, nextNeed, null);
+                        var consumed = Buy(nextNeed);
                         if (consumed.isZero())
                             someLuxuryProductUnavailable = true;
                         else
@@ -731,7 +731,7 @@ namespace Nashet.EconomicSimulation
                                 education.Learn();
                         }
                     }
-                    MoneyView luxuryNeedsCost = World.market.getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost = GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
@@ -756,7 +756,7 @@ namespace Nashet.EconomicSimulation
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.Multiply(buyExtraGoodsMultiplier);
-                                var consumed = World.market.Sell(this, nextNeed, null);
+                                var consumed = Buy(nextNeed);
                                 if (consumed.isNotZero())
                                     luxuryNeedsConsumed.Add(consumed);
                             }
@@ -1298,7 +1298,9 @@ namespace Nashet.EconomicSimulation
         {
             if (Country.Invented(Invention.Banking))
             {
+                //Hmm.. Here it's about some world average price..
                 MoneyView extraMoney = Cash.Copy().Subtract(
+                    // introduce some factual price?
                     World.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
                     , false);
                 if (extraMoney.isNotZero())

@@ -11,7 +11,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Market : Agent//: PrimitiveStorageSet
     {
-        private readonly StorageSet marketPrice = new StorageSet();
+        public readonly StorageSet prices = new StorageSet();
 
         // todo make Better class for it? - yes
         private Date dateOfDSB = Date.Never.Copy();
@@ -92,14 +92,14 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView getCost(Product whom)
         {
-            return new MoneyView((decimal)marketPrice.getCheapestStorage(whom).get());
+            return new MoneyView((decimal)prices.getCheapestStorage(whom).get());
         }
         /// <summary>
         /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
         /// </summary>
         internal Storage GetRandomCheapestSubstitute(Storage need)
         {
-            return marketPrice.ConvertToRandomCheapestStorageProduct(need);
+            return prices.ConvertToRandomCheapestStorageProduct(need);
         }
 
         //todo change it to 1 run by every products, not run for every product
@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
             if (!dateOfgetBought.IsToday)
             {
                 //recalculate all products
-                foreach (Storage recalculatingProduct in marketPrice)
+                foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
                         var result = recalculateProductForConsumers(recalculatingProduct.Product, x => x.getConsumedInMarket());
@@ -203,7 +203,7 @@ namespace Nashet.EconomicSimulation
             if (!dateOfgetTotalConsumption.IsToday)
             {
                 //recalculate buffer
-                foreach (Storage recalculatingProduct in marketPrice)
+                foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
                         var result = recalculateProductForConsumers(recalculatingProduct.Product, x => x.getConsumed());
@@ -227,7 +227,7 @@ namespace Nashet.EconomicSimulation
             if (!dateOfgetSupplyOnMarket.IsToday)
             {
                 //recalculate supply buffer
-                foreach (Storage recalculatingProduct in marketPrice)
+                foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
                         var result = recalculateProductForSellers(recalculatingProduct.Product, x => x.getSentToMarket(recalculatingProduct.Product));
@@ -251,7 +251,7 @@ namespace Nashet.EconomicSimulation
             if (!dateOfgetTotalProduction.IsToday)
             {
                 //recalculate Production buffer
-                foreach (Storage recalculatingProduct in marketPrice)
+                foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
                         var result = recalculateProductForProducers(recalculatingProduct.Product, x => x.getGainGoodsThisTurn());
@@ -273,7 +273,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public void SetDefaultPrice(Product pro, float inprice)
         {
-            marketPrice.Set(new Storage(pro, inprice));
+            prices.Set(new Storage(pro, inprice));
         }
 
         internal bool isAvailable(Product product)
@@ -302,117 +302,14 @@ namespace Nashet.EconomicSimulation
 
         private void Ssssel(Consumer buyer, MoneyView cost, Storage sale)
         {
-            buyer.Pay(World.market, cost);
-            buyer.consumeFromMarket(sale);
-            var isSP = buyer as SimpleProduction;
-            if (isSP != null)
-                isSP.getInputProductsReserve().Add(sale);
+
+            buyer.BuyFromMarket(sale);
+
         }
 
-        /// <summary>
-        /// returns how much was sold de facto
-        /// new version of buy-old,
-        /// real deal. If not enough money to buy (including deposits) then buys some part of desired
-        /// </summary>
-        internal Storage Sell(Consumer buyer, Storage whatWantedToBuy)
-        {
-            if (whatWantedToBuy.isNotZero())
-            {
+        
 
-                Storage sale;
-                if (whatWantedToBuy.Product.isAbstract())
-                {
-                    sale = marketPrice.ConvertToRandomCheapestExistingSubstitute(whatWantedToBuy);
-                    if (sale == null)//no substitution available on market
-                        return new Storage(whatWantedToBuy.Product);
-                    else if (sale.isZero())
-                        return sale;
-                }
-                else
-                    sale = whatWantedToBuy;
-
-                Storage howMuchCanConsume;
-                MoneyView price = getCost(sale.Product);
-                MoneyView cost;
-
-                if (World.market.sentToMarket.has(sale))
-                {
-                    cost = getCost(sale);
-
-                    if (buyer.CanPay(cost))
-                    {
-                        Ssssel(buyer, cost, sale);
-                        return sale;
-                    }
-                    else
-                    {
-                        float val = (float)(buyer.getMoneyAvailable().Get() / price.Get());
-                        howMuchCanConsume = new Storage(sale.Product, val);
-                        howMuchCanConsume.Subtract(0.001f, false); // to fix percision bug
-                        if (howMuchCanConsume.isZero())
-                            return howMuchCanConsume;
-                        else
-                        {
-                            
-                            Ssssel(buyer, getCost(howMuchCanConsume), howMuchCanConsume);
-                            return howMuchCanConsume;
-                        }
-                    }
-                }
-                else
-                {
-                    // assuming available < buying
-                    Storage howMuchAvailable = new Storage(World.market.HowMuchAvailable(sale));
-                    if (howMuchAvailable.isNotZero())
-                    {
-                        cost = getCost(howMuchAvailable);
-                        if (buyer.CanPay(cost))
-                        {
-                            Ssssel(buyer, cost, howMuchAvailable);
-                            return howMuchAvailable;
-                        }
-                        else
-                        {
-                            howMuchCanConsume = new Storage(howMuchAvailable.Product, (float)(buyer.getMoneyAvailable().Get() / price.Get()));
-
-                            if (howMuchCanConsume.get() > howMuchAvailable.get())
-                                howMuchCanConsume.Set(howMuchAvailable.get()); // you don't buy more than there is
-
-                            howMuchCanConsume.Subtract(0.001f, false); // to fix percision bug
-                            if (howMuchCanConsume.isNotZero())
-                            {
-                                Ssssel(buyer, buyer.getMoneyAvailable(), howMuchCanConsume);//pay all money cause you don't have more                                                                        
-                                return howMuchCanConsume;
-                            }
-                            else
-                                return howMuchCanConsume;
-                        }
-                    }
-                    else
-                        return howMuchAvailable;
-                }
-            }
-            else
-                return whatWantedToBuy; // assuming buying is empty here            
-        }
-
-        /// <summary>
-        /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
-        /// </summary>
-        public Storage Sell(Consumer toWhom, Storage need, Country subsidizer)
-        {
-            if (toWhom.CanAfford(need) || subsidizer == null)
-            {
-                return Sell(toWhom, need);
-            }
-            //todo fix that
-            else if (subsidizer.GiveFactorySubsidies(toWhom, toWhom.HowMuchLacksMoneyIncludingDeposits(getCost(need))))
-            {
-                return Sell(toWhom, need);
-            }
-            else
-                return new Storage(need.Product, 0f);
-        }
+       
 
         /// <summary>
         /// Buying PrimitiveStorageSet, subsidizations allowed
@@ -519,7 +416,7 @@ namespace Nashet.EconomicSimulation
             // recalculate DSBbuffer
             {
                 //Debug.Log("Recalculation of DSB started");
-                foreach (Storage nextProduct in marketPrice)
+                foreach (Storage nextProduct in prices)
                     if (nextProduct.Product.isTradable())
                     {
                         //getProductionTotal(product, false); // for pre-turn initialization
@@ -562,7 +459,7 @@ namespace Nashet.EconomicSimulation
             //float highestChangingSpeed = 0.2f; //%
             //float highChangingSpeed = 0.04f;//%
 
-            foreach (Storage price in marketPrice)
+            foreach (Storage price in prices)
                 if (price.Product.isTradable())
                 {
                     // first call of DSB

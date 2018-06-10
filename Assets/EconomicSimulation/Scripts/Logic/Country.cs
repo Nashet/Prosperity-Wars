@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
         private readonly Bank bank;
 
         public Bank Bank { get { return bank; } }
-
+        public Market market;
         internal readonly MinorityPolicy minorityPolicy;
 
         private readonly List<Province> ownedProvinces = new List<Province>();
@@ -139,6 +139,7 @@ namespace Nashet.EconomicSimulation
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
             country = this;
+            market = new Market();
             modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
             modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
             new Modifier(x=>(x as Country).government.getValue() != government.getValue(), "You have different form of government", -0.002f, false),

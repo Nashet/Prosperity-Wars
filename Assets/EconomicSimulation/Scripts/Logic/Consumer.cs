@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
 
@@ -52,15 +53,131 @@ namespace Nashet.EconomicSimulation
         {
             return consumedInMarket;
         }
-
-        // Do I use where need to? Yes, I do. It goes to Market.Buy()
-        public void consumeFromMarket(Storage what)
+        //internal Storage Buy(ICanSell seller,  Storage what) 
+        //{
+        //    //look for better seller
+        //}
+        public Market GetCheapestMarket(Storage need)
         {
+            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
+
+        }
+        /// <summary>
+        /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
+        /// </summary>
+        //public Storage Buy(Storage need)// old market.Sell
+        //{
+        //    if (this.CanAfford(need))
+        //    {
+        //        return Buy(need);
+        //    }
+        //    //todo fix that - return subsidies
+        //    //else if (subsidizer.GiveFactorySubsidies(toWhom, toWhom.HowMuchLacksMoneyIncludingDeposits(getCost(need))))
+        //    //{
+        //    //    return Sell(toWhom, need);
+        //    //}
+        //    else
+        //        return new Storage(need.Product, 0f);
+        //}
+        /// <summary>
+        /// returns how much was sold de facto
+        /// new version of buy-old,
+        /// real deal. If not enough money to buy (including deposits) then buys some part of desired
+        /// </summary>
+        internal Storage Buy(Storage need) // old Market.Sell
+        {
+            if (need.isNotZero())
+            {
+                Market market = GetCheapestMarket(need);
+                Storage sale;
+                if (need.Product.isAbstract())
+                {
+                    sale = market.prices.ConvertToRandomCheapestExistingSubstitute(need);
+                    if (sale == null)//no substitution available on market
+                        return new Storage(need.Product);
+                    else if (sale.isZero())
+                        return sale;
+                }
+                else
+                    sale = need;
+
+                Storage howMuchCanConsume;
+                MoneyView price = market.getCost(sale.Product);
+                MoneyView cost;
+
+                if (market.sentToMarket.has(sale))
+                {
+                    cost = market.getCost(sale);
+
+                    if (this.CanPay(cost))
+                    {
+                        this.BuyFromMarket(market, cost, sale);
+                        return sale;
+                    }
+                    else
+                    {
+                        float val = (float)(this.getMoneyAvailable().Get() / price.Get());
+                        howMuchCanConsume = new Storage(sale.Product, val);
+                        howMuchCanConsume.Subtract(0.001f, false); // to fix percision bug
+                        if (howMuchCanConsume.isZero())
+                            return howMuchCanConsume;
+                        else
+                        {
+
+                            this.BuyFromMarket(market, market.getCost(howMuchCanConsume), howMuchCanConsume);
+                            return howMuchCanConsume;
+                        }
+                    }
+                }
+                else
+                {
+                    // assuming available < buying
+                    Storage howMuchAvailable = new Storage(market.HowMuchAvailable(sale));
+                    if (howMuchAvailable.isNotZero())
+                    {
+                        cost = market.getCost(howMuchAvailable);
+                        if (this.CanPay(cost))
+                        {
+                            this.BuyFromMarket(market, cost, howMuchAvailable);
+                            return howMuchAvailable;
+                        }
+                        else
+                        {
+                            howMuchCanConsume = new Storage(howMuchAvailable.Product, (float)(this.getMoneyAvailable().Get() / price.Get()));
+
+                            if (howMuchCanConsume.get() > howMuchAvailable.get())
+                                howMuchCanConsume.Set(howMuchAvailable.get()); // you don't buy more than there is
+
+                            howMuchCanConsume.Subtract(0.001f, false); // to fix precision bug
+                            if (howMuchCanConsume.isNotZero())
+                            {
+                                this.BuyFromMarket(market, this.getMoneyAvailable(), howMuchCanConsume);//pay all money cause you don't have more                                                                        
+                                return howMuchCanConsume;
+                            }
+                            else
+                                return howMuchCanConsume;
+                        }
+                    }
+                    else
+                        return howMuchAvailable;
+                }
+            }
+            else
+                return need; // assuming buying is empty here            
+        }
+        // Do I use where need to? Yes, I do. It goes to Market.Buy()
+        public void BuyFromMarket(Market market, MoneyView cost, Storage what)
+        {
+            this.Pay(market, cost);
             consumed.Add(what);
             consumedInMarket.Add(what);
-            World.market.sentToMarket.Subtract(what);
+            market.sentToMarket.Subtract(what);
+            var isSP = this as SimpleProduction;
+            if (isSP != null)
+                isSP.getInputProductsReserve().Add(what);
+
             if (Game.logMarket)
-                Debug.Log(this + " consumed from market " + what + " costing " + World.market.getCost(what));
+                Debug.Log(this + " consumed from market " + what + " costing " + market.getCost(what));
         }
 
         public void consumeFromCountryStorage(List<Storage> what, Country country)
