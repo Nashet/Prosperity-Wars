@@ -17,7 +17,7 @@ namespace Nashet.EconomicSimulation
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
-        private static readonly bool readMapFormFile = false;
+        public static  bool readMapFormFile = false;
         private static MyTexture mapTexture;
         
 
@@ -39,15 +39,16 @@ namespace Nashet.EconomicSimulation
         private static VoxelGrid grid;
         private readonly Rect mapBorders;
 
-        public Game()
+        public Game(Texture2D mapImage)
         {
-            if (readMapFormFile)
+            if (mapImage==null)
+                generateMapImage();            
+            else
             {
-                Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
+                //Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
                 mapTexture = new MyTexture(mapImage);
             }
-            else
-                generateMapImage();
+
             mapBorders = new Rect(0f, 0f, mapTexture.getWidth() * Options.cellMultiplier, mapTexture.getHeight() * Options.cellMultiplier);
         }
 
@@ -55,7 +56,7 @@ namespace Nashet.EconomicSimulation
         {
             World.market.initialize();
 
-            World.Create(mapTexture, !readMapFormFile);
+            World.Create(mapTexture);
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
