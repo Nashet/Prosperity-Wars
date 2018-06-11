@@ -155,24 +155,26 @@ public class SelectionComponent : MonoBehaviour
             else
             {
                 var unit = collider.transform.GetComponent<Unit>();
-
-                var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
-                if (army != null)
+                if (unit != null)
                 {
-                    if (Input.GetKey(AdditionKey))
+                    var army = unit.Province.AllStandingArmies().Where(x => x.getOwner() == Game.Player).Next(ref nextArmyToSelect);
+                    if (army != null)
                     {
-                        if (Game.selectedArmies.Contains(army))
-                            army.DeSelect();
-                        else
-                            army.Select();
-                    }
-                    else
-                    {
-                        if (Game.selectedArmies.Count > 0)
+                        if (Input.GetKey(AdditionKey))
                         {
-                            Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+                            if (Game.selectedArmies.Contains(army))
+                                army.DeSelect();
+                            else
+                                army.Select();
                         }
-                        army.Select();
+                        else
+                        {
+                            if (Game.selectedArmies.Count > 0)
+                            {
+                                Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+                            }
+                            army.Select();
+                        }
                     }
                 }
             }

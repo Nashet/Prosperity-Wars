@@ -14,6 +14,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private float xzCameraSpeed = 2f;
 
+        
+
         [SerializeField]
         private float yCameraSpeed = -55f;
 
@@ -54,6 +56,9 @@ namespace Nashet.EconomicSimulation
         {
             Get = this;
             focusHeight = transform.position.z;
+            //
+            //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
+            //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
         }
 
         public void Move(float xMove, float zMove, float yMove)
@@ -88,7 +93,7 @@ namespace Nashet.EconomicSimulation
         private void LoadGame()
         {
             Application.runInBackground = true;
-            game = new Game();
+            game = new Game(MapOptions.MapImage);
 #if UNITY_WEBGL
             game.InitializeNonUnityData(); // non multi-threading
 #else
@@ -109,6 +114,8 @@ namespace Nashet.EconomicSimulation
         // Update is called once per frame
         private void Update()
         {
+            if (!MapOptions.MadeChoise)
+                return;
             //starts loading thread
             if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
             {
@@ -180,6 +187,7 @@ namespace Nashet.EconomicSimulation
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 
             }
+
         }
 
         private void RefreshMap()

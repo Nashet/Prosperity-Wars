@@ -1,4 +1,4 @@
-# Economic simulation
+# Prosperity Wars game
 
 ## Demo
 [There is early browser demo of this game](https://nashet.github.io/Prosperity-Wars/WEBGL/index.html) (about 6MB download, some devices are not supported)
@@ -20,8 +20,8 @@ Main principles of that simulation are:
 * governments can put extra money in bank
 * governments can compete by wars
 
-## What it has now (v0.20.1)
- - provinces and countries (generated randomly)
+## What it has now (v0.20.6)
+ - provinces and countries (generated randomly OR generated from image file)
  - movements and Rebellions
  - factories and national banks
  - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen, Artisans)
@@ -35,7 +35,7 @@ Main principles of that simulation are:
  - basic diplomacy (only relations for now)
  - [substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
  - [planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
- - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.svg?columns=all)](https://waffle.io/Nashet/EconomicSimulation) 
+ - [![Bugs](https://badge.waffle.io/Nashet/Prosperity-Wars.svg?columns=all)](https://waffle.io/Nashet/Prosperity-Wars) 
 
 Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.
 
