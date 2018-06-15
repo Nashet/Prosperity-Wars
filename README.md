@@ -14,7 +14,7 @@ Main simulation principles in PosperityWars include:
 * Agent based simulation with real population units, fabrics, countries
 * Prices determined by supply / demand balance (currently with one market and one currency - gold)
 * No price limits (except 0.001 and 999), allowing realistic inflation
-* Consumer goods ordered by price from cheap to expensive
+* Population consume goods ordered by price from cheap to expensive (making more demand for cheaper goods)
 * Factories can compete for workforce by competitive wages
 * Factories have specified owners like the government or population unit
 * Capitalists can take loans form national bank for business expansion 
@@ -34,11 +34,11 @@ Main simulation principles in PosperityWars include:
  - Migration\immigration\assimilation
  - Political\culture\core\resource\population\prosperity map mode
  - Basic diplomacy (only relations for now)
- - [Substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
- - [Planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
+ - [Substitute products](https://github.com/Nashet/Prosperity-Wars/wiki/Products)
+ - [Planned economy!](https://github.com/Nashet/Prosperity-Wars/wiki/Economy-types#Planned_economy)
  - [![Bugs](https://badge.waffle.io/Nashet/Prosperity-Wars.svg?columns=all)](https://waffle.io/Nashet/Prosperity-Wars) 
 
-Maps are generated randomly, you play as a leader of a country. For now you are only able to grow the economy or try to conquer the world.
+Maps are generated randomly, you play as a leader of a country. For now you are able to grow the prosperity or try to conquer the world.
 
 ## Screenshots
 ![map](http://i.imgrpost.com/imgr/2017/08/14/VYAaererrerdsdVA.png)
@@ -53,7 +53,7 @@ Maps are generated randomly, you play as a leader of a country. For now you are 
 
 ## Contributing
 I would appreciate any assitance in providing ideas, code or feedback.  You may:
-- Create Tickets on the tracker - https://waffle.io/Nashet/EconomicSimulation
+- Create Tickets on the tracker - https://waffle.io/Nashet/Prosperity-Wars
 - Open a Pull Request and I will check it.
 
 License is GPL-3.0
