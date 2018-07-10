@@ -1,35 +1,43 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
     public class DiplomacyPanel : DragPanel
     {
         [SerializeField]
-        private Text captionText, generalText;
+        private Text captionText, generalText, property;
+
         [SerializeField]
-        private Button giveControlToAi, giveControlToPlayer;
+        private Button giveControlToAi, giveControlToPlayer, declareWar;
+
         [SerializeField]
         private MainCamera mainCamera;
+
+        [SerializeField]
+        private RawImage flag;
+
         private Country selectedCountry;
-        StringBuilder sb = new StringBuilder();
+        private StringBuilder sb = new StringBuilder();
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.diplomacyPanel = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 45);
             Hide();
         }
+
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             //refresh();
         }
+
         public override void Refresh()
         {
             setButtonsState();
@@ -41,23 +49,32 @@ namespace Nashet.EconomicSimulation
             sb.Append("Population: ").Append(selectedCountry.getFamilyPopulation().ToString("N0")).Append("; rank: ").Append(selectedCountry.getPopulationRank());
             sb.Append(". Provinces: ").Append(selectedCountry.getSize()).Append("; rank: ").Append(selectedCountry.getSizeRank());
             //sb.Append(", str: ").Append(selectedCountry.getStregth(null));
-
-            sb.Append("\nGDP: ").Append(selectedCountry.getGDP().get().ToString("N3")).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
-            sb.Append("\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000().ToString("F3")).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
-            sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.getAverageNeedsFulfilling());
-            sb.Append("\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
+            //.Get().ToString("N3")
+            //.ToString("F3")
+            sb.Append("\n\nGDP: ").Append(selectedCountry.getGDP()).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
+            sb.Append("\n\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
+            //sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.GetAveragePop(x=>x.needsFulfilled));
+            sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
+            sb.Append(", loyalty: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.loyalty));
+            sb.Append(", education: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.Education));
+            sb.Append("\n\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
             sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
             sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
-            sb.Append("\nState culture: ").Append(selectedCountry.getCulture());
-            sb.Append("\nCultures:\n\t").Append(selectedCountry.getCultures().getString("\n\t", 5));
-            sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces().getName());
+            sb.Append("\n\nState culture: ").Append(selectedCountry.getCulture());
+            sb.Append("\nCultures: ").Append(selectedCountry.GetAllPopulation().Group(x => x.culture, y => y.population.Get())
+                .OrderByDescending(x => x.Value.get()).ToString(", ", 5));
+            sb.Append("\nClasses: ").Append(selectedCountry.GetAllPopulation().Group(x => x.Type, y => y.population.Get())
+                .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
+            if (Game.devMode)
+                sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces());
+
             if (selectedCountry == Game.Player)
                 sb.Append("\n\nOpinion of myself: I'm cool!");
             else
             {
-                sb.Append("\n\n").Append(selectedCountry.getDescription()).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
+                sb.Append("\n\n").Append(selectedCountry.FullName).Append("'s opinion of us: ").Append(selectedCountry.getRelationTo(Game.Player));
                 string str;
                 selectedCountry.modMyOpinionOfXCountry.getModifier(Game.Player, out str);
                 sb.Append(" Dynamics: ").Append(str);
@@ -65,34 +82,54 @@ namespace Nashet.EconomicSimulation
             //sb.Append("\nInventions: ").Append(selectedCountry.inventions.getInvented(selectedCountry).ToString());
             //selectedCountry.inventions.getInvented(selectedCountry).ToString();
             generalText.text = sb.ToString();
+            var found = World.GetAllShares(selectedCountry).OrderByDescending(x => x.Value.get());
+            property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
         }
+
         public Country getSelectedCountry()
         {
             return selectedCountry;
         }
-        public void show(Country count)
+
+        public void show(Country country)
         {
-            selectedCountry = count;
-            Show();                       
+            selectedCountry = country;
+            Show();
+            flag.texture = country.Flag;
         }
+
         private void setButtonsState()
         {
             giveControlToPlayer.interactable = selectedCountry.isAI();
             giveControlToAi.interactable = !selectedCountry.isAI();
+
+            declareWar.interactable = !Diplomacy.IsInWar(Game.Player, this.selectedCountry);
         }
+
         public void onSurrenderClick()
         {
-            Game.givePlayerControlToAI();
+            Game.GivePlayerControlToAI();
             setButtonsState();
         }
+
+        public void OnDeclareWar()
+        {
+            if (Game.Player != this.selectedCountry && !Diplomacy.IsInWar(Game.Player, this.selectedCountry))
+            {
+                Diplomacy.DeclareWar(Game.Player, this.selectedCountry);
+                Refresh();
+            }
+        }
+
         public void onGoToClick()
         {
-            if (selectedCountry != Country.NullCountry)
-                mainCamera.focus(selectedCountry.getCapital());
+            if (selectedCountry != World.UncolonizedLand)
+                mainCamera.FocusOnProvince(selectedCountry.Capital, true);
         }
+
         public void onRegainControlClick()
         {
-            Game.takePlayerControlOfThatCountry(selectedCountry);
+            Game.GivePlayerControlOf(selectedCountry);
             setButtonsState();
         }
     }

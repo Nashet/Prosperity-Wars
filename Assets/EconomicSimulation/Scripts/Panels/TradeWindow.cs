@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
-using System.Text;
+﻿using System.Text;
 using Nashet.UnityUIUtils;
+using UnityEngine;
+using UnityEngine.UI;
+
 namespace Nashet.EconomicSimulation
 {
     public class TradeWindow : DragPanel
@@ -27,26 +25,29 @@ namespace Nashet.EconomicSimulation
         private Product selectedProduct;
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             slBuyIfLessThan.setExponential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
             slSellIfMoreThan.setExponential(x => 0.2f * x * x, x => Mathf.Sqrt(x * 5f));
             MainCamera.tradeWindow = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, MainCamera.topPanel.GetComponent<RectTransform>().rect.height * -1f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(-775f, -642);                
             Hide();
         }
+
         public override void Show()
         {
             if (selectedProduct == null)
                 selectProduct(Product.Fish);
-            base.Show();                
+            base.Show();
         }
+
         public override void Refresh()
         {
             tradeSliders.SetActive(!Game.Player.isAI());
             worldMarketTable.Refresh();
             countryStorageTable.Refresh();
         }
+
         public void refreshTradeLimits()
         {
             var sb = new StringBuilder();
@@ -54,6 +55,7 @@ namespace Nashet.EconomicSimulation
             txtBuyIfLessThan.text = sb.ToString();
             txtSaleIfMoreThan.text = "Sell if more than: " + slSellIfMoreThan.exponentialValue.ToString("F0");
         }
+
         public void onslBuyIfLessThanChange()
         {
             if (slBuyIfLessThan.exponentialValue > slSellIfMoreThan.exponentialValue)
@@ -64,6 +66,7 @@ namespace Nashet.EconomicSimulation
             Game.Player.setBuyIfLessLimits(selectedProduct, slBuyIfLessThan.exponentialValue);
             refreshTradeLimits();
         }
+
         public void onslSellIfMoreThanChange()
         {
             if (slBuyIfLessThan.exponentialValue > slSellIfMoreThan.exponentialValue)
@@ -74,9 +77,10 @@ namespace Nashet.EconomicSimulation
             Game.Player.setSellIfMoreLimits(selectedProduct, slSellIfMoreThan.exponentialValue);
             refreshTradeLimits();
         }
+
         internal void selectProduct(Product product)
         {
-            if (!product.isAbstract())
+            if (!product.isAbstract() && product.IsStorable && product != Product.Gold)
             {
                 selectedProduct = product;
                 slBuyIfLessThan.exponentialValue = Game.Player.getBuyIfLessLimits(selectedProduct).get();

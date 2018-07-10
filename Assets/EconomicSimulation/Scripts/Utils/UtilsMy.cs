@@ -1,218 +1,230 @@
-﻿using UnityEngine;
-using System.Text;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using UnityEngine.Events;
-using System;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading;
 using Nashet.EconomicSimulation;
 using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
 namespace Nashet.Utils
 {
+    public interface ICopyable<T>
+    {
+        T Copy();
+    }
+
     public class CultureNameGenerator
     {
-        static ChanceBox<string> prefix;
-        static ChanceBox<string> postfix;
+        private static ChanceBox<string> prefix;
+        private static ChanceBox<string> postfix;
+
         public CultureNameGenerator()
         {
             postfix = new ChanceBox<string>();
-            postfix.add("nian", 1.6f);
-            postfix.add("rian", 1f);
-            postfix.add("man", 3.0f);
-            postfix.add("men", 2.2f);
-            postfix.add("tian", 1f);
-            postfix.add("sian", 1.5f);
+            postfix.Add("nian", 1.6f);
+            postfix.Add("rian", 1f);
+            postfix.Add("man", 3.0f);
+            postfix.Add("men", 2.2f);
+            postfix.Add("tian", 1f);
+            postfix.Add("sian", 1.5f);
 
-            postfix.add("pian", 1f);
-            postfix.add("vian", 1f);
-            postfix.add("lian", 1.8f);
+            postfix.Add("pian", 1f);
+            postfix.Add("vian", 1f);
+            postfix.Add("lian", 1.8f);
 
-
-            postfix.add("", 5f);
-            postfix.initiate();
+            postfix.Add("", 5f);
+            postfix.Initiate();
 
             prefix = new ChanceBox<string>();
 
-            prefix.add("South ", 0.3f);
-            prefix.add("West ", 0.3f);
-            prefix.add("North ", 0.3f);
-            prefix.add("East ", 0.3f);
-            prefix.add("Great ", 0.8f);
-            prefix.add("Upper ", 0.2f);
-            prefix.add("Middle ", 0.1f);
-            prefix.add("", 40f);
-            prefix.initiate();
+            prefix.Add("South ", 0.3f);
+            prefix.Add("West ", 0.3f);
+            prefix.Add("North ", 0.3f);
+            prefix.Add("East ", 0.3f);
+            prefix.Add("Great ", 0.8f);
+            prefix.Add("Upper ", 0.2f);
+            prefix.Add("Middle ", 0.1f);
+            prefix.Add("", 40f);
+            prefix.Initiate();
         }
-        StringBuilder result = new StringBuilder();
+
+        private StringBuilder result = new StringBuilder();
+
         public string generateCultureName()
         {
             result.Clear();
-            result.Append(prefix.getRandom());
+            result.Append(prefix.GetRandom());
 
-            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
-            result.Append(postfix.getRandom());
+            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
+            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
+            result.Append(postfix.GetRandom());
 
             return (result.ToString());
         }
     }
+
     public class CountryNameGenerator
     {
-        static ChanceBox<string> prefix;
-        static ChanceBox<string> postfix;
-
+        private static ChanceBox<string> prefix;
+        private static ChanceBox<string> postfix;
 
         public CountryNameGenerator()
         {
             postfix = new ChanceBox<string>();
-            postfix.add("burg", 1.2f);
+            postfix.Add("burg", 1.2f);
 
-            postfix.add("hill", 0.31f);
+            postfix.Add("hill", 0.31f);
 
-            postfix.add("land", 1.0f);
-            postfix.add("lands", 1.2f);
-            postfix.add("landia", 0.3f);
-            postfix.add("stan", 0.3f);
+            postfix.Add("land", 1.0f);
+            postfix.Add("lands", 1.2f);
+            postfix.Add("landia", 0.3f);
+            postfix.Add("stan", 0.3f);
 
-            postfix.add("lia", 1.8f);
-            postfix.add("mia", 0.1f);
-            postfix.add("nia", 1.1f);
-            postfix.add("sia", 1.1f);
-            postfix.add("cia", 1.1f);
-            postfix.add("ria", 1.1f);
+            postfix.Add("lia", 1.8f);
+            postfix.Add("mia", 0.1f);
+            postfix.Add("nia", 1.1f);
+            postfix.Add("sia", 1.1f);
+            postfix.Add("cia", 1.1f);
+            postfix.Add("ria", 1.1f);
 
-            postfix.add("stad", 0.3f);
+            postfix.Add("stad", 0.3f);
 
-            postfix.add("holm", 0.3f);
-            postfix.add("bruck", 0.3f);
+            postfix.Add("holm", 0.3f);
+            postfix.Add("bruck", 0.3f);
 
-            postfix.add("berg", 1f);
+            postfix.Add("berg", 1f);
 
-            postfix.add("polis", 2f);
-            postfix.add("", 10f);
-            postfix.initiate();
+            postfix.Add("polis", 2f);
+            postfix.Add("", 10f);
+            postfix.Initiate();
 
             prefix = new ChanceBox<string>();
 
-            prefix.add("South ", 0.3f);
-            prefix.add("West ", 0.3f);
-            prefix.add("North ", 0.3f);
-            prefix.add("East ", 0.3f);
-            prefix.add("Holy ", 0.1f);
-            prefix.add("Great ", 0.8f);
-            prefix.add("Saint ", 0.2f);
-            prefix.add("Dark ", 0.01f);
-            prefix.add("Upper ", 0.2f);
-            prefix.add("Middle ", 0.1f);
+            prefix.Add("South ", 0.3f);
+            prefix.Add("West ", 0.3f);
+            prefix.Add("North ", 0.3f);
+            prefix.Add("East ", 0.3f);
+            prefix.Add("Holy ", 0.1f);
+            prefix.Add("Great ", 0.8f);
+            prefix.Add("Saint ", 0.2f);
+            prefix.Add("Dark ", 0.01f);
+            prefix.Add("Upper ", 0.2f);
+            prefix.Add("Middle ", 0.1f);
 
-            prefix.add("", 80f);
-            prefix.initiate();
+            prefix.Add("", 80f);
+            prefix.Initiate();
         }
-        StringBuilder result = new StringBuilder();
+
+        private StringBuilder result = new StringBuilder();
+
         public string generateCountryName()
         {
             result.Clear();
-            result.Append(prefix.getRandom());
+            result.Append(prefix.GetRandom());
 
-            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Game.random.Next(3) + 1, true)));
-            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Game.Random.Next(3, 5))));
-            result.Append(postfix.getRandom());
+            //result.Append(UtilsMy.FirstLetterToUpper(RandWord.Models.RandomWordGenerator.Word(Rand.random2.Next(3) + 1, true)));
+            result.Append(UtilsMy.FirstLetterToUpper(ProvinceNameGenerator.generateWord(Rand.Get.Next(3, 5))));
+            result.Append(postfix.GetRandom());
 
             return (result.ToString());
         }
     }
+
     public class ProvinceNameGenerator
     {
-        static ChanceBox<string> prefix;
-        static ChanceBox<string> postfix;
-        static ChanceBox<string> vowels = new ChanceBox<string>();
-        static ChanceBox<string> consonants = new ChanceBox<string>();
+        private static ChanceBox<string> prefix;
+        private static ChanceBox<string> postfix;
+        private static ChanceBox<string> vowels = new ChanceBox<string>();
+        private static ChanceBox<string> consonants = new ChanceBox<string>();
+
         public static string generateWord(int length)
         {
             var sb = new StringBuilder();
-            if (Game.Random.Next(10) == 1)
+            if (Rand.Get.Next(10) == 1)
             {
-                sb.Append(vowels.getRandom());
-                if (Game.Random.Next(2) == 1)
-                    sb.Append(consonants.getRandom());
+                sb.Append(vowels.GetRandom());
+                if (Rand.Get.Next(2) == 1)
+                    sb.Append(consonants.GetRandom());
             }
-            //if (Game.random.Next(6) == 1)
+            //if (Rand.random2.Next(6) == 1)
             //    Game.threadDangerSB.Append(consonants.getRandom());
 
             for (int i = 0; i < length; i += 2)
             {
-                sb.Append(consonants.getRandom()).Append(vowels.getRandom());
-                if (Game.Random.Next(5) == 1 || length == 2)
-                    sb.Append(consonants.getRandom());
+                sb.Append(consonants.GetRandom()).Append(vowels.GetRandom());
+                if (Rand.Get.Next(5) == 1 || length == 2)
+                    sb.Append(consonants.GetRandom());
             }
             return UtilsMy.FirstLetterToUpper(sb.ToString());
             //return Game.threadDangerSB.ToString();
         }
+
         public ProvinceNameGenerator()
         {
             postfix = new ChanceBox<string>();
-            postfix.add("burg", 2.2f);
-            postfix.add("bridge", 0.1f);
-            postfix.add("coln", 0.2f);
+            postfix.Add("burg", 2.2f);
+            postfix.Add("bridge", 0.1f);
+            postfix.Add("coln", 0.2f);
 
-            postfix.add("field", 2f);
-            postfix.add("hill", 1f);
-            postfix.add("ford", 0.5f);
-            postfix.add("land", 2.5f);
-            postfix.add("landia", 0.3f);
-            postfix.add("lia", 2.5f);
-            postfix.add("mia", 0.1f);
-            postfix.add("stad", 0.3f);
+            postfix.Add("field", 2f);
+            postfix.Add("hill", 1f);
+            postfix.Add("ford", 0.5f);
+            postfix.Add("land", 2.5f);
+            postfix.Add("landia", 0.3f);
+            postfix.Add("lia", 2.5f);
+            postfix.Add("mia", 0.1f);
+            postfix.Add("stad", 0.3f);
 
-            postfix.add("holm", 1f);
-            postfix.add("bruck", 0.3f);
-            postfix.add("bridge", 0.3f);
-            postfix.add("berg", 1f);
-            postfix.add(" Creek", 1f);
-            postfix.add(" Lakes", 1.5f);
-            postfix.add(" Falls", 1f);
-            postfix.add("rock", 2f);
-            postfix.add("ville", 2f);
-            postfix.add("polis", 2f);
+            postfix.Add("holm", 1f);
+            postfix.Add("bruck", 0.3f);
+            postfix.Add("bridge", 0.3f);
+            postfix.Add("berg", 1f);
+            postfix.Add(" Creek", 1f);
+            postfix.Add(" Lakes", 1.5f);
+            postfix.Add(" Falls", 1f);
+            postfix.Add("rock", 2f);
+            postfix.Add("ville", 2f);
+            postfix.Add("polis", 2f);
 
-            postfix.add("lyn", 2f);
-            postfix.add("minster", 0.1f);
-            postfix.add("ton", 2f);
-            postfix.add("bury", 2f);
-            postfix.add("wich", 1f);
+            postfix.Add("lyn", 2f);
+            postfix.Add("minster", 0.1f);
+            postfix.Add("ton", 2f);
+            postfix.Add("bury", 2f);
+            postfix.Add("wich", 1f);
 
-            postfix.add("caster", 0.1f);
-            postfix.add("ham", 2f);
-            postfix.add("mouth", 2f);
+            postfix.Add("caster", 0.1f);
+            postfix.Add("ham", 2f);
+            postfix.Add("mouth", 2f);
 
-            postfix.add("ness", 2f);
-            postfix.add("pool", 2f);
-            postfix.add("stead", 2f);
-            postfix.add("wick", 1f);
+            postfix.Add("ness", 2f);
+            postfix.Add("pool", 2f);
+            postfix.Add("stead", 2f);
+            postfix.Add("wick", 1f);
 
-            postfix.add("worth", 2f);
+            postfix.Add("worth", 2f);
 
-
-            postfix.add("", 10f);
-            postfix.initiate();
+            postfix.Add("", 10f);
+            postfix.Initiate();
 
             prefix = new ChanceBox<string>();
-            prefix.add("Fort ", 0.5f);
-            prefix.add("South ", 0.3f);
-            prefix.add("West ", 0.3f);
-            prefix.add("North ", 0.3f);
-            prefix.add("East ", 0.3f);
-            prefix.add("Saint ", 0.1f);
-            prefix.add("Great ", 0.2f);
-            prefix.add("Dark ", 0.01f);
-            prefix.add("Upper ", 0.2f);
-            prefix.add("Middle ", 0.1f);
+            prefix.Add("Fort ", 0.5f);
+            prefix.Add("South ", 0.3f);
+            prefix.Add("West ", 0.3f);
+            prefix.Add("North ", 0.3f);
+            prefix.Add("East ", 0.3f);
+            prefix.Add("Saint ", 0.1f);
+            prefix.Add("Great ", 0.2f);
+            prefix.Add("Dark ", 0.01f);
+            prefix.Add("Upper ", 0.2f);
+            prefix.Add("Middle ", 0.1f);
 
-            prefix.add("Gate ", 0.2f);
-            prefix.add("Kings ", 0.3f);
+            prefix.Add("Gate ", 0.2f);
+            prefix.Add("Kings ", 0.3f);
             //prefix.add("Knock", 0.6f);
             //prefix.add("Ling", 0.6f);
             //prefix.add("Weald", 0.6f);
@@ -226,84 +238,96 @@ namespace Nashet.Utils
             //prefix.add("Pen", 0.6f);
             //prefix.add("Sud", 0.6f);
 
+            prefix.Add("", 60f);
+            prefix.Initiate();
 
-            prefix.add("", 60f);
-            prefix.initiate();
-
-            vowels.add("a", 8.167f);
-            vowels.add("e", 12.702f);
-            vowels.add("i", 6.966f);
-            vowels.add("o", 7.507f);
-            vowels.add("u", 2.758f);
+            vowels.Add("a", 8.167f);
+            vowels.Add("e", 12.702f);
+            vowels.Add("i", 6.966f);
+            vowels.Add("o", 7.507f);
+            vowels.Add("u", 2.758f);
             //vowels.add("a", 8.167f);
-            vowels.initiate();
+            vowels.Initiate();
 
-            consonants.add("b", 1.492f);
-            consonants.add("c", 2.782f);
-            consonants.add("d", 4.253f);
+            consonants.Add("b", 1.492f);
+            consonants.Add("c", 2.782f);
+            consonants.Add("d", 4.253f);
 
-            consonants.add("f", 2.228f);
-            consonants.add("g", 2.015f);
-            consonants.add("h", 0.1f); //IRL -  6.094f);
+            consonants.Add("f", 2.228f);
+            consonants.Add("g", 2.015f);
+            consonants.Add("h", 0.1f); //IRL -  6.094f);
 
-            consonants.add("j", 0.03f);//0.153f);
-            consonants.add("k", 0.772f);
-            consonants.add("l", 4.025f);
-            consonants.add("m", 2.406f);
-            consonants.add("n", 6.749f);
+            consonants.Add("j", 0.03f);//0.153f);
+            consonants.Add("k", 0.772f);
+            consonants.Add("l", 4.025f);
+            consonants.Add("m", 2.406f);
+            consonants.Add("n", 6.749f);
 
-            consonants.add("p", 1.929f);
-            consonants.add("q", 0.095f);
-            consonants.add("r", 5.987f);
-            consonants.add("s", 6.327f);
-            consonants.add("t", 9.056f);
+            consonants.Add("p", 1.929f);
+            consonants.Add("q", 0.095f);
+            consonants.Add("r", 5.987f);
+            consonants.Add("s", 6.327f);
+            consonants.Add("t", 9.056f);
 
-            consonants.add("v", 0.978f);
-            consonants.add("w", 2.360f);
-            consonants.add("x", 0.150f);
-            consonants.add("y", 0.174f); //IRL 1.974f
-            consonants.add("z", 0.074f);
-            consonants.initiate();
+            consonants.Add("v", 0.978f);
+            consonants.Add("w", 2.360f);
+            consonants.Add("x", 0.150f);
+            consonants.Add("y", 0.174f); //IRL 1.974f
+            consonants.Add("z", 0.074f);
+            consonants.Initiate();
         }
-        StringBuilder result = new StringBuilder();
+
+        private StringBuilder result = new StringBuilder();
+
         public string generateProvinceName()
         {
             result.Clear();
-            result.Append(prefix.getRandom());
-            if (Game.Random.Next(3) == 1) result.Append(generateWord(Game.Random.Next(2, 5)));
+            result.Append(prefix.GetRandom());
+            if (Rand.Get.Next(3) == 1) result.Append(generateWord(Rand.Get.Next(2, 5)));
             else
-                result.Append(generateWord(Game.Random.Next(3, 5)));
-            result.Append(postfix.getRandom());
+                result.Append(generateWord(Rand.Get.Next(3, 5)));
+            result.Append(postfix.GetRandom());
 
             return UtilsMy.FirstLetterToUpper(result.ToString());
         }
     }
+
+    /// <summary>
+    /// Redo input to dictionary
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ChanceBox<T>
     {
-        class Mean
+        private class Mean
         {
             //KeyValuePair<string,int>
             public T element;
+
             public float weight;
+
             public Mean(T obj, float inchance)
             {
                 element = obj;
                 weight = inchance;
             }
+
             public override string ToString()
             {
-                return element.ToString() + " " + weight;
+                return element + " " + weight;
             }
         }
+
         //SortedDictionary
         //SortedDictionary<T, float> list = new SortedDictionary<T, float>();
         //todo make it dictionary
-        List<Mean> list = new List<Mean>();
-        public void add(T obj, float chance)
+        private List<Mean> list = new List<Mean>();
+
+        public void Add(T obj, float chance)
         {
             list.Add(new Mean(obj, chance));
         }
-        public void initiate()
+
+        public void Initiate()
         {
             float totalWeight = 0f;
 
@@ -319,7 +343,7 @@ namespace Nashet.Utils
 
             foreach (Mean next in list)
             {
-                next.weight = next.weight / totalWeight; ;
+                next.weight = next.weight / totalWeight;
                 //next.weight = next.weight / list.Count ;
             }
             for (int i = 1; i < list.Count; i++)
@@ -327,11 +351,11 @@ namespace Nashet.Utils
                 list[i].weight += list[i - 1].weight;
             }
         }
-        /// <summary>Gives random T according element weight  /// </summary>    
-        public T getRandom()
+
+        /// <summary>Gives random T according element weight  /// </summary>
+        public T GetRandom()
         {
-            //float randomNumver = UnityEngine.Random.value;
-            float randomNumber = Game.Random.getFloat(0f, 1f);
+            float randomNumber = Rand.getFloat(0f, 1f);
             foreach (Mean next in list)
                 if (randomNumber <= next.weight)
                     return next.element;
@@ -341,15 +365,17 @@ namespace Nashet.Utils
 
     public class PricePool
     {
-        Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
-        static readonly internal int lenght = 40; // !! duplicate of DataStorage!!
+        private Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
+        internal static readonly int lenght = 40; // !! duplicate of DataStorage!!
+
         internal PricePool()
         {
-            foreach (var product in Product.getAll(x => !x.isAbstract()))
+            foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
                 if (product != Product.Gold)
                     for (int i = 0; i < lenght; i++)
-                        this.addData(product, new Value(0f));
+                        addData(product, new Value(0f));
         }
+
         internal void addData(Product product, Value indata)
         {
             DataStorageProduct cell;
@@ -360,6 +386,7 @@ namespace Nashet.Utils
             }
             cell.addData(indata);
         }
+
         //public System.Collections.IEnumerator GetEnumerator()
         //{
         //    for (int i = 0; i < pool.Count; i++)
@@ -379,28 +406,35 @@ namespace Nashet.Utils
                 return null;
         }
     }
+
     public class DataStorageProduct : DataStorage<Product>
     {
         public DataStorageProduct(Product inn) : base(inn)
         {
         }
     }
+
     public class DataStorage<IDTYPE>
     {
-        static int length = 40;
+        private static int length = 40;
+
         //todo use LinkedList<T> instead of queue?
         internal LimitedQueue<Value> data;
-        IDTYPE ID;
+
+        private IDTYPE ID;
+
         internal DataStorage(IDTYPE inn)
         {
             data = new LimitedQueue<Value>(length);
             ID = inn;
         }
+
         internal void addData(Value indata)
         {
             data.Enqueue(new Value(indata.get()));
         }
     }
+
     public class LimitedQueue<T> : Queue<T>
     {
         public int Limit { get; set; }
@@ -420,21 +454,12 @@ namespace Nashet.Utils
         }
     }
 
-
     public static class UtilsMy
     {
-        public static float getFloat(this System.Random random, float minValue, float maxValue)
-        {
-            //float m = (maxValue - minValue) ;
-
-            return (float)(random.NextDouble()) * (maxValue - minValue) + minValue;
-        }
-
         public static void Clear(this StringBuilder value)
         {
             value.Length = 0;
         }
-
 
         public static string FirstLetterToUpper(string str)
         {
@@ -480,6 +505,7 @@ namespace Nashet.Utils
 
             return buttonObject;
         }
+
         private static void SetSize(RectTransform trans, Vector2 size)
         {
             Vector2 currSize = trans.rect.size;
@@ -491,6 +517,7 @@ namespace Nashet.Utils
                                       new Vector2(sizeDiff.x * (1.0f - trans.pivot.x),
                                           sizeDiff.y * (1.0f - trans.pivot.y));
         }
+
         private static GameObject CreateText(Transform parent, float x, float y,
                                          float w, float h, string message, int fontSize)
         {
@@ -519,10 +546,7 @@ namespace Nashet.Utils
 
             return textObject;
         }
-
-
     }
-
 
     public class DontUseThatMethod : Exception
     {
@@ -530,7 +554,6 @@ namespace Nashet.Utils
         /// Just create the exception
         /// </summary>
         public DontUseThatMethod()
-          : base()
         {
         }
 
@@ -565,8 +588,9 @@ namespace Nashet.Utils
         {
         }
     }
+
     //DateTime
-    //public struct Date 
+    //public struct Date
     //{
     //    int blya;
     //    public Date(int date)
@@ -575,7 +599,7 @@ namespace Nashet.Utils
     //    }
     //    /// <summary>
     //    /// copy constructor
-    //    /// </summary>    
+    //    /// </summary>
     //    public Date(Date date)
     //    {
     //        this.blya = date.blya;
@@ -616,16 +640,19 @@ namespace Nashet.Utils
             public int v1;
             public int v2;
             public int triangleIndex;
+
             public Edge(int aV1, int aV2, int aIndex)
             {
                 v1 = aV1;
                 v2 = aV2;
                 triangleIndex = aIndex;
             }
+
             public static bool operator ==(Edge c1, Edge c2)
             {
                 return (c1.v1 == c2.v1 && c1.v2 == c2.v2) || (c1.v1 == c2.v2 && c1.v2 == c2.v1);
             }
+
             public static bool operator !=(Edge c1, Edge c2)
             {
                 return (c1.v1 != c2.v1 || c1.v2 != c2.v2) && (c1.v1 != c2.v2 || c1.v2 != c2.v1);
@@ -644,8 +671,6 @@ namespace Nashet.Utils
                 result.Add(new Edge(v2, v3, i));
                 result.Add(new Edge(v3, v1, i));
             }
-
-
 
             return result;
         }
@@ -669,6 +694,7 @@ namespace Nashet.Utils
             }
             return result;
         }
+
         public static List<Edge> SortEdges(this List<Edge> aEdges)
         {
             List<Edge> result = new List<Edge>(aEdges);
@@ -693,12 +719,14 @@ namespace Nashet.Utils
             return result;
         }
     }
+
     public abstract class ThreadedJob
     {
-        private bool m_IsDone = false;
+        private bool m_IsDone;
         private string status = "Not started yet";
         private object m_Handle = new object();
-        private System.Threading.Thread m_Thread = null;
+        private Thread m_Thread;
+
         public bool IsDone
         {
             get
@@ -718,6 +746,7 @@ namespace Nashet.Utils
                 }
             }
         }
+
         public void updateStatus(String status)
         {
             lock (this.status)
@@ -725,6 +754,7 @@ namespace Nashet.Utils
                 this.status = status;
             }
         }
+
         public string getStatus()
         {
             //tmp = status;
@@ -733,11 +763,13 @@ namespace Nashet.Utils
                 return status;
             }
         }
+
         public virtual void Start()
         {
-            m_Thread = new System.Threading.Thread(Run);
+            m_Thread = new Thread(Run);
             m_Thread.Start();
         }
+
         public virtual void Abort()
         {
             m_Thread.Abort();
@@ -745,7 +777,9 @@ namespace Nashet.Utils
 
         protected abstract void ThreadFunction();
 
-        protected virtual void OnFinished() { }
+        protected virtual void OnFinished()
+        {
+        }
 
         public virtual bool Update()
         {
@@ -756,6 +790,7 @@ namespace Nashet.Utils
             }
             return false;
         }
+
         public IEnumerator WaitFor()
         {
             while (!Update())
@@ -763,54 +798,78 @@ namespace Nashet.Utils
                 yield return null;
             }
         }
+
         private void Run()
         {
             ThreadFunction();
             IsDone = true;
         }
     }
+
     public class MyTexture
     {
-        readonly int width, height;
-        readonly Color[] map;
+        private readonly int width, height;
+        private readonly Color[] map;
+
         public MyTexture(Texture2D image)
         {
             width = image.width;
             height = image.height;
             map = image.GetPixels();
         }
+
         internal int getWidth()
         {
             return width;
         }
+
         internal int getHeight()
         {
             return height;
         }
+
         internal Color GetPixel(int x, int v)
         {
             return map[x + v * width];
         }
+
         public Color getRandomPixel()
         {
-            return map[Game.Random.Next((width * height) - 1)];
+            return map[Rand.Get.Next((width * height) - 1)];
         }
     }
-    public abstract class Name
+
+    public abstract class Name : INameable, ISortableName
     {
-        protected readonly string name;
+        private readonly string name;
+        private readonly float nameWeight;
+
         protected Name(string name)
         {
             this.name = name;
+            if (name != null)
+                nameWeight = name.GetWeight();
         }
-        virtual public string getName()
+
+        public float GetNameWeight()
         {
-            return name;
+            return nameWeight;
         }
-        virtual public string getDescription()
+
+        //public string getShortName()
+        //{
+        //    return name;
+        //}
+        public virtual string ShortName
         {
-            return name;
+            get { return name; }
         }
+
+        public virtual string FullName
+        {
+            get { return name + " longed"; }
+        }
+
         public override string ToString()
         {
             return name;

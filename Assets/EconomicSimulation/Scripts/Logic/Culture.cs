@@ -1,26 +1,35 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+
 namespace Nashet.EconomicSimulation
 {
-    public class Culture: ISortable
+    public class Culture : Name, IWayOfLifeChange
     {
-        private readonly string name;
-        private readonly List<Culture> allCultures = new List<Culture>();
-        public Culture(string iname)
-        {
-            name = iname;
-            allCultures.Add(this);
-        }
+        private readonly Color color;
 
-        public float getSortRank()
+        public Culture(string name, Color color) : base(name)
         {
-            return GetHashCode();
+            this.color = color;
         }
 
         public override string ToString()
         {
-            return name;
+            return ShortName;
+        }
+
+        internal Color getColor()
+        {
+            return color;
+        }
+
+        /// <summary>
+        /// Just a place holder, not used
+        /// </summary>
+        public ReadOnlyValue getLifeQuality(PopUnit pop)
+        {
+            throw new NotImplementedException();
         }
     }
 }

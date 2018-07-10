@@ -1,12 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
 namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
     {
+
+
         [SerializeField]
-        private Canvas canvas;
+        private float xzCameraSpeed = 2f;
+
+        
+
+        [SerializeField]
+        private float yCameraSpeed = -55f;
+
+
+        private float focusHeight;
 
         public static TopPanel topPanel;
         public static ProvincePanel provincePanel;
@@ -27,138 +41,220 @@ namespace Nashet.EconomicSimulation
         internal static BottomPanel bottomPanel;
         internal static StatisticsPanel StatisticPanel;
 
-        private Camera camera; // it's OK
-        private Game game;
-        public static bool gameIsLoaded; // remove public after deletion of MyTable class
 
-        void FixedUpdate()
+        private Game game;
+        private static bool gameLoadingIsFinished;
+
+        //[SerializeField]
+        /// <summary>Limits simulation speed (in seconds)</summary>
+        private readonly float simulationSpeedLimit = 0.10f;
+
+        private float previousFrameTime;
+        public static MainCamera Get;
+
+        private void Start()
         {
-            if (gameIsLoaded)
+            Get = this;
+            focusHeight = transform.position.z;
+            //
+            //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
+            //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
+        }
+
+        public void Move(float xMove, float zMove, float yMove)
+        {
+            var position = transform.position;
+            var mapBorders = game.getMapBorders();
+
+
+            if (xMove * xzCameraSpeed + position.x < mapBorders.x
+                || xMove * xzCameraSpeed + position.x > mapBorders.width)
+                xMove = 0;
+
+            if (yMove * xzCameraSpeed + position.y < mapBorders.y
+                || yMove * xzCameraSpeed + position.y > mapBorders.height)
+                yMove = 0;
+
+            zMove = zMove * yCameraSpeed;
+            if (position.z + zMove > -40f
+                || position.z + zMove < -500f)
+                zMove = 0f;
+            transform.Translate(xMove * xzCameraSpeed, yMove * xzCameraSpeed, zMove, Space.World);
+        }
+
+        private void FixedUpdate()
+        {
+            if (gameLoadingIsFinished)
             {
-                var position = this.transform.position;
-                var mapBorders = game.getMapBorders();
-                float xyCameraSpeed = 2f;
-                float zCameraSpeed = 55f;
-                float xMove = Input.GetAxis("Horizontal");
-                if (xMove * xyCameraSpeed + position.x < mapBorders.x
-                    || xMove * xyCameraSpeed + position.x > mapBorders.width)
-                    xMove = 0;
-                float yMove = Input.GetAxis("Vertical");
-                if (yMove * xyCameraSpeed + position.y < mapBorders.y
-                    || yMove * xyCameraSpeed + position.y > mapBorders.height)
-                    yMove = 0;
-                float zMove = Input.GetAxis("Mouse ScrollWheel");
-                zMove = zMove * zCameraSpeed;
-                if (position.z + zMove > -40f
-                    || position.z + zMove < -500f)
-                    zMove = 0f;
-                transform.Translate(xMove * xyCameraSpeed, yMove * xyCameraSpeed, zMove);
+                Move(0f, Input.GetAxis("Mouse ScrollWheel"), 0f);
             }
         }
-        // Update is called once per frame
-        void Update()
+
+        private void LoadGame()
         {
+            Application.runInBackground = true;
+            game = new Game(MapOptions.MapImage);
+#if UNITY_WEBGL
+            game.InitializeNonUnityData(); // non multi-threading
+#else
+            game.Start(); //initialize is here
+#endif
+        }
+        private void OnGameLoaded()
+        {
+            Game.setUnityAPI();
+
+
+            FocusOnProvince(Game.Player.Capital, false);
+            loadingPanel.Hide();
+            topPanel.Show();
+            bottomPanel.Show();
+            gameLoadingIsFinished = true;
+        }
+        // Update is called once per frame
+        private void Update()
+        {
+            if (!MapOptions.MadeChoise)
+                return;
             //starts loading thread
             if (game == null)// && Input.GetKeyUp(KeyCode.Backspace))
             {
-                Application.runInBackground = true;
-                game = new Game();
-#if UNITY_WEBGL
-                game.initialize(); // non multi-threading
-#else
-                game.Start(); //initialize is here 
-#endif
+                LoadGame();
             }
-            if (game != null)
+            else
 #if UNITY_WEBGL
-                if (!gameIsLoaded)  // non multi-threading
+            if (!gameLoadingIsFinished)  // non multi-threading
 #else
-                if (game.IsDone && !gameIsLoaded)
+            if (game.IsDone && !gameLoadingIsFinished)
 #endif
-                {
-                    Game.setUnityAPI();
-
-                    camera = this.GetComponent<Camera>();
-                    focus(Game.Player.getCapital());
-                    //gameObject.transform.position = new Vector3(Game.Player.getCapital().getPosition().x,
-                    //    Game.Player.getCapital().getPosition().y, gameObject.transform.position.z);
-                    loadingPanel.Hide();
-                    topPanel.Show();
-                    bottomPanel.Show();
-                    gameIsLoaded = true;
-                }
+            {
+                OnGameLoaded();
+            }
 #if !UNITY_WEBGL
                 else // multi-threading
                     loadingPanel.updateStatus(game.getStatus());
 #endif
-            if (gameIsLoaded)
+            if (gameLoadingIsFinished)
             {
-                if (Game.getMapMode() != 0 && Game.date.isDivisible(Options.MapRedrawRate))
-                    Game.redrawMapAccordingToMapMode(Game.getMapMode());
-                if (Input.GetMouseButtonDown(0)) // clicked and released left button
-                {
-                    int meshNumber = getRayCastMeshNumber();
-                    //found something correct            
-                    selectProvince(meshNumber);
-                }
-                if (Input.GetKeyUp(KeyCode.Space))
-                    topPanel.switchHaveToRunSimulation();
+                RefreshMap();
 
-                if (Input.GetKeyDown(KeyCode.Return))
-                    closeToppestPanel();
-
-                if (Game.isRunningSimulation() && !MessagePanel.IsOpenAny())
+                if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
-                    Game.simulate();
-                    //if (Time.unscaledTime - lastTime > howOften)
-                    //{                    
-                    //    lastTime = Time.unscaledTime;
-                    refreshAllActive();
-                    //}
+                    if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
+                    {
+                        World.simulate();
+                        //Unit.RedrawAll();
+
+                        previousFrameTime = Time.time;
+                        refreshAllActive();
+                    }
                 }
 
+                if (Game.provincesToRedrawArmies.Count > 0)
+                {
+                    Unit.RedrawAll();
+                }
+                if (Game.devMode == false)
+                {
+                    Game.playerVisibleProvinces.Clear();
+                    Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
+                    Game.Player.AllNeighborProvinces().Distinct().PerformAction(
+                        x => Game.playerVisibleProvinces.Add(x));
 
+                    foreach (var army in World.AllArmies())
+                    {
+                        if (Game.playerVisibleProvinces.Contains(army.Province))
+                        {
+                            army.unit.Show();
+                            army.unit.unitPanel.Show();
+                        }
+                        else
+                        {
+                            army.unit.Hide();
+                            army.unit.unitPanel.Hide();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var army in World.AllArmies())
+                    {
+                        army.unit.Show();
+                        army.unit.unitPanel.Show();
+                    }
+                }
                 if (Message.HasUnshownMessages())
-                    MessagePanel.showMessageBox(canvas);
-                Game.previoslySelectedProvince = Game.selectedProvince;
+                    MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
+
+            }
+
+        }
+
+        private void RefreshMap()
+        {
+            if (Game.getMapMode() != 0
+                    //&& Date.Today.isDivisible(Options.MapRedrawRate)
+                    )
+                Game.redrawMapAccordingToMapMode(Game.getMapMode());
+
+
+            if (Game.getMapMode() == 4)
+            {
+                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                var hoveredProvince = World.FindProvince(meshNumber);
+                if (hoveredProvince == null)
+                    GetComponent<ToolTipHandler>().Hide();
+                else
+                {
+                    if (Game.selectedProvince == null)
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\n" + hoveredProvince.Country.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
+                        .getString("\n", "Total change: "));
+                    else
+                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\n" + hoveredProvince.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
+                        .getString("\n", "Total change: ")
+                        );
+                    GetComponent<ToolTipHandler>().Show();
+                }
+            }
+            else if (Game.getMapMode() == 5)
+            {
+                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                var hoveredProvince = World.FindProvince(meshNumber);
+                if (hoveredProvince == null)
+                    GetComponent<ToolTipHandler>().Hide();
+                else
+                {
+                    GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\nChange: " + hoveredProvince.getAllPopulationChanges()
+                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
+                        + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
+                        );
+                    GetComponent<ToolTipHandler>().Show();
+                }
+            }
+            else if (Game.getMapMode() == 6) //prosperity wars
+            {
+                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                var hoveredProvince = World.FindProvince(meshNumber);
+                if (hoveredProvince == null)
+                    GetComponent<ToolTipHandler>().Hide();
+                else
+                {
+                    GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                        + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
+                    GetComponent<ToolTipHandler>().Show();
+                }
             }
         }
-        int getRayCastMeshNumber()
-        {
-            //RaycastHit hit = new RaycastHit();//temp
-            //int layerMask = 1 << 8;
-            //DefaultRaycastLayers
-            //Physics.DefaultRaycastLayers;
-            RaycastHit hit;
-            if (!UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                if (!Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hit))
-                    return -1;
-                else; // go on
-            else return -3; //hovering over UI
 
-            MeshCollider meshCollider = hit.collider as MeshCollider;
-
-            if (meshCollider == null || meshCollider.sharedMesh == null)
-                return -2;
-            Mesh mesh = meshCollider.sharedMesh;
-
-            //Vector3[] vertices = mesh.vertices;
-            //int[] triangles = mesh.triangles;
-
-            //Vector3 p0 = vertices[triangles[hit.triangleIndex * 3 + 0]];
-
-            //mapPointer.transform.position = p0;
-            //// Gets a vector that points from the player's position to the target's.
-            //Vector3 heading = mapPointer.transform.position - Vector3.zero;
-            //heading.Normalize();
-
-            // mapPointer.transform.position += heading * 50;
-            // mapPointer.transform.rotation = Quaternion.LookRotation(heading, Vector3.up) * Quaternion.Euler(-90, 0, 0);
-
-            //return groundMesh.triangles[hit.triangleIndex * 3];
-            ;
-            return System.Convert.ToInt32(mesh.name);
-        }
 
         internal static void refreshAllActive()
         {
@@ -183,49 +279,39 @@ namespace Nashet.EconomicSimulation
 
         internal static void selectProvince(int number)
         {
-            //if (Game.selectedProvince != null && number >= 0)
-            //{
-            //    Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-            //    Game.selectedProvince.setBorderMaterials();
-            //}
-
-
-            if (number >= 0)
+            if (number < 0 || World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
             {
-                if (Province.find(number) == Game.selectedProvince)// same province clicked, hide selection
+                var lastSelected = Game.selectedProvince;
+                Game.selectedProvince = null;
+                if (lastSelected != null)
                 {
-
-                    var lastSelected = Game.selectedProvince;
-                    Game.selectedProvince = null;
-                    lastSelected.setBorderMaterial(Game.defaultProvinceBorderMaterial);
+                    lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
                     lastSelected.setBorderMaterials(true);
-
+                }
+                if (provincePanel.isActiveAndEnabled)
                     provincePanel.Hide();
-
-                }
-                else // new province selected
-                {
-                    if (Game.selectedProvince != null)//deal with previous selection
-                    {
-                        Game.selectedProvince.setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                        Game.selectedProvince.setBorderMaterials(true);
-                    }
-                    Game.selectedProvince = Province.find(number);
-                    Game.selectedProvince.setBorderMaterial(Game.selectedProvinceBorderMaterial);
-                    provincePanel.Show();
-                    if (Game.getMapMode() == 2) //core map mode
-                        Game.redrawMapAccordingToMapMode(2);
-
-                }
-                if (buildPanel.isActiveAndEnabled)
-                    buildPanel.Refresh();
-
             }
+            else // new province selected
+            {
+                if (Game.selectedProvince != null)//deal with previous selection
+                {
+                    Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
+                    Game.selectedProvince.setBorderMaterials(true);
+                }
+                Game.selectedProvince = World.FindProvince(number);
+                Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
+                provincePanel.Show();
+                if (Game.getMapMode() == 2) //core map mode
+                    Game.redrawMapAccordingToMapMode(2);
+            }
+            if (buildPanel != null && buildPanel.isActiveAndEnabled)
+                buildPanel.Refresh();
         }
-        private void closeToppestPanel()
+
+        public void closeToppestPanel()
         {
             //canvas.GetComponentInChildren<DragPanel>();
-            var lastChild = canvas.transform.GetChild(canvas.transform.childCount - 1);
+            var lastChild = LinksManager.Get.CameraLayerCanvas.transform.GetChild(LinksManager.Get.CameraLayerCanvas.transform.childCount - 1);
             var panel = lastChild.GetComponent<DragPanel>();
             if (panel != null)
                 panel.Hide();
@@ -236,13 +322,16 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-
-        // This function is called every fixed framerate frame, if the MonoBehavior is enabled.
-        public void focus(Province province)
+        public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x,
-                        province.getPosition().y, gameObject.transform.position.z);
+            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
+            if (select)
+                selectProvince(province.getID());
         }
 
+        public void FocusOnPoint(Vector2 point)
+        {
+            gameObject.transform.position = new Vector3(point.x, point.y, focusHeight);
+        }
     }
 }

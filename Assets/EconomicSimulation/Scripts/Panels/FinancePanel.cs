@@ -1,11 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System.Text;
+﻿using System.Text;
 using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -28,8 +26,9 @@ namespace Nashet.EconomicSimulation
         private CanvasGroup bankPanel;
 
         private readonly StringBuilder sb = new StringBuilder();
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.financePanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
@@ -38,6 +37,7 @@ namespace Nashet.EconomicSimulation
             autoPutInBankLimit.setExponential(x => Mathf.Pow(x, 2f), f => Mathf.Pow(f, 1f / 2f));
             Hide();
         }
+
         public override void Refresh()
         {
             sb.Clear();
@@ -46,16 +46,17 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
             sb.Append("Income:");
-            sb.Append("\n Poor tax (").Append(Game.Player.taxationForPoor.getValue()).Append("): ").Append(Game.Player.getPoorTaxIncome());
-            sb.Append("\n Rich tax (").Append(Game.Player.taxationForRich.getValue()).Append("): ").Append(Game.Player.getRichTaxIncome());
-            sb.Append("\n Gold mines: ").Append(Game.Player.getGoldMinesIncome());
-            sb.Append("\n Owned enterprises: ").Append(Game.Player.getOwnedFactoriesIncome());
+            sb.Append("\n Income tax for Poor (").Append(Game.Player.taxationForPoor.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStaticticPoor);
+            sb.Append("\n Income tax for Rich (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxStatisticRich);
+            sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
+            sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
+            sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
             sb.Append("\n Storage sells: ").Append(Game.Player.getCostOfAllSellsByGovernment());
-            sb.Append("\n Rest: ").Append(Game.Player.getRestIncome());
-            sb.Append("\nTotal: ").Append(Game.Player.moneyIncomethisTurn);
+            sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
+            sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
 
             sb.Append("\n\nBalance: ").Append(Game.Player.getBalance());
-            sb.Append("\nHave money: ").Append(Game.Player.cash).Append(" + ").Append(Game.Player.deposits).Append(" on bank deposit");
+            sb.Append("\nHave money: ").Append(Game.Player.Cash).Append(" + ").Append(Game.Player.deposits).Append(" in bank");
             sb.Append("\nLoans taken: ").Append(Game.Player.loans);
             //sb.Append("\nGDP (current prices): ").Append(Game.Player.getGDP()).Append("; GDP per thousand men: ").Append(Game.Player.getGDPPer1000());
             incomeText.text = sb.ToString();
@@ -63,119 +64,140 @@ namespace Nashet.EconomicSimulation
 
             sb.Clear();
             sb.Append("Expenses: ");
-            sb.Append("\n Unemployment subsidies: ").Append(Game.Player.getUnemploymentSubsidiesExpense())
-                .Append(" unemployment: ").Append(Game.Player.getUnemployment());
-            sb.Append("\n Enterprises subsidies: ").Append(Game.Player.getFactorySubsidiesExpense());
-            if (Game.Player.isInvented(Invention.ProfessionalArmy))
-                sb.Append("\n Soldiers paychecks: ").Append(Game.Player.getSoldiersWageExpense());
-            sb.Append("\n Storage buying: ").Append(Game.Player.getStorageBuyingExpense());
-            sb.Append("\nTotal: ").Append(Game.Player.getAllExpenses());
+            sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
+                .Append(" unemployment: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.getUnemployment()));
+            sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
+            if (Game.Player.Invented(Invention.ProfessionalArmy))
+                sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);
+            sb.Append("\n Storage buying: ").Append(Game.Player.StorageBuyingExpense);
+            sb.Append("\nTotal: ").Append(Game.Player.getExpenses());
             expensesText.text = sb.ToString();
 
             sb.Clear();
 
-            sb.Append("\nNational bank: ").Append(Game.Player.getBank()).Append(" loans: ").Append(Game.Player.getBank().getGivenLoans());
+            sb.Append("\n").Append(Game.Player.Bank).Append(" - reserves: ").Append(Game.Player.Bank.Cash)
+                .Append("; loans: ").Append(Game.Player.Bank.GetGivenCredits());
             //sb.Append(Game.player.bank).Append(" deposits: ").Append(Game.player.bank.getGivenLoans());
-            sb.Append("\nTotal gold (in world): ").Append(Game.getAllMoneyInWorld());
+            sb.Append("\nTotal gold (in world): ").Append(World.GetAllMoney());
             sb.Append("\n*Government and others could automatically take money from deposits");
             bankText.text = sb.ToString();
 
             onLoanLimitChange();
             onDepositLimitChange();
             //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
-            autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
-            if (Game.Player.isInvented(Invention.Banking))
+            autoPutInBankLimit.exponentialValue = (float)Game.Player.autoPutInBankLimit.Get();
+            if (Game.Player.Invented(Invention.Banking))
                 bankPanel.interactable = true;
             else
             {
                 bankPanel.interactable = false;
                 autoSendMoneyToBank.isOn = false;
             }
-            if (Game.Player.isInvented(Invention.ProfessionalArmy))
+            if (Game.Player.Invented(Invention.ProfessionalArmy))
             {
-                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat(Game.market.getCost(PopType.Soldiers.getAllNeedsPer1000()).get() * 2f);
-                ssSoldiersWage.exponentialValue = Game.Player.getSoldierWage(); // could be changed by AI
+                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat((float)(World.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Get() * 2m));
+                ssSoldiersWage.exponentialValue = (float)Game.Player.getSoldierWage().Get(); // could be changed by AI
                 refreshSoldierWageText();
-                ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
+                //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;
+                //ssSoldiersWage.enabled = true;
+                ssSoldiersWage.gameObject.SetActive(true);
             }
             else
-                ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
-        }
-        public void findNoonesEterprises()
-        {
-            foreach (var item in Province.allProvinces)
+                //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 0f;
+                //ssSoldiersWage.enabled = false;
+                ssSoldiersWage.gameObject.SetActive(false);
+            if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
             {
-                foreach (var fact in item.allFactories)
-                {
-                    if (fact.getOwner() == null)
-                        new Message("", "Null owner in " + item + " " + fact, "Got it");
-                    else
-                    if (fact.getOwner() is PopUnit)
-                    {
-                        var owner = fact.getOwner() as PopUnit;
-                        if (!owner.isAlive())
-                            new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
-                    }
-                    else
-                    if (fact.getOwner() is Country)
-                    {
-                        var c = fact.getOwner() as Country;
-                        if (!c.isAlive())
-                            new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
-                    }
-                }
+                ssSoldiersWage.enabled = false;
+                ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("With Planned Economy soldiers take products from country stockpile");
+            }
+            else
+            {
+                ssSoldiersWage.enabled = true;
+                ssSoldiersWage.GetComponent<ToolTipHandler>().SetText("");
             }
         }
+
+        //public void findNoonesEterprises()
+        //{
+        //    foreach (var item in Province.allProvinces)
+        //    {
+        //        foreach (var fact in item.allFactories)
+        //        {
+        //            if (fact.getOwner() == null)
+        //                new Message("", "Null owner in " + item + " " + fact, "Got it");
+        //            else
+        //            if (fact.getOwner() is PopUnit)
+        //            {
+        //                var owner = fact.getOwner() as PopUnit;
+        //                if (!owner.isAlive())
+        //                    new Message("", "Dead pop owner in " + item + " " + fact, "Got it"); ;
+        //            }
+        //            else
+        //            if (fact.getOwner() is Country)
+        //            {
+        //                var c = fact.getOwner() as Country;
+        //                if (!c.isAlive())
+        //                    new Message("", "Dead country owner in " + item + " " + fact, "Got it"); ;
+        //            }
+        //        }
+        //    }
+        //}
         public void onTakeLoan()
         {
-            Value loan = Game.Player.getBank().howMuchCanGive(Game.Player);
+            Money loan = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy();
             if (loanLimit.value != 1f)
-                loan.multiply(loanLimit.value);
-            if (Game.Player.getBank().canGiveMoney(Game.Player, loan))
-                Game.Player.getBank().giveMoney(Game.Player, loan);
+                loan.Multiply((decimal)loanLimit.value);
+            Game.Player.Bank.GiveCredit(Game.Player, loan);
             MainCamera.refreshAllActive();
         }
+
         public void onPutInDeposit()
         {
-            if (loanLimit.value == 1f)
-                Game.Player.getBank().takeMoney(Game.Player, new Value(Game.Player.cash));
+            if (loanLimit.value == 1f)//.Copy()
+                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash);
             else
-                Game.Player.getBank().takeMoney(Game.Player, Game.Player.cash.multiplyOutside(depositLimit.value));
+                Game.Player.Bank.ReceiveMoney(Game.Player, Game.Player.Cash.Copy().Multiply((decimal)depositLimit.value));
             MainCamera.refreshAllActive();
         }
+
         public void onLoanLimitChange()
         {
-            loanLimitText.text = Game.Player.getBank().howMuchCanGive(Game.Player).multiplyOutside(loanLimit.value).ToString();
+            loanLimitText.text = Game.Player.Bank.HowBigCreditCanGive(Game.Player).Copy().Multiply((decimal)loanLimit.value).ToString();
         }
 
         public void onDepositLimitChange()
         {
-            depositLimitText.text = Game.Player.cash.multiplyOutside(depositLimit.value).ToString();
+            depositLimitText.text = Game.Player.Cash.Copy().Multiply((decimal)depositLimit.value).ToString();
         }
+
         private void refreshSoldierWageText()
         {
             sb.Clear();
             sb.Append("Soldiers wage: ").Append(string.Format("{0:N3}", ssSoldiersWage.exponentialValue)).Append(" men: ").Append(Game.Player.getPopulationAmountByType(PopType.Soldiers));
             ssSoldiersWage.GetComponentInChildren<Text>().text = sb.ToString();
         }
+
         public void onSoldierWageChange()
         {
             refreshSoldierWageText();
-            Game.Player.setSoldierWage(ssSoldiersWage.exponentialValue);
+            Game.Player.setSoldierWage(new MoneyView((decimal)ssSoldiersWage.exponentialValue));
         }
+
         public void onAutoPutInBankLimitChange()
         {
-            Game.Player.autoPutInBankLimit = (int)autoPutInBankLimit.exponentialValue;
+            Game.Player.autoPutInBankLimit.Set(new MoneyView((decimal)autoPutInBankLimit.exponentialValue));
             AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
         }
+
         public void onAutoSendMoneyToBankToggleChange()
         {
             autoPutInBankLimit.interactable = autoSendMoneyToBank.isOn;
             if (!autoSendMoneyToBank.isOn)
             {
-                Game.Player.autoPutInBankLimit = 0;
+                Game.Player.autoPutInBankLimit.SetZero();
                 //AutoPutInBankText.text = Game.Player.autoPutInBankLimit.ToString();
-                autoPutInBankLimit.exponentialValue = Game.Player.autoPutInBankLimit;
+                autoPutInBankLimit.exponentialValue = (float)Game.Player.autoPutInBankLimit.Get();
             }
         }
     }

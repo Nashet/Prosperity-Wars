@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using System;
+
 namespace Nashet.UnityUIUtils
 {
     public class TooltipBase : MonoBehaviour
@@ -9,6 +8,7 @@ namespace Nashet.UnityUIUtils
         //manually selectable padding for the background image
         [SerializeField]
         private int horizontalPadding;
+
         [SerializeField]
         private int verticalPadding;
 
@@ -16,11 +16,20 @@ namespace Nashet.UnityUIUtils
         [SerializeField]
         private Text thisText;
 
+        [SerializeField]
+        private int showDelay;
+
+        private int ticksSkipped = 0;
+
         //horizontal layout of the tooltip
         [SerializeField]
         private HorizontalLayoutGroup hlG;
+
         [SerializeField]
         private Image bgImageSource;
+
+        [SerializeField]
+        private float yOffset = 40f;
 
         //needed as the layout refreshes only on the first Update() call
         private bool firstUpdate;
@@ -34,6 +43,7 @@ namespace Nashet.UnityUIUtils
 
         //detect canvas mode so to apply different behaviors to different canvas modes, currently only RenderMode.ScreenSpaceCamera implemented
         private int canvasMode;
+
         private RenderMode GUIMode;
 
         //the scene GUI camera
@@ -44,18 +54,24 @@ namespace Nashet.UnityUIUtils
 
         //screen viewport corners for out of screen detection
         private Vector3 lowerLeft;
+
         private Vector3 upperRight;
 
         //scale factor of proportionality to the reference resolution (1280x720)
+        [SerializeField]
         private float currentYScaleFactor;
+
+        [SerializeField]
         private float currentXScaleFactor;
 
         //standard X and Y offsets of the new tooltip
         private float defaultYOffset;
+
         private float defaultXOffset;
 
         //real on screen sizes of the tooltip object
         private float tooltipRealHeight;
+
         private float tooltipRealWidth;
 
         private static TooltipBase thatObjectLink;
@@ -63,10 +79,18 @@ namespace Nashet.UnityUIUtils
         //tooltip background image
         [SerializeField]
         private RectTransform bgImage;
+
+        private CanvasGroup canvas;
+
+        private void Start()
+        {
+            var image = transform.parent.GetComponent<Image>();
+            image.color = GUIChanger.DarkestColor;
+        }
+
         // Use this for initialization
         private void Awake()
         {
-
             //in this line you need to change the string in order to get your Camera //TODO MAYBE DO IT FROM THE INSPECTOR
             //GUICamera = GameObject.Find("GUICamera").GetComponent<Camera>();
             //GUICamera = (Camera)GameObject.FindWithTag("MainCamera");// MainCamera.cameraMy;
@@ -76,7 +100,7 @@ namespace Nashet.UnityUIUtils
                 GUICamera = gameControllerObject.GetComponent<Camera>();
             }
 
-            GUIMode = this.transform.parent.parent.GetComponent<Canvas>().renderMode;
+            GUIMode = transform.parent.parent.GetComponent<Canvas>().renderMode;
 
             bgImageSource = bgImage.GetComponent<Image>();
 
@@ -88,20 +112,24 @@ namespace Nashet.UnityUIUtils
 
             //hide the tooltip
             HideTooltipVisibility();
-            this.transform.parent.gameObject.SetActive(false);
+            canvas = transform.parent.GetComponent<CanvasGroup>();
+            transform.parent.gameObject.SetActive(false);
             thatObjectLink = this;
+
+
         }
+
         public bool isInside()
         {
             return inside;
         }
+
         internal void redrawDynamicString(string text)
         {
-
             //init tooltip string
             thisText.text = text;
-
         }
+
         public static TooltipBase get()
         {
             return thatObjectLink;
@@ -114,29 +142,29 @@ namespace Nashet.UnityUIUtils
 
             //init tooltip string
             thisText.text = text;
-
+            inside = true;
             //call the position function
+
             OnScreenSpaceCamera();
             LayoutInit();
             firstUpdate = true;
-            //LayoutInit();
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             LayoutInit();
             if (inside)
             {
-                //    if (GUIMode == RenderMode.ScreenSpaceCamera)
-
+                if (ticksSkipped >= showDelay)
+                    canvas.alpha = 1f;
                 OnScreenSpaceCamera();
-
+                ticksSkipped++;
             }
         }
 
         //this function is used in order to setup the size of the tooltip by cheating on the HorizontalLayoutBehavior. The resize is done in the first update.
-        void LayoutInit()
+        private void LayoutInit()
         {
             if (firstUpdate)
             {
@@ -155,7 +183,7 @@ namespace Nashet.UnityUIUtils
         }
 
         //init basic variables on a new tooltip set
-        void NewTooltip()
+        private void NewTooltip()
         {
             firstUpdate = true;
 
@@ -164,7 +192,6 @@ namespace Nashet.UnityUIUtils
 
             //currentYScaleFactor = Screen.height / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.y;
             //currentXScaleFactor = Screen.width / this.transform.root.GetComponent<CanvasScaler>().referenceResolution.x;
-
         }
 
         //used to visualize the tooltip one update call after it has been built (to avoid flickers)
@@ -182,166 +209,49 @@ namespace Nashet.UnityUIUtils
             thisText.color = new Color(textColor.r, textColor.g, textColor.b, 0f);
             bgImageSource.color = new Color(bgImageSource.color.r, bgImageSource.color.g, bgImageSource.color.b, 0f);
         }
+
         //position function, currently not working correctly due to the use of pivots and not manual offsets, soon to be fixed
         public void OnScreenSpaceCamera()
         {
-            //get the dynamic position of the pous in viewport coordinates
-            //Vector3 newPos = GUICamera.ScreenToViewportPoint(Input.mousePosition);
             Vector3 newPos = (Input.mousePosition);
-            //newPos.y += -30;
 
-            // store in val the updated position (x or y) of the tooltip edge of interest
-            float val;
-
-            //store the new offset to impose in case of out of screen
-            float yOffSet = 0f;
-            float xOffSet = 0f;
-
-            //hidede due to different Cameracoords
-            //check for right edge of screen
-            ////obtain the x coordinate of the right edge of the tooltip
-            //val = ((GUICamera.ViewportToScreenPoint(newPos).x) + (tooltipRealWidth * bgImage.pivot.x));
-
-            ////evaluate if the right edge of the tooltip goes out of screen
-            //if (val > (upperRight.x))
-            //{
-            //    float distFromRight = upperRight.x - val;
-
-            //    xOffSet = distFromRight;
-
-            //    //assign the new modified coordinates to the tooltip and convert to screen coordinates
-            //    Vector3 newTooltipPos = new Vector3(GUICamera.ViewportToScreenPoint(newPos).x + xOffSet, 0f, 0f);
-
-            //    newPos.x = GUICamera.ScreenToViewportPoint(newTooltipPos).x;
-            //}
-
-            ////check for left edge of screen
-            ////obtain the x coordinate of the left edge of the tooltip
-            //val = ((GUICamera.ViewportToScreenPoint(newPos).x) - (tooltipRealWidth * bgImage.pivot.x));
-
-            ////evaluate if the left edge of the tooltip goes out of screen
-            //if (val < (lowerLeft.x))
-            //{
-            //    float distFromLeft = lowerLeft.x - val;
-
-            //    xOffSet = -distFromLeft;
-
-            //    //assign the new modified coordinates to the tooltip and convert to screen coordinates
-            //    Vector3 newTooltipPos = new Vector3(GUICamera.ViewportToScreenPoint(newPos).x - xOffSet, 0f, 0f);
-
-            //    newPos.x = GUICamera.ScreenToViewportPoint(newTooltipPos).x;
-            //}
-
-            ////check for upper edge of the screen
-            ////obtain the y coordinate of the upper edge of the tooltip
-            //val = ((GUICamera.ViewportToScreenPoint(newPos).y) - ((bgImage.sizeDelta.y * currentYScaleFactor * (bgImage.pivot.y)) - (tooltipRealHeight)));
-            ////evaluate if the upper edge of the tooltip goes out of screen
-            //if (val > (upperRight.y))
-            //{
-            //    float distFromUpper = upperRight.y - val;
-            //    yOffSet = (bgImage.sizeDelta.y * currentYScaleFactor * (bgImage.pivot.y));
-
-            //    if (distFromUpper > (defaultYOffset * 0.75))
-            //    {
-            //        //shorten the temporary offset up to a certain distance from the tooltip
-            //        yOffSet = distFromUpper;
-            //    }
-            //    else
-            //    {
-            //        //if the distance becomes too short flip the tooltip to below the pointer (by offset+twice the height of the tooltip)
-            //        yOffSet = ((defaultYOffset) - (tooltipRealHeight) * 2f);
-            //    }
-
-            //    //assign the new modified coordinates to the tooltip and convert to screen coordinates
-            //    Vector3 newTooltipPos = new Vector3(newPos.x, GUICamera.ViewportToScreenPoint(newPos).y + yOffSet, 0f);
-            //    newPos.y = GUICamera.ScreenToViewportPoint(newTooltipPos).y;
-            //}
-
-            ////check for lower edge of the screen
-            ////obtain the y coordinate of the lower edge of the tooltip
-            //val = ((GUICamera.ViewportToScreenPoint(newPos).y) - ((bgImage.sizeDelta.y * currentYScaleFactor * (bgImage.pivot.y))));
-
-            ////evaluate if the upper edge of the tooltip goes out of screen
-            //if (val < (lowerLeft.y))
-            //{
-            //    float distFromLower = lowerLeft.y - val;
-            //    yOffSet = (bgImage.sizeDelta.y * currentYScaleFactor * (bgImage.pivot.y));
-
-            //    if (distFromLower < (defaultYOffset * 0.75 - tooltipRealHeight))
-            //    {
-            //        //shorten the temporary offset up to a certain distance from the tooltip
-            //        yOffSet = distFromLower;
-            //    }
-            //    else
-            //    {
-            //        //if the distance becomes too short flip the tooltip to above the pointer (by twice the height of the tooltip)
-            //        yOffSet = ((tooltipRealHeight) * 2f);
-            //    }
-
-            //    //assign the new modified coordinates to the tooltip and convert to screen coordinates
-            //    Vector3 newTooltipPos = new Vector3(newPos.x, GUICamera.ViewportToScreenPoint(newPos).y + yOffSet, 0f);
-            //    newPos.y = GUICamera.ScreenToViewportPoint(newTooltipPos).y;
-            //}
-
-            //this.transform.parent.transform.position = new Vector3(GUICamera.ViewportToWorldPoint(newPos).x, GUICamera.ViewportToWorldPoint(newPos).y, 0f);
-            // was it: - nash
-
-            //my new fit in window logic - nash
-            // check right edge
-            //var ter = GetC<RectTransform>();
-            var rt = transform.parent.parent.GetComponentInParent<RectTransform>();
-
-            var rightEdge = newPos.x + tooltipRealWidth / 2f;
-            var leftEdge = newPos.x - tooltipRealWidth / 2f;
-
-            var topEdge = newPos.y - 40f;
-            var bottomEdge = newPos.y - tooltipRealHeight - 40f;
-
-            float moveByX = 0f, moveByY = 0f;
-            if (rightEdge > rt.rect.width)
+            var rect = transform.parent.GetComponent<RectTransform>();
+            rect.position = new Vector2(newPos.x - tooltipRealWidth / 2f, newPos.y - tooltipRealHeight - yOffset);
+            if (rect.position.x < 0)
             {
-                moveByX = rt.rect.width - rightEdge;
-            }
-            else
-            {
-                if (leftEdge < 0)
-
-                    moveByX = leftEdge * -1f;
-            }
-            if (topEdge > rt.rect.height)
-            {
-                moveByY = rt.rect.height - topEdge;
-            }
-            else
-            {
-                if (bottomEdge < 0)
-
-                    moveByY = bottomEdge * -1f;
+                rect.position = new Vector3(0, rect.position.y, rect.position.z);
             }
 
-            this.transform.parent.transform.position = new Vector3(newPos.x + moveByX, newPos.y + moveByY - 40f, 0f);//
+            if (rect.position.y < 0)
+            {
+                rect.position = new Vector3(rect.position.x, 0, rect.position.z);
+            }
 
-            //this.transform.SetParent(this.transform.parent, false);
+            if (rect.position.x > Screen.width - rect.sizeDelta.x)
+            {
+                rect.position = new Vector3(Screen.width - rect.sizeDelta.x, rect.position.y, rect.position.z);
+            }
 
-            this.transform.parent.gameObject.SetActive(true);
-            inside = true;
-
-            this.transform.parent.SetAsLastSibling();
+            if (rect.position.y > Screen.height - rect.sizeDelta.y)
+            {
+                rect.position = new Vector3(rect.position.x, Screen.height - rect.sizeDelta.y, rect.position.z);
+            }
+            transform.parent.gameObject.SetActive(true);
+            transform.parent.SetAsLastSibling();
         }
 
         //call to hide tooltip when hovering out from the object
         public void HideTooltip()
         {
-            //
-            //if (GUIMode == RenderMode.ScreenSpaceCamera)
+            if (this != null)
             {
-                if (this != null)
-                {
-                    this.transform.parent.gameObject.SetActive(false);
-                    inside = false;
-                    HideTooltipVisibility();
-                }
+                transform.parent.gameObject.SetActive(false);
+                canvas.alpha = 0f;
+                inside = false;
+                HideTooltipVisibility();
+                ticksSkipped = 0;
             }
+
         }
     }
 }

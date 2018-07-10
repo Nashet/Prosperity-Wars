@@ -1,62 +1,62 @@
-# Economic simulation
+# Prosperity Wars game
 
 ## Demo
-[There is very early browser demo of this game](http://nashet.github.io/EconomicSimulation/WEBGL/index.html) (6MB download, some mobile devices are not supported)
-And there is standalone windows version in [releases](https://github.com/Nashet/EconomicSimulation/releases), which runs faster and has bigger map
+There is an early browser demo of this game located [**here**](https://nashet.github.io/Prosperity-Wars/WEBGL/index.html)
+It is roughly 6MB in size, some devices are not supported.
+
+[Project now has patreon page](https://www.patreon.com/ProsperityWars) where you can help support development.
+
+There is also a standalone windows edition under [releases](https://github.com/Nashet/Prosperity-Wars/releases) which runs faster.
 
 ## Description
-Several years ago I made [Economy analyzer for PDS's Victoria 2 game](https://github.com/aekrylov/vic2_economy_analyzer) (currently updating by @aekrylov)
+I'm a huge fan of the game Victoria 2, but I was disappointed in the economy mechanics of the game. Unable to find a strategy simulation game with a better economy, I decided to make my own.
+Main simulation principles in PosperityWars include:
+* Agent based simulation with real population units, fabrics, countries
+* Prices determined by supply / demand balance (currently with one market and one currency - gold)
+* No price limits (except 0.001 and 999), allowing realistic inflation
+* Population consume goods ordered by price from cheap to expensive (making more demand for cheaper goods)
+* Factories can compete for workforce by competitive wages
+* Factories have specified owners like the government or population unit
+* Capitalists can take loans form national bank for business expansion 
+* Governments can put extra money in bank
+* Governments can compete by wars
 
-Making that tool made me disappointed in how Victoria 2 economy is made. Since I didn't find better game-like economy simulation,  I decided to try to make my own.
-So, main principles of that simulation are:
-* free market agent based economy simulation (currently with one currency - gold)
-* no price limits (except 0.001 and 999), allowing realistic inflation
-* population consume goods not in fixed order but - at first cheap goods, then expensive
-* factories can compete for workforce by changeable salary
-* factories have specific owner like government or population unit
-* capitalists can take loans form national bank for business expansion 
-* governments can put extra money in bank
-* governments can compete by wars
-
-## What it has now (v0.16.0)
- - provinces and countries
+## What it has now (v0.20.6)
+ - Provinces and Countries (generated randomly OR generated from image file)
  - Movements and Rebellions
- - factories and national banks
- - population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen, Artisans)
- - basic production\trade\consumption
- - basic warfare
- - basic inventions
- - basic reforms (population can vote for reforms)
- - population demotion\promotion to other classes
- - migration\immigration\assimilation
- - political\culture\core\resorce map mode
- - basic diplomacy (only relations for now)
- - [substitute products](https://github.com/Nashet/EconomicSimulation/wiki/Products)
- - [planned economy!](https://github.com/Nashet/EconomicSimulation/wiki/Economy-types#Planned_economy)
- - [![Bugs](https://badge.waffle.io/Nashet/EconomicSimulation.svg?columns=all)](https://waffle.io/Nashet/EconomicSimulation) 
+ - Factories and National banks
+ - Population agents (Aristocrats, Capitalists, Farmers, Soldiers, Workers, Tribesmen, Artisans)
+ - Basic production\free market trade\consumption
+ - Basic warfare
+ - Basic inventions
+ - Basic reforms (population can vote for reforms)
+ - Population demotion\promotion to other classes
+ - Migration\immigration\assimilation
+ - Political\culture\core\resource\population\prosperity map mode
+ - Basic diplomacy (only relations for now)
+ - [Substitute products](https://github.com/Nashet/Prosperity-Wars/wiki/Products)
+ - [Planned economy!](https://github.com/Nashet/Prosperity-Wars/wiki/Economy-types#Planned_economy)
+ - [![Bugs](https://badge.waffle.io/Nashet/Prosperity-Wars.svg?columns=all)](https://waffle.io/Nashet/Prosperity-Wars) 
 
-Map is generated randomly, you play as some country yet there is no much gameplay for now. You can try to growth economy or conquer the world.           
-
-## Current targets
- - more gameplay
- - diplomacy
- - perfomance
+Maps are generated randomly, you play as a leader of a country. For now you are able to grow the prosperity or try to conquer the world.
 
 ## Screenshots
 ![map](http://i.imgrpost.com/imgr/2017/08/14/VYAaererrerdsdVA.png)
 ![map](http://i.imgrpost.com/imgr/2017/08/14/VYsdffAaererdsdVA.png)
 ![map](http://i.imgrpost.com/imgr/2017/06/22/VYAaereVAVArdsdVA.png)
-![diplomacy](http://i.imgrpost.com/imgr/2017/06/22/VYAaersderdsdVA.png)
-![panels](http://i.imgrpost.com/imgr/2017/08/14/ES-14.png)
-![Imgur](http://i.imgur.com/KevTH51.png)
-![Imgur](http://i.imgur.com/uzEJCvM.png)
+
+![Imgur](https://i.imgur.com/ir7pqgV.png)
+![Imgur](https://i.imgur.com/U85ZjSV.png)
+![Imgur](https://i.imgur.com/knumBN0.png)
+![Imgur](https://i.imgur.com/goICtvL.png)
+![Imgur](https://i.imgur.com/6YLDnnq.png)
 
 ## Contributing
-I would love to have other people providing ideas, code or questions.  You may:
-- Create Tickets on the tracker - https://waffle.io/Nashet/EconomicSimulation
-- Open a Pull Request and I will check it
+I would appreciate any assitance in providing ideas, code or feedback.  You may:
+- Create Tickets on the tracker - https://waffle.io/Nashet/Prosperity-Wars
+- Open a Pull Request and I will check it.
 
 License is GPL-3.0
 
 ## How to build
-Project is build with Unity 5.4.2f2 - Unity 5.6.1f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene
+Since 0.19.2 version the project is built with Unity 2017.40f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene.

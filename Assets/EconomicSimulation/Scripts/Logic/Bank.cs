@@ -1,192 +1,272 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using Nashet.Utils;
 using Nashet.ValueSpace;
+
 namespace Nashet.EconomicSimulation
 {
-    public class Bank : Agent
+    public class Bank : Agent, INameable
     {
-        Value givenLoans = new Value(0);
+        private readonly Money givenCredits = new Money(0);
+        //private readonly Country country;
 
-        public Bank() : base(0f, null, null)
+        public override string ToString()
         {
-            //setBank(this);
+            return FullName;
         }
-        /// <summary>
-        /// Returns money to bank. checks inside.
-        /// Just wouldn't take money if giver hasn't enough money
-        /// Don't provide variables like Cash as argument!! It would default to zero!
-        /// </summary>    
-        internal void takeMoney(Agent giver, Value howMuchTake)
+
+        public string FullName
         {
-            if (giver.pay(this, howMuchTake))
-                if (giver.loans.isBiggerThan(Value.Zero))  //has debt (meaning has no deposits)
-                    if (howMuchTake.isBiggerOrEqual(giver.loans)) // cover debt
+            get { return "Bank of " + Country.ShortName; }
+        }
+
+        public string ShortName
+        {
+            get { return "Bank of " + Country.ShortName; }
+        }
+
+        public Bank(Country country) : base(country)
+        {
+            //this.country = country;
+        }
+
+        /// <summary>
+        /// Gives money to bank (as deposit or loan payment). Checks inside.
+        /// Just wouldn't take money if giver hasn't enough money.
+        /// Don't provide variables like Cash as argument!! It would default to zero!
+        /// </summary>
+        internal void ReceiveMoney(Agent giver, MoneyView sum)
+        {
+            if (giver.PayWithoutRecord(this, sum))
+                if (giver.loans.isNotZero())  //has debt (meaning has no deposits)
+                    if (sum.isBiggerOrEqual(giver.loans)) // cover debt
                     {
-                        Value extraMoney = howMuchTake.subtractOutside(giver.loans);
-                        this.givenLoans.subtract(giver.loans);
-                        giver.loans.set(0f);
-                        giver.deposits.set(extraMoney);
+                        MoneyView extraMoney = sum.Copy().Subtract(giver.loans);
+                        givenCredits.Subtract(giver.loans);
+
+                        giver.loans.SetZero(); //put extra money on deposit
+                        giver.deposits.Set(extraMoney);
                     }
-                    else// not cover debt
+                    else// not cover debt, just decrease loan
                     {
-                        giver.loans.subtract(howMuchTake);
-                        this.givenLoans.subtract(howMuchTake);
+                        giver.loans.Subtract(sum);
+                        givenCredits.Subtract(sum);
                     }
                 else
                 {
-                    giver.deposits.add(howMuchTake);
+                    giver.deposits.Add(sum);
                 }
         }
 
         /// <summary>
-        ///checks outside 
-        /// </summary>   
-        internal void giveMoney(Agent taker, Value howMuch)
+        /// Gives money in credit or returns deposit, if possible.
+        /// Gives whole sum or gives nothing.
+        /// Checks inside. Return false if didn't give credit.
+        /// </summary>
+        internal bool GiveCredit(Agent taker, MoneyView desiredCredit) // todo check
         {
-            payWithoutRecord(taker, howMuch);
-            if (taker.deposits.isBiggerThan(Value.Zero)) // has deposit (meaning, has no loans)
-                if (howMuch.isBiggerOrEqual(taker.deposits))// loan is bigger than this deposit
+            if (taker.deposits.isNotZero()) // has deposit (meaning, has no loans)
+            {
+                if (desiredCredit.isBiggerThan(taker.deposits))// loan is bigger than this deposit
                 {
-                    Value notEnoughMoney = howMuch.subtractOutside(taker.deposits);
-                    taker.deposits.set(0f);
-                    taker.loans.set(notEnoughMoney);
-                    this.givenLoans.add(notEnoughMoney);
+                    MoneyView returnedDeposit = ReturnDeposit(taker, taker.deposits);
+                    if (returnedDeposit.isSmallerThan(taker.deposits))
+                        return false;// if can't return deposit than can't give credit for sure
+                                     //returnedMoney = new ReadOnlyValue(0f);
+
+                    MoneyView restOfTheSum = desiredCredit.Copy().Subtract(returnedDeposit);
+                    if (CanGiveCredit(taker, restOfTheSum))
+                    {
+                        taker.loans.Set(restOfTheSum);//important
+                        givenCredits.Add(restOfTheSum);
+                        PayWithoutRecord(taker, restOfTheSum);
+                        return true;
+                    }
+                    else
+                        return false;
                 }
-                else // not cover
+                else // no need for credit, just return deposit
                 {
-                    taker.deposits.subtract(howMuch);
+                    // if can't return deposit than can't give credit for sure
+                    if (CanReturnDeposit(taker, desiredCredit))
+                    {
+                        ReturnDeposit(taker, desiredCredit);
+                        return true;
+                    }
+                    else
+                        return false;
                 }
+            }
             else
             {
-                taker.loans.add(howMuch);
-                this.givenLoans.add(howMuch);
-            }
-        }
-        /// <summary>
-        ///checks outside 
-        /// </summary>   
-        //internal bool giveMoneyIf(Consumer taker, Value howMuch)
-        //{
-        //    
-        //        Value needLoan = howMuch.subtractOutside(taker.cash);
-        //        if (this.canGiveMoney(taker, needLoan))
-        //        {
-        //            this.giveMoney(taker, needLoan);
-        //            return true;
-        //        }
-        //   
-        //    return false;
-        //}
-        /// <summary>
-        /// checks inside. Just wouldn't give money if can't
-        /// </summary>    
-        internal bool giveLackingMoney(Agent taker, Value sum)
-        {
-            if (taker.getCountry().isInvented(Invention.Banking))// find money in bank?
-            {
-                Value lackOfSum = sum.subtractOutside(taker.cash);
-                if (canGiveMoney(taker, lackOfSum))
+                if (CanGiveCredit(taker, desiredCredit))
                 {
-                    giveMoney(taker, lackOfSum);
+                    taker.loans.Add(desiredCredit);
+                    givenCredits.Add(desiredCredit);
+                    PayWithoutRecord(taker, desiredCredit);
                     return true;
                 }
+                else
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Gives credit. Checks inside. Just wouldn't give money if can't
+        /// </summary>
+        internal bool GiveLackingMoneyInCredit(Agent taker, MoneyView desirableSum)
+        {
+            if (taker.Country.Invented(Invention.Banking))// find money in bank?
+            {
+                MoneyView lackOfSum = desirableSum.Copy().Subtract(taker.getMoneyAvailable(), false); 
+                if (lackOfSum.isNotZero())
+                    return GiveCredit(taker, lackOfSum);
+                else
+                    return false;
             }
             return false;
         }
+
+        /// <summary>
+        /// Result is how much deposit was really returned. Checks inside. Just wouldn't give money if can't
+        /// Can return less than was prompted
+        /// </summary>
+        internal MoneyView ReturnDeposit(Agent toWhom, MoneyView howMuchWants)
+        {
+            if (toWhom.Country.Invented(Invention.Banking))// find money in bank? //todo remove checks, make bank==null if uninvented
+            {
+                var maxReturnLimit = HowMuchDepositCanReturn(toWhom);
+                if (maxReturnLimit.isBiggerOrEqual(howMuchWants))
+                {
+                    MoneyView returnMoney;
+                    if (howMuchWants.isBiggerThan(maxReturnLimit))
+                        returnMoney = maxReturnLimit;
+                    else
+                        returnMoney = howMuchWants;
+
+                    if (returnMoney.isNotZero())// return deposit
+                    {
+                        //giveMoney(toWhom, moneyToReturn);
+                        toWhom.deposits.Subtract(returnMoney);
+                        PayWithoutRecord(toWhom, returnMoney);
+                    }
+                    return returnMoney;
+                }
+            }
+            return MoneyView.Zero;
+        }
+
         /// <summary>
         /// Returns deposits only. As much as possible. checks inside. Just wouldn't give money if can't
         /// </summary>
-        /// //todo - add some cross bank money transfer?
-        internal void returnAllMoney(Agent agent)
+        internal void ReturnAllDeposits(Agent toWhom)
         {
-            //if (canGiveLoan(agent.deposits))
-            //    giveMoney(agent, agent.deposits);
-
-            giveMoney(agent, howMuchDepositCanReturn(agent));
+            ReturnDeposit(toWhom, HowMuchDepositCanReturn(toWhom));
         }
 
-        internal Value getGivenLoans()
-        {
-            return givenLoans;
-        }
         /// <summary>
-        /// how much money have in cash
+        /// includes checks for Cash and deposit. Returns copy
         /// </summary>
-        internal Value getReservs()
+        internal MoneyView HowMuchDepositCanReturn(Agent agent)
         {
-            return new Value(cash);
-        }
-        /// <summary>
-        /// Checks reserve limits and deposits
-        /// </summary>    
-        internal bool canGiveMoney(Agent agent, Value loan)
-        {
-            return howMuchCanGive(agent).isBiggerOrEqual(loan);
+            var howMuchReturn = agent.deposits.Copy();//initialization
+
+            var wantedResrve = Cash.Copy().Subtract(GetMinimalReservs(), false); //defaults to zero if there is no money to give
+                                                                                 // doesn't account bank's deposits
+            if (howMuchReturn.isBiggerThan(wantedResrve))
+                howMuchReturn.Set(wantedResrve);
+
+            return howMuchReturn;
         }
 
-        private Value getMinimalReservs()
+        /// <summary>
+        /// includes checks for Cash and deposit.
+        /// </summary>
+        internal bool CanReturnDeposit(Agent agent, MoneyView howMuch)
+        {
+            return HowMuchDepositCanReturn(agent).isBiggerOrEqual(howMuch);
+        }
+
+        internal MoneyView GetGivenCredits()
+        {
+            return givenCredits;
+        }
+
+        /// <summary>
+        /// how much money have in Cash.
+        /// </summary>
+        //internal ReadOnlyValue getReservs()
+        //{
+        //    return Cash;
+        //}
+
+        private MoneyView GetMinimalReservs()
         {
             //todo improve reserves
-            return new Value(1000f);
+            return new MoneyView(100m);
         }
 
-        override public string ToString()
+        /// <summary>
+        /// Agent refuses to pay debt
+        /// </summary>
+        internal void OnLoanerRefusesToPay(Agent agent)
         {
-            return cash.ToString();
+            givenCredits.Subtract(agent.loans);
+            agent.loans.SetZero();
         }
 
-        internal void defaultLoaner(Agent agent)
-        {
-            givenLoans.subtract(agent.loans);
-            agent.loans.set(0);
-        }
         /// <summary>
         /// Assuming all clients already defaulted theirs loans
-        /// </summary>    
-        internal void add(Bank annexingBank)
+        /// </summary>
+        internal void Annex(Bank annexingBank)
         {
-            annexingBank.cash.sendAll(this.cash);
-            annexingBank.givenLoans.sendAll(this.givenLoans);
-        }
-        bool isItEnoughReserves(Value sum)
-        {
-            return cash.subtractOutside(getMinimalReservs()).isNotZero();
+            annexingBank.PayAllAvailableMoney(this);
+            //annexingBank.givenCredits.SendAll(this.givenCredits);
+            givenCredits.Add(annexingBank.givenCredits);
+            annexingBank.givenCredits.SetZero();
         }
 
         /// <summary>
-        /// Checks reserve limits and deposits
-        /// </summary>    
-        internal Value howMuchCanGive(Agent agent)
+        /// Checks reserve limits
+        /// </summary>
+        internal bool CanGiveCredit(Agent whom, MoneyView desirableSum)
         {
-            Value wouldGive = cash.subtractOutside(getMinimalReservs(), false);
-            if (agent.deposits.isBiggerThan(wouldGive))
-            {
-                wouldGive = new Value(agent.deposits); // increase wouldGive to deposits size
-                if (wouldGive.isBiggerThan(cash)) //decrease wouldGive to cash size
-                    wouldGive = new Value(cash);
-            }
-            return wouldGive;
+            return HowBigCreditCanGive(whom).isBiggerOrEqual(desirableSum);
         }
+
         /// <summary>
-        /// includes checks for cash and deposit size
-        /// </summary>   
-        internal Value howMuchDepositCanReturn(Agent agent)
+        /// How much can
+        /// Checks reserve limits.
+        /// new value
+        /// </summary>
+        internal MoneyView HowBigCreditCanGive(Agent whom)
         {
-            if (cash.isBiggerOrEqual(agent.deposits))
-                return new Value(agent.deposits);
-            else
-                return new Value(cash);
+            MoneyView maxSum = Cash.Copy().Subtract(GetMinimalReservs(), false); // don't take in account banks deposits
+            //if (whom.deposits.isBiggerThan(maxSum))
+            //{
+            //    maxSum = whom.deposits.Copy(); // sets maxSum to deposits size
+            //    if (maxSum.isBiggerThan(Cash)) //decrease maxSum to Cash size
+            //        maxSum.Set(Cash);
+            //}
+            return maxSum;
         }
+
         internal void destroy(Country byWhom)
         {
-            cash.sendAll(byWhom.cash);
-            givenLoans.setZero();
+            PayAllAvailableMoney(byWhom);
+            givenCredits.SetZero();
         }
 
         public override void simulate()
         {
             throw new NotImplementedException();
+        }
+
+        public void Nationalize()
+        {
+            Country.Bank.PayAllAvailableMoney(Country);
+            Country.Bank.givenCredits.SetZero();
+            Country.loans.SetZero();
+            Country.deposits.SetZero();
         }
     }
 }

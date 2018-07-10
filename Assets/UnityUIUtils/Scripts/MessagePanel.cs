@@ -1,68 +1,141 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
+using Nashet.EconomicSimulation;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Text;
+using UnityEngine.UI;
 
 namespace Nashet.UnityUIUtils
 {
     public class Message
     {
-        static private readonly Stack<Message> Queue = new Stack<Message>();
+        private static readonly Stack<Message> Queue = new Stack<Message>();
+        private static bool showDefeatingAttackersMessages = true;
+
         private readonly string caption, text, closeText;
-        static public bool HasUnshownMessages()
+        private Vector2 focus;
+        private bool hasFocus;
+
+        public bool HasFocus
+        {
+            get { return hasFocus; }
+        }
+
+        public static bool ShowDefeatingAttackersMessages
+        {
+            get { return showDefeatingAttackersMessages; }
+        }
+
+        public static void NewMessage(string caption, string message, string closeText, bool isDefeatingAttackersMessage, Vector2 focus)
+        {
+            if (!isDefeatingAttackersMessage || showDefeatingAttackersMessages)
+                new Message(caption, message, closeText, focus);
+        }
+
+        public static void NewMessage(string caption, string message, string closeText, bool isDefeatingAttackersMessage)
+        {
+            if (!isDefeatingAttackersMessage || showDefeatingAttackersMessages)
+                new Message(caption, message, closeText);
+        }
+
+        protected Message(string caption, string message, string closeText)
+        {
+            this.caption = caption;
+            text = message;
+            this.closeText = closeText;
+            Queue.Push(this);
+        }
+
+        protected Message(string caption, string message, string closeText, Vector2 focus) : this(caption, message, closeText)
+        {
+            hasFocus = true;
+            this.focus = focus;
+        }
+
+        public static bool HasUnshownMessages()
         {
             return Queue.Count > 0;
         }
-        static public Message PopAndDeleteMessage()
+
+        public static Message PopAndDeleteMessage()
         {
             return Queue.Pop();
         }
 
-        public Message(string caption, string message, string closeText)
+        public static void SetShowDefeatingAttackersMessages(bool value)
         {
-            this.caption = caption;
-            this.text = message;
-            this.closeText = closeText;
-            Queue.Push(this);
+            showDefeatingAttackersMessages = value;
         }
+
+        /// <summary>
+        /// Before use check if focus exists
+        /// </summary>
+        public Vector2 getFocus()
+        {
+            return focus;
+        }
+
         public string GetCaption()
         {
             return caption;
         }
+
         public string GetText()
         {
             return text;
         }
+
         public string GetClosetext()
         {
             return closeText;
         }
     }
+
     public class MessagePanel : DragPanel
     {
         ///<summary>Stores position of top-level message window. Used to correctly place next message window</summary>
-        static Vector3 lastDragPosition;
+        private static Vector3 lastDragPosition;
 
         [SerializeField]
         private Text caption, message, closeText;
 
         [SerializeField]
+        private Toggle showDefeatingAttackerMessage;
+
+        [SerializeField]
         private static GameObject messagePanelPrefab; //FixedJoint it
 
-        private static int howMuchPausedWindowsOpen = 0;
-        private StringBuilder sb = new StringBuilder();
+        private MainCamera mainCamera;
+
+        private static int howMuchPausedWindowsOpen;
+        private Message messageSource;
+
+        public static void showMessageBox(Canvas canvas, MainCamera mainCamera)
+        {
+            if (messagePanelPrefab == null)
+                messagePanelPrefab = Resources.Load("Prefabs\\MessagePanel", typeof(GameObject)) as GameObject;
+            Message message = Message.PopAndDeleteMessage();
+            GameObject newObject = Instantiate(messagePanelPrefab, canvas.transform);
+            //newObject.transform.SetParent(canvas.transform, true);
+
+            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
+            mesPanel.Awake();
+            mesPanel.show(message, mainCamera);
+        }
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             Vector3 position = Vector3.zero;
             position.Set(lastDragPosition.x - 10f, lastDragPosition.y - 10f, 0);
             transform.localPosition = position;
             lastDragPosition = transform.localPosition;
+            GUIChanger.Apply(gameObject);
+            showDefeatingAttackerMessage.isOn = Message.ShowDefeatingAttackersMessages;
+            var rect = GetComponent<RectTransform>();
+            rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
         }
 
-        override public void OnDrag(PointerEventData data)
+        public override void OnDrag(PointerEventData data) // need it to place windows in stair-order
         {
             base.OnDrag(data);
             lastDragPosition = transform.localPosition;
@@ -73,27 +146,29 @@ namespace Nashet.UnityUIUtils
             //
         }
 
-        public void show(Message mess)
+        public void OnShowMessagesChanged(bool value)
         {
+            Message.SetShowDefeatingAttackersMessages(value);
+        }
+
+        public void OnFocusClicked()
+        {
+            if (messageSource.HasFocus)
+                mainCamera.FocusOnPoint(messageSource.getFocus());
+        }
+
+        private void show(Message mess, MainCamera mainCamera)
+        {
+            this.mainCamera = mainCamera;
             howMuchPausedWindowsOpen++;
             caption.text = mess.GetCaption();
             message.text = mess.GetText();
             closeText.text = mess.GetClosetext();
-            Show();            
+            messageSource = mess;
+            Show();
         }
-        static public void showMessageBox(Canvas canvas)
-        {
-            if (messagePanelPrefab == null)
-                messagePanelPrefab = Resources.Load("Prefabs\\MessagePanel", typeof(GameObject)) as GameObject;
-            Message mes = Message.PopAndDeleteMessage();
-            GameObject newObject = (GameObject)GameObject.Instantiate(messagePanelPrefab);
-            newObject.transform.SetParent(canvas.transform, true);
 
-            MessagePanel mesPanel = newObject.GetComponent<MessagePanel>();
-            mesPanel.Awake();
-            mesPanel.show(mes);
-        }
-        override public void Hide()
+        public override void Hide()
         {
             base.Hide();
             howMuchPausedWindowsOpen--;

@@ -1,39 +1,67 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using System.Linq;
 using System.Text;
 using Nashet.UnityUIUtils;
+using Nashet.Utils;
+using UnityEngine;
+using UnityEngine.UI;
+
 namespace Nashet.EconomicSimulation
 {
     public class TopPanel : Window
     {
         [SerializeField]
+        private MainCamera mainCamera;
+
+        [SerializeField]
         private Button btnPlay, btnStep, btnTrade;
 
         [SerializeField]
-        private Text generalText;
+        private Text generalText, specificText;
 
+        [SerializeField]
+        private World world;
         // Use this for initialization
-        void Awake()
+        private void Awake()
         {
-            btnPlay.onClick.AddListener(() => onbtnPlayClick(btnPlay));
-            btnStep.onClick.AddListener(() => onbtnStepClick(btnPlay));
-            btnPlay.image.color = Color.grey;
             MainCamera.topPanel = this;
-            Hide();
+        }
+
+        private bool firstUpdate = true;
+
+        private void Update()
+        {
+            if (firstUpdate)
+                btnPlay.image.color = GUIChanger.DisabledButtonColor;
+            firstUpdate = false;
         }
 
         public override void Refresh()
         {
             var sb = new StringBuilder();
 
-            sb.Append("Date: ").Append(Game.date).Append("; Country: ").Append(Game.Player.getName())
-                .Append("\nMoney: ").Append(Game.Player.cash.get().ToString("N0"))
-                .Append("; Science points: ").Append(Game.Player.sciencePoints.get().ToString("F0"))
-                .Append("; Men: ").Append(Game.Player.getMenPopulation().ToString("N0"))
-                .Append("; avg. loyalty: ").Append(Game.Player.getAverageLoyalty());
+            sb.Append("You rule: ").Append(Game.Player.FullName);
+
+            if (!Game.Player.isAlive())
+                sb.Append(" (destroyed by enemies, but could rise again)");
+            sb.Append("    Month: ").Append(Date.Today);
+
+            if (Game.Player.isAlive())
+                sb.Append("   Population: ").Append(Game.Player.getFamilyPopulation().ToString("N0"))
+                    .Append(" (")
+                    .Append(Game.Player.getAllPopulationChanges().Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
+                    .Sum(x=>x.Value).ToString("+0;-0;0"))
+                    .Append(")");
+
+            sb.Append("\nMoney: ").Append(Game.Player.Cash)
+            .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
+
+            if (Game.Player.isAlive())                
+                sb.Append("   Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
+                .Append("   Education: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.Education));
+
             generalText.text = sb.ToString();
         }
+
         public void onTradeClick()
         {
             if (MainCamera.tradeWindow.isActiveAndEnabled)
@@ -41,42 +69,51 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.tradeWindow.Show();
         }
+
         public void onExitClick()
         {
             Application.Quit();
         }
+
         public void onMilitaryClick()
         {
             if (MainCamera.militaryPanel.isActiveAndEnabled)
                 MainCamera.militaryPanel.Hide();
             else
                 MainCamera.militaryPanel.show(null);
-
         }
+
         public void onInventionsClick()
         {
-
             if (MainCamera.inventionsPanel.isActiveAndEnabled)
                 MainCamera.inventionsPanel.Hide();
             else
                 MainCamera.inventionsPanel.Show();
         }
+
         public void onEnterprisesClick()
         {
             if (MainCamera.productionWindow.isActiveAndEnabled)
-                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince))               
-                    MainCamera.productionWindow.ClearAllFiltres();                   
+            {
+                if (MainCamera.productionWindow.IsSelectedProvince(Game.selectedProvince) 
+                    && Game.selectedProvince != null)
+                {
+                    MainCamera.productionWindow.ClearAllFiltres();
+                }
                 else
+                {
                     MainCamera.productionWindow.Hide();
+                }
+            }
             else
             {
                 MainCamera.productionWindow.ClearAllFiltres();
                 MainCamera.productionWindow.Show();
             }
         }
+
         public void onPopulationClick()
         {
-
             if (MainCamera.populationPanel.isActiveAndEnabled)
                 if (MainCamera.populationPanel.IsSetAnyFilter())
                     MainCamera.populationPanel.ClearAllFiltres();
@@ -88,6 +125,7 @@ namespace Nashet.EconomicSimulation
                 MainCamera.populationPanel.Show();
             }
         }
+
         public void onPoliticsClick()
         {
             if (MainCamera.politicsPanel.isActiveAndEnabled)
@@ -95,6 +133,7 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.politicsPanel.Show();
         }
+
         public void onFinanceClick()
         {
             if (MainCamera.financePanel.isActiveAndEnabled)
@@ -102,38 +141,46 @@ namespace Nashet.EconomicSimulation
             else
                 MainCamera.financePanel.Show();
         }
-        void onbtnStepClick(Button button)
+
+        public void onbtnStepClick(Button button)
         {
-            if (Game.isRunningSimulation())
-            {
-                Game.pauseSimulation();
-                button.image.color = Color.grey;
-                Text text = button.GetComponentInChildren<Text>();
-                text.text = "Pause";
+            if (world.IsRunning)
+            {                
+                switchHaveToRunSimulation();
             }
             else
-                Game.makeOneStepSimulation();
+                world.MakeOneStepSimulation();
         }
-        void onbtnPlayClick(Button button)
+
+        public void onbtnPlayClick(Button button)
         {
             switchHaveToRunSimulation();
         }
+
+        public void OnFocusOnCountryClick()
+        {
+            if (Game.Player != null)
+                mainCamera.FocusOnProvince(Game.Player.Capital, true);
+        }
+
         public void switchHaveToRunSimulation()
         {
-            if (Game.isRunningSimulation())
-                Game.pauseSimulation();
+            if (world.IsRunning)
+                world.PauseSimulation();
             else
-                Game.continueSimulation();
+                world.ResumeSimulation();
 
-            if (Game.isRunningSimulation())
+            if (world.IsRunning)
             {
-                btnPlay.image.color = Color.white;
+                //btnPlay.interactable = true;
+                btnPlay.image.color = GUIChanger.ButtonsColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
-                text.text = "Playing";
+                text.text = "Play";
             }
             else
             {
-                btnPlay.image.color = Color.grey;
+                //btnPlay.interactable = false;
+                btnPlay.image.color = GUIChanger.DisabledButtonColor;
                 Text text = btnPlay.GetComponentInChildren<Text>();
                 text.text = "Pause";
             }

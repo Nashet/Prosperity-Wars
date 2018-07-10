@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Nashet.UnityUIUtils;
-using Nashet.ValueSpace;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nashet.EconomicSimulation
 {
@@ -37,17 +37,17 @@ namespace Nashet.EconomicSimulation
         private readonly List<AbstractReformValue> assotiateTable = new List<AbstractReformValue>();
 
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.politicsPanel = this;
             voteButton.interactable = false;
             dropDown.interactable = false;
             forceDecisionButton.interactable = false;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, -150f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(15f, 45f);
             Hide();
-        }        
+        }
 
-        void changeReformValue()
+        private void changeReformValue()
         {
             if (selectedReform != null && selectedReformValue != null && selectedReformValue != selectedReform.getValue())
             {
@@ -55,25 +55,24 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
             }
         }
+
         public void onVoteClick()
         {
             changeReformValue();
         }
+
         public void onForceDecisionClick()
         {
-            //uint votersSayedYes;
-            foreach (Province pro in Game.Player.ownedProvinces)
-                foreach (PopUnit pop in pro.allPopUnits)
+            foreach (PopUnit pop in Game.Player.GetAllPopulation())
+            {
+                if (pop.canVote() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
                 {
-                    if (pop.canVote() && !pop.getSayingYes(selectedReformValue))
-                    {
-                        //votersSayedYes = pop.getSayingYes(selectedReformValue);
-                        //if (pop.getSayYesProcent(selectedReformValue) < Options.votingPassBillLimit)
-                        pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
-                    }
+                    pop.addDaysUpsetByForcedReform(Options.PopDaysUpsetByForcedReform);
                 }
+            }
             changeReformValue();
         }
+
         //slider.onValueChanged.AddListener(ListenerMethod);
 
         public void onChoiceValueChanged()
@@ -81,9 +80,10 @@ namespace Nashet.EconomicSimulation
             selectedReformValue = assotiateTable[dropDown.value];
             refresh(false);
         }
-        void rebuildDropDown()
+
+        private void rebuildDropDown()
         {
-            //dropDown.Hide();        
+            //dropDown.Hide();
             var toDestroy = dropDown.transform.Find("Dropdown List");
             if (toDestroy != null)
                 Destroy(toDestroy.gameObject);
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
             {
                 //if (next.isAvailable(Game.player))
                 {
-                    dropDown.options.Add(new Dropdown.OptionData() { text = next.ToString() });
+                    dropDown.options.Add(new Dropdown.OptionData { text = next.ToString() });
                     assotiateTable.Add(next);
                     if (next == selectedReform.getValue())
                     {
@@ -111,25 +111,25 @@ namespace Nashet.EconomicSimulation
             dropDown.RefreshShownValue();
             //dropDown.Show();
         }
+
         public override void Refresh()
         {
             refresh(true);
         }
+
         public void selectReform(AbstractReform newSelection)
         {
             selectedReform = newSelection;
             if (newSelection == null)
                 dropDown.interactable = false;
         }
+
         private void refresh(bool callRebuildDropDown)
         {
-
             table.Refresh();
-            //if (Game.Player.movements != null)
-            movementsText.text = Game.Player.movements.getString();
+            movementsText.text = Game.Player.movements.OrderByDescending(x => x.getRelativeStrength(Game.Player).get()).getString();
             if (movementsText.preferredHeight > 90 && movementsText.preferredHeight < 130)
                 movementsText.text += "\n\n\n\n";
-
 
             movementsHorizontalScrollBar.value = 0;
             if (selectedReform == null)
@@ -142,15 +142,15 @@ namespace Nashet.EconomicSimulation
             } //did selected reform
             else
             {
-                if (callRebuildDropDown) // meaning changed whole reform            
+                if (callRebuildDropDown) // meaning changed whole reform
                     rebuildDropDown();
-                descriptionText.text = selectedReform + " reforms " + selectedReform.getDescription()
-               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().getDescription()
+                descriptionText.text = selectedReform + " reforms " + selectedReform.FullName
+               + "\nCurrently: " + selectedReform.getValue() + " " + selectedReform.getValue().FullName
                + "\nSelected: ";
 
                 //if (selectedReformValue != null)
                 if (selectedReformValue != selectedReform.getValue())
-                    descriptionText.text += selectedReformValue + " " + selectedReformValue.getDescription();
+                    descriptionText.text += selectedReformValue + " " + selectedReformValue.FullName;
                 else
                     descriptionText.text += "current";
 
@@ -205,7 +205,7 @@ namespace Nashet.EconomicSimulation
                         forceDecisionButton.GetComponent<ToolTipHandler>().text += "\n\nForcing decision against people's desires will drop loyalty!";
                     }
                 }
-            }            
+            }
         }
     }
 }

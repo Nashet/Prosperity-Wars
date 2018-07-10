@@ -1,336 +1,195 @@
-﻿using System;
+﻿using Nashet.Utils;
 using UnityEngine;
+
 namespace Nashet.ValueSpace
 {
-    public class Value
+    public class Value : ReadOnlyValue, ICopyable<Value>
     {
-        ///<summary> storing as value as number * precision </summary>
-        private uint value;
-        internal readonly static uint precision = 1000; // 0.01
-        internal static readonly Value Zero = new Value(0);
-        internal static readonly Value Max999 = new Value(999.99f);
-        internal static readonly Value Max = new Value(int.MaxValue / 1000f);
-
-        public Value(float number, bool showMessageAboutNegativeValue = true)
+        public Value(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
         {
-            if (number >= 0f)
-                set(number); // set already have multiplier
-            else
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Can't create negative Value");
-                set(0);
-            }
+        }
 
-        }
-        public Value(Value number)
+        //protected
+        public Value(ReadOnlyValue number) : base(number)
         {
-            set(number); // set already have multiplier
+            //   set(number); // set already have multiplier
         }
+
+        /// <summary>
+        /// Converts dirty float into Value format
+        /// </summary>
         public static float Convert(float invalue)
         {
-            uint intermediate = (uint)Mathf.RoundToInt(invalue * precision);
-            return (float)intermediate / (float)precision;
+            uint intermediate = (uint)Mathf.RoundToInt(invalue * Precision);
+            return (float)intermediate / (float)Precision;
         }
-        public bool isBiggerThan(Value invalue)
-        {
-            return this.value > invalue.value;
-        }
-        /// <summary>
-        /// Returns true if bigger than argument + barrier
-        /// </summary>
 
-        public bool isBiggerThan(Value invalue, Value barrier)
-        {
-            return this.value > invalue.value + barrier.value;
-        }
-        public bool isBiggerOrEqual(Value invalue)
-        {
-            return this.value >= invalue.value;
-        }
-        public bool isSmallerThan(Value invalue)
-        {
-            return this.value < invalue.value;
-        }
-        public bool isSmallerOrEqual(Value invalue)
-        {
-            return this.value <= invalue.value;
-        }
         //TODO overflow checks?
-        virtual public void add(Value invalue, bool showMessageAboutNegativeValue = true)
+        public Value Add(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (value + invalue.value < 0f)
+            if (rawUIntValue + howMuch.RawUIntValue < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value Add-Value failed");
-                set(0);
+                Set(0);
             }
             else
-                value += invalue.value;
+                rawUIntValue += howMuch.RawUIntValue;
+            return this;
         }
 
-        virtual public void add(float invalue, bool showMessageAboutNegativeValue = true)
+        public Value Add(float howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue + get() < 0f)
+            if (howMuch + get() < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value Add-float failed");
-                set(0);
+                Set(0);
             }
             else
-                value += (uint)Mathf.RoundToInt(invalue * precision);
+                rawUIntValue += (uint)Mathf.RoundToInt(howMuch * Precision);
+            return this;
         }
-        internal Value addOutside(Value deposits)
+
+        public Value Subtract(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
-            var result = new Value(this);
-            result.add(deposits);
-            return result;
-        }
-        public bool subtract(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.value > value)
+            if (howMuch.RawUIntValue > rawUIntValue)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract gave negative result");
-                set(0);
-                return false;
+                Set(0);
             }
             else
-            {
-                value -= invalue.value;
-                return true;
-            }
+                rawUIntValue -= howMuch.RawUIntValue;
+            return this;
         }
-        public void subtract(float invalue, bool showMessageAboutNegativeValue = true)
+
+        public Value Subtract(float howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue  > get())
+            if (howMuch > get())
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value subtract failed");
-                value = 0;
+                rawUIntValue = 0;
             }
             else
-                value -= (uint)Mathf.RoundToInt(invalue * precision);
-        }
-        public Value subtractOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.value > value)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value subtrackOutside failed");
-                return new Value(0);
-            }
-            else
-                return new Value((this.value - invalue.value) / (float)precision);
+                rawUIntValue -= (uint)Mathf.RoundToInt(howMuch * Precision);
+            return this;
         }
 
-        /// <summary>Keeps result inside</summary>    
-        public void multiply(Value invalue, bool showMessageAboutNegativeValue = true)
+        /// <summary>Keeps result inside</summary>
+        public Value Multiply(ReadOnlyValue howMuch, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue.get() < 0)
+            //if (howMuch.get() < 0)
+            //{
+            //    if (showMessageAboutNegativeValue)
+            //        Debug.Log("Value multiply failed");
+            //    value = 0;
+            //}
+            //else
+            Set(howMuch.get() * get());
+            return this;
+        }
+
+        public Value Multiply(float howMuch, bool showMessageAboutNegativeValue = true)
+        {
+            if (howMuch < 0f)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value multiply failed");
-                value = 0;
+                rawUIntValue = 0;
             }
             else
-                set(invalue.get() * this.get());
+                Set(howMuch * get());
+            return this;
         }
-        /// <summary>Keeps result inside</summary>    
-        public void multiply(float invalue, bool showMessageAboutNegativeValue = true)
+
+        /// <summary>Keeps result inside</summary>
+        public Value Divide(ReadOnlyValue divider, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue < 0f)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value multiply failed");
-                value = 0;
-            }
-            else
-                set(invalue * this.get());
+            //if (invalue.get() <= 0)
+            //{
+            //    if (showMessageAboutNegativeValue)
+            //        Debug.Log("Value divide failed");
+            //    value = 99999;
+            //}
+            //else
+            Set(rawUIntValue / (float)divider.RawUIntValue);
+            return this;
         }
-        /// <summary>
-        /// returns new value
-        /// </summary>
-        internal Value multiplyOutside(int invalue, bool showMessageAboutOperationFails = true)
+
+        internal Value Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
-            if (invalue < 0)
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Value multiply failed");
-                return new Value(0f);
-            }
-            else
-                return new Value(get() * invalue);
-        }
-        virtual public Value multiplyOutside(float invalue, bool showMessageAboutOperationFails = true)
-        {
-            if (invalue < 0f)
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("Value multiply failed");
-                return new Value(0f);
-            }
-            else
-                return new Value(get() * invalue);
-        }
-        /// <summary>
-        /// returns new value
-        /// </summary>    
-        virtual public Value multiplyOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.get() < 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value multiply failed");
-                return new Value(0);
-            }
-            else
-                return new Value(get() * invalue.get());
-        }
-        /// <summary>Keeps result inside</summary>    
-        public void divide(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.get() <= 0)
+            if (divider <= 0)
             {
                 if (showMessageAboutNegativeValue)
                     Debug.Log("Value divide failed");
-                value = 99999;
+                rawUIntValue = 99999;
             }
             else
-                set(this.value / (float)invalue.value);
-        }
-        /// <summary>Keeps result inside</summary>    
-        internal void divide(int v, bool showMessageAboutNegativeValue = true)
-        {
-            if (v <= 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value divide failed");
-                value = 99999;
-            }
-            else
-                set(this.get() / (float)v);
+                Set(get() / (float)divider);
+            return this;
         }
 
-
-        /// <summary>returns new value </summary>
-        internal Value divideOutside(int invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue == 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value divide by zero");
-                return Max999;
-            }
-            else
-                return new Value(get() / invalue);
-        }
-        /// <summary>returns new value </summary>
-        internal Value divideOutside(Value invalue, bool showMessageAboutNegativeValue = true)
-        {
-            if (invalue.get() == 0)
-            {
-                if (showMessageAboutNegativeValue)
-                    Debug.Log("Value divide by zero");
-                return Max999;
-            }
-            else
-                return new Value(get() / invalue.get());
-        }
-        /// <summary>
-        /// Bigger than 0
-        /// </summary>
-        /// <returns></returns>
-        public bool isNotZero()
-        {
-            return value > 0;
-        }
-        public bool isZero()
-        {
-            return value == 0;
-        }
-        internal Procent HowMuchHaveOf(Value need)
-        {
-            if (need.value == 0)
-                return new Procent(1f);
-            else
-                return Procent.makeProcent((int)this.value, (int)need.value);
-        }
-
-        public void send(Value another, float amount, bool showMessageAboutOperationFails = true)
-        {
-            if (this.get() >= amount)
-            {
-                this.subtract(amount);
-                another.add(amount);
-            }
-            else
-            {
-                if (showMessageAboutOperationFails) Debug.Log("No enough value to send");
-                sendAll(another);
-            }
-
-        }
-        public bool send(Value another, Value amount, bool showMessageAboutOperationFails = true)
-        {
-            if (this.get() >= amount.get())
-            {
-                subtract(amount);
-                another.add(amount);
-                return true;
-            }
-            else
-            {
-                if (showMessageAboutOperationFails)
-                    Debug.Log("No enough value to send");
-                sendAll(another);
-                return false;
-            }
-        }
-        //public bool has(Value HowMuch)
+        //public void send(Value another, float amount, bool showMessageAboutOperationFails = true)
         //{
-        //    if (HowMuch.value >= this.value)
-        //        return false;
-        //    else return true;
+        //    if (this.get() >= amount)
+        //    {
+        //        this.subtract(amount);
+        //        another.add(amount);
+        //    }
+        //    else
+        //    {
+        //        if (showMessageAboutOperationFails) Debug.Log("No enough value to send");
+        //        sendAll(another);
+        //    }
+
         //}
-        public void sendAll(Value another)
+        //public bool send(Value another, ReadOnlyValue amount, bool showMessageAboutOperationFails = true)
+        //{
+        //    if (this.get() >= amount.get())
+        //    {
+        //        subtract(amount);
+        //        another.Add(amount);
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        if (showMessageAboutOperationFails)
+        //            Debug.Log("No enough value to send");
+        //        sendAll(another);
+        //        return false;
+        //    }
+        //}
+
+        public void SendAll(Value where)
         {
-            another.add(this);
-            this.setZero();
-        }
-        // toDO test that file properly
-        public float get()
-        {
-            return (float)value / (float)precision; //TODO roundation fakup
+            where.Add(this);
+            SetZero();
         }
 
-        internal void setZero()
+        internal void SetZero()
         {
-            value = 0;
+            rawUIntValue = 0;
         }
 
-        virtual public void set(float invalue, bool showMessageAboutOperationFails = true)
+        public void Set(float newValue, bool showMessageAboutOperationFails = true)
         {
-            if (invalue >= 0)
-                value = (uint)Mathf.RoundToInt(invalue * precision);
+            if (newValue >= 0f)
+                rawUIntValue = (uint)Mathf.RoundToInt(newValue * Precision);
             else
             {
                 if (showMessageAboutOperationFails)
                     Debug.Log("Can't set negative value");
-                value = 0;
+                rawUIntValue = 0;
             }
+        }
 
-        }
-        public void set(Value invalue)
+        public void Set(ReadOnlyValue invalue)
         {
-            value = invalue.value;
+            rawUIntValue = invalue.RawUIntValue;
         }
-        override public string ToString()
-        {
-            if (value > 0)
-                return System.Convert.ToString(get());
-            else return "0";
-        }
+
         //public int Compare(Value x, Value y)
         //{
         //    if (x.value == y.value)

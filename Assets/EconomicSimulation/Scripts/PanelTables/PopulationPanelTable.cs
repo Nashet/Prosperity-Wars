@@ -1,30 +1,30 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.Linq;
+using System.Text;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
-using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
     public class PopulationPanelTable : UITableNew<PopUnit>
     {
         private SortOrder needsFulfillmentOrder, unemploymentOrder, loyaltyOrder, populationOrder, cashOrder,
-        movementOrder, provinceOrder, cultureOrder;
+        movementOrder, provinceOrder, cultureOrder, popTypeOrder, educationOrder;
 
         private void Start()
         {
+            popTypeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
             needsFulfillmentOrder = new SortOrder(this, x => x.needsFulfilled.get());
-            unemploymentOrder = new SortOrder(this, x => x.getUnemployedProcent().get());
+            unemploymentOrder = new SortOrder(this, x => x.getUnemployment().get());
             loyaltyOrder = new SortOrder(this, x => x.loyalty.get());
-            populationOrder = new SortOrder(this, x => x.getPopulation());
-            cashOrder = new SortOrder(this, x => x.getCash());
+            populationOrder = new SortOrder(this, x => x.population.Get());
+            cashOrder = new SortOrder(this, x => (float)x.Cash.Get());
 
-            
-            provinceOrder = new SortOrder(this, x => x.getProvince().getSortRank());
-            cultureOrder = new SortOrder(this, x => x.culture.getSortRank());
+            educationOrder = new SortOrder(this, x => x.Education.get());
+
+            provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
+            cultureOrder = new SortOrder(this, x => x.culture.GetNameWeight());
             movementOrder = new SortOrder(this, x =>
             {
                 if (x.getMovement() == null)
@@ -33,41 +33,51 @@ namespace Nashet.EconomicSimulation
                     return x.getMovement().GetHashCode();
             });
         }
+
         protected override IEnumerable<PopUnit> ContentSelector()
         {
-            return Game.Player.getAllPopUnits();
-            //var popsToShow = new List<PopUnit>();
-            //foreach (Province province in Game.Player.ownedProvinces)
-            //    foreach (PopUnit pop in province.allPopUnits)
-            //        popsToShow.Add(pop);
-            //return popsToShow;
+            var selectedProvince = MainCamera.populationPanel.SelectedProvince;
+            if (selectedProvince == null)
+                return Game.Player.GetAllPopulation();
+            else
+                return selectedProvince.GetAllPopulation();
         }
+        private readonly StringBuilder sb = new StringBuilder();
         protected override void AddRow(PopUnit pop, int number)
         {
             // Adding number
             //AddButton(Convert.ToString(i + offset), record);
 
             // Adding PopType
-            AddCell(pop.popType.ToString(), pop);
+            AddCell(pop.ShortName, pop);
+
             ////Adding province
-            AddCell(pop.getProvince().ToString(), pop.getProvince(), () => "Click to select this province");
-            ////Adding population
-            AddCell(System.Convert.ToString(pop.getPopulation()), pop);
+            AddCell(pop.Province.ToString(), pop.Province, () => "Click to select this province");
+
+
+            ////Adding population            
+            sb.Clear();
+            sb.Append(pop.population.Get());
+            int populationChange = pop.getAllPopulationChanges().Sum(x => x.Value);
+            if (populationChange != 0)
+                sb.Append(" (").Append(populationChange.ToString("+0;-0")).Append(")");
+                
+            AddCell(sb.ToString(), pop);
+
             ////Adding culture
             AddCell(pop.culture.ToString(), pop);
 
             ////Adding education
-            AddCell(pop.education.ToString(), pop);
+            AddCell(pop.Education.ToString(), pop);
 
             ////Adding cash
-            AddCell(pop.cash.ToString(), pop);
+            AddCell(pop.Cash.ToString(), pop);
 
             ////Adding needs fulfilling
 
-            //PopUnit ert = record;
             AddCell(pop.needsFulfilled.ToString(), pop,
-                //() => ert.consumedTotal.ToStringWithLines()                        
-                () => "Consumed:\n" + pop.getConsumed().getContainer().getString("\n")
+                //() => ert.consumedTotal.ToStringWithLines()
+                () => "Consumed:\n" + pop.getConsumed().GetString("\n")
                 );
 
             ////Adding loyalty
@@ -76,33 +86,34 @@ namespace Nashet.EconomicSimulation
             AddCell(pop.loyalty.ToString(), pop, () => accu);
 
             //Adding Unemployment
-            AddCell(pop.getUnemployedProcent().ToString(), pop);
+            AddCell(pop.getUnemployment().ToString(), pop);
 
             //Adding Movement
             if (pop.getMovement() == null)
                 AddCell("", pop);
             else
-                AddCell(pop.getMovement().getShortName(), pop, () => pop.getMovement().getName());
+                AddCell(pop.getMovement().ShortName, pop, () => pop.getMovement().ToString());
         }
+
         protected override void AddHeader()
         {
             // Adding number
             // AddButton("Number");
 
             // Adding PopType
-            AddCell("Type");
+            AddCell("Type" + popTypeOrder.getSymbol(), popTypeOrder);
 
             ////Adding province
-            AddCell("Province"+ provinceOrder.getSymbol(), provinceOrder);
+            AddCell("Province" + provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding population
             AddCell("Population" + populationOrder.getSymbol(), populationOrder);
 
             ////Adding culture
-            AddCell("Culture"+ cultureOrder.getSymbol(), cultureOrder);
+            AddCell("Culture" + cultureOrder.getSymbol(), cultureOrder);
 
             ////Adding education
-            AddCell("Education");
+            AddCell("Education" + educationOrder.getSymbol(), educationOrder);
 
             ////Adding storage
             //if (null.storage != null)

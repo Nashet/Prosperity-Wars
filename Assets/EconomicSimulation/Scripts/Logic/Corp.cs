@@ -1,29 +1,32 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using UnityEngine;
+using Nashet.Utils;
 using Nashet.ValueSpace;
+using UnityEngine;
+
 namespace Nashet.EconomicSimulation
 {
     //todo inherit from consumer?
     public class Corps // Consumer
     {
-        PopUnit origin;
-        int size;
-        readonly Procent morale = new Procent(0f);
-        readonly StorageSet consumption = new StorageSet();
+        private PopUnit origin;
+        private int size;
+        private readonly Procent morale = new Procent(0f);
+        private readonly StorageSet consumption = new StorageSet();
+
         internal void initialize(PopUnit origin, int size)
         {
             this.origin = origin;
             this.size = size;
-            this.morale.set(0f);
+            morale.Set(0f);
             consumption.setZero();
         }
+
         public Corps(PopUnit origin, int size)//:base(null,null)
         {
             initialize(origin, size);
         }
+
         public static Corps mobilize(Staff staff, PopUnit origin)
         {
             int howMuch = origin.mobilize(staff);
@@ -32,6 +35,7 @@ namespace Nashet.EconomicSimulation
             else
                 return null;
         }
+
         internal void reMobilize(Staff staff)
         {
             //int howMuchCanMobilize = getPopUnit().howMuchCanMobilize(staff, null);
@@ -41,17 +45,17 @@ namespace Nashet.EconomicSimulation
             getPopUnit().mobilize(staff);
             //if ()
         }
+
         //public Corps(Corps corps):this(corps.getPopUnit(), corps.getSize())
         //{
-
         //}
         internal void deleteData()
         {
             size = 0;
             origin = null;
-            morale.set(0);
+            morale.Set(0);
             consumption.setZero();
-            //here - delete all links on that object        
+            //here - delete all links on that object
         }
 
         public void consume(Country owner)
@@ -73,7 +77,7 @@ namespace Nashet.EconomicSimulation
                     {
                         owner.consumeFromCountryStorage(realConsumption, owner);
                         //owner.countryStorageSet.subtract(realConsumption);
-                        consumption.add(realConsumption);
+                        consumption.Add(realConsumption);
                     }
                 }
                 else
@@ -85,97 +89,106 @@ namespace Nashet.EconomicSimulation
             float moraleChange = getConsumptionProcent(Product.Food, owner).get() - morale.get();
             moraleChange = Mathf.Clamp(moraleChange, Options.ArmyMaxMoralChangePerTic * -1f, Options.ArmyMaxMoralChangePerTic);
             if (morale.get() + moraleChange < 0)
-                morale.set(0f);
+                morale.Set(0f);
             else
-                morale.add(moraleChange);
-            if (this.origin.popType == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
-                morale.set(origin.loyalty);
+                morale.Add(moraleChange);
+            if (origin.Type == PopType.Soldiers && morale.isBiggerThan(origin.loyalty))
+                morale.Set(origin.loyalty);
 
             if (morale.isBiggerThan(Procent.HundredProcent))
-                morale.set(1f);
+                morale.Set(1f);
             //if (getPopUnit().loyalty.isSmallerThan(Options.PopMinLoyaltyToMobilizeForGovernment))
-            //    getCountry().demobilize(x => x.getPopUnit() == this);
+            //    Country.demobilize(x => x.getPopUnit() == this);
         }
+
         public StorageSet getConsumption()
         {
             return consumption;
         }
+
         internal Procent getConsumptionProcent(Product product, Country country)
         {
             // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
-            return Procent.makeProcent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
+            return new Procent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
         }
+
         internal Value getConsumption(Product prod)
         {
-            return consumption.getFirstStorage(prod);
+            return consumption.GetFirstSubstituteStorage(prod);
         }
-        public StorageSet getRealNeeds(Country country)
-        {
-            Value multiplier = new Value(this.getSize() / 1000f);
 
-            List<Storage> result = new List<Storage>();
-            foreach (Storage next in origin.popType.getMilitaryNeedsPer1000())
-                if (next.getProduct().isInventedBy(country) && (next.getProduct() != Product.Cattle || country.isInvented(Invention.Domestication)))
-                {
-                    Storage nStor = new Storage(next.getProduct(), next.get());
-                    nStor.multiply(multiplier);
-                    result.Add(nStor);
-                }
-            return new StorageSet(result);
+        public List<Storage> getRealNeeds(Country country)
+        {
+            Value multiplier = new Value(getSize() / 1000f);
+
+            List<Storage> result = origin.Type.getMilitaryNeedsPer1000Men(country);
+            foreach (Storage next in result)
+                next.Multiply(multiplier);
+            return result;
         }
+
+        /// <summary>
+        /// New value
+        /// </summary>
         public Storage getRealNeeds(Country country, Product product)
         {
-            if (product.isInventedBy(country))
+            if (country.Invented(product))
             {
-                Storage found = origin.popType.getMilitaryNeedsPer1000().getFirstStorage(product);
+                Storage found = origin.Type.getMilitaryNeedsPer1000Men(country).GetFirstSubstituteStorage(product).Copy();
                 if (found.isZero())
                     return found;
                 else
-                    return new Storage(product, found.multiplyOutside(this.getSize() / 1000f));
+                    return found.Multiply(getSize() / 1000f);
             }
             else
                 return new Storage(product);
         }
+
         public Procent getMorale()
         {
             return morale;
         }
+
         //private float getStrenght()
         //{
-        //    return getType().getStrenght(); // bonus
+        //    return Type.getStrenght(); // bonus
         //}
         internal float getStrenght(Army army, float armyStrenghtModifier)
         {
-            return getSize() * origin.popType.getStrenght() * armyStrenghtModifier;
+            return getSize() * origin.Type.getStrenght() * armyStrenghtModifier;
         }
-        public PopType getType()
-        {
-            return origin.popType;
-        }
+
+        public PopType Type { get { return origin.Type; } }
+
+        //public PopType Type
+        //{
+        //    return origin.Type;
+        //}
         public int getSize()
         {
             return size;
         }
-        override public string ToString()
+
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(getSize()).Append(" ").Append(origin.ToString());
+            sb.Append(getSize()).Append(" ").Append(origin);
             return sb.ToString();
         }
 
-        internal int TakeLoss(int loss)
+        internal int TakeLoss(int loss, IWayOfLifeChange reason)
         {
             int alive = size - loss;
             if (alive > 0)
             {
                 size = alive;
-                origin.takeLoss(loss);
+                origin.takeLoss(loss, reason);
                 return loss;
             }
             else
             {
                 int wasSize = size;
-                origin.takeLoss(size);
+                origin.takeLoss(size, reason);
                 size = 0;
                 return wasSize;
             }
@@ -189,7 +202,7 @@ namespace Nashet.EconomicSimulation
         internal void add(Corps another)
         {
             size += another.getSize();
-            morale.addPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
+            morale.AddPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
         }
 
         internal void setStatisticToZero()
@@ -201,11 +214,10 @@ namespace Nashet.EconomicSimulation
     // The PooledObject class is the type that is expensive or slow to instantiate,
     // or that has limited availability, so is to be held in the object pool.
 
-
     // The Pool class is the most important class in the object pool design pattern. It controls access to the
     // pooled objects, maintaining a list of available objects and a collection of objects that have already been
     // requested from the pool and are still in use. The pool also ensures that objects that have been released
-    // are returned to a suitable state, ready for the next time they are requested. 
+    // are returned to a suitable state, ready for the next time they are requested.
     public static class CorpsPool
     {
         private static List<Corps> _available = new List<Corps>();
@@ -242,10 +254,11 @@ namespace Nashet.EconomicSimulation
                 _inUse.Remove(corps);
             }
         }
-        //public static IEnumerable<Corps> existing()      
+
+        //public static IEnumerable<Corps> existing()
         //{
         //    foreach (Corps f in _inUse)
-        //        yield return f;                      
+        //        yield return f;
         //}
     }
 }

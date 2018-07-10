@@ -1,26 +1,29 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using System.Linq;
 using System.Text;
-using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using Nashet.ValueSpace;
+using UnityEngine;
+using UnityEngine.UI;
+
 namespace Nashet.EconomicSimulation
 {
     public class PopUnitPanel : DragPanel
     {
         [SerializeField]
         private Text generaltext, luxuryNeedsText, everyDayNeedsText, lifeNeedsText, efficiencyText,
-            issues, money, caption;
+            issues, money, caption, property, populationChange;
+
         private PopUnit pop;
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.popUnitPanel = this;
             GetComponent<RectTransform>().anchoredPosition = new Vector2(600f, 53f);
             Hide();
         }
+
         public PopUnit whomShowing()
         {
             return pop;
@@ -33,143 +36,128 @@ namespace Nashet.EconomicSimulation
                 var sb = new StringBuilder();
                 caption.text = pop.ToString();
                 //sb.Append(pop);
-                sb.Append("Population: ").Append(pop.getPopulation());
-                //if (Game.devMode)
-                sb.Append("\nStorage: ").Append(pop.storage.ToString());
                 Artisans isArtisan = pop as Artisans;
+                sb.Append("Population: ").Append(pop.population.Get());
                 if (isArtisan != null)
                 {
-                    sb.Append(", input products:  ").Append(isArtisan.getInputProducts());
-                    sb.Append("\nProducing: ");
-                    if (isArtisan.getType() == null)
+                    sb.Append(", Producing: ");
+                    if (isArtisan.Type == null)
                         sb.Append("nothing");
                     else
-                        sb.Append(isArtisan.getType().basicProduction.getProduct());
+                        sb.Append(isArtisan.Type.basicProduction.Product);
                 }
-                sb.Append("\nGain goods: ").Append(pop.getGainGoodsThisTurn().ToString());
-                sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
-                makeLine(sb, pop.getRichestPromotionTarget(), pop.getPromotionSize(), "Promotion: ", pop.wantsToPromote());
-
-                if (pop.getLastEscapeSize() != 0)
-                    makeLineNew(sb, pop.getLastEscapeTarget(), pop.getLastEscapeSize());
+                //if (Game.devMode)
+                if (pop.Type == PopType.Aristocrats || pop.Type == PopType.Soldiers)
+                    sb.Append("\nGained: ").Append(pop.getGainGoodsThisTurn());
                 else
-                    sb.Append("\nNo demotions\\migrations\\immigrations");
+                    sb.Append("\nProduced: ").Append(pop.getGainGoodsThisTurn());
+                if (pop.storage.isNotZero())
+                    if (pop.Type == PopType.Aristocrats)
+                        sb.Append(", Storage: ").Append(pop.storage);
+                    else
+                        sb.Append(", Unsold: ").Append(pop.storage);
+                
+                if (isArtisan != null)
+                {
+                    sb.Append("\nInput required: ");
+                    foreach (Storage next in isArtisan.GetResurceInput() )
+                        sb.Append(next.get() * isArtisan.population.Get() / Population.PopulationMultiplier).Append(" ").Append(next.Product).Append(";");
 
-                sb.Append("\nAssimilation: ");
-                if (pop.culture != pop.getCountry().getCulture() && pop.getAssimilationSize() > 0)
-                    sb.Append(pop.getCountry().getCulture()).Append(" ").Append(pop.getAssimilationSize());
-                else
-                    sb.Append("none");
+                    sb.Append("\nStockpile:  ").Append(isArtisan.getInputProducts()).Append(", Resource availability: ").Append(isArtisan.getInputFactor());                    
+                }
+                
+                //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
+                sb.Append("\nConsumed: ").Append(pop.getConsumed());
+                sb.Append("\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
+                //sb.Append("\nAssimilation: ");
 
-                sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
-                sb.Append("\nUnemployment: ").Append(pop.getUnemployedProcent());
-                sb.Append("\nLoyalty: ").Append(pop.loyalty);
+                //if (pop.culture != pop.Country.getCulture() && pop.getAssimilationSize() > 0)
+                //    sb.Append(pop.Country.getCulture()).Append(" ").Append(pop.getAssimilationSize());
+                //else
+                //    sb.Append("none");
 
-                if (pop.loans.get() > 0f)
-                    sb.Append("\nLoan: ").Append(pop.loans.ToString());// hide it
-                if (pop.deposits.get() > 0f)
-                    sb.Append("\nDeposit: ").Append(pop.deposits.ToString());// hide it
-
-                sb.Append("\nAge: ").Append(pop.getAge());
+                //sb.Append("\nGrowth: ").Append(pop.getGrowthSize());
+                sb.Append("\n\nLoyalty: ").Append(pop.loyalty);
+                sb.Append("\nUnemployment: ").Append(pop.getUnemployment());                
+                sb.Append("\nEducation: ").Append(pop.Education);
+                sb.Append("\nCulture: ").Append(pop.culture);
+                if (!pop.isStateCulture())
+                    sb.Append(", minority");
+                               
+                                                                             //if (Game.devMode)
+                sb.Append("\n\nAge: ").Append(pop.getAge());
                 sb.Append("\nMobilized: ").Append(pop.getMobilized());
                 if (pop.getMovement() != null)
                     sb.Append("\nMember of ").Append(pop.getMovement());
-                sb.Append("\nConsumed: ").Append(pop.getConsumed());
+
+                if (pop.loans.isNotZero())
+                    sb.Append("\nLoan: ").Append(pop.loans);// hide it
+                if (pop.deposits.isNotZero())
+                    sb.Append("\nDeposit: ").Append(pop.deposits);// hide it
 
                 //if (Game.devMode)
-                //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedLastTurn())
-                //        ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(Game.market.getCost(pop.getConsumedInMarket()));
+                //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(World.market.getCost(pop.getConsumedLastTurn())
+                //        ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(World.market.getCost(pop.getConsumedInMarket()));
 
                 generaltext.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling().ToString()).Append(" fulfilled");
-                lifeNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => " Life needs wants:\n" + pop.getRealLifeNeeds().getString("\n"));
+                sb.Append("Life needs: ").Append(pop.getLifeNeedsFullfilling()).Append(" fulfilled");
+                lifeNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => " Life needs wants:\n" + pop.population.getRealLifeNeeds().getString("\n"));
                 lifeNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling().ToString()).Append(" fulfilled");
-                everyDayNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Everyday needs wants:\n" + pop.getRealEveryDayNeeds().getString("\n"));
+                sb.Append("Everyday needs: ").Append(pop.getEveryDayNeedsFullfilling()).Append(" fulfilled");
+                everyDayNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Everyday needs wants:\n" + pop.population.getRealEveryDayNeeds().getString("\n"));
                 everyDayNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling().ToString()).Append(" fulfilled");
-                luxuryNeedsText.GetComponent<ToolTipHandler>().SetDynamicString(() => "Luxury needs wants:\n" + pop.getRealLuxuryNeeds().getString("\n"));
+                sb.Append("Luxury needs: ").Append(pop.getLuxuryNeedsFullfilling()).Append(" fulfilled");
+                luxuryNeedsText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Luxury needs wants:\n" + pop.population.getRealLuxuryNeeds().getString("\n"));
                 luxuryNeedsText.text = sb.ToString();
 
                 sb.Clear();
-                sb.Append("Cash: ").Append(pop.cash.ToString());
+                sb.Append("Cash: ").Append(pop.Cash);
                 money.text = sb.ToString();
-                money.GetComponent<ToolTipHandler>().SetDynamicString(() => "Money income: " + pop.moneyIncomethisTurn
-                + "\nIncome tax: " + pop.incomeTaxPayed
-                + "\nConsumed cost: " + Game.market.getCost(pop.getConsumed()));
+                money.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Money income: " + pop.moneyIncomeThisTurn
+                + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
+                + "\nConsumed cost: " + World.market.getCost(pop.getConsumed()));
 
-                if (pop.popType.isProducer())
+                if (pop.Type.isProducer())
                 {
-                    efficiencyText.enabled = true;
+                    efficiencyText.gameObject.SetActive(true);
                     efficiencyText.text = "Efficiency: " + PopUnit.modEfficiency.getModifier(pop);
-                    efficiencyText.GetComponent<ToolTipHandler>().SetDynamicString(() => PopUnit.modEfficiency.GetDescription(pop));
+                    efficiencyText.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Efficiency: " + PopUnit.modEfficiency.GetDescription(pop));
                 }
                 else
                 {
-                    efficiencyText.enabled = false;
+                    efficiencyText.gameObject.SetActive(false);
                     //efficiencyText.GetComponent<ToolTipHandler>().SetText("");//it's disabled anyway
                 }
+                var thisInvestor = pop as Investor;
+                if (thisInvestor != null)
+                {
+                    property.gameObject.SetActive(true);
+                    var found = World.GetAllShares(thisInvestor).OrderByDescending(x => x.Value.get());
+                    property.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Owns:\n" + found.getString(", ", "\n"));
+                }
+                else
+                    property.gameObject.SetActive(false);
 
-
-                issues.GetComponent<ToolTipHandler>().SetDynamicString(
-                    delegate ()
+                issues.GetComponent<ToolTipHandler>().SetTextDynamic(
+                    delegate
                     {
-                        var items = from pair in pop.getIssues()
-                                    orderby pair.Value descending
-                                    select pair;
-                        return items.getString(" willing ", "\n");
+                        //var items = from pair in pop.getIssues()
+                        //            orderby pair.Value descending
+                        //            select pair;
+                        var items = pop.getIssues().OrderByDescending(x => x.Value);
+                        return "Issues:\n" + items.getString(" willing ", "\n");
                     }
                     );
-            }
-        }
-        private void makeLine(StringBuilder sb, IEscapeTarget target, int size, string header, bool boolCheck)
-        {
-            sb.Append("\n").Append(header);
-
-            if (boolCheck && target != null && size > 0)
-            {
-                var targetIsProvince = target as Province;
-                if (targetIsProvince == null)
-                    sb.Append(target).Append(" ").Append(size);
-                else
-                {
-                    if (pop.getCountry() == targetIsProvince.getCountry())
-                        sb.Append(targetIsProvince).Append(" ").Append(size);
-                    else// immigration
-                        sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
-
-                }
-            }
-            else
-                sb.Append("none");
-        }
-        private void makeLineNew(StringBuilder sb, IEscapeTarget target, int size)
-        {
-            // extra type conversion could be reduced by adding demotion type flag in PopUnit.LastDemotion
-            var targetIsProvince = target as Province;
-            if (targetIsProvince == null) // Assuming target is PopType
-            {
-                sb.Append("\n").Append("Demotion: ");
-                sb.Append(target).Append(" ").Append(size);
-            }
-            else // Assuming target is Province
-            {
-                if (pop.getCountry() == targetIsProvince.getCountry())
-                {
-                    sb.Append("\n").Append("Migration: ");
-                    sb.Append(targetIsProvince).Append(" ").Append(size);
-                }
-                else// immigration
-                {
-                    sb.Append("\n").Append("Immigration: ");
-                    sb.Append(targetIsProvince.getCountry()).Append(" (").Append(target).Append(") ").Append(size);
-                }
+                populationChange.text = "Population change: " + pop.getAllPopulationChanges().Sum(x => x.Value);
+                populationChange.GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                "Population change:\n" +
+                pop.getAllPopulationChanges().getString("\n", pop, "Total change: "));
             }
         }
 

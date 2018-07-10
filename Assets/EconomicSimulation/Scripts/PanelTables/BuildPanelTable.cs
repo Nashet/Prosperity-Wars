@@ -1,36 +1,31 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
-using Nashet.UnityUIUtils;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Nashet.UnityUIUtils;
+using Nashet.Utils;
 
 namespace Nashet.EconomicSimulation
 {
-
-    public class BuildPanelTable : UITableNew<FactoryType>
+    public class BuildPanelTable : UITableNew<ProductionType>
     {
-        protected override IEnumerable<FactoryType> ContentSelector()
+        protected override IEnumerable<ProductionType> ContentSelector()
         {
-            
             if (Game.selectedProvince == null)
-                return Enumerable.Empty<FactoryType>();
+                return Enumerable.Empty<ProductionType>();
             else
-                return FactoryType.getAllInventedTypes(Game.Player, x => x.canBuildNewFactory(Game.selectedProvince));
+                return ProductionType.getAllInventedFactories(Game.Player).Where(x => x.canBuildNewFactory(Game.selectedProvince, Game.Player));
         }
-        protected override void AddRow(FactoryType factoryType, int number)
+
+        protected override void AddRow(ProductionType factoryType, int number)
         {
             // Adding shownFactory type
             AddCell(factoryType.ToString(), factoryType);
 
             ////Adding cost
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (Economy.isMarket.checkIftrue(Game.Player))
-                AddCell(factoryType.getInvestmentsCost().ToString(), factoryType);
+            if (Economy.isMarket.checkIfTrue(Game.Player))
+                AddCell(factoryType.GetBuildCost().ToString(), factoryType);
             else
-                AddCell(factoryType.getBuildNeeds().ToString(), factoryType);
-
+                AddCell(factoryType.GetBuildNeeds().getString(""), factoryType);
 
             ////Adding resource needed
             //AddButton(next.resourceInput.ToString(), next);
@@ -42,7 +37,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("unknown", factoryType);
             else
-                AddCell(factoryType.getMargin().ToString(), factoryType);
+                AddCell(factoryType.GetPossibleMargin(Game.selectedProvince).ToString(), factoryType);
         }
 
         protected override void AddHeader()

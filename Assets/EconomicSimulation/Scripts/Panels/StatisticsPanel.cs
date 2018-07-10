@@ -1,32 +1,23 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using Nashet.UnityUIUtils;
+﻿using Nashet.UnityUIUtils;
+using UnityEngine;
+
 namespace Nashet.EconomicSimulation
 {
     public class StatisticsPanel : DragPanel
     {
         [SerializeField]
         private StatisticsPanelTable table;
+
         // Use this for initialization
-        void Start()
+        private void Start()
         {
             MainCamera.StatisticPanel = this;
-            GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -100f);
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(20f, -460f);
             //show(false);
             Canvas.ForceUpdateCanvases();
             Hide();
-        }        
-       
-        //public void onShowAllClick()
-        //{
-        //    //hide();
-        //    SetAllPopsToShow();
-        //    //showAll = true;
-        //    showingProvince = null;
-        //    show(true);
-        //}
+        }
+
         public override void Refresh()
         {
             table.Refresh();

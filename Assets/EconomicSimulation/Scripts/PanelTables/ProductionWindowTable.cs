@@ -1,8 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections.Generic;
-using System;
 using Nashet.UnityUIUtils;
 
 namespace Nashet.EconomicSimulation
@@ -12,42 +9,47 @@ namespace Nashet.EconomicSimulation
         private SortOrder typeOrder, provinceOrder, productionOrder, resourcesOrder, workForceOrder, profitOrder,
             profitabilityOrder, salaryOrder, unemploymentOrder;
 
+        private Func<IEnumerable<Factory>> content;
+
         private void Start()
         {
-            typeOrder = new SortOrder(this, x => x.getType().getSortRank());
-            provinceOrder = new SortOrder(this, x => x.getProvince().getSortRank());
+            typeOrder = new SortOrder(this, x => x.Type.GetNameWeight());
+            provinceOrder = new SortOrder(this, x => x.Province.GetNameWeight());
             productionOrder = new SortOrder(this, x => x.getGainGoodsThisTurn().get());
             resourcesOrder = new SortOrder(this, x => x.getInputFactor().get());
             workForceOrder = new SortOrder(this, x => x.getWorkForce());
-            profitOrder = new SortOrder(this, x => x.getProfit());
-            profitabilityOrder = new SortOrder(this, x => x.getMargin().get());
-            salaryOrder = new SortOrder(this, x => x.getSalary());
-            unemploymentOrder = new SortOrder(this, x => x.getProvince().getUnemployedWorkers());
+            profitOrder = new SortOrder(this, x => (float)x.getProfit());
+            profitabilityOrder = new SortOrder(this, x => x.GetMargin().get());
+            salaryOrder = new SortOrder(this, x => (float)x.getSalary().Get());
+            unemploymentOrder = new SortOrder(this, x => x.Province.getUnemployedWorkers());
         }
+
         protected override IEnumerable<Factory> ContentSelector()
         {
-            return Game.Player.getAllFactories();
-            //var factoriesToShow = new List<Factory>();
-            //foreach (Province province in Game.Player.ownedProvinces)
-            //    foreach (Factory factory in province.allFactories)
-            //        factoriesToShow.Add(factory);
-            //return factoriesToShow;
+            if (content == null)
+            {
+                var selectedProvince = MainCamera.productionWindow.SelectedProvince;
+                if (selectedProvince == null)
+                    return Game.Player.getAllFactories();
+                else
+                    return selectedProvince.getAllFactories();
+            }
+            else
+                return content();
         }
-        //public override void onShowAllClick()
-        //{
-        //    base.onShowAllClick();
 
-        //    RemoveFilter(filterSelectedProvince);
-        //    //table.ClearAllFiltres();
-        //    table.Refresh();
-        //}
+        public void SetContent(Func<IEnumerable<Factory>> content)
+        {
+            this.content = content;
+        }
+
         protected override void AddRow(Factory factory, int number)
         {
-            // Adding shownFactory name 
-            AddCell(factory.getType().name + " L" + factory.getLevel(), factory);
+            // Adding shownFactory name
+            AddCell(factory.ShortName, factory);
 
-            // Adding province 
-            AddCell(factory.getProvince().ToString(), factory.getProvince());
+            // Adding province
+            AddCell(factory.Province.ToString(), factory.Province, () => "Click to select this province");
 
             ////Adding production
             AddCell(factory.getGainGoodsThisTurn().ToString(), factory);
@@ -59,55 +61,56 @@ namespace Nashet.EconomicSimulation
             AddCell(factory.getWorkForce().ToString(), factory);
 
             ////Adding profit
-            if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("none", factory);
             else
-                AddCell(factory.getProfit().ToString("F3"), factory);
+                AddCell(factory.getProfit().ToString("F3") + " Gold", factory);
 
             ////Adding margin
             if (factory.isUpgrading())
-                AddCell("Upgrading", factory);
+                AddCell("Upgrading", factory, () => "Margin (tax included) is " + factory.GetMargin());
             else
             {
                 if (factory.isBuilding())
-                    AddCell("Building", factory);
+                    AddCell("Building", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                 else
                 {
-                    if (!factory.isWorking())
-                        AddCell("Closed", factory);
+                    if (factory.IsClosed)
+                        AddCell("Closed", factory, () => "Proposed margin (tax included) is " + factory.GetMargin());
                     else
                     {
-                        if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+                        if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                             AddCell("none", factory);
                         else
-                            AddCell(factory.getMargin().ToString(), factory);
+                            AddCell(factory.GetMargin().ToString(), factory, () => "Tax included");
                     }
                 }
             }
 
             ////Adding salary
             //if (Game.player.isInvented(InventionType.capitalism))
-            if (factory.getCountry().economy.getValue() == Economy.PlannedEconomy)
+            if (factory.Country.economy.getValue() == Economy.PlannedEconomy)
                 AddCell("centralized", factory);
             else
             {
-                if (factory.getCountry().economy.getValue() == Economy.NaturalEconomy)
-                    AddCell(factory.getSalary().ToString() + " food", factory);
+                if (factory.Country.economy.getValue() == Economy.NaturalEconomy)
+                    AddCell(factory.getSalary() + " food", factory);
                 else
-                    AddCell(factory.getSalary().ToString("F3") + " coins", factory);
+                    AddCell(factory.getSalary().ToString(), factory);
             }
 
             //Adding unemployment
-            AddCell(factory.getProvince().getUnemployedWorkers().ToString("N0"), factory);
+            AddCell(factory.Province.getUnemployedWorkers().ToString("N0"), factory);
         }
+
         protected override void AddHeader()
         {
             if (typeOrder == null)
                 Start();
-            // Adding product name 
+            // Adding product name
             AddCell("Type" + typeOrder.getSymbol(), typeOrder);
 
-            // Adding province 
+            // Adding province
             AddCell("Province" + provinceOrder.getSymbol(), provinceOrder);
 
             ////Adding production

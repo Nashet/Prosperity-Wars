@@ -1,14 +1,16 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
+
 namespace Nashet.UnityUIUtils
 {
     // A very simple object pooling class
     public class SimpleObjectPool : MonoBehaviour
     {
-        ///<summary>The prefab that this object pool returns instances of</summary>        
+        ///<summary>The prefab that this object pool returns instances of</summary>
         [SerializeField] // Don't make it static since there could be > 1 pools
         private GameObject pooledPrefab;
+
         // collection of currently inactive instances of the prefab
         private readonly Stack<GameObject> inactiveInstances = new Stack<GameObject>();
 
@@ -53,7 +55,7 @@ namespace Nashet.UnityUIUtils
             // otherwise, create a new instance
             else
             {
-                spawnedGameObject = (GameObject)GameObject.Instantiate(pooledPrefab);
+                spawnedGameObject = Instantiate(pooledPrefab);
 
                 // add the PooledObject component to the prefab so we know it came from this pool
                 PooledObject pooledObject = spawnedGameObject.AddComponent<PooledObject>();
@@ -79,7 +81,7 @@ namespace Nashet.UnityUIUtils
                 ToolTipHandler s = toReturn.GetComponent<ToolTipHandler>();
                 // s.GetComponent<ToolTipHandler>().tooltip = "";
                 s.SetText("");
-                s.SetDynamicString(null);
+                s.SetTextDynamic(null);
                 //if (s.tip != null)
                 //    s.tip.HideTooltip();
                 //s.tip = null;
@@ -99,10 +101,11 @@ namespace Nashet.UnityUIUtils
                 Destroy(toReturn);
             }
         }
+
         // a component that simply identifies the pool that a GameObject came from
         public class PooledObject : MonoBehaviour
         {
             public SimpleObjectPool pool;
         }
-    }    
+    }
 }

@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+	"com.unity.incrementalcompiler": "0.0.40"
+	},
+"registry": "https://staging-packages.unity.com"
+}

@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
-using System;
 
 namespace Nashet.UnityUIUtils
 {
@@ -10,14 +7,16 @@ namespace Nashet.UnityUIUtils
     {
         void Refresh();
     }
+
     public interface IHideable
     {
         void Hide();
-        void Show();        
+
+        void Show();
     }
-   
-    abstract public class Hideable : MonoBehaviour, IHideable
-    { 
+
+    public abstract class Hideable : MonoBehaviour, IHideable
+    {
         // declare delegate (type)
         public delegate void HideEventHandler(Hideable eventData);
 
@@ -29,30 +28,33 @@ namespace Nashet.UnityUIUtils
             gameObject.SetActive(false);
             var @event = Hidden;
             if (@event != null)// check for subscribers
-                @event(this); //fires event for all subscribers 
+                @event(this); //fires event for all subscribers
         }
-       
-        virtual public void Show()
+
+        public virtual void Show()
         {
             gameObject.SetActive(true);
         }
     }
+
     /// <summary>
     /// Represent UI object that can be refreshed and hidden
     /// </summary>
-    abstract public class Window : Hideable, IRefreshable
+    public abstract class Window : Hideable, IRefreshable
     {
         public abstract void Refresh();
-        override public void Show()
+
+        public override void Show()
         {
             base.Show();
             Refresh();
         }
     }
+
     /// <summary>
     /// Represents movable and hideable window
     /// </summary>
-    abstract public class DragPanel : Window, IPointerDownHandler, IDragHandler
+    public abstract class DragPanel : Window, IPointerDownHandler, IDragHandler
     {
         private Vector2 pointerOffset;
         private RectTransform canvasRectTransform;
@@ -61,7 +63,7 @@ namespace Nashet.UnityUIUtils
         public void Awake()
         {
             Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas != null)
+            //if (canvas != null)
             {
                 canvasRectTransform = canvas.transform as RectTransform;
                 panelRectTransform = transform as RectTransform;
@@ -74,25 +76,40 @@ namespace Nashet.UnityUIUtils
             RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRectTransform, data.position, data.pressEventCamera, out pointerOffset);
         }
 
-        virtual public void OnDrag(PointerEventData data)
+        public virtual void OnDrag(PointerEventData data)
         {
             if (panelRectTransform == null)
                 return;
 
-            //Vector2 pointerPostion = ClampToWindow(data);
-            //Vector2 ert;
             Vector2 localPointerPosition;
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                //canvasRectTransform, pointerPostion, data.pressEventCamera, out localPointerPosition
                 canvasRectTransform, data.position, data.pressEventCamera, out localPointerPosition
             ))
             {
-                //ert = localPointerPosition - pointerOffset;
-                //panelRectTransform.localPosition = ert;
-                GetComponent<RectTransform>().localPosition = localPointerPosition - pointerOffset;
-                //GetComponent<RectTransform>().localPosition
-            }
+                var rect = GetComponent<RectTransform>();
+                rect.localPosition = localPointerPosition - pointerOffset;
 
+                if (rect.position.x < 0)
+                {
+                    rect.position = new Vector3(0, rect.position.y, rect.position.z);
+                }
+                var bottomPanelRect = EconomicSimulation.MainCamera.bottomPanel.GetComponent<RectTransform>();
+                if (rect.position.y < bottomPanelRect.rect.height - 5)
+                {
+                    rect.position = new Vector3(rect.position.x, bottomPanelRect.rect.height - 5, rect.position.z);
+                }
+
+                if (rect.position.x > Screen.width - rect.sizeDelta.x)
+                {
+                    rect.position = new Vector3(Screen.width - rect.sizeDelta.x, rect.position.y, rect.position.z);
+                }
+
+                var topPanelRect = EconomicSimulation.MainCamera.topPanel.GetComponent<RectTransform>();
+                if (rect.position.y > Screen.height - topPanelRect.rect.height - rect.sizeDelta.y + 5)
+                {
+                    rect.position = new Vector3(rect.position.x, Screen.height - topPanelRect.rect.height - rect.sizeDelta.y + 5, rect.position.z);
+                }
+            }
         }
 
         private Vector2 ClampToWindow(PointerEventData data)
@@ -107,7 +124,6 @@ namespace Nashet.UnityUIUtils
 
             Vector2 newPointerPosition = new Vector2(clampedX, clampedY);
             return newPointerPosition;
-
         }
 
         public override void Hide()
@@ -115,10 +131,13 @@ namespace Nashet.UnityUIUtils
             panelRectTransform.SetAsFirstSibling();
             base.Hide();
         }
-        override public void Show()
+
+        public override void Show()
         {
             base.Show();
             panelRectTransform.SetAsLastSibling();
+            //var rect = GetComponent<RectTransform>();
+            //rect.transform.position = new Vector3((Screen.width - rect.sizeDelta.x) / 2, (Screen.height - rect.sizeDelta.y) / 2, rect.position.z);
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Nashet.EconomicSimulation;
 using Nashet.Utils;
+using UnityEngine;
+
 namespace Nashet.MarchingSquares
 {
     [SelectionBase]
@@ -19,16 +20,15 @@ namespace Nashet.MarchingSquares
         private MeshStructure mesh;
         private Dictionary<Province, MeshStructure> bordersMeshes;
 
-
         private Voxel dummyX, dummyY, dummyT;
-        private readonly Game game;
+        //private readonly Game game;
 
-        public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, Game game, List<Province> provinces
-            )
+        //public VoxelGrid(int width, int height, float size, MyTexture texture, List<Province> blockedProvinces, IEnumerable<Province> provinces)
+        public VoxelGrid(int width, int height, float size, MyTexture texture, IEnumerable<Province> provinces)
         {
             this.width = width;
             this.height = height;
-            this.game = game;
+            //this.game = game;
             // this.resolution = resolution;
             gridSize = size;
             voxelSize = size / width;
@@ -47,7 +47,7 @@ namespace Nashet.MarchingSquares
                 {
                     //curColor = texture.GetPixel(x, y);
                     //if (!blockedProvinces.Contains(curColor))
-                    CreateVoxel(i, x, y, provinces.Find(province => province.getColorID() == texture.GetPixel(x, y)));
+                    CreateVoxel(i, x, y, provinces.FirstOrDefault(t => t.getColorID() == texture.GetPixel(x, y)));
                     i++;
                 }
             }
@@ -71,26 +71,24 @@ namespace Nashet.MarchingSquares
             //            CreateVoxel(i, x, y, Color.black);
             //    }
             //}
-
         }
+
         public MeshStructure getMesh(Province analysingProvince)
         {
             mesh = new MeshStructure();
             bordersMeshes = new Dictionary<Province, MeshStructure>();
-            game.updateStatus("Triangulation .." + analysingProvince);
+            //game.updateStatus("Triangulation .." + analysingProvince);
             Triangulate(analysingProvince);
             return mesh;
         }
+
         private void CreateVoxel(int i, int x, int y, Province state)
         {
             voxels[i] = new Voxel(x, y, voxelSize, state);
         }
 
-
-
         private void Triangulate(Province analysingProvince)
         {
-
             //mesh.Clear();
 
             if (xNeighbor != null)
@@ -164,6 +162,7 @@ namespace Nashet.MarchingSquares
                 TriangulateCell(voxels[voxels.Length - 1], dummyX, dummyY, dummyT, analysingProvince);
             }
         }
+
         private bool isBorderCell(Voxel a, Voxel b, Voxel c, Voxel d)
         {
             return !(a.getState() == b.getState() && a.getState() == c.getState() && a.getState() == d.getState());
@@ -184,9 +183,9 @@ namespace Nashet.MarchingSquares
                     bordersMeshes.Add(province, border);
                 }
                 border.AddBorderQuad2(a, b);
-
             }
         }
+
         private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Province analyzingState)
         {
             //bool isBorder = isBorderCell(a, b, c, d);
@@ -211,6 +210,7 @@ namespace Nashet.MarchingSquares
             {
                 case 0:
                     return;
+
                 case 1:
                     mesh.AddTriangle(a.getPosition(), a.getYEdgePosition(), a.getXEdgePosition());
 
@@ -229,6 +229,7 @@ namespace Nashet.MarchingSquares
                         findBorderMeshAndAdd(d.getState(), a.getYEdgePosition(), a.getXEdgePosition());
 
                     break;
+
                 case 2:
                     mesh.AddTriangle(b.getPosition(), a.getXEdgePosition(), b.getYEdgePosition());
                     if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
@@ -245,6 +246,7 @@ namespace Nashet.MarchingSquares
                         findBorderMeshAndAdd(c.getState(), a.getXEdgePosition(), b.getYEdgePosition());
 
                     break;
+
                 case 3:
                     mesh.AddQuad(a.getPosition(), a.getYEdgePosition(), b.getYEdgePosition(), b.getPosition());
                     if (is3ColorCornerDown(a, b, c, d) && b.getState() == analyzingState)
@@ -257,6 +259,7 @@ namespace Nashet.MarchingSquares
                         findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), b.getYEdgePosition());
 
                     break;
+
                 case 4:
                     mesh.AddTriangle(c.getPosition(), c.getXEdgePosition(), a.getYEdgePosition());
                     if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
@@ -269,12 +272,12 @@ namespace Nashet.MarchingSquares
                         //AddQuad(mesh, a.getYEdgePosition(), c.getXEdgePosition(), b.getYEdgePosition(), a.getXEdgePosition());
                         findBorderMeshAndAdd(a.getState(), centre, a.getYEdgePosition());
                         findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), centre);
-
                     }
                     else
                         findBorderMeshAndAdd(b.getState(), c.getXEdgePosition(), a.getYEdgePosition());
 
                     break;
+
                 case 5:
                     mesh.AddQuad(a.getPosition(), c.getPosition(), c.getXEdgePosition(), a.getXEdgePosition());
 
@@ -287,6 +290,7 @@ namespace Nashet.MarchingSquares
                     else
                         findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), a.getXEdgePosition());
                     break;
+
                 case 6:
                     mesh.AddTriangle(b.getPosition(), a.getXEdgePosition(), b.getYEdgePosition());
                     mesh.AddTriangle(c.getPosition(), c.getXEdgePosition(), a.getYEdgePosition());
@@ -295,11 +299,13 @@ namespace Nashet.MarchingSquares
                     findBorderMeshAndAdd(d.getState(), a.getXEdgePosition(), a.getYEdgePosition());
                     findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), b.getYEdgePosition());
                     break;
+
                 case 7:
                     mesh.AddPentagon(a.getPosition(), c.getPosition(), c.getXEdgePosition(), b.getYEdgePosition(), b.getPosition());
                     findBorderMeshAndAdd(d.getState(), c.getXEdgePosition(), b.getYEdgePosition());
 
                     break;
+
                 case 8:
                     mesh.AddTriangle(d.getPosition(), b.getYEdgePosition(), c.getXEdgePosition());
                     if (a.getState() != b.getState() && a.getState() != c.getState() && a.getState() != d.getState()
@@ -318,6 +324,7 @@ namespace Nashet.MarchingSquares
                         findBorderMeshAndAdd(a.getState(), b.getYEdgePosition(), c.getXEdgePosition());
 
                     break;
+
                 case 9:
                     mesh.AddTriangle(a.getPosition(), a.getYEdgePosition(), a.getXEdgePosition());
                     mesh.AddTriangle(d.getPosition(), b.getYEdgePosition(), c.getXEdgePosition());
@@ -326,6 +333,7 @@ namespace Nashet.MarchingSquares
                     findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), a.getXEdgePosition());
                     findBorderMeshAndAdd(c.getState(), b.getYEdgePosition(), c.getXEdgePosition());
                     break;
+
                 case 10:
                     mesh.AddQuad(a.getXEdgePosition(), c.getXEdgePosition(), d.getPosition(), b.getPosition());
                     if (is3ColorCornerRight(a, b, c, d) && d.getState() == analyzingState)
@@ -337,11 +345,13 @@ namespace Nashet.MarchingSquares
                     else
                         findBorderMeshAndAdd(c.getState(), a.getXEdgePosition(), c.getXEdgePosition());
                     break;
+
                 case 11:
                     mesh.AddPentagon(b.getPosition(), a.getPosition(), a.getYEdgePosition(), c.getXEdgePosition(), d.getPosition());
                     findBorderMeshAndAdd(c.getState(), a.getYEdgePosition(), c.getXEdgePosition());
 
                     break;
+
                 case 12:
                     mesh.AddQuad(a.getYEdgePosition(), c.getPosition(), d.getPosition(), b.getYEdgePosition());
                     if (is3ColorCornerUp(a, b, c, d) && c.getState() == analyzingState)
@@ -354,20 +364,24 @@ namespace Nashet.MarchingSquares
                         findBorderMeshAndAdd(a.getState(), b.getYEdgePosition(), a.getYEdgePosition());
 
                     break;
+
                 case 13:
                     mesh.AddPentagon(c.getPosition(), d.getPosition(), b.getYEdgePosition(), a.getXEdgePosition(), a.getPosition());
                     findBorderMeshAndAdd(b.getState(), b.getYEdgePosition(), a.getXEdgePosition());
 
                     break;
+
                 case 14:
                     mesh.AddPentagon(d.getPosition(), b.getPosition(), a.getXEdgePosition(), a.getYEdgePosition(), c.getPosition());
                     findBorderMeshAndAdd(a.getState(), a.getXEdgePosition(), a.getYEdgePosition());
 
                     break;
+
                 case 15:
                     mesh.AddQuad(a.getPosition(), c.getPosition(), d.getPosition(), b.getPosition());
                     //don't add borders here, it's inside mesh
                     break;
+
                 default:
                     Debug.Log("Unexpected triangulation data");
                     break;
@@ -384,25 +398,28 @@ namespace Nashet.MarchingSquares
 
             //if (is3ColorCornerRight(a, b, c, d) && d.getColor() == analyzingColor)
             //    AddTriangle(a.getYEdgePosition(), c.getXEdgePosition(), a.getXEdgePosition());
-
-
         }
+
         private static bool is3ColorCornerDown(Voxel a, Voxel b, Voxel c, Voxel d)
         {
             return a.getState() == b.getState() && a.getState() != c.getState() && b.getState() != d.getState() && c.getState() != d.getState();
         }
+
         private static bool is3ColorCornerUp(Voxel a, Voxel b, Voxel c, Voxel d)
         {
             return c.getState() == d.getState() && c.getState() != a.getState() && d.getState() != b.getState() && a.getState() != b.getState();
         }
+
         private static bool is3ColorCornerLeft(Voxel a, Voxel b, Voxel c, Voxel d)
         {
             return c.getState() == a.getState() && c.getState() != d.getState() && a.getState() != b.getState() && d.getState() != b.getState();
         }
+
         private static bool is3ColorCornerRight(Voxel a, Voxel b, Voxel c, Voxel d)
         {
             return d.getState() == b.getState() && d.getState() != c.getState() && b.getState() != a.getState() && c.getState() != a.getState();
         }
+
         internal Dictionary<Province, MeshStructure> getBorders()
         {
             return bordersMeshes;
