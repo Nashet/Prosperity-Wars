@@ -1187,7 +1187,7 @@ namespace Nashet.EconomicSimulation
                     {
                         var howMuchToSell = howMuchHave.Copy().subtract(maxLimit);
                         if (howMuchToSell.isNotZero())
-                            sell(howMuchToSell);
+                            SendToMarket(howMuchToSell);
                     }
                     else
                     {
@@ -1257,7 +1257,7 @@ namespace Nashet.EconomicSimulation
                     if (toSell.isBiggerThan(Value.Zero))   // have more than desiredMaximum
                     {
                         if (toSell.isNotZero())
-                            sell(toSell);//go sell
+                            SendToMarket(toSell);//go sell
                     }
                 }
             }

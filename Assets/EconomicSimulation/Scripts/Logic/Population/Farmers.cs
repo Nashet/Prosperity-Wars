@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
                 //sentToMarket.set(gainGoodsThisTurn);
                 //World.market.sentToMarket.add(gainGoodsThisTurn);
                 if (getGainGoodsThisTurn().isNotZero())
-                    sell(getGainGoodsThisTurn());
+                    SendToMarket(getGainGoodsThisTurn());
             }
             else
             {

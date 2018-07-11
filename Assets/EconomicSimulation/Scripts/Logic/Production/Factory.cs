@@ -1023,7 +1023,7 @@ namespace Nashet.EconomicSimulation
                     if (Economy.isMarket.checkIfTrue(Country))
                     {
                         if (getGainGoodsThisTurn().isNotZero())
-                            sell(getGainGoodsThisTurn());
+                            SendToMarket(getGainGoodsThisTurn());
                     }
                     else if (Country.economy.getValue() == Economy.NaturalEconomy)
                     {
@@ -1034,7 +1034,7 @@ namespace Nashet.EconomicSimulation
                         //else // assuming owner is aristocrat/capitalist
                         {
                             if (getGainGoodsThisTurn().isNotZero())
-                                sell(getGainGoodsThisTurn());
+                                SendToMarket(getGainGoodsThisTurn());
                         }
                     }
                     else if (Country.economy.getValue() == Economy.PlannedEconomy)

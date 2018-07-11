@@ -105,7 +105,7 @@ namespace Nashet.EconomicSimulation
                 MoneyView price = market.getCost(sale.Product);
                 MoneyView cost;
 
-                if (market.sentToMarket.has(sale))
+                if (market.receivedGoods.has(sale))
                 {
                     cost = market.getCost(sale);
 
@@ -171,7 +171,7 @@ namespace Nashet.EconomicSimulation
             this.Pay(market, cost);
             consumed.Add(what);
             consumedInMarket.Add(what);
-            market.sentToMarket.Subtract(what);
+            market.receivedGoods.Subtract(what);
             var isSP = this as SimpleProduction;
             if (isSP != null)
                 isSP.getInputProductsReserve().Add(what);

@@ -6,13 +6,19 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    internal interface ICanSell
+    public interface ICanSell
     {
-        Storage getSentToMarket(Product product);
+        void SendToMarket(Storage what);
 
-        void sell(Storage what);
 
-        void getMoneyForSoldProduct();
+        IEnumerable<Market> AllTradeMarkets();
+
+        IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals();
+
+        /// <summary>
+        /// Assumes that market key exists for sure
+        /// </summary>        
+        Storage HowMuchSentToMarket(Market market);
     }
 
     /// <summary>
@@ -117,54 +123,16 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Do checks outside
         /// </summary>
-        public void sell(Storage what)
+        public void SendToMarket(Storage what)
         {
             sentToMarket.Add(what);
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
-            World.market.sentToMarket.Add(what);
+            var market = Market.GetReachestMarket(what);
+            market.ReceiveProducts(what);
         }
 
-        public void getMoneyForSoldProduct()
-        {
-            foreach (var sent in sentToMarket)
-                if (sent.isNotZero())
-                {
-                    Value DSB = new Value(World.market.getDemandSupplyBalance(sent.Product, false));
-                    if (DSB.get() == Options.MarketInfiniteDSB)
-                        DSB.SetZero();// real DSB is unknown
-                    else
-                    if (DSB.get() > Options.MarketEqualityDSB)
-                        DSB.Set(Options.MarketEqualityDSB);
-                    decimal realSold = (decimal)sent.get();
-                    realSold *= (decimal)DSB.get();
-                    if (realSold > 0m)
-                    {
-                        MoneyView cost = World.market.getCost(sent.Product).Copy().Multiply(realSold); //World.market.getCost(realSold);
-                        //soldByGovernment.addMy(realSold.Product, realSold);
-                        soldByGovernment[sent.Product].Set((float)realSold);
-                        //returning back unsold product
-                        //if (sent.isBiggerThan(realSold))
-                        //{
-                        //    var unSold = sent.subtractOutside(realSold);
-                        //    countryStorageSet.add(unSold);
-                        //}
-
-                        if (World.market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
-                        {
-                            World.market.Pay(this, cost);
-                            //World.market.sentToMarket.subtract(realSold);
-                        }
-                        else
-                        {                            
-                            //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
-                                Debug.Log("Failed market (country) - lacks " + World.market.HowMuchLacksMoneyIncludingDeposits(cost)
-                                    + " for " + realSold + " " + sent.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
-                            World.market.PayAllAvailableMoney(this);
-                        }
-                    }
-                }
-        }
+        
 
         internal void producedTotalAdd(Storage produced)
         {
@@ -214,11 +182,31 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Procent getWorldProductionShare(Product product)
         {
-            var worldProduction = World.market.getProductionTotal(product, true);
+            Storage worldProduction = new Storage(product);
+            foreach (var item in World.getAllExistingCountries())
+            {
+                worldProduction.Add(item.market.getProductionTotal(product, true));
+            }
+            
             if (worldProduction.isZero())
                 return Procent.ZeroProcent.Copy();
             else
                 return new Procent(getProducedTotal(product), worldProduction);
+        }
+
+        public IEnumerable<Market> AllTradeMarkets()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Storage HowMuchSentToMarket(Market market)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

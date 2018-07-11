@@ -86,11 +86,7 @@ namespace Nashet.EconomicSimulation
                     return country.Bank;
             }
         }
-
-        //public void setBank(Bank bank)
-        //{
-        //    this.bank = bank;
-        //}
+        
         /// <summary> Includes deposits. New value </summary>
         public MoneyView getMoneyAvailable()
         {
@@ -100,40 +96,7 @@ namespace Nashet.EconomicSimulation
                 return cash.Copy().Add(Bank.HowMuchDepositCanReturn(this));//that's new Value
         }
 
-        //new internal bool canPay(Value howMuchPay)
-        //{
-        //    return getMoneyTotal().isBiggerOrEqual(howMuchPay);
-        //}
-        ///// <summary>
-        ///// depreciated
-        ///// </summary>
-        //private bool canPay(float howMuchPay)
-        //{
-        //    throw new DontUseThatMethod();
-        //}
-        //internal CountryWallet getCountryWallet()
-        //{
-        //    if (this is Country)
-        //        return wallet as CountryWallet;
-        //    else
-        //        return null;
-        //}
-        //todo should be Value
-        //public float getLoans()
-        //{
-        //    if (loans.get() > 0f)
-        //        return loans.get();
-        //    else
-        //        return 0f;
-        //}
-        //public float getDeposits()
-        //{
-        //    if (loans.get() > 0f)
-        //        return 0f;
-        //    else
-        //        return loans.get() * -1f;
-        //}
-        //***************
+
         /// <summary>
         /// Ignores if need is available on market or not
         /// </summary>
@@ -142,11 +105,11 @@ namespace Nashet.EconomicSimulation
             Storage realNeed;
             if (need.isAbstractProduct())
                 //realNeed = new Storage(World.market.getCheapestSubstitute(need).Product, need);
-                realNeed = World.market.GetRandomCheapestSubstitute(need);
+                realNeed = Country.market.GetRandomCheapestSubstitute(need);
             else
                 realNeed = need;
 
-            return CanPay(World.market.getCost(realNeed));
+            return CanPay(Country.market.getCost(realNeed));
             //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
         }
 
@@ -160,7 +123,7 @@ namespace Nashet.EconomicSimulation
             }
             return true;
         }
-                
+
         internal bool CanAfford(IEnumerable<Storage> need)
         {
             foreach (Storage stor in need)
@@ -173,11 +136,11 @@ namespace Nashet.EconomicSimulation
         /// <summary> Including deposits </summary>
         internal Storage HowMuchCanAfford(Storage need)
         {
-            MoneyView cost = World.market.getCost(need);
+            MoneyView cost = Country.market.getCost(need);
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(World.market.getCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Country.market.getCost(need.Product).Get()).Get());
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>

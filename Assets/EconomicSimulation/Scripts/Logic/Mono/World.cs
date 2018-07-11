@@ -40,9 +40,6 @@ namespace Nashet.EconomicSimulation
 
         static World()
         {
-            //Product.init(); // to avoid crash based on initialization order
-            market = new Market();
-
             var culture = new Culture("Ancient tribes", Color.yellow);
             allCultures.Add(culture);
             UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
@@ -585,7 +582,7 @@ namespace Nashet.EconomicSimulation
             // big AFTER all and get money for sold circle
             foreach (Country country in World.getAllExistingCountries())
             {
-                country.getMoneyForSoldProduct();
+                Market.GiveMoneyForSoldProduct(country);                
                 foreach (Province province in country.AllProvinces())//Province.allProvinces)
                 {
                     foreach (Factory factory in province.getAllFactories())
@@ -597,7 +594,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            factory.getMoneyForSoldProduct();
+                            Market.GiveMoneyForSoldProduct(factory);
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here
                             factory.payDividend(); // also pays taxes inside
@@ -616,7 +613,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.Type == PopType.Workers)
                             pop.LearnByWork();
                         if (pop.canSellProducts())
-                            pop.getMoneyForSoldProduct();
+                            Market.GiveMoneyForSoldProduct(pop);
                         pop.takeUnemploymentSubsidies();
                         if (country.Invented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                         // don't need salary with PE

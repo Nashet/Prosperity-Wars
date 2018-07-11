@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Nashet.EconomicSimulation
 {
     /// <summary>
-    /// Represent World market, currently exists only in 1 instance (World.market)
+    /// Represent markets. Each country can have one
     /// </summary>
     public class Market : Agent//: PrimitiveStorageSet
     {
@@ -31,13 +31,15 @@ namespace Nashet.EconomicSimulation
         private readonly StorageSet bought = new StorageSet();
 
         internal PricePool priceHistory;
-        internal StorageSet sentToMarket = new StorageSet();
+        private StorageSet receivedGoods = new StorageSet();
+
+        //private Dictionary<Producer, Storage> sentToMarket;
 
         public Market() : base(null)
         {
         }
 
-        
+
 
         internal void initialize()
         {
@@ -60,7 +62,7 @@ namespace Nashet.EconomicSimulation
             }
             return cost;
         }
-        
+
         /// <summary>
         /// returns new Value
         /// </summary>
@@ -307,9 +309,9 @@ namespace Nashet.EconomicSimulation
 
         }
 
-        
 
-       
+
+
 
         /// <summary>
         /// Buying PrimitiveStorageSet, subsidizations allowed
@@ -388,7 +390,7 @@ namespace Nashet.EconomicSimulation
         internal Storage HowMuchAvailable(Storage need)
         {
             //float BuyingAmountAvailable = 0;
-            return sentToMarket.getBiggestStorage(need.Product);
+            return receivedGoods.getBiggestStorage(need.Product);
 
             //BuyingAmountAvailable = need.get() / DSB;
 
@@ -502,12 +504,70 @@ namespace Nashet.EconomicSimulation
         public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
-            sentToMarket.setZero();
+            receivedGoods.setZero();
         }
 
         public override string ToString()
         {
             return "Global market";
+        }
+        /// <summary>
+        /// Brings money for sold product
+        /// </summary>
+        public static void GiveMoneyForSoldProduct(ICanSell seller)
+        {
+            foreach (var deal in seller.AllSellDeals())
+            {
+                // Key is a market, Value is a Storage
+                var market = deal.Key;
+                var sentToMarket = deal.Value;
+                if (sentToMarket.get() > 0f)
+                {
+                    Value DSB = new Value(market.getDemandSupplyBalance(sentToMarket.Product, false));
+                    if (DSB.get() == Options.MarketInfiniteDSB)
+                        DSB.SetZero(); // real DSB is unknown
+                    else if (DSB.get() > Options.MarketEqualityDSB)
+                        DSB.Set(Options.MarketEqualityDSB);
+
+                    decimal realSold = (decimal)sentToMarket.get();
+                    realSold *= (decimal)DSB.get();
+
+                    if (realSold > 0m)
+                    {
+                        MoneyView cost = market.getCost(sentToMarket.Product).Copy().Multiply(realSold);
+
+                        // adding unsold product
+                        // assuming gainGoodsThisTurn & realSold have same product
+                        //if (storage.isExactlySameProduct(gainGoodsThisTurn))
+                        //    storage.add(gainGoodsThisTurn);
+                        //else
+                        //    storage = new Storage(gainGoodsThisTurn);
+                        //storage.Subtract((float)realSold);
+
+                        if (market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
+                        {
+                            market.Pay(seller, cost);
+                        }
+                        else
+                        {
+                            //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                            Debug.Log("Failed market - lacks " + market.HowMuchLacksMoneyIncludingDeposits(cost)
+                                    + " for " + realSold + " " + sentToMarket.Product + " " + seller + " trade: " + cost); // money in market ended... Only first lucky get money
+                            market.PayAllAvailableMoney(seller);
+
+                        }
+                    }
+                }
+            }
+        }
+        public void ReceiveProducts(Storage what)
+        {
+            receivedGoods.Add(what);
+        }
+
+        public static Market GetReachestMarket(Storage need)
+        {
+            return World.AllMarkets().MaxBy(x => x.getCost(need.Product).Get());
         }
     }
 }
