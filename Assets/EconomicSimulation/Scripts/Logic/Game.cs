@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
 
         public void InitializeNonUnityData()
         {
-            Country.market.initialize();
+            World.AllMarkets().PerformAction(x => x.Initialize());            
 
             World.Create(mapTexture, !readMapFormFile);
             //Game.updateStatus("Making grid..");

@@ -299,15 +299,25 @@ namespace Nashet.EconomicSimulation
             return this == Farmers || this == Tribesmen || this == Artisans;
         }
 
+       
         /// <summary>
         /// Makes sure that pops consume product in cheap-first order
         /// </summary>
-        internal static void sortNeeds()
+        internal static void sortNeeds(Market market )
         {
+            
             foreach (var item in allPopTypes)
             {
-                item.everyDayNeeds.Sort(Storage.CostOrder);
-                item.luxuryNeeds.Sort(Storage.CostOrder);
+               
+                item.everyDayNeeds.Sort(delegate (Storage x, Storage y)
+                {
+                    return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
+                });
+
+                item.luxuryNeeds.Sort(delegate (Storage x, Storage y)
+                {
+                    return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
+                });
             }
         }
 

@@ -793,7 +793,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal MoneyView getMinSalary()
         {
-            var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage();
+            var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage(this.market);
             if (res.isZero())
                 return Options.FactoryMinPossibleSallary;
             else
@@ -1053,7 +1053,7 @@ namespace Nashet.EconomicSimulation
                             ).MaxByRandom(x => x.Value.get());
                         if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.isBiggerThan(Options.minMarginToInvest.Copy().Multiply(Options.InvestorEmploymentSafety)))
                         {
-                            MoneyView investmentCost = project.Key.GetInvestmentCost();
+                            MoneyView investmentCost = project.Key.GetInvestmentCost(market);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))

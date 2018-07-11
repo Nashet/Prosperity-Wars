@@ -244,11 +244,11 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public MoneyView GetInvestmentCost()
+        public MoneyView GetInvestmentCost(Market market)
         {
             if (IsOpen)
             {
-                var res = Country.market.getCost(getUpgradeNeeds()).Copy();
+                var res = market.getCost(getUpgradeNeeds()).Copy();
                 res.Add(Options.factoryMoneyReservePerLevel);
                 return res;
             }

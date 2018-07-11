@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
         //private Storage sentToMarket;
         //public Storage SentToMarket { get { return sentToMarket; } }
-        private Dictionary<Market, Storage> sentToMarket;
+        private Dictionary<Market, Storage> sentToMarket = new Dictionary<Market, Storage>();
 
 
         private readonly Province province;

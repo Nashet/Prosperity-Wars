@@ -180,16 +180,17 @@ namespace Nashet.EconomicSimulation
                     }
                     else
                     {
-                        var cost = GetBuildCost();
+                        var cost = GetBuildCost(agent.Country.market);
                         return agent.CanPay(cost);
                     }
                 },
                 delegate
                 {
                     var sb = new StringBuilder();
-                    var cost = GetBuildCost();
-                    sb.Append("Have ").Append(cost).Append(" coins");
-                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") have ").Append(GetBuildNeeds().getString(", "));
+                    // var cost = GetBuildCost(agent.Country.market);
+                    //sb.Append("Has ").Append(cost).Append(" coins");
+                    sb.Append("Has enough coins");
+                    sb.Append(" or (with ").Append(Economy.PlannedEconomy).Append(") has ").Append(GetBuildNeeds().getString(", "));
                     return sb.ToString();
                 }, true);
 
@@ -248,9 +249,9 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///Returns new value
         /// </summary>
-        public MoneyView GetBuildCost()
+        public MoneyView GetBuildCost(Market market)
         {
-            Money result = Country.market.getCost(GetBuildNeeds()).Copy();
+            Money result = market.getCost(GetBuildNeeds()).Copy();
             result.Add(Options.factoryMoneyReservePerLevel);
             return result;
         }
@@ -375,20 +376,20 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// For artisans. Not including salary
         /// </summary>
-        internal MoneyView getPossibleProfit()
+        internal MoneyView getPossibleProfit(Market market)
         {
-            if (Country.market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
+            if (market.getDemandSupplyBalance(basicProduction.Product, false) == Options.MarketZeroDSB)
                 return new MoneyView(0); // no demand for result product
-            MoneyView income = Country.market.getCost(basicProduction);
+            MoneyView income = market.getCost(basicProduction);
 
             if (hasInput())
             {
                 // change to minimal hire limits
                 foreach (Storage inputProduct in resourceInput)
-                    if (!Country.market.isAvailable(inputProduct.Product))
+                    if (!market.isAvailable(inputProduct.Product))
                         return new MoneyView(0);// inputs are unavailable
 
-                return income.Copy().Subtract(Country.market.getCost(resourceInput), false);
+                return income.Copy().Subtract(market.getCost(resourceInput), false);
             }
             return income;
         }
@@ -401,7 +402,7 @@ namespace Nashet.EconomicSimulation
             var profit = getPossibleProfit(province).Copy();
             var taxes = profit.Copy().Multiply(province.Country.taxationForRich.getTypedValue().tax);
             profit.Subtract(taxes);
-            return new Procent(profit, GetBuildCost());
+            return new Procent(profit, GetBuildCost(province.Country.market));
         }
 
         /// <summary>

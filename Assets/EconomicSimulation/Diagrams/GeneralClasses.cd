@@ -17,7 +17,7 @@
   <Class Name="Nashet.EconomicSimulation.Aristocrats" Collapsed="true">
     <Position X="28.5" Y="9" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAgAQAAAAAAAQAABAgAAAAAARAEAAAAAAAAAAQAAA=</HashCode>
+      <HashCode>AAAAgAQAAAAAAAQAABAgAAAAAABAEAAgAAAAAAAQAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Population\Aristocrats.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -137,7 +137,7 @@
   <Class Name="Nashet.EconomicSimulation.Product" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="52.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gQ1AggCSAMABECIVUAgAMAKUFxyACCOmsiAqkgYBEQk=</HashCode>
+      <HashCode>gQlAggCSAMABECIVUAgAMAKUFxyACCOmsiAqkgYBEQk=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Production\Product.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -301,7 +301,7 @@
   <Class Name="Nashet.EconomicSimulation.Market" Collapsed="true">
     <Position X="19.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AhIBgBEAAoCIABCEQCGKAAABSQACFSAAgAEAQEQAACE=</HashCode>
+      <HashCode>AhIBgBEAAoCIARCEQCCKAAABSQACFSAAgAEAQEQAACE=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Market.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -326,13 +326,6 @@
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Production\Ownership.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Nashet.EconomicSimulation.ISeller" Collapsed="true">
-    <Position X="49" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAACAAAAAAAAAAAAAAEAAAAAEAAAAAAAAAAABAAAA=</HashCode>
-      <FileName>Assets\EconomicSimulation\Scripts\Logic\MultiSeller.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Interface Name="Nashet.EconomicSimulation.IHasCountry" Collapsed="true">
     <Position X="52.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
@@ -351,6 +344,13 @@
     <Position X="52.25" Y="7" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAEAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Nashet.EconomicSimulation.ISeller" Collapsed="true">
+    <Position X="49" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAEAAAAAEAAAAAAAAAAABAAAA=</HashCode>
       <FileName>Assets\EconomicSimulation\Scripts\Logic\Interfaces.cs</FileName>
     </TypeIdentifier>
   </Interface>

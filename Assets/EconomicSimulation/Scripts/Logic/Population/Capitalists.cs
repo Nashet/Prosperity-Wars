@@ -102,7 +102,7 @@ namespace Nashet.EconomicSimulation
 
                 if (!project.Equals(default(KeyValuePair<IInvestable, Procent>)) && project.Value.Copy().Multiply(getBusinessSecurity(project.Key)).isBiggerThan(Options.minMarginToInvest))
                 {
-                    MoneyView investmentCost = project.Key.GetInvestmentCost();
+                    MoneyView investmentCost = project.Key.GetInvestmentCost(project.Key.Country.market);
                     if (!CanPay(investmentCost))
                         Bank.GiveLackingMoneyInCredit(this, investmentCost);
                     if (CanPay(investmentCost))

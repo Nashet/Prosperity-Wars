@@ -84,7 +84,7 @@ namespace Nashet.EconomicSimulation
 
                 // take loan if don't have enough money to buy inputs
                 if (Country.Invented(Invention.Banking) && !artisansProduction.isAllInputProductsCollected()
-                    && artisansProduction.Type.getPossibleProfit().isNotZero())
+                    && artisansProduction.Type.getPossibleProfit(Country.market).isNotZero())
                 {
                     var needs = artisansProduction.getRealAllNeeds();
                     if (!artisansProduction.CanAfford(needs))
@@ -149,7 +149,7 @@ namespace Nashet.EconomicSimulation
         private void changeProductionType()
         {
             var newProductionType = ProductionType.getAllInventedArtisanships(Country).
-                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit().isNotZero()).MaxBy(x => x.getPossibleProfit().Get());
+                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit(Country.market).isNotZero()).MaxBy(x => x.getPossibleProfit(Country.market).Get());
 
             if (newProductionType != null)
                 if (artisansProduction == null

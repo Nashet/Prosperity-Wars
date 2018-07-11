@@ -19,14 +19,13 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal void dealWithMarket()
+        internal void SentExtraGoodsToMarket()
         {
             if (storage.get() > Options.aristocratsFoodReserv)
             {
                 Storage howMuchSend = new Storage(storage.Product, storage.get() - Options.aristocratsFoodReserv);
-                storage.send(getSentToMarket(), howMuchSend);
-                //sentToMarket.set(howMuchSend);
-                Country.market.sentToMarket.Add(howMuchSend);
+
+                SendToMarket(howMuchSend);                
             }
         }
 
@@ -145,7 +144,7 @@ namespace Nashet.EconomicSimulation
                         var factory = project as Factory;// existing one
                         if (factory != null)
                         {
-                            MoneyView investmentCost = factory.GetInvestmentCost();
+                            MoneyView investmentCost = factory.GetInvestmentCost(Country.market);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))

@@ -43,7 +43,7 @@ namespace Nashet.EconomicSimulation
             if (product != null)
             {
                 generaltext.text = product
-                    + "\n price: " + Game.Player.market.GetCost(product).Get() + " supply: " + Game.Player.market.getMarketSupply(product, true).get() 
+                    + "\n price: " + Game.Player.market.getCost(product).Get() + " supply: " + Game.Player.market.getMarketSupply(product, true).get() 
                     + " consumption: " + Game.Player.market.getBouthOnMarket(product, true).get();
 
                 Color32[] resetColorArray = graphTexture.GetPixels32();

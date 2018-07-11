@@ -327,9 +327,9 @@ namespace Nashet.ValueSpace
         }
 
         /// <summary>Gets cheapest storage of that product type. Returns NEW empty storage if search is failed</summary>
-        internal Storage getCheapestStorage(Product what)
+        internal Storage getCheapestStorage(Product what, Market market)
         {
-            return getStorage(what, CollectionExtensions.MinBy, x => (float)Country.market.getCost(x.Product).Get());
+            return getStorage(what, CollectionExtensions.MinBy, x => (float)market.getCost(x.Product).Get());
         }
 
         /// <summary> Finds substitute for abstract need and returns new storage with product converted to non-abstract product
@@ -357,16 +357,16 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// Returns NULL if failed
         /// </summary>
-        public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct)
+        public Storage ConvertToRandomCheapestExistingSubstitute(Storage abstractProduct, Market market)
         {
             var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x =>
             {
                 if (!x.isTradable()) // skip uninvented
                     return false;
                 // take available products
-                return Country.market.sentToMarket.has(new Storage(x, abstractProduct));
+                return market.HasAvailable(new Storage(x, abstractProduct));
             })
-            .FirstSameElements(x => (float)Country.market.getCost(x).Get()).ToList().Random();
+            .FirstSameElements(x => (float)market.getCost(x).Get()).ToList().Random();
             if (randomCheapestProduct == null)
                 return null;
             else
@@ -387,10 +387,10 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// Returns NULL if failed
         /// </summary>
-        public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct)
+        public Storage ConvertToRandomCheapestStorageProduct(Storage abstractProduct, Market market)
         {
             var randomCheapestProduct = abstractProduct.Product.getSubstitutes().Where(x => x.isTradable())
-            .FirstSameElements(x => (float)Country.market.getCost(x).Get()).ToList().Random();
+            .FirstSameElements(x => (float)market.getCost(x).Get()).ToList().Random();
 
             if (randomCheapestProduct == null)
                 return null;

@@ -8,7 +8,7 @@ namespace Nashet.EconomicSimulation
         private readonly Province province;
 
         public NewFactoryProject(Province province, ProductionType type)
-        {            
+        {
             Type = type;
             this.province = province;
         }
@@ -28,9 +28,9 @@ namespace Nashet.EconomicSimulation
             return Type.CanProduce(product);
         }
 
-        public MoneyView GetInvestmentCost()
+        public MoneyView GetInvestmentCost(Market market)
         {
-            return Type.GetBuildCost();
+            return Type.GetBuildCost(market);
         }
 
         public Procent GetMargin()

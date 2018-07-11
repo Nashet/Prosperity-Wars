@@ -547,7 +547,7 @@ namespace Nashet.EconomicSimulation
                 Storage howMuch = new Storage(fromWho.Product, taxTotalToPay.get() * (float)aristocrat.population.Get() / (float)aristoctratAmount);
                 fromWho.send(aristocrat.storage, howMuch);
                 aristocrat.addProduct(howMuch);
-                aristocrat.dealWithMarket();
+                aristocrat.SentExtraGoodsToMarket();
                 //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);
             }
         }

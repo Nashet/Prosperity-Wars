@@ -489,8 +489,8 @@ namespace Nashet.EconomicSimulation
                     }
                 }
             }
-            PopType.sortNeeds();
-            Product.sortSubstitutes();
+            PopType.sortNeeds( World.getAllExistingCountries().Random().market);
+            Product.sortSubstitutes(World.getAllExistingCountries().Random().market);
         }
 
         internal static void simulate()
@@ -505,11 +505,7 @@ namespace Nashet.EconomicSimulation
             AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
-            EventHandler handler = DayPassed;
-            if (handler != null)
-            {
-                handler(World.Get, EventArgs.Empty);
-            }
+            DayPassed?.Invoke(World.Get, EventArgs.Empty);
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
             //calcBattles();

@@ -41,7 +41,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal void initialize()
+        internal void Initialize()
         {
             priceHistory = new PricePool();
         }
@@ -85,12 +85,12 @@ namespace Nashet.EconomicSimulation
                 return new MoneyView((decimal)need.get());
             }
             else
-                return GetCost(need.Product).Copy().Multiply((decimal)need.get());
+                return getCost(need.Product).Copy().Multiply((decimal)need.get());
         }
         /// <summary>
         /// new value. Cost in that particular market. Cheapest if there are several products
         /// </summary>
-        internal MoneyView GetCost(Product product)
+        internal MoneyView getCost(Product product)
         {
             if (product == Product.Gold)
             {
@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
                 return new MoneyView(1);// cost of 1 gold
             }
             else
-                return new MoneyView((decimal)prices.getCheapestStorage(product).get());
+                return new MoneyView((decimal)prices.getCheapestStorage(product, this).get());
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal Storage GetRandomCheapestSubstitute(Storage need)
         {
-            return prices.ConvertToRandomCheapestStorageProduct(need);
+            return prices.ConvertToRandomCheapestStorageProduct(need, this);
         }
 
         //todo change it to 1 run by every products, not run for every product
@@ -509,7 +509,7 @@ namespace Nashet.EconomicSimulation
 
                     if (realSold > 0m)
                     {
-                        MoneyView cost = market.GetCost(sentToMarket.Product).Copy().Multiply(realSold);
+                        MoneyView cost = market.getCost(sentToMarket.Product).Copy().Multiply(realSold);
 
                         // adding unsold product
                         // assuming gainGoodsThisTurn & realSold have same product
@@ -547,11 +547,11 @@ namespace Nashet.EconomicSimulation
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().MaxBy(x => x.GetCost(need.Product).Get());
+            return World.AllMarkets().MaxBy(x => x.getCost(need.Product).Get());
         }
         public static Market GetCheapestMarket(Storage need)
         {
-            return World.AllMarkets().MinBy(x => x.GetCost(need.Product).Get());
+            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
 
         }
     }

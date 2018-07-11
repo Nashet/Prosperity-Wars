@@ -247,24 +247,32 @@ namespace Nashet.EconomicSimulation
             return allProducts.Where(x => x.isResource()).Random();
         }
 
-        public static void sortSubstitutes()
+        public static void sortSubstitutes(Market market)
         {
             foreach (var item in getAll().Where(x => x.isAbstract()))
             //if (item.isTradable())
             // Abstract are always invented and not gold
             {
-                item.substitutes.Sort(CostOrder);
+                item.substitutes.Sort(delegate (Product x, Product y)
+                {
+                    //if (x == null && y == null) return 0;
+                    //else 
+                    //if (x.PartName == null) return -1;
+                    //else if (y.PartName == null) return 1;
+                    //else
+                    return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
+                });
             }
         }
 
-        public static int CostOrder(Product x, Product y)
-        {
-            //eats less memory
-            float sumX = (float)Country.market.getCost(x).Get();
-            float sumY = (float)Country.market.getCost(y).Get();
-            return sumX.CompareTo(sumY);
-            //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
-        }
+        //public static int CostOrder(Product x, Product y)//, Market market
+        //{
+        //    //eats less memory
+        //    float sumX = (float)Country.market.getCost(x).Get();
+        //    float sumY = (float)Country.market.getCost(y).Get();
+        //    return sumX.CompareTo(sumY);
+        //    //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
+        //}
 
         /// <summary>
         /// Isn't Gold & Invested by anyone

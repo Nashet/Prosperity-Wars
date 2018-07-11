@@ -6,17 +6,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public interface ISeller
-    {
-        void SendToMarket(Storage what);
 
-
-        IEnumerable<Market> AllTradeMarkets();
-
-        IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals();
-            
-        Storage HowMuchSentToMarket(Market market, Product product);
-    }
 
     /// <summary>
     /// Had to be class representing ability to sell more than 1 product
@@ -25,7 +15,7 @@ namespace Nashet.EconomicSimulation
     public abstract class MultiSeller : Staff, IStatisticable, ISeller
     {
         public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
-        private readonly StorageSet sentToMarket = new StorageSet();
+        private List<KeyValuePair<Market, Storage>> sentToMarket = new List<KeyValuePair<Market, Storage>>();
 
         private readonly Dictionary<Product, Storage> sellIfMoreLimits = new Dictionary<Product, Storage>();
         private readonly Dictionary<Product, Storage> buyIfLessLimits = new Dictionary<Product, Storage>();
@@ -93,43 +83,44 @@ namespace Nashet.EconomicSimulation
         public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
-            sentToMarket.setZero();
+            sentToMarket = new List<KeyValuePair<Market, Storage>>();// .Clear;
             foreach (var item in producedTotal)
                 item.Value.Set(ReadOnlyValue.Zero);
             foreach (var item in soldByGovernment)
                 item.Value.Set(Value.Zero);
         }
 
-        public Storage getSentToMarket(Product product)
-        {
-            return sentToMarket.GetFirstSubstituteStorage(product);
-        }
+        //public Storage getSentToMarket(Product product)
+        //{
+        //    return sentToMarket.GetFirstSubstituteStorage(product);
+        //}
 
         /// <summary> Assuming product is abstract product</summary>
-        public Storage getSentToMarketIncludingSubstituts(Product product)
-        {
-            var res = new Value(0f);
-            foreach (var item in product.getSubstitutes())
-                if (item.isTradable())
-                {
-                    res.Add(sentToMarket.GetFirstSubstituteStorage(item));
-                }
-            return new Storage(product, res);
-        }
+        //public Storage getSentToMarketIncludingSubstituts(Product product)
+        //{
+        //    var res = new Value(0f);
+        //    foreach (var item in product.getSubstitutes())
+        //        if (item.isTradable())
+        //        {
+        //            res.Add(sentToMarket.GetFirstSubstituteStorage(item));
+        //        }
+        //    return new Storage(product, res);
+        //}
 
         /// <summary>
         /// Do checks outside
         /// </summary>
         public void SendToMarket(Storage what)
         {
-            sentToMarket.Add(what);
+            var market = Market.GetReachestMarket(what);
+            sentToMarket.Add(new KeyValuePair<Market, Storage>(market, what));
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
-            var market = Market.GetReachestMarket(what);
+
             market.ReceiveProducts(what);
         }
 
-        
+
 
         internal void producedTotalAdd(Storage produced)
         {
@@ -184,7 +175,7 @@ namespace Nashet.EconomicSimulation
             {
                 worldProduction.Add(item.market.getProductionTotal(product, true));
             }
-            
+
             if (worldProduction.isZero())
                 return Procent.ZeroProcent.Copy();
             else
@@ -198,12 +189,22 @@ namespace Nashet.EconomicSimulation
 
         public IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals()
         {
-            throw new System.NotImplementedException();
+            foreach (var item in sentToMarket)
+            {
+                yield return item;
+            }
         }
 
         public Storage HowMuchSentToMarket(Market market, Product product)
         {
-            throw new System.NotImplementedException();
+            var pair = sentToMarket.Where(x => x.Key == market && x.Value.Product == product).FirstOrDefault();
+
+            if (pair.Value != null)
+            {
+                return pair.Value;
+            }
+            else
+                return new Storage(product);// empty storage
         }
     }
 }

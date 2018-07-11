@@ -140,7 +140,7 @@ namespace Nashet.EconomicSimulation
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Country.market.GetCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Country.market.getCost(need.Product).Get()).Get());
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>

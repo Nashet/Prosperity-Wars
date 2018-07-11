@@ -889,44 +889,44 @@ namespace Nashet.EconomicSimulation
             /// Calculates wage basing on consumption cost for 1000 workers
             /// Returns new value
             /// </summary>
-            internal MoneyView getWage()
+            internal MoneyView getWage(Market market)
             {
                 if (this == None)
                     return Money.Zero;
                 else if (this == Scanty)
                 {
-                    MoneyView result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    MoneyView result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result;
                 }
                 else if (this == Minimal)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.08m);
                     //Value luxuryCost = Country.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
@@ -939,7 +939,7 @@ namespace Nashet.EconomicSimulation
 
             public override string ToString()
             {
-                return base.ToString() + " (" + getWage() + ")";
+                return base.ToString() + " (" + "getwage back" + ")";//getWage()
             }
 
             protected override Procent howIsItGoodForPop(PopUnit pop)
@@ -1085,44 +1085,44 @@ namespace Nashet.EconomicSimulation
             /// <summary>
             /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
             /// </summary>
-            internal MoneyView getSubsidiesRate()
+            internal MoneyView getSubsidiesRate(Market market)
             {
                 if (this == None)
                     return MoneyView.Zero;
                 else if (this == Scanty)
                 {
-                    MoneyView result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
+                    MoneyView result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men());
                     //result.multipleInside(0.5f);
                     return result;
                 }
                 else if (this == Minimal)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.02m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Trinket)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.04m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Middle)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.06m);
                     result.Add(everyDayCost);
                     return result;
                 }
                 else if (this == Big)
                 {
-                    Money result = Country.market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
-                    Money everyDayCost = Country.market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
+                    Money result = market.getCost(PopType.Workers.getLifeNeedsPer1000Men()).Copy();
+                    Money everyDayCost = market.getCost(PopType.Workers.getEveryDayNeedsPer1000Men()).Copy();
                     everyDayCost.Multiply(0.08m);
                     //Value luxuryCost = Country.market.getCost(PopType.workers.luxuryNeedsPer1000);
                     result.Add(everyDayCost);
@@ -1131,14 +1131,14 @@ namespace Nashet.EconomicSimulation
                 }
                 else
                 {
-                    Debug.Log("Unkown reform");
+                    Debug.Log("Unknown reform");
                     return MoneyView.Zero;
                 }
             }
 
             public override string ToString()
             {
-                return base.ToString() + " (" + getSubsidiesRate() + ")";
+                return base.ToString() + " (" + "get back getSubsidiesRate()" + ")";//getSubsidiesRate()
             }
 
             protected override Procent howIsItGoodForPop(PopUnit pop)

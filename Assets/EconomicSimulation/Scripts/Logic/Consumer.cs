@@ -88,7 +88,7 @@ namespace Nashet.EconomicSimulation
                 Storage sale;
                 if (need.Product.isAbstract())
                 {
-                    sale = market.prices.ConvertToRandomCheapestExistingSubstitute(need);
+                    sale = market.prices.ConvertToRandomCheapestExistingSubstitute(need, Country.market);
                     if (sale == null)//no substitution available on market
                         return new Storage(need.Product);
                     else if (sale.isZero())
@@ -98,7 +98,7 @@ namespace Nashet.EconomicSimulation
                     sale = need;
 
                 Storage howMuchCanConsume;
-                MoneyView price = Country.market.GetCost(sale.Product);
+                MoneyView price = Country.market.getCost(sale.Product);
                 MoneyView cost;
 
                 if (market.HasAvailable(sale))

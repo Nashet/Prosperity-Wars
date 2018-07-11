@@ -1070,7 +1070,7 @@ namespace Nashet.EconomicSimulation
                 var unemployment = getUnemployment();
                 if (unemployment.isNotZero() && reform != UnemploymentSubsidies.None)
                 {
-                    var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate();
+                    var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate(Country.market);
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000).Multiply(unemployment);
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (Country.CanPay(subsidy))

@@ -374,7 +374,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Cost of standard share
         /// </summary>
-        public MoneyView GetInvestmentCost()
+        public MoneyView GetInvestmentCost(Market market =null)
         {
             return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);
         }
