@@ -575,11 +575,11 @@ namespace Nashet.EconomicSimulation
                 //Money res = new Money(0m);
                 //foreach (var product in Product.getAll())
 
-                //    res.Add(World.market.getCost(World.market.getMarketSupply(product, true)).Copy().Multiply((decimal)World.market.getDemandSupplyBalance(product, false))
+                //    res.Add(Country.market.getCost(Country.market.getMarketSupply(product, true)).Copy().Multiply((decimal)Country.market.getDemandSupplyBalance(product, false))
                 //        );
-                //if (!World.market.moneyIncomeThisTurn.IsEqual(res))
+                //if (!Country.market.moneyIncomeThisTurn.IsEqual(res))
                 //{
-                //    Debug.Log("Market income: " + World.market.moneyIncomeThisTurn + " total: " + World.market.Cash);
+                //    Debug.Log("Market income: " + Country.market.moneyIncomeThisTurn + " total: " + Country.market.Cash);
                 //    Debug.Log("Should pay: " + res);
                 //}
             }

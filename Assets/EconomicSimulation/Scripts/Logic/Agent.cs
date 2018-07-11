@@ -104,12 +104,12 @@ namespace Nashet.EconomicSimulation
         {
             Storage realNeed;
             if (need.isAbstractProduct())
-                //realNeed = new Storage(World.market.getCheapestSubstitute(need).Product, need);
+                //realNeed = new Storage(Country.market.getCheapestSubstitute(need).Product, need);
                 realNeed = Country.market.GetRandomCheapestSubstitute(need);
             else
                 realNeed = need;
 
-            return CanPay(Market.getCost(realNeed));
+            return CanPay(Country.market.getCost(realNeed));
             //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
         }
 
@@ -136,17 +136,17 @@ namespace Nashet.EconomicSimulation
         /// <summary> Including deposits </summary>
         internal Storage HowMuchCanAfford(Storage need)
         {
-            MoneyView cost = Market.getCost(need);
+            MoneyView cost = Country.market.getCost(need);
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Market.getCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Country.market.GetCost(need.Product).Get()).Get());
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
         //{
-        //    return new Value(World.market.getCost(need).get() - this.cash.get());
+        //    return new Value(Country.market.getCost(need).get() - this.cash.get());
         //}
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(float need)
@@ -178,7 +178,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
         //internal Value HowMuchCanNotAfford(Storage need)
         //{
-        //    return new Value(World.market.getCost(need) - this.cash.get());
+        //    return new Value(Country.market.getCost(need) - this.cash.get());
         //}
 
         //private float get()

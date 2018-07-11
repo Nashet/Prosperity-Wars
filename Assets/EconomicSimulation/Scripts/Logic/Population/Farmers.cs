@@ -34,7 +34,7 @@ namespace Nashet.EconomicSimulation
             if (Economy.isMarket.checkIfTrue(Country))
             {
                 //sentToMarket.set(gainGoodsThisTurn);
-                //World.market.sentToMarket.add(gainGoodsThisTurn);
+                //Country.market.sentToMarket.add(gainGoodsThisTurn);
                 if (getGainGoodsThisTurn().isNotZero())
                     SendToMarket(getGainGoodsThisTurn());
             }

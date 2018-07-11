@@ -54,10 +54,11 @@ namespace Nashet.EconomicSimulation
         public override void consumeNeeds()
         {
             List<Storage> shoppingList = getHowMuchInputProductsReservesWants();
-            //World.market.SellList(this, new StorageSet(shoppingList), null);
+            //Country.market.SellList(this, new StorageSet(shoppingList), null);
             foreach (Storage item in shoppingList)
                 if (item.isNotZero())
-                    World.market.Sell(this, item, null);
+                    //SendToMarket(item);
+                    Buy(item, null);
         }
     }
 }

@@ -157,7 +157,7 @@ namespace Nashet.EconomicSimulation
             var res = new Money(0m);
             foreach (var item in soldByGovernment)
             {
-                res.Add(Market.getCost(new Storage(item.Key, item.Value)));
+                res.Add(Game.Player.market.getCost(new Storage(item.Key, item.Value)));
             }
             return res;
         }

@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
             storage.subtract(what);
             market.ReceiveProducts(what);
             //if (Game.logMarket)
-            //    Debug.Log(this + " sent to market " + what + " costing " + World.market.getCost(what));
+            //    Debug.Log(this + " sent to market " + what + " costing " + Country.market.getCost(what));
         }
 
         /// <summary> Do checks outside</summary>

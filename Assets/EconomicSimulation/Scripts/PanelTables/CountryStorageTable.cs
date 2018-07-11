@@ -87,7 +87,7 @@ namespace Nashet.EconomicSimulation
                 ////Adding Sold
                 //// finding actually sold from sentToMarket
                 //var str = Game.Player.getSentToMarket(product);
-                //var DSB = World.market.getDemandSupplyBalance(product);
+                //var DSB = Country.market.getDemandSupplyBalance(product);
                 //if (DSB.GetHashCode() == Options.MarketInfiniteDSB.GetHashCode())
                 //    str.setZero();
                 //else

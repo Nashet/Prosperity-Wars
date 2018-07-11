@@ -89,7 +89,7 @@ namespace Nashet.EconomicSimulation
                     var needs = artisansProduction.getRealAllNeeds();
                     if (!artisansProduction.CanAfford(needs))
                     {
-                        var loanSize = Market.getCost(needs); // takes little more than really need, could be fixed
+                        var loanSize = Country.market.getCost(needs); // takes little more than really need, could be fixed
                         Bank.GiveCredit(this, loanSize);
                         PayWithoutRecord(artisansProduction, Cash);
                     }

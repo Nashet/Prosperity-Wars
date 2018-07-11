@@ -96,8 +96,8 @@ namespace Nashet.EconomicSimulation
                     sb.Append("\nDeposit: ").Append(pop.deposits);// hide it
 
                 //if (Game.devMode)
-                //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(World.market.getCost(pop.getConsumedLastTurn())
-                //        ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(World.market.getCost(pop.getConsumedInMarket()));
+                //    sb.Append("\nConsumedLT: ").Append(pop.getConsumedLastTurn()).Append(" cost: ").Append(Country.market.getCost(pop.getConsumedLastTurn())
+                //        ).Append("\nConsumedIM: ").Append(pop.getConsumedInMarket()).Append(" cost: ").Append(Country.market.getCost(pop.getConsumedInMarket()));
 
                 generaltext.text = sb.ToString();
 
@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
                 money.text = sb.ToString();
                 money.GetComponent<ToolTipHandler>().SetTextDynamic(() => "Money income: " + pop.moneyIncomeThisTurn
                 + "\nIncome tax (inc. foreign jurisdictions): " + pop.incomeTaxPayed
-                + "\nConsumed cost: " + World.market.getCost(pop.getConsumed()));
+                + "\nConsumed cost: " + Game.Player.market.getCost(pop.getConsumed()));
 
                 if (pop.Type.isProducer())
                 {

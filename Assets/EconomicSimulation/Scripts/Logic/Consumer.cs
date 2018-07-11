@@ -98,12 +98,12 @@ namespace Nashet.EconomicSimulation
                     sale = need;
 
                 Storage howMuchCanConsume;
-                MoneyView price = Market.getCost(sale.Product);
+                MoneyView price = Country.market.GetCost(sale.Product);
                 MoneyView cost;
 
                 if (market.HasAvailable(sale))
                 {
-                    cost = Market.getCost(sale);
+                    cost = Country.market.getCost(sale);
 
                     if (this.CanPay(cost))
                     {
@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
                         else
                         {
 
-                            this.Buy_utility(market, Market.getCost(howMuchCanConsume), howMuchCanConsume);
+                            this.Buy_utility(market, Country.market.getCost(howMuchCanConsume), howMuchCanConsume);
                             return howMuchCanConsume;
                         }
                     }
@@ -131,7 +131,7 @@ namespace Nashet.EconomicSimulation
                     Storage howMuchAvailable = new Storage(market.HowMuchAvailable(sale));
                     if (howMuchAvailable.isNotZero())
                     {
-                        cost = Market.getCost(howMuchAvailable);
+                        cost = Country.market.getCost(howMuchAvailable);
                         if (this.CanPay(cost))
                         {
                             this.Buy_utility(market, cost, howMuchAvailable);
@@ -199,7 +199,7 @@ namespace Nashet.EconomicSimulation
                 return Buy(need);
             }
             //todo fix that
-            else if (subsidizer.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(getCost(need))))
+            else if (subsidizer.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(Country.market.getCost(need))))
             {
                 return Buy(need);
             }
@@ -216,7 +216,7 @@ namespace Nashet.EconomicSimulation
 
 
             if (Game.logMarket)
-                Debug.Log(this + " consumed from market " + what + " costing " + Market.getCost(what));
+                Debug.Log(this + " consumed from market " + what + " costing " + Country.market.getCost(what));
         }
 
         public void consumeFromCountryStorage(List<Storage> what, Country country)

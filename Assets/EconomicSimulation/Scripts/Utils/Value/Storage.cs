@@ -43,11 +43,11 @@ namespace Nashet.ValueSpace
         public static int CostOrder(Storage x, Storage y)
         {
             //eats less memory
-            float sumX = x.get() * (float)World.market.getCost(x.Product).Get();
-            float sumY = y.get() * (float)World.market.getCost(y.Product).Get();
+            float sumX = x.get() * (float)Country.market.getCost(x.Product).Get();
+            float sumY = y.get() * (float)Country.market.getCost(y.Product).Get();
             return sumX.CompareTo(sumY);
 
-            //return World.market.getCost(x).get().CompareTo(World.market.getCost(y).get());
+            //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
         }
 
         public void set(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true)

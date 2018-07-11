@@ -835,7 +835,7 @@ namespace Nashet.EconomicSimulation
                 var buildNeeds = countryStorageSet.hasAllOfConvertToBiggest(propositionFactory.GetBuildNeeds());
                 if (buildNeeds != null)
                 {
-                    var newFactory = province.BuildFactory(this, propositionFactory, Market.getCost(buildNeeds));
+                    var newFactory = province.BuildFactory(this, propositionFactory, Country.market.getCost(buildNeeds));
                     consumeFromCountryStorage(buildNeeds, this);
                     return true;
                     //newFactory.constructionNeeds.setZero();
@@ -979,7 +979,7 @@ namespace Nashet.EconomicSimulation
                 if (Invented(Invention.ProfessionalArmy) && Rand.Get.Next(10) == 1)
                 {
                     Money newWage;
-                    Money soldierAllNeedsCost = Market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
+                    Money soldierAllNeedsCost = Country.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Copy();
                     if (failedToPaySoldiers)
                     {
                         newWage = getSoldierWage().Copy().Multiply(0.8m);
@@ -1314,7 +1314,7 @@ namespace Nashet.EconomicSimulation
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);
-                storageBuyingExpenseAdd(Market.getCost(realyBougth));
+                storageBuyingExpenseAdd(Country.market.getCost(realyBougth));
             }
         }
 

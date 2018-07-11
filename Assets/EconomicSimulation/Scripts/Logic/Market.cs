@@ -48,16 +48,14 @@ namespace Nashet.EconomicSimulation
 
         /// <summary>
         /// new value
-        /// </summary>
-        /// <param name="need"></param>
-        /// <returns></returns>
+        /// </summary>        
         internal MoneyView getCost(StorageSet need)
         {
             Money cost = new Money(0m);
             // float price;
             foreach (Storage stor in need)
             {
-                //price = World.market.findPrice(stor.Product).get();
+                //price = Country.market.findPrice(stor.Product).get();
                 cost.Add(getCost(stor));
             }
             return cost;
@@ -87,15 +85,24 @@ namespace Nashet.EconomicSimulation
                 return new MoneyView((decimal)need.get());
             }
             else
-                return World.market.getCost(need.Product).Copy().Multiply((decimal)need.get());
+                return GetCost(need.Product).Copy().Multiply((decimal)need.get());
         }
         /// <summary>
-        /// new value
+        /// new value. Cost in that particular market. Cheapest if there are several products
         /// </summary>
-        internal MoneyView getCost(Product whom)
+        internal MoneyView GetCost(Product product)
         {
-            return new MoneyView((decimal)prices.getCheapestStorage(whom).get());
+            if (product == Product.Gold)
+            {
+                //var res = need.Copy().Multiply(Options.goldToCoinsConvert);
+                //res.Multiply(Options.GovernmentTakesShareOfGoldOutput);
+                //return res;
+                return new MoneyView(1);// cost of 1 gold
+            }
+            else
+                return new MoneyView((decimal)prices.getCheapestStorage(product).get());
         }
+
         /// <summary>
         /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
         /// </summary>
@@ -140,11 +147,13 @@ namespace Nashet.EconomicSimulation
         }
 
         //todo change it to 1 run by every products, not run for every product
+        private Storage recalculateProductForSellers(Product product, Func<ISeller, Storage> selector)
         {
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces())
+                    foreach (ISeller producer in province.getAllProducers())
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
@@ -222,6 +231,7 @@ namespace Nashet.EconomicSimulation
         {
             if (takeThisTurnData)
             {
+                return recalculateProductForSellers(product, x => x.HowMuchSentToMarket(this, product));
             }
             if (!dateOfgetSupplyOnMarket.IsToday)
             {
@@ -229,6 +239,7 @@ namespace Nashet.EconomicSimulation
                 foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
+                        var result = recalculateProductForSellers(recalculatingProduct.Product, x => x.HowMuchSentToMarket(this, recalculatingProduct.Product));
                         supplyOnMarket.Set(new Storage(recalculatingProduct.Product, result));
                     }
                 dateOfgetSupplyOnMarket.set(Date.Today);
@@ -310,7 +321,6 @@ namespace Nashet.EconomicSimulation
 
 
 
-
         /// <summary>
         /// Date actual for how much produced on turn start, not how much left
         /// </summary>
@@ -333,6 +343,7 @@ namespace Nashet.EconomicSimulation
         //    // here DSB is based not on last turn data, but on this turn.
         //    return new Storage(need, getMarketSupply(need, false));
         //}
+
         /// <summary>
         /// Based on DSB, assuming you have enough money
         /// </summary>
@@ -342,6 +353,10 @@ namespace Nashet.EconomicSimulation
             //if (availible.get() >= need.get()) return true;
             //else return false;
             Storage availible = HowMuchAvailable(need);
+            if (availible.get() >= need.get())
+                return true;
+            else
+                return false;
         }
 
         /// <summary>
@@ -474,6 +489,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Brings money for sold product
         /// </summary>
+        public static void GiveMoneyForSoldProduct(ISeller seller)
         {
             foreach (var deal in seller.AllSellDeals())
             {
@@ -493,7 +509,7 @@ namespace Nashet.EconomicSimulation
 
                     if (realSold > 0m)
                     {
-                        MoneyView cost = market.getCost(sentToMarket.Product).Copy().Multiply(realSold);
+                        MoneyView cost = market.GetCost(sentToMarket.Product).Copy().Multiply(realSold);
 
                         // adding unsold product
                         // assuming gainGoodsThisTurn & realSold have same product
@@ -503,14 +519,17 @@ namespace Nashet.EconomicSimulation
                         //    storage = new Storage(gainGoodsThisTurn);
                         //storage.Subtract((float)realSold);
 
-                        if (market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
+
+                        if (market.CanPay(cost)) //&& Country.market.tmpMarketStorage.has(realSold))
                         {
+                            market.Pay(seller as Agent, cost);
                         }
                         else
                         {
-                            //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
+                            //if (Game.devMode)// && Country.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
                             Debug.Log("Failed market - lacks " + market.HowMuchLacksMoneyIncludingDeposits(cost)
                                     + " for " + realSold + " " + sentToMarket.Product + " " + seller + " trade: " + cost); // money in market ended... Only first lucky get money
+                            market.PayAllAvailableMoney(seller as Agent);
 
                         }
                     }
@@ -521,10 +540,19 @@ namespace Nashet.EconomicSimulation
         {
             receivedGoods.Add(what);
         }
+        public void SendGoods(Storage what)
+        {
+            receivedGoods.Subtract(what);
+        }
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().MaxBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets().MaxBy(x => x.GetCost(need.Product).Get());
+        }
+        public static Market GetCheapestMarket(Storage need)
+        {
+            return World.AllMarkets().MinBy(x => x.GetCost(need.Product).Get());
+
         }
     }
 }

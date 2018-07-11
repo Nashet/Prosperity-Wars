@@ -86,11 +86,14 @@ namespace Nashet.EconomicSimulation
         static Product()
         {
             // abstract products
-            foreach (var item in getAll().Where(x => !x.isAbstract()))
-                if (item != Gold)
-                {
-                    World.market.SetDefaultPrice(item, (float)item.defaultPrice.Get());
-                }
+            foreach (var markets in World.AllMarkets())
+            {
+                foreach (var item in getAll().Where(x => !x.isAbstract()))
+                    if (item != Gold)
+                    {
+                        markets.SetDefaultPrice(item, (float)item.defaultPrice.Get());
+                    }
+            }
         }
 
         /// <summary>
@@ -257,10 +260,10 @@ namespace Nashet.EconomicSimulation
         public static int CostOrder(Product x, Product y)
         {
             //eats less memory
-            float sumX = (float)World.market.getCost(x).Get();
-            float sumY = (float)World.market.getCost(y).Get();
+            float sumX = (float)Country.market.getCost(x).Get();
+            float sumY = (float)Country.market.getCost(y).Get();
             return sumX.CompareTo(sumY);
-            //return World.market.getCost(x).get().CompareTo(World.market.getCost(y).get());
+            //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
         }
 
         /// <summary>
@@ -351,7 +354,7 @@ namespace Nashet.EconomicSimulation
         //            return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
         //        else
         //        {
-        //            Money res = World.market.getCost(type.resourceInput) .Copy();
+        //            Money res = Country.market.getCost(type.resourceInput) .Copy();
         //            res.Multiply(Options.defaultPriceLimitMultiplier);
         //            res.Divide(type.basicProduction.get());
         //            return res;

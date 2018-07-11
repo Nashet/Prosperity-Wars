@@ -33,7 +33,7 @@ namespace Nashet.EconomicSimulation
                 else
                     return (x as Country).FullName + " owns that province";
             }
-        , true);      
+        , true);
 
         public static readonly Predicate<Province> All = x => true;
 
@@ -74,16 +74,16 @@ namespace Nashet.EconomicSimulation
         private Color color;
 
         private GameObject gameObject;
-        private MeshRenderer meshRenderer;        
+        private MeshRenderer meshRenderer;
 
         private Country country;
-       
+
 
         private readonly int fertileSoil;
         private readonly List<Country> cores = new List<Country>();
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         private TerrainTypes terrain;
-        
+
 
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
@@ -793,12 +793,12 @@ namespace Nashet.EconomicSimulation
 
 
             group.SetLODs(lods);
-//#if UNITY_WEBGL
+            //#if UNITY_WEBGL
             group.size = 20; //was 30 for webgl
-//#else
-            //group.size = 20; // for others
-//#endif
-            //group.RecalculateBounds();
+                             //#else
+                             //group.size = 20; // for others
+                             //#endif
+                             //group.RecalculateBounds();
         }
 
         internal Factory findFactory(ProductionType proposition)
@@ -1067,7 +1067,7 @@ namespace Nashet.EconomicSimulation
             Money result = new Money(0m);
             foreach (var producer in getAllAgents())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
-                    result.Add(Market.getCost(producer.getGainGoodsThisTurn())); //- World.market.getCost(producer.getConsumedTotal()).get());
+                    result.Add(Country.market.getCost(producer.getGainGoodsThisTurn())); //- Country.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
 

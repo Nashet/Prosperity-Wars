@@ -130,7 +130,7 @@ namespace Nashet.EconomicSimulation
                         sb.Append("\nStockpile: nothing");
 
                     if (factory.getConsumed().Count() > 0)
-                        sb.Append("\nBought: ").Append(factory.getConsumed()).Append(", Cost: ").Append(World.market.getCost(factory.getConsumed()));
+                        sb.Append("\nBought: ").Append(factory.getConsumed()).Append(", Cost: ").Append(Game.Player.market.getCost(factory.getConsumed()));
                 }
                 if (factory.Type.hasInput())
                     sb.Append("\nResource availability: ").Append(factory.getInputFactor());
