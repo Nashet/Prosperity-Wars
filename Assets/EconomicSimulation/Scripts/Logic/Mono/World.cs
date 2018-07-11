@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
             foreach (var country in allCountries)
                 if (country.isAlive() && country != UncolonizedLand)
                     yield return country;
-        }
+        }      
 
         public static IEnumerable<Market> AllMarkets()
         {
@@ -130,7 +130,11 @@ namespace Nashet.EconomicSimulation
                     //if (isArtisan!=null && isArtisan.)
                 }
             }
-            allMoney.Add(World.market.Cash);
+            foreach (var market in World.AllMarkets())
+            {
+                allMoney.Add(market.Cash);
+            }            
+            
             return allMoney;
         }
 
@@ -471,7 +475,7 @@ namespace Nashet.EconomicSimulation
 
         public static void prepareForNewTick()
         {
-            World.market.SetStatisticToZero();
+            AllMarkets().PerformAction(x => x.SetStatisticToZero());            
 
             foreach (Country country in World.getAllExistingCountries())
             {
@@ -498,7 +502,7 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
                 Debug.Log("New date! - " + Date.Today);
             // strongly before PrepareForNewTick
-            World.market.simulatePriceChangeBasingOnLastTurnData();
+            AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
             EventHandler handler = DayPassed;
@@ -565,19 +569,19 @@ namespace Nashet.EconomicSimulation
                     }
             }
             //force DSB recalculation
-            World.market.getDemandSupplyBalance(null, true);
+            AllMarkets().PerformAction(x => x.getDemandSupplyBalance(null, true));
             if (Game.logMarket)
             {
-                ValueSpace.Money res = new ValueSpace.Money(0m);
-                foreach (var product in Product.getAll())
+                //Money res = new Money(0m);
+                //foreach (var product in Product.getAll())
 
-                    res.Add(World.market.getCost(World.market.getMarketSupply(product, true)).Copy().Multiply((decimal)World.market.getDemandSupplyBalance(product, false))
-                        );
-                if (!World.market.moneyIncomeThisTurn.IsEqual(res))
-                {
-                    Debug.Log("Market income: " + World.market.moneyIncomeThisTurn + " total: " + World.market.Cash);
-                    Debug.Log("Should pay: " + res);
-                }
+                //    res.Add(World.market.getCost(World.market.getMarketSupply(product, true)).Copy().Multiply((decimal)World.market.getDemandSupplyBalance(product, false))
+                //        );
+                //if (!World.market.moneyIncomeThisTurn.IsEqual(res))
+                //{
+                //    Debug.Log("Market income: " + World.market.moneyIncomeThisTurn + " total: " + World.market.Cash);
+                //    Debug.Log("Should pay: " + res);
+                //}
             }
             // big AFTER all and get money for sold circle
             foreach (Country country in World.getAllExistingCountries())
