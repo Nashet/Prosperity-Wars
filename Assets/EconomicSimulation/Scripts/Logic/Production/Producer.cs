@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     /// Represents anyone who can produce, store and sell product (1 product)
     /// also linked to Province
     /// </summary>
-    public abstract class Producer : Consumer, IHasProvince, ICanSell
+    public abstract class Producer : Consumer, IHasProvince, ISeller
     {
         /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
         private Storage gainGoodsThisTurn;
@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        
+
 
         /// <summary>
         /// Do checks outside. Currently sends only to 1 market
@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
         {
             var market = Market.GetReachestMarket(what);
             sentToMarket.Add(market, what);
-            storage.subtract(what);           
+            storage.subtract(what);
             market.ReceiveProducts(what);
             //if (Game.logMarket)
             //    Debug.Log(this + " sent to market " + what + " costing " + World.market.getCost(what));
@@ -114,12 +114,18 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        /// <summary>
-        /// Assumes that market key exists for sure
+        /// <summary>        
+        /// Returns null 
         /// </summary>        
-        public Storage HowMuchSentToMarket(Market market)
+        public Storage HowMuchSentToMarket(Market market, Product product)
         {
-            return sentToMarket[market];
+            Storage has;
+            sentToMarket.TryGetValue(market, out has);
+            if (has != null && has.Product == product)
+            {
+                return sentToMarket[market];
+            }
+            return new Storage(product);// empty storage
         }
 
     }

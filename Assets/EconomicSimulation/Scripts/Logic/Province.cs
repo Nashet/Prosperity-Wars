@@ -1067,7 +1067,7 @@ namespace Nashet.EconomicSimulation
             Money result = new Money(0m);
             foreach (var producer in getAllAgents())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
-                    result.Add(World.market.getCost(producer.getGainGoodsThisTurn())); //- World.market.getCost(producer.getConsumedTotal()).get());
+                    result.Add(Market.getCost(producer.getGainGoodsThisTurn())); //- World.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
 

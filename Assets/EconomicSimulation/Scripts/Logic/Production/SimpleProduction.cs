@@ -209,7 +209,7 @@ namespace Nashet.EconomicSimulation
         {
             //Value multiplier = new Value(getEfficiency(false).get() * getLevel());
             if (type.isResourceGathering())
-               yield return null;
+                yield return null;
             //List<Storage> result = new List<Storage>();
 
             foreach (Storage next in type.resourceInput)
@@ -258,7 +258,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         internal virtual MoneyView getExpences()
         {
-            return World.market.getCost(getConsumed());
+            return Market.getCost(getConsumed());
         }
 
         public bool isAllInputProductsCollected()
@@ -270,6 +270,11 @@ namespace Nashet.EconomicSimulation
                     return false;
             }
             return true;
+        }
+        override protected void Buy_utility(Market market, MoneyView cost, Storage what)
+        {
+            base.Buy_utility(market, cost, what);
+            getInputProductsReserve().Add(what);
         }
     }
 }

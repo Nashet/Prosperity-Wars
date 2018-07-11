@@ -57,11 +57,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    //look for better seller
         //}
-        public Market GetCheapestMarket(Storage need)
-        {
-            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
 
-        }
         /// <summary>
         /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
         /// </summary>
@@ -84,11 +80,11 @@ namespace Nashet.EconomicSimulation
         /// new version of buy-old,
         /// real deal. If not enough money to buy (including deposits) then buys some part of desired
         /// </summary>
-        internal Storage Buy(Storage need) // old Market.Sell
+        protected Storage Buy(Storage need) // old Market.Sell
         {
             if (need.isNotZero())
             {
-                Market market = GetCheapestMarket(need);
+                Market market = Market.GetCheapestMarket(need);
                 Storage sale;
                 if (need.Product.isAbstract())
                 {
@@ -102,16 +98,16 @@ namespace Nashet.EconomicSimulation
                     sale = need;
 
                 Storage howMuchCanConsume;
-                MoneyView price = market.getCost(sale.Product);
+                MoneyView price = Market.getCost(sale.Product);
                 MoneyView cost;
 
-                if (market.receivedGoods.has(sale))
+                if (market.HasAvailable(sale))
                 {
-                    cost = market.getCost(sale);
+                    cost = Market.getCost(sale);
 
                     if (this.CanPay(cost))
                     {
-                        this.BuyFromMarket(market, cost, sale);
+                        this.Buy_utility(market, cost, sale);
                         return sale;
                     }
                     else
@@ -124,7 +120,7 @@ namespace Nashet.EconomicSimulation
                         else
                         {
 
-                            this.BuyFromMarket(market, market.getCost(howMuchCanConsume), howMuchCanConsume);
+                            this.Buy_utility(market, Market.getCost(howMuchCanConsume), howMuchCanConsume);
                             return howMuchCanConsume;
                         }
                     }
@@ -135,10 +131,10 @@ namespace Nashet.EconomicSimulation
                     Storage howMuchAvailable = new Storage(market.HowMuchAvailable(sale));
                     if (howMuchAvailable.isNotZero())
                     {
-                        cost = market.getCost(howMuchAvailable);
+                        cost = Market.getCost(howMuchAvailable);
                         if (this.CanPay(cost))
                         {
-                            this.BuyFromMarket(market, cost, howMuchAvailable);
+                            this.Buy_utility(market, cost, howMuchAvailable);
                             return howMuchAvailable;
                         }
                         else
@@ -151,7 +147,7 @@ namespace Nashet.EconomicSimulation
                             howMuchCanConsume.Subtract(0.001f, false); // to fix precision bug
                             if (howMuchCanConsume.isNotZero())
                             {
-                                this.BuyFromMarket(market, this.getMoneyAvailable(), howMuchCanConsume);//pay all money cause you don't have more                                                                        
+                                this.Buy_utility(market, this.getMoneyAvailable(), howMuchCanConsume);//pay all money cause you don't have more                                                                        
                                 return howMuchCanConsume;
                             }
                             else
@@ -165,19 +161,62 @@ namespace Nashet.EconomicSimulation
             else
                 return need; // assuming buying is empty here            
         }
-        // Do I use where need to? Yes, I do. It goes to Market.Buy()
-        public void BuyFromMarket(Market market, MoneyView cost, Storage what)
+
+        /// <summary>
+        /// Buying needs in circle, by Procent in time
+        /// return true if buying is zero (bought all what it wanted)
+        /// former bool Sell(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
+        /// </summary>
+        internal bool Buy(StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
+        {
+            bool buyingIsFinished = true;
+            foreach (Storage what in ofWhat)
+            {
+                Storage consumeOnThisIteration = new Storage(what.Product, what.get() * buyInTime.get());
+                if (consumeOnThisIteration.isZero())
+                    return true;
+
+                // check if consumeOnThisIteration is not bigger than stillHaveToBuy
+                if (!stillHaveToBuy.has(consumeOnThisIteration))
+                    consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.Product);
+                //var reallyBought = Sell(buyer, consumeOnThisIteration, null);
+
+                //stillHaveToBuy.Subtract(reallyBought);
+
+                if (stillHaveToBuy.getBiggestStorage(what.Product).isNotZero())
+                    buyingIsFinished = false;
+            }
+            return buyingIsFinished;
+        }
+
+        /// <summary>
+        /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
+        /// </summary>
+        public Storage Buy(Storage need, Country subsidizer)
+        {
+            if (CanAfford(need) || subsidizer == null)
+            {
+                return Buy(need);
+            }
+            //todo fix that
+            else if (subsidizer.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(getCost(need))))
+            {
+                return Buy(need);
+            }
+            else
+                return new Storage(need.Product, 0f);
+        }
+        // Do I use where need to? Yes, I do. It called from this.Buy()
+        protected virtual void Buy_utility(Market market, MoneyView cost, Storage what)
         {
             this.Pay(market, cost);
             consumed.Add(what);
             consumedInMarket.Add(what);
-            market.receivedGoods.Subtract(what);
-            var isSP = this as SimpleProduction;
-            if (isSP != null)
-                isSP.getInputProductsReserve().Add(what);
+            market.SendGoods(what);
+
 
             if (Game.logMarket)
-                Debug.Log(this + " consumed from market " + what + " costing " + market.getCost(what));
+                Debug.Log(this + " consumed from market " + what + " costing " + Market.getCost(what));
         }
 
         public void consumeFromCountryStorage(List<Storage> what, Country country)
@@ -198,5 +237,6 @@ namespace Nashet.EconomicSimulation
             consumed.setZero();
             consumedInMarket.setZero();
         }
+
     }
 }

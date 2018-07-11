@@ -124,13 +124,13 @@ namespace Nashet.EconomicSimulation
                         // try to build for grain
                         if (storage.has(resourceToBuild))
                         {
-                            var factory = Province.BuildFactory(this, factoryProject.Type, World.market.getCost(resourceToBuild));
+                            var factory = Province.BuildFactory(this, factoryProject.Type, Market.getCost(resourceToBuild));
                             storage.send(factory.getInputProductsReserve(), resourceToBuild);
                             factory.constructionNeeds.setZero();
                         }
                         else // build for money
                         {
-                            MoneyView investmentCost = World.market.getCost(resourceToBuild);
+                            MoneyView investmentCost = Market.getCost(resourceToBuild);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))

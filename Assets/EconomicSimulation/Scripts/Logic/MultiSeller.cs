@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public interface ICanSell
+    public interface ISeller
     {
         void SendToMarket(Storage what);
 
@@ -14,18 +14,15 @@ namespace Nashet.EconomicSimulation
         IEnumerable<Market> AllTradeMarkets();
 
         IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals();
-
-        /// <summary>
-        /// Assumes that market key exists for sure
-        /// </summary>        
-        Storage HowMuchSentToMarket(Market market);
+            
+        Storage HowMuchSentToMarket(Market market, Product product);
     }
 
     /// <summary>
     /// Had to be class representing ability to sell more than 1 product
     /// but actually it contains statistics for Country
     /// </summary>
-    public abstract class MultiSeller : Staff, IStatisticable, ICanSell
+    public abstract class MultiSeller : Staff, IStatisticable, ISeller
     {
         public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
         private readonly StorageSet sentToMarket = new StorageSet();
@@ -160,7 +157,7 @@ namespace Nashet.EconomicSimulation
             var res = new Money(0m);
             foreach (var item in soldByGovernment)
             {
-                res.Add(World.market.getCost(new Storage(item.Key, item.Value)));
+                res.Add(Market.getCost(new Storage(item.Key, item.Value)));
             }
             return res;
         }
@@ -204,7 +201,7 @@ namespace Nashet.EconomicSimulation
             throw new System.NotImplementedException();
         }
 
-        public Storage HowMuchSentToMarket(Market market)
+        public Storage HowMuchSentToMarket(Market market, Product product)
         {
             throw new System.NotImplementedException();
         }

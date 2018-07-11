@@ -695,7 +695,7 @@ namespace Nashet.EconomicSimulation
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in population.getRealEveryDayNeeds())
                 {
-                    var consumed =Buy(need);
+                    var consumed = Buy(need);
                     if (consumed.isNotZero())
                     {
                         everyDayNeedsConsumed.Add(consumed);
@@ -731,7 +731,7 @@ namespace Nashet.EconomicSimulation
                                 education.Learn();
                         }
                     }
-                    MoneyView luxuryNeedsCost = GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost = Market.GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
@@ -1301,7 +1301,7 @@ namespace Nashet.EconomicSimulation
                 //Hmm.. Here it's about some world average price..
                 MoneyView extraMoney = Cash.Copy().Subtract(
                     // introduce some factual price?
-                    World.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
+                    Market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
                     , false);
                 if (extraMoney.isNotZero())
                     Bank.ReceiveMoney(this, extraMoney);

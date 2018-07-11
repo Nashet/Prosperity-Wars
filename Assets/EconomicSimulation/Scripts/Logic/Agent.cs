@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation
             else
                 realNeed = need;
 
-            return CanPay(Country.market.getCost(realNeed));
+            return CanPay(Market.getCost(realNeed));
             //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
         }
 
@@ -136,11 +136,11 @@ namespace Nashet.EconomicSimulation
         /// <summary> Including deposits </summary>
         internal Storage HowMuchCanAfford(Storage need)
         {
-            MoneyView cost = Country.market.getCost(need);
+            MoneyView cost = Market.getCost(need);
             if (CanPay(cost))
                 return new Storage(need);
             else
-                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Country.market.getCost(need.Product).Get()).Get());
+                return new Storage(need.Product, (float)(getMoneyAvailable().Copy()).Divide(Market.getCost(need.Product).Get()).Get());
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>

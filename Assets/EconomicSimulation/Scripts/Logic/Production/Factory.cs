@@ -120,7 +120,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            MoneyView cost = World.market.getCost(typedfactory.getUpgradeNeeds());
+                            MoneyView cost = Market.getCost(typedfactory.getUpgradeNeeds());
                             return agent.CanPay(cost);
                         }
                     }
@@ -248,7 +248,7 @@ namespace Nashet.EconomicSimulation
         {
             if (IsOpen)
             {
-                var res = World.market.getCost(getUpgradeNeeds()).Copy();
+                var res = Market.getCost(getUpgradeNeeds()).Copy();
                 res.Add(Options.factoryMoneyReservePerLevel);
                 return res;
             }
@@ -638,7 +638,7 @@ namespace Nashet.EconomicSimulation
                     //if (margin.get() > 100f) //10000%
                     //    salaryRaise.Multiply(0.05m);
                     //else 
-                    
+
                     if (margin.get() > 10f) //1000%
                         salaryRaise.Multiply(0.1m);
                     //else if (margin.get() > 1f) //100%
@@ -1086,7 +1086,7 @@ namespace Nashet.EconomicSimulation
                         Country subsidizer = isSubsidized() ? Country : null;
                         foreach (Storage item in shoppingList)
                             if (item.isNotZero())
-                                World.market.Sell(this, item, subsidizer);
+                                Buy(item, subsidizer);
                     }
             }
             if (isUpgrading() || isBuilding())
@@ -1108,9 +1108,9 @@ namespace Nashet.EconomicSimulation
                 else
                 {
                     if (isBuilding())
-                        isBuyingComplete = World.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, Type.GetBuildNeeds());
+                        isBuyingComplete = Buy(constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, Type.GetBuildNeeds());
                     else if (isUpgrading())
-                        isBuyingComplete = World.market.Sell(this, constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
+                        isBuyingComplete = Buy(constructionNeeds, Options.BuyInTimeFactoryUpgradeNeeds, getUpgradeNeeds());
 
                     // get money from current investor, not owner
                     MoneyView needExtraFonds = wantsMinMoneyReserv().Copy().Subtract(Cash, false);

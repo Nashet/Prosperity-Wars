@@ -140,13 +140,11 @@ namespace Nashet.EconomicSimulation
         }
 
         //todo change it to 1 run by every products, not run for every product
-        private Storage recalculateProductForSellers(Product product, Func<ICanSell, Storage> selector)
         {
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces())
-                    foreach (ICanSell producer in province.getAllProducers())
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
@@ -224,7 +222,6 @@ namespace Nashet.EconomicSimulation
         {
             if (takeThisTurnData)
             {
-                return recalculateProductForSellers(product, x => x.getSentToMarket(product));
             }
             if (!dateOfgetSupplyOnMarket.IsToday)
             {
@@ -232,7 +229,6 @@ namespace Nashet.EconomicSimulation
                 foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
-                        var result = recalculateProductForSellers(recalculatingProduct.Product, x => x.getSentToMarket(recalculatingProduct.Product));
                         supplyOnMarket.Set(new Storage(recalculatingProduct.Product, result));
                     }
                 dateOfgetSupplyOnMarket.set(Date.Today);
@@ -302,17 +298,6 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        private void Ssssel(Consumer buyer, MoneyView cost, Storage sale)
-        {
-
-            buyer.BuyFromMarket(sale);
-
-        }
-
-
-
-
-
         /// <summary>
         /// Buying PrimitiveStorageSet, subsidizations allowed
         /// </summary>
@@ -323,31 +308,8 @@ namespace Nashet.EconomicSimulation
         //            buy(buyer, item, subsidizer);
         //}
 
-        /// <summary>
-        /// Buying needs in circle, by Procent in time
-        /// return true if buying is zero (bought all what it wanted)
-        /// </summary>
-        internal bool Sell(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
-        {
-            bool buyingIsFinished = true;
-            foreach (Storage what in ofWhat)
-            {
-                Storage consumeOnThisIteration = new Storage(what.Product, what.get() * buyInTime.get());
-                if (consumeOnThisIteration.isZero())
-                    return true;
 
-                // check if consumeOnThisIteration is not bigger than stillHaveToBuy
-                if (!stillHaveToBuy.has(consumeOnThisIteration))
-                    consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.Product);
-                var reallyBought = Sell(buyer, consumeOnThisIteration, null);
 
-                stillHaveToBuy.Subtract(reallyBought);
-
-                if (stillHaveToBuy.getBiggestStorage(what.Product).isNotZero())
-                    buyingIsFinished = false;
-            }
-            return buyingIsFinished;
-        }
 
         /// <summary>
         /// Date actual for how much produced on turn start, not how much left
@@ -380,8 +342,6 @@ namespace Nashet.EconomicSimulation
             //if (availible.get() >= need.get()) return true;
             //else return false;
             Storage availible = HowMuchAvailable(need);
-            if (availible.get() >= need.get()) return true;
-            else return false;
         }
 
         /// <summary>
@@ -514,7 +474,6 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Brings money for sold product
         /// </summary>
-        public static void GiveMoneyForSoldProduct(ICanSell seller)
         {
             foreach (var deal in seller.AllSellDeals())
             {
@@ -546,14 +505,12 @@ namespace Nashet.EconomicSimulation
 
                         if (market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
                         {
-                            market.Pay(seller, cost);
                         }
                         else
                         {
                             //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
                             Debug.Log("Failed market - lacks " + market.HowMuchLacksMoneyIncludingDeposits(cost)
                                     + " for " + realSold + " " + sentToMarket.Product + " " + seller + " trade: " + cost); // money in market ended... Only first lucky get money
-                            market.PayAllAvailableMoney(seller);
 
                         }
                     }
