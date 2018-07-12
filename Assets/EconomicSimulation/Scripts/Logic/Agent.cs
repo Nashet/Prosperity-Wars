@@ -27,12 +27,13 @@ namespace Nashet.EconomicSimulation
 
         public abstract void simulate();
 
-        protected Country country;
+        private Country country;
 
         public Country Country
         {
             //get { return province.Country; }
             get { return country; }
+            protected set { country = value; }
         }
 
         protected Agent(Country country)
@@ -86,7 +87,7 @@ namespace Nashet.EconomicSimulation
                     return country.Bank;
             }
         }
-        
+
         /// <summary> Includes deposits. New value </summary>
         public MoneyView getMoneyAvailable()
         {
@@ -249,8 +250,8 @@ namespace Nashet.EconomicSimulation
             if (CanPay(howMuch))// It does has enough cash or deposit
             {
                 if (!CanPayCashOnly(howMuch))
-                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));                
-                    
+                    Bank.ReturnDeposit(this, HowMuchLacksMoneyCashOnly(howMuch));
+
                 return true;
             }
             else
@@ -320,7 +321,7 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            return "Agent "+ cash.Get();
+            return "Agent " + cash.Get();
         }
-    }    
+    }
 }

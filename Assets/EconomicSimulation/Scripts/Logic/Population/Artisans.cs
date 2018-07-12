@@ -72,7 +72,10 @@ namespace Nashet.EconomicSimulation
 
         internal StorageSet GetResurceInput()
         {
-            return artisansProduction.Type.resourceInput;
+            if (artisansProduction == null)
+                return new StorageSet();
+            else
+                return artisansProduction.Type.resourceInput;
         }
 
         public override void consumeNeeds()

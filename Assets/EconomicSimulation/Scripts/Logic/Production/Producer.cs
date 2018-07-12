@@ -3,6 +3,7 @@ using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -66,6 +67,8 @@ namespace Nashet.EconomicSimulation
         public void SendToMarket(Storage what)
         {
             var market = Market.GetReachestMarket(what);
+            if (market == null)
+                market = Country.market;
             sentToMarket.Add(market, what);
             storage.subtract(what);
             market.ReceiveProducts(what);

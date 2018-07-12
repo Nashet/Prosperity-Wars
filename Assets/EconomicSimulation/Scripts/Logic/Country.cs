@@ -138,7 +138,7 @@ namespace Nashet.EconomicSimulation
             SetName(name);
             foreach (var each in Invention.getAll())
                 inventions.Add(each, false);
-            country = this;
+            Country = this;
             market = new Market();
             modXHasMyCores = new Modifier(x => (x as Country).hasCores(this), "You have my cores", -0.05f, false);
             modMyOpinionOfXCountry = new ModifiersList(new List<Condition> { modXHasMyCores,
@@ -195,10 +195,12 @@ namespace Nashet.EconomicSimulation
 
                 markInvented(Invention.Banking);
 
-                //markInvented(Invention.Universities);
-                //markInvented(Invention.Manufactures);
+                markInvented(Invention.Universities);
+                markInvented(Invention.Manufactures);
 
-                //markInvented(Invention.metal);
+                markInvented(Invention.Metal);
+
+                
                 //markInvented(Invention.individualRights);
                 //markInvented(Invention.ProfessionalArmy);
                 //markInvented(Invention.Welfare);

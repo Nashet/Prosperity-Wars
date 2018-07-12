@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
 
         private static int resourceCounter;
 
-        private readonly MoneyView defaultPrice;
+        public readonly MoneyView defaultPrice;
         private readonly bool _isResource;
         private readonly bool _isAbstract;
         private readonly bool _isMilitary;
@@ -85,15 +85,15 @@ namespace Nashet.EconomicSimulation
         //static initialization
         static Product()
         {
-            // abstract products
-            foreach (var markets in World.AllMarkets())
-            {
-                foreach (var item in getAll().Where(x => !x.isAbstract()))
-                    if (item != Gold)
-                    {
-                        markets.SetDefaultPrice(item, (float)item.defaultPrice.Get());
-                    }
-            }
+            //// abstract products
+            //foreach (var markets in World.AllMarkets())
+            //{
+            //    foreach (var item in getAll().Where(x => !x.isAbstract()))
+            //        if (item != Gold)
+            //        {
+            //            markets.SetDefaultPrice(item, (float)item.defaultPrice.Get());
+            //        }
+            //}
         }
 
         /// <summary>

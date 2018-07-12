@@ -113,6 +113,8 @@ namespace Nashet.EconomicSimulation
         public void SendToMarket(Storage what)
         {
             var market = Market.GetReachestMarket(what);
+            if (market == null)
+                market = Country.market;
             sentToMarket.Add(new KeyValuePair<Market, Storage>(market, what));
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics

@@ -909,7 +909,7 @@ namespace Nashet.EconomicSimulation
             daysInConstruction = 0;
         }
 
-        internal void open(IShareOwner byWhom, bool payMoney)
+        public void open(IShareOwner byWhom, bool payMoney)
         {
             var agent = byWhom as Agent;
             if (agent.Country.economy.getValue() != Economy.PlannedEconomy)

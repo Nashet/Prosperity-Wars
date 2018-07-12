@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
@@ -41,9 +42,15 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal void Initialize()
+        internal void Initialize(Country country)
         {
             priceHistory = new PricePool();
+            foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
+                if (item != Product.Gold)
+                {
+                    prices.Set(new Storage(item, (float)item.defaultPrice.Get()));
+                }
+            Country = country;
         }
 
         /// <summary>
@@ -115,15 +122,15 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            //foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
+                foreach (Province province in Country.AllProvinces())
                     foreach (Consumer consumer in province.getAllAgents())
                     {
                         Storage found = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(found);
                     }
-                Storage countryStor = selector(country).GetFirstSubstituteStorage(product);
+                Storage countryStor = selector(Country).GetFirstSubstituteStorage(product);
                 result.add(countryStor);
             }
             return result;
@@ -132,15 +139,15 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            //foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
+                foreach (Province province in Country.AllProvinces())
                     foreach (Consumer consumer in province.getAllBuyers())
                     {
                         Storage re = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(re);
                     }
-                Storage countryStor = selector(country).GetFirstSubstituteStorage(product);
+                Storage countryStor = selector(Country).GetFirstSubstituteStorage(product);
                 result.add(countryStor);
             }
             return result;
@@ -150,16 +157,16 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForSellers(Product product, Func<ISeller, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            //foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
+                foreach (Province province in Country.AllProvinces())
                     foreach (ISeller producer in province.getAllProducers())
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
                             result.add(found);
                     }
-                result.add(selector(country));
+                result.add(selector(Country));
             }
             return result;
         }
@@ -168,9 +175,9 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
         {
             Storage result = new Storage(product);
-            foreach (Country country in World.getAllExistingCountries())
+            //foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
+                foreach (Province province in Country.AllProvinces())
                     foreach (Producer producer in province.getAllProducers())
                     {
                         var found = selector(producer);
@@ -277,13 +284,7 @@ namespace Nashet.EconomicSimulation
         //    //dateOfDSB--;//!!! Warning! This need to be uncommented to work properly
         //    getDemandSupplyBalance(null);
         //}
-        /// <summary>
-        /// per 1 unit
-        /// </summary>
-        public void SetDefaultPrice(Product pro, float inprice)
-        {
-            prices.Set(new Storage(pro, inprice));
-        }
+
 
         internal bool isAvailable(Product product)
         {
@@ -401,15 +402,27 @@ namespace Nashet.EconomicSimulation
                         float supply = getMarketSupply(nextProduct.Product, forceDSBRecalculation).get();
                         float demand = getBouthOnMarket(nextProduct.Product, forceDSBRecalculation).get();
 
-                        //if (supply == 0 && demand == 0) // both zero
-                        //    balance = Options.MarketInfiniteDSB;
-                        //else
-                        //{
                         if (supply == 0)
                             balance = Options.MarketInfiniteDSB; // supply zero
                         else
                         {
-                            if (demand == 0) // demand zero
+                            if (demand == 0f) // demand zero
+                                balance = Options.MarketZeroDSB; // otherwise - furniture bag
+                            else
+                                balance = demand / supply;
+                        }
+
+                        //if (supply == 0 && demand == 0) // both zero
+                        //    balance = Options.MarketInfiniteDSB;
+                        //else
+                        //{
+                        if (supply != 0f && demand == 0f)
+                            balance = Options.MarketZeroDSB; // Options.MarketInfiniteDSB; // supply zero
+                        else if (supply == 0f && demand == 0f)
+                            balance = Options.MarketInfiniteDSB; // Options.MarketInfiniteDSB; // supply zero
+                        else
+                        {
+                            if (demand == 0f) // demand zero
                                 balance = Options.MarketZeroDSB; // otherwise - furniture bag
                             else
                                 balance = demand / supply;
@@ -484,7 +497,7 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            return "Global market";
+            return Country + "'s market";
         }
         /// <summary>
         /// Brings money for sold product
@@ -547,7 +560,7 @@ namespace Nashet.EconomicSimulation
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().MaxBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets().Where(x => x.getBouthOnMarket(need.Product, false).get() != Options.MarketEqualityDSB).MaxBy(x => x.getCost(need.Product).Get());
         }
         public static Market GetCheapestMarket(Storage need)
         {
