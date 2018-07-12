@@ -70,12 +70,12 @@ namespace Nashet.UnityUIUtils
                 OnPointerEnter(null); // forces tooltip to update
         }
 
-        internal string GetText()
+        public string GetText()
         {
             return text;
         }
 
-        internal void AddText(string add)
+        public void AddText(string add)
         {
             text += add;
         }

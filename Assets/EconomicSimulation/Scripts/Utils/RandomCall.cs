@@ -31,7 +31,7 @@ namespace Nashet.Utils
             return Get.Next(Procent.Precision) < chance.RawUIntValue;
         }
 
-        internal static bool Call(Action action, int chance)
+        public static bool Call(Action action, int chance)
         {
             if (UnityEngine.Random.Range(0, chance) == 0)
             {
@@ -42,7 +42,7 @@ namespace Nashet.Utils
                 return false;
         }
 
-        internal static bool Call(Action action, ReadOnlyValue chance)
+        public static bool Call(Action action, ReadOnlyValue chance)
         {
             if (Chance(chance))
             {

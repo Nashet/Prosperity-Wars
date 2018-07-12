@@ -32,17 +32,17 @@ namespace Nashet.EconomicSimulation
             //Game.allBattles.Add(this);
         }
 
-        internal bool isAttackerWon()
+        public bool isAttackerWon()
         {
             return result;
         }
 
-        internal bool isDefenderWon()
+        public bool isDefenderWon()
         {
             return !result;
         }
 
-        internal void createMessage()
+        public void createMessage()
         {
             sb.Clear();
 
@@ -97,12 +97,12 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal Staff getDefender()
+        public Staff getDefender()
         {
             return defender;
         }
 
-        internal Staff getAttacker()
+        public Staff getAttacker()
         {
             return attacker;
         }

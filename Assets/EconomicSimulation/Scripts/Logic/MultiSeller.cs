@@ -124,7 +124,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal void producedTotalAdd(Storage produced)
+        public void producedTotalAdd(Storage produced)
         {
             producedTotal.addMy(produced.Product, produced);
         }

@@ -191,14 +191,14 @@ namespace Nashet.EconomicSimulation
             Country.movements.Remove(this);
             //members.Clear();
         }
-        internal void OnSeparatistsWon()
+        public void OnSeparatistsWon()
         {
             var separatists = getGoal() as Separatism;
             separatists.Country.onSeparatismWon(Country);
             if (!Country.isAI())//separatists.C
                 Message.NewMessage("", "Separatists won revolution - " + separatists.Country.FullName, "hmm", false, separatists.Country.Capital.getPosition());
         }
-        internal void onRevolutionWon(bool setReform)
+        public void onRevolutionWon(bool setReform)
         {
             siegeCapitalTurns = 0;
             _isInRevolt = false;
@@ -224,7 +224,7 @@ namespace Nashet.EconomicSimulation
             killMovement();
         }
 
-        internal void onRevolutionLost()
+        public void onRevolutionLost()
         {
             foreach (var pop in members)
             {
@@ -235,7 +235,7 @@ namespace Nashet.EconomicSimulation
             //demobilize();
         }
 
-        internal bool isEmpty()
+        public bool isEmpty()
         {
             return members.Count == 0;
         }

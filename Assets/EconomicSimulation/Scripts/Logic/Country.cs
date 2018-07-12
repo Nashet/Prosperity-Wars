@@ -11,20 +11,20 @@ namespace Nashet.EconomicSimulation
 {
     public class Country : MultiSeller, IClickable, IShareOwner, ISortableName, INameable
     {
-        internal readonly Government government;
-        internal readonly Economy economy;
-        internal readonly Serfdom serfdom;
-        internal readonly MinimalWage minimalWage;
-        internal readonly UnemploymentSubsidies unemploymentSubsidies;
-        internal readonly TaxationForPoor taxationForPoor;
-        internal readonly TaxationForRich taxationForRich;
+        public readonly Government government;
+        public readonly Economy economy;
+        public readonly Serfdom serfdom;
+        public readonly MinimalWage minimalWage;
+        public readonly UnemploymentSubsidies unemploymentSubsidies;
+        public readonly TaxationForPoor taxationForPoor;
+        public readonly TaxationForRich taxationForRich;
         public readonly Dictionary<Country, Date> LastAttackDate = new Dictionary<Country, Date>();
         /// <summary> could be null</summary>
         private readonly Bank bank;
 
         public Bank Bank { get { return bank; } }
         public Market market;
-        internal readonly MinorityPolicy minorityPolicy;
+        public readonly MinorityPolicy minorityPolicy;
 
         private readonly List<Province> ownedProvinces = new List<Province>();
 
@@ -209,7 +209,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void SetName(string name)
+        public void SetName(string name)
         {
             nameWeight = name.GetWeight();
             this.name = name;
@@ -223,7 +223,7 @@ namespace Nashet.EconomicSimulation
             setPrefix();
         }
 
-        internal void onGrantedProvince(Province province)
+        public void onGrantedProvince(Province province)
         {
             var oldCountry = province.Country;
             changeRelation(oldCountry, 1.00f);
@@ -265,7 +265,7 @@ namespace Nashet.EconomicSimulation
                 newCapital = AllProvinces().Random();
             return newCapital;
         }
-        internal void onSeparatismWon(Country oldCountry)
+        public void onSeparatismWon(Country oldCountry)
         {
             foreach (var item in oldCountry.ownedProvinces.ToList())
                 if (item.isCoreFor(this))
@@ -298,12 +298,12 @@ namespace Nashet.EconomicSimulation
             World.UncolonizedLand.AllProvinces().PerformAction(x => x.OnSecedeGraphic(World.UncolonizedLand));
         }
 
-        internal int getSize()
+        public int getSize()
         {
             return ownedProvinces.Count;
         }
 
-        internal static int howMuchCountriesAlive()
+        public static int howMuchCountriesAlive()
         {
             int res = 0;
             foreach (var item in World.getAllExistingCountries())
@@ -397,7 +397,7 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        internal void setPrefix()
+        public void setPrefix()
         {
             if (meshCapitalText != null)
                 meshCapitalText.text = FullName;
@@ -428,12 +428,12 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        internal void setSoldierWage(MoneyView value)
+        public void setSoldierWage(MoneyView value)
         {
             soldiersWage.Set(value);
         }
 
-        internal MoneyView getSoldierWage()
+        public MoneyView getSoldierWage()
         {
             return soldiersWage;
         }
@@ -462,7 +462,7 @@ namespace Nashet.EconomicSimulation
         //        }
         //    return result;
         //}
-        //internal Procent getAverageNeedsFulfilling()
+        //public Procent getAverageNeedsFulfilling()
         //{
         //    Procent result = new Procent(0f);
         //    int calculatedPopulation = 0;
@@ -556,7 +556,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Also transfers enterprises to local governments
         /// </summary>
-        internal void OnKillCountry(Country byWhom)
+        public void OnKillCountry(Country byWhom)
         {
             if (meshCapitalText != null) //todo WTF!!
                 Object.Destroy(meshCapitalText.gameObject);
@@ -593,12 +593,12 @@ namespace Nashet.EconomicSimulation
             get { return capital; }
         }
 
-        internal override void sendAllArmies(Province target)
+        public override void sendAllArmies(Province target)
         {
             base.sendAllArmies(target);
         }
 
-        //internal bool canAttack(Province province)
+        //public bool canAttack(Province province)
         //{
         //    //!province.isBelongsTo(this) &&
         //    return province.isNeighbor(this);
@@ -606,7 +606,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Has duplicates!
         /// </summary>
-        internal IEnumerable<Province> AllNeighborProvinces()
+        public IEnumerable<Province> AllNeighborProvinces()
         {
             //var res = Enumerable.Empty<Province>();
             foreach (var province in ownedProvinces)
@@ -623,7 +623,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Has duplicates!
         /// </summary>
-        internal IEnumerable<Country> AllNeighborCountries()
+        public IEnumerable<Country> AllNeighborCountries()
         {
             //var res = Enumerable.Empty<Province>();
             foreach (var province in ownedProvinces)
@@ -648,7 +648,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal void setCapitalTextMesh(Province province)
+        public void setCapitalTextMesh(Province province)
         {
             Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
             txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
@@ -673,7 +673,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void MoveCapitalTo(Province newCapital)
+        public void MoveCapitalTo(Province newCapital)
         {
             if (meshCapitalText == null)
                 setCapitalTextMesh(newCapital);
@@ -687,12 +687,12 @@ namespace Nashet.EconomicSimulation
             capital = newCapital;
         }
 
-        internal Color getColor()
+        public Color getColor()
         {
             return nationalColor;
         }
 
-        internal Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
+        public Procent getYesVotes(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
         {
             // calculate how much of population wants selected reform
             int totalPopulation = GetAllPopulation().Sum(x => x.population.Get());
@@ -731,7 +731,7 @@ namespace Nashet.EconomicSimulation
             return procentVotersSayedYes;
         }
 
-        internal Material getBorderMaterial()
+        public Material getBorderMaterial()
         {
             return borderMaterial;
         }
@@ -740,7 +740,7 @@ namespace Nashet.EconomicSimulation
         /// Not finished, don't use it
         /// </summary>
         /// <param name="reform"></param>
-        internal Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
+        public Procent getYesVotes2(AbstractReformValue reform, ref Procent procentPopulationSayedYes)
         {
             int totalPopulation = GetAllPopulation().Sum(x => x.population.Get());
             int votingPopulation = 0;
@@ -764,7 +764,7 @@ namespace Nashet.EconomicSimulation
             return procentVotersSayedYes;
         }
 
-        internal Dictionary<PopType, int> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, int> divisionPopulationResult)
+        public Dictionary<PopType, int> getYesVotesByType(AbstractReformValue reform, ref Dictionary<PopType, int> divisionPopulationResult)
         {  // division by pop types
             Dictionary<PopType, int> divisionVotersResult = new Dictionary<PopType, int>();
             foreach (PopType type in PopType.getAllPopTypes())
@@ -793,7 +793,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns new value
         /// </summary>
-        internal MoneyView getMinSalary()
+        public MoneyView getMinSalary()
         {
             var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage(this.market);
             if (res.isZero())
@@ -871,7 +871,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // todo should be redone as country-wise method
-        internal void invest(Province province)
+        public void invest(Province province)
         {
             if (economy.getValue() == Economy.PlannedEconomy && Invented(Invention.Manufactures))
                 if (!province.isThereFactoriesInUpgradeMoreThan(1)//Options.maximumFactoriesInUpgradeToBuildNew)
@@ -1091,7 +1091,7 @@ namespace Nashet.EconomicSimulation
                     }, Options.CountryInvestmentRate);
         }
 
-        internal void simulate()
+        public void simulate()
         {
             // military staff
             base.simulate();
@@ -1336,14 +1336,14 @@ namespace Nashet.EconomicSimulation
         //}
         //return result;
         //}
-        //internal int getMenPopulation()
+        //public int getMenPopulation()
         //{
         //    int result = 0;
         //    foreach (Province pr in ownedProvinces)
         //        result += pr.getMenPopulation();
         //    return result;
         //}
-        internal int getFamilyPopulation()
+        public int getFamilyPopulation()
         {
             //return  getMenPopulation() * Options.familySize;
             return GetAllPopulation().Sum(x => x.population.Get()) * Options.familySize;
@@ -1411,7 +1411,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        internal MoneyView getGDPPer1000()
+        public MoneyView getGDPPer1000()
         {
             return (getGDP().Copy()).Multiply(1000m).Divide(getFamilyPopulation(), false);
             // overflows
@@ -1534,12 +1534,12 @@ namespace Nashet.EconomicSimulation
             soldiersWageExpense.SetZero();
         }
 
-        internal float getBalance()
+        public float getBalance()
         {
             return (float)(moneyIncomeThisTurn.Get() - getExpenses().Get());
         }
 
-        internal MoneyView getExpenses()
+        public MoneyView getExpenses()
         {
             Money result = MoneyView.Zero.Copy();
             result.Add(unemploymentSubsidiesExpense);
@@ -1549,7 +1549,7 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        internal Money getIncome()
+        public Money getIncome()
         {
             Money result = new Money(0m);
             result.Add(incomeTaxStaticticPoor);
@@ -1564,7 +1564,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns true if was able to give a subsidy
         /// </summary>
-        internal bool GiveFactorySubsidies(Consumer byWhom, MoneyView howMuch)
+        public bool GiveFactorySubsidies(Consumer byWhom, MoneyView howMuch)
         {
             if (CanPay(howMuch))
             {
@@ -1581,17 +1581,17 @@ namespace Nashet.EconomicSimulation
             //}
         }
 
-        internal void soldiersWageExpenseAdd(MoneyView payCheck)
+        public void soldiersWageExpenseAdd(MoneyView payCheck)
         {
             soldiersWageExpense.Add(payCheck);
         }
 
-        //internal float getPoorTaxIncome()
+        //public float getPoorTaxIncome()
         //{
         //    return poorTaxIncome.get();
         //}
 
-        //internal float getRichTaxIncome()
+        //public float getRichTaxIncome()
         //{
         //    return richTaxIncome.get();
         //}
@@ -1600,7 +1600,7 @@ namespace Nashet.EconomicSimulation
         /// Forces payer to pay tax from taxable. Returns how much payed (new value)
         /// Don't call it manually, it called from Agent.Pay() automatically
         /// </summary>
-        internal MoneyView TakeIncomeTaxFrom(Agent taxPayer, MoneyView taxable, bool isPoorStrata)
+        public MoneyView TakeIncomeTaxFrom(Agent taxPayer, MoneyView taxable, bool isPoorStrata)
         {
             var pop = taxPayer as PopUnit;
             if (pop != null
@@ -1659,22 +1659,22 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void goldMinesIncomeAdd(MoneyView toAdd)
+        public void goldMinesIncomeAdd(MoneyView toAdd)
         {
             goldMinesIncome.Add(toAdd);
         }
 
-        internal void unemploymentSubsidiesExpenseAdd(MoneyView toAdd)
+        public void unemploymentSubsidiesExpenseAdd(MoneyView toAdd)
         {
             unemploymentSubsidiesExpense.Add(toAdd);
         }
 
-        internal void storageBuyingExpenseAdd(MoneyView toAdd)
+        public void storageBuyingExpenseAdd(MoneyView toAdd)
         {
             storageBuyingExpense.Add(toAdd);
         }
 
-        internal void ownedFactoriesIncomeAdd(MoneyView toAdd)
+        public void ownedFactoriesIncomeAdd(MoneyView toAdd)
         {
             ownedFactoriesIncome.Add(toAdd);
         }
@@ -1686,7 +1686,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Gets reform which can take given value
         /// </summary>
-        internal AbstractReform getReform(AbstractReformValue abstractReformValue)
+        public AbstractReform getReform(AbstractReformValue abstractReformValue)
         {
             foreach (var item in reforms)
             {
@@ -1719,7 +1719,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    return stock;
         //}
-        internal void annexTo(Country country)
+        public void annexTo(Country country)
         {
             foreach (var item in ownedProvinces.ToList())
             {
@@ -1747,7 +1747,7 @@ namespace Nashet.EconomicSimulation
                 }
         }
 
-        internal void Nationilize(Factory factory)
+        public void Nationilize(Factory factory)
         {
             foreach (var owner in factory.ownership.GetAll().ToList())
                 if (owner.Key != this)

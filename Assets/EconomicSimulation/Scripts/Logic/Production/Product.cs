@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         private readonly Color color;
         private bool _isStoreable = true;
 
-        internal static readonly Product
+        public static readonly Product
             //Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetalOre,
             //Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
             //Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
             Gold = new Product("Gold", 4f, Color.yellow, type.industrial),
             Education = new Product("Education", 4f, type.consumerProduct, false);
 
-        internal static readonly Product //Food, Sugar, Fibers, Fuel;
+        public static readonly Product //Food, Sugar, Fibers, Fuel;
             Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit }, type.consumerProduct),
             Sugar = new Product("Sugar", 0.04f, new List<Product> { Grain, Fruit }, type.consumerProduct),
             Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton }, type.consumerProduct),
@@ -240,7 +240,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal static Product getRandomResource(bool ignoreGold)
+        public static Product getRandomResource(bool ignoreGold)
         {
             if (ignoreGold)
                 return Wood;
@@ -323,7 +323,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal bool isResource()
+        public bool isResource()
         {
             return _isResource;
         }
@@ -349,7 +349,7 @@ namespace Nashet.EconomicSimulation
         //    storable = isStorable;
         //}
 
-        //internal MoneyView getDefaultPrice()
+        //public MoneyView getDefaultPrice()
         //{
         //    if (isResource())
         //    {
@@ -397,7 +397,7 @@ namespace Nashet.EconomicSimulation
                 return base.ToString();
         }
 
-        internal Color getColor()
+        public Color getColor()
         {
             return color;
         }

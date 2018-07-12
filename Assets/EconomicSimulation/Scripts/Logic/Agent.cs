@@ -46,12 +46,12 @@ namespace Nashet.EconomicSimulation
             country = newOner;
         }
 
-        internal void GiveMoneyFromNoWhere(decimal money)
+        public void GiveMoneyFromNoWhere(decimal money)
         {
             cash.Add(money);
         }
 
-        internal void GiveMoneyFromGoldPit(Storage gold)
+        public void GiveMoneyFromGoldPit(Storage gold)
         {
             var newMoney = new MoneyView(gold);
             cash.Add(newMoney);
@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Ignores if need is available on market or not
         /// </summary>
-        internal bool CanAfford(Storage need)
+        public bool CanAfford(Storage need)
         {
             Storage realNeed;
             if (need.isAbstractProduct())
@@ -114,7 +114,7 @@ namespace Nashet.EconomicSimulation
             //return realNeed.IsEqual(HowMuchCanAfford(realNeed));
         }
 
-        internal bool CanAfford(StorageSet need)
+        public bool CanAfford(StorageSet need)
         {
             foreach (Storage stor in need)
             {
@@ -125,7 +125,7 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        internal bool CanAfford(IEnumerable<Storage> need)
+        public bool CanAfford(IEnumerable<Storage> need)
         {
             foreach (Storage stor in need)
                 //if (HowMuchCanAfford(stor).isSmallerThan(stor))
@@ -135,7 +135,7 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary> Including deposits </summary>
-        internal Storage HowMuchCanAfford(Storage need)
+        public Storage HowMuchCanAfford(Storage need)
         {
             MoneyView cost = Country.market.getCost(need);
             if (CanPay(cost))
@@ -145,12 +145,12 @@ namespace Nashet.EconomicSimulation
         }
 
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-        //internal Value HowMuchCanNotAfford(PrimitiveStorageSet need)
+        //public Value HowMuchCanNotAfford(PrimitiveStorageSet need)
         //{
         //    return new Value(Country.market.getCost(need).get() - this.cash.get());
         //}
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-        //internal Value HowMuchCanNotAfford(float need)
+        //public Value HowMuchCanNotAfford(float need)
         //{
         //    return new Value(need - this.cash.get());
         //}
@@ -158,7 +158,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> Says how much money lack of desiredSum (counting cash and deposits in bank). New value.
         /// Goes nut if cash + deposits >= desiredSum, no need for extra money, check that outside
         /// </summary>
-        internal MoneyView HowMuchLacksMoneyIncludingDeposits(MoneyView desiredSum)
+        public MoneyView HowMuchLacksMoneyIncludingDeposits(MoneyView desiredSum)
         {
             return desiredSum.Copy().Subtract(getMoneyAvailable(), false);
         }
@@ -167,17 +167,17 @@ namespace Nashet.EconomicSimulation
         /// Says how much money lack of desiredSum (counting cash only). New value
         /// Says zero if cash >= desiredSum, no need for extra money
         /// </summary>
-        internal MoneyView HowMuchLacksMoneyCashOnly(MoneyView desiredSum)
+        public MoneyView HowMuchLacksMoneyCashOnly(MoneyView desiredSum)
         {
             return desiredSum.Copy().Subtract(cash, false);
         }
 
-        //internal Value HowMuchMoneyCanNotPay(Value value)
+        //public Value HowMuchMoneyCanNotPay(Value value)
         //{
         //    return new Value(value.get() - this.cash.get());
         //}
         /// <summary>WARNING! Can overflow if money > cost of need. use CanAfford before </summary>
-        //internal Value HowMuchCanNotAfford(Storage need)
+        //public Value HowMuchCanNotAfford(Storage need)
         //{
         //    return new Value(Country.market.getCost(need) - this.cash.get());
         //}
@@ -187,13 +187,13 @@ namespace Nashet.EconomicSimulation
         //    throw new NotImplementedException();
         //}
 
-        //internal bool canPay(Value howMuchPay)
+        //public bool canPay(Value howMuchPay)
         //{
         //    if (this.cash.get() >= howMuchPay.get())
         //        return true;
         //    else return false;
         //}
-        //internal bool canPay(float howMuchPay)
+        //public bool canPay(float howMuchPay)
         //{
         //    if (this.cash.get() >= howMuchPay)
         //        return true;
@@ -201,12 +201,12 @@ namespace Nashet.EconomicSimulation
         //        return false;
         //}
         /// <summary> Counting deposit and cash </summary>
-        internal bool CanPay(MoneyView howMuchPay)
+        public bool CanPay(MoneyView howMuchPay)
         {
             return getMoneyAvailable().isBiggerOrEqual(howMuchPay);
         }
 
-        internal bool CanPayCashOnly(MoneyView howMuchPay)
+        public bool CanPayCashOnly(MoneyView howMuchPay)
         {
             return cash.isBiggerOrEqual(howMuchPay);
         }
@@ -305,14 +305,14 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        internal void PayAllAvailableMoney(Agent whom)
+        public void PayAllAvailableMoney(Agent whom)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);
             Pay(whom, cash);
         }
 
-        internal void PayAllAvailableMoneyWithoutRecord(Agent whom)
+        public void PayAllAvailableMoneyWithoutRecord(Agent whom)
         {
             if (Bank != null)
                 Bank.ReturnAllDeposits(this);

@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
             changeProductionType(this.type.basicProduction.Product);
         }
 
-        //internal Agent getOwner()
+        //public Agent getOwner()
         //{
         //    return owner;
         //}
@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// could be negative
         /// </summary>        
-        internal decimal getProfit()
+        public decimal getProfit()
 
         {
             //return (float)(moneyIncomeThisTurn.Get() - getExpences().Get());
@@ -91,7 +91,7 @@ namespace Nashet.EconomicSimulation
                         getInputProductsReserve().Subtract(next, false);
         }
 
-        internal abstract Procent getInputFactor();
+        public abstract Procent getInputFactor();
 
         protected Procent getInputFactor(Procent multiplier)
         {
@@ -256,7 +256,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///new value
         /// </summary>
-        internal virtual MoneyView getExpences()
+        public virtual MoneyView getExpences()
         {
             return Country.market.getCost(getConsumed());
         }

@@ -19,7 +19,7 @@ namespace Nashet.EconomicSimulation
             return ShortName;
         }
 
-        internal Color getColor()
+        public Color getColor()
         {
             return color;
         }

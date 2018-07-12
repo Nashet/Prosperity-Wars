@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
             return mapBorders;
         }
 
-        internal static void GivePlayerControlOf(Country country)
+        public static void GivePlayerControlOf(Country country)
         {
             //if (country != Country.NullCountry)
             {
@@ -142,7 +142,7 @@ namespace Nashet.EconomicSimulation
             surrended = true;
         }
 
-        internal static int getMapMode()
+        public static int getMapMode()
         {
             return mapMode;
         }
@@ -156,7 +156,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal static bool isPlayerSurrended()
+        public static bool isPlayerSurrended()
         {
             return surrended;
         }

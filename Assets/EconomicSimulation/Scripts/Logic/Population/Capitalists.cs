@@ -24,7 +24,7 @@ namespace Nashet.EconomicSimulation
             // Caps don't produce products directly
         }
 
-        internal override bool canTrade()
+        public override bool canTrade()
         {
             if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
@@ -37,7 +37,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
@@ -47,7 +47,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 if (reformValue == Government.WealthDemocracy)
@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
                 return 0;
         }
 
-        internal override void invest()
+        public override void invest()
         {
             //should I invest?
             if (Economy.isMarket.checkIfTrue(Country) && Country.Invented(Invention.Manufactures))

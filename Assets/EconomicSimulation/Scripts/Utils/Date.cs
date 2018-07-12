@@ -5,7 +5,7 @@
     /// </summary>
     public class Date : ICopyable<Date>
     {
-        internal static readonly Date Never = new Date(int.MinValue / 2);
+        public static readonly Date Never = new Date(int.MinValue / 2);
         private static Date today = new Date(0);
 
         public static Date Today
@@ -40,7 +40,7 @@
             year += v;
         }
 
-        internal Date getNewDate(int v)
+        public Date getNewDate(int v)
         {
             return new Date(year + v);
         }
@@ -74,7 +74,7 @@
             return today.year > year;
         }
 
-        internal void set(Date newDate)
+        public void set(Date newDate)
         {
             // Debug.Log("date set to "+ newDate.year);
             year = newDate.year;

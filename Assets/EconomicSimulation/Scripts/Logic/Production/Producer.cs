@@ -79,7 +79,7 @@ namespace Nashet.EconomicSimulation
         /// <summary> Do checks outside</summary>
         public void consumeFromItself(Storage what)
         {
-            getConsumed().Add(what);
+            consumed.Add(what);
             storage.subtract(what);
         }
 

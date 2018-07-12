@@ -14,10 +14,10 @@ namespace Nashet.ValueSpace
             get { return rawUIntValue; }
         }
 
-        internal static readonly int Precision = 1000; // 0.001
-        internal static readonly ReadOnlyValue Zero = new ReadOnlyValue(0);
-        internal static readonly ReadOnlyValue Max999 = new ReadOnlyValue(999.999f);
-        internal static readonly ReadOnlyValue Max = new ReadOnlyValue(int.MaxValue / (float)Precision);
+        public static readonly int Precision = 1000; // 0.001
+        public static readonly ReadOnlyValue Zero = new ReadOnlyValue(0);
+        public static readonly ReadOnlyValue Max999 = new ReadOnlyValue(999.999f);
+        public static readonly ReadOnlyValue Max = new ReadOnlyValue(int.MaxValue / (float)Precision);
 
         public ReadOnlyValue(float number, bool showMessageAboutOperationFails = true)
         {
@@ -97,7 +97,7 @@ namespace Nashet.ValueSpace
         }
 
         // new value
-        internal Procent HowMuchHaveOf(Value need)
+        public Procent HowMuchHaveOf(Value need)
         {
             if (need.rawUIntValue == 0)
                 return new Procent(1f);

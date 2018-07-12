@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         private Date dateOfgetBought = Date.Never.Copy();
         private readonly StorageSet bought = new StorageSet();
 
-        internal PricePool priceHistory;
+        public PricePool priceHistory;
         private StorageSet receivedGoods = new StorageSet();
 
         //private Dictionary<Producer, Storage> sentToMarket;
@@ -42,7 +42,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal void Initialize(Country country)
+        public void Initialize(Country country)
         {
             priceHistory = new PricePool();
             foreach (var item in Product.getAll().Where(x => !x.isAbstract()))
@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// new value
         /// </summary>        
-        internal MoneyView getCost(StorageSet need)
+        public MoneyView getCost(StorageSet need)
         {
             Money cost = new Money(0m);
             // float price;
@@ -71,7 +71,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// returns new Value
         /// </summary>
-        internal MoneyView getCost(IEnumerable<Storage> need)
+        public MoneyView getCost(IEnumerable<Storage> need)
         {
             Money cost = new Money(0m);
             foreach (Storage stor in need)
@@ -82,7 +82,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// New value
         /// </summary>
-        internal MoneyView getCost(Storage need)
+        public MoneyView getCost(Storage need)
         {
             if (need.Product == Product.Gold)
             {
@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// new value. Cost in that particular market. Cheapest if there are several products
         /// </summary>
-        internal MoneyView getCost(Product product)
+        public MoneyView getCost(Product product)
         {
             if (product == Product.Gold)
             {
@@ -113,13 +113,13 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Just transfers it to StorageSet.convertToCheapestStorageProduct(Storage)
         /// </summary>
-        internal Storage GetRandomCheapestSubstitute(Storage need)
+        public Storage GetRandomCheapestSubstitute(Storage need)
         {
             return prices.ConvertToRandomCheapestStorageProduct(need, this);
         }
 
         //todo change it to 1 run by every products, not run for every product
-        private Storage recalculateProductForConsumers(Product product, Func<Consumer, StorageSet> selector)
+        private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product);
             //foreach (Country country in World.getAllExistingCountries())
@@ -136,18 +136,18 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        private Storage recalculateProductForBuyers(Product product, Func<Consumer, StorageSet> selector)
+        private Storage recalculateProductForBuyers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product);
-            //foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in Country.AllProvinces())
+                foreach (Province province in country.AllProvinces())
                     foreach (Consumer consumer in province.getAllBuyers())
                     {
                         Storage re = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(re);
                     }
-                Storage countryStor = selector(Country).GetFirstSubstituteStorage(product);
+                Storage countryStor = selector(country).GetFirstSubstituteStorage(product);
                 result.add(countryStor);
             }
             return result;
@@ -188,12 +188,12 @@ namespace Nashet.EconomicSimulation
             return result;
         }
 
-        internal Storage getBouthOnMarket(Product product, bool takeThisTurnData)
+        public Storage getBouthOnMarket(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
             {
                 // recalculate only 1 product
-                return recalculateProductForBuyers(product, x => x.getConsumedInMarket());
+                return recalculateProductForBuyers(product, x => x.getConsumedInMarket(this));
             }
             if (!dateOfgetBought.IsToday)
             {
@@ -201,7 +201,7 @@ namespace Nashet.EconomicSimulation
                 foreach (Storage recalculatingProduct in prices)
                     if (recalculatingProduct.Product.isTradable())
                     {
-                        var result = recalculateProductForConsumers(recalculatingProduct.Product, x => x.getConsumedInMarket());
+                        var result = recalculateProductForConsumers(recalculatingProduct.Product, x => x.getConsumedInMarket(this));
 
                         bought.Set(new Storage(recalculatingProduct.Product, result));
                     }
@@ -210,7 +210,7 @@ namespace Nashet.EconomicSimulation
             return bought.GetFirstSubstituteStorage(product);
         }
 
-        internal Storage getTotalConsumption(Product product, bool takeThisTurnData)
+        public Storage getTotalConsumption(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
             {
@@ -234,7 +234,7 @@ namespace Nashet.EconomicSimulation
         /// Only goods sent to market
         /// Based  on last turn data
         /// </summary>
-        internal Storage getMarketSupply(Product product, bool takeThisTurnData)
+        public Storage getMarketSupply(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
             {
@@ -258,7 +258,7 @@ namespace Nashet.EconomicSimulation
         /// All produced supplies
         /// Based  on last turn data
         /// </summary>
-        internal Storage getProductionTotal(Product product, bool takeThisTurnData)
+        public Storage getProductionTotal(Product product, bool takeThisTurnData)
         {
             if (takeThisTurnData)
             {
@@ -279,14 +279,14 @@ namespace Nashet.EconomicSimulation
             return totalProduction.GetFirstSubstituteStorage(product);
         }
 
-        //internal void ForceDSBRecalculation()
+        //public void ForceDSBRecalculation()
         //{
         //    //dateOfDSB--;//!!! Warning! This need to be uncommented to work properly
         //    getDemandSupplyBalance(null);
         //}
 
 
-        internal bool isAvailable(Product product)
+        public bool isAvailable(Product product)
         {
             if (product.isAbstract())
             {
@@ -313,7 +313,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Buying PrimitiveStorageSet, subsidizations allowed
         /// </summary>
-        //internal void SellList(Consumer buyer, StorageSet buying, Country subsidizer)
+        //public void SellList(Consumer buyer, StorageSet buying, Country subsidizer)
         //{
         //    foreach (Storage item in buying)
         //        if (item.isNotZero())
@@ -325,7 +325,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Date actual for how much produced on turn start, not how much left
         /// </summary>
-        //internal bool HasProducedThatMuch(Storage need)
+        //public bool HasProducedThatMuch(Storage need)
         //{
         //    //Storage availible = findStorage(need.Product);
         //    //if (availible.get() >= need.get()) return true;
@@ -338,7 +338,7 @@ namespace Nashet.EconomicSimulation
         /// Must be safe - returns new Storage
         /// Date actual for how much produced on turn start, not how much left
         /// </summary>
-        //internal Storage HowMuchProduced(Product need)
+        //public Storage HowMuchProduced(Product need)
         //{
         //    //return findStorage(need.Product);
         //    // here DSB is based not on last turn data, but on this turn.
@@ -348,7 +348,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Based on DSB, assuming you have enough money
         /// </summary>
-        internal bool HasAvailable(Storage need)
+        public bool HasAvailable(Storage need)
         {
             //Storage availible = findStorage(need.Product);
             //if (availible.get() >= need.get()) return true;
@@ -363,7 +363,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Based on DSB, shows how much you can get assuming you have enough money
         /// </summary>
-        internal Storage HowMuchAvailable(Storage need)
+        public Storage HowMuchAvailable(Storage need)
         {
             //float BuyingAmountAvailable = 0;
             return receivedGoods.getBiggestStorage(need.Product);
@@ -383,7 +383,7 @@ namespace Nashet.EconomicSimulation
         /// Result > 1 mean demand is higher, price should go up   Result fewer 1 mean supply is higher, price should go down
         /// based on last turn data
         ///</summary>
-        internal float getDemandSupplyBalance(Product product, bool forceDSBRecalculation)
+        public float getDemandSupplyBalance(Product product, bool forceDSBRecalculation)
         {
             if (product == Product.Gold)
                 return Options.MarketInfiniteDSB;

@@ -12,17 +12,17 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class World : MonoBehaviour
     {
-        private static readonly List<Province> allProvinces = new List<Province>();
-        private static readonly List<Country> allCountries = new List<Country>();
-        private static readonly List<Culture> allCultures = new List<Culture>();
+        protected static readonly List<Province> allProvinces = new List<Province>();
+        protected static readonly List<Country> allCountries = new List<Country>();
+        protected static readonly List<Culture> allCultures = new List<Culture>();
 
-        internal static readonly Country UncolonizedLand;
+        public static readonly Country UncolonizedLand;
 
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
 
-        internal static List<BattleResult> allBattles = new List<BattleResult>();
+        public static List<BattleResult> allBattles = new List<BattleResult>();
 
         //public static Market market;
         public Graph graph;
@@ -100,7 +100,7 @@ namespace Nashet.EconomicSimulation
                     yield return item;
         }
 
-        internal static IEnumerable<Factory> GetAllFactories()
+        public static IEnumerable<Factory> GetAllFactories()
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal static Money GetAllMoney()
+        public static Money GetAllMoney()
         {
             Money allMoney = new Money(0m);
             foreach (Country country in getAllExistingCountries())
@@ -146,7 +146,7 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        internal static Province FindProvince(int number)
+        public static Province FindProvince(int number)
         {
             foreach (var pro in allProvinces)
                 if (pro.getID() == number)
@@ -192,22 +192,22 @@ namespace Nashet.EconomicSimulation
                 }
         }
 
-        internal void ResumeSimulation()
+        public void ResumeSimulation()
         {
             haveToRunSimulation = true;
         }
 
-        internal bool IsRunning
+        public bool IsRunning
         {
             get { return (haveToRunSimulation || haveToStepSimulation); }// && !MessagePanel.IsOpenAny();
         }
 
-        internal void PauseSimulation()
+        public void PauseSimulation()
         {
             haveToRunSimulation = false;
         }
 
-        internal void MakeOneStepSimulation()
+        public void MakeOneStepSimulation()
         {
             haveToStepSimulation = true;
         }
@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal static void CreateCountries()
+        public static void CreateCountries()
         {
             var countryNameGenerator = new CountryNameGenerator();
             var cultureNameGenerator = new CultureNameGenerator();
@@ -398,7 +398,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // temporally
-        internal static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
+        public static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -407,7 +407,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // temporally
-        internal static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
+        public static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -493,7 +493,7 @@ namespace Nashet.EconomicSimulation
             Product.sortSubstitutes(World.getAllExistingCountries().Random().market);
         }
 
-        internal static void simulate()
+        public static void simulate()
         {
             if (haveToStepSimulation)
                 haveToStepSimulation = false;

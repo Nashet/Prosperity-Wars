@@ -271,17 +271,17 @@ namespace Nashet.EconomicSimulation
             return ShortName;
         }
 
-        internal bool isPoorStrata()
+        public bool isPoorStrata()
         {
             return this == Farmers || this == Workers || this == Tribesmen || this == Soldiers;
         }
 
-        internal bool isRichStrata()
+        public bool isRichStrata()
         {
             return this == Aristocrats || this == Capitalists || this == Artisans;
         }
 
-        internal float getStrenght()
+        public float getStrenght()
         {
             return strenght;
         }
@@ -294,7 +294,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Returns true if can produce something by himself
         /// </summary>
-        internal bool isProducer()
+        public bool isProducer()
         {
             return this == Farmers || this == Tribesmen || this == Artisans;
         }
@@ -303,7 +303,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Makes sure that pops consume product in cheap-first order
         /// </summary>
-        internal static void sortNeeds(Market market )
+        public static void sortNeeds(Market market )
         {
             
             foreach (var item in allPopTypes)
@@ -321,7 +321,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        //internal bool HasJobsForThatPopTypeIn(Province province)
+        //public bool HasJobsForThatPopTypeIn(Province province)
         //{
         //    return true;
         //}

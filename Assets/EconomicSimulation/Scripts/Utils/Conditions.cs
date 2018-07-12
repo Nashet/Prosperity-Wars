@@ -9,8 +9,8 @@ namespace Nashet.Conditions
 {
     public class ConditionsList
     {
-        //internal readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition> { new Condition(x => 2 * 2 == 4, "Always Yes condition", true) });
-        //internal readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition> { Condition.IsNotImplemented });
+        //public readonly static ConditionsList AlwaysYes = new ConditionsList(new List<Condition> { new Condition(x => 2 * 2 == 4, "Always Yes condition", true) });
+        //public readonly static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition> { Condition.IsNotImplemented });
 
         protected List<Condition> list;
 
@@ -46,7 +46,7 @@ namespace Nashet.Conditions
             list = new List<Condition>(conditionsList.list);
         }
 
-        internal void add(Condition condition)
+        public void add(Condition condition)
         {
             list.Add(condition);
         }
@@ -89,11 +89,11 @@ namespace Nashet.Conditions
     /// </summary>
     public class Condition : Name
     {
-        internal static readonly Condition IsNotImplemented
+        public static readonly Condition IsNotImplemented
             //= new Condition(delegate { return 2 * 2 == 5 || Game.devMode; }, "Feature is implemented", true);
             = new Condition(delegate { return 2 * 2 == 5; }, "Feature is implemented", true);
 
-        internal static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
+        public static readonly Condition AlwaysYes = new Condition(x => 2 * 2 == 4, "Always Yes condition", true);
 
         protected readonly Func<object, bool> checkingFunction;
 
@@ -193,7 +193,7 @@ namespace Nashet.Conditions
         }
 
         /// <summary>Returns bool result and description in out description</summary>
-        internal bool checkIftrue(object forWhom, out string description)
+        public bool checkIftrue(object forWhom, out string description)
         {
             if (changeTargetObject != null)
                 forWhom = changeTargetObject(forWhom);
@@ -214,7 +214,7 @@ namespace Nashet.Conditions
         }
 
         /// <summary>Returns bool result, fast version, without description</summary>
-        internal bool checkIfTrue(object forWhom)
+        public bool checkIfTrue(object forWhom)
         {
             if (changeTargetObject != null)
                 forWhom = changeTargetObject(forWhom);
@@ -352,7 +352,7 @@ namespace Nashet.Conditions
         }
 
         /// <summary>Returns bool result and description in out description, supports two objects</summary>
-        internal bool checkIftrue(object firstObject, object secondObject, out string description)
+        public bool checkIftrue(object firstObject, object secondObject, out string description)
         {
             if (changeTargetObject != null)
                 firstObject = changeTargetObject(firstObject);
@@ -382,7 +382,7 @@ namespace Nashet.Conditions
         }
 
         /// <summary>Returns bool result, fast version, without description, supports two objects</summary>
-        internal bool checkIftrue(object firstObject, object secondObject)
+        public bool checkIftrue(object firstObject, object secondObject)
         {
             if (changeTargetObject != null)
                 firstObject = changeTargetObject(firstObject);
@@ -452,14 +452,14 @@ namespace Nashet.Conditions
             this.showZeroModifiers = showZeroModifiers;
         }
 
-        internal float getValue()
+        public float getValue()
         {
             return value;
         }
 
         /// <summary>Returns bool result and description in out description
         /// Doesn't care about showZeroModifier</summary>
-        //override internal bool checkIftrue(Country forWhom, out string description)
+        //override public bool checkIftrue(Country forWhom, out string description)
         //{
         //    bool answer = false;
         //    if (floatModifierFunction != null)
@@ -495,7 +495,7 @@ namespace Nashet.Conditions
         //    }
         //    return answer;
         //}
-        internal float getModifier(object forWhom, out string description)
+        public float getModifier(object forWhom, out string description)
         {
             if (changeTargetObject != null)
                 forWhom = changeTargetObject(forWhom);
@@ -549,7 +549,7 @@ namespace Nashet.Conditions
             return result;
         }
 
-        internal float getModifier(object forWhom)
+        public float getModifier(object forWhom)
         {
             if (changeTargetObject != null)
                 forWhom = changeTargetObject(forWhom);
@@ -579,10 +579,10 @@ namespace Nashet.Conditions
         //public ModifiersList(List<AbstractCondition> inlist) : base(inlist)
         //{
         //}
-        //internal static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
-        //internal static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
+        //public static ConditionsList AlwaysYes = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 2; }, "Always Yes condition", true) });
+        //public static ConditionsList IsNotImplemented = new ConditionsList(new List<Condition>() { new Condition(delegate (Country forWhom) { return 2 == 0; }, "Feature is implemented", true) });
 
-        internal float getModifier(object forWhom, out string description)
+        public float getModifier(object forWhom, out string description)
         {
             StringBuilder text = new StringBuilder();
             //text.Clear();
@@ -604,7 +604,7 @@ namespace Nashet.Conditions
             return summ;
         }
 
-        internal float getModifier(object forWhom)
+        public float getModifier(object forWhom)
         {
             float summ = 0f;
             foreach (Modifier item in list)
@@ -612,7 +612,7 @@ namespace Nashet.Conditions
             return summ;
         }
 
-        internal float find(AbstractReformValue reformValue)
+        public float find(AbstractReformValue reformValue)
         {
             var foundModifier = list.Find(x => reformValue.allowed.contains(x)) as Modifier;
             if (foundModifier == null)
@@ -621,7 +621,7 @@ namespace Nashet.Conditions
                 return foundModifier.getValue();
         }
 
-        internal string GetDescription(object forWhom)
+        public string GetDescription(object forWhom)
         {
             string res;
             getModifier(forWhom, out res);

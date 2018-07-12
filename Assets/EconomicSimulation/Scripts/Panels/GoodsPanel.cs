@@ -106,7 +106,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        //internal int getGraphPoint()
+        //public int getGraphPoint()
         //{ }
         public void show(Product inn)
         {

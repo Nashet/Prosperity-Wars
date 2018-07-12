@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
         public readonly DoubleConditionsList allowed;
         public readonly Condition isEnacted;// = new Condition(x => !(x as Country).reforms.isEnacted(this), "Reform is not enacted yet", true);
 
-        internal abstract bool isAvailable(Country country);
+        public abstract bool isAvailable(Country country);
 
         protected abstract Procent howIsItGoodForPop(PopUnit pop);
 
@@ -102,13 +102,13 @@ namespace Nashet.EconomicSimulation
             this.country = country;
         }
         private readonly Country country;
-        internal abstract bool isAvailable(Country country);
+        public abstract bool isAvailable(Country country);
 
         public abstract IEnumerator GetEnumerator();
 
-        internal abstract bool canChange();
+        public abstract bool canChange();
 
-        internal virtual void setValue(AbstractReformValue selectedReformValue)
+        public virtual void setValue(AbstractReformValue selectedReformValue)
         {
             foreach (PopUnit pop in country.GetAllPopulation())
                 if (pop.getSayingYes(selectedReformValue))
@@ -128,12 +128,12 @@ namespace Nashet.EconomicSimulation
             get { return description; }
         }
 
-        internal abstract AbstractReformValue getValue();
+        public abstract AbstractReformValue getValue();
 
-        internal abstract bool canHaveValue(AbstractReformValue abstractReformValue);
+        public abstract bool canHaveValue(AbstractReformValue abstractReformValue);
 
-        //abstract internal AbstractReformValue getValue(int value);
-        //abstract internal void setValue(int value);
+        //abstract public AbstractReformValue getValue(int value);
+        //abstract public void setValue(int value);
         public void OnClicked()
         {
             MainCamera.politicsPanel.selectReform(this);
@@ -143,7 +143,7 @@ namespace Nashet.EconomicSimulation
 
     public class Government : AbstractReform, IHasCountry
     {
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
         private ReformValue reform;
         private readonly Country country;
 
@@ -170,7 +170,7 @@ namespace Nashet.EconomicSimulation
 
             //public void onEnacted()
             //{ }
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 if (ID == 4 && !country.Invented(Invention.Collectivism))
                     return false;
@@ -199,7 +199,7 @@ namespace Nashet.EconomicSimulation
                 return result;
             }
 
-            internal string getPrefix()
+            public string getPrefix()
             {
                 return prefix;
             }
@@ -224,47 +224,47 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal static readonly ReformValue Tribal = new ReformValue("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
+        public static readonly ReformValue Tribal = new ReformValue("Tribal Federation", "- Democracy-lite; Tribesmen and Aristocrats vote.", 0,
             new DoubleConditionsList(), "Tribe", 10, 0f);
 
-        internal static readonly ReformValue Aristocracy = new ReformValue("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
+        public static readonly ReformValue Aristocracy = new ReformValue("Aristocracy", "- Aristocrats and Clerics make the rules.", 1,
             new DoubleConditionsList(), "Kingdom", 20, 0.5f);
 
-        internal static readonly ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
+        public static readonly ReformValue Polis = new ReformValue("Polis", "- Landed individuals allowed to vote. Farmers, Aristocrats, and Clerics share equal voting power.", 8,
             new DoubleConditionsList(), "Polis", 5, 1f);
 
-        internal static readonly ReformValue Despotism = new ReformValue("Despotism", "- Who needs elections? All the power belongs to you!", 2,
+        public static readonly ReformValue Despotism = new ReformValue("Despotism", "- Who needs elections? All the power belongs to you!", 2,
             new DoubleConditionsList(), "Empire", 40, 0.25f);
 
-        internal static readonly ReformValue Theocracy = new ReformValue("Theocracy", "- God decreed only Clerics should have power because of their heavenly connections.", 5,
+        public static readonly ReformValue Theocracy = new ReformValue("Theocracy", "- God decreed only Clerics should have power because of their heavenly connections.", 5,
             new DoubleConditionsList(Condition.IsNotImplemented), "", 40, 0f);
 
-        internal static readonly ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
+        public static readonly ReformValue WealthDemocracy = new ReformValue("Wealth Democracy", "- Landed individuals allowed to vote, such as Farmers, Aristocrats, etc. Wealthy individuals have more votes (5 to 1)", 9,
             new DoubleConditionsList(Condition.IsNotImplemented), "States", 40, 1f);
 
-        internal static readonly ReformValue Democracy = new ReformValue("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
+        public static readonly ReformValue Democracy = new ReformValue("Universal Democracy", "- The ideal democracy. Everyone's vote is equal.", 3,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Republic", 100, 1f);
 
-        internal static readonly ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
+        public static readonly ReformValue BourgeoisDictatorship = new ReformValue("Bourgeois Dictatorship", "- Robber Barons or Captains of Industry? You decide!", 6,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented }), "Oligarchy", 20, 1f);
 
-        internal static readonly ReformValue Junta = new ReformValue("Junta", "- The military knows what's best for the people...", 7,
+        public static readonly ReformValue Junta = new ReformValue("Junta", "- The military knows what's best for the people...", 7,
             new DoubleConditionsList(new List<Condition> { Invention.ProfessionalArmyInvented }), "Junta", 20, 0.3f);
 
-        internal static readonly ReformValue ProletarianDictatorship = new ReformValue("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
+        public static readonly ReformValue ProletarianDictatorship = new ReformValue("Proletarian Dictatorship", "- Bureaucrats ruling with a terrifying hammer and a friendly sickle.", 4,
             new DoubleConditionsList(new List<Condition> { Invention.CollectivismInvented, Invention.ManufacturesInvented }), "SSR", 20, 0.5f);
 
-        internal static readonly Condition isPolis = new Condition(x => (x as Country).government.getValue() == Polis, "Government is " + Polis, true);
-        internal static readonly Condition isTribal = new Condition(x => (x as Country).government.getValue() == Tribal, "Government is " + Tribal, true);
-        internal static readonly Condition isAristocracy = new Condition(x => (x as Country).government.getValue() == Aristocracy, "Government is " + Aristocracy, true);
+        public static readonly Condition isPolis = new Condition(x => (x as Country).government.getValue() == Polis, "Government is " + Polis, true);
+        public static readonly Condition isTribal = new Condition(x => (x as Country).government.getValue() == Tribal, "Government is " + Tribal, true);
+        public static readonly Condition isAristocracy = new Condition(x => (x as Country).government.getValue() == Aristocracy, "Government is " + Aristocracy, true);
 
-        internal static readonly Condition isDespotism = new Condition(x => (x as Country).government.getValue() == Despotism, "Government is " + Despotism, true);
-        internal static readonly Condition isTheocracy = new Condition(x => (x as Country).government.getValue() == Theocracy, "Government is " + Theocracy, true);
-        internal static readonly Condition isWealthDemocracy = new Condition(x => (x as Country).government.getValue() == WealthDemocracy, "Government is " + WealthDemocracy, true);
-        internal static readonly Condition isDemocracy = new Condition(x => (x as Country).government.getValue() == Democracy, "Government is " + Democracy, true);
-        internal static readonly Condition isBourgeoisDictatorship = new Condition(x => (x as Country).government.getValue() == BourgeoisDictatorship, "Government is " + BourgeoisDictatorship, true);
-        internal static readonly Condition isJunta = new Condition(x => (x as Country).government.getValue() == Junta, "Government is " + Junta, true);
-        internal static readonly Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == ProletarianDictatorship, "Government is " + ProletarianDictatorship, true);
+        public static readonly Condition isDespotism = new Condition(x => (x as Country).government.getValue() == Despotism, "Government is " + Despotism, true);
+        public static readonly Condition isTheocracy = new Condition(x => (x as Country).government.getValue() == Theocracy, "Government is " + Theocracy, true);
+        public static readonly Condition isWealthDemocracy = new Condition(x => (x as Country).government.getValue() == WealthDemocracy, "Government is " + WealthDemocracy, true);
+        public static readonly Condition isDemocracy = new Condition(x => (x as Country).government.getValue() == Democracy, "Government is " + Democracy, true);
+        public static readonly Condition isBourgeoisDictatorship = new Condition(x => (x as Country).government.getValue() == BourgeoisDictatorship, "Government is " + BourgeoisDictatorship, true);
+        public static readonly Condition isJunta = new Condition(x => (x as Country).government.getValue() == Junta, "Government is " + Junta, true);
+        public static readonly Condition isProletarianDictatorship = new Condition(x => (x as Country).government.getValue() == ProletarianDictatorship, "Government is " + ProletarianDictatorship, true);
 
         public Government(Country country) : base("Government", "Form of government", country)
         {
@@ -272,26 +272,26 @@ namespace Nashet.EconomicSimulation
             this.country = country;
         }
 
-        internal string getPrefix()
+        public string getPrefix()
         {
             return reform.getPrefix();
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return reform;
         }
 
-        internal ReformValue getTypedValue()
+        public ReformValue getTypedValue()
         {
             return reform;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    return PossibleStatuses[value];
         //}
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -333,7 +333,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             reform = (ReformValue)selectedReform;
@@ -462,19 +462,19 @@ namespace Nashet.EconomicSimulation
                 MainCamera.refreshAllActive();
         }
 
-        //internal void setValue(AbstractReformValue selectedReform, bool setPrefix)
+        //public void setValue(AbstractReformValue selectedReform, bool setPrefix)
         //{
         //    setValue(selectedReform);
         //    if (setPrefix)
         //        country.setPrefix();
         //}
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return true;
         }
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -484,22 +484,22 @@ namespace Nashet.EconomicSimulation
     {
         private readonly Country country;
 
-        internal static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status != LaissezFaire; }, "Economy policy is not Laissez Faire", true);
-        internal static readonly Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status == LaissezFaire; }, "Economy policy is Laissez Faire", true);
+        public static readonly Condition isNotLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status != LaissezFaire; }, "Economy policy is not Laissez Faire", true);
+        public static readonly Condition isLF = new Condition(delegate (object forWhom) { return (forWhom as Country).economy.status == LaissezFaire; }, "Economy policy is Laissez Faire", true);
 
-        internal static readonly Condition isNotNatural = new Condition(x => (x as Country).economy.status != NaturalEconomy, "Economy policy is not Natural Economy", true);
-        internal static readonly Condition isNatural = new Condition(x => (x as Country).economy.status == NaturalEconomy, "Economy policy is Natural Economy", true);
+        public static readonly Condition isNotNatural = new Condition(x => (x as Country).economy.status != NaturalEconomy, "Economy policy is not Natural Economy", true);
+        public static readonly Condition isNatural = new Condition(x => (x as Country).economy.status == NaturalEconomy, "Economy policy is Natural Economy", true);
 
-        internal static readonly Condition isNotState = new Condition(x => (x as Country).economy.status != StateCapitalism, "Economy policy is not State Capitalism", true);
-        internal static readonly Condition isStateCapitlism = new Condition(x => (x as Country).economy.status == StateCapitalism, "Economy policy is State Capitalism", true);
+        public static readonly Condition isNotState = new Condition(x => (x as Country).economy.status != StateCapitalism, "Economy policy is not State Capitalism", true);
+        public static readonly Condition isStateCapitlism = new Condition(x => (x as Country).economy.status == StateCapitalism, "Economy policy is State Capitalism", true);
 
-        internal static readonly Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Interventionism, "Economy policy is not Limited Interventionism", true);
-        internal static readonly Condition isInterventionism = new Condition(x => (x as Country).economy.status == Interventionism, "Economy policy is Limited Interventionism", true);
+        public static readonly Condition isNotInterventionism = new Condition(x => (x as Country).economy.status != Interventionism, "Economy policy is not Limited Interventionism", true);
+        public static readonly Condition isInterventionism = new Condition(x => (x as Country).economy.status == Interventionism, "Economy policy is Limited Interventionism", true);
 
-        internal static readonly Condition isNotPlanned = new Condition(x => (x as Country).economy.status != PlannedEconomy, "Economy policy is not Planned Economy", true);
-        internal static readonly Condition isPlanned = new Condition(x => (x as Country).economy.status == PlannedEconomy, "Economy policy is Planned Economy", true);
+        public static readonly Condition isNotPlanned = new Condition(x => (x as Country).economy.status != PlannedEconomy, "Economy policy is not Planned Economy", true);
+        public static readonly Condition isPlanned = new Condition(x => (x as Country).economy.status == PlannedEconomy, "Economy policy is Planned Economy", true);
 
-        internal static readonly DoubleCondition taxesInsideLFLimit = new DoubleCondition(
+        public static readonly DoubleCondition taxesInsideLFLimit = new DoubleCondition(
         delegate (object x, object y)
         {
             //if it's poor taxes
@@ -514,7 +514,7 @@ namespace Nashet.EconomicSimulation
         },
             x => "Economy policy is Laissez Faire and tax is not higher than 50%", false);
 
-        internal static readonly DoubleCondition taxesInsideSCLimit = new DoubleCondition(
+        public static readonly DoubleCondition taxesInsideSCLimit = new DoubleCondition(
         delegate (object x, object y)
         {
             //if it's poor taxes
@@ -529,10 +529,10 @@ namespace Nashet.EconomicSimulation
         },
             x => "Economy policy is State capitalism and tax is not lower than 20%", false);
 
-        internal static Condition isNotMarket = new Condition(x => (x as Country).economy.status == NaturalEconomy || (x as Country).economy.status == PlannedEconomy,
+        public static Condition isNotMarket = new Condition(x => (x as Country).economy.status == NaturalEconomy || (x as Country).economy.status == PlannedEconomy,
           "Economy is not market economy", true);
 
-        internal static Condition isMarket = new Condition(x => (x as Country).economy.status == StateCapitalism || (x as Country).economy.status == Interventionism
+        public static Condition isMarket = new Condition(x => (x as Country).economy.status == StateCapitalism || (x as Country).economy.status == Interventionism
             || (x as Country).economy.status == LaissezFaire
             , "Economy is market economy", true);
 
@@ -551,7 +551,7 @@ namespace Nashet.EconomicSimulation
                 _allowForeignIvestments = _allowForeighnIvestments;
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 ReformValue requested = this;
                 if (requested.ID == 0)
@@ -612,16 +612,16 @@ namespace Nashet.EconomicSimulation
 
         private ReformValue status;
 
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
 
-        internal static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0, false,
+        public static readonly ReformValue PlannedEconomy = new ReformValue("Planned economy", "", 0, false,
             new DoubleConditionsList(new List<Condition> {
             Invention.CollectivismInvented, Government.isProletarianDictatorship }));
 
-        internal static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, false, new DoubleConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes));
-        internal static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, false, new DoubleConditionsList(capitalism));
-        internal static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, true, new DoubleConditionsList(capitalism));
-        internal static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, true, new DoubleConditionsList(capitalism));
+        public static readonly ReformValue NaturalEconomy = new ReformValue("Natural economy", " ", 1, false, new DoubleConditionsList(Condition.IsNotImplemented));//new ConditionsList(Condition.AlwaysYes));
+        public static readonly ReformValue StateCapitalism = new ReformValue("State capitalism", "", 2, false, new DoubleConditionsList(capitalism));
+        public static readonly ReformValue Interventionism = new ReformValue("Limited interventionism", "", 3, true, new DoubleConditionsList(capitalism));
+        public static readonly ReformValue LaissezFaire = new ReformValue("Laissez faire", "", 4, true, new DoubleConditionsList(capitalism));
 
         /// ////////////
         public Economy(Country country) : base("Economy", "Your economy policy", country)
@@ -630,7 +630,7 @@ namespace Nashet.EconomicSimulation
             this.country = country;
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
@@ -641,7 +641,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // todo add OnReformEnacted?
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
@@ -668,16 +668,16 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal ReformValue getTypedValue()
+        public ReformValue getTypedValue()
         {
             return status;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    return PossibleStatuses[value];
         //}
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -688,12 +688,12 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return true;
         }
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -710,7 +710,7 @@ namespace Nashet.EconomicSimulation
                 // this.allowed = condition;
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 ReformValue requested = this;
 
@@ -736,7 +736,7 @@ namespace Nashet.EconomicSimulation
             private static Procent al = new Procent(0.1f);
             private static Procent nu = new Procent(0.0f);
 
-            internal Procent getTax()
+            public Procent getTax()
             {
                 if (this == Brutal)
                     return br;
@@ -770,20 +770,20 @@ namespace Nashet.EconomicSimulation
         }
 
         public ReformValue status;
-        internal static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
-        internal static ReformValue Allowed;
-        internal static ReformValue Brutal;
+        public static List<ReformValue> PossibleStatuses = new List<ReformValue>();// { Allowed, Brutal, Abolished, AbolishedWithLandPayment, AbolishedAndNationalizated };
+        public static ReformValue Allowed;
+        public static ReformValue Brutal;
 
-        internal static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
+        public static ReformValue Abolished = new ReformValue("Abolished", "- Abolished with no obligations", 2,
             new DoubleConditionsList(new List<Condition> { Invention.IndividualRightsInvented, Condition.IsNotImplemented }));
 
-        internal static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
+        public static ReformValue AbolishedWithLandPayment = new ReformValue("Abolished with land payment", "- Peasants are personally free now but they have to pay debt for land", 3,
             new DoubleConditionsList(new List<Condition>
             {
             Invention.IndividualRightsInvented,Invention.BankingInvented, Condition.IsNotImplemented
             }));
 
-        internal static ReformValue AbolishedAndNationalized = new ReformValue("Abolished and Nationalized land", "- Aristocrats loose property", 4,
+        public static ReformValue AbolishedAndNationalized = new ReformValue("Abolished and Nationalized land", "- Aristocrats loose property", 4,
             new DoubleConditionsList(new List<Condition>
             {
             Government.isProletarianDictatorship, Condition.IsNotImplemented
@@ -807,17 +807,17 @@ namespace Nashet.EconomicSimulation
             status = Allowed;
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    //return PossibleStatuses.Find(x => x.ID == value);
         //    return PossibleStatuses[value];
         //}
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -828,26 +828,26 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return true;
         }
 
-        internal static Condition IsAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Abolished
+        public static Condition IsAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Abolished
         || (x as Country).serfdom.status == AbolishedAndNationalized || (x as Country).serfdom.status == AbolishedWithLandPayment,
             "Serfdom is abolished", true);
 
-        internal static Condition IsNotAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Allowed
+        public static Condition IsNotAbolishedInAnyWay = new Condition(x => (x as Country).serfdom.status == Allowed
         || (x as Country).serfdom.status == Brutal,
             "Serfdom is in power", true);
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -880,7 +880,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 return true;
             }
@@ -889,7 +889,7 @@ namespace Nashet.EconomicSimulation
             /// Calculates wage basing on consumption cost for 1000 workers
             /// Returns new value
             /// </summary>
-            internal MoneyView getWage(Market market)
+            public MoneyView getWage(Market market)
             {
                 if (this == None)
                     return Money.Zero;
@@ -975,30 +975,30 @@ namespace Nashet.EconomicSimulation
 
         private ReformValue status;
 
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
-        internal static readonly ReformValue None = new ReformValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstractReformValue.isNotLFOrMoreConservative }));
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
+        public static readonly ReformValue None = new ReformValue("No Minimum Wage", "", 0, new DoubleConditionsList(new List<Condition> { AbstractReformValue.isNotLFOrMoreConservative }));
 
-        internal static readonly ReformValue Scanty = new ReformValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Scanty = new ReformValue("Scant Minimum Wage", "- Half-hungry", 1, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Minimal = new ReformValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Minimal = new ReformValue("Subsistence Minimum Wage", "- Just enough to feed yourself", 2, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Trinket = new ReformValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Trinket = new ReformValue("Mid-Level Minimum Wage", "- You can buy some small stuff", 3, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Middle = new ReformValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Middle = new ReformValue("Social Security", "- Minimum Wage & Retirement benefits", 4, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Big = new ReformValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Big = new ReformValue("Generous Minimum Wage", "- Can live almost like a king. Almost..", 5, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented,AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
@@ -1008,22 +1008,22 @@ namespace Nashet.EconomicSimulation
             status = None;
         }
 
-        internal bool isThatReformEnacted(int value)
+        public bool isThatReformEnacted(int value)
         {
             return status == PossibleStatuses[value];
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    return PossibleStatuses.Find(x => x.ID == value);
         //    //return PossibleStatuses[value];
         //}
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -1034,13 +1034,13 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             if (country.Invented(Invention.Welfare))
                 return true;
@@ -1048,7 +1048,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -1077,7 +1077,7 @@ namespace Nashet.EconomicSimulation
                     condition.add(new Condition(x => (x as Country).unemploymentSubsidies.isThatReformEnacted(previousID), "Previous reform enacted", true));
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 return true;
             }
@@ -1085,7 +1085,7 @@ namespace Nashet.EconomicSimulation
             /// <summary>
             /// Calculates Unemployment Subsidies basing on consumption cost for 1000 workers
             /// </summary>
-            internal MoneyView getSubsidiesRate(Market market)
+            public MoneyView getSubsidiesRate(Market market)
             {
                 if (this == None)
                     return MoneyView.Zero;
@@ -1165,30 +1165,30 @@ namespace Nashet.EconomicSimulation
         }
 
         private ReformValue status;
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
-        internal static readonly ReformValue None = new ReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition>()));
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
+        public static readonly ReformValue None = new ReformValue("No Unemployment Benefits", "", 0, new DoubleConditionsList(new List<Condition>()));
 
-        internal static readonly ReformValue Scanty = new ReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Scanty = new ReformValue("Bread Lines", "-The people are starving. Let them eat bread.", 1, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Minimal = new ReformValue("Food Stamps", "- Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Minimal = new ReformValue("Food Stamps", "- Let the people buy what they need.", 2, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Trinket = new ReformValue("Housing & Food Assistance", "- Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Trinket = new ReformValue("Housing & Food Assistance", "- Affordable Housing for the Unemployed.", 3, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Middle = new ReformValue("Welfare Ministry", "- Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Middle = new ReformValue("Welfare Ministry", "- Now there is a minister granting greater access to benefits.", 4, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
 
-        internal static readonly ReformValue Big = new ReformValue("Full State Unemployment Benefits", "- Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
+        public static readonly ReformValue Big = new ReformValue("Full State Unemployment Benefits", "- Full State benefits for the downtrodden.", 5, new DoubleConditionsList(new List<Condition>
         {
             Invention.WelfareInvented, AbstractReformValue.isNotLFOrMoreConservative, Economy.isNotPlanned
         }));
@@ -1198,28 +1198,28 @@ namespace Nashet.EconomicSimulation
             status = None;
         }
 
-        internal bool isThatReformEnacted(int value)
+        public bool isThatReformEnacted(int value)
         {
             return status == PossibleStatuses[value];
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    return PossibleStatuses.Find(x => x.ID == value);
         //    //return PossibleStatuses[value];
         //}
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -1230,7 +1230,7 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             if (country.Invented(Invention.Welfare))
                 return true;
@@ -1238,7 +1238,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -1248,7 +1248,7 @@ namespace Nashet.EconomicSimulation
     {
         public class ReformValue : AbstractReformStepValue
         {
-            internal Procent tax;
+            public Procent tax;
 
             public ReformValue(string name, string description, Procent tarrif, int ID, DoubleConditionsList condition) : base(name, description, ID, condition, 11)
             {
@@ -1272,7 +1272,7 @@ namespace Nashet.EconomicSimulation
                 return tax + base.ToString();
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 //if (ID == 2 && !country.isInvented(InventionType.collectivism))
                 //    return false;
@@ -1301,7 +1301,7 @@ namespace Nashet.EconomicSimulation
         }
 
         private ReformValue status;
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
 
         static TaxationForPoor()
         {
@@ -1314,22 +1314,22 @@ namespace Nashet.EconomicSimulation
             status = PossibleStatuses[1];
         }
 
-        internal bool isThatReformEnacted(int value)
+        public bool isThatReformEnacted(int value)
         {
             return status == PossibleStatuses[value];
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
 
-        internal ReformValue getTypedValue()
+        public ReformValue getTypedValue()
         {
             return status;
         }
 
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -1340,18 +1340,18 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return true;
         }
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -1361,7 +1361,7 @@ namespace Nashet.EconomicSimulation
     {
         public class ReformValue : AbstractReformStepValue
         {
-            internal Procent tax;
+            public Procent tax;
 
             public ReformValue(string inname, string indescription, Procent intarrif, int idin, DoubleConditionsList condition) : base(inname, indescription, idin, condition, 11)
             {
@@ -1385,7 +1385,7 @@ namespace Nashet.EconomicSimulation
                 return tax + base.ToString();
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 //if (ID == 2 && !country.isInvented(InventionType.collectivism))
                 //    return false;
@@ -1419,7 +1419,7 @@ namespace Nashet.EconomicSimulation
         }
 
         private ReformValue status;
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();// { NaturalEconomy, StateCapitalism, PlannedEconomy };
 
         static TaxationForRich()
         {
@@ -1432,26 +1432,26 @@ namespace Nashet.EconomicSimulation
             status = PossibleStatuses[1];
         }
 
-        internal bool isThatReformEnacted(int value)
+        public bool isThatReformEnacted(int value)
         {
             return status == PossibleStatuses[value];
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
 
-        internal ReformValue getTypedValue()
+        public ReformValue getTypedValue()
         {
             return status;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    return PossibleStatuses[value];
         //}
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -1462,18 +1462,18 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return true;
         }
 
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }
@@ -1493,7 +1493,7 @@ namespace Nashet.EconomicSimulation
                 PossibleStatuses.Add(this);
             }
 
-            internal override bool isAvailable(Country country)
+            public override bool isAvailable(Country country)
             {
                 ReformValue requested = this;
                 if ((requested.ID == 4) && country.Invented(Invention.Collectivism) && (country.serfdom.getValue().ID == 0 || country.serfdom.getValue().ID == 1 || country.serfdom.getValue().ID == 4))
@@ -1537,13 +1537,13 @@ namespace Nashet.EconomicSimulation
         }
 
         private ReformValue status;
-        internal static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
-        internal static ReformValue Equality; // all can vote
-        internal static ReformValue Residency; // state culture only can vote
-        internal static readonly ReformValue NoRights = new ReformValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
+        public static readonly List<ReformValue> PossibleStatuses = new List<ReformValue>();
+        public static ReformValue Equality; // all can vote
+        public static ReformValue Residency; // state culture only can vote
+        public static readonly ReformValue NoRights = new ReformValue("No Rights for Minorities", "-Slavery?", 0, new DoubleConditionsList(Condition.IsNotImplemented));
 
-        //internal readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
-        //internal static Condition IsResidencyPop;
+        //public readonly static Condition isEquality = new Condition(x => (x as Country).minorityPolicy.getValue() == MinorityPolicy.Equality, "Minority policy is " + MinorityPolicy.Equality.getName(), true);
+        //public static Condition IsResidencyPop;
         public MinorityPolicy(Country country) : base("Minority Policy", "- Minority Policy", country)
         {
             if (Equality == null)
@@ -1557,16 +1557,16 @@ namespace Nashet.EconomicSimulation
             //Residency.FullName, true);
         }
 
-        internal override AbstractReformValue getValue()
+        public override AbstractReformValue getValue()
         {
             return status;
         }
 
-        //internal override AbstractReformValue getValue(int value)
+        //public override AbstractReformValue getValue(int value)
         //{
         //    return PossibleStatuses[value];
         //}
-        internal override bool canChange()
+        public override bool canChange()
         {
             return true;
         }
@@ -1577,23 +1577,23 @@ namespace Nashet.EconomicSimulation
                 yield return f;
         }
 
-        internal override void setValue(AbstractReformValue selectedReform)
+        public override void setValue(AbstractReformValue selectedReform)
         {
             base.setValue(selectedReform);
             status = (ReformValue)selectedReform;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return true;
         }
 
-        //internal static Condition IsResidency = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Residency,
+        //public static Condition IsResidency = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Residency,
         //    Residency.FullName, true);
 
-        //internal static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
+        //public static Condition IsEquality = new Condition(x => (x as Country).minorityPolicy.status == MinorityPolicy.Equality,
         //    Equality.FullName, true);
-        internal override bool canHaveValue(AbstractReformValue abstractReformValue)
+        public override bool canHaveValue(AbstractReformValue abstractReformValue)
         {
             return PossibleStatuses.Contains(abstractReformValue as ReformValue);
         }

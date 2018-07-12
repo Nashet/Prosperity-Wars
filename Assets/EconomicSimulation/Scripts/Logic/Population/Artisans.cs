@@ -70,7 +70,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal StorageSet GetResurceInput()
+        public StorageSet GetResurceInput()
         {
             if (artisansProduction == null)
                 return new StorageSet();
@@ -104,13 +104,21 @@ namespace Nashet.EconomicSimulation
                 // consuming made in artisansProduction.consumeNeeds()
                 // here is data transferring
                 // todo rework data transferring from artisans?
-                getConsumedInMarket().Add(artisansProduction.getConsumedInMarket());
-                getConsumed().Add(artisansProduction.getConsumed());
+                foreach (var item in artisansProduction.getAllConsumedInMarket())
+                {
+                    consumedInMarket.Add(item);
+                }
+
+                foreach (var item in artisansProduction.getConsumed())
+                {
+                    consumed.Add(item);
+                }
+                
                 getConsumedLastTurn().Add(artisansProduction.getConsumedLastTurn());
             }
         }
 
-        internal override bool canTrade()
+        public override bool canTrade()
         {
             if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
@@ -118,7 +126,7 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        internal override bool canSellProducts()
+        public override bool canSellProducts()
         {
             return true;
         }
@@ -128,7 +136,7 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.BourgeoisDictatorship)
@@ -138,7 +146,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 if (reformValue == Government.WealthDemocracy)
@@ -197,7 +205,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void checkProfit()
+        public void checkProfit()
         {
             // todo doesn't include taxes. Should it?
             if (artisansProduction == null

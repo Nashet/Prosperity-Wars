@@ -71,7 +71,7 @@ public class Path
         }
     }
 
-    internal Vector3[] GetVector3Nodes()
+    public Vector3[] GetVector3Nodes()
     {
         Vector3[] array = new Vector3[nodes.Count+1];
         for (int i = 0; i < nodes.Count; i++)
@@ -97,7 +97,7 @@ public class Path
             length);
     }
 
-    internal void Add(Path path)
+    public void Add(Path path)
     {
         if (path != null)
         {

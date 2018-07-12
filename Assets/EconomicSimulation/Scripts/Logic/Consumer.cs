@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Nashet.Utils;
 using Nashet.ValueSpace;
 using UnityEngine;
@@ -12,12 +13,12 @@ namespace Nashet.EconomicSimulation
     public abstract class Consumer : Agent
     {
         /// <summary> Amount of consumed product (destroyed by consumption) including market and non-market consumption. Used for statistics </summary>
-        private readonly StorageSet consumed = new StorageSet();
+        protected readonly StorageSet consumed = new StorageSet();
 
         private readonly StorageSet consumedLastTurnAwq = new StorageSet();
 
         /// <summary> Amount of product bought and consumed (destroyed by consumption). Included only market bought products. Used to calculate prices on market</summary>
-        private readonly StorageSet consumedInMarket = new StorageSet();
+        protected readonly List<KeyValuePair<Market, Storage>> consumedInMarket = new List<KeyValuePair<Market, Storage>>();
 
         /// <summary>
         /// Represents buying and/or consuming needs
@@ -33,9 +34,13 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Use for only reads!
         /// </summary>
-        public StorageSet getConsumed()
+        public IEnumerable<Storage> getConsumed()
         {
-            return consumed;
+            foreach (var item in consumed)
+            {
+                yield return item;
+            }
+            //return consumed;
         }
 
         /// <summary>
@@ -49,14 +54,17 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Use for only reads!
         /// </summary>
-        public StorageSet getConsumedInMarket()
-        {
-            return consumedInMarket;
+        public IEnumerable<Storage> getConsumedInMarket(Market market)
+        {            
+                foreach (var item in consumedInMarket.Where(x => x.Key == market))
+                    yield return item.Value;
         }
-        //internal Storage Buy(ICanSell seller,  Storage what) 
-        //{
-        //    //look for better seller
-        //}
+        public IEnumerable<KeyValuePair<Market, Storage>> getAllConsumedInMarket()
+        {
+            foreach (var item in consumedInMarket)
+                yield return item;
+        }
+
 
         /// <summary>
         /// Buys, returns actually bought, subsidizations allowed, uses deposits if available
@@ -167,7 +175,7 @@ namespace Nashet.EconomicSimulation
         /// return true if buying is zero (bought all what it wanted)
         /// former bool Sell(Producer buyer, StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
         /// </summary>
-        internal bool Buy(StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
+        public bool Buy(StorageSet stillHaveToBuy, Procent buyInTime, List<Storage> ofWhat)
         {
             bool buyingIsFinished = true;
             foreach (Storage what in ofWhat)
@@ -211,12 +219,12 @@ namespace Nashet.EconomicSimulation
         {
             this.Pay(market, cost);
             consumed.Add(what);
-            consumedInMarket.Add(what);
+            consumedInMarket.Add(new KeyValuePair<Market, Storage>(market, what));
             market.SendGoods(what);
 
 
             if (Game.logMarket)
-                Debug.Log(this + " consumed from market " + what + " costing " + Country.market.getCost(what));
+                Debug.Log(this + " consumed from " + market + " " + what + " costing " + Country.market.getCost(what));
         }
 
         public void consumeFromCountryStorage(List<Storage> what, Country country)
@@ -235,7 +243,7 @@ namespace Nashet.EconomicSimulation
         {
             base.SetStatisticToZero();
             consumed.setZero();
-            consumedInMarket.setZero();
+            consumedInMarket.Clear();
         }
 
     }

@@ -62,14 +62,14 @@ namespace Nashet.EconomicSimulation
             return unit;
         }
 
-        internal void Select()
+        public void Select()
         {
 
             selectionPart.SetActive(true);
             ArmiesSelectionWindow.Get.Show();
         }
 
-        internal void DeSelect()
+        public void DeSelect()
         {
             selectionPart.SetActive(false);
             ArmiesSelectionWindow.Get.Refresh();
@@ -96,7 +96,7 @@ namespace Nashet.EconomicSimulation
         public void Simulate()
         { }
 
-        internal static Unit FindByID(int meshNumber)
+        public static Unit FindByID(int meshNumber)
         {
             return allUnits.Find(x => Int32.Parse(x.name) == meshNumber);
         }
@@ -109,7 +109,7 @@ namespace Nashet.EconomicSimulation
             return "Army";
         }
 
-        internal void UpdateUnitShieldText(Province province)//static
+        public void UpdateUnitShieldText(Province province)//static
         {
             int count = 0;
             //var sb = new StringBuilder();
@@ -126,7 +126,7 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        internal static void RedrawAll()
+        public static void RedrawAll()
         {
             foreach (var province in Game.provincesToRedrawArmies)
             {

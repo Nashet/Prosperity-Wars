@@ -175,7 +175,7 @@ namespace Nashet.UnityUIUtils
             Destroy(gameObject);
         }
 
-        internal static bool IsOpenAny()
+        public static bool IsOpenAny()
         {
             return howMuchPausedWindowsOpen > 0;
         }

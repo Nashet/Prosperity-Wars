@@ -27,7 +27,7 @@ namespace Nashet.EconomicSimulation
             return getHowMuchInputProductsReservesWants(new Value(artisan.population.Get() / 1000f * Options.FactoryInputReservInDays));
         }
 
-        internal override Procent getInputFactor()
+        public override Procent getInputFactor()
         {
             return getInputFactor(new Procent(artisan.population.Get() / 1000f));
         }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -56,7 +57,7 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.countryStorageSet.used.getTotal(product).get().ToString());
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket().getTotal(product).get().ToString());
+                AddCell(Game.Player.getConsumedInMarket(Game.Player.market).getTotal(product).get().ToString());
 
                 ////Adding Sold
                 //AddButton(Game.Player.getSentToMarketIncludingSubstituts(product).get().ToString());
@@ -82,7 +83,7 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.countryStorageSet.used.GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket().GetFirstSubstituteStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.getConsumedInMarket(Game.Player.market).GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding Sold
                 //// finding actually sold from sentToMarket

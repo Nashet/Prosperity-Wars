@@ -1,5 +1,16 @@
-﻿namespace Nashet.ValueSpace
+﻿using Nashet.EconomicSimulation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Nashet.ValueSpace
 {
+    interface IStorageSet
+    {
+        Storage GetFirstSubstituteStorage(Product what);
+    }
     public interface IReadOnlyValue
     {
         float get();

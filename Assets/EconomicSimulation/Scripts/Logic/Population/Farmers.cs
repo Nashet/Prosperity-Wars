@@ -47,7 +47,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal override bool canSellProducts()
+        public override bool canSellProducts()
         {
             if (Economy.isMarket.checkIfTrue(Country))
                 return true;
@@ -60,7 +60,7 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        //internal override bool getSayingYes(AbstractReformValue reform)
+        //public override bool getSayingYes(AbstractReformValue reform)
         //{
         //    if (reform is Government.ReformValue)
         //    {
@@ -108,7 +108,7 @@ namespace Nashet.EconomicSimulation
         //    else
         //        return false;
         //}
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy)
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
@@ -117,7 +117,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 return 1;

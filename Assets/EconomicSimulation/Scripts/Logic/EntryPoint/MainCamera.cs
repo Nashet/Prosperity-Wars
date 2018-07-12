@@ -25,19 +25,19 @@ namespace Nashet.EconomicSimulation
         public static PopulationPanel populationPanel;
         public static PopUnitPanel popUnitPanel;
         public static DiplomacyPanel diplomacyPanel;
-        internal static TradeWindow tradeWindow;
-        internal static ProductionWindow productionWindow;
-        internal static FactoryPanel factoryPanel;
-        internal static GoodsPanel goodsPanel;
-        internal static InventionsPanel inventionsPanel;
-        internal static BuildPanel buildPanel;
-        internal static PoliticsPanel politicsPanel;
-        internal static FinancePanel financePanel;
-        internal static MilitaryPanel militaryPanel;
+        public static TradeWindow tradeWindow;
+        public static ProductionWindow productionWindow;
+        public static FactoryPanel factoryPanel;
+        public static GoodsPanel goodsPanel;
+        public static InventionsPanel inventionsPanel;
+        public static BuildPanel buildPanel;
+        public static PoliticsPanel politicsPanel;
+        public static FinancePanel financePanel;
+        public static MilitaryPanel militaryPanel;
 
-        internal static LoadingPanel loadingPanel;
-        internal static BottomPanel bottomPanel;
-        internal static StatisticsPanel StatisticPanel;
+        public static LoadingPanel loadingPanel;
+        public static BottomPanel bottomPanel;
+        public static StatisticsPanel StatisticPanel;
 
 
         private Game game;
@@ -248,7 +248,7 @@ namespace Nashet.EconomicSimulation
         }
 
 
-        internal static void refreshAllActive()
+        public static void refreshAllActive()
         {
             if (topPanel.isActiveAndEnabled) topPanel.Refresh();
             if (populationPanel.isActiveAndEnabled) populationPanel.Refresh();
@@ -269,7 +269,7 @@ namespace Nashet.EconomicSimulation
             //if (bottomPanel.isActiveAndEnabled) bottomPanel.refresh();
         }
 
-        internal static void selectProvince(int number)
+        public static void selectProvince(int number)
         {
             if (number < 0 || World.FindProvince(number) == Game.selectedProvince)// same province clicked, hide selection
             {
