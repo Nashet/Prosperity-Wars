@@ -55,9 +55,9 @@ namespace Nashet.EconomicSimulation
         /// Use for only reads!
         /// </summary>
         public IEnumerable<Storage> getConsumedInMarket(Market market)
-        {            
-                foreach (var item in consumedInMarket.Where(x => x.Key == market))
-                    yield return item.Value;
+        {
+            foreach (var item in consumedInMarket.Where(x => x.Key == market))
+                yield return item.Value;
         }
         public IEnumerable<KeyValuePair<Market, Storage>> getAllConsumedInMarket()
         {
@@ -187,9 +187,10 @@ namespace Nashet.EconomicSimulation
                 // check if consumeOnThisIteration is not bigger than stillHaveToBuy
                 if (!stillHaveToBuy.has(consumeOnThisIteration))
                     consumeOnThisIteration = stillHaveToBuy.getBiggestStorage(what.Product);
-                //var reallyBought = Sell(buyer, consumeOnThisIteration, null);
 
-                //stillHaveToBuy.Subtract(reallyBought);
+                var reallyBought = Buy(consumeOnThisIteration, null);
+
+                stillHaveToBuy.Subtract(reallyBought);
 
                 if (stillHaveToBuy.getBiggestStorage(what.Product).isNotZero())
                     buyingIsFinished = false;

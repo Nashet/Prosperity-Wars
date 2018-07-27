@@ -53,11 +53,15 @@ namespace Nashet.EconomicSimulation
 
         public void InitializeNonUnityData()
         {
+
+            var m = new Market();
+            World.Create(mapTexture, !readMapFormFile);
+
             
 
-            World.Create(mapTexture, !readMapFormFile);
-            
-            World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
+            m.Initialize(null);
+            //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
+
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
@@ -105,10 +109,10 @@ namespace Nashet.EconomicSimulation
             grid = null;
             mapTexture = null;
             // Annex all countries to P)layer
-            foreach (var item in World.getAllExistingCountries().Where(x => x != Game.Player))
-            {
-                item.annexTo(Game.Player);
-            }
+            //foreach (var item in World.getAllExistingCountries().Where(x => x != Game.Player))
+            //{
+            //    item.annexTo(Game.Player);
+            //}
             //Quaternion.Ro(90f, Vector3.right);
             //World.Get.transform.Rotate(Vector3.right* 90f);
             //World.Get.transform.rotation.SetAxisAngle(Vector3.right, 90f);

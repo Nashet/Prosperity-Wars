@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
                 }
                 
                 //sb.Append("\nSent to market: ").Append(pop.getSentToMarket());  // hide it
-                sb.Append("\nConsumed: ").Append(pop.getConsumed());
+                sb.Append("\nConsumed: ").Append(pop.getConsumed().getString(", "));
                 sb.Append("\nNeeds fulfilled (total): ").Append(pop.needsFulfilled);
                 //sb.Append("\nAssimilation: ");
 

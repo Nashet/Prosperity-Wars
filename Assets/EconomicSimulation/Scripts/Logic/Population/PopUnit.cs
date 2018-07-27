@@ -733,7 +733,11 @@ namespace Nashet.EconomicSimulation
                                 education.Learn();
                         }
                     }
-                    MoneyView luxuryNeedsCost = Market.GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost;
+                    if (luxuryNeedsConsumed.Count > 0)
+                        luxuryNeedsCost = Market.GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
+                    else
+                        luxuryNeedsCost = MoneyView.Zero.Copy();
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money

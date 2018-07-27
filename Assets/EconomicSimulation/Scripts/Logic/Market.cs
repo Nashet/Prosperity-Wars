@@ -34,10 +34,13 @@ namespace Nashet.EconomicSimulation
         public PricePool priceHistory;
         private StorageSet receivedGoods = new StorageSet();
 
+        public static Market TemporalSingleMarket { get; internal set; }
+
         //private Dictionary<Producer, Storage> sentToMarket;
 
         public Market() : base(null)
         {
+            TemporalSingleMarket = this;
         }
 
 
@@ -122,15 +125,15 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
             Storage result = new Storage(product);
-            //foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in Country.AllProvinces())
+                foreach (Province province in country.AllProvinces())
                     foreach (Consumer consumer in province.getAllAgents())
                     {
                         Storage found = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(found);
                     }
-                Storage countryStor = selector(Country).GetFirstSubstituteStorage(product);
+                Storage countryStor = selector(country).GetFirstSubstituteStorage(product);
                 result.add(countryStor);
             }
             return result;
@@ -157,16 +160,16 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForSellers(Product product, Func<ISeller, Storage> selector)
         {
             Storage result = new Storage(product);
-            //foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in Country.AllProvinces())
+                foreach (Province province in country.AllProvinces())
                     foreach (ISeller producer in province.getAllProducers())
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
                             result.add(found);
                     }
-                result.add(selector(Country));
+                result.add(selector(country));
             }
             return result;
         }
@@ -175,9 +178,9 @@ namespace Nashet.EconomicSimulation
         private Storage recalculateProductForProducers(Product product, Func<Producer, Storage> selector)
         {
             Storage result = new Storage(product);
-            //foreach (Country country in World.getAllExistingCountries())
+            foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in Country.AllProvinces())
+                foreach (Province province in country.AllProvinces())
                     foreach (Producer producer in province.getAllProducers())
                     {
                         var found = selector(producer);
@@ -497,7 +500,7 @@ namespace Nashet.EconomicSimulation
 
         public override string ToString()
         {
-            return Country + "'s market";
+            return "Single market";//Country + "'s market";
         }
         /// <summary>
         /// Brings money for sold product
@@ -560,12 +563,11 @@ namespace Nashet.EconomicSimulation
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().Where(x => x.getBouthOnMarket(need.Product, false).get() != Options.MarketEqualityDSB).MaxBy(x => x.getCost(need.Product).Get());
+            return World.AllMarkets().Where(x => x.getBouthOnMarket(need.Product, false).get() != Options.MarketEqualityDSB).MaxBy(x => x.getCost(need.Product).Get());           
         }
         public static Market GetCheapestMarket(Storage need)
         {
-            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
-
+            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());          
         }
     }
 }

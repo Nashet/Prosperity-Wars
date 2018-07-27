@@ -77,9 +77,10 @@ namespace Nashet.EconomicSimulation
 
         public static IEnumerable<Market> AllMarkets()
         {
-            foreach (var country in getAllExistingCountries())
+            ///foreach (var country in getAllExistingCountries())
 
-                yield return country.market;
+            //yield return country.market;
+            yield return Market.TemporalSingleMarket;
         }
 
         public static IEnumerable<Province> GetAllProvinces()
@@ -489,8 +490,8 @@ namespace Nashet.EconomicSimulation
                     }
                 }
             }
-            PopType.sortNeeds( World.getAllExistingCountries().Random().market);
-            Product.sortSubstitutes(World.getAllExistingCountries().Random().market);
+            PopType.sortNeeds(Market.TemporalSingleMarket );//getAllExistingCountries().Random().market
+            Product.sortSubstitutes(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
         }
 
         public static void simulate()
