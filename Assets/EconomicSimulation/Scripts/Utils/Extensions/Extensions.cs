@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Nashet.EconomicSimulation;
@@ -74,9 +75,28 @@ namespace Nashet.Utils
                 return true;
         }
     }
-
+    //public static class TextureExtensions
+    //{
+    //    public static bool IsEmpty(Texture2D original)
+    //    {
+    //    }
+    //}
     public static class Texture2DExtensions
     {
+        public static Texture2D LoadPNG(string filePath)
+        {
+
+            Texture2D tex = null;
+            byte[] fileData;
+
+            if (File.Exists(filePath))
+            {
+                fileData = File.ReadAllBytes(filePath);
+                tex = new Texture2D(2, 2, TextureFormat.RGBAFloat, false);
+                tex.LoadImage(fileData); //..this will auto-resize the texture dimensions.
+            }
+            return tex;
+        }
         public static Texture2D FlipTexture(Texture2D original)
         {
             Texture2D flipped = new Texture2D(original.width, original.height);
@@ -605,7 +625,7 @@ namespace Nashet.Utils
 
         //}
 
-        
+
         public static IEnumerable<T> FirstSameElements<T>(this IEnumerable<T> collection, Func<T, float> selector)
         {
             T previousElement = collection.FirstOrDefault();

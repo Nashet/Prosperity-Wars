@@ -230,7 +230,8 @@ namespace Nashet.EconomicSimulation
             howMuchCountries += Rand.Get.Next(6);
             if (howMuchCountries < 8)
                 howMuchCountries = 8;
-
+            if (howMuchCountries > World.allProvinces.Count)
+                howMuchCountries = World.allProvinces.Count;
             for (int i = 0; i < howMuchCountries; i++)
             {
                 //Game.updateStatus("Making countries.." + i);
@@ -360,15 +361,16 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Could run in threads
         /// </summary>
-        public static void Create(MyTexture map, bool isMapGenerated)
+        public static void Create(MyTexture map)
         {
+            bool isMapRandom = MapOptions.MapImage == null;
             //FactoryType.getResourceTypes(); // FORCING FactoryType to initialize?
 
             // remake it on messages?
             //Game.updateStatus("Reading provinces..");
             preReadProvinces(map);
-            var seaProvinces = getSeaProvinces(map, !isMapGenerated);
-            deleteSomeProvinces(seaProvinces, isMapGenerated);
+            var seaProvinces = getSeaProvinces(map, !isMapRandom);
+            deleteSomeProvinces(seaProvinces, isMapRandom);
 
             // Game.updateStatus("Making countries..");
             CreateCountries();
@@ -386,16 +388,15 @@ namespace Nashet.EconomicSimulation
         private static void setStartResources()
         {
             //Country.allCountries[0] is null country
+            //Country.allCountries[0].Capital.setResource(Product.Wood;
             //Country.allCountries[1].Capital.setResource(Product.Wood);// player
 
-            //Country.allCountries[0].Capital.setResource(Product.Wood;
-
-            allCountries[2].Capital.setResource(Product.Fruit);
-            allCountries[3].Capital.setResource(Product.Gold);
-            allCountries[4].Capital.setResource(Product.Cotton);
-            allCountries[5].Capital.setResource(Product.Stone);
-            allCountries[6].Capital.setResource(Product.MetalOre);
-            allCountries[7].Capital.setResource(Product.Wood);
+            if (allCountries.Count > 2) allCountries[2].Capital.setResource(Product.Fruit);
+            if (allCountries.Count > 3) allCountries[3].Capital.setResource(Product.Gold);
+            if (allCountries.Count > 4) allCountries[4].Capital.setResource(Product.Cotton);
+            if (allCountries.Count > 5) allCountries[5].Capital.setResource(Product.Stone);
+            if (allCountries.Count > 6) allCountries[6].Capital.setResource(Product.MetalOre);
+            if (allCountries.Count > 7) allCountries[7].Capital.setResource(Product.Wood);
         }
 
         // temporally
