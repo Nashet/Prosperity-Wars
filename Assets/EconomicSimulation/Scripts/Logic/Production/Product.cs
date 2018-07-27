@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
 
         private static int resourceCounter;
 
-        private readonly MoneyView defaultPrice;
+        public readonly MoneyView defaultPrice;
         private readonly bool _isResource;
         private readonly bool _isAbstract;
         private readonly bool _isMilitary;
@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         private readonly Color color;
         private bool _isStoreable = true;
 
-        internal static readonly Product
+        public static readonly Product
             //Fish, Grain, Cattle, Wood, Lumber, Furniture, Gold, Metal, MetalOre,
             //Cotton, Clothes, Stone, Cement, Fruit, Liquor, ColdArms, Ammunition, Firearms, Artillery,
             //Oil, MotorFuel, Cars, Tanks, Airplanes, Rubber, Machinery,
@@ -73,7 +73,7 @@ namespace Nashet.EconomicSimulation
             Gold = new Product("Gold", 4f, Color.yellow, type.industrial),
             Education = new Product("Education", 4f, type.consumerProduct, false);
 
-        internal static readonly Product //Food, Sugar, Fibers, Fuel;
+        public static readonly Product //Food, Sugar, Fibers, Fuel;
             Food = new Product("Food", 0.04f, new List<Product> { Fish, Grain, Cattle, Fruit }, type.consumerProduct),
             Sugar = new Product("Sugar", 0.04f, new List<Product> { Grain, Fruit }, type.consumerProduct),
             Fibers = new Product("Fibers", 0.04f, new List<Product> { Cattle, Cotton }, type.consumerProduct),
@@ -85,12 +85,15 @@ namespace Nashet.EconomicSimulation
         //static initialization
         static Product()
         {
-            // abstract products
-            foreach (var item in getAll().Where(x => !x.isAbstract()))
-                if (item != Gold)
-                {
-                    World.market.SetDefaultPrice(item, (float)item.defaultPrice.Get());
-                }
+            //// abstract products
+            //foreach (var markets in World.AllMarkets())
+            //{
+            //    foreach (var item in getAll().Where(x => !x.isAbstract()))
+            //        if (item != Gold)
+            //        {
+            //            markets.SetDefaultPrice(item, (float)item.defaultPrice.Get());
+            //        }
+            //}
         }
 
         /// <summary>
@@ -237,31 +240,39 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal static Product getRandomResource(bool ignoreGold)
+        public static Product getRandomResource(bool ignoreGold)
         {
             if (ignoreGold)
                 return Wood;
             return allProducts.Where(x => x.isResource()).Random();
         }
 
-        public static void sortSubstitutes()
+        public static void sortSubstitutes(Market market)
         {
             foreach (var item in getAll().Where(x => x.isAbstract()))
             //if (item.isTradable())
             // Abstract are always invented and not gold
             {
-                item.substitutes.Sort(CostOrder);
+                item.substitutes.Sort(delegate (Product x, Product y)
+                {
+                    //if (x == null && y == null) return 0;
+                    //else 
+                    //if (x.PartName == null) return -1;
+                    //else if (y.PartName == null) return 1;
+                    //else
+                    return market.getCost(x).Get().CompareTo(market.getCost(y).Get());
+                });
             }
         }
 
-        public static int CostOrder(Product x, Product y)
-        {
-            //eats less memory
-            float sumX = (float)World.market.getCost(x).Get();
-            float sumY = (float)World.market.getCost(y).Get();
-            return sumX.CompareTo(sumY);
-            //return World.market.getCost(x).get().CompareTo(World.market.getCost(y).get());
-        }
+        //public static int CostOrder(Product x, Product y)//, Market market
+        //{
+        //    //eats less memory
+        //    float sumX = (float)Country.market.getCost(x).Get();
+        //    float sumY = (float)Country.market.getCost(y).Get();
+        //    return sumX.CompareTo(sumY);
+        //    //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
+        //}
 
         /// <summary>
         /// Isn't Gold & Invested by anyone
@@ -312,7 +323,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal bool isResource()
+        public bool isResource()
         {
             return _isResource;
         }
@@ -338,7 +349,7 @@ namespace Nashet.EconomicSimulation
         //    storable = isStorable;
         //}
 
-        //internal MoneyView getDefaultPrice()
+        //public MoneyView getDefaultPrice()
         //{
         //    if (isResource())
         //    {
@@ -351,7 +362,7 @@ namespace Nashet.EconomicSimulation
         //            return defaultPrice.Copy().Multiply(Options.defaultPriceLimitMultiplier);
         //        else
         //        {
-        //            Money res = World.market.getCost(type.resourceInput) .Copy();
+        //            Money res = Country.market.getCost(type.resourceInput) .Copy();
         //            res.Multiply(Options.defaultPriceLimitMultiplier);
         //            res.Divide(type.basicProduction.get());
         //            return res;
@@ -386,7 +397,7 @@ namespace Nashet.EconomicSimulation
                 return base.ToString();
         }
 
-        internal Color getColor()
+        public Color getColor()
         {
             return color;
         }

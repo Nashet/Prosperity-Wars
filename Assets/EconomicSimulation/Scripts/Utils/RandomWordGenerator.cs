@@ -295,7 +295,7 @@ namespace RandWord.Models
         };
     }
 
-    internal static class RandomWordExtensions
+    public static class RandomWordExtensions
     {
         private static Random rand = new Random();
 

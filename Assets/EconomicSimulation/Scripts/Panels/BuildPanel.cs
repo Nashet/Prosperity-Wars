@@ -44,7 +44,7 @@ namespace Nashet.EconomicSimulation
             Factory factory;
             if (Economy.isMarket.checkIfTrue(Game.Player))
             {
-                MoneyView cost = selectedFactoryType.GetBuildCost();
+                MoneyView cost = selectedFactoryType.GetBuildCost(Game.Player.market);
                 if (Game.Player.CanPay(cost))
                 {
                     factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, cost);
@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
                 Storage needFood = resourceToBuild.GetFirstSubstituteStorage(Product.Grain);
                 if (Game.Player.countryStorageSet.has(needFood))
                 {
-                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, World.market.getCost(resourceToBuild));
+                    factory = Game.selectedProvince.BuildFactory(Game.Player, selectedFactoryType, Game.Player.market.getCost(resourceToBuild));
                     Game.Player.countryStorageSet.Subtract(needFood);
                     buildSomething = true;
                     MainCamera.factoryPanel.show(factory);
@@ -97,7 +97,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append(".");
                 if (Game.Player.economy.getValue() != Economy.PlannedEconomy)
                 {
-                    var cost = selectedFactoryType.GetBuildCost();
+                    var cost = selectedFactoryType.GetBuildCost(Game.Player.market);
                     sb.Append(" cost: ").Append(cost);
                 }
                 sb.Append("\nEveryday resource input: ");

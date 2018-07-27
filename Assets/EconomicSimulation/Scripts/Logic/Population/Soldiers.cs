@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Junta)
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
@@ -35,7 +35,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 return 1;
@@ -47,7 +47,7 @@ namespace Nashet.EconomicSimulation
         {
         }
 
-        internal void takePayCheck()
+        public void takePayCheck()
         {
             Money payCheck = Country.getSoldierWage().Copy();
             payCheck.Multiply(population.Get() / 1000m);

@@ -25,7 +25,7 @@ namespace Nashet.Utils
             Enqueue(emptyElement);
         }
 
-        internal void Add(FixedSizeQueue<T> populationChanges)
+        public void Add(FixedSizeQueue<T> populationChanges)
         {
             foreach (var item in populationChanges)
             {

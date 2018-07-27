@@ -124,7 +124,7 @@ namespace Nashet.UnityUIUtils
             return inside;
         }
 
-        internal void redrawDynamicString(string text)
+        public void redrawDynamicString(string text)
         {
             //init tooltip string
             thisText.text = text;

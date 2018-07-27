@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
         private readonly Procent morale = new Procent(0f);
         private readonly StorageSet consumption = new StorageSet();
 
-        internal void initialize(PopUnit origin, int size)
+        public void initialize(PopUnit origin, int size)
         {
             this.origin = origin;
             this.size = size;
@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
                 return null;
         }
 
-        internal void reMobilize(Staff staff)
+        public void reMobilize(Staff staff)
         {
             //int howMuchCanMobilize = getPopUnit().howMuchCanMobilize(staff, null);
             //int change = howMuchCanMobilize - getPopUnit().getMobilized();
@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
         //public Corps(Corps corps):this(corps.getPopUnit(), corps.getSize())
         //{
         //}
-        internal void deleteData()
+        public void deleteData()
         {
             size = 0;
             origin = null;
@@ -106,13 +106,13 @@ namespace Nashet.EconomicSimulation
             return consumption;
         }
 
-        internal Procent getConsumptionProcent(Product product, Country country)
+        public Procent getConsumptionProcent(Product product, Country country)
         {
             // getBiggestStorage here are duplicated in this.consume() (convertToBiggestStorageProduct())
             return new Procent(consumption.getBiggestStorage(product), getRealNeeds(country, product), false);
         }
 
-        internal Value getConsumption(Product prod)
+        public Value getConsumption(Product prod)
         {
             return consumption.GetFirstSubstituteStorage(prod);
         }
@@ -153,7 +153,7 @@ namespace Nashet.EconomicSimulation
         //{
         //    return Type.getStrenght(); // bonus
         //}
-        internal float getStrenght(Army army, float armyStrenghtModifier)
+        public float getStrenght(Army army, float armyStrenghtModifier)
         {
             return getSize() * origin.Type.getStrenght() * armyStrenghtModifier;
         }
@@ -176,7 +176,7 @@ namespace Nashet.EconomicSimulation
             return sb.ToString();
         }
 
-        internal int TakeLoss(int loss, IWayOfLifeChange reason)
+        public int TakeLoss(int loss, IWayOfLifeChange reason)
         {
             int alive = size - loss;
             if (alive > 0)
@@ -194,18 +194,18 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal PopUnit getPopUnit()
+        public PopUnit getPopUnit()
         {
             return origin;
         }
 
-        internal void add(Corps another)
+        public void add(Corps another)
         {
             size += another.getSize();
             morale.AddPoportionally(getSize(), another.getSize(), Procent.ZeroProcent);
         }
 
-        internal void setStatisticToZero()
+        public void setStatisticToZero()
         {
             consumption.setZero();
         }

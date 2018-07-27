@@ -49,7 +49,7 @@ namespace Nashet.EconomicSimulation
         public static readonly Condition ManufacturesInvented = new Condition(x => (x as Country).Invented(Manufactures), "Manufactures are invented", true);
         public static readonly Condition ManufacturesUnInvented = new Condition(x => !(x as Country).Invented(Manufactures), "Manufactures aren't invented", true);
 
-        internal Invention(string name, string description, Value cost) : base(name)
+        public Invention(string name, string description, Value cost) : base(name)
         {
             //this.name = name;
             this.description = description;
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal string getInventedPhrase()
+        public string getInventedPhrase()
         {
             return inventedPhrase;
         }
@@ -94,7 +94,7 @@ namespace Nashet.EconomicSimulation
             get { return description; }
         }
 
-        internal Value getCost()
+        public Value getCost()
         {
             return cost;
         }

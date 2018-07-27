@@ -21,7 +21,7 @@ namespace Nashet.EconomicSimulation
             allSeparatists.Add(this);
         }
 
-        internal static Separatism find(Country country)
+        public static Separatism find(Country country)
         {
             var found = allSeparatists.Find(x => x.separatismTarget == country);
             if (found == null)
@@ -36,12 +36,12 @@ namespace Nashet.EconomicSimulation
             return willing;
         }
 
-        internal override bool isAvailable(Country country)
+        public override bool isAvailable(Country country)
         {
             return !separatismTarget.isAlive();
         }
 
-        internal Country Country
+        public Country Country
         {
             get { return separatismTarget; }
         }

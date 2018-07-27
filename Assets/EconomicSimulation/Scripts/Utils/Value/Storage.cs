@@ -40,15 +40,15 @@ namespace Nashet.ValueSpace
         {
         }
 
-        public static int CostOrder(Storage x, Storage y)
-        {
-            //eats less memory
-            float sumX = x.get() * (float)World.market.getCost(x.Product).Get();
-            float sumY = y.get() * (float)World.market.getCost(y.Product).Get();
-            return sumX.CompareTo(sumY);
+        //public static int CostOrder(Storage x, Storage y)
+        //{
+        //    //eats less memory
+        //    float sumX = x.get() * (float)Country.market.getCost(x.Product).Get();
+        //    float sumY = y.get() * (float)Country.market.getCost(y.Product).Get();
+        //    return sumX.CompareTo(sumY);
 
-            //return World.market.getCost(x).get().CompareTo(World.market.getCost(y).get());
-        }
+        //    //return Country.market.getCost(x).get().CompareTo(Country.market.getCost(y).get());
+        //}
 
         public void set(Product inProduct, float inAmount, bool showMessageAboutNegativeValue = true)
         {
@@ -180,7 +180,7 @@ namespace Nashet.ValueSpace
             }
         }
 
-        internal Storage Multiply(float invalue, bool showMessageAboutOperationFails = true)
+        public Storage Multiply(float invalue, bool showMessageAboutOperationFails = true)
         {
             //if (invalue < 0f)
             //{
@@ -228,7 +228,7 @@ namespace Nashet.ValueSpace
         //}
 
         /// <summary> Returns true if products exactly same or this is substitute for anotherStorage</summary>
-        internal bool isSameProductType(Storage anotherStorage)
+        public bool isSameProductType(Storage anotherStorage)
         {
             return Product.isSameProduct(anotherStorage.Product);
         }
@@ -240,7 +240,7 @@ namespace Nashet.ValueSpace
         }
 
         /// <summary> Returns true only if products exactly same. Does not coiunt substitutes</summary>
-        internal bool isExactlySameProduct(Storage anotherStorage)
+        public bool isExactlySameProduct(Storage anotherStorage)
         {
             return Product == anotherStorage.Product;
         }
@@ -251,11 +251,11 @@ namespace Nashet.ValueSpace
             return Product == anotherProduct;
         }
 
-        //internal bool isSubstituteProduct(Product product)
+        //public bool isSubstituteProduct(Product product)
         //{
         //    return this.Product.isSubstituteFor(product);
         //}
-        internal bool isAbstractProduct()
+        public bool isAbstractProduct()
         {
             return Product.isAbstract();
         }

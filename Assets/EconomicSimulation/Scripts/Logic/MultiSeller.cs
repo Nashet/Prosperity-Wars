@@ -6,23 +6,16 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    internal interface ICanSell
-    {
-        Storage getSentToMarket(Product product);
 
-        void sell(Storage what);
-
-        void getMoneyForSoldProduct();
-    }
 
     /// <summary>
     /// Had to be class representing ability to sell more than 1 product
     /// but actually it contains statistics for Country
     /// </summary>
-    public abstract class MultiSeller : Staff, IStatisticable, ICanSell
+    public abstract class MultiSeller : Staff, IStatisticable, ISeller
     {
         public readonly CountryStorageSet countryStorageSet = new CountryStorageSet();
-        private readonly StorageSet sentToMarket = new StorageSet();
+        private List<KeyValuePair<Market, Storage>> sentToMarket = new List<KeyValuePair<Market, Storage>>();
 
         private readonly Dictionary<Product, Storage> sellIfMoreLimits = new Dictionary<Product, Storage>();
         private readonly Dictionary<Product, Storage> buyIfLessLimits = new Dictionary<Product, Storage>();
@@ -90,83 +83,48 @@ namespace Nashet.EconomicSimulation
         public override void SetStatisticToZero()
         {
             base.SetStatisticToZero();
-            sentToMarket.setZero();
+            sentToMarket = new List<KeyValuePair<Market, Storage>>();// .Clear;
             foreach (var item in producedTotal)
                 item.Value.Set(ReadOnlyValue.Zero);
             foreach (var item in soldByGovernment)
                 item.Value.Set(Value.Zero);
         }
 
-        public Storage getSentToMarket(Product product)
-        {
-            return sentToMarket.GetFirstSubstituteStorage(product);
-        }
+        //public Storage getSentToMarket(Product product)
+        //{
+        //    return sentToMarket.GetFirstSubstituteStorage(product);
+        //}
 
         /// <summary> Assuming product is abstract product</summary>
-        public Storage getSentToMarketIncludingSubstituts(Product product)
-        {
-            var res = new Value(0f);
-            foreach (var item in product.getSubstitutes())
-                if (item.isTradable())
-                {
-                    res.Add(sentToMarket.GetFirstSubstituteStorage(item));
-                }
-            return new Storage(product, res);
-        }
+        //public Storage getSentToMarketIncludingSubstituts(Product product)
+        //{
+        //    var res = new Value(0f);
+        //    foreach (var item in product.getSubstitutes())
+        //        if (item.isTradable())
+        //        {
+        //            res.Add(sentToMarket.GetFirstSubstituteStorage(item));
+        //        }
+        //    return new Storage(product, res);
+        //}
 
         /// <summary>
         /// Do checks outside
         /// </summary>
-        public void sell(Storage what)
+        public void SendToMarket(Storage what)
         {
-            sentToMarket.Add(what);
+            var market = Market.GetReachestMarket(what);
+            if (market == null)
+                market = Country.market;
+            sentToMarket.Add(new KeyValuePair<Market, Storage>(market, what));
             //countryStorageSet.subtract(what);
             countryStorageSet.subtractNoStatistic(what); // to avoid getting what in "howMuchUsed" statistics
-            World.market.sentToMarket.Add(what);
+
+            market.ReceiveProducts(what);
         }
 
-        public void getMoneyForSoldProduct()
-        {
-            foreach (var sent in sentToMarket)
-                if (sent.isNotZero())
-                {
-                    Value DSB = new Value(World.market.getDemandSupplyBalance(sent.Product, false));
-                    if (DSB.get() == Options.MarketInfiniteDSB)
-                        DSB.SetZero();// real DSB is unknown
-                    else
-                    if (DSB.get() > Options.MarketEqualityDSB)
-                        DSB.Set(Options.MarketEqualityDSB);
-                    decimal realSold = (decimal)sent.get();
-                    realSold *= (decimal)DSB.get();
-                    if (realSold > 0m)
-                    {
-                        MoneyView cost = World.market.getCost(sent.Product).Copy().Multiply(realSold); //World.market.getCost(realSold);
-                        //soldByGovernment.addMy(realSold.Product, realSold);
-                        soldByGovernment[sent.Product].Set((float)realSold);
-                        //returning back unsold product
-                        //if (sent.isBiggerThan(realSold))
-                        //{
-                        //    var unSold = sent.subtractOutside(realSold);
-                        //    countryStorageSet.add(unSold);
-                        //}
 
-                        if (World.market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
-                        {
-                            World.market.Pay(this, cost);
-                            //World.market.sentToMarket.subtract(realSold);
-                        }
-                        else
-                        {                            
-                            //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
-                                Debug.Log("Failed market (country) - lacks " + World.market.HowMuchLacksMoneyIncludingDeposits(cost)
-                                    + " for " + realSold + " " + sent.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
-                            World.market.PayAllAvailableMoney(this);
-                        }
-                    }
-                }
-        }
 
-        internal void producedTotalAdd(Storage produced)
+        public void producedTotalAdd(Storage produced)
         {
             producedTotal.addMy(produced.Product, produced);
         }
@@ -192,7 +150,7 @@ namespace Nashet.EconomicSimulation
             var res = new Money(0m);
             foreach (var item in soldByGovernment)
             {
-                res.Add(World.market.getCost(new Storage(item.Key, item.Value)));
+                res.Add(Game.Player.market.getCost(new Storage(item.Key, item.Value)));
             }
             return res;
         }
@@ -214,11 +172,41 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public Procent getWorldProductionShare(Product product)
         {
-            var worldProduction = World.market.getProductionTotal(product, true);
+            Storage worldProduction = new Storage(product);
+            foreach (var item in World.getAllExistingCountries())
+            {
+                worldProduction.Add(item.market.getProductionTotal(product, true));
+            }
+
             if (worldProduction.isZero())
                 return Procent.ZeroProcent.Copy();
             else
                 return new Procent(getProducedTotal(product), worldProduction);
+        }
+
+        public IEnumerable<Market> AllTradeMarkets()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals()
+        {
+            foreach (var item in sentToMarket)
+            {
+                yield return item;
+            }
+        }
+
+        public Storage HowMuchSentToMarket(Market market, Product product)
+        {
+            var pair = sentToMarket.Where(x => x.Key == market && x.Value.Product == product).FirstOrDefault();
+
+            if (pair.Value != null)
+            {
+                return pair.Value;
+            }
+            else
+                return new Storage(product);// empty storage
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Nashet.ValueSpace
         //{
         //    return new Money(this);
         //}
-        internal Money Divide(decimal divider, bool showMessageAboutNegativeValue = true)
+        public Money Divide(decimal divider, bool showMessageAboutNegativeValue = true)
         {
             if (divider == 0m)
             {

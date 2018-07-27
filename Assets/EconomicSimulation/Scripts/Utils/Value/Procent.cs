@@ -11,11 +11,11 @@ namespace Nashet.ValueSpace
 {
     public class Procent : Value, ICopyable<Procent>
     {
-        internal static readonly Procent HundredProcent = new Procent(1f);
-        internal static readonly Procent _50Procent = new Procent(0.5f);
-        internal static readonly Procent ZeroProcent = new Procent(0f);
-        internal static readonly Procent Max999 = new Procent(999.999f);
-        //internal static readonly Procent Max = new Procent(int.MaxValue / 1000f);
+        public static readonly Procent HundredProcent = new Procent(1f);
+        public static readonly Procent _50Procent = new Procent(0.5f);
+        public static readonly Procent ZeroProcent = new Procent(0f);
+        public static readonly Procent Max999 = new Procent(999.999f);
+        //public static readonly Procent Max = new Procent(int.MaxValue / 1000f);
 
         public Procent(float number, bool showMessageAboutNegativeValue = true) : base(number, showMessageAboutNegativeValue)
         {
@@ -36,6 +36,9 @@ namespace Nashet.ValueSpace
 
         public Procent(StorageSet numerator, IEnumerable<Storage> denominator, bool showMessageAboutOperationFails = true)
             : this(numerator.GetTotalQuantity(), denominator.Sum(), showMessageAboutOperationFails) { }
+
+        public Procent(IEnumerable<Storage> numerator, IEnumerable<Storage> denominator, bool showMessageAboutOperationFails = true)
+            : this(numerator.Sum(), denominator.Sum(), showMessageAboutOperationFails) { }
 
         public Procent(ReadOnlyValue numerator, ReadOnlyValue denominator, bool showMessageAboutOperationFails = true)
             : this(numerator.get(), denominator.get(), showMessageAboutOperationFails) { }
@@ -76,7 +79,7 @@ namespace Nashet.ValueSpace
                 Set((float)(numerator.Get() / denominator.Get()), showMessageAboutOperationFails);
         }
 
-        internal float get50Centre()
+        public float get50Centre()
         {
             return get() - 0.5f;
         }
@@ -107,7 +110,7 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// new value
         /// </summary>
-        internal int getProcentOf(int value)
+        public int getProcentOf(int value)
         {
             return Mathf.RoundToInt(get() * value);
         }
@@ -123,7 +126,7 @@ namespace Nashet.ValueSpace
         //        base.set(invalue);
         //}
 
-        internal void clamp100()
+        public void clamp100()
         {
             if (isBiggerThan(HundredProcent))
                 Set(1f);

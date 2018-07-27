@@ -11,7 +11,7 @@
         float GetNameWeight();
     }
 
-    internal interface IStatisticable
+    public interface IStatisticable
     {
         void SetStatisticToZero();
     }

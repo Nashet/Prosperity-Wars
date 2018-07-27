@@ -366,9 +366,9 @@ namespace Nashet.Utils
     public class PricePool
     {
         private Dictionary<Product, DataStorageProduct> pool = new Dictionary<Product, DataStorageProduct>();
-        internal static readonly int lenght = 40; // !! duplicate of DataStorage!!
+        public static readonly int lenght = 40; // !! duplicate of DataStorage!!
 
-        internal PricePool()
+        public PricePool()
         {
             foreach (var product in Product.getAll().Where(x => !x.isAbstract()))
                 if (product != Product.Gold)
@@ -376,7 +376,7 @@ namespace Nashet.Utils
                         addData(product, new Value(0f));
         }
 
-        internal void addData(Product product, Value indata)
+        public void addData(Product product, Value indata)
         {
             DataStorageProduct cell;
             if (!pool.TryGetValue(product, out cell))
@@ -394,7 +394,7 @@ namespace Nashet.Utils
         //        yield return pool.GetEnumerator();
         //    }
         //}
-        internal DataStorageProduct getPool(Product product)
+        public DataStorageProduct getPool(Product product)
         {
             //return pool[pro];
             DataStorageProduct result;
@@ -419,17 +419,17 @@ namespace Nashet.Utils
         private static int length = 40;
 
         //todo use LinkedList<T> instead of queue?
-        internal LimitedQueue<Value> data;
+        public LimitedQueue<Value> data;
 
         private IDTYPE ID;
 
-        internal DataStorage(IDTYPE inn)
+        public DataStorage(IDTYPE inn)
         {
             data = new LimitedQueue<Value>(length);
             ID = inn;
         }
 
-        internal void addData(Value indata)
+        public void addData(Value indata)
         {
             data.Enqueue(new Value(indata.get()));
         }
@@ -613,13 +613,13 @@ namespace Nashet.Utils
     //        return blya - anotherDate.getDate();
     //    }
 
-    //    internal void StepSimulation()
+    //    public void StepSimulation()
     //    {
     //        //blya++;
     //        blya = 100;
     //    }
 
-    //    internal bool isItTimeOf(Date anotherDate)
+    //    public bool isItTimeOf(Date anotherDate)
     //    {
     //        return blya == anotherDate.blya;
     //    }
@@ -628,7 +628,7 @@ namespace Nashet.Utils
     //        return "year " + blya;
     //    }
 
-    //    internal void set(Date date)
+    //    public void set(Date date)
     //    {
     //        this.blya = date.blya;
     //    }
@@ -818,17 +818,17 @@ namespace Nashet.Utils
             map = image.GetPixels();
         }
 
-        internal int getWidth()
+        public int getWidth()
         {
             return width;
         }
 
-        internal int getHeight()
+        public int getHeight()
         {
             return height;
         }
 
-        internal Color GetPixel(int x, int v)
+        public Color GetPixel(int x, int v)
         {
             return map[x + v * width];
         }

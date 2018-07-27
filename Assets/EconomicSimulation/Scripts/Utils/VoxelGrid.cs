@@ -420,7 +420,7 @@ namespace Nashet.MarchingSquares
             return d.getState() == b.getState() && d.getState() != c.getState() && b.getState() != a.getState() && c.getState() != a.getState();
         }
 
-        internal Dictionary<Province, MeshStructure> getBorders()
+        public Dictionary<Province, MeshStructure> getBorders()
         {
             return bordersMeshes;
         }

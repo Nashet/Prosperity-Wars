@@ -25,7 +25,7 @@ namespace Nashet.EconomicSimulation
             howMuchOwns.Subtract(sum);
         }
 
-        internal void CancelBuyOrder(MoneyView sum)
+        public void CancelBuyOrder(MoneyView sum)
         {
             howMuchWantsToSell.Subtract(sum, false);
         }

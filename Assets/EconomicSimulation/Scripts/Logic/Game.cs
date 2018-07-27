@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -54,12 +54,15 @@ namespace Nashet.EconomicSimulation
 
         public void InitializeNonUnityData()
         {
-            World.market.initialize();
-
+            var m = new Market();
             World.Create(mapTexture);
+            
+
+            m.Initialize(null);
+            //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
+
             //Game.updateStatus("Making grid..");
             grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
-
 
             if (!devMode)
                 makeHelloMessage();
@@ -120,7 +123,7 @@ namespace Nashet.EconomicSimulation
             return mapBorders;
         }
 
-        internal static void GivePlayerControlOf(Country country)
+        public static void GivePlayerControlOf(Country country)
         {
             //if (country != Country.NullCountry)
             {
@@ -141,7 +144,7 @@ namespace Nashet.EconomicSimulation
             surrended = true;
         }
 
-        internal static int getMapMode()
+        public static int getMapMode()
         {
             return mapMode;
         }
@@ -155,7 +158,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal static bool isPlayerSurrended()
+        public static bool isPlayerSurrended()
         {
             return surrended;
         }

@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     public class DebugWindow : DragPanel
     {
 
-        internal static bool Exist { get; private set; }
+        public static bool Exist { get; private set; }
 
         [SerializeField]
         private Toggle devModeToggle, logInvestmentsToggle, logMarketFailsToggle;

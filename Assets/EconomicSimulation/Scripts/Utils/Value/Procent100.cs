@@ -97,7 +97,7 @@ namespace Nashet.ValueSpace
             return this;
         }
 
-        internal Procent100 Divide(int divider, bool showMessageAboutOperationFails = true)
+        public Procent100 Divide(int divider, bool showMessageAboutOperationFails = true)
         {
             base.Divide(divider, showMessageAboutOperationFails);
             clamp100();

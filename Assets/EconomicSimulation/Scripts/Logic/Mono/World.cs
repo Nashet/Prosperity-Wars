@@ -12,19 +12,19 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class World : MonoBehaviour
     {
-        private static readonly List<Province> allProvinces = new List<Province>();
-        private static readonly List<Country> allCountries = new List<Country>();
-        private static readonly List<Culture> allCultures = new List<Culture>();
+        protected static readonly List<Province> allProvinces = new List<Province>();
+        protected static readonly List<Country> allCountries = new List<Country>();
+        protected static readonly List<Culture> allCultures = new List<Culture>();
 
-        internal static readonly Country UncolonizedLand;
+        public static readonly Country UncolonizedLand;
 
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
 
-        internal static List<BattleResult> allBattles = new List<BattleResult>();
+        public static List<BattleResult> allBattles = new List<BattleResult>();
 
-        public static Market market;
+        //public static Market market;
         public Graph graph;
 
 
@@ -40,9 +40,6 @@ namespace Nashet.EconomicSimulation
 
         static World()
         {
-            //Product.init(); // to avoid crash based on initialization order
-            market = new Market();
-
             var culture = new Culture("Ancient tribes", Color.yellow);
             allCultures.Add(culture);
             UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
@@ -76,6 +73,14 @@ namespace Nashet.EconomicSimulation
             foreach (var country in allCountries)
                 if (country.isAlive() && country != UncolonizedLand)
                     yield return country;
+        }      
+
+        public static IEnumerable<Market> AllMarkets()
+        {
+            ///foreach (var country in getAllExistingCountries())
+
+            //yield return country.market;
+            yield return Market.TemporalSingleMarket;
         }
 
         public static IEnumerable<Province> GetAllProvinces()
@@ -96,7 +101,7 @@ namespace Nashet.EconomicSimulation
                     yield return item;
         }
 
-        internal static IEnumerable<Factory> GetAllFactories()
+        public static IEnumerable<Factory> GetAllFactories()
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -113,7 +118,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal static Money GetAllMoney()
+        public static Money GetAllMoney()
         {
             Money allMoney = new Money(0m);
             foreach (Country country in getAllExistingCountries())
@@ -126,7 +131,11 @@ namespace Nashet.EconomicSimulation
                     //if (isArtisan!=null && isArtisan.)
                 }
             }
-            allMoney.Add(World.market.Cash);
+            foreach (var market in World.AllMarkets())
+            {
+                allMoney.Add(market.Cash);
+            }            
+            
             return allMoney;
         }
 
@@ -138,7 +147,7 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        internal static Province FindProvince(int number)
+        public static Province FindProvince(int number)
         {
             foreach (var pro in allProvinces)
                 if (pro.getID() == number)
@@ -184,22 +193,22 @@ namespace Nashet.EconomicSimulation
                 }
         }
 
-        internal void ResumeSimulation()
+        public void ResumeSimulation()
         {
             haveToRunSimulation = true;
         }
 
-        internal bool IsRunning
+        public bool IsRunning
         {
             get { return (haveToRunSimulation || haveToStepSimulation); }// && !MessagePanel.IsOpenAny();
         }
 
-        internal void PauseSimulation()
+        public void PauseSimulation()
         {
             haveToRunSimulation = false;
         }
 
-        internal void MakeOneStepSimulation()
+        public void MakeOneStepSimulation()
         {
             haveToStepSimulation = true;
         }
@@ -212,7 +221,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal static void CreateCountries()
+        public static void CreateCountries()
         {
             var countryNameGenerator = new CountryNameGenerator();
             var cultureNameGenerator = new CultureNameGenerator();
@@ -391,7 +400,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // temporally
-        internal static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
+        public static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -400,7 +409,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // temporally
-        internal static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
+        public static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -468,7 +477,7 @@ namespace Nashet.EconomicSimulation
 
         public static void prepareForNewTick()
         {
-            World.market.SetStatisticToZero();
+            AllMarkets().PerformAction(x => x.SetStatisticToZero());            
 
             foreach (Country country in World.getAllExistingCountries())
             {
@@ -482,11 +491,11 @@ namespace Nashet.EconomicSimulation
                     }
                 }
             }
-            PopType.sortNeeds();
-            Product.sortSubstitutes();
+            PopType.sortNeeds(Market.TemporalSingleMarket );//getAllExistingCountries().Random().market
+            Product.sortSubstitutes(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
         }
 
-        internal static void simulate()
+        public static void simulate()
         {
             if (haveToStepSimulation)
                 haveToStepSimulation = false;
@@ -495,14 +504,10 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
                 Debug.Log("New date! - " + Date.Today);
             // strongly before PrepareForNewTick
-            World.market.simulatePriceChangeBasingOnLastTurnData();
+            AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
-            EventHandler handler = DayPassed;
-            if (handler != null)
-            {
-                handler(World.Get, EventArgs.Empty);
-            }
+            DayPassed?.Invoke(World.Get, EventArgs.Empty);
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
             //calcBattles();
@@ -562,24 +567,24 @@ namespace Nashet.EconomicSimulation
                     }
             }
             //force DSB recalculation
-            World.market.getDemandSupplyBalance(null, true);
+            AllMarkets().PerformAction(x => x.getDemandSupplyBalance(null, true));
             if (Game.logMarket)
             {
-                ValueSpace.Money res = new ValueSpace.Money(0m);
-                foreach (var product in Product.getAll())
+                //Money res = new Money(0m);
+                //foreach (var product in Product.getAll())
 
-                    res.Add(World.market.getCost(World.market.getMarketSupply(product, true)).Copy().Multiply((decimal)World.market.getDemandSupplyBalance(product, false))
-                        );
-                if (!World.market.moneyIncomeThisTurn.IsEqual(res))
-                {
-                    Debug.Log("Market income: " + World.market.moneyIncomeThisTurn + " total: " + World.market.Cash);
-                    Debug.Log("Should pay: " + res);
-                }
+                //    res.Add(Country.market.getCost(Country.market.getMarketSupply(product, true)).Copy().Multiply((decimal)Country.market.getDemandSupplyBalance(product, false))
+                //        );
+                //if (!Country.market.moneyIncomeThisTurn.IsEqual(res))
+                //{
+                //    Debug.Log("Market income: " + Country.market.moneyIncomeThisTurn + " total: " + Country.market.Cash);
+                //    Debug.Log("Should pay: " + res);
+                //}
             }
             // big AFTER all and get money for sold circle
             foreach (Country country in World.getAllExistingCountries())
             {
-                country.getMoneyForSoldProduct();
+                Market.GiveMoneyForSoldProduct(country);                
                 foreach (Province province in country.AllProvinces())//Province.allProvinces)
                 {
                     foreach (Factory factory in province.getAllFactories())
@@ -591,7 +596,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            factory.getMoneyForSoldProduct();
+                            Market.GiveMoneyForSoldProduct(factory);
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here
                             factory.payDividend(); // also pays taxes inside
@@ -610,7 +615,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.Type == PopType.Workers)
                             pop.LearnByWork();
                         if (pop.canSellProducts())
-                            pop.getMoneyForSoldProduct();
+                            Market.GiveMoneyForSoldProduct(pop);
                         pop.takeUnemploymentSubsidies();
                         if (country.Invented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                         // don't need salary with PE

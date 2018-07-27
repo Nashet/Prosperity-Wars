@@ -18,12 +18,12 @@ namespace Nashet.EconomicSimulation
             Change(population);
         }
 
-        internal int Get()
+        public int Get()
         {
             return population;
         }
 
-        internal void Delete()
+        public void Delete()
         {
             population = 0;
         }
@@ -32,7 +32,7 @@ namespace Nashet.EconomicSimulation
         /// Checks - outside
         /// </summary>
         /// <param name="change"></param>
-        internal void Change(int change)
+        public void Change(int change)
         {
             //population += change;
             ////throw new NotImplementedException();

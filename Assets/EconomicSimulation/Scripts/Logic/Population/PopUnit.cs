@@ -136,7 +136,7 @@ namespace Nashet.EconomicSimulation
         {
             where.RegisterPop(this);
             born = new Date(Date.Today);
-            
+
             type = popType;
             population = new Population(amount, this);
             this.culture = culture;
@@ -182,7 +182,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             mobilized = 0;
-           
+
             this.culture = culture;
             education = new Education(source.education.get());
             needsFulfilled = new Procent(source.needsFulfilled.get());
@@ -234,9 +234,9 @@ namespace Nashet.EconomicSimulation
 
             //Consumer's fields:
             // Do I really need it?
-            getConsumed().setZero();// = new PrimitiveStorageSet();
+            //getConsumed().setZero(); //cleared in Consumer
             getConsumedLastTurn().setZero();// = new PrimitiveStorageSet();
-            getConsumedInMarket().setZero();// = new PrimitiveStorageSet();
+            //getConsumedInMarket().setZero();// cleared in Consumer
 
             //kill in the end
             source.population.Change(-1 * sizeOfNewPop);
@@ -247,13 +247,13 @@ namespace Nashet.EconomicSimulation
         /// assuming that both pops are in same province, and has same type
         /// culture defaults to this.culture
         /// </summary>
-        internal void mergeIn(PopUnit source)
+        public void mergeIn(PopUnit source)
         {
             //carefully summing 2 pops..
             populationChanges.Add(source.populationChanges);
             //Own PopUnit fields:
             loyalty.AddPoportionally(population.Get(), source.population.Get(), source.loyalty);
-            
+
 
             mobilized += source.mobilized;
             //type = newPopType; don't change that
@@ -282,9 +282,11 @@ namespace Nashet.EconomicSimulation
 
             //consumer's fields
             //isn't that important. That is fucking important
-            getConsumed().Add(source.getConsumed());
+            //getConsumed().Add(source.getConsumed());
+            consumed.Add(source.consumed);
+
             getConsumedLastTurn().Add(source.getConsumedLastTurn());
-            getConsumedInMarket().Add(source.getConsumedInMarket());
+            consumedInMarket.AddRange(source.consumedInMarket);
 
             //province = source.province; don't change that
 
@@ -319,7 +321,7 @@ namespace Nashet.EconomicSimulation
             //remove from population panel.. Would do it automatically
             if (MainCamera.popUnitPanel.whomShowing() == this)
                 MainCamera.popUnitPanel.Hide();
-            
+
 
             PayAllAvailableMoney(Bank); // just in case if there is something
             Bank.OnLoanerRefusesToPay(this);
@@ -331,9 +333,9 @@ namespace Nashet.EconomicSimulation
         //    return culture;
         //}
         // have to be this way!
-        internal abstract int getVotingPower(Government.ReformValue reformValue);
+        public abstract int getVotingPower(Government.ReformValue reformValue);
 
-        internal int getVotingPower()
+        public int getVotingPower()
         {
             return getVotingPower(Country.government.getTypedValue());
         }
@@ -364,7 +366,7 @@ namespace Nashet.EconomicSimulation
             return born.getYearsSince();
         }
 
-        internal int howMuchCanMobilize(Staff byWhom, Staff againstWho)
+        public int howMuchCanMobilize(Staff byWhom, Staff againstWho)
         {
             int howMuchCanMobilizeTotal = 0;
             if (byWhom == Country)
@@ -422,7 +424,7 @@ namespace Nashet.EconomicSimulation
             mobilized = 0;
         }
 
-        internal void takeLoss(int loss, IWayOfLifeChange reason)
+        public void takeLoss(int loss, IWayOfLifeChange reason)
         {
             //int newPopulation = population.Get() - (int)(loss * Options.PopAttritionFactor);
             var change = -1 * (int)(loss * Options.PopAttritionFactor);
@@ -433,7 +435,7 @@ namespace Nashet.EconomicSimulation
                 mobilized = 0;
         }
 
-        internal void addDaysUpsetByForcedReform(int popDaysUpsetByForcedReform)
+        public void addDaysUpsetByForcedReform(int popDaysUpsetByForcedReform)
         {
             daysUpsetByForcedReform += popDaysUpsetByForcedReform;
         }
@@ -463,7 +465,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal bool getSayingYes(AbstractReformValue reform)
+        public bool getSayingYes(AbstractReformValue reform)
         {
             return reform.modVoting.getModifier(this) > Options.votingPassBillLimit;
         }
@@ -474,7 +476,7 @@ namespace Nashet.EconomicSimulation
             return randomPopulation;
         }
 
-        internal bool isAlive()
+        public bool isAlive()
         {
             return population.Get() > 0;
         }
@@ -495,12 +497,12 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal int GetUnemployedPopulation()
+        public int GetUnemployedPopulation()
         {
             return population.Get() - employed;
         }
 
-        internal Procent getUnemployment()
+        public Procent getUnemployment()
         {
             if (type == PopType.Workers)
             {
@@ -582,12 +584,12 @@ namespace Nashet.EconomicSimulation
         //    }
         //}
 
-        internal bool isStateCulture()
+        public bool isStateCulture()
         {
             return culture == Country.getCulture();
         }
 
-        //virtual internal bool CanGainDividents()
+        //virtual public bool CanGainDividents()
         //{
         //    return false;
         //}
@@ -679,7 +681,7 @@ namespace Nashet.EconomicSimulation
                     needsFulfilled.Set(Options.PopOneThird);
                 }
                 else
-                    needsFulfilled.Set(World.market.Sell(this, need, null).Divide(need).Divide(Options.PopStrataWeight));
+                    needsFulfilled.Set(Buy(need).Divide(need).Divide(Options.PopStrataWeight));
             }
             if (type != PopType.Aristocrats)
                 storage.SetZero();
@@ -695,7 +697,7 @@ namespace Nashet.EconomicSimulation
                 var everyDayNeedsConsumed = new List<Storage>();
                 foreach (Storage need in population.getRealEveryDayNeeds())
                 {
-                    var consumed = World.market.Sell(this, need, null);
+                    var consumed = Buy(need);
                     if (consumed.isNotZero())
                     {
                         everyDayNeedsConsumed.Add(consumed);
@@ -720,7 +722,7 @@ namespace Nashet.EconomicSimulation
                         luxuryNeedsConsumed = new List<Storage>();
                     foreach (Storage nextNeed in luxuryNeeds)
                     {
-                        var consumed = World.market.Sell(this, nextNeed, null);
+                        var consumed = Buy(nextNeed);
                         if (consumed.isZero())
                             someLuxuryProductUnavailable = true;
                         else
@@ -731,7 +733,11 @@ namespace Nashet.EconomicSimulation
                                 education.Learn();
                         }
                     }
-                    MoneyView luxuryNeedsCost = World.market.getCost(luxuryNeeds);
+                    MoneyView luxuryNeedsCost;
+                    if (luxuryNeedsConsumed.Count > 0)
+                        luxuryNeedsCost = Market.GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
+                    else
+                        luxuryNeedsCost = MoneyView.Zero.Copy();
 
                     // unlimited consumption
                     // unlimited luxury spending should be limited by money income and already spent money
@@ -756,7 +762,7 @@ namespace Nashet.EconomicSimulation
                             foreach (Storage nextNeed in luxuryNeeds)
                             {
                                 nextNeed.Multiply(buyExtraGoodsMultiplier);
-                                var consumed = World.market.Sell(this, nextNeed, null);
+                                var consumed = Buy(nextNeed);
                                 if (consumed.isNotZero())
                                     luxuryNeedsConsumed.Add(consumed);
                             }
@@ -861,7 +867,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Overrode for some pop types
         /// </summary>
-        internal virtual bool canTrade()
+        public virtual bool canTrade()
         {
             if (Economy.isMarket.checkIfTrue(Country))
                 return true;
@@ -869,17 +875,17 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal virtual bool canSellProducts()
+        public virtual bool canSellProducts()
         {
             return false;
         }
 
-        internal bool canVote()
+        public bool canVote()
         {
             return canVote(Country.government.getTypedValue());
         }
 
-        internal abstract bool canVote(Government.ReformValue reform);
+        public abstract bool canVote(Government.ReformValue reform);
 
         public Dictionary<AbstractReformValue, float> getIssues()
         {
@@ -1060,7 +1066,7 @@ namespace Nashet.EconomicSimulation
         //        deleteData();
         //}
 
-        internal void takeUnemploymentSubsidies()
+        public void takeUnemploymentSubsidies()
         {
             // no subsidies with PE
             // may replace by trigger
@@ -1070,7 +1076,7 @@ namespace Nashet.EconomicSimulation
                 var unemployment = getUnemployment();
                 if (unemployment.isNotZero() && reform != UnemploymentSubsidies.None)
                 {
-                    var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate();
+                    var rate = (reform as UnemploymentSubsidies.ReformValue).getSubsidiesRate(Country.market);
                     MoneyView subsidy = rate.Copy().Multiply(population.Get()).Divide(1000).Multiply(unemployment);
                     //float subsidy = population / 1000f * getUnemployedProcent().get() * (reform as UnemploymentSubsidies.LocalReformValue).getSubsidiesRate();
                     if (Country.CanPay(subsidy))
@@ -1253,7 +1259,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void Assimilate()
+        public void Assimilate()
         {
             bool isAssimilated = false;
             if (!isStateCulture())
@@ -1294,12 +1300,14 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal virtual void invest()
+        public virtual void invest()
         {
             if (Country.Invented(Invention.Banking))
             {
+                //Hmm.. Here it's about some world average price..
                 MoneyView extraMoney = Cash.Copy().Subtract(
-                    World.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
+                   // introduce some factual price?
+                   Country.market.getCost(getRealAllNeeds()).Copy().Multiply(Options.PopDaysReservesBeforePuttingMoneyInBak)
                     , false);
                 if (extraMoney.isNotZero())
                     Bank.ReceiveMoney(this, extraMoney);
@@ -1372,7 +1380,7 @@ namespace Nashet.EconomicSimulation
             //return result;
         }
 
-        internal void LearnByWork()
+        public void LearnByWork()
         {
             //if (Rand.Chance(education) || education.isZero()
             if (Rand.Chance(Options.PopLearnByWorkingChance)

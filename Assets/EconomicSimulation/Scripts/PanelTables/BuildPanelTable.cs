@@ -23,7 +23,7 @@ namespace Nashet.EconomicSimulation
             ////Adding cost
             //if (Game.player.isInvented(InventionType.capitalism))
             if (Economy.isMarket.checkIfTrue(Game.Player))
-                AddCell(factoryType.GetBuildCost().ToString(), factoryType);
+                AddCell(factoryType.GetBuildCost(Game.Player.market).ToString(), factoryType);
             else
                 AddCell(factoryType.GetBuildNeeds().getString(""), factoryType);
 
