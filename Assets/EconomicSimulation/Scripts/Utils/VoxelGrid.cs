@@ -47,7 +47,7 @@ namespace Nashet.MarchingSquares
                 {
                     //curColor = texture.GetPixel(x, y);
                     //if (!blockedProvinces.Contains(curColor))
-                    CreateVoxel(i, x, y, provinces.FirstOrDefault(t => t.getColorID() == texture.GetPixel(x, y)));
+                    CreateVoxel(i, x, y, provinces.FirstOrDefault(t => t.ColorID == texture.GetPixel(x, y)));
                     i++;
                 }
             }

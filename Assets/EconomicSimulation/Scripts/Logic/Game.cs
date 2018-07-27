@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
             //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
 
             //Game.updateStatus("Making grid..");
-            grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
+            grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllLandProvinces());
 
             if (!devMode)
                 makeHelloMessage();
@@ -92,15 +92,15 @@ namespace Nashet.EconomicSimulation
             //r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
             //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
-            World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            foreach (var item in World.GetAllProvinces())
+            World.GetAllLandProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            foreach (var item in World.GetAllLandProvinces())
             {
-                var node = item.getRootGameObject().GetComponent<Node>();
+                var node = item.GameObject.GetComponent<Node>();
                 node.Set(item, item.getAllNeighbors());
                 World.Get.graph.AddNode(node);
             }
 
-            World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
+            World.GetAllLandProvinces().PerformAction(x => x.setBorderMaterials(false));
             Country.setUnityAPI();
             //seaProvinces = null;
             // todo clear resources
@@ -152,7 +152,7 @@ namespace Nashet.EconomicSimulation
         public static void redrawMapAccordingToMapMode(int newMapMode)
         {
             mapMode = newMapMode;
-            foreach (var item in World.GetAllProvinces())
+            foreach (var item in World.GetAllLandProvinces())
                 item.updateColor(item.getColorAccordingToMapMode());
         }
 

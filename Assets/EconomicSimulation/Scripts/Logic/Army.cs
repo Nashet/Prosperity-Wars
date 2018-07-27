@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
 
         public Vector3 Position
         {
-            get { return Province.getPosition(); }
+            get { return Province.Position; }
         }
 
         public Province Province { get; protected set; }
@@ -592,7 +592,7 @@ namespace Nashet.EconomicSimulation
                 Path = null;
                 Game.provincesToRedrawArmies.Add(Province);
                 //Province.RedrawLocalArmies(); 
-                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.getPosition());
+                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.Position);
             }
         }
 
@@ -662,7 +662,7 @@ namespace Nashet.EconomicSimulation
                             if (isCountryOwner != null && isCountryOwner != Province.Country)
                             {
                                 if (Province.Country == Game.Player && !Game.isPlayerSurrended())
-                                    Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.getPosition());
+                                    Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.Position);
                                 isCountryOwner.TakeProvince(Province, true);
 
                             }

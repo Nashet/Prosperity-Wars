@@ -202,7 +202,7 @@ namespace Nashet.EconomicSimulation
             {
                 int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
-                if (hoveredProvince == null)
+                if (hoveredProvince == null || hoveredProvince is Province)
                     GetComponent<ToolTipHandler>().Hide();
                 else
                 {
@@ -324,9 +324,9 @@ namespace Nashet.EconomicSimulation
 
         public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
+            gameObject.transform.position = new Vector3(province.Position.x, province.Position.y, focusHeight);
             if (select)
-                selectProvince(province.getID());
+                selectProvince(province.ID);
         }
 
         public void FocusOnPoint(Vector2 point)

@@ -83,6 +83,25 @@ namespace Nashet.Utils
     //}
     public static class Texture2DExtensions
     {
+        public static List<Color> AllUniqueColors(this Texture2D image)
+        {
+            var res = new List<Color>();
+            
+            Color currentProvinceColor = image.GetPixel(0, 0);
+            
+            for (int j = 0; j < image.height; j++) // circle by province
+                for (int i = 0; i < image.width; i++)
+                {
+                    if (currentProvinceColor != image.GetPixel(i, j)                        
+                        && !res.Contains( currentProvinceColor))
+                    {
+                            res.Add(currentProvinceColor);            
+                    }
+                    currentProvinceColor = image.GetPixel(i, j);
+                    
+                }
+            return res;
+        }
         public static Texture2D LoadPNG(string filePath)
         {
 
@@ -399,12 +418,7 @@ namespace Nashet.Utils
             return source.MinBy(selector, null);
         }
 
-        public static void PerformAction<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, Action<TSource> action)
-        {
-            foreach (var item in source)
-                if (predicate(item))
-                    action(item);
-        }
+       
 
         /// <summary>
         /// New value
@@ -426,6 +440,13 @@ namespace Nashet.Utils
             foreach (var item in source)
                 action(item);
         }
+
+        //public static void PerformAction<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, Action<TSource> action)
+        //{
+        //    foreach (var item in source)
+        //        if (predicate(item))
+        //            action(item);
+        //}
 
         /// <summary>
         /// Returns default() if there is source is empty

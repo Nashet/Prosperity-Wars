@@ -837,6 +837,43 @@ namespace Nashet.Utils
         {
             return map[Rand.Get.Next((width * height) - 1)];
         }
+        public List<Color> AllUniqueColors()
+        {
+            var res = new List<Color>();
+            ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
+            Color nextColor = map[0];
+
+            for (int i = 0; i < map.Length; i++)
+            {
+                if (nextColor != map[i]
+                    && !res.Contains(nextColor))
+                {
+                    res.Add(nextColor);
+                }
+                nextColor = map[i];
+
+            }
+            return res;
+        }
+        public List<Color> AllUniqueColorsExcludingBorders()
+        {
+            var res = new List<Color>();
+
+            Color nextColor = map[0];
+
+            for (int j = 1; j < height-1; j++) // circle by province
+                for (int i = 1; i < width-1; i++)
+                {
+                    if (nextColor != map[i * j]
+                        && !res.Contains(nextColor))
+                    {
+                        res.Add(nextColor);
+                    }
+                    nextColor = map[i * j];
+
+                }
+            return res;
+        }
     }
 
     public abstract class Name : INameable, ISortableName

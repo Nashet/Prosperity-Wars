@@ -582,7 +582,7 @@ namespace Nashet.EconomicSimulation
                     item.ownership.TransferAll(this, item.Country);
 
             if (IsHuman)
-                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.getPosition());
+                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.Position);
             alive = false;
 
             SetStatisticToZero();
@@ -651,9 +651,9 @@ namespace Nashet.EconomicSimulation
         public void setCapitalTextMesh(Province province)
         {
             Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
-            txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
+            txtMeshTransform.SetParent(province.GameObject.transform, false);
 
-            Vector3 capitalTextPosition = province.getPosition();
+            Vector3 capitalTextPosition = province.Position;
             capitalTextPosition.y += 2f;
             //capitalTextPosition.z -= 5f;
             txtMeshTransform.position = capitalTextPosition;
@@ -679,7 +679,7 @@ namespace Nashet.EconomicSimulation
                 setCapitalTextMesh(newCapital);
             else
             {
-                Vector3 capitalTextPosition = newCapital.getPosition();
+                Vector3 capitalTextPosition = newCapital.Position;
                 capitalTextPosition.y += 2f;
                 capitalTextPosition.z -= 5f;
                 meshCapitalText.transform.position = capitalTextPosition;
@@ -1010,9 +1010,9 @@ namespace Nashet.EconomicSimulation
                 }
             // dealing with enterprises
             if (economy.getValue() == Economy.Interventionism)
-                Rand.Call(() => getAllFactories().PerformAction(
+                Rand.Call(() => getAllFactories().Where(
                     x => x.ownership.HowMuchOwns(this).Copy().Subtract(x.ownership.HowMuchSelling(this))
-                    .isBiggerOrEqual(Procent._50Procent),
+                    .isBiggerOrEqual(Procent._50Procent)).PerformAction(
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     30);
             else
