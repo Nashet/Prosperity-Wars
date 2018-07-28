@@ -861,15 +861,76 @@ namespace Nashet.Utils
 
             Color nextColor = map[0];
 
-            for (int j = 1; j < height-1; j++) // circle by province
-                for (int i = 1; i < width-1; i++)
+            for (int y = 1; y < height - 1; y++) // circle by province
+                for (int x = 1; x < width - 1; x++)
                 {
-                    if (nextColor != map[i * j]
+                    if (nextColor != map[x * y]
                         && !res.Contains(nextColor))
                     {
                         res.Add(nextColor);
                     }
-                    nextColor = map[i * j];
+                    nextColor = map[x * y];
+
+                }
+            return res;
+        }
+        public Dictionary<Color, bool> AllUniqueColorsExcludingBorders2()
+        {
+
+            var res = new Dictionary<Color, bool>();
+            Color nextColor = map[0];
+            for (int y = 0; y < height; y++)
+            {
+                if (nextColor != map[y * width]
+                   && !res.ContainsKey(nextColor))
+                {
+
+                    res.Add(nextColor, true);
+                }
+                nextColor = map[y * width];
+            }
+            for (int y = 0; y < height; y++)
+            {
+                if (nextColor != map[width-1+ y * width]
+                   && !res.ContainsKey(nextColor))
+                {
+
+                    res.Add(nextColor, true);
+                }
+                nextColor = map[width - 1 + y * width];
+            }
+            for (int x = 0; x < width; x++)
+            {
+                if (nextColor != map[x]
+                   && !res.ContainsKey(nextColor))
+                {
+
+                    res.Add(nextColor, true);
+                }
+                nextColor = map[x];
+            }
+            for (int x = 0; x < width; x++)
+            {
+                if (nextColor != map[x + (height-1) * width]
+                   && !res.ContainsKey(nextColor))
+                {
+
+                    res.Add(nextColor, true);
+                }
+                nextColor = map[x + (height - 1) * width];
+            }
+
+
+            for (int y = 1; y < height-1; y++)
+                for (int x = 1; x < width-1; x++)
+                {
+                    if (nextColor != map[x + y * width]
+                        && !res.ContainsKey(nextColor))
+                    {
+
+                        res.Add(nextColor, false);
+                    }
+                    nextColor = map[x + y * width];
 
                 }
             return res;

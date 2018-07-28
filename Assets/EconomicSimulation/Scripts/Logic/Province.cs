@@ -17,6 +17,60 @@ namespace Nashet.EconomicSimulation
         protected SeaProvince(string name, int ID, Color colorID) : base(name, ID, colorID)
         {
         }
+        public override void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
+        {
+            base.setUnityAPI(meshStructure, neighborBorders);
+            //MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            //groundMeshCollider.sharedMesh = MeshFilter.mesh;
+
+
+
+            //meshRenderer.material.shader = Shader.Find("Standard");// Province");
+
+            //meshRenderer.material.color = ProvinceColor;
+
+            //var graph = World.Get.GetComponent<AstarPath>();
+
+
+            //// setting neighbors
+            ////making meshes for border
+            //foreach (var border in neighborBorders)
+            //{
+            //    //each color is one neighbor (non repeating)
+            //    var neighbor = border.Key;
+            //    if (!(Terrain == TerrainTypes.Mountains && neighbor.Terrain == TerrainTypes.Mountains))
+            //    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+            //    {
+            //        neighbors.Add(neighbor);
+            //        //var newNode = new Pathfinding.PointNode(AstarPath.active);
+            //        //newNode.gameObject = txtMeshGl;
+            //        //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
+
+            //    }
+
+            //    GameObject borderObject = new GameObject("Border with " + neighbor);
+
+            //    //Add Components
+            //    MeshFilter = borderObject.AddComponent<MeshFilter>();
+            //    MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
+
+            //    borderObject.transform.parent = GameObject.transform;
+
+            //    Mesh borderMesh = MeshFilter.mesh;
+            //    borderMesh.Clear();
+
+            //    borderMesh.vertices = border.Value.getVertices().ToArray();
+            //    borderMesh.triangles = border.Value.getTriangles().ToArray();
+            //    borderMesh.uv = border.Value.getUVmap().ToArray();
+            //    borderMesh.RecalculateNormals();
+            //    borderMesh.RecalculateBounds();
+            //    meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
+            //    borderMesh.name = "Border with " + neighbor;
+
+            //    bordersMeshes.Add(neighbor, meshRenderer);
+            //}
+            //var node = GameObject.AddComponent<Node>();
+        }
     }
 
     public class Province : AbstractProvince, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
@@ -53,8 +107,7 @@ namespace Nashet.EconomicSimulation
         private readonly List<Factory> allFactories = new List<Factory>();
         private readonly List<Army> standingArmies = new List<Army>(); // military units
 
-        //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
-        private readonly List<Province> neighbors = new List<Province>();
+        
 
         private Product resource;
 
@@ -369,15 +422,8 @@ namespace Nashet.EconomicSimulation
         {
             return Country == country;
         }
-
-        //public bool isNeighborButNotOwn(Country country)
-        //{
-        //    return this.Country != country && neighbors.Any(x => x.Country == country);
-        //}
-        public bool isNeighbor(Province province)
-        {
-            return neighbors.Contains(province);
-        }
+               
+       
 
         public int getFamilyPopulation()
         {

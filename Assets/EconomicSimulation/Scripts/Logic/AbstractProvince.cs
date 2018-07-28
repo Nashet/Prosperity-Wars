@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class AbstractProvince : Name
+    public abstract class AbstractProvince : Name
     {
         /// <summary> false means sea province </summary>
         public bool IsLandProvince { get; protected set; }
@@ -26,7 +26,10 @@ namespace Nashet.EconomicSimulation
         //protected Vector3 position;
         public Vector3 Position { get; protected set; }
 
-        public AbstractProvince(string name, int ID, Color colorID) : base(name)
+        //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+        protected readonly List<Province> neighbors = new List<Province>();
+
+        protected AbstractProvince(string name, int ID, Color colorID) : base(name)
         {
             this.ID = ID;
             this.ColorID = colorID;
@@ -98,6 +101,10 @@ namespace Nashet.EconomicSimulation
                 accu += c;
             accu = accu / meshStructure.verticesCount;
             return accu;
+        }
+        public bool isNeighbor(Province province)
+        {
+            return neighbors.Contains(province);
         }
     }
 }

@@ -89,15 +89,15 @@ namespace Nashet.Utils
             
             Color currentProvinceColor = image.GetPixel(0, 0);
             
-            for (int j = 0; j < image.height; j++) // circle by province
-                for (int i = 0; i < image.width; i++)
+            for (int y = 0; y < image.height; y++) // circle by province
+                for (int x = 0; x < image.width; x++)
                 {
-                    if (currentProvinceColor != image.GetPixel(i, j)                        
+                    if (currentProvinceColor != image.GetPixel(x, y)                        
                         && !res.Contains( currentProvinceColor))
                     {
                             res.Add(currentProvinceColor);            
                     }
-                    currentProvinceColor = image.GetPixel(i, j);
+                    currentProvinceColor = image.GetPixel(x, y);
                     
                 }
             return res;
