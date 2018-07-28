@@ -17,9 +17,9 @@ namespace Nashet.EconomicSimulation
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
-        public static  bool readMapFormFile = false;
+        public static bool readMapFormFile = false;
         private static MyTexture mapTexture;
-        
+
 
         public static Country Player;
 
@@ -32,19 +32,19 @@ namespace Nashet.EconomicSimulation
         public static List<Province> playerVisibleProvinces = new List<Province>();
 
         private static int mapMode;
-        
 
-        
+
+
 
         private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;
 
-        public static bool DrawFogOfWar { get; internal set; }
+        public static bool DrawFogOfWar { get; internal set; } = true;
 
         public Game(Texture2D mapImage)
         {
-            if (mapImage==null)
-                generateMapImage();            
+            if (mapImage == null)
+                generateMapImage();
             else
             {
                 //Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
@@ -58,7 +58,7 @@ namespace Nashet.EconomicSimulation
         {
             var m = new Market();
             World.Create(mapTexture);
-            
+
 
             m.Initialize(null);
             //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          

@@ -29,18 +29,15 @@ namespace Nashet.Utils
             {
                 var renderer = someObject.GetComponent<MeshRenderer>();
                 if (renderer == null)
-                //if there is no render in selected object, find one in childes
-                {
-                    var children = someObject.GetComponentsInChildren<MeshRenderer>();
-                    foreach (var item in children)
-                    {
-                        RemoveMaterial(item);
-                    }
-                }
-                else
-                {
                     RemoveMaterial(renderer);
+                //also add to all children
+
+                var children = someObject.GetComponentsInChildren<MeshRenderer>();
+                foreach (var item in children)
+                {
+                    RemoveMaterial(item);
                 }
+
             }
         }
 
@@ -50,18 +47,16 @@ namespace Nashet.Utils
             {
                 var renderer = someObject.GetComponent<MeshRenderer>();
                 if (renderer == null)
-                //if there is no render in selected object, find one in childes
-                {
-                    var children = someObject.GetComponentsInChildren<MeshRenderer>();
-                    foreach (var item in children)
-                    {
-                        AddMaterial(item);
-                    }
-                }
-                else
-                {
                     AddMaterial(renderer);
+                //Also add to all children
+
+                var children = someObject.GetComponentsInChildren<MeshRenderer>();
+                foreach (var item in children)
+                {
+                    if (item.GetComponent<TextMesh>() == null)
+                        AddMaterial(item);
                 }
+
                 if (selectionTime != 0f)
                     StartCoroutine(DelayedDeselection(someObject));
             }
