@@ -89,9 +89,15 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var item in allLandProvinces)
             {
-                var landProvince = item as Province;
-                if (landProvince != null)
-                    yield return landProvince;
+                yield return item;
+            }
+
+        }
+        public static IEnumerable<SeaProvince> AllSeaProvinces()
+        {
+            foreach (var item in allSeaProvinces)
+            {
+                yield return item;
             }
 
         }
@@ -297,9 +303,11 @@ namespace Nashet.EconomicSimulation
                     if (!item.Value)
                     {
                         allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, item.Key, Product.getRandomResource(false)));
-                        //allSeaProvinces.Add();
-                        counter++;
+
                     }
+                    else
+                        allSeaProvinces.Add(new SeaProvince(nameGenerator.generateProvinceName(), counter, item.Key));
+                    counter++;
                 }
             }
             else

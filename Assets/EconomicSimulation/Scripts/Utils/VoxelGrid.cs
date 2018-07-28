@@ -73,7 +73,7 @@ namespace Nashet.MarchingSquares
             //}
         }
 
-        public MeshStructure getMesh(Province analysingProvince)
+        public MeshStructure getMesh(AbstractProvince analysingProvince)
         {
             mesh = new MeshStructure();
             bordersMeshes = new Dictionary<Province, MeshStructure>();
@@ -87,7 +87,7 @@ namespace Nashet.MarchingSquares
             voxels[i] = new Voxel(x, y, voxelSize, state);
         }
 
-        private void Triangulate(Province analysingProvince)
+        private void Triangulate(AbstractProvince analysingProvince)
         {
             //mesh.Clear();
 
@@ -105,7 +105,7 @@ namespace Nashet.MarchingSquares
             //mesh.triangles = triangles.ToArray();
         }
 
-        private void TriangulateCellRows(Province analysingProvince)
+        private void TriangulateCellRows(AbstractProvince analysingProvince)
         {
             //int cells = resolution - 1;
             for (int i = 0, y = 0; y < height - 1; y++)
@@ -131,7 +131,7 @@ namespace Nashet.MarchingSquares
             }
         }
 
-        private void TriangulateGapCell(int i, Province analysingProvince)
+        private void TriangulateGapCell(int i, AbstractProvince analysingProvince)
         {
             Voxel dummySwap = dummyT;
             dummySwap.BecomeXDummyOf(xNeighbor.voxels[i + 1], gridSize);
@@ -140,7 +140,7 @@ namespace Nashet.MarchingSquares
             TriangulateCell(voxels[i], dummyT, voxels[i + width], dummyX, analysingProvince);
         }
 
-        private void TriangulateGapRow(Province analysingProvince)
+        private void TriangulateGapRow(AbstractProvince analysingProvince)
         {
             dummyY.BecomeYDummyOf(yNeighbor.voxels[0], gridSize);
             //int cells = width - 1;
@@ -186,7 +186,7 @@ namespace Nashet.MarchingSquares
             }
         }
 
-        private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, Province analyzingState)
+        private void TriangulateCell(Voxel a, Voxel b, Voxel c, Voxel d, AbstractProvince analyzingState)
         {
             //bool isBorder = isBorderCell(a, b, c, d);
             int cellType = 0;

@@ -864,12 +864,12 @@ namespace Nashet.Utils
             for (int y = 1; y < height - 1; y++) // circle by province
                 for (int x = 1; x < width - 1; x++)
                 {
-                    if (nextColor != map[x * y]
+                    if (nextColor != map[x + y * width]
                         && !res.Contains(nextColor))
                     {
                         res.Add(nextColor);
                     }
-                    nextColor = map[x * y];
+                    nextColor = map[x + y * width];
 
                 }
             return res;

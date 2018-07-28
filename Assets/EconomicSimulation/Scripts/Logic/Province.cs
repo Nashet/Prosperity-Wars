@@ -14,7 +14,7 @@ namespace Nashet.EconomicSimulation
 
     public class SeaProvince : AbstractProvince
     {
-        protected SeaProvince(string name, int ID, Color colorID) : base(name, ID, colorID)
+        public SeaProvince(string name, int ID, Color colorID) : base(name, ID, colorID)
         {
         }
         public override void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)

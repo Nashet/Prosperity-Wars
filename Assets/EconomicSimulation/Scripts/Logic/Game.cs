@@ -93,6 +93,7 @@ namespace Nashet.EconomicSimulation
             //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
             World.GetAllLandProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            World.AllSeaProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
             foreach (var item in World.GetAllLandProvinces())
             {
                 var node = item.GameObject.GetComponent<Node>();
