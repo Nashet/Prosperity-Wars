@@ -718,9 +718,7 @@ namespace Nashet.EconomicSimulation
         public void Deselect()
         {
             Game.selectedArmies.Remove(this);
-            unit.Deselect();
-            //selectionPart.SetActive(false);
-            //Province.SelectUnit();
+            unit.Deselect();            
         }
                 
         private Path path;

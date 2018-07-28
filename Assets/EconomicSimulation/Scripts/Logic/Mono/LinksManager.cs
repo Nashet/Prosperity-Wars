@@ -20,6 +20,7 @@ namespace Nashet.EconomicSimulation
 
         private static LinksManager thisObject;
         public Material ProvinceSelecionMaterial;
+        public Material FogOfWarMaterial;
 
         // Use this for initialization
         void Start()

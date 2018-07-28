@@ -10,10 +10,12 @@ namespace Nashet.EconomicSimulation
     public class MainCamera : MonoBehaviour
     {
         [SerializeField]
-        private float xzCameraSpeed = 2f;        
+        private float xzCameraSpeed = 2f;
 
         [SerializeField]
         private float yCameraSpeed = -55f;
+
+        [SerializeField] protected float fogOfWarDensity;
 
         private float focusHeight;
 
@@ -48,12 +50,14 @@ namespace Nashet.EconomicSimulation
         public static MainCamera Get;
 
         public static ISelector provinceSelector;
+        public static ISelector fogOfWar;
 
         private void Start()
         {
             Get = this;
             focusHeight = transform.position.z;
             provinceSelector = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.ProvinceSelecionMaterial, 0);
+            fogOfWar = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.FogOfWarMaterial, 0);
             //
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
@@ -152,35 +156,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Unit.RedrawAll();
                 }
-                if (Game.devMode == false)
-                {
-                    Game.playerVisibleProvinces.Clear();
-                    Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
-                    Game.Player.AllNeighborProvinces().Distinct().PerformAction(
-                        x => Game.playerVisibleProvinces.Add(x));
-
-                    foreach (var army in World.AllArmies())
-                    {
-                        if (Game.playerVisibleProvinces.Contains(army.Province))
-                        {
-                            army.unit.Show();
-                            army.unit.unitPanel.Show();
-                        }
-                        else
-                        {
-                            army.unit.Hide();
-                            army.unit.unitPanel.Hide();
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var army in World.AllArmies())
-                    {
-                        army.unit.Show();
-                        army.unit.unitPanel.Show();
-                    }
-                }
+                DrawFogOfWar();
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 
@@ -188,6 +164,59 @@ namespace Nashet.EconomicSimulation
 
         }
 
+        protected void DrawFogOfWar()
+        {
+            if (Game.devMode == false)
+            {
+                Game.playerVisibleProvinces.Clear();
+                Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
+                Game.Player.AllNeighborProvinces().Distinct().PerformAction(
+                    x => Game.playerVisibleProvinces.Add(x));
+
+                if (Game.DrawFogOfWar)
+                {
+                    World.GetAllLandProvinces().PerformAction(
+                        x => x.updateColor(x.ProvinceColor * fogOfWarDensity)
+                        //x => fogOfWar.Select(x.GameObject)
+                        );
+                    Game.playerVisibleProvinces.PerformAction(x =>
+                    //fogOfWar.Deselect(x.GameObject)
+                    x.updateColor(x.ProvinceColor)
+                    );
+                }
+
+
+
+                foreach (var army in World.AllArmies())
+                {
+                    if (Game.playerVisibleProvinces.Contains(army.Province))
+                    {
+                        army.unit.Show();
+                        army.unit.unitPanel.Show();
+                    }
+                    else
+                    {
+                        army.unit.Hide();
+                        army.unit.unitPanel.Hide();
+                    }
+                }
+            }
+            else
+            {                
+                foreach (var army in World.AllArmies())
+                {
+                    army.unit.Show();
+                    army.unit.unitPanel.Show();
+                }
+            }
+            if (!Game.DrawFogOfWar)
+            {
+                World.GetAllLandProvinces().PerformAction(x =>
+                //fogOfWar.Deselect(x.GameObject)
+                x.updateColor(x.ProvinceColor)
+                );
+            }
+        }
         private void RefreshMap()
         {
             if (Game.getMapMode() != 0

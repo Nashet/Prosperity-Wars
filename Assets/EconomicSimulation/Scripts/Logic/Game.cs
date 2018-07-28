@@ -39,6 +39,8 @@ namespace Nashet.EconomicSimulation
         private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;
 
+        public static bool DrawFogOfWar { get; internal set; }
+
         public Game(Texture2D mapImage)
         {
             if (mapImage==null)
