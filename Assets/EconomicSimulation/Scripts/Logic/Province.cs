@@ -44,24 +44,22 @@ namespace Nashet.EconomicSimulation
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
         private readonly List<Factory> allFactories = new List<Factory>();
         private readonly List<Army> standingArmies = new List<Army>(); // military units
-                                                                       //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
+        //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
         protected readonly List<Province> neighbors = new List<Province>();
-
+        private readonly List<Country> cores = new List<Country>();
 
         private Product resource;
 
         private Country country;
         private Product product;
         private readonly int fertileSoil;
-        private readonly List<Country> cores = new List<Country>();
+
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
         public TerrainTypes Terrain { get; protected set; }
 
 
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
-
-        //private readonly float nameWeight;
-        //empty province constructor
+        
         public Province(string name, int ID, Color colorID, Product resource) : base(name, ID, colorID)
         {
             country = World.UncolonizedLand;
@@ -69,44 +67,36 @@ namespace Nashet.EconomicSimulation
             setResource(resource);
 
             fertileSoil = 5000;
+
         }
 
         public Province(AbstractProvince p, Product product) : this(p.ShortName, p.ID, p.ColorID, product)
         {
             this.product = product;
         }
-       
-        public void setBorderMaterial(Material material)
-        {
-            foreach (var item in bordersMeshes)
-                item.Value.material = material;
-        }
 
-        public void setBorderMaterials(bool reWriteSelection)
+        public void SetBorderMaterials()
         {
             foreach (var border in bordersMeshes)
             {
                 if (border.Key.isNeighbor(this))
                 {
-                    if (Country == border.Key.Country)
+                    if (Country == border.Key.Country) // same country
                     {
-                        if (this != Game.selectedProvince || reWriteSelection)
-                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                        if (border.Key != Game.selectedProvince || reWriteSelection)
-                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                     }
                     else
                     {
-                        if (this != Game.selectedProvince || reWriteSelection)
-                            if (Country == World.UncolonizedLand)
-                                border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                            else
-                                border.Value.material = Country.getBorderMaterial();
-                        if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.Country != null)
-                            if (border.Key.Country == World.UncolonizedLand)
-                                border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
-                            else
-                                border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
+                        if (Country == World.UncolonizedLand)
+                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        else
+                            border.Value.material = Country.getBorderMaterial();
+                                                
+                        if (border.Key.Country == World.UncolonizedLand)
+                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        else
+                            border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
                     }
                 }
                 else
@@ -266,7 +256,7 @@ namespace Nashet.EconomicSimulation
             //graphic stuff
             ProvinceColor = taker.getColor().getAlmostSameColor();
             meshRenderer.material.color = getColorAccordingToMapMode();
-            setBorderMaterials(false);
+            SetBorderMaterials();
         }
 
         public int howFarFromCapital()
@@ -361,8 +351,8 @@ namespace Nashet.EconomicSimulation
         {
             return Country == country;
         }
-               
-       
+
+
 
         public int getFamilyPopulation()
         {
@@ -1217,7 +1207,7 @@ namespace Nashet.EconomicSimulation
         public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
         {
             base.setUnityAPI(meshStructure, neighborBorders);
-            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;            
             groundMeshCollider.sharedMesh = MeshFilter.mesh;
 
 

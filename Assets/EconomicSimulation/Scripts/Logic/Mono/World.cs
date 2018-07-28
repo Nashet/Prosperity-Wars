@@ -308,7 +308,7 @@ namespace Nashet.EconomicSimulation
             ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
             if (!useProvinceColors)
             {
-                var uniqueColors = mapTexture.AllUniqueColorsExcludingBorders2();
+                var uniqueColors = mapTexture.AllUniqueColors2();
                 int counter = 0;
                 int lakechance = 20;//
                 foreach (var item in uniqueColors)

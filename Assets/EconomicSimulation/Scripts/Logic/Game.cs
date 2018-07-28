@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
                 World.Get.graph.AddNode(node);
             }
 
-            World.GetAllLandProvinces().PerformAction(x => x.setBorderMaterials(false));
+            World.GetAllLandProvinces().PerformAction(x => x.SetBorderMaterials());
             Country.setUnityAPI();
             //seaProvinces = null;
             // todo clear resources

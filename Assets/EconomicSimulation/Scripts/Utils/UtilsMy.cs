@@ -855,28 +855,10 @@ namespace Nashet.Utils
             }
             return res;
         }
-        public List<Color> AllUniqueColorsExcludingBorders()
+        
+        public Dictionary<Color, bool> AllUniqueColors2()
         {
-            var res = new List<Color>();
-
-            Color nextColor = map[0];
-
-            for (int y = 1; y < height - 1; y++) // circle by province
-                for (int x = 1; x < width - 1; x++)
-                {
-                    if (nextColor != map[x + y * width]
-                        && !res.Contains(nextColor))
-                    {
-                        res.Add(nextColor);
-                    }
-                    nextColor = map[x + y * width];
-
-                }
-            return res;
-        }
-        public Dictionary<Color, bool> AllUniqueColorsExcludingBorders2()
-        {
-
+            // true means is a sea
             var res = new Dictionary<Color, bool>();
             Color nextColor = map[0];
             for (int y = 0; y < height; y++)
@@ -891,7 +873,7 @@ namespace Nashet.Utils
             }
             for (int y = 0; y < height; y++)
             {
-                if (nextColor != map[width-1+ y * width]
+                if (nextColor != map[width - 1 + y * width]
                    && !res.ContainsKey(nextColor))
                 {
 
@@ -911,7 +893,7 @@ namespace Nashet.Utils
             }
             for (int x = 0; x < width; x++)
             {
-                if (nextColor != map[x + (height-1) * width]
+                if (nextColor != map[x + (height - 1) * width]
                    && !res.ContainsKey(nextColor))
                 {
 
@@ -921,8 +903,8 @@ namespace Nashet.Utils
             }
 
 
-            for (int y = 1; y < height-1; y++)
-                for (int x = 1; x < width-1; x++)
+            for (int y = 1; y < height - 1; y++)
+                for (int x = 1; x < width - 1; x++)
                 {
                     if (nextColor != map[x + y * width]
                         && !res.ContainsKey(nextColor))

@@ -69,7 +69,7 @@ namespace Nashet.EconomicSimulation
             ArmiesSelectionWindow.Get.Show();
         }
 
-        public void DeSelect()
+        public void Deselect()
         {
             selectionPart.SetActive(false);
             ArmiesSelectionWindow.Get.Refresh();

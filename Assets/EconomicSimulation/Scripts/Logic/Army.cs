@@ -715,10 +715,10 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void DeSelect()
+        public void Deselect()
         {
             Game.selectedArmies.Remove(this);
-            unit.DeSelect();
+            unit.Deselect();
             //selectionPart.SetActive(false);
             //Province.SelectUnit();
         }

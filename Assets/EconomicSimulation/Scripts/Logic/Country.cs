@@ -291,7 +291,7 @@ namespace Nashet.EconomicSimulation
 
                 country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                country.ownedProvinces[0].setBorderMaterials(false);
+                country.ownedProvinces[0].SetBorderMaterials();
                 country.AllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
                 country.Flag = Nashet.Flag.Generate(128, 128);
             }

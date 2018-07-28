@@ -9,16 +9,11 @@ namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
     {
-
-
         [SerializeField]
-        private float xzCameraSpeed = 2f;
-
-        
+        private float xzCameraSpeed = 2f;        
 
         [SerializeField]
         private float yCameraSpeed = -55f;
-
 
         private float focusHeight;
 
@@ -52,10 +47,13 @@ namespace Nashet.EconomicSimulation
         private float previousFrameTime;
         public static MainCamera Get;
 
+        public static ISelector provinceSelector;
+
         private void Start()
         {
             Get = this;
             focusHeight = transform.position.z;
+            provinceSelector = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.ProvinceSelecionMaterial, 0);
             //
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
@@ -283,10 +281,12 @@ namespace Nashet.EconomicSimulation
             {
                 var lastSelected = Game.selectedProvince;
                 Game.selectedProvince = null;
+
                 if (lastSelected != null)
                 {
-                    lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
-                    lastSelected.setBorderMaterials(true);
+                    //lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
+                    //lastSelected.setBorderMaterials(true);
+                    provinceSelector.Deselect(lastSelected.GameObject);
                 }
                 if (provincePanel.isActiveAndEnabled)
                     provincePanel.Hide();
@@ -295,11 +295,14 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.selectedProvince != null)//deal with previous selection
                 {
-                    Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
-                    Game.selectedProvince.setBorderMaterials(true);
+                    //Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
+                    //Game.selectedProvince.setBorderMaterials(true);
+                    provinceSelector.Deselect(Game.selectedProvince.GameObject);
                 }
+                // freshly selected province
                 Game.selectedProvince = World.FindProvince(number);
-                Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
+                provinceSelector.Select(Game.selectedProvince.GameObject);
+                //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
