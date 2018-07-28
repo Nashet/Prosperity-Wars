@@ -56,7 +56,10 @@ ENDCG
 
 
 Subshader {
-	Tags { "RenderType"="Opaque" }
+	Tags { 
+	"RenderType"="Opaque"
+	"Queue" = "Background" 
+	}
 	Pass {
 
 CGPROGRAM

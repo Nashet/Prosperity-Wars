@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = true;
+        public static bool devMode = false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -36,7 +36,7 @@ namespace Nashet.EconomicSimulation
 
         
 
-        private static VoxelGrid grid;
+        private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;
 
         public Game(Texture2D mapImage)
@@ -62,7 +62,7 @@ namespace Nashet.EconomicSimulation
             //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
 
             //Game.updateStatus("Making grid..");
-            grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllLandProvinces());
+            grid = new VoxelGrid<AbstractProvince>(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
             if (!devMode)
                 makeHelloMessage();

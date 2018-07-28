@@ -85,6 +85,18 @@ namespace Nashet.EconomicSimulation
             yield return Market.TemporalSingleMarket;
         }
 
+        public static IEnumerable<AbstractProvince> GetAllProvinces()
+        {
+            foreach (var item in GetAllLandProvinces())
+            {
+                yield return item;
+            }
+            foreach (var item in AllSeaProvinces())
+            {
+                yield return item;
+            }
+
+        }
         public static IEnumerable<Province> GetAllLandProvinces()
         {
             foreach (var item in allLandProvinces)
@@ -298,15 +310,16 @@ namespace Nashet.EconomicSimulation
             {
                 var uniqueColors = mapTexture.AllUniqueColorsExcludingBorders2();
                 int counter = 0;
+                int lakechance = 20;//
                 foreach (var item in uniqueColors)
                 {
-                    if (!item.Value)
+                    if (!item.Value && Rand.Get.Next(lakechance) !=0)
                     {
                         allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, item.Key, Product.getRandomResource(false)));
 
                     }
-                    else
-                        allSeaProvinces.Add(new SeaProvince(nameGenerator.generateProvinceName(), counter, item.Key));
+                    //else
+                    //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
                     counter++;
                 }
             }
@@ -316,7 +329,7 @@ namespace Nashet.EconomicSimulation
 
                 for (int counter = 0; counter < uniqueColors.Count; counter++)
                 {
-                    var color = uniqueColors[0];
+                    var color = uniqueColors[counter];
                     if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
                         //if (color.g + color.b + color.r > 492f / 255f)
 
@@ -336,9 +349,7 @@ namespace Nashet.EconomicSimulation
             // remake it on messages?
             //Game.updateStatus("Reading provinces..");
 
-
-            CreateProvinces(map, !isMapRandom);
-            //deleteSomeProvinces(seaProvinces, isMapRandom);
+            CreateProvinces(map, !isMapRandom);            
 
             // Game.updateStatus("Making countries..");
             CreateCountries();

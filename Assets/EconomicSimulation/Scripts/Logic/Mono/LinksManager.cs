@@ -16,6 +16,8 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         public Canvas CameraLayerCanvas;
 
+        public Material waterMaterial;
+
         private static LinksManager thisObject;
         // Use this for initialization
         void Start()
