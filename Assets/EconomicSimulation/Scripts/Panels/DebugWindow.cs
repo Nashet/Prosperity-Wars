@@ -13,8 +13,7 @@ namespace Nashet.EconomicSimulation
         public static bool Exist { get; private set; }
 
         [SerializeField]
-        private Toggle devModeToggle, logInvestmentsToggle, logMarketFailsToggle, FOWToggle
-            ;
+        private Toggle devModeToggle, logInvestmentsToggle, logMarketFailsToggle, FOWToggle;
 
         [SerializeField]
         private Text richestAgents;

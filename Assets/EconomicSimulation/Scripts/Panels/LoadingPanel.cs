@@ -17,6 +17,7 @@ namespace Nashet.EconomicSimulation
         {
             MainCamera.loadingPanel = this;
             var window = Instantiate(mapOptionsWindowPrefab, transform.parent);
+            window.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, 0f);
         }
 
         public void updateStatus(string text)

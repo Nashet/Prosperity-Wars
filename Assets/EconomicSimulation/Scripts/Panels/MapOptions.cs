@@ -17,8 +17,9 @@ namespace Nashet.EconomicSimulation
     class MapOptions : Hideable
     {
         static public bool MadeChoise;
+
         [SerializeField]
-        private Toggle randomMap;
+        private Toggle randomMap, industrialStart;
 
         [SerializeField]
         private CanvasSampleOpenFileImage imageOpener;
@@ -35,11 +36,16 @@ namespace Nashet.EconomicSimulation
         {
             //GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, 200f);
             GUIChanger.Apply(gameObject);
+            industrialStart.isOn = Game.IndustrialStart;
         }
         //public override void Refresh()
         //{
 
         //}
+        public void OnIndustrialStartChanged(bool value)
+        {
+            Game.IndustrialStart = value;
+        }
         public void OnMapFromFileToggled(bool value)
         {
             if (value == true)

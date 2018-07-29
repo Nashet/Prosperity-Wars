@@ -40,6 +40,7 @@ namespace Nashet.EconomicSimulation
         private readonly Rect mapBorders;
 
         public static bool DrawFogOfWar { get; internal set; } = true;
+        public static bool IndustrialStart { get; internal set; }
 
         public Game(Texture2D mapImage)
         {
