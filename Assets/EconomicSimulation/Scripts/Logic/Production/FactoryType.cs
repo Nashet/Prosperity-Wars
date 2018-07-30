@@ -276,9 +276,10 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public static ProductionType whoCanProduce(Product product)
         {
-            foreach (ProductionType ft in allTypes)
-                if (ft.basicProduction.isSameProductType(product))
-                    return ft;
+            if (product != null)
+                foreach (ProductionType ft in allTypes)
+                    if (ft.basicProduction.isSameProductType(product))
+                        return ft;
             return null;
         }
 
@@ -305,7 +306,7 @@ namespace Nashet.EconomicSimulation
 
         public bool isResourceGathering()
         {
-            if (hasInput())
+            if (hasInput() || this == University)
                 return false;
             else
                 return true;

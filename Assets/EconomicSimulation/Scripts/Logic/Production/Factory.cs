@@ -223,7 +223,7 @@ namespace Nashet.EconomicSimulation
         /// Don't call it directly
         /// </summary>
 
-        public Factory(Province province, IShareOwner investor, ProductionType type, MoneyView cost)
+        public Factory(Province province, IShareOwner investor, ProductionType type, MoneyView cost, bool instantBuild = false)
             : base(type, province)
         {
             //this.buildByPlannedEconomy = buildByPlannedEconomy;
@@ -231,8 +231,15 @@ namespace Nashet.EconomicSimulation
             if (investor != null) // that mean that factory is a fake
             {
                 currentInvestor = investor;
-                //assuming this is level 0 building
-                constructionNeeds = new StorageSet(Type.GetBuildNeeds());
+
+                if (instantBuild)
+                {
+                    constructionNeeds = new StorageSet();
+                    onConstructionComplete(true);
+                }
+                else
+                    //assuming this is level 0 building
+                    constructionNeeds = new StorageSet(Type.GetBuildNeeds());
 
                 ownership.Add(investor, cost);
 
@@ -241,6 +248,7 @@ namespace Nashet.EconomicSimulation
                     setPriorityAutoWithPlannedEconomy();
                 if (Game.logInvestments)
                     Debug.Log(investor + " invested " + cost + " in building new " + this + " awaiting " + type.GetPossibleMargin(province) + " margin");
+
             }
         }
 
@@ -910,12 +918,12 @@ namespace Nashet.EconomicSimulation
         }
 
         public void open(IShareOwner byWhom, bool payMoney)
-        {
-            var agent = byWhom as Agent;
-            if (agent.Country.economy.getValue() != Economy.PlannedEconomy)
+        {            
+            if (Country.economy.getValue() != Economy.PlannedEconomy)
                 salary.Set(Province.getLocalMinSalary());
             if (payMoney)
             {
+                var agent = byWhom as Agent;
                 agent.PayWithoutRecord(this, getReopenCost());
                 ownership.Add(byWhom, getReopenCost());
                 if (Game.logInvestments)

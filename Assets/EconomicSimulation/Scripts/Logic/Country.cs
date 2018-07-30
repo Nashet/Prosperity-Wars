@@ -181,32 +181,28 @@ namespace Nashet.EconomicSimulation
                 capital.OnSecedeTo(this, false);
                 capital.setInitial(this);
             }
-            //if (!Game.devMode)
-            {
-                //economy.setValue( Economy.NaturalEconomy);
-                serfdom.setValue(Serfdom.Abolished);
-                //government.setValue(Government.Tribal, false);
 
-                government.setValue(Government.Aristocracy);
-                //economy.setValue(Economy.StateCapitalism);
-                taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
-                markInvented(Invention.Farming);
+            //economy.setValue( Economy.NaturalEconomy);
+            serfdom.setValue(Serfdom.Abolished);
+            //government.setValue(Government.Tribal, false);
 
-                markInvented(Invention.Banking);
+            government.setValue(Government.Aristocracy);
+            //economy.setValue(Economy.StateCapitalism);
+            taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
-                markInvented(Invention.Universities);
-                markInvented(Invention.Manufactures);
+            markInvented(Invention.Farming);
 
-                markInvented(Invention.Metal);
+            markInvented(Invention.Banking);
 
-                
-                //markInvented(Invention.individualRights);
-                //markInvented(Invention.ProfessionalArmy);
-                //markInvented(Invention.Welfare);
+            
 
-                //markInvented(Invention.Collectivism);
-            }
+            //markInvented(Invention.individualRights);
+            //markInvented(Invention.ProfessionalArmy);
+            //markInvented(Invention.Welfare);
+
+            //markInvented(Invention.Collectivism);
+
         }
 
         public void SetName(string name)
@@ -249,7 +245,7 @@ namespace Nashet.EconomicSimulation
             if (oldCountry.ownedProvinces.Count == 0)
                 oldCountry.OnKillCountry(this);
             else if (province == oldCountry.Capital)
-            {                
+            {
                 oldCountry.MoveCapitalTo(oldCountry.ChooseNewCapital());
             }
 
@@ -966,10 +962,10 @@ namespace Nashet.EconomicSimulation
                                 mobilize(ownedProvinces);
                                 foreach (var army in AllArmies())
                                 {
-                                    army.SetPathTo(targetProvince, x=>x.Country==this|| x.Country==targetCountry);
+                                    army.SetPathTo(targetProvince, x => x.Country == this || x.Country == targetCountry);
                                     //if (army.Path==null)
                                 }
-                                
+
                             }
                         }
                     }
@@ -1312,7 +1308,7 @@ namespace Nashet.EconomicSimulation
 
         private void buyNeeds(Storage toBuy)
         {
-            Storage realyBougth = Buy( toBuy, null);
+            Storage realyBougth = Buy(toBuy, null);
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);

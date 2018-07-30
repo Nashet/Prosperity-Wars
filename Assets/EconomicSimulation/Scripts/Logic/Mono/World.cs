@@ -276,7 +276,14 @@ namespace Nashet.EconomicSimulation
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(8200, 9000), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(20m);
 
-                    new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
+                    if (Game.IndustrialStart)
+                    {
+                        new Workers(PopUnit.getRandomPopulationAmount(4500, 5000), province.Country.getCulture(), province);
+                        pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
+                        pop.GiveMoneyFromNoWhere(9000);
+                    }
+                    else
+                        new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
                     //break;
@@ -313,7 +320,7 @@ namespace Nashet.EconomicSimulation
                 int lakechance = 20;//
                 foreach (var item in uniqueColors)
                 {
-                    if (!item.Value && Rand.Get.Next(lakechance) !=0)
+                    if (!item.Value && Rand.Get.Next(lakechance) != 0)
                     {
                         allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, item.Key, Product.getRandomResource(false)));
 
@@ -349,7 +356,7 @@ namespace Nashet.EconomicSimulation
             // remake it on messages?
             //Game.updateStatus("Reading provinces..");
 
-            CreateProvinces(map, !isMapRandom);            
+            CreateProvinces(map, !isMapRandom);
 
             // Game.updateStatus("Making countries..");
             CreateCountries();
@@ -357,11 +364,54 @@ namespace Nashet.EconomicSimulation
             //Game.updateStatus("Making population..");
             CreateRandomPopulation();
 
-            setStartResources();
+
+            if (Game.IndustrialStart)
+                IndustrialStart();
+
+
+
+
+            if (Game.devMode)
+                setStartResources(); // only for testing cause it bugs resource/factory connection
             //foreach (var item in World.getAllExistingCountries())
             //{
             //    item.Capital.OnSecedeTo(item, false);
             //}
+        }
+
+        private static void IndustrialStart()
+        {
+            foreach (var item in getAllExistingCountries())
+            {
+                item.markInvented(Invention.Universities);
+                item.markInvented(Invention.Manufactures);
+                item.markInvented(Invention.Metal);
+                item.markInvented(Invention.Gunpowder);
+
+
+                
+                var resurceEnterprise = ProductionType.whoCanProduce(item.Capital.getResource());
+                var aristocrats = item.Capital.GetAllPopulation().Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
+
+                if (resurceEnterprise != null && item.Invented(resurceEnterprise.basicProduction.Product))
+                {
+                    item.Capital.BuildFactory(aristocrats, resurceEnterprise, resurceEnterprise.GetBuildCost(item.market), true);
+                }
+
+                var processingEnterprises = ProductionType.getAllInventedFactories(item).Where(x => x.hasInput() || x == ProductionType.University);
+
+                var capitalists = item.Capital.GetAllPopulation().Where(x => x.Type == PopType.Capitalists).First() as Capitalists;
+                for (int i = 0; i < 3; i++)
+                {
+                    var processingEnterprise = processingEnterprises.Random();
+                    if (processingEnterprise.canBuildNewFactory(item.Capital, capitalists))
+                        item.Capital.BuildFactory(capitalists, processingEnterprise, processingEnterprise.GetBuildCost(item.market), true);
+                }
+
+                //ProductionType.getAllInventedFactories(Country).Where(x=>x.canBuildNewFactory);
+                //var res = new Factory(this, investor, type, cost);
+                //allFactories.Add(res);
+            }
         }
 
         private static void setStartResources()

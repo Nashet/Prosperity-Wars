@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation
         private Product resource;
 
         private Country country;
-        private Product product;
+       
         private readonly int fertileSoil;
 
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
@@ -59,20 +59,19 @@ namespace Nashet.EconomicSimulation
 
 
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
-        
+
         public Province(string name, int ID, Color colorID, Product resource) : base(name, ID, colorID)
         {
             country = World.UncolonizedLand;
             ProvinceColor = country.getColor().getAlmostSameColor();
             setResource(resource);
-
-            fertileSoil = 5000;
+            fertileSoil = 5000;         
 
         }
 
         public Province(AbstractProvince p, Product product) : this(p.ShortName, p.ID, p.ColorID, product)
         {
-            this.product = product;
+           
         }
 
         public void SetBorderMaterials()
@@ -92,7 +91,7 @@ namespace Nashet.EconomicSimulation
                             border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
                         else
                             border.Value.material = Country.getBorderMaterial();
-                                                
+
                         if (border.Key.Country == World.UncolonizedLand)
                             border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                         else
@@ -1048,15 +1047,15 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost)
+        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost, bool instantBuild = false)
         {
-            if (getAllFactories().Any(x => x.Type == type)) //temporally
+            //if (getAllFactories().Any(x => x.Type == type)) //todo temporally
+            //{
+            //    throw new Exception("Can't have 2 same factory types");
+            //}
+            //else
             {
-                throw new Exception("Can't have 2 same factory types");
-            }
-            else
-            {
-                var res = new Factory(this, investor, type, cost);
+                var res = new Factory(this, investor, type, cost, instantBuild);
                 allFactories.Add(res);
                 return res;
             }
@@ -1207,7 +1206,7 @@ namespace Nashet.EconomicSimulation
         public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
         {
             base.setUnityAPI(meshStructure, neighborBorders);
-            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;            
+            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
             groundMeshCollider.sharedMesh = MeshFilter.mesh;
 
 
