@@ -13,11 +13,14 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Text generalText;
 
+        [SerializeField]
+        private GameObject debugWindowPrefab;
+
         // Use this for initialization
         private void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.20.6";
+            generalText.text = "Prosperity Wars v0.20.7";
             Hide();
         }
 
@@ -38,8 +41,8 @@ namespace Nashet.EconomicSimulation
             if (Game.getMapMode() != newMapMode)
                 Game.redrawMapAccordingToMapMode(newMapMode);
         }
-        [SerializeField]
-        private GameObject debugWindowPrefab;
+       
+
         public void OnDebugWindowOpen()
         {
             if (!DebugWindow.Exist)

@@ -9,16 +9,13 @@ namespace Nashet.EconomicSimulation
 {
     public class MainCamera : MonoBehaviour
     {
-
-
         [SerializeField]
         private float xzCameraSpeed = 2f;
-
-        
 
         [SerializeField]
         private float yCameraSpeed = -55f;
 
+        [SerializeField] protected float fogOfWarDensity;
 
         private float focusHeight;
 
@@ -52,10 +49,15 @@ namespace Nashet.EconomicSimulation
         private float previousFrameTime;
         public static MainCamera Get;
 
+        public static ISelector provinceSelector;
+        public static ISelector fogOfWar;
+
         private void Start()
         {
             Get = this;
             focusHeight = transform.position.z;
+            provinceSelector = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.ProvinceSelecionMaterial, 0);
+            fogOfWar = TimedSelectorWithMaterial.AddTo(gameObject, LinksManager.Get.FogOfWarMaterial, 0);
             //
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
@@ -154,35 +156,7 @@ namespace Nashet.EconomicSimulation
                 {
                     Unit.RedrawAll();
                 }
-                if (Game.devMode == false)
-                {
-                    Game.playerVisibleProvinces.Clear();
-                    Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
-                    Game.Player.AllNeighborProvinces().Distinct().PerformAction(
-                        x => Game.playerVisibleProvinces.Add(x));
-
-                    foreach (var army in World.AllArmies())
-                    {
-                        if (Game.playerVisibleProvinces.Contains(army.Province))
-                        {
-                            army.unit.Show();
-                            army.unit.unitPanel.Show();
-                        }
-                        else
-                        {
-                            army.unit.Hide();
-                            army.unit.unitPanel.Hide();
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (var army in World.AllArmies())
-                    {
-                        army.unit.Show();
-                        army.unit.unitPanel.Show();
-                    }
-                }
+                DrawFogOfWar();
                 if (Message.HasUnshownMessages())
                     MessagePanel.showMessageBox(LinksManager.Get.CameraLayerCanvas, this);
 
@@ -190,6 +164,59 @@ namespace Nashet.EconomicSimulation
 
         }
 
+        protected void DrawFogOfWar()
+        {
+            if (Game.devMode == false)
+            {
+                Game.playerVisibleProvinces.Clear();
+                Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces());
+                Game.Player.AllNeighborProvinces().Distinct().PerformAction(
+                    x => Game.playerVisibleProvinces.Add(x));
+
+                if (Game.DrawFogOfWar)
+                {
+                    World.GetAllLandProvinces().PerformAction(
+                        x => x.updateColor(x.ProvinceColor * fogOfWarDensity)
+                        //x => fogOfWar.Select(x.GameObject)
+                        );
+                    Game.playerVisibleProvinces.PerformAction(x =>
+                    //fogOfWar.Deselect(x.GameObject)
+                    x.updateColor(x.ProvinceColor)
+                    );
+                }
+
+
+
+                foreach (var army in World.AllArmies())
+                {
+                    if (Game.playerVisibleProvinces.Contains(army.Province))
+                    {
+                        army.unit.Show();
+                        army.unit.unitPanel.Show();
+                    }
+                    else
+                    {
+                        army.unit.Hide();
+                        army.unit.unitPanel.Hide();
+                    }
+                }
+            }
+            else
+            {                
+                foreach (var army in World.AllArmies())
+                {
+                    army.unit.Show();
+                    army.unit.unitPanel.Show();
+                }
+            }
+            if (!Game.DrawFogOfWar)
+            {
+                World.GetAllLandProvinces().PerformAction(x =>
+                //fogOfWar.Deselect(x.GameObject)
+                x.updateColor(x.ProvinceColor)
+                );
+            }
+        }
         private void RefreshMap()
         {
             if (Game.getMapMode() != 0
@@ -202,7 +229,7 @@ namespace Nashet.EconomicSimulation
             {
                 int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
-                if (hoveredProvince == null)
+                if (hoveredProvince == null || hoveredProvince is Province)
                     GetComponent<ToolTipHandler>().Hide();
                 else
                 {
@@ -283,10 +310,12 @@ namespace Nashet.EconomicSimulation
             {
                 var lastSelected = Game.selectedProvince;
                 Game.selectedProvince = null;
+
                 if (lastSelected != null)
                 {
-                    lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
-                    lastSelected.setBorderMaterials(true);
+                    //lastSelected.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
+                    //lastSelected.setBorderMaterials(true);
+                    provinceSelector.Deselect(lastSelected.GameObject);
                 }
                 if (provincePanel.isActiveAndEnabled)
                     provincePanel.Hide();
@@ -295,11 +324,14 @@ namespace Nashet.EconomicSimulation
             {
                 if (Game.selectedProvince != null)//deal with previous selection
                 {
-                    Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
-                    Game.selectedProvince.setBorderMaterials(true);
+                    //Game.selectedProvince.setBorderMaterial(LinksManager.Get.defaultProvinceBorderMaterial);
+                    //Game.selectedProvince.setBorderMaterials(true);
+                    provinceSelector.Deselect(Game.selectedProvince.GameObject);
                 }
+                // freshly selected province
                 Game.selectedProvince = World.FindProvince(number);
-                Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
+                provinceSelector.Select(Game.selectedProvince.GameObject);
+                //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();
                 if (Game.getMapMode() == 2) //core map mode
                     Game.redrawMapAccordingToMapMode(2);
@@ -324,9 +356,9 @@ namespace Nashet.EconomicSimulation
 
         public void FocusOnProvince(Province province, bool select)
         {
-            gameObject.transform.position = new Vector3(province.getPosition().x, province.getPosition().y, focusHeight);
+            gameObject.transform.position = new Vector3(province.Position.x, province.Position.y, focusHeight);
             if (select)
-                selectProvince(province.getID());
+                selectProvince(province.ID);
         }
 
         public void FocusOnPoint(Vector2 point)

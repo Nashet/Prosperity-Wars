@@ -5,13 +5,13 @@ using UnityEngine;
 namespace Nashet.MarchingSquares
 {
     [Serializable]
-    public class Voxel
+    public class Voxel<T>where T : class, IColorID
     {
-        private Province state;
+        private T state;
 
         private Vector2 position, xEdgePosition, yEdgePosition;
 
-        public Voxel(int x, int y, float size, Province state)
+        public Voxel(int x, int y, float size, T state)
         {
             position.x = (x + 0.5f) * size;
             position.y = (y + 0.5f) * size;
@@ -24,7 +24,7 @@ namespace Nashet.MarchingSquares
             //this.state = Rand.random2.Next(3) == 1;
         }
 
-        public Province getState()
+        public T getState()
         {
             return state;
         }
@@ -48,7 +48,7 @@ namespace Nashet.MarchingSquares
         {
         }
 
-        public void BecomeXDummyOf(Voxel voxel, float offset)
+        public void BecomeXDummyOf(Voxel<T> voxel, float offset)
         {
             state = voxel.state;
             position = voxel.position;
@@ -59,7 +59,7 @@ namespace Nashet.MarchingSquares
             yEdgePosition.x += offset;
         }
 
-        public void BecomeYDummyOf(Voxel voxel, float offset)
+        public void BecomeYDummyOf(Voxel<T> voxel, float offset)
         {
             state = voxel.state;
             position = voxel.position;
@@ -70,7 +70,7 @@ namespace Nashet.MarchingSquares
             yEdgePosition.y += offset;
         }
 
-        public void BecomeXYDummyOf(Voxel voxel, float offset)
+        public void BecomeXYDummyOf(Voxel<T> voxel, float offset)
         {
             state = voxel.state;
             position = voxel.position;

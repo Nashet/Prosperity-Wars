@@ -13,7 +13,7 @@ namespace Nashet.EconomicSimulation
         public static bool Exist { get; private set; }
 
         [SerializeField]
-        private Toggle devModeToggle, logInvestmentsToggle, logMarketFailsToggle;
+        private Toggle devModeToggle, logInvestmentsToggle, logMarketFailsToggle, FOWToggle;
 
         [SerializeField]
         private Text richestAgents;
@@ -30,6 +30,7 @@ namespace Nashet.EconomicSimulation
             devModeToggle.isOn = Game.devMode;
             logInvestmentsToggle.isOn = Game.logInvestments;
             logMarketFailsToggle.isOn = Game.logMarket;
+            FOWToggle.isOn = Game.DrawFogOfWar;
         }
 
         public override void Hide()
@@ -38,6 +39,10 @@ namespace Nashet.EconomicSimulation
             Exist = false;
         }
 
+        public void OnDrawFogOfWarChange(bool value)
+        {
+            Game.DrawFogOfWar = value;
+        }
         public void OnDevModeChange(bool value)
         {
             Game.devMode = value;

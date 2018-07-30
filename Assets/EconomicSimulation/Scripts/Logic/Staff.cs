@@ -270,7 +270,7 @@ namespace Nashet.EconomicSimulation
         //}
         public void KillArmy(Army army)
         {
-            army.DeSelect();
+            army.Deselect();
             army.Province.RemoveArmy(army);
             allArmies.Remove(army);
             World.DayPassed -= army.OnMoveArmy;

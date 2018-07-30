@@ -181,32 +181,28 @@ namespace Nashet.EconomicSimulation
                 capital.OnSecedeTo(this, false);
                 capital.setInitial(this);
             }
-            //if (!Game.devMode)
-            {
-                //economy.setValue( Economy.NaturalEconomy);
-                serfdom.setValue(Serfdom.Abolished);
-                //government.setValue(Government.Tribal, false);
 
-                government.setValue(Government.Aristocracy);
-                //economy.setValue(Economy.StateCapitalism);
-                taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
-                markInvented(Invention.Farming);
+            //economy.setValue( Economy.NaturalEconomy);
+            serfdom.setValue(Serfdom.Abolished);
+            //government.setValue(Government.Tribal, false);
 
-                markInvented(Invention.Banking);
+            government.setValue(Government.Aristocracy);
+            //economy.setValue(Economy.StateCapitalism);
+            taxationForRich.setValue(TaxationForRich.PossibleStatuses[2]);
 
-                markInvented(Invention.Universities);
-                markInvented(Invention.Manufactures);
+            markInvented(Invention.Farming);
 
-                markInvented(Invention.Metal);
+            markInvented(Invention.Banking);
 
-                
-                //markInvented(Invention.individualRights);
-                //markInvented(Invention.ProfessionalArmy);
-                //markInvented(Invention.Welfare);
+            
 
-                //markInvented(Invention.Collectivism);
-            }
+            //markInvented(Invention.individualRights);
+            //markInvented(Invention.ProfessionalArmy);
+            //markInvented(Invention.Welfare);
+
+            //markInvented(Invention.Collectivism);
+
         }
 
         public void SetName(string name)
@@ -249,7 +245,7 @@ namespace Nashet.EconomicSimulation
             if (oldCountry.ownedProvinces.Count == 0)
                 oldCountry.OnKillCountry(this);
             else if (province == oldCountry.Capital)
-            {                
+            {
                 oldCountry.MoveCapitalTo(oldCountry.ChooseNewCapital());
             }
 
@@ -291,7 +287,7 @@ namespace Nashet.EconomicSimulation
 
                 country.borderMaterial = new Material(LinksManager.Get.defaultCountryBorderMaterial) { color = country.nationalColor.getNegative() };
                 //item.ownedProvinces[0].setBorderMaterial(Game.defaultProvinceBorderMaterial);
-                country.ownedProvinces[0].setBorderMaterials(false);
+                country.ownedProvinces[0].SetBorderMaterials();
                 country.AllProvinces().PerformAction(x => x.OnSecedeGraphic(x.Country));
                 country.Flag = Nashet.Flag.Generate(128, 128);
             }
@@ -582,7 +578,7 @@ namespace Nashet.EconomicSimulation
                     item.ownership.TransferAll(this, item.Country);
 
             if (IsHuman)
-                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.getPosition());
+                Message.NewMessage("Disaster!!", "It looks like we lost our last province\n\nMaybe we would rise again?", "Okay", false, capital.Position);
             alive = false;
 
             SetStatisticToZero();
@@ -651,9 +647,9 @@ namespace Nashet.EconomicSimulation
         public void setCapitalTextMesh(Province province)
         {
             Transform txtMeshTransform = GameObject.Instantiate(LinksManager.Get.r3DCountryTextPrefab).transform;
-            txtMeshTransform.SetParent(province.getRootGameObject().transform, false);
+            txtMeshTransform.SetParent(province.GameObject.transform, false);
 
-            Vector3 capitalTextPosition = province.getPosition();
+            Vector3 capitalTextPosition = province.Position;
             capitalTextPosition.y += 2f;
             //capitalTextPosition.z -= 5f;
             txtMeshTransform.position = capitalTextPosition;
@@ -679,7 +675,7 @@ namespace Nashet.EconomicSimulation
                 setCapitalTextMesh(newCapital);
             else
             {
-                Vector3 capitalTextPosition = newCapital.getPosition();
+                Vector3 capitalTextPosition = newCapital.Position;
                 capitalTextPosition.y += 2f;
                 capitalTextPosition.z -= 5f;
                 meshCapitalText.transform.position = capitalTextPosition;
@@ -966,10 +962,10 @@ namespace Nashet.EconomicSimulation
                                 mobilize(ownedProvinces);
                                 foreach (var army in AllArmies())
                                 {
-                                    army.SetPathTo(targetProvince, x=>x.Country==this|| x.Country==targetCountry);
+                                    army.SetPathTo(targetProvince, x => x.Country == this || x.Country == targetCountry);
                                     //if (army.Path==null)
                                 }
-                                
+
                             }
                         }
                     }
@@ -1010,9 +1006,9 @@ namespace Nashet.EconomicSimulation
                 }
             // dealing with enterprises
             if (economy.getValue() == Economy.Interventionism)
-                Rand.Call(() => getAllFactories().PerformAction(
+                Rand.Call(() => getAllFactories().Where(
                     x => x.ownership.HowMuchOwns(this).Copy().Subtract(x.ownership.HowMuchSelling(this))
-                    .isBiggerOrEqual(Procent._50Procent),
+                    .isBiggerOrEqual(Procent._50Procent)).PerformAction(
                     x => x.ownership.SetToSell(this, Options.PopBuyAssetsAtTime)),
                     30);
             else
@@ -1312,7 +1308,7 @@ namespace Nashet.EconomicSimulation
 
         private void buyNeeds(Storage toBuy)
         {
-            Storage realyBougth = Buy( toBuy, null);
+            Storage realyBougth = Buy(toBuy, null);
             if (realyBougth.isNotZero())
             {
                 countryStorageSet.Add(realyBougth);

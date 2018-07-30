@@ -37,7 +37,7 @@ public class Graph : MonoBehaviour
 	/// <param name="end">End Node.</param>
 	public virtual Path GetShortestPath(Province start, Province end, Predicate<Province> predicate = null)
     {
-        return GetShortestPath(start.getRootGameObject().GetComponent<Node>(), end.getRootGameObject().GetComponent<Node>(), predicate);
+        return GetShortestPath(start.GameObject.GetComponent<Node>(), end.GameObject.GetComponent<Node>(), predicate);
     }
 
     /// <summary>

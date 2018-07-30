@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
+    public class Province : AbstractProvince, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
     {
         public enum TerrainTypes
         {
@@ -37,194 +37,65 @@ namespace Nashet.EconomicSimulation
 
         public static readonly Predicate<Province> All = x => true;
 
-        private Province here
-        {
-            get { return this; }
-        }
+        private Province here { get { return this; } }
 
-        GameObject txtMeshGl;
-        private readonly int ID;
-        private readonly Color colorID;
+        public Color ProvinceColor { get; protected set; }
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
         private readonly List<Factory> allFactories = new List<Factory>();
-        private List<Army> standingArmies = new List<Army>(); // military units
-
-        public IEnumerable<Army> AllStandingArmies()
-        {
-            foreach (var item in standingArmies)
-            {
-                yield return item;
-            }
-        }
-        public void AddArmy(Army army)
-        {
-            standingArmies.Add(army);
-            //Debug.Log("Added " + army);
-        }
-        public void RemoveArmy(Army army)
-        {
-            standingArmies.Remove(army);
-        }
+        private readonly List<Army> standingArmies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
-        private readonly List<Province> neighbors = new List<Province>();
+        protected readonly List<Province> neighbors = new List<Province>();
+        private readonly List<Country> cores = new List<Country>();
 
         private Product resource;
-        private Vector3 position;
-        private Color color;
-
-        private GameObject gameObject;
-        private MeshRenderer meshRenderer;
 
         private Country country;
-
-
+       
         private readonly int fertileSoil;
-        private readonly List<Country> cores = new List<Country>();
+
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
-        private TerrainTypes terrain;
+        public TerrainTypes Terrain { get; protected set; }
 
 
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
-        //private readonly float nameWeight;
-        //empty province constructor
-        public Province(string name, int iID, Color icolorID, Product resource) : base(name)
+        public Province(string name, int ID, Color colorID, Product resource) : base(name, ID, colorID)
         {
             country = World.UncolonizedLand;
-            color = country.getColor().getAlmostSameColor();
+            ProvinceColor = country.getColor().getAlmostSameColor();
             setResource(resource);
-            colorID = icolorID;
-            ID = iID;
-            fertileSoil = 5000;
+            fertileSoil = 5000;         
+
         }
 
-        public void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
+        public Province(AbstractProvince p, Product product) : this(p.ShortName, p.ID, p.ColorID, product)
         {
-            //this.meshStructure = meshStructure;
-
-            //spawn object
-            gameObject = new GameObject(string.Format("{0}", getID()));
-
-            //Add Components
-            var meshFilter = gameObject.AddComponent<MeshFilter>();
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
-
-            // in case you want the new gameobject to be a child
-            // of the gameobject that your script is attached to
-            gameObject.transform.parent = World.Get.transform;
-
-            var landMesh = meshFilter.mesh;
-            landMesh.Clear();
-
-            landMesh.vertices = meshStructure.getVertices().ToArray();
-            landMesh.triangles = meshStructure.getTriangles().ToArray();
-            landMesh.RecalculateNormals();
-            landMesh.RecalculateBounds();
-            landMesh.name = getID().ToString();
-            //meshRenderer.material = Material.fI
-
-            meshRenderer.material.shader = Shader.Find("Standard");// Province");
-
-            meshRenderer.material.color = color;
-
-            MeshCollider groundMeshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-            groundMeshCollider.sharedMesh = landMesh;
-
-            position = setProvinceCenter(meshStructure);
-
-            setLabel();
-
-
-            //var graph = World.Get.GetComponent<AstarPath>();
-
-
-            // setting neighbors
-            //making meshes for border
-            foreach (var border in neighborBorders)
-            {
-                //each color is one neighbor (non repeating)
-                var neighbor = border.Key;
-                if (!(getTerrain() == TerrainTypes.Mountains && neighbor.terrain == TerrainTypes.Mountains))
-                //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
-                {
-                    neighbors.Add(neighbor);
-                    //var newNode = new Pathfinding.PointNode(AstarPath.active);
-                    //newNode.gameObject = txtMeshGl;
-                    //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
-
-                }
-
-                GameObject borderObject = new GameObject("Border with " + neighbor);
-
-                //Add Components
-                meshFilter = borderObject.AddComponent<MeshFilter>();
-                MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
-
-                borderObject.transform.parent = gameObject.transform;
-
-                Mesh borderMesh = meshFilter.mesh;
-                borderMesh.Clear();
-
-                borderMesh.vertices = border.Value.getVertices().ToArray();
-                borderMesh.triangles = border.Value.getTriangles().ToArray();
-                borderMesh.uv = border.Value.getUVmap().ToArray();
-                borderMesh.RecalculateNormals();
-                borderMesh.RecalculateBounds();
-                meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                borderMesh.name = "Border with " + neighbor;
-
-                bordersMeshes.Add(neighbor, meshRenderer);
-            }
-            var node = gameObject.AddComponent<Node>();
+           
         }
 
-        public TerrainTypes getTerrain()
-        {
-            return terrain;
-        }
-
-        public Vector3 getPosition()
-        {
-            return position;
-        }
-
-        public GameObject getRootGameObject()
-        {
-            return gameObject;
-        }
-
-        public void setBorderMaterial(Material material)
-        {
-            foreach (var item in bordersMeshes)
-                item.Value.material = material;
-        }
-
-        public void setBorderMaterials(bool reWriteSelection)
+        public void SetBorderMaterials()
         {
             foreach (var border in bordersMeshes)
             {
                 if (border.Key.isNeighbor(this))
                 {
-                    if (Country == border.Key.Country)
+                    if (Country == border.Key.Country) // same country
                     {
-                        if (this != Game.selectedProvince || reWriteSelection)
-                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                        if (border.Key != Game.selectedProvince || reWriteSelection)
-                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                     }
                     else
                     {
-                        if (this != Game.selectedProvince || reWriteSelection)
-                            if (Country == World.UncolonizedLand)
-                                border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                            else
-                                border.Value.material = Country.getBorderMaterial();
-                        if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.Country != null)
-                            if (border.Key.Country == World.UncolonizedLand)
-                                border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
-                            else
-                                border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
+                        if (Country == World.UncolonizedLand)
+                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        else
+                            border.Value.material = Country.getBorderMaterial();
+
+                        if (border.Key.Country == World.UncolonizedLand)
+                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        else
+                            border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
                     }
                 }
                 else
@@ -244,8 +115,7 @@ namespace Nashet.EconomicSimulation
             get { return country; }
         }
 
-        public int getID()
-        { return ID; }
+
 
         /// <summary>
         /// called only on map generation
@@ -383,9 +253,9 @@ namespace Nashet.EconomicSimulation
         public void OnSecedeGraphic(Country taker)
         {
             //graphic stuff
-            color = taker.getColor().getAlmostSameColor();
+            ProvinceColor = taker.getColor().getAlmostSameColor();
             meshRenderer.material.color = getColorAccordingToMapMode();
-            setBorderMaterials(false);
+            SetBorderMaterials();
         }
 
         public int howFarFromCapital()
@@ -446,21 +316,6 @@ namespace Nashet.EconomicSimulation
             //    yield return factory;
         }
 
-        //public IEnumerable<Factory> getAllFactories(Predicate<Factory> predicate)
-        //{
-        //    foreach (Factory factory in allFactories)
-        //        if (predicate(factory))
-        //            yield return factory;
-        //}
-        public static Vector3 setProvinceCenter(MeshStructure meshStructure)
-        {
-            Vector3 accu = new Vector3(0, 0, 0);
-            foreach (var c in meshStructure.getVertices())
-                accu += c;
-            accu = accu / meshStructure.verticesCount;
-            return accu;
-        }
-
         public Culture getMajorCulture()
         {
             Dictionary<Culture, int> cultures = new Dictionary<Culture, int>();
@@ -496,14 +351,7 @@ namespace Nashet.EconomicSimulation
             return Country == country;
         }
 
-        //public bool isNeighborButNotOwn(Country country)
-        //{
-        //    return this.Country != country && neighbors.Any(x => x.Country == country);
-        //}
-        public bool isNeighbor(Province province)
-        {
-            return neighbors.Contains(province);
-        }
+
 
         public int getFamilyPopulation()
         {
@@ -566,15 +414,6 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        public Color getColorID()
-        {
-            return colorID;
-        }
-
-        public Color getColor()
-        {
-            return color;
-        }
 
         /// <summary>
         /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
@@ -672,9 +511,9 @@ namespace Nashet.EconomicSimulation
         {
             resource = inres;
             if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetalOre || resource == Product.Coal)
-                terrain = TerrainTypes.Mountains;
+                Terrain = TerrainTypes.Mountains;
             else
-                terrain = TerrainTypes.Plains;
+                Terrain = TerrainTypes.Plains;
         }
 
         public Product getResource()
@@ -767,39 +606,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        public void setLabel()
-        {
-            LODGroup group = gameObject.AddComponent<LODGroup>();
 
-            // Add 4 LOD levels
-            LOD[] lods = new LOD[1];
-            txtMeshGl = GameObject.Instantiate(LinksManager.Get.r3DProvinceTextPrefab);
-            Transform txtMeshTransform = txtMeshGl.transform;
-            txtMeshTransform.SetParent(gameObject.transform, false);
-            Renderer[] renderers = new Renderer[1];
-            renderers[0] = txtMeshTransform.GetComponent<Renderer>();
-            lods[0] = new LOD(0.25F, renderers);
-
-            var position = getPosition();
-            position.z -= 0.003f;
-            txtMeshTransform.position = position;
-
-            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-
-            txtMesh.text = ToString();
-            txtMesh.color = Color.black; // Set the text's color to red
-
-            //renderers[0].material.shader = Shader.Find("3DText");
-
-
-            group.SetLODs(lods);
-            //#if UNITY_WEBGL
-            group.size = 20; //was 30 for webgl
-                             //#else
-                             //group.size = 20; // for others
-                             //#endif
-                             //group.RecalculateBounds();
-        }
 
         public Factory findFactory(ProductionType proposition)
         {
@@ -957,7 +764,7 @@ namespace Nashet.EconomicSimulation
             switch (Game.getMapMode())
             {
                 case 0: //political mode
-                    return getColor();
+                    return ProvinceColor;
 
                 case 1: //culture mode
                     //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
@@ -1240,15 +1047,15 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost)
+        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost, bool instantBuild = false)
         {
-            if (getAllFactories().Any(x => x.Type == type)) //temporally
+            //if (getAllFactories().Any(x => x.Type == type)) //todo temporally
+            //{
+            //    throw new Exception("Can't have 2 same factory types");
+            //}
+            //else
             {
-                throw new Exception("Can't have 2 same factory types");
-            }
-            else
-            {
-                var res = new Factory(this, investor, type, cost);
+                var res = new Factory(this, investor, type, cost, instantBuild);
                 allFactories.Add(res);
                 return res;
             }
@@ -1395,6 +1202,83 @@ namespace Nashet.EconomicSimulation
         public class OwnerChangedEventArgs : EventArgs
         {
             public Country oldOwner { get; set; }
+        }
+        public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
+        {
+            base.setUnityAPI(meshStructure, neighborBorders);
+            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            groundMeshCollider.sharedMesh = MeshFilter.mesh;
+
+
+
+            meshRenderer.material.shader = Shader.Find("Standard");// Province");
+
+            meshRenderer.material.color = ProvinceColor;
+
+            //var graph = World.Get.GetComponent<AstarPath>();
+
+
+            // setting neighbors
+            //making meshes for border
+            foreach (var border in neighborBorders)
+            {
+                //each color is one neighbor (non repeating)
+                var neighbor = border.Key as Province;
+                if (neighbor != null)
+                {
+                    if (!(Terrain == TerrainTypes.Mountains && neighbor.Terrain == TerrainTypes.Mountains))
+                    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                    {
+                        neighbors.Add(neighbor);
+                        //var newNode = new Pathfinding.PointNode(AstarPath.active);
+                        //newNode.gameObject = txtMeshGl;
+                        //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
+
+                    }
+
+                    GameObject borderObject = new GameObject("Border with " + neighbor);
+
+                    //Add Components
+                    MeshFilter = borderObject.AddComponent<MeshFilter>();
+                    MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
+
+                    borderObject.transform.parent = GameObject.transform;
+
+                    Mesh borderMesh = MeshFilter.mesh;
+                    borderMesh.Clear();
+
+                    borderMesh.vertices = border.Value.getVertices().ToArray();
+                    borderMesh.triangles = border.Value.getTriangles().ToArray();
+                    borderMesh.uv = border.Value.getUVmap().ToArray();
+                    borderMesh.RecalculateNormals();
+                    borderMesh.RecalculateBounds();
+                    meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                    borderMesh.name = "Border with " + neighbor;
+
+                    bordersMeshes.Add(neighbor, meshRenderer);
+                }
+            }
+            var node = GameObject.AddComponent<Node>();
+        }
+        public IEnumerable<Army> AllStandingArmies()
+        {
+            foreach (var item in standingArmies)
+            {
+                yield return item;
+            }
+        }
+        public void AddArmy(Army army)
+        {
+            standingArmies.Add(army);
+            //Debug.Log("Added " + army);
+        }
+        public void RemoveArmy(Army army)
+        {
+            standingArmies.Remove(army);
+        }
+        public bool isNeighbor(Province province)
+        {
+            return neighbors.Contains(province);
         }
     }
 }
