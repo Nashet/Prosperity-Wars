@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = false;
+        public static bool devMode = true;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -31,7 +31,7 @@ namespace Nashet.EconomicSimulation
         public static List<Army> selectedArmies = new List<Army>();
         public static List<Province> playerVisibleProvinces = new List<Province>();
 
-        private static int mapMode;
+        private static MapModes mapMode;
 
 
 
@@ -41,6 +41,7 @@ namespace Nashet.EconomicSimulation
 
         public static bool DrawFogOfWar { get; internal set; } = true;
         public static bool IndustrialStart { get; internal set; }
+        public static MapModes MapMode { get; internal set; }
 
         public Game(Texture2D mapImage)
         {
@@ -148,16 +149,24 @@ namespace Nashet.EconomicSimulation
             surrended = true;
         }
 
-        public static int getMapMode()
+        public enum MapModes
         {
-            return mapMode;
+            Political, Cultures, Cores, Resources, PopulationChange, PopulationDensity, Prosperity
         }
 
-        public static void redrawMapAccordingToMapMode(int newMapMode)
-        {
-            mapMode = newMapMode;
+        //case 0: //political mode
+        //    case 1: //culture mode
+        //    case 2: //cores mode
+        //    case 3: //resource mode
+        //    case 4: //population change mode
+        //    case 5: //population density mode
+        //    case 6: //prosperity map
+       
+
+        public static void redrawMapAccordingToMapMode()
+        {           
             foreach (var item in World.GetAllLandProvinces())
-                item.updateColor(item.getColorAccordingToMapMode());
+                item.SetColorAccordingToMapMode();
         }
 
 

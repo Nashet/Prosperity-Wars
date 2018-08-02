@@ -173,15 +173,15 @@ namespace Nashet.EconomicSimulation
                 Game.Player.AllNeighborProvinces().Distinct().PerformAction(
                     x => Game.playerVisibleProvinces.Add(x));
 
-                if (Game.DrawFogOfWar)
+                if (Game.DrawFogOfWar && Game.MapMode == Game.MapModes.Political)
                 {
                     World.GetAllLandProvinces().PerformAction(
-                        x => x.updateColor(x.ProvinceColor * fogOfWarDensity)
+                        x => x.SetColor(x.ProvinceColor * fogOfWarDensity)
                         //x => fogOfWar.Select(x.GameObject)
                         );
                     Game.playerVisibleProvinces.PerformAction(x =>
                     //fogOfWar.Deselect(x.GameObject)
-                    x.updateColor(x.ProvinceColor)
+                    x.SetColor(x.ProvinceColor)
                     );
                 }
 
@@ -202,7 +202,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             else
-            {                
+            {
                 foreach (var army in World.AllArmies())
                 {
                     army.unit.Show();
@@ -213,19 +213,22 @@ namespace Nashet.EconomicSimulation
             {
                 World.GetAllLandProvinces().PerformAction(x =>
                 //fogOfWar.Deselect(x.GameObject)
-                x.updateColor(x.ProvinceColor)
+                x.SetColor(x.ProvinceColor)
                 );
             }
         }
         private void RefreshMap()
         {
-            if (Game.getMapMode() != 0
+            if (Game.MapMode != Game.MapModes.Political
                     //&& Date.Today.isDivisible(Options.MapRedrawRate)
                     )
-                Game.redrawMapAccordingToMapMode(Game.getMapMode());
+            {
+
+                Game.redrawMapAccordingToMapMode();
+            }
 
 
-            if (Game.getMapMode() == 4)
+            if (Game.MapMode == Game.MapModes.PopulationChange)
             {
                 int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
@@ -249,7 +252,7 @@ namespace Nashet.EconomicSimulation
                     GetComponent<ToolTipHandler>().Show();
                 }
             }
-            else if (Game.getMapMode() == 5)
+            else if (Game.MapMode == Game.MapModes.PopulationDensity)
             {
                 int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
@@ -266,7 +269,7 @@ namespace Nashet.EconomicSimulation
                     GetComponent<ToolTipHandler>().Show();
                 }
             }
-            else if (Game.getMapMode() == 6) //prosperity wars
+            else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
             {
                 int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
                 var hoveredProvince = World.FindProvince(meshNumber);
@@ -333,8 +336,8 @@ namespace Nashet.EconomicSimulation
                 provinceSelector.Select(Game.selectedProvince.GameObject);
                 //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();
-                if (Game.getMapMode() == 2) //core map mode
-                    Game.redrawMapAccordingToMapMode(2);
+                if (Game.MapMode == Game.MapModes.Cores) //core map mode
+                    Game.redrawMapAccordingToMapMode();
             }
             if (buildPanel != null && buildPanel.isActiveAndEnabled)
                 buildPanel.Refresh();

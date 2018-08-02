@@ -208,12 +208,15 @@ namespace Nashet.EconomicSimulation
                 return Buy(need);
             }
             //todo fix that
-            else if (subsidizer.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(Country.market.getCost(need))))
-            {
-                return Buy(need);
-            }
             else
-                return new Storage(need.Product, 0f);
+            {
+                if (subsidizer.GiveFactorySubsidies(this, HowMuchLacksMoneyIncludingDeposits(Country.market.getCost(need))))
+                {
+                    return Buy(need);
+                }
+                else
+                    return new Storage(need.Product, 0f);
+            }
         }
         // Do I use where need to? Yes, I do. It called from this.Buy()
         protected virtual void Buy_utility(Market market, MoneyView cost, Storage what)
