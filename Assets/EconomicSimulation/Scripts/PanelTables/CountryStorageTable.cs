@@ -93,7 +93,9 @@ namespace Nashet.EconomicSimulation
                 //    str.setZero();
                 //else
                 //    str.multiply(DSB);
-                AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
+
+                //AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
+                AddCell(Market.GiveTotalSoldProduct(Game.Player, product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
             }
         }
 

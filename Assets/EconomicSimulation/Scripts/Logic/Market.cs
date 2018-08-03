@@ -502,6 +502,34 @@ namespace Nashet.EconomicSimulation
         {
             return "Single market";//Country + "'s market";
         }
+
+        public static Storage GiveTotalSoldProduct(ISeller seller, Product product)
+        {
+            var res = new Storage(product);
+            foreach (var deal in seller.AllSellDeals().Where(x => x.Value.Product == product))
+            {                
+                // Key is a market, Value is a Storage
+                var market = deal.Key;
+                var sentToMarket = deal.Value;
+                if (sentToMarket.get() > 0f)
+                {
+                    Value DSB = new Value(market.getDemandSupplyBalance(sentToMarket.Product, false));
+                    if (DSB.get() == Options.MarketInfiniteDSB)
+                        DSB.SetZero(); // real DSB is unknown
+                    else if (DSB.get() > Options.MarketEqualityDSB)
+                        DSB.Set(Options.MarketEqualityDSB);
+
+                    var realSold = sentToMarket.Multiply(DSB);
+
+                    if (realSold.isNotZero())
+                    {
+                        res.Add(realSold);
+                    }
+                }
+            }
+            return res;
+        }
+
         /// <summary>
         /// Brings money for sold product
         /// </summary>
@@ -563,11 +591,11 @@ namespace Nashet.EconomicSimulation
 
         public static Market GetReachestMarket(Storage need)
         {
-            return World.AllMarkets().Where(x => x.getBouthOnMarket(need.Product, false).get() != Options.MarketEqualityDSB).MaxBy(x => x.getCost(need.Product).Get());           
+            return World.AllMarkets().Where(x => x.getBouthOnMarket(need.Product, false).get() != Options.MarketEqualityDSB).MaxBy(x => x.getCost(need.Product).Get());
         }
         public static Market GetCheapestMarket(Storage need)
         {
-            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());          
+            return World.AllMarkets().MinBy(x => x.getCost(need.Product).Get());
         }
     }
 }

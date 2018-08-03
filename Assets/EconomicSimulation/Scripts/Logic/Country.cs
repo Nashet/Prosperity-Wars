@@ -791,7 +791,7 @@ namespace Nashet.EconomicSimulation
         /// </summary>
         public MoneyView getMinSalary()
         {
-            var res = (minimalWage.getValue() as MinimalWage.ReformValue).getWage(this.market);
+            var res = (minimalWage.getValue() as MinimalWage.ReformValue).getMinimalWage(this.market);
             if (res.isZero())
                 return Options.FactoryMinPossibleSallary;
             else
