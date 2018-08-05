@@ -400,7 +400,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void updateColor(Color color)
+        public void SetColor(Color color)
         {
             meshRenderer.material.color = color;
         }
@@ -758,15 +758,18 @@ namespace Nashet.EconomicSimulation
         {
             return modifiers.ContainsKey(modifier);
         }
-
-        public Color getColorAccordingToMapMode()
+        public void SetColorAccordingToMapMode()
         {
-            switch (Game.getMapMode())
+            SetColor(getColorAccordingToMapMode());
+        }
+        protected Color getColorAccordingToMapMode()
+        {
+            switch (Game.MapMode)
             {
-                case 0: //political mode
+                case Game.MapModes.Political: 
                     return ProvinceColor;
 
-                case 1: //culture mode
+                case Game.MapModes.Cultures: //culture mode
                     //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
                     var culture = getMajorCulture();
                     if (culture == null)
@@ -774,7 +777,7 @@ namespace Nashet.EconomicSimulation
                     else
                         return culture.getColor();
 
-                case 2: //cores mode
+                case Game.MapModes.Cores: //cores mode
                     if (Game.selectedProvince == null)
                     {
                         if (isCoreFor(Country))
@@ -812,14 +815,14 @@ namespace Nashet.EconomicSimulation
                             }
                         }
                     }
-                case 3: //resource mode
+                case Game.MapModes.Resources: //resource mode
                     {
                         if (getResource() == null)
                             return Color.gray;
                         else
                             return getResource().getColor();
                     }
-                case 4: //population change mode
+                case Game.MapModes.PopulationChange: //population change mode
                     {
                         if (Game.selectedProvince == null)
                         {
@@ -847,13 +850,13 @@ namespace Nashet.EconomicSimulation
                                 return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
                         }
                     }
-                case 5: //population density mode
+                case Game.MapModes.PopulationDensity: //population density mode
                     {
                         float maxPopultion = 50000;
                         var population = GetAllPopulation().Sum(x => x.population.Get());
                         return Color.Lerp(Color.white, Color.red, population / maxPopultion);
                     }
-                case 6: //prosperity map
+                case Game.MapModes.Prosperity: //prosperity map
                     {
                         float minValue = 0.25f;
                         float maxValue = 0.5f - minValue;

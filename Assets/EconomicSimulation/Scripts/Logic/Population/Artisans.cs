@@ -113,7 +113,7 @@ namespace Nashet.EconomicSimulation
                 {
                     consumed.Add(item);
                 }
-                
+
                 getConsumedLastTurn().Add(artisansProduction.getConsumedLastTurn());
             }
         }
@@ -159,8 +159,11 @@ namespace Nashet.EconomicSimulation
 
         private void changeProductionType()
         {
-            var newProductionType = ProductionType.getAllInventedArtisanships(Country).
-                Where(x => !x.isResourceGathering() && x.basicProduction.Product != Product.Education).Where(x => x.getPossibleProfit(Country.market).isNotZero()).MaxBy(x => x.getPossibleProfit(Country.market).Get());
+            var newProductionType = ProductionType.getAllInventedArtisanships(Country)
+                .Where(x => !x.isResourceGathering()
+                && x.basicProduction.Product != Product.Education
+                && x.getPossibleProfit(Country.market).isNotZero())
+                .MaxBy(x => x.getPossibleProfit(Country.market).Get());
 
             if (newProductionType != null)
                 if (artisansProduction == null

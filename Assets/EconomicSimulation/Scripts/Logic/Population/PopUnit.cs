@@ -734,7 +734,7 @@ namespace Nashet.EconomicSimulation
                         }
                     }
                     MoneyView luxuryNeedsCost;
-                    if (luxuryNeedsConsumed.Count > 0)
+                    if (luxuryNeedsConsumed != null && luxuryNeedsConsumed.Count > 0)
                         luxuryNeedsCost = Market.GetCheapestMarket(luxuryNeedsConsumed[0]).getCost(luxuryNeeds);
                     else
                         luxuryNeedsCost = MoneyView.Zero.Copy();
@@ -768,9 +768,13 @@ namespace Nashet.EconomicSimulation
                             }
                         }
                     }
-                    var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, population.getRealLuxuryNeeds(), false);
-                    luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
-                    needsFulfilled.Add(luxuryNeedsFulfilled);
+
+                    if (luxuryNeedsConsumed != null)
+                    {
+                        var luxuryNeedsFulfilled = new Procent(luxuryNeedsConsumed, population.getRealLuxuryNeeds(), false);
+                        luxuryNeedsFulfilled.Divide(Options.PopStrataWeight);
+                        needsFulfilled.Add(luxuryNeedsFulfilled);
+                    }
                 }
                 cash.Add(reserve);
             }

@@ -137,14 +137,19 @@ namespace Nashet.EconomicSimulation
             //    return Value.Zero;
         }
 
+        /// <summary>
+        /// not used really
+        /// </summary>        
         public ReadOnlyValue getSoldByGovernment(Product product)
         {
             if (soldByGovernment.ContainsKey(product))
                 return soldByGovernment[product];
             else
-                return Value.Zero;
+                return ReadOnlyValue.Zero;
         }
-
+        /// <summary>
+        /// !!
+        /// </summary>        
         public MoneyView getCostOfAllSellsByGovernment()
         {
             var res = new Money(0m);

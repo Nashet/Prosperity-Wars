@@ -52,6 +52,8 @@ namespace Nashet.EconomicSimulation
         public static ISelector provinceSelector;
         public static ISelector fogOfWar;
 
+        protected ToolTipHandler tooltip;
+
         private void Start()
         {
             Get = this;
@@ -61,6 +63,7 @@ namespace Nashet.EconomicSimulation
             //
             //var window = Instantiate(LinksManager.Get.MapOptionsPrefab, LinksManager.Get.CameraLayerCanvas.transform);
             //window.GetComponent<RectTransform>().anchoredPosition = new Vector2(150f, 150f);
+            tooltip = GetComponent<ToolTipHandler>();
         }
 
         public void Move(float xMove, float zMove, float yMove)
@@ -138,7 +141,7 @@ namespace Nashet.EconomicSimulation
 #endif
             if (gameLoadingIsFinished)
             {
-                RefreshMap();
+                UpdateMapTooltip();
 
                 if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
@@ -173,15 +176,15 @@ namespace Nashet.EconomicSimulation
                 Game.Player.AllNeighborProvinces().Distinct().PerformAction(
                     x => Game.playerVisibleProvinces.Add(x));
 
-                if (Game.DrawFogOfWar)
+                if (Game.DrawFogOfWar && Game.MapMode == Game.MapModes.Political)
                 {
                     World.GetAllLandProvinces().PerformAction(
-                        x => x.updateColor(x.ProvinceColor * fogOfWarDensity)
+                        x => x.SetColor(x.ProvinceColor * fogOfWarDensity)
                         //x => fogOfWar.Select(x.GameObject)
                         );
                     Game.playerVisibleProvinces.PerformAction(x =>
                     //fogOfWar.Deselect(x.GameObject)
-                    x.updateColor(x.ProvinceColor)
+                    x.SetColor(x.ProvinceColor)
                     );
                 }
 
@@ -202,7 +205,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
             else
-            {                
+            {
                 foreach (var army in World.AllArmies())
                 {
                     army.unit.Show();
@@ -213,72 +216,81 @@ namespace Nashet.EconomicSimulation
             {
                 World.GetAllLandProvinces().PerformAction(x =>
                 //fogOfWar.Deselect(x.GameObject)
-                x.updateColor(x.ProvinceColor)
+                x.SetColor(x.ProvinceColor)
                 );
             }
         }
-        private void RefreshMap()
+        private void UpdateMapTooltip()
         {
-            if (Game.getMapMode() != 0
+            if (Game.MapMode != Game.MapModes.Political
                     //&& Date.Today.isDivisible(Options.MapRedrawRate)
                     )
-                Game.redrawMapAccordingToMapMode(Game.getMapMode());
-
-
-            if (Game.getMapMode() == 4)
             {
-                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
-                var hoveredProvince = World.FindProvince(meshNumber);
-                if (hoveredProvince == null || hoveredProvince is Province)
-                    GetComponent<ToolTipHandler>().Hide();
-                else
-                {
-                    if (Game.selectedProvince == null)
-                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                        "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.population.Get())
-                        + "\n" + hoveredProvince.Country.getAllPopulationChanges()
-                        .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
-                        .getString("\n", "Total change: "));
-                    else
-                        GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                        + "\n" + hoveredProvince.getAllPopulationChanges()
-                        .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
-                        .getString("\n", "Total change: ")
-                        );
-                    GetComponent<ToolTipHandler>().Show();
-                }
+                Game.redrawMapAccordingToMapMode();
             }
-            else if (Game.getMapMode() == 5)
+
+            if (!EventSystem.current.IsPointerOverGameObject())// don't force map tooltip if mouse hover UI
             {
-                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
-                var hoveredProvince = World.FindProvince(meshNumber);
-                if (hoveredProvince == null)
-                    GetComponent<ToolTipHandler>().Hide();
-                else
+                if (Game.MapMode == Game.MapModes.PopulationChange)
                 {
-                    GetComponent<ToolTipHandler>().SetTextDynamic(() =>
+                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)// || hoveredProvince is Province
+                        tooltip.Hide();
+                    else
+                    {
+                        if (Game.selectedProvince == null)
+                            tooltip.SetTextDynamic(() =>
+                           "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.GetAllPopulation().Sum(x => x.population.Get())
+                           + "\n" + hoveredProvince.Country.getAllPopulationChanges()
+                           .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
+                           .getString("\n", "Total change: "));
+                        else
+                            tooltip.SetTextDynamic(() =>
+                           "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                           + "\n" + hoveredProvince.getAllPopulationChanges()
+                           .Where(y => y.Key == null || y.Key is Province || y.Key is Staff)
+                           .getString("\n", "Total change: ")
+                            );
+                        tooltip.Show();
+                    }
+                }
+                else if (Game.MapMode == Game.MapModes.PopulationDensity)
+                {
+                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        tooltip.Hide();
+                    else
+                    {
+                        tooltip.SetTextDynamic(() =>
                         "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
                         + "\nChange: " + hoveredProvince.getAllPopulationChanges()
                         .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(x => x.Value)
                         + "\nOverpopulation: " + hoveredProvince.GetOverpopulation()
-                        );
-                    GetComponent<ToolTipHandler>().Show();
+                         );
+                        tooltip.Show();
+                    }
+                }
+                else if (Game.MapMode == Game.MapModes.Prosperity) //prosperity wars
+                {
+                    int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
+                    var hoveredProvince = World.FindProvince(meshNumber);
+                    if (hoveredProvince == null)
+                        tooltip.Hide();
+                    else
+                    {
+                        tooltip.SetTextDynamic(() =>
+                       "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
+                       + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
+                        tooltip.Show();
+                    }
                 }
             }
-            else if (Game.getMapMode() == 6) //prosperity wars
+            else
             {
-                int meshNumber = Province.FindByCollider(SelectionComponent.getRayCastMeshNumber());
-                var hoveredProvince = World.FindProvince(meshNumber);
-                if (hoveredProvince == null)
-                    GetComponent<ToolTipHandler>().Hide();
-                else
-                {
-                    GetComponent<ToolTipHandler>().SetTextDynamic(() =>
-                        "Province: " + hoveredProvince.ShortName + ", population (men): " + hoveredProvince.GetAllPopulation().Sum(x => x.population.Get())
-                        + "\nAv. needs fulfilling: " + hoveredProvince.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
-                    GetComponent<ToolTipHandler>().Show();
-                }
+                if (tooltip.IsInside()) // hide only if it's that tooltip is shown
+                    tooltip.Hide();
             }
         }
 
@@ -333,8 +345,8 @@ namespace Nashet.EconomicSimulation
                 provinceSelector.Select(Game.selectedProvince.GameObject);
                 //Game.selectedProvince.setBorderMaterial(LinksManager.Get.selectedProvinceBorderMaterial);
                 provincePanel.Show();
-                if (Game.getMapMode() == 2) //core map mode
-                    Game.redrawMapAccordingToMapMode(2);
+                if (Game.MapMode == Game.MapModes.Cores) //core map mode
+                    Game.redrawMapAccordingToMapMode();
             }
             if (buildPanel != null && buildPanel.isActiveAndEnabled)
                 buildPanel.Refresh();

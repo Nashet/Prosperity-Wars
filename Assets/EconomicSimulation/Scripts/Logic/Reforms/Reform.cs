@@ -119,7 +119,7 @@ namespace Nashet.EconomicSimulation
             var isThereSuchMovement = country.movements.Find(x => x.getGoal() == selectedReformValue);
             if (isThereSuchMovement != null)
             {
-                isThereSuchMovement.onRevolutionWon(false);                
+                isThereSuchMovement.onRevolutionWon(false);
             }
         }
 
@@ -889,7 +889,7 @@ namespace Nashet.EconomicSimulation
             /// Calculates wage basing on consumption cost for 1000 workers
             /// Returns new value
             /// </summary>
-            public MoneyView getWage(Market market)
+            public MoneyView getMinimalWage(Market market)
             {
                 if (this == None)
                     return Money.Zero;
@@ -937,9 +937,9 @@ namespace Nashet.EconomicSimulation
                     return new Money(0m);
             }
 
-            public override string ToString()
+            public override string ToString()//Market market
             {
-                return base.ToString() + " (" + "getwage back" + ")";//getWage()
+                return base.ToString();// +" (" + "getwage back" + ")";//getMinimalWage(market)
             }
 
             protected override Procent howIsItGoodForPop(PopUnit pop)
@@ -1335,7 +1335,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public override IEnumerator GetEnumerator()
-        {            
+        {
             foreach (ReformValue f in PossibleStatuses)
                 yield return f;
         }
@@ -1457,7 +1457,7 @@ namespace Nashet.EconomicSimulation
         }
 
         public override IEnumerator GetEnumerator()
-        {            
+        {
             foreach (ReformValue f in PossibleStatuses)
                 yield return f;
         }
