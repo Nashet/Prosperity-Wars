@@ -36,7 +36,7 @@ Main simulation principles in PosperityWars include:
  - Basic diplomacy (only relations for now)
  - [Substitute products](https://github.com/Nashet/Prosperity-Wars/wiki/Products)
  - [Planned economy!](https://github.com/Nashet/Prosperity-Wars/wiki/Economy-types#Planned_economy)
- - [![Bugs](https://badge.waffle.io/Nashet/Prosperity-Wars.svg?columns=all)](https://waffle.io/Nashet/Prosperity-Wars) 
+ - [![Bugs](https://badge.waffle.io/Nashet/Prosperity-Wars.svg?columns=all)](https://waffle.io/Nashet/Prosperity-Wars) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/32a3f6b804334fc1bdb2cea878329a77)](https://www.codacy.com/project/Nashet/Prosperity-Wars/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Nashet/Prosperity-Wars&amp;utm_campaign=Badge_Grade_Dashboard)
 
 Maps are generated randomly, you play as a leader of a country. For now you are able to grow the prosperity or try to conquer the world.
 
@@ -59,4 +59,4 @@ I would appreciate any assitance in providing ideas, code or feedback.  You may:
 License is GPL-3.0
 
 ## How to build
-Since 0.19.2 version the project is built with Unity 2017.40f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene.
+Since 0.19.2 version the project is built with Unity 2017.40f1 (5.4.2f2 will brake UI positions). Just add as project and open "Base" scene. Unity 2018 doesn't build WebGL for that project so far. Game's version 0.20.7 causes errors in WebGL.
