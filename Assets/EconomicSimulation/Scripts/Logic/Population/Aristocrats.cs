@@ -19,14 +19,13 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal void dealWithMarket()
+        public void SentExtraGoodsToMarket()
         {
             if (storage.get() > Options.aristocratsFoodReserv)
             {
                 Storage howMuchSend = new Storage(storage.Product, storage.get() - Options.aristocratsFoodReserv);
-                storage.send(getSentToMarket(), howMuchSend);
-                //sentToMarket.set(howMuchSend);
-                World.market.sentToMarket.Add(howMuchSend);
+
+                SendToMarket(howMuchSend);                
             }
         }
 
@@ -35,7 +34,7 @@ namespace Nashet.EconomicSimulation
             //Aristocrats don't produce anything
         }
 
-        internal override bool canTrade()
+        public override bool canTrade()
         {
             if (Country.economy.getValue() == Economy.PlannedEconomy)
                 return false;
@@ -43,7 +42,7 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        internal override bool canSellProducts()
+        public override bool canSellProducts()
         {
             return true;
         }
@@ -53,7 +52,7 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.Polis || reform == Government.WealthDemocracy
                 || reform == Government.Aristocracy || reform == Government.Tribal)
@@ -63,7 +62,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 if (reformValue == Government.WealthDemocracy)
@@ -74,7 +73,7 @@ namespace Nashet.EconomicSimulation
                 return 0;
         }
 
-        internal override void invest()
+        public override void invest()
         {
             // Aristocrats invests only in resource factories (and banks)
             if (Province.getResource() != null)
@@ -124,13 +123,13 @@ namespace Nashet.EconomicSimulation
                         // try to build for grain
                         if (storage.has(resourceToBuild))
                         {
-                            var factory = Province.BuildFactory(this, factoryProject.Type, World.market.getCost(resourceToBuild));
+                            var factory = Province.BuildFactory(this, factoryProject.Type, Country.market.getCost(resourceToBuild));
                             storage.send(factory.getInputProductsReserve(), resourceToBuild);
                             factory.constructionNeeds.setZero();
                         }
                         else // build for money
                         {
-                            MoneyView investmentCost = World.market.getCost(resourceToBuild);
+                            MoneyView investmentCost = Country.market.getCost(resourceToBuild);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))
@@ -145,7 +144,7 @@ namespace Nashet.EconomicSimulation
                         var factory = project as Factory;// existing one
                         if (factory != null)
                         {
-                            MoneyView investmentCost = factory.GetInvestmentCost();
+                            MoneyView investmentCost = factory.GetInvestmentCost(Country.market);
                             if (!CanPay(investmentCost))
                                 Bank.GiveLackingMoneyInCredit(this, investmentCost);
                             if (CanPay(investmentCost))

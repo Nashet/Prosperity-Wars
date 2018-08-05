@@ -78,7 +78,7 @@ namespace Nashet.EconomicSimulation
             refreshTradeLimits();
         }
 
-        internal void selectProduct(Product product)
+        public void selectProduct(Product product)
         {
             if (!product.isAbstract() && product.IsStorable && product != Product.Gold)
             {

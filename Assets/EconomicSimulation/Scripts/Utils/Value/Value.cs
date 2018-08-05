@@ -118,7 +118,7 @@ namespace Nashet.ValueSpace
             return this;
         }
 
-        internal Value Divide(int divider, bool showMessageAboutNegativeValue = true)
+        public Value Divide(int divider, bool showMessageAboutNegativeValue = true)
         {
             if (divider <= 0)
             {
@@ -168,7 +168,7 @@ namespace Nashet.ValueSpace
             SetZero();
         }
 
-        internal void SetZero()
+        public void SetZero()
         {
             rawUIntValue = 0;
         }

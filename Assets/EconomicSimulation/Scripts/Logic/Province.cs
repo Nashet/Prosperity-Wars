@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Nashet.EconomicSimulation
 {
-    public class Province : Name, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
+    public class Province : AbstractProvince, IWayOfLifeChange, IHasCountry, IClickable, ISortableName
     {
         public enum TerrainTypes
         {
@@ -33,198 +33,69 @@ namespace Nashet.EconomicSimulation
                 else
                     return (x as Country).FullName + " owns that province";
             }
-        , true);      
+        , true);
 
         public static readonly Predicate<Province> All = x => true;
 
-        private Province here
-        {
-            get { return this; }
-        }
+        private Province here { get { return this; } }
 
-        GameObject txtMeshGl;
-        private readonly int ID;
-        private readonly Color colorID;
+        public Color ProvinceColor { get; protected set; }
 
         private readonly List<PopUnit> allPopUnits = new List<PopUnit>();
         private readonly List<Factory> allFactories = new List<Factory>();
-        private List<Army> standingArmies = new List<Army>(); // military units
-
-        public IEnumerable<Army> AllStandingArmies()
-        {
-            foreach (var item in standingArmies)
-            {
-                yield return item;
-            }
-        }
-        public void AddArmy(Army army)
-        {
-            standingArmies.Add(army);
-            //Debug.Log("Added " + army);
-        }
-        public void RemoveArmy(Army army)
-        {
-            standingArmies.Remove(army);
-        }
+        private readonly List<Army> standingArmies = new List<Army>(); // military units
         //private readonly Dictionary<Province, byte> distances = new Dictionary<Province, byte>();
-        private readonly List<Province> neighbors = new List<Province>();
+        protected readonly List<Province> neighbors = new List<Province>();
+        private readonly List<Country> cores = new List<Country>();
 
         private Product resource;
-        private Vector3 position;
-        private Color color;
-
-        private GameObject gameObject;
-        private MeshRenderer meshRenderer;        
 
         private Country country;
        
-
         private readonly int fertileSoil;
-        private readonly List<Country> cores = new List<Country>();
+
         private readonly Dictionary<Province, MeshRenderer> bordersMeshes = new Dictionary<Province, MeshRenderer>();
-        private TerrainTypes terrain;
-        
+        public TerrainTypes Terrain { get; protected set; }
+
 
         private readonly Dictionary<TemporaryModifier, Date> modifiers = new Dictionary<TemporaryModifier, Date>();
 
-        //private readonly float nameWeight;
-        //empty province constructor
-        public Province(string name, int iID, Color icolorID, Product resource) : base(name)
+        public Province(string name, int ID, Color colorID, Product resource) : base(name, ID, colorID)
         {
             country = World.UncolonizedLand;
-            color = country.getColor().getAlmostSameColor();
+            ProvinceColor = country.getColor().getAlmostSameColor();
             setResource(resource);
-            colorID = icolorID;
-            ID = iID;
-            fertileSoil = 5000;
+            fertileSoil = 5000;         
+
         }
 
-        public void setUnityAPI(MeshStructure meshStructure, Dictionary<Province, MeshStructure> neighborBorders)
+        public Province(AbstractProvince p, Product product) : this(p.ShortName, p.ID, p.ColorID, product)
         {
-            //this.meshStructure = meshStructure;
-
-            //spawn object
-            gameObject = new GameObject(string.Format("{0}", getID()));
-
-            //Add Components
-            var meshFilter = gameObject.AddComponent<MeshFilter>();
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
-
-            // in case you want the new gameobject to be a child
-            // of the gameobject that your script is attached to
-            gameObject.transform.parent = World.Get.transform;
-
-            var landMesh = meshFilter.mesh;
-            landMesh.Clear();
-
-            landMesh.vertices = meshStructure.getVertices().ToArray();
-            landMesh.triangles = meshStructure.getTriangles().ToArray();
-            landMesh.RecalculateNormals();
-            landMesh.RecalculateBounds();
-            landMesh.name = getID().ToString();
-            //meshRenderer.material = Material.fI
-
-            meshRenderer.material.shader = Shader.Find("Standard");// Province");
-
-            meshRenderer.material.color = color;
-
-            MeshCollider groundMeshCollider = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
-            groundMeshCollider.sharedMesh = landMesh;
-
-            position = setProvinceCenter(meshStructure);
-
-            setLabel();
-
-
-            //var graph = World.Get.GetComponent<AstarPath>();
-
-
-            // setting neighbors
-            //making meshes for border
-            foreach (var border in neighborBorders)
-            {
-                //each color is one neighbor (non repeating)
-                var neighbor = border.Key;
-                if (!(getTerrain() == TerrainTypes.Mountains && neighbor.terrain == TerrainTypes.Mountains))
-                //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
-                {
-                    neighbors.Add(neighbor);
-                    //var newNode = new Pathfinding.PointNode(AstarPath.active);
-                    //newNode.gameObject = txtMeshGl;
-                    //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
-
-                }
-
-                GameObject borderObject = new GameObject("Border with " + neighbor);
-
-                //Add Components
-                meshFilter = borderObject.AddComponent<MeshFilter>();
-                MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
-
-                borderObject.transform.parent = gameObject.transform;
-
-                Mesh borderMesh = meshFilter.mesh;
-                borderMesh.Clear();
-
-                borderMesh.vertices = border.Value.getVertices().ToArray();
-                borderMesh.triangles = border.Value.getTriangles().ToArray();
-                borderMesh.uv = border.Value.getUVmap().ToArray();
-                borderMesh.RecalculateNormals();
-                borderMesh.RecalculateBounds();
-                meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                borderMesh.name = "Border with " + neighbor;
-
-                bordersMeshes.Add(neighbor, meshRenderer);
-            }
-            var node = gameObject.AddComponent<Node>();
+           
         }
 
-        internal TerrainTypes getTerrain()
-        {
-            return terrain;
-        }
-
-        public Vector3 getPosition()
-        {
-            return position;
-        }
-
-        public GameObject getRootGameObject()
-        {
-            return gameObject;
-        }
-
-        public void setBorderMaterial(Material material)
-        {
-            foreach (var item in bordersMeshes)
-                item.Value.material = material;
-        }
-
-        public void setBorderMaterials(bool reWriteSelection)
+        public void SetBorderMaterials()
         {
             foreach (var border in bordersMeshes)
             {
                 if (border.Key.isNeighbor(this))
                 {
-                    if (Country == border.Key.Country)
+                    if (Country == border.Key.Country) // same country
                     {
-                        if (this != Game.selectedProvince || reWriteSelection)
-                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                        if (border.Key != Game.selectedProvince || reWriteSelection)
-                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
                     }
                     else
                     {
-                        if (this != Game.selectedProvince || reWriteSelection)
-                            if (Country == World.UncolonizedLand)
-                                border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
-                            else
-                                border.Value.material = Country.getBorderMaterial();
-                        if ((border.Key != Game.selectedProvince || reWriteSelection) && border.Key.Country != null)
-                            if (border.Key.Country == World.UncolonizedLand)
-                                border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
-                            else
-                                border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
+                        if (Country == World.UncolonizedLand)
+                            border.Value.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        else
+                            border.Value.material = Country.getBorderMaterial();
+
+                        if (border.Key.Country == World.UncolonizedLand)
+                            border.Key.bordersMeshes[this].material = LinksManager.Get.defaultProvinceBorderMaterial;
+                        else
+                            border.Key.bordersMeshes[this].material = border.Key.Country.getBorderMaterial();
                     }
                 }
                 else
@@ -244,8 +115,7 @@ namespace Nashet.EconomicSimulation
             get { return country; }
         }
 
-        internal int getID()
-        { return ID; }
+
 
         /// <summary>
         /// called only on map generation
@@ -318,12 +188,12 @@ namespace Nashet.EconomicSimulation
                 yield return core;
         }
 
-        internal Country getRandomCore()
+        public Country getRandomCore()
         {
             return cores.Random();
         }
 
-        internal Country getRandomCore(Predicate<Country> predicate)
+        public Country getRandomCore(Predicate<Country> predicate)
         {
             return cores.FindAll(predicate).Random();
         }
@@ -383,9 +253,9 @@ namespace Nashet.EconomicSimulation
         public void OnSecedeGraphic(Country taker)
         {
             //graphic stuff
-            color = taker.getColor().getAlmostSameColor();
+            ProvinceColor = taker.getColor().getAlmostSameColor();
             meshRenderer.material.color = getColorAccordingToMapMode();
-            setBorderMaterials(false);
+            SetBorderMaterials();
         }
 
         public int howFarFromCapital()
@@ -398,12 +268,12 @@ namespace Nashet.EconomicSimulation
             return modifiers;
         }
 
-        //internal bool isCapital()
+        //public bool isCapital()
         //{
         //    return Country.Capital == this;
         //}
 
-        internal IEnumerable<Province> getAllNeighbors()
+        public IEnumerable<Province> getAllNeighbors()
         {
             foreach (var item in neighbors)
                 yield return item;
@@ -418,7 +288,7 @@ namespace Nashet.EconomicSimulation
                     yield return pop;
         }
 
-        public IEnumerable<Producer> getAllBuyers()
+        public IEnumerable<Consumer> getAllBuyers()
         {
             foreach (Factory factory in allFactories)
                 // if (!factory.Type.isResourceGathering()) // every fabric is buyer (upgrading)
@@ -446,22 +316,7 @@ namespace Nashet.EconomicSimulation
             //    yield return factory;
         }
 
-        //public IEnumerable<Factory> getAllFactories(Predicate<Factory> predicate)
-        //{
-        //    foreach (Factory factory in allFactories)
-        //        if (predicate(factory))
-        //            yield return factory;
-        //}
-        public static Vector3 setProvinceCenter(MeshStructure meshStructure)
-        {
-            Vector3 accu = new Vector3(0, 0, 0);
-            foreach (var c in meshStructure.getVertices())
-                accu += c;
-            accu = accu / meshStructure.verticesCount;
-            return accu;
-        }
-
-        internal Culture getMajorCulture()
+        public Culture getMajorCulture()
         {
             Dictionary<Culture, int> cultures = new Dictionary<Culture, int>();
 
@@ -491,19 +346,12 @@ namespace Nashet.EconomicSimulation
         //    return result;
         //}
 
-        internal bool isBelongsTo(Country country)
+        public bool isBelongsTo(Country country)
         {
             return Country == country;
         }
 
-        //internal bool isNeighborButNotOwn(Country country)
-        //{
-        //    return this.Country != country && neighbors.Any(x => x.Country == country);
-        //}
-        internal bool isNeighbor(Province province)
-        {
-            return neighbors.Contains(province);
-        }
+
 
         public int getFamilyPopulation()
         {
@@ -511,14 +359,14 @@ namespace Nashet.EconomicSimulation
             return GetAllPopulation().Sum(x => x.population.Get()) * Options.familySize;
         }
 
-        internal MoneyView getIncomeTax()
+        public MoneyView getIncomeTax()
         {
             decimal res = 0m;
             allPopUnits.ForEach(x => res += x.incomeTaxPayed.Get());
             return new MoneyView(res);
         }
 
-        internal void mobilize()
+        public void mobilize()
         {
             Country.mobilize(new List<Province> { this });
         }
@@ -537,7 +385,7 @@ namespace Nashet.EconomicSimulation
         }
 
         //not called with capitalism
-        internal void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
+        public void shareWithAllAristocrats(Storage fromWho, Value taxTotalToPay)
         {
             int aristoctratAmount = 0;
             foreach (Aristocrats aristocrats in GetAllPopulation(PopType.Aristocrats))
@@ -547,12 +395,12 @@ namespace Nashet.EconomicSimulation
                 Storage howMuch = new Storage(fromWho.Product, taxTotalToPay.get() * (float)aristocrat.population.Get() / (float)aristoctratAmount);
                 fromWho.send(aristocrat.storage, howMuch);
                 aristocrat.addProduct(howMuch);
-                aristocrat.dealWithMarket();
+                aristocrat.SentExtraGoodsToMarket();
                 //aristocrat.sentToMarket.set(aristocrat.gainGoodsThisTurn);
             }
         }
 
-        internal void updateColor(Color color)
+        public void SetColor(Color color)
         {
             meshRenderer.material.color = color;
         }
@@ -566,15 +414,6 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        internal Color getColorID()
-        {
-            return colorID;
-        }
-
-        internal Color getColor()
-        {
-            return color;
-        }
 
         /// <summary>
         /// Returns result divided on groups of factories (List) each with own level of salary or priority given in orderMethod(Factory)
@@ -663,21 +502,21 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void DestroyAllMarkedfactories()
+        public void DestroyAllMarkedfactories()
         {
             allFactories.RemoveAll(x => x.isToRemove());
         }
 
-        internal void setResource(Product inres)
+        public void setResource(Product inres)
         {
             resource = inres;
             if (resource == Product.Stone || resource == Product.Gold || resource == Product.MetalOre || resource == Product.Coal)
-                terrain = TerrainTypes.Mountains;
+                Terrain = TerrainTypes.Mountains;
             else
-                terrain = TerrainTypes.Plains;
+                Terrain = TerrainTypes.Plains;
         }
 
-        internal Product getResource()
+        public Product getResource()
         {
             if (resource.IsInventedByAnyOne())
                 return resource;
@@ -685,7 +524,7 @@ namespace Nashet.EconomicSimulation
                 return null;
         }
 
-        internal Factory getExistingResourceFactory()
+        public Factory getExistingResourceFactory()
         {
             foreach (Factory factory in allFactories)
                 if (factory.Type.basicProduction.Product == resource)
@@ -693,7 +532,7 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        //internal IEnumerable<FactoryType> getAllBuildableFactories()
+        //public IEnumerable<FactoryType> getAllBuildableFactories()
         //{
         //    List<FactoryType> result = new List<FactoryType>();
         //    foreach (FactoryType type in FactoryType.allTypes)
@@ -706,7 +545,7 @@ namespace Nashet.EconomicSimulation
         /// check type for null outside
         /// </summary>
 
-        internal bool hasFactory(ProductionType type)
+        public bool hasFactory(ProductionType type)
         {
             foreach (Factory f in allFactories)
                 if (f.Type == type)
@@ -734,7 +573,7 @@ namespace Nashet.EconomicSimulation
         //    return result;
         //}
 
-        internal void DestroyFactory(Factory factory)
+        public void DestroyFactory(Factory factory)
         {
             allFactories.Remove(factory);
         }
@@ -742,7 +581,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Very heavy method
         /// </summary>
-        internal int getUnemployedWorkers()
+        public int getUnemployedWorkers()
         {
             int totalWorkforce = GetAllPopulation(PopType.Workers).Sum(x => x.population.Get());
             if (totalWorkforce == 0)
@@ -754,7 +593,7 @@ namespace Nashet.EconomicSimulation
             return totalWorkforce - employed;
         }
 
-        internal bool isThereFactoriesInUpgradeMoreThan(int limit)
+        public bool isThereFactoriesInUpgradeMoreThan(int limit)
         {
             int counter = 0;
             foreach (Factory factory in allFactories)
@@ -767,41 +606,9 @@ namespace Nashet.EconomicSimulation
             return false;
         }
 
-        internal void setLabel()
-        {
-            LODGroup group = gameObject.AddComponent<LODGroup>();
-
-            // Add 4 LOD levels
-            LOD[] lods = new LOD[1];
-            txtMeshGl = GameObject.Instantiate(LinksManager.Get.r3DProvinceTextPrefab);
-            Transform txtMeshTransform = txtMeshGl.transform;
-            txtMeshTransform.SetParent(gameObject.transform, false);
-            Renderer[] renderers = new Renderer[1];
-            renderers[0] = txtMeshTransform.GetComponent<Renderer>();
-            lods[0] = new LOD(0.25F, renderers);
-
-            var position = getPosition();
-            position.z -= 0.003f;
-            txtMeshTransform.position = position;
-
-            TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
-
-            txtMesh.text = ToString();
-            txtMesh.color = Color.black; // Set the text's color to red
-
-            //renderers[0].material.shader = Shader.Find("3DText");
 
 
-            group.SetLODs(lods);
-//#if UNITY_WEBGL
-            group.size = 20; //was 30 for webgl
-//#else
-            //group.size = 20; // for others
-//#endif
-            //group.RecalculateBounds();
-        }
-
-        internal Factory findFactory(ProductionType proposition)
+        public Factory findFactory(ProductionType proposition)
         {
             foreach (Factory f in allFactories)
                 if (f.Type == proposition)
@@ -809,7 +616,7 @@ namespace Nashet.EconomicSimulation
             return null;
         }
 
-        internal bool isProducingOnEnterprises(StorageSet resourceInput)
+        public bool isProducingOnEnterprises(StorageSet resourceInput)
         {
             foreach (Storage inputNeed in resourceInput)
                 foreach (Factory provinceFactory in allFactories)
@@ -822,7 +629,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Adjusted to use in modifiers
         /// </summary>
-        internal float getOverpopulationAdjusted(PopUnit pop)
+        public float getOverpopulationAdjusted(PopUnit pop)
         {
             if (pop.Type == PopType.Tribesmen || pop.Type == PopType.Farmers)
             {
@@ -839,7 +646,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// New value
         /// </summary>
-        internal Procent GetOverpopulation()
+        public Procent GetOverpopulation()
         {
             float usedLand = 0f;
             foreach (PopUnit pop in allPopUnits)
@@ -858,7 +665,7 @@ namespace Nashet.EconomicSimulation
         /// \nCould auto-drop salary on minSalary of there is problems with inputs
         /// Returns new value</summary>
 
-        internal MoneyView getLocalMinSalary()
+        public MoneyView getLocalMinSalary()
         {
             MoneyView res;
             if (allFactories.Count <= 1) // first enterprise in province
@@ -884,7 +691,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>Returns salary of a factory with maximum salary in province. If no factory in province, then returns Country.minSalary
         /// New value
         ///</summary>
-        internal MoneyView getLocalMaxSalary()
+        public MoneyView getLocalMaxSalary()
         {
             var openEnterprises = allFactories.FirstOrDefault(x => x.IsOpen);
             //if (allFactories.Count(x=>x.IsOpen) <= 1)
@@ -932,7 +739,7 @@ namespace Nashet.EconomicSimulation
             return allPopUnits.FindAll(predicate).MinBy(x => x.population.Get());
         }
 
-        internal bool hasAnotherPop(PopType type)
+        public bool hasAnotherPop(PopType type)
         {
             int result = 0;
             foreach (PopUnit pop in allPopUnits)
@@ -951,15 +758,18 @@ namespace Nashet.EconomicSimulation
         {
             return modifiers.ContainsKey(modifier);
         }
-
-        public Color getColorAccordingToMapMode()
+        public void SetColorAccordingToMapMode()
         {
-            switch (Game.getMapMode())
+            SetColor(getColorAccordingToMapMode());
+        }
+        protected Color getColorAccordingToMapMode()
+        {
+            switch (Game.MapMode)
             {
-                case 0: //political mode
-                    return getColor();
+                case Game.MapModes.Political: 
+                    return ProvinceColor;
 
-                case 1: //culture mode
+                case Game.MapModes.Cultures: //culture mode
                     //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
                     var culture = getMajorCulture();
                     if (culture == null)
@@ -967,7 +777,7 @@ namespace Nashet.EconomicSimulation
                     else
                         return culture.getColor();
 
-                case 2: //cores mode
+                case Game.MapModes.Cores: //cores mode
                     if (Game.selectedProvince == null)
                     {
                         if (isCoreFor(Country))
@@ -1005,14 +815,14 @@ namespace Nashet.EconomicSimulation
                             }
                         }
                     }
-                case 3: //resource mode
+                case Game.MapModes.Resources: //resource mode
                     {
                         if (getResource() == null)
                             return Color.gray;
                         else
                             return getResource().getColor();
                     }
-                case 4: //population change mode
+                case Game.MapModes.PopulationChange: //population change mode
                     {
                         if (Game.selectedProvince == null)
                         {
@@ -1040,13 +850,13 @@ namespace Nashet.EconomicSimulation
                                 return Color.Lerp(Color.grey, Color.red, -1f * change / maxColor);
                         }
                     }
-                case 5: //population density mode
+                case Game.MapModes.PopulationDensity: //population density mode
                     {
                         float maxPopultion = 50000;
                         var population = GetAllPopulation().Sum(x => x.population.Get());
                         return Color.Lerp(Color.white, Color.red, population / maxPopultion);
                     }
-                case 6: //prosperity map
+                case Game.MapModes.Prosperity: //prosperity map
                     {
                         float minValue = 0.25f;
                         float maxValue = 0.5f - minValue;
@@ -1067,7 +877,7 @@ namespace Nashet.EconomicSimulation
             Money result = new Money(0m);
             foreach (var producer in getAllAgents())
                 if (producer.getGainGoodsThisTurn().get() > 0f)
-                    result.Add(World.market.getCost(producer.getGainGoodsThisTurn())); //- World.market.getCost(producer.getConsumedTotal()).get());
+                    result.Add(Country.market.getCost(producer.getGainGoodsThisTurn())); //- Country.market.getCost(producer.getConsumedTotal()).get());
             return result;
         }
 
@@ -1082,7 +892,7 @@ namespace Nashet.EconomicSimulation
         //    }
         //    return result;
         //}
-        //internal float getAverageFactoryWorkforceFulfilling()
+        //public float getAverageFactoryWorkforceFulfilling()
         //{
         //    int workForce = 0;
         //    int capacity = 0;
@@ -1240,15 +1050,15 @@ namespace Nashet.EconomicSimulation
                 return true;
         }
 
-        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost)
+        public Factory BuildFactory(IShareOwner investor, ProductionType type, MoneyView cost, bool instantBuild = false)
         {
-            if (getAllFactories().Any(x => x.Type == type)) //temporally
+            //if (getAllFactories().Any(x => x.Type == type)) //todo temporally
+            //{
+            //    throw new Exception("Can't have 2 same factory types");
+            //}
+            //else
             {
-                throw new Exception("Can't have 2 same factory types");
-            }
-            else
-            {
-                var res = new Factory(this, investor, type, cost);
+                var res = new Factory(this, investor, type, cost, instantBuild);
                 allFactories.Add(res);
                 return res;
             }
@@ -1368,7 +1178,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         ///  If byWhom == Game.Player checks money/resources availability. If not then not.
         /// </summary>
-        internal bool CanUpgradeFactory(ProductionType type, Agent byWhom)
+        public bool CanUpgradeFactory(ProductionType type, Agent byWhom)
         {
             var factory = findFactory(type);
             if (factory == null)
@@ -1395,6 +1205,83 @@ namespace Nashet.EconomicSimulation
         public class OwnerChangedEventArgs : EventArgs
         {
             public Country oldOwner { get; set; }
+        }
+        public override void setUnityAPI(MeshStructure meshStructure, Dictionary<AbstractProvince, MeshStructure> neighborBorders)
+        {
+            base.setUnityAPI(meshStructure, neighborBorders);
+            MeshCollider groundMeshCollider = GameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            groundMeshCollider.sharedMesh = MeshFilter.mesh;
+
+
+
+            meshRenderer.material.shader = Shader.Find("Standard");// Province");
+
+            meshRenderer.material.color = ProvinceColor;
+
+            //var graph = World.Get.GetComponent<AstarPath>();
+
+
+            // setting neighbors
+            //making meshes for border
+            foreach (var border in neighborBorders)
+            {
+                //each color is one neighbor (non repeating)
+                var neighbor = border.Key as Province;
+                if (neighbor != null)
+                {
+                    if (!(Terrain == TerrainTypes.Mountains && neighbor.Terrain == TerrainTypes.Mountains))
+                    //this.getTerrain() == TerrainTypes.Plains || neighbor.terrain == TerrainTypes.Plains)
+                    {
+                        neighbors.Add(neighbor);
+                        //var newNode = new Pathfinding.PointNode(AstarPath.active);
+                        //newNode.gameObject = txtMeshGl;
+                        //graph.data.pointGraph.AddNode(newNode, (Pathfinding.Int3)neighbor.getPosition());
+
+                    }
+
+                    GameObject borderObject = new GameObject("Border with " + neighbor);
+
+                    //Add Components
+                    MeshFilter = borderObject.AddComponent<MeshFilter>();
+                    MeshRenderer meshRenderer = borderObject.AddComponent<MeshRenderer>();
+
+                    borderObject.transform.parent = GameObject.transform;
+
+                    Mesh borderMesh = MeshFilter.mesh;
+                    borderMesh.Clear();
+
+                    borderMesh.vertices = border.Value.getVertices().ToArray();
+                    borderMesh.triangles = border.Value.getTriangles().ToArray();
+                    borderMesh.uv = border.Value.getUVmap().ToArray();
+                    borderMesh.RecalculateNormals();
+                    borderMesh.RecalculateBounds();
+                    meshRenderer.material = LinksManager.Get.defaultProvinceBorderMaterial;
+                    borderMesh.name = "Border with " + neighbor;
+
+                    bordersMeshes.Add(neighbor, meshRenderer);
+                }
+            }
+            var node = GameObject.AddComponent<Node>();
+        }
+        public IEnumerable<Army> AllStandingArmies()
+        {
+            foreach (var item in standingArmies)
+            {
+                yield return item;
+            }
+        }
+        public void AddArmy(Army army)
+        {
+            standingArmies.Add(army);
+            //Debug.Log("Added " + army);
+        }
+        public void RemoveArmy(Army army)
+        {
+            standingArmies.Remove(army);
+        }
+        public bool isNeighbor(Province province)
+        {
+            return neighbors.Contains(province);
         }
     }
 }

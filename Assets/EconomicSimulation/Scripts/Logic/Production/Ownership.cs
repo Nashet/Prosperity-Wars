@@ -101,7 +101,7 @@ namespace Nashet.EconomicSimulation
             //else return false;
         }
 
-        internal void TransferAll(IShareOwner oldOwner, IShareOwner newOwner, bool showMessageAboutOperationFails = true)
+        public void TransferAll(IShareOwner oldOwner, IShareOwner newOwner, bool showMessageAboutOperationFails = true)
         {
             Share oldOwnerAsset;
             if (ownership.TryGetValue(oldOwner, out oldOwnerAsset))
@@ -121,7 +121,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Don't call it directly, call it from Country
         /// </summary>
-        //internal void Nationilize(Country nationalizator)
+        //public void Nationilize(Country nationalizator)
         //{
         //    foreach (var owner in GetAll().ToList())
         //        if (owner.Key != nationalizator)
@@ -155,12 +155,12 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal bool HasOwner(IShareOwner owner)
+        public bool HasOwner(IShareOwner owner)
         {
             return ownership.ContainsKey(owner);
         }
 
-        internal bool Has(IShareOwner owner, Procent share)
+        public bool Has(IShareOwner owner, Procent share)
         {
             Share found;
             if (ownership.TryGetValue(owner, out found))
@@ -174,7 +174,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal bool IsCountryOwnsControlPacket()
+        public bool IsCountryOwnsControlPacket()
         {
             Money ownedByAnyCountry = new Money(0m);
             Money total = new Money(0m);
@@ -193,7 +193,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal Procent GetTotalOnSale()
+        public Procent GetTotalOnSale()
         {
             var onSale = new Money(0m);
             foreach (var item in ownership)
@@ -201,12 +201,12 @@ namespace Nashet.EconomicSimulation
             return new Procent(onSale, totallyInvested);
         }
 
-        internal bool IsOnlyOwner(IShareOwner owner)
+        public bool IsOnlyOwner(IShareOwner owner)
         {
             return ownership.ContainsKey(owner) && ownership.Count == 1;
         }
 
-        internal bool IsOnSale()
+        public bool IsOnSale()
         {
             return ownership.Any(x => x.Value.GetShareForSale().isNotZero());
         }
@@ -214,7 +214,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Readonly !!
         /// </summary>
-        internal ReadOnlyValue HowMuchSelling(IShareOwner owner)
+        public ReadOnlyValue HowMuchSelling(IShareOwner owner)
         {
             Share record;
             if (ownership.TryGetValue(owner, out record))
@@ -226,7 +226,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Readonly !!
         /// </summary>
-        internal Procent HowMuchOwns(IShareOwner owner)
+        public Procent HowMuchOwns(IShareOwner owner)
         {
             Share record;
             if (ownership.TryGetValue(owner, out record))
@@ -260,7 +260,7 @@ namespace Nashet.EconomicSimulation
                 Debug.Log("No such owner");
         }
 
-        //internal KeyValuePair<IShareOwner, Record> GetRandomSaleBiggerThan(Value desireableValue)
+        //public KeyValuePair<IShareOwner, Record> GetRandomSaleBiggerThan(Value desireableValue)
         //{
         //    return ownership.Where(x => x.Value.GetAssetForSale().isBiggerOrEqual(desireableValue)).Random();
         //}
@@ -268,7 +268,7 @@ namespace Nashet.EconomicSimulation
         ///
         /// </summary>
 
-        internal MoneyView GetAssetsValue()
+        public MoneyView GetAssetsValue()
         {
             return totallyInvested;
         }
@@ -276,24 +276,24 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// New value
         /// </summary>
-        internal Money GetMarketValue()
+        public Money GetMarketValue()
         {
             return totallyInvested.Copy().Multiply(marketPriceModifier);
         }
 
-        internal MoneyView GetShareMarketValue(Procent share)
+        public MoneyView GetShareMarketValue(Procent share)
         {
             return GetMarketValue().Multiply(share);
             //return share.SendProcentOf(GetMarketValue());
         }
 
-        internal MoneyView GetShareAssetsValue(Procent share)
+        public MoneyView GetShareAssetsValue(Procent share)
         {
             return GetAssetsValue().Copy().Multiply(share);
             //return share.SendProcentOf(GetAllAssetsValue());
         }
 
-        internal void CalcMarketPrice()
+        public void CalcMarketPrice()
         {
             var isOnsale = IsOnSale();
             if (isOnsale || parent.IsClosed)
@@ -310,7 +310,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Buy that share (or less). Assumes that there is something on sale. Assumes that buyer has enough money
         /// </summary>
-        internal void BuyStandardShare(IShareOwner buyer)
+        public void BuyStandardShare(IShareOwner buyer)
         {
             // what if buys from itself?
             if (HowMuchSelling(buyer).isNotZero())
@@ -374,7 +374,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// Cost of standard share
         /// </summary>
-        public MoneyView GetInvestmentCost()
+        public MoneyView GetInvestmentCost(Market market =null)
         {
             return GetMarketValue().Multiply(Options.PopBuyAssetsAtTime);
         }

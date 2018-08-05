@@ -12,19 +12,21 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class World : MonoBehaviour
     {
-        private static readonly List<Province> allProvinces = new List<Province>();
-        private static readonly List<Country> allCountries = new List<Country>();
-        private static readonly List<Culture> allCultures = new List<Culture>();
+        protected static readonly List<Province> allLandProvinces = new List<Province>();
+        protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
 
-        internal static readonly Country UncolonizedLand;
+        protected static readonly List<Country> allCountries = new List<Country>();
+        protected static readonly List<Culture> allCultures = new List<Culture>();
+
+        public static readonly Country UncolonizedLand;
 
 
         private static bool haveToRunSimulation;
         private static bool haveToStepSimulation;
 
-        internal static List<BattleResult> allBattles = new List<BattleResult>();
+        public static List<BattleResult> allBattles = new List<BattleResult>();
 
-        public static Market market;
+        //public static Market market;
         public Graph graph;
 
 
@@ -40,9 +42,6 @@ namespace Nashet.EconomicSimulation
 
         static World()
         {
-            //Product.init(); // to avoid crash based on initialization order
-            market = new Market();
-
             var culture = new Culture("Ancient tribes", Color.yellow);
             allCultures.Add(culture);
             UncolonizedLand = new Country("Uncolonized lands", culture, culture.getColor(), null, 0f);
@@ -78,10 +77,41 @@ namespace Nashet.EconomicSimulation
                     yield return country;
         }
 
-        public static IEnumerable<Province> GetAllProvinces()
+        public static IEnumerable<Market> AllMarkets()
         {
-            foreach (var item in allProvinces)
+            ///foreach (var country in getAllExistingCountries())
+
+            //yield return country.market;
+            yield return Market.TemporalSingleMarket;
+        }
+
+        public static IEnumerable<AbstractProvince> GetAllProvinces()
+        {
+            foreach (var item in GetAllLandProvinces())
+            {
                 yield return item;
+            }
+            foreach (var item in AllSeaProvinces())
+            {
+                yield return item;
+            }
+
+        }
+        public static IEnumerable<Province> GetAllLandProvinces()
+        {
+            foreach (var item in allLandProvinces)
+            {
+                yield return item;
+            }
+
+        }
+        public static IEnumerable<SeaProvince> AllSeaProvinces()
+        {
+            foreach (var item in allSeaProvinces)
+            {
+                yield return item;
+            }
+
         }
 
         /// <summary>
@@ -96,7 +126,7 @@ namespace Nashet.EconomicSimulation
                     yield return item;
         }
 
-        internal static IEnumerable<Factory> GetAllFactories()
+        public static IEnumerable<Factory> GetAllFactories()
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -113,7 +143,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal static Money GetAllMoney()
+        public static Money GetAllMoney()
         {
             Money allMoney = new Money(0m);
             foreach (Country country in getAllExistingCountries())
@@ -126,103 +156,63 @@ namespace Nashet.EconomicSimulation
                     //if (isArtisan!=null && isArtisan.)
                 }
             }
-            allMoney.Add(World.market.Cash);
+            foreach (var market in World.AllMarkets())
+            {
+                allMoney.Add(market.Cash);
+            }
+
             return allMoney;
         }
 
-        public static Province FindProvince(Color color)
+        public static Province FindProvince(int number)
         {
-            foreach (Province anyProvince in allProvinces)
-                if (anyProvince.getColorID() == color)
-                    return anyProvince;
-            return null;
-        }
-
-        internal static Province FindProvince(int number)
-        {
-            foreach (var pro in allProvinces)
-                if (pro.getID() == number)
+            foreach (var pro in allLandProvinces)
+                if (pro.ID == number)
+                {
                     return pro;
+                }
             return null;
         }
 
-        public static void deleteSomeProvinces(List<Province> toDelete, bool addLakes)
-        {
-            //Province.allProvinces.FindAndDo(x => blockedProvinces.Contains(x.getColorID()), x => x.removeProvince());
-            foreach (var item in allProvinces.ToArray())
-                if (toDelete.Contains(item))
-                {
-                    allProvinces.Remove(item);
-                    //item.removeProvince();
-                }
-            //todo move it in seaProvinces
-            if (addLakes)
-            {
-                int howMuchLakes = allProvinces.Count / Options.ProvinceLakeShance + Rand.Get.Next(3);
-                for (int i = 0; i < howMuchLakes; i++)
-                    allProvinces.Remove(allProvinces.Random());
-            }
-        }
-
-        public static void preReadProvinces(MyTexture image)
-        {
-            ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
-            Color currentProvinceColor = image.GetPixel(0, 0);
-            int provinceCounter = 0;
-            for (int j = 0; j < image.getHeight(); j++) // circle by province
-                for (int i = 0; i < image.getWidth(); i++)
-                {
-                    if (currentProvinceColor != image.GetPixel(i, j)
-                        //&& !blockedProvinces.Contains(currentProvinceColor)
-                        && !isProvinceCreated(currentProvinceColor))
-                    {
-                        allProvinces.Add(new Province(nameGenerator.generateProvinceName(), provinceCounter, currentProvinceColor, Product.getRandomResource(false)));
-                        provinceCounter++;
-                    }
-                    currentProvinceColor = image.GetPixel(i, j);
-                    //game.updateStatus("Reading provinces.. x = " + i + " y = " + j);
-                }
-        }
-
-        internal void ResumeSimulation()
+        public void ResumeSimulation()
         {
             haveToRunSimulation = true;
         }
 
-        internal bool IsRunning
+        public bool IsRunning
         {
             get { return (haveToRunSimulation || haveToStepSimulation); }// && !MessagePanel.IsOpenAny();
         }
 
-        internal void PauseSimulation()
+        public void PauseSimulation()
         {
             haveToRunSimulation = false;
         }
 
-        internal void MakeOneStepSimulation()
+        public void MakeOneStepSimulation()
         {
             haveToStepSimulation = true;
         }
 
         public static bool isProvinceCreated(Color color)
         {
-            foreach (Province anyProvince in allProvinces)
-                if (anyProvince.getColorID() == color)
+            foreach (Province anyProvince in allLandProvinces)
+                if (anyProvince.ColorID == color)
                     return true;
             return false;
         }
 
-        internal static void CreateCountries()
+        public static void CreateCountries()
         {
             var countryNameGenerator = new CountryNameGenerator();
             var cultureNameGenerator = new CultureNameGenerator();
             //int howMuchCountries =3;
-            int howMuchCountries = allProvinces.Count / Options.ProvincesPerCountry;
+            int howMuchCountries = allLandProvinces.Count / Options.ProvincesPerCountry;
             howMuchCountries += Rand.Get.Next(6);
             if (howMuchCountries < 8)
                 howMuchCountries = 8;
-            if (howMuchCountries > World.allProvinces.Count)
-                howMuchCountries = World.allProvinces.Count;
+            if (howMuchCountries > World.allLandProvinces.Count)
+                howMuchCountries = World.allLandProvinces.Count;
             for (int i = 0; i < howMuchCountries; i++)
             {
                 //Game.updateStatus("Making countries.." + i);
@@ -230,7 +220,7 @@ namespace Nashet.EconomicSimulation
                 Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
                 allCultures.Add(culture);
 
-                Province province = GetAllProvinces().Where(x => x.Country == UncolonizedLand).Random();
+                Province province = GetAllLandProvinces().Where(x => x.Country == UncolonizedLand).Random();
 
                 Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
@@ -248,7 +238,7 @@ namespace Nashet.EconomicSimulation
 
         public static void CreateRandomPopulation()
         {
-            foreach (Province province in allProvinces)
+            foreach (Province province in allLandProvinces)
             {
                 if (province.Country == UncolonizedLand)
                 {
@@ -286,7 +276,14 @@ namespace Nashet.EconomicSimulation
                     pop = new Farmers(PopUnit.getRandomPopulationAmount(8200, 9000), province.Country.getCulture(), province);
                     pop.GiveMoneyFromNoWhere(20m);
 
-                    new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
+                    if (Game.IndustrialStart)
+                    {
+                        new Workers(PopUnit.getRandomPopulationAmount(4500, 5000), province.Country.getCulture(), province);
+                        pop = new Capitalists(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
+                        pop.GiveMoneyFromNoWhere(9000);
+                    }
+                    else
+                        new Workers(PopUnit.getRandomPopulationAmount(500, 800), province.Country.getCulture(), province);
                     //}
                     //province.allPopUnits.Add(new Workers(600, PopType.workers, Game.player.culture, province));
                     //break;
@@ -294,59 +291,58 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public static List<Province> getSeaProvinces(MyTexture mapTexture, bool useProvinceColors)
+
+        ////cut by random
+        //seaProvince = FindProvince(mapTexture.getRandomPixel());
+        //if (!res.Contains(seaProvince))
+        //    res.Add(seaProvince);
+
+        //if (Rand.Get.Next(3) == 1)
+        //{
+        //    seaProvince = FindProvince(mapTexture.getRandomPixel());
+        //    if (!res.Contains(seaProvince))
+        //        res.Add(seaProvince);
+        //    if (Rand.Get.Next(20) == 1)
+        //    {
+        //        seaProvince = FindProvince(mapTexture.getRandomPixel());
+        //        if (!res.Contains(seaProvince))
+        //            res.Add(seaProvince);
+        //    }
+        //}
+
+        public static void CreateProvinces(MyTexture mapTexture, bool useProvinceColors)
         {
-            List<Province> res = new List<Province>();
+            ProvinceNameGenerator nameGenerator = new ProvinceNameGenerator();
             if (!useProvinceColors)
             {
-                Province seaProvince;
-                for (int x = 0; x < mapTexture.getWidth(); x++)
+                var uniqueColors = mapTexture.AllUniqueColors2();
+                int counter = 0;
+                int lakechance = 20;//
+                foreach (var item in uniqueColors)
                 {
-                    seaProvince = FindProvince(mapTexture.GetPixel(x, 0));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                    seaProvince = FindProvince(mapTexture.GetPixel(x, mapTexture.getHeight() - 1));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                }
-                for (int y = 0; y < mapTexture.getHeight(); y++)
-                {
-                    seaProvince = FindProvince(mapTexture.GetPixel(0, y));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                    seaProvince = FindProvince(mapTexture.GetPixel(mapTexture.getWidth() - 1, y));
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                }
-
-                seaProvince = FindProvince(mapTexture.getRandomPixel());
-                if (!res.Contains(seaProvince))
-                    res.Add(seaProvince);
-
-                if (Rand.Get.Next(3) == 1)
-                {
-                    seaProvince = FindProvince(mapTexture.getRandomPixel());
-                    if (!res.Contains(seaProvince))
-                        res.Add(seaProvince);
-                    if (Rand.Get.Next(20) == 1)
+                    if (!item.Value && Rand.Get.Next(lakechance) != 0)
                     {
-                        seaProvince = FindProvince(mapTexture.getRandomPixel());
-                        if (!res.Contains(seaProvince))
-                            res.Add(seaProvince);
+                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, item.Key, Product.getRandomResource(false)));
+
                     }
+                    //else
+                    //    allSeaProvinces.Add(new SeaProvince("", counter, item.Key));
+                    counter++;
                 }
             }
             else
             { // Victoria 2 format
-                foreach (var item in GetAllProvinces())
+                var uniqueColors = mapTexture.AllUniqueColors();
+
+                for (int counter = 0; counter < uniqueColors.Count; counter++)
                 {
-                    var color = item.getColorID();
-                    if (color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f)
+                    var color = uniqueColors[counter];
+                    if (!(color.g + color.b >= 200f / 255f + 200f / 255f && color.r < 96f / 255f))
                         //if (color.g + color.b + color.r > 492f / 255f)
-                        res.Add(item);
+
+                        allLandProvinces.Add(new Province(nameGenerator.generateProvinceName(), counter, color, Product.getRandomResource(false)));
                 }
             }
-            return res;
         }
 
         /// <summary>
@@ -359,9 +355,8 @@ namespace Nashet.EconomicSimulation
 
             // remake it on messages?
             //Game.updateStatus("Reading provinces..");
-            preReadProvinces(map);
-            var seaProvinces = getSeaProvinces(map, !isMapRandom);
-            deleteSomeProvinces(seaProvinces, isMapRandom);
+
+            CreateProvinces(map, !isMapRandom);
 
             // Game.updateStatus("Making countries..");
             CreateCountries();
@@ -369,11 +364,54 @@ namespace Nashet.EconomicSimulation
             //Game.updateStatus("Making population..");
             CreateRandomPopulation();
 
-            setStartResources();
+
+            if (Game.IndustrialStart)
+                IndustrialStart();
+
+
+
+
+            if (Game.devMode)
+                setStartResources(); // only for testing cause it bugs resource/factory connection
             //foreach (var item in World.getAllExistingCountries())
             //{
             //    item.Capital.OnSecedeTo(item, false);
             //}
+        }
+
+        private static void IndustrialStart()
+        {
+            foreach (var item in getAllExistingCountries())
+            {
+                item.markInvented(Invention.Universities);
+                item.markInvented(Invention.Manufactures);
+                item.markInvented(Invention.Metal);
+                item.markInvented(Invention.Gunpowder);
+
+
+                
+                var resurceEnterprise = ProductionType.whoCanProduce(item.Capital.getResource());
+                var aristocrats = item.Capital.GetAllPopulation().Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
+
+                if (resurceEnterprise != null && item.Invented(resurceEnterprise.basicProduction.Product))
+                {
+                    item.Capital.BuildFactory(aristocrats, resurceEnterprise, resurceEnterprise.GetBuildCost(item.market), true);
+                }
+
+                var processingEnterprises = ProductionType.getAllInventedFactories(item).Where(x => x.hasInput() || x == ProductionType.University);
+
+                var capitalists = item.Capital.GetAllPopulation().Where(x => x.Type == PopType.Capitalists).First() as Capitalists;
+                for (int i = 0; i < 3; i++)
+                {
+                    var processingEnterprise = processingEnterprises.Random();
+                    if (processingEnterprise.canBuildNewFactory(item.Capital, capitalists))
+                        item.Capital.BuildFactory(capitalists, processingEnterprise, processingEnterprise.GetBuildCost(item.market), true);
+                }
+
+                //ProductionType.getAllInventedFactories(Country).Where(x=>x.canBuildNewFactory);
+                //var res = new Factory(this, investor, type, cost);
+                //allFactories.Add(res);
+            }
         }
 
         private static void setStartResources()
@@ -391,7 +429,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // temporally
-        internal static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
+        public static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -400,7 +438,7 @@ namespace Nashet.EconomicSimulation
         }
 
         // temporally
-        internal static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
+        public static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
         {
             foreach (var item in getAllExistingCountries())
                 foreach (var factory in item.getAllFactories())
@@ -468,7 +506,7 @@ namespace Nashet.EconomicSimulation
 
         public static void prepareForNewTick()
         {
-            World.market.SetStatisticToZero();
+            AllMarkets().PerformAction(x => x.SetStatisticToZero());
 
             foreach (Country country in World.getAllExistingCountries())
             {
@@ -482,11 +520,11 @@ namespace Nashet.EconomicSimulation
                     }
                 }
             }
-            PopType.sortNeeds();
-            Product.sortSubstitutes();
+            PopType.sortNeeds(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
+            Product.sortSubstitutes(Market.TemporalSingleMarket);//getAllExistingCountries().Random().market
         }
 
-        internal static void simulate()
+        public static void simulate()
         {
             if (haveToStepSimulation)
                 haveToStepSimulation = false;
@@ -495,14 +533,14 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
                 Debug.Log("New date! - " + Date.Today);
             // strongly before PrepareForNewTick
-            World.market.simulatePriceChangeBasingOnLastTurnData();
+            AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
-            EventHandler handler = DayPassed;
-            if (handler != null)
-            {
-                handler(World.Get, EventArgs.Empty);
-            }
+           // DayPassed?.Invoke(World.Get, EventArgs.Empty);
+
+            var @event = DayPassed;
+            if (@event != null)// check for subscribers
+                @event(World.Get, EventArgs.Empty); //fires event for all subscribers
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
             //calcBattles();
@@ -562,24 +600,24 @@ namespace Nashet.EconomicSimulation
                     }
             }
             //force DSB recalculation
-            World.market.getDemandSupplyBalance(null, true);
+            AllMarkets().PerformAction(x => x.getDemandSupplyBalance(null, true));
             if (Game.logMarket)
             {
-                ValueSpace.Money res = new ValueSpace.Money(0m);
-                foreach (var product in Product.getAll())
+                //Money res = new Money(0m);
+                //foreach (var product in Product.getAll())
 
-                    res.Add(World.market.getCost(World.market.getMarketSupply(product, true)).Copy().Multiply((decimal)World.market.getDemandSupplyBalance(product, false))
-                        );
-                if (!World.market.moneyIncomeThisTurn.IsEqual(res))
-                {
-                    Debug.Log("Market income: " + World.market.moneyIncomeThisTurn + " total: " + World.market.Cash);
-                    Debug.Log("Should pay: " + res);
-                }
+                //    res.Add(Country.market.getCost(Country.market.getMarketSupply(product, true)).Copy().Multiply((decimal)Country.market.getDemandSupplyBalance(product, false))
+                //        );
+                //if (!Country.market.moneyIncomeThisTurn.IsEqual(res))
+                //{
+                //    Debug.Log("Market income: " + Country.market.moneyIncomeThisTurn + " total: " + Country.market.Cash);
+                //    Debug.Log("Should pay: " + res);
+                //}
             }
             // big AFTER all and get money for sold circle
             foreach (Country country in World.getAllExistingCountries())
             {
-                country.getMoneyForSoldProduct();
+                Market.GiveMoneyForSoldProduct(country);
                 foreach (Province province in country.AllProvinces())//Province.allProvinces)
                 {
                     foreach (Factory factory in province.getAllFactories())
@@ -591,7 +629,7 @@ namespace Nashet.EconomicSimulation
                         }
                         else
                         {
-                            factory.getMoneyForSoldProduct();
+                            Market.GiveMoneyForSoldProduct(factory);
                             factory.ChangeSalary();
                             factory.paySalary(); // workers get gold or food here
                             factory.payDividend(); // also pays taxes inside
@@ -610,7 +648,7 @@ namespace Nashet.EconomicSimulation
                         if (pop.Type == PopType.Workers)
                             pop.LearnByWork();
                         if (pop.canSellProducts())
-                            pop.getMoneyForSoldProduct();
+                            Market.GiveMoneyForSoldProduct(pop);
                         pop.takeUnemploymentSubsidies();
                         if (country.Invented(Invention.ProfessionalArmy) && country.economy.getValue() != Economy.PlannedEconomy)
                         // don't need salary with PE

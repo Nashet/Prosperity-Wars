@@ -15,7 +15,7 @@ namespace Nashet.EconomicSimulation
             ////Adding On market
             AddCell("On market");
             ////Adding abstract Demand
-            //AddButton(World.market.get(pro).ToString().name, null);
+            //AddButton(Country.market.get(pro).ToString().name, null);
             ////Adding effective Demand
             AddCell("Consumption");
             ////Adding bought
@@ -32,24 +32,24 @@ namespace Nashet.EconomicSimulation
             // Adding product name
             AddCell(product.ToString(), product);
             ////Adding production
-            AddCell(World.market.getProductionTotal(product, true).get().ToString(), product);
+            AddCell(Game.Player.market.getProductionTotal(product, true).get().ToString(), product);
             ////Adding abstract Demand
-            //AddButton(World.market.get(pro).ToString().name, next);
+            //AddButton(Country.market.get(pro).ToString().name, next);
 
             ////Adding On market
-            AddCell(World.market.getMarketSupply(product, true).get().ToString(), product);
+            AddCell(Game.Player.market.getMarketSupply(product, true).get().ToString(), product);
 
             ////Adding total consumption
-            AddCell(World.market.getTotalConsumption(product, true).get().ToString(), product);
+            AddCell(Game.Player.market.getTotalConsumption(product, true).get().ToString(), product);
 
             ////Adding Bought
-            AddCell(World.market.getBouthOnMarket(product, true).get().ToString(), product);
+            AddCell(Game.Player.market.getBouthOnMarket(product, true).get().ToString(), product);
 
             ////Adding effective Demand/Supply
-            AddCell(World.market.getDemandSupplyBalance(product, false).ToString(), product);
+            AddCell(Game.Player.market.getDemandSupplyBalance(product, false).ToString(), product);
             //AddButton("-", product);
             ////Adding price
-            AddCell(World.market.getCost(product).Get().ToString(), product);
+            AddCell(Game.Player.market.getCost(product).Get().ToString(), product);
             ////Adding price Change
             //AddButton(next.loyalty.ToString(), next);
             //counter++;

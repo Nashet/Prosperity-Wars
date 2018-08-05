@@ -16,7 +16,7 @@ namespace Nashet.ValueSpace
         /// </summary>
         public readonly StorageSet used = new StorageSet();
 
-        //internal Value getConsumption(Product whom)
+        //public Value getConsumption(Product whom)
         //{
         //    foreach (Storage stor in takenAwayLastTurn)
         //        if (stor.Product == whom)
@@ -43,7 +43,7 @@ namespace Nashet.ValueSpace
         ///// <summary>
         ///// If duplicated than adds
         ///// </summary>
-        //internal void add(Storage need)
+        //public void add(Storage need)
         //{
         //    base.add(need);
         //    consumedLastTurn.add(need)
@@ -52,7 +52,7 @@ namespace Nashet.ValueSpace
         ///// <summary>
         ///// If duplicated than adds
         ///// </summary>
-        //internal void add(PrimitiveStorageSet need)
+        //public void add(PrimitiveStorageSet need)
         //{ }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Nashet.ValueSpace
                 return false;
         }
 
-        //internal void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
+        //public void subtract(List<Storage> set, bool showMessageAboutNegativeValue = true)
         //{
         //    foreach (Storage stor in set)
         //    {
@@ -133,18 +133,18 @@ namespace Nashet.ValueSpace
         /// <summary>
         /// //todo !!! if someone would change returning object then country consumption logic would be broken!!
         /// </summary>
-        //internal Value getStorage(Product whom)
+        //public Value getStorage(Product whom)
         //{
         //    return base.getStorage(whom);
         //}
 
-        internal void SetZero()
+        public void SetZero()
         {
             setZero();
             throw new DontUseThatMethod();
         }
 
-        //internal PrimitiveStorageSet Divide(float v)
+        //public PrimitiveStorageSet Divide(float v)
         //{
         //    PrimitiveStorageSet result = new PrimitiveStorageSet();
         //    foreach (Storage stor in container)
@@ -152,7 +152,7 @@ namespace Nashet.ValueSpace
         //    return result;
         //}
 
-        //internal Storage subtractOutside(Storage stor)
+        //public Storage subtractOutside(Storage stor)
         //{
         //    Storage find = this.findStorage(stor.Product);
         //    if (find == null)
@@ -160,19 +160,19 @@ namespace Nashet.ValueSpace
         //    else
         //        return new Storage(stor.Product, find.subtractOutside(stor).get());
         //}
-        //internal void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
+        //public void subtract(StorageSet set, bool showMessageAboutNegativeValue = true)
         //{
         //    base.subtract(set, showMessageAboutNegativeValue);
         //    throw new DontUseThatMethod();
         //}
 
         // removed form ancestor
-        //internal void copyDataFrom(StorageSet consumed)
+        //public void copyDataFrom(StorageSet consumed)
         //{
         //    base.copyDataFrom(consumed);
         //    throw new DontUseThatMethod();
         //}
-        internal void sendAll(StorageSet toWhom)
+        public void sendAll(StorageSet toWhom)
         {
             used.Add(this);
             base.sendAll(toWhom);

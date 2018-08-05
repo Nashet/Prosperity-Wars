@@ -1,4 +1,6 @@
-﻿namespace Nashet.Utils
+﻿using UnityEngine;
+
+namespace Nashet.Utils
 {
     public interface INameable
     {
@@ -11,8 +13,17 @@
         float GetNameWeight();
     }
 
-    internal interface IStatisticable
+    public interface IStatisticable
     {
         void SetStatisticToZero();
+    }
+    /// <summary>
+    /// Describes ability to select & deselect some GameObject.
+    /// Supposed to be a component
+    /// </summary>
+    public interface ISelector
+    {
+        void Select(GameObject someObject);
+        void Deselect(GameObject someObject);
     }
 }

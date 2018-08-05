@@ -17,9 +17,9 @@ namespace Nashet.EconomicSimulation
         public static bool logInvestments = false;
         public static bool logMarket = false;
 
-        public static  bool readMapFormFile = false;
+        public static bool readMapFormFile = false;
         private static MyTexture mapTexture;
-        
+
 
         public static Country Player;
 
@@ -31,18 +31,23 @@ namespace Nashet.EconomicSimulation
         public static List<Army> selectedArmies = new List<Army>();
         public static List<Province> playerVisibleProvinces = new List<Province>();
 
-        private static int mapMode;
-        
+        private static MapModes mapMode;
 
-        
 
-        private static VoxelGrid grid;
+
+
+        private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;
+
+        public static bool DrawFogOfWar { get; internal set; }
+        public static bool IndustrialStart { get; internal set; }
+        public static MapModes MapMode { get; internal set; }
 
         public Game(Texture2D mapImage)
         {
-            if (mapImage==null)
-                generateMapImage();            
+            DrawFogOfWar = true;
+            if (mapImage == null)
+                generateMapImage();
             else
             {
                 //Texture2D mapImage = Resources.Load("provinces", typeof(Texture2D)) as Texture2D; ///texture;
@@ -54,12 +59,15 @@ namespace Nashet.EconomicSimulation
 
         public void InitializeNonUnityData()
         {
-            World.market.initialize();
-
+            var m = new Market();
             World.Create(mapTexture);
-            //Game.updateStatus("Making grid..");
-            grid = new VoxelGrid(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
+
+            m.Initialize(null);
+            //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
+
+            //Game.updateStatus("Making grid..");
+            grid = new VoxelGrid<AbstractProvince>(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
 
             if (!devMode)
                 makeHelloMessage();
@@ -89,15 +97,16 @@ namespace Nashet.EconomicSimulation
             //r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
             //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
-            World.GetAllProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            foreach (var item in World.GetAllProvinces())
+            World.GetAllLandProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            World.AllSeaProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            foreach (var item in World.GetAllLandProvinces())
             {
-                var node = item.getRootGameObject().GetComponent<Node>();
+                var node = item.GameObject.GetComponent<Node>();
                 node.Set(item, item.getAllNeighbors());
                 World.Get.graph.AddNode(node);
             }
 
-            World.GetAllProvinces().PerformAction(x => x.setBorderMaterials(false));
+            World.GetAllLandProvinces().PerformAction(x => x.SetBorderMaterials());
             Country.setUnityAPI();
             //seaProvinces = null;
             // todo clear resources
@@ -120,7 +129,7 @@ namespace Nashet.EconomicSimulation
             return mapBorders;
         }
 
-        internal static void GivePlayerControlOf(Country country)
+        public static void GivePlayerControlOf(Country country)
         {
             //if (country != Country.NullCountry)
             {
@@ -141,21 +150,29 @@ namespace Nashet.EconomicSimulation
             surrended = true;
         }
 
-        internal static int getMapMode()
+        public enum MapModes
         {
-            return mapMode;
+            Political, Cultures, Cores, Resources, PopulationChange, PopulationDensity, Prosperity
         }
 
-        public static void redrawMapAccordingToMapMode(int newMapMode)
+        //case 0: //political mode
+        //    case 1: //culture mode
+        //    case 2: //cores mode
+        //    case 3: //resource mode
+        //    case 4: //population change mode
+        //    case 5: //population density mode
+        //    case 6: //prosperity map
+
+
+        public static void redrawMapAccordingToMapMode()
         {
-            mapMode = newMapMode;
-            foreach (var item in World.GetAllProvinces())
-                item.updateColor(item.getColorAccordingToMapMode());
+            foreach (var item in World.GetAllLandProvinces())
+                item.SetColorAccordingToMapMode();
         }
 
 
 
-        internal static bool isPlayerSurrended()
+        public static bool isPlayerSurrended()
         {
             return surrended;
         }

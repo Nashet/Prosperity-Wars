@@ -118,7 +118,7 @@ namespace Nashet.EconomicSimulation
         //    //allArmies.RemoveAll(army => army.getSize() == 0);// && army != country.sendingArmy); // don't remove sending army. Its personal already transfered to Home army
         //}
 
-        //internal void mobilize()
+        //public void mobilize()
         //{
         //    foreach (var province in place.ownedProvinces)
         //    {
@@ -129,7 +129,7 @@ namespace Nashet.EconomicSimulation
         //    }
         //    consolidateArmies();
         //}
-        internal void mobilize(IEnumerable<Province> source)
+        public void mobilize(IEnumerable<Province> source)
         {
             foreach (var province in source)
             {
@@ -149,7 +149,7 @@ namespace Nashet.EconomicSimulation
             allArmies.Add(army);
         }
 
-        //internal void demobilize()
+        //public void demobilize()
         //{
         //    foreach (var item in allArmies.ToList())
         //    {
@@ -158,7 +158,7 @@ namespace Nashet.EconomicSimulation
         //    //allArmies.Clear();
         //}
 
-        internal void demobilize(Func<Corps, bool> predicate=null)
+        public void demobilize(Func<Corps, bool> predicate=null)
         {
             foreach (Army nextArmy in allArmies.ToList())
             {
@@ -167,7 +167,7 @@ namespace Nashet.EconomicSimulation
             //allArmies.RemoveAll(army => army.getSize() == 0);
         }
 
-        internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
+        public void rebelTo(Func<Corps, bool> popSelector, Movement movement)
         {
             allArmies.ForEach(x => x.rebelTo(popSelector, movement));
         }
@@ -185,7 +185,7 @@ namespace Nashet.EconomicSimulation
             return res;
         }
 
-        internal virtual void sendAllArmies(Province possibleTarget)
+        public virtual void sendAllArmies(Province possibleTarget)
         {
             allArmies.PerformAction(x => x.SetPathTo(possibleTarget));
             //consolidateArmies().balance(procent).sendTo(possibleTarget);
@@ -197,20 +197,20 @@ namespace Nashet.EconomicSimulation
             allArmies.ForEach(x => x.setStatisticToZero());
         }
 
-        internal IEnumerable<Army> AllArmies()
+        public IEnumerable<Army> AllArmies()
         {
             foreach (var army in allArmies)
                 yield return army;
         }
 
-        internal IEnumerable<Corps> getAllCorps()
+        public IEnumerable<Corps> getAllCorps()
         {
             foreach (var army in allArmies)
                 foreach (var corps in army.getCorps())
                     yield return corps;
         }
 
-        //internal IEnumerable<Army> getAttackingArmies()
+        //public IEnumerable<Army> getAttackingArmies()
         //{
         //    foreach (var army in allArmies)
         //        if (army.getDestination() != null)
@@ -224,7 +224,7 @@ namespace Nashet.EconomicSimulation
         /// returns Home army
         /// </summary>
         /// <returns></returns>
-        internal int getDefenceForces()
+        public int getDefenceForces()
         {
             return allArmies.Sum(x => x.getSize());
             //Army a = allArmies.Find(x => x.getSize() > 0 && x.getDestination() == null);
@@ -234,7 +234,7 @@ namespace Nashet.EconomicSimulation
             //    return a;
         }
 
-        internal static IEnumerable<Staff> getAllStaffs()
+        public static IEnumerable<Staff> getAllStaffs()
         {
             foreach (var country in World.getAllExistingCountries())
                 if (country.isAlive() && country != World.UncolonizedLand)
@@ -263,14 +263,14 @@ namespace Nashet.EconomicSimulation
         //    throw new NotImplementedException();
         //}
 
-        //internal Army getVirtualArmy(Procent procent)
+        //public Army getVirtualArmy(Procent procent)
         //{
         //    Army virtualArmy = consolidateArmies(false).getVirtualArmy(procent);
         //    return virtualArmy;
         //}
         public void KillArmy(Army army)
         {
-            army.DeSelect();
+            army.Deselect();
             army.Province.RemoveArmy(army);
             allArmies.Remove(army);
             World.DayPassed -= army.OnMoveArmy;

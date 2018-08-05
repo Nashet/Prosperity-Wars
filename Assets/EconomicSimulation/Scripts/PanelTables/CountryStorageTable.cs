@@ -2,6 +2,7 @@
 using System.Linq;
 using Nashet.UnityUIUtils;
 using Nashet.Utils;
+using Nashet.ValueSpace;
 
 namespace Nashet.EconomicSimulation
 {
@@ -56,7 +57,7 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.countryStorageSet.used.getTotal(product).get().ToString());
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket().getTotal(product).get().ToString());
+                AddCell(Game.Player.getConsumedInMarket(Game.Player.market).getTotal(product).get().ToString());
 
                 ////Adding Sold
                 //AddButton(Game.Player.getSentToMarketIncludingSubstituts(product).get().ToString());
@@ -82,17 +83,19 @@ namespace Nashet.EconomicSimulation
                 AddCell(Game.Player.countryStorageSet.used.GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding bought
-                AddCell(Game.Player.getConsumedInMarket().GetFirstSubstituteStorage(product).get().ToString(), storage);
+                AddCell(Game.Player.getConsumedInMarket(Game.Player.market).GetFirstSubstituteStorage(product).get().ToString(), storage);
 
                 ////Adding Sold
                 //// finding actually sold from sentToMarket
                 //var str = Game.Player.getSentToMarket(product);
-                //var DSB = World.market.getDemandSupplyBalance(product);
+                //var DSB = Country.market.getDemandSupplyBalance(product);
                 //if (DSB.GetHashCode() == Options.MarketInfiniteDSB.GetHashCode())
                 //    str.setZero();
                 //else
                 //    str.multiply(DSB);
-                AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
+
+                //AddCell(Game.Player.getSoldByGovernment(product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
+                AddCell(Market.GiveTotalSoldProduct(Game.Player, product).get().ToString(), storage, () => "Actually sold according to demand\nCould be less than sent to market");
             }
         }
 

@@ -26,7 +26,7 @@
             return true;
         }
 
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Democracy || reform == Government.ProletarianDictatorship) // temporally
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
@@ -36,7 +36,7 @@
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 return 1;
@@ -44,12 +44,12 @@
                 return 0;
         }
 
-        internal void Hire(Factory factory, int leftToHire)
+        public void Hire(Factory factory, int leftToHire)
         {
             employed += leftToHire;
         }
 
-        internal void Fire()
+        public void Fire()
         {
             employed = 0;
         }

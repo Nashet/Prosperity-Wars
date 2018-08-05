@@ -122,7 +122,7 @@ public class SelectionComponent : MonoBehaviour
         if (mousePosition1 != Input.mousePosition)
         {
             if (!Input.GetKey(AdditionKey))
-                Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+                Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
             foreach (var selectableObject in Game.Player.AllArmies())
             {
                 if (IsWithinSelectionBounds(selectableObject.Position))
@@ -150,7 +150,7 @@ public class SelectionComponent : MonoBehaviour
             {
                 MainCamera.selectProvince(provinceNumber);
                 if (!Input.GetKey(AdditionKey)) // don't de select units if shift is pressed
-                    Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+                    Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
             }
             else
             {
@@ -163,7 +163,7 @@ public class SelectionComponent : MonoBehaviour
                         if (Input.GetKey(AdditionKey))
                         {
                             if (Game.selectedArmies.Contains(army))
-                                army.DeSelect();
+                                army.Deselect();
                             else
                                 army.Select();
                         }
@@ -171,7 +171,7 @@ public class SelectionComponent : MonoBehaviour
                         {
                             if (Game.selectedArmies.Count > 0)
                             {
-                                Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+                                Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
                             }
                             army.Select();
                         }
@@ -183,7 +183,7 @@ public class SelectionComponent : MonoBehaviour
         {
             MainCamera.selectProvince(-1);
             if (!Input.GetKey(AdditionKey))
-                Game.selectedArmies.ToList().PerformAction(x => x.DeSelect());
+                Game.selectedArmies.ToList().PerformAction(x => x.Deselect());
         }
     }
     public bool IsWithinSelectionBounds(Vector3 position)

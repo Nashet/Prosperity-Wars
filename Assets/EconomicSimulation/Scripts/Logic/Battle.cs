@@ -32,17 +32,17 @@ namespace Nashet.EconomicSimulation
             //Game.allBattles.Add(this);
         }
 
-        internal bool isAttackerWon()
+        public bool isAttackerWon()
         {
             return result;
         }
 
-        internal bool isDefenderWon()
+        public bool isDefenderWon()
         {
             return !result;
         }
 
-        internal void createMessage()
+        public void createMessage()
         {
             sb.Clear();
 
@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(attackerLoss).Append(" men");
                 sb.Append("\nProvince ").Append(place).Append(" is our now!");
                 // sb.Append("\nDate is ").Append(Game.date);
-                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", false, place.getPosition());
+                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", false, place.Position);
             }
             else if (defender.IsHuman && isDefenderWon())
             {
@@ -66,7 +66,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWhile we had ").Append(defenderArmy).Append(" men. Modifiers: ").Append(defenderBonus);
                 sb.Append("\n\nWe won, enemy lost all men and we lost ").Append(defenderLoss).Append(" men");
                 // sb.Append("\nDate is ").Append(Game.date);
-                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", true, place.getPosition());
+                Message.NewMessage("We won a battle!", sb.ToString(), "Fine", true, place.Position);
             }
             else if (attacker.IsHuman && isDefenderWon())
             {
@@ -77,7 +77,7 @@ namespace Nashet.EconomicSimulation
                 sb.Append("\n\nWhile enemy had ").Append(defenderArmy).Append(" men. Modifiers:  ").Append(defenderBonus);
                 sb.Append("\n\nWe lost, our invasion army is destroyed, while enemy lost ").Append(defenderLoss).Append(" men");
                 // sb.Append("\nDate is ").Append(Game.date);
-                Message.NewMessage("We lost a battle!", sb.ToString(), "Fine", false, place.getPosition());
+                Message.NewMessage("We lost a battle!", sb.ToString(), "Fine", false, place.Position);
             }
             else if (defender.IsHuman && isAttackerWon())
 
@@ -93,16 +93,16 @@ namespace Nashet.EconomicSimulation
                 else
                     sb.Append("\nWe had to enact ").Append(movement.getGoal());
                 // sb.Append("\nDate is ").Append(Game.date);
-                Message.NewMessage("We lost a battle!", sb.ToString(), "Not fine really", false, place.getPosition());
+                Message.NewMessage("We lost a battle!", sb.ToString(), "Not fine really", false, place.Position);
             }
         }
 
-        internal Staff getDefender()
+        public Staff getDefender()
         {
             return defender;
         }
 
-        internal Staff getAttacker()
+        public Staff getAttacker()
         {
             return attacker;
         }

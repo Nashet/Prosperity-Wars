@@ -51,7 +51,7 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n Income tax for Foreigners (").Append(Game.Player.taxationForRich.getTypedValue().tax).Append("): ").Append(Game.Player.IncomeTaxForeigner);
             sb.Append("\n Gold mines: ").Append(Game.Player.GoldMinesIncome);
             sb.Append("\n Dividends: ").Append(Game.Player.OwnedFactoriesIncome);
-            sb.Append("\n Storage sells: ").Append(Game.Player.getCostOfAllSellsByGovernment());
+            sb.Append("\n Storage sells: [code is broken #494]");//.Append(Game.Player.getCostOfAllSellsByGovernment());
             sb.Append("\n Rest: ").Append(Game.Player.RestIncome);
             sb.Append("\nTotal: ").Append(Game.Player.moneyIncomeThisTurn);
 
@@ -95,7 +95,7 @@ namespace Nashet.EconomicSimulation
             }
             if (Game.Player.Invented(Invention.ProfessionalArmy))
             {
-                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat((float)(World.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Get() * 2m));
+                ssSoldiersWage.maxValue = ssSoldiersWage.ConvertToSliderFormat((float)(Game.Player.market.getCost(PopType.Soldiers.getAllNeedsPer1000Men()).Get() * 2m));
                 ssSoldiersWage.exponentialValue = (float)Game.Player.getSoldierWage().Get(); // could be changed by AI
                 refreshSoldierWageText();
                 //ssSoldiersWage.GetComponent<CanvasGroup>().alpha = 1f;

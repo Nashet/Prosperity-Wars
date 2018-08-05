@@ -13,11 +13,14 @@ namespace Nashet.EconomicSimulation
         [SerializeField]
         private Text generalText;
 
+        [SerializeField]
+        private GameObject debugWindowPrefab;
+
         // Use this for initialization
         private void Awake() // used to position other windows
         {
             MainCamera.bottomPanel = this;
-            generalText.text = "Prosperity Wars v0.20.6";
+            generalText.text = "Prosperity Wars v0.20.7";
             Hide();
         }
 
@@ -35,11 +38,15 @@ namespace Nashet.EconomicSimulation
 
         public void onddMapModesChange(int newMapMode)
         {
-            if (Game.getMapMode() != newMapMode)
-                Game.redrawMapAccordingToMapMode(newMapMode);
+            var  _newMapMod =( Game.MapModes)newMapMode;
+            if (Game.MapMode != _newMapMod)
+            {
+                Game.MapMode = _newMapMod;
+                Game.redrawMapAccordingToMapMode();
+            }
         }
-        [SerializeField]
-        private GameObject debugWindowPrefab;
+
+
         public void OnDebugWindowOpen()
         {
             if (!DebugWindow.Exist)
@@ -62,22 +69,22 @@ namespace Nashet.EconomicSimulation
         }
         public void OnScrollUp()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();            
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
             cameraScript.Move(0f, 0f, 1f);
         }
         public void OnScrollDown()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();            
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
             cameraScript.Move(0f, 0f, -1f);
         }
         public void OnScaleIn()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();            
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
             cameraScript.Move(0f, -0.1f, 0f);
         }
         public void OnScaleOut()
         {
-            var cameraScript = Camera.main.GetComponent<MainCamera>();            
+            var cameraScript = Camera.main.GetComponent<MainCamera>();
             cameraScript.Move(0f, 0.1f, 0f);
         }
         public void OnTest()
@@ -85,7 +92,7 @@ namespace Nashet.EconomicSimulation
             //gameObject = new GameObject(string.Format("{0}", getID()),);
 
             //var unitObject = Instantiate(LinksManager.Get.UnitPrefab, World.Get.transform);
-           
+
             //unitObject.GetComponent<Unit>().SetPosition(Game.selectedProvince);
             //unitObject.name = (World.GetAllProvinces().Count() + Random.Range(0, 2000)).ToString();
         }

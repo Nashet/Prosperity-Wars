@@ -40,10 +40,10 @@ namespace Nashet.EconomicSimulation
 
         public Vector3 Position
         {
-            get { return Province.getPosition(); }
+            get { return Province.Position; }
         }
 
-        public Province Province { get; internal set; }
+        public Province Province { get; protected set; }
         private float getHorsesSupply()
         {
             if (getOwner().Country.Invented(Invention.Domestication))
@@ -118,7 +118,7 @@ namespace Nashet.EconomicSimulation
         modifierEducation
         });
 
-        public bool IsSelected { get; internal set; }
+        public bool IsSelected { get; protected set; }
 
         // private Army consolidatedArmy;
 
@@ -194,7 +194,7 @@ namespace Nashet.EconomicSimulation
                 owner.KillArmy(this);
         }
 
-        internal void rebelTo(Func<Corps, bool> popSelector, Movement movement)
+        public void rebelTo(Func<Corps, bool> popSelector, Movement movement)
         {
             //todo rebel
             //var takerArmy = movement.getDefenceForces();
@@ -271,17 +271,17 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal void removeCorps(Corps corps)
+        public void removeCorps(Corps corps)
         {
             personal.Remove(corps.getPopUnit());
         }
 
-        internal int getSize()
+        public int getSize()
         {
             return personal.Sum(x => x.Value.getSize());
         }
 
-        internal IEnumerable<Corps> getCorps()
+        public IEnumerable<Corps> getCorps()
         {
             foreach (Corps corps in personal.Values)
                 yield return corps;
@@ -365,7 +365,7 @@ namespace Nashet.EconomicSimulation
         /// <summary>
         /// howMuchShouldBeInSecondArmy - procent of this army. Returns second army
         /// </summary>
-        internal Army balance(Procent howMuchShouldBeInSecondArmy)
+        public Army balance(Procent howMuchShouldBeInSecondArmy)
         {
             owner.armyCount++;
             Army secondArmy = new Army(owner, Province, owner + "'s " + owner.armyCount.ToString() + "th");
@@ -388,7 +388,7 @@ namespace Nashet.EconomicSimulation
             return secondArmy;
         }
 
-        internal BattleResult attack(Province prov)
+        public BattleResult attack(Province prov)
         {
             //todo attack
             //var enemy = prov.Country;
@@ -559,7 +559,7 @@ namespace Nashet.EconomicSimulation
                 return smallerCorps.MaxBy(x => x.Value.getSize()).Value;
         }
 
-        //internal Army split(Procent howMuchShouldBeInSecondArmy)
+        //public Army split(Procent howMuchShouldBeInSecondArmy)
         //{
         //    if (personal.Count > 0)
         //    {
@@ -580,7 +580,7 @@ namespace Nashet.EconomicSimulation
 
 
 
-        internal void setStatisticToZero()
+        public void setStatisticToZero()
         {
             foreach (var corps in personal)
                 corps.Value.setStatisticToZero();
@@ -592,7 +592,7 @@ namespace Nashet.EconomicSimulation
                 Path = null;
                 Game.provincesToRedrawArmies.Add(Province);
                 //Province.RedrawLocalArmies(); 
-                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.getPosition());
+                Message.NewMessage(this.FullName + " arrived!", "Commander, " + this.FullName + " stopped at " + Province + " province", "Fine", false, Province.Position);
             }
         }
 
@@ -662,7 +662,7 @@ namespace Nashet.EconomicSimulation
                             if (isCountryOwner != null && isCountryOwner != Province.Country)
                             {
                                 if (Province.Country == Game.Player && !Game.isPlayerSurrended())
-                                    Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.getPosition());
+                                    Message.NewMessage("Province lost!", "Commander, " + isCountryOwner + " took " + Province, "Fine", false, Province.Position);
                                 isCountryOwner.TakeProvince(Province, true);
 
                             }
@@ -682,7 +682,7 @@ namespace Nashet.EconomicSimulation
                 }
             }
         }
-        internal void AddToPath(Province destinationProvince)
+        public void AddToPath(Province destinationProvince)
         {
             if (Path == null)
                 SetPathTo(destinationProvince);
@@ -693,7 +693,7 @@ namespace Nashet.EconomicSimulation
                 //                Province.RedrawLocalArmies();
             }
         }
-        internal void SetPathTo(Province destinationProvince, Predicate<Province> predicate = null)
+        public void SetPathTo(Province destinationProvince, Predicate<Province> predicate = null)
         {
             if (destinationProvince == null)
                 Path = null;
@@ -715,12 +715,10 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        public void DeSelect()
+        public void Deselect()
         {
             Game.selectedArmies.Remove(this);
-            unit.DeSelect();
-            //selectionPart.SetActive(false);
-            //Province.SelectUnit();
+            unit.Deselect();            
         }
                 
         private Path path;
@@ -743,7 +741,7 @@ namespace Nashet.EconomicSimulation
                 //}
             }
         }
-        internal string getName()
+        public string getName()
         {
             StringBuilder sb = new StringBuilder();
 

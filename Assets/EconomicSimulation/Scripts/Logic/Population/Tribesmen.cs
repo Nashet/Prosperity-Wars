@@ -40,7 +40,7 @@ namespace Nashet.EconomicSimulation
             }
         }
 
-        internal override bool canTrade()
+        public override bool canTrade()
         {
             return false;
         }
@@ -50,7 +50,7 @@ namespace Nashet.EconomicSimulation
             return true;
         }
 
-        internal override bool canVote(Government.ReformValue reform)
+        public override bool canVote(Government.ReformValue reform)
         {
             if ((reform == Government.Tribal || reform == Government.Democracy)
                 && (isStateCulture() || Country.minorityPolicy.getValue() == MinorityPolicy.Equality))
@@ -59,7 +59,7 @@ namespace Nashet.EconomicSimulation
                 return false;
         }
 
-        internal override int getVotingPower(Government.ReformValue reformValue)
+        public override int getVotingPower(Government.ReformValue reformValue)
         {
             if (canVote(reformValue))
                 return 1;

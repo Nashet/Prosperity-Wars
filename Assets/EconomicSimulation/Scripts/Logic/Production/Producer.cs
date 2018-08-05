@@ -1,5 +1,9 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.Utils;
+using Nashet.ValueSpace;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Nashet.EconomicSimulation
 {
@@ -7,7 +11,7 @@ namespace Nashet.EconomicSimulation
     /// Represents anyone who can produce, store and sell product (1 product)
     /// also linked to Province
     /// </summary>
-    public abstract class Producer : Consumer, ICanSell, IHasProvince
+    public abstract class Producer : Consumer, IHasProvince, ISeller
     {
         /// <summary>How much was gained (before any payments). Not money!! Generally, gets value in PopUnit.produce and Factore.Produce </summary>
         private Storage gainGoodsThisTurn;
@@ -16,7 +20,10 @@ namespace Nashet.EconomicSimulation
         public Storage storage;
 
         /// <summary>How much sent to market, Some other amount could be consumedTotal or stored for future </summary>
-        private Storage sentToMarket;
+        //private Storage sentToMarket;
+        //public Storage SentToMarket { get { return sentToMarket; } }
+        private Dictionary<Market, Storage> sentToMarket = new Dictionary<Market, Storage>();
+
 
         private readonly Province province;
         /// <summary> /// Return in pieces  /// </summary>
@@ -48,83 +55,40 @@ namespace Nashet.EconomicSimulation
             if (gainGoodsThisTurn != null)
                 gainGoodsThisTurn.SetZero();
             if (sentToMarket != null)
-                sentToMarket.SetZero();
+                sentToMarket.Clear();
         }
 
-        //todo put it and duplicate in market?
-        public void getMoneyForSoldProduct()
-        {
-            if (sentToMarket.get() > 0f)
-            {
-                Value DSB = new Value(World.market.getDemandSupplyBalance(sentToMarket.Product, false));
-                if (DSB.get() == Options.MarketInfiniteDSB)
-                    DSB.SetZero(); // real DSB is unknown
-                else if (DSB.get() > Options.MarketEqualityDSB)
-                    DSB.Set(Options.MarketEqualityDSB);
-                decimal realSold = (decimal)sentToMarket.get();
-                realSold *= (decimal)DSB.get();
-                if (realSold > 0m)
-                {
-                    MoneyView cost = World.market.getCost(sentToMarket.Product).Copy().Multiply(realSold);
 
-                    // adding unsold product
-                    // assuming gainGoodsThisTurn & realSold have same product
-                    if (storage.isExactlySameProduct(gainGoodsThisTurn))
-                        storage.add(gainGoodsThisTurn);
-                    else
-                        storage = new Storage(gainGoodsThisTurn);
-                    storage.Subtract((float)realSold);
 
-                    if (World.market.CanPay(cost)) //&& World.market.tmpMarketStorage.has(realSold))
-                    {
-                        World.market.Pay(this, cost);
-                    }
-                    else
-                    {
-                        //if (Game.devMode)// && World.market.HowMuchLacksMoneyIncludingDeposits(cost).Get() > 10m)
-                            Debug.Log("Failed market - lacks " + World.market.HowMuchLacksMoneyIncludingDeposits(cost)
-                                    + " for " + realSold + " " + sentToMarket.Product + " " + this + " trade: " + cost); // money in market ended... Only first lucky get money
-                        World.market.PayAllAvailableMoney(this);
-
-                    }
-                }
-            }
-        }
 
         /// <summary>
-        /// Do checks outside
+        /// Do checks outside. Currently sends only to 1 market
         /// </summary>
-        public void sell(Storage what)
+        public void SendToMarket(Storage what)
         {
-            sentToMarket.set(what);
+            var market = Market.GetReachestMarket(what);
+            if (market == null)
+                market = Country.market;
+            sentToMarket.Add(market, what);
             storage.subtract(what);
-            World.market.sentToMarket.Add(what);
-            if (Game.logMarket)
-                Debug.Log(this + " sent to market " + what + " costing " + World.market.getCost(what));
+            market.ReceiveProducts(what);
+            //if (Game.logMarket)
+            //    Debug.Log(this + " sent to market " + what + " costing " + Country.market.getCost(what));
         }
 
         /// <summary> Do checks outside</summary>
         public void consumeFromItself(Storage what)
         {
-            getConsumed().Add(what);
+            consumed.Add(what);
             storage.subtract(what);
         }
 
-        public Storage getSentToMarket(Product product)
-        {
-            return getSentToMarket();
-        }
-
-        public Storage getSentToMarket()
-        {
-            return sentToMarket;
-        }
 
         protected void changeProductionType(Product product)
         {
             storage = new Storage(product);
             gainGoodsThisTurn = new Storage(product);
-            sentToMarket = new Storage(product);
+            //sentToMarket = new Storage(product);
         }
 
         /// <summary>
@@ -139,5 +103,33 @@ namespace Nashet.EconomicSimulation
         {
             gainGoodsThisTurn.add(howMuch);
         }
+
+        public IEnumerable<Market> AllTradeMarkets()
+        {
+            return sentToMarket.Keys;
+        }
+
+        public IEnumerable<KeyValuePair<Market, Storage>> AllSellDeals()
+        {
+            foreach (var item in sentToMarket)
+            {
+                yield return item;
+            }
+        }
+
+        /// <summary>        
+        /// Returns null 
+        /// </summary>        
+        public Storage HowMuchSentToMarket(Market market, Product product)
+        {
+            Storage has;
+            sentToMarket.TryGetValue(market, out has);
+            if (has != null && has.Product == product)
+            {
+                return sentToMarket[market];
+            }
+            return new Storage(product);// empty storage
+        }
+
     }
 }

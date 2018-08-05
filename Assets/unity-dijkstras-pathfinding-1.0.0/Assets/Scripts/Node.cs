@@ -57,6 +57,6 @@ public class Node : MonoBehaviour
     {
         this.province = province;
         foreach (var next in provinces)
-            this.m_Connections.Add(next.getRootGameObject().GetComponent<Node>());
+            this.m_Connections.Add(next.GameObject.GetComponent<Node>());
     }
 }
