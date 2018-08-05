@@ -124,7 +124,7 @@ namespace Nashet.EconomicSimulation
         //todo change it to 1 run by every products, not run for every product
         private Storage recalculateProductForConsumers(Product product, Func<Consumer, IEnumerable<Storage>> selector)
         {
-            Storage result = new Storage(product);
+            Storage result = new Storage(product); // too big circle - 22k per frame, 11Mb memory
             foreach (Country country in World.getAllExistingCountries())
             {
                 foreach (Province province in country.AllProvinces())

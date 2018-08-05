@@ -12,7 +12,7 @@ namespace Nashet.EconomicSimulation
     /// </summary>
     public class Game : ThreadedJob
     {
-        public static bool devMode = true;
+        public static bool devMode = false;
         private static bool surrended = devMode;
         public static bool logInvestments = false;
         public static bool logMarket = false;
@@ -39,12 +39,13 @@ namespace Nashet.EconomicSimulation
         private static VoxelGrid<AbstractProvince> grid;
         private readonly Rect mapBorders;
 
-        public static bool DrawFogOfWar { get; internal set; } = true;
+        public static bool DrawFogOfWar { get; internal set; }
         public static bool IndustrialStart { get; internal set; }
         public static MapModes MapMode { get; internal set; }
 
         public Game(Texture2D mapImage)
         {
+            DrawFogOfWar = true;
             if (mapImage == null)
                 generateMapImage();
             else
@@ -161,10 +162,10 @@ namespace Nashet.EconomicSimulation
         //    case 4: //population change mode
         //    case 5: //population density mode
         //    case 6: //prosperity map
-       
+
 
         public static void redrawMapAccordingToMapMode()
-        {           
+        {
             foreach (var item in World.GetAllLandProvinces())
                 item.SetColorAccordingToMapMode();
         }

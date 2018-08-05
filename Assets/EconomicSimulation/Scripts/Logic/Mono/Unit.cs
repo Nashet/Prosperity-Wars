@@ -26,7 +26,7 @@ namespace Nashet.EconomicSimulation
         Animator m_Animator;
 
 
-        private readonly static List<Unit> allUnits = new List<Unit>();       
+        private readonly static List<Unit> allUnits = new List<Unit>();
 
         public Province Province { get; private set; }
 
@@ -165,7 +165,8 @@ namespace Nashet.EconomicSimulation
             lineRenderer.SetPositions(path.GetVector3Nodes());
             lineRenderer.SetPosition(0, Province.Position);//currentProvince.getPosition()
             this.transform.LookAt(path.nodes[0].Province.Position, Vector3.back);
-            m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
+            if (m_Animator.gameObject.activeInHierarchy)
+                m_Animator.SetFloat("Forward", 0.4f);//, 0.3f, Time.deltaTime
                                                  //if (where.armies.Count > 1)
                                                  //    for (int i = 0; i < where.armies.Count - 1; i++)
                                                  //    {
@@ -179,7 +180,8 @@ namespace Nashet.EconomicSimulation
         private void Stop()
         {
             lineRenderer.positionCount = 0;
-            m_Animator.SetFloat("Forward", 0f);
+            if (m_Animator.gameObject.activeInHierarchy)
+                m_Animator.SetFloat("Forward", 0f);
 
             //SetUnitPanel(null);
         }

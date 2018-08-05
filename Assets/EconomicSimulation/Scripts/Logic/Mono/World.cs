@@ -536,7 +536,11 @@ namespace Nashet.EconomicSimulation
             AllMarkets().PerformAction(x => x.simulatePriceChangeBasingOnLastTurnData());
 
             // rise event on day passed
-            DayPassed?.Invoke(World.Get, EventArgs.Empty);
+           // DayPassed?.Invoke(World.Get, EventArgs.Empty);
+
+            var @event = DayPassed;
+            if (@event != null)// check for subscribers
+                @event(World.Get, EventArgs.Empty); //fires event for all subscribers
 
             // should be before PrepareForNewTick cause PrepareForNewTick hires dead workers on factories
             //calcBattles();
