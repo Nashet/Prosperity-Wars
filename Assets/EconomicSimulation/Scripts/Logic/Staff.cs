@@ -48,8 +48,8 @@ namespace Nashet.EconomicSimulation
         public float howMuchCanMobilize(Staff againstWho)
         {
             float result = 0f;
-            foreach (var province in Country.AllProvinces())
-                foreach (var pop in province.GetAllPopulation())
+            foreach (var province in Country.AllProvinces)
+                foreach (var pop in province.AllPops)
                     if (pop.Type.canMobilize(this))
                         result += pop.howMuchCanMobilize(this, againstWho);
             return result;
@@ -134,7 +134,7 @@ namespace Nashet.EconomicSimulation
             foreach (var province in source)
             {
                 // mirrored in Army
-                if (province.GetAllPopulation().Any(x=>x.Type.canMobilize(this) && x.howMuchCanMobilize(this, null) > 0))
+                if (province.AllPops.Any(x=>x.Type.canMobilize(this) && x.howMuchCanMobilize(this, null) > 0))
                     //if (pop.Type.canMobilize(this) && pop.howMuchCanMobilize(this, null) > 0) 
                     {
                         armyCount++;

@@ -129,8 +129,8 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product); // too big circle - 22k per frame, 11Mb memory
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (Consumer consumer in province.getAllAgents())
+                foreach (Province province in country.AllProvinces)
+                    foreach (Consumer consumer in province.AllAgents)
                     {
                         Storage found = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(found);
@@ -146,8 +146,8 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (Consumer consumer in province.getAllConsumers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (Consumer consumer in province.AllConsumers)
                     {
                         Storage re = selector(consumer).GetFirstSubstituteStorage(product);
                         result.add(re);
@@ -164,8 +164,8 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (ISeller producer in province.getAllProducers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (ISeller producer in province.AllProducers)
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
@@ -182,8 +182,8 @@ namespace Nashet.EconomicSimulation
             Storage result = new Storage(product);
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (Province province in country.AllProvinces())
-                    foreach (Producer producer in province.getAllProducers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (Producer producer in province.AllProducers)
                     {
                         var found = selector(producer);
                         if (found.isExactlySameProduct(product))
@@ -389,7 +389,7 @@ namespace Nashet.EconomicSimulation
             // get all MarketSupply            
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var agent in country.getAllAgents())
+                foreach (var agent in country.AllAgents)
                 {
                     //if (found.isExactlySameProduct(product))
                     var isSeller = agent as Producer;
@@ -484,7 +484,7 @@ namespace Nashet.EconomicSimulation
             // get all getBoughtOnMarket            
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var consumer in country.AllConsumers())
+                foreach (var consumer in country.AllConsumers)
                 {
                     //if (found.isExactlySameProduct(product))
                     foreach (var deal in consumer.AllConsumedInMarket(this))

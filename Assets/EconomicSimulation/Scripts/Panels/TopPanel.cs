@@ -48,7 +48,7 @@ namespace Nashet.EconomicSimulation
             if (Game.Player.isAlive())
                 sb.Append("   Population: ").Append(Game.Player.getFamilyPopulation().ToString("N0"))
                     .Append(" (")
-                    .Append(Game.Player.getAllPopulationChanges().Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
+                    .Append(Game.Player.AllPopsChanges.Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != Game.Player))
                     .Sum(x=>x.Value).ToString("+0;-0;0"))
                     .Append(")");
 
@@ -56,8 +56,8 @@ namespace Nashet.EconomicSimulation
             .Append("   Tech points: ").Append(Game.Player.sciencePoints.get().ToString("F0"));
 
             if (Game.Player.isAlive())                
-                sb.Append("   Loyalty: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.loyalty))
-                .Append("   Education: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.Education));
+                sb.Append("   Loyalty: ").Append(Game.Player.AllPops.GetAverageProcent(x => x.loyalty))
+                .Append("   Education: ").Append(Game.Player.AllPops.GetAverageProcent(x => x.Education));
 
             generalText.text = sb.ToString();
         }

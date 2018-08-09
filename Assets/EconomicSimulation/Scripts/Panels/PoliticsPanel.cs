@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
 
         public void onForceDecisionClick()
         {
-            foreach (PopUnit pop in Game.Player.GetAllPopulation())
+            foreach (PopUnit pop in Game.Player.AllPops)
             {
                 if (pop.canVote() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
                 {

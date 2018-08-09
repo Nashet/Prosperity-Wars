@@ -937,7 +937,7 @@ namespace Nashet.EconomicSimulation
 
         private Separatism getPotentialSeparatismTarget()
         {
-            foreach (var item in Province.getAllCores())
+            foreach (var item in Province.AllCores())
             {
                 if (!item.isAlive() && item != Country && item.getCulture() == culture)//todo doesn't supports different countries for same culture
                 {
@@ -1220,7 +1220,7 @@ namespace Nashet.EconomicSimulation
         {
             //***********migration inside country***********
             if (type == PopType.Farmers || type == PopType.Workers || type == PopType.Tribesmen)
-                foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country == Country))
+                foreach (var proposedNewProvince in Province.AllNeighbors().Where(x => x.Country == Country))
                 //foreach (var proposedNewProvince in Country.getAllProvinces())
                 {
                     var targetPriority = proposedNewProvince.getLifeQuality(this);//province.getAverageNeedsFulfilling(this.type);
@@ -1244,7 +1244,7 @@ namespace Nashet.EconomicSimulation
                     //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     //))
 
-                    foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != Country))
+                    foreach (var proposedNewProvince in Province.AllNeighbors().Where(x => x.Country != Country))
                     {
                         var targetPriority = proposedNewProvince.getLifeQuality(this);
                         if (targetPriority.isNotZero())
@@ -1366,7 +1366,7 @@ namespace Nashet.EconomicSimulation
         {
             //foreach  Province.getAllFactories()
 
-            var employed = Province.getAllFactories().Where(x => !x.Type.isResourceGathering() && x.IsOpen).Sum(x => x.HowManyEmployed(this));
+            var employed = Province.AllFactories.Where(x => !x.Type.isResourceGathering() && x.IsOpen).Sum(x => x.HowManyEmployed(this));
             return new Procent(employed, population.Get());
 
             //Province.getAllFactories().PerformAction(x =>

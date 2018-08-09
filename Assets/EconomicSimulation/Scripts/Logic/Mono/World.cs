@@ -10,7 +10,7 @@ namespace Nashet.EconomicSimulation
     /// <summary>
     /// represents the world, doesn't care about Unity's specific API
     /// </summary>
-    public class World : MonoBehaviour
+    public class World : MonoBehaviour//, IPopulated
     {
         protected static readonly List<Province> allLandProvinces = new List<Province>();
         protected static readonly List<SeaProvince> allSeaProvinces = new List<SeaProvince>();
@@ -85,33 +85,42 @@ namespace Nashet.EconomicSimulation
             yield return Market.TemporalSingleMarket;
         }
 
-        public static IEnumerable<AbstractProvince> GetAllProvinces()
+        public static IEnumerable<AbstractProvince> AllAbstractProvinces
         {
-            foreach (var item in GetAllLandProvinces())
+            get
             {
-                yield return item;
+                foreach (var item in AllProvinces)
+                {
+                    yield return item;
+                }
+                foreach (var item in AllSeaProvinces)
+                {
+                    yield return item;
+                }
             }
-            foreach (var item in AllSeaProvinces())
-            {
-                yield return item;
-            }
-
         }
-        public static IEnumerable<Province> GetAllLandProvinces()
+        /// <summary>
+        /// Land provinces only
+        /// </summary>
+        public static IEnumerable<Province> AllProvinces
         {
-            foreach (var item in allLandProvinces)
+            get
             {
-                yield return item;
+                foreach (var item in allLandProvinces)
+                {
+                    yield return item;
+                }
             }
-
         }
-        public static IEnumerable<SeaProvince> AllSeaProvinces()
+        public static IEnumerable<SeaProvince> AllSeaProvinces
         {
-            foreach (var item in allSeaProvinces)
+            get
             {
-                yield return item;
+                foreach (var item in allSeaProvinces)
+                {
+                    yield return item;
+                }
             }
-
         }
 
         /// <summary>
@@ -126,20 +135,26 @@ namespace Nashet.EconomicSimulation
                     yield return item;
         }
 
-        public static IEnumerable<Factory> GetAllFactories()
+        public static IEnumerable<Factory> AllFactories
         {
-            foreach (var item in getAllExistingCountries())
-                foreach (var factory in item.getAllFactories())
-                    yield return factory;
+            get
+            {
+                foreach (var item in getAllExistingCountries())
+                    foreach (var factory in item.AllFactories)
+                        yield return factory;
+            }
         }
 
-        public static IEnumerable<Agent> getAllAgents()
+        public static IEnumerable<Agent> AllAgents
         {
-            foreach (var country in getAllExistingCountries())
+            get
             {
-                yield return country;
-                foreach (var item in country.getAllAgents())
-                    yield return item;
+                foreach (var country in getAllExistingCountries())
+                {
+                    yield return country;
+                    foreach (var item in country.AllAgents)
+                        yield return item;
+                }
             }
         }
 
@@ -149,7 +164,7 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in getAllExistingCountries())
             {
                 allMoney.Add(country.Cash);
-                foreach (var agent in country.getAllAgents())
+                foreach (var agent in country.AllAgents)
                 {
                     allMoney.Add(agent.Cash);
                     //var isArtisan = agent as Artisans;
@@ -220,7 +235,7 @@ namespace Nashet.EconomicSimulation
                 Culture culture = new Culture(cultureNameGenerator.generateCultureName(), ColorExtensions.getRandomColor());
                 allCultures.Add(culture);
 
-                Province province = GetAllLandProvinces().Where(x => x.Country == UncolonizedLand).Random();
+                Province province = AllProvinces.Where(x => x.Country == UncolonizedLand).Random();
 
                 Country country = new Country(countryNameGenerator.generateCountryName(), culture, culture.getColor(), province, 100f);
                 allCountries.Add(country);
@@ -391,7 +406,7 @@ namespace Nashet.EconomicSimulation
 
                 
                 var resurceEnterprise = ProductionType.whoCanProduce(item.Capital.getResource());
-                var aristocrats = item.Capital.GetAllPopulation().Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
+                var aristocrats = item.Capital.AllPops.Where(x => x.Type == PopType.Aristocrats).First() as Aristocrats;
 
                 if (resurceEnterprise != null && item.Invented(resurceEnterprise.basicProduction.Product))
                 {
@@ -400,7 +415,7 @@ namespace Nashet.EconomicSimulation
 
                 var processingEnterprises = ProductionType.getAllInventedFactories(item).Where(x => x.hasInput() || x == ProductionType.University);
 
-                var capitalists = item.Capital.GetAllPopulation().Where(x => x.Type == PopType.Capitalists).First() as Capitalists;
+                var capitalists = item.Capital.AllPops.Where(x => x.Type == PopType.Capitalists).First() as Capitalists;
                 for (int i = 0; i < 3; i++)
                 {
                     var processingEnterprise = processingEnterprises.Random();
@@ -432,7 +447,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<KeyValuePair<IShareOwner, Procent>> GetAllShares()
         {
             foreach (var item in getAllExistingCountries())
-                foreach (var factory in item.getAllFactories())
+                foreach (var factory in item.AllFactories)
                     foreach (var record in factory.ownership.GetAllShares())
                         yield return record;
         }
@@ -441,29 +456,68 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<KeyValuePair<IShareable, Procent>> GetAllShares(IShareOwner owner)
         {
             foreach (var item in getAllExistingCountries())
-                foreach (var factory in item.getAllFactories())
+                foreach (var factory in item.AllFactories)
                     foreach (var record in factory.ownership.GetAllShares())
                         if (record.Key == owner)
                             yield return new KeyValuePair<IShareable, Procent>(factory, record.Value);
         }
 
-        public static IEnumerable<PopUnit> GetAllPopulation()
+        public static IEnumerable<PopUnit> AllPops
         {
-            foreach (var country in getAllExistingCountries())
+            get
             {
-                foreach (var item in country.GetAllPopulation())
-                    yield return item;
+                foreach (var country in getAllExistingCountries())
+                {
+                    foreach (var item in country.AllPops)
+                        yield return item;
+                }
+            }
+        }
+        public static IEnumerable<Producer> AllProducers
+        {
+            get
+            {
+                foreach (var country in getAllExistingCountries())
+                {
+                    foreach (var item in country.AllProducers)
+                        yield return item;
+                }
             }
         }
 
+        public static IEnumerable<Consumer> AllConsumers         
+        {
+            get
+            {
+                foreach (var country in getAllExistingCountries())
+                {
+                    foreach (var item in country.AllConsumers)
+                        yield return item;
+                }
+            }
+        }
+        public static IEnumerable<ISeller> AllSellers 
+        {
+            get
+            {
+                foreach (var country in getAllExistingCountries())
+                {
+                    foreach (var item in country.AllSellers)
+                        yield return item;
+                }
+            }
+        }
         /// <summary>
         /// Returns last escape type - demotion, migration or immigration
         /// </summary>
-        public IEnumerable<KeyValuePair<IWayOfLifeChange, int>> getAllPopulationChanges()
+        public IEnumerable<KeyValuePair<IWayOfLifeChange, int>> AllPopsChanges
         {
-            foreach (var item in GetAllPopulation())
-                foreach (var record in item.getAllPopulationChanges())
-                    yield return record;
+            get
+            {
+                foreach (var item in AllPops)
+                    foreach (var record in item.getAllPopulationChanges())
+                        yield return record;
+            }
         }
 
         //private static void calcBattles()
@@ -511,11 +565,11 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 country.SetStatisticToZero();
-                foreach (Province province in country.AllProvinces())
+                foreach (Province province in country.AllProvinces)
                 {
                     province.BalanceEmployableWorkForce();
                     {
-                        foreach (var item in province.getAllAgents())
+                        foreach (var item in province.AllAgents)
                             item.SetStatisticToZero();
                     }
                 }
@@ -551,8 +605,8 @@ namespace Nashet.EconomicSimulation
 
             // big PRODUCE circle
             foreach (Country country in World.getAllExistingCountries())
-                foreach (Province province in country.AllProvinces())
-                    foreach (var producer in province.getAllProducers())
+                foreach (Province province in country.AllProvinces)
+                    foreach (var producer in province.AllProducers)
                         producer.produce();
 
             // big CONCUME circle
@@ -562,30 +616,30 @@ namespace Nashet.EconomicSimulation
                 if (country.economy.getValue() == Economy.PlannedEconomy)
                 {
                     //consume in PE order
-                    foreach (Factory factory in country.getAllFactories())
+                    foreach (Factory factory in country.AllFactories)
                         factory.consumeNeeds();
 
                     if (country.Invented(Invention.ProfessionalArmy))
-                        foreach (var item in country.GetAllPopulation(PopType.Soldiers))
+                        foreach (var item in country.AllPops.Where(x => x.Type == PopType.Soldiers))
                             item.consumeNeeds();
 
-                    foreach (var item in country.GetAllPopulation(PopType.Workers))
+                    foreach (var item in country.AllPops.Where(x => x.Type == PopType.Workers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.GetAllPopulation(PopType.Farmers))
+                    foreach (var item in country.AllPops.Where(x => x.Type == PopType.Farmers))
                         item.consumeNeeds();
 
-                    foreach (var item in country.GetAllPopulation(PopType.Tribesmen))
+                    foreach (var item in country.AllPops.Where(x => x.Type == PopType.Tribesmen))
                         item.consumeNeeds();
                 }
                 else  //consume in regular order
-                    foreach (Province province in country.AllProvinces())//Province.allProvinces)
+                    foreach (Province province in country.AllProvinces)//Province.allProvinces)
                     {
-                        foreach (Factory factory in province.getAllFactories())
+                        foreach (Factory factory in province.AllFactories)
                         {
                             factory.consumeNeeds();
                         }
-                        foreach (PopUnit pop in province.GetAllPopulation())
+                        foreach (PopUnit pop in province.AllPops)
                         {
                             //That placed here to avoid issues with Aristocrats and Clerics
                             //Otherwise Aristocrats starts to consume BEFORE they get all what they should
@@ -593,7 +647,7 @@ namespace Nashet.EconomicSimulation
                                 if (pop.shouldPayAristocratTax())
                                     pop.payTaxToAllAristocrats();
                         }
-                        foreach (PopUnit pop in province.GetAllPopulation())
+                        foreach (PopUnit pop in province.AllPops)
                         {
                             pop.consumeNeeds();
                         }
@@ -621,9 +675,9 @@ namespace Nashet.EconomicSimulation
             foreach (Country country in World.getAllExistingCountries())
             {
                 Market.GiveMoneyForSoldProduct(country);
-                foreach (Province province in country.AllProvinces())//Province.allProvinces)
+                foreach (Province province in country.AllProvinces)//Province.allProvinces)
                 {
-                    foreach (Factory factory in province.getAllFactories())
+                    foreach (Factory factory in province.AllFactories)
                     {
                         if (country.economy.getValue() == Economy.PlannedEconomy)
                         {
@@ -646,7 +700,7 @@ namespace Nashet.EconomicSimulation
                     }
                     province.DestroyAllMarkedfactories();
                     // get pop's income section:
-                    foreach (PopUnit pop in province.GetAllPopulation())
+                    foreach (PopUnit pop in province.AllPops)
                     {
                         if (pop.Type == PopType.Workers)
                             pop.LearnByWork();
@@ -688,9 +742,9 @@ namespace Nashet.EconomicSimulation
             //investments circle. Needs to be separate, otherwise cashed  investments can conflict
             foreach (Country country in World.getAllExistingCountries())
             {
-                foreach (var province in country.AllProvinces())
+                foreach (var province in country.AllProvinces)
                 {
-                    foreach (var pop in province.GetAllPopulation())
+                    foreach (var pop in province.AllPops)
                     {
                         if (country.economy.getValue() != Economy.PlannedEconomy)
                             Rand.Call(() => pop.invest(), Options.PopInvestRate);

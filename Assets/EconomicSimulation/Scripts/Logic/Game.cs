@@ -67,7 +67,7 @@ namespace Nashet.EconomicSimulation
             //World.getAllExistingCountries().PerformAction(x => x.market.Initialize(x));  // should go after countries creation          
 
             //Game.updateStatus("Making grid..");
-            grid = new VoxelGrid<AbstractProvince>(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.GetAllProvinces());
+            grid = new VoxelGrid<AbstractProvince>(mapTexture.getWidth(), mapTexture.getHeight(), Options.cellMultiplier * mapTexture.getWidth(), mapTexture, World.AllAbstractProvinces);
 
             if (!devMode)
                 makeHelloMessage();
@@ -97,16 +97,16 @@ namespace Nashet.EconomicSimulation
             //r3DProvinceTextPrefab = GameObject.Find("3DProvinceNameText");
             //r3DCountryTextPrefab = GameObject.Find("3DCountryNameText");
 
-            World.GetAllLandProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            World.AllSeaProvinces().PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
-            foreach (var item in World.GetAllLandProvinces())
+            World.AllProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            World.AllSeaProvinces.PerformAction(x => x.setUnityAPI(grid.getMesh(x), grid.getBorders()));
+            foreach (var item in World.AllProvinces)
             {
                 var node = item.GameObject.GetComponent<Node>();
-                node.Set(item, item.getAllNeighbors());
+                node.Set(item, item.AllNeighbors());
                 World.Get.graph.AddNode(node);
             }
 
-            World.GetAllLandProvinces().PerformAction(x => x.SetBorderMaterials());
+            World.AllProvinces.PerformAction(x => x.SetBorderMaterials());
             Country.setUnityAPI();
             //seaProvinces = null;
             // todo clear resources
@@ -166,7 +166,7 @@ namespace Nashet.EconomicSimulation
 
         public static void redrawMapAccordingToMapMode()
         {
-            foreach (var item in World.GetAllLandProvinces())
+            foreach (var item in World.AllProvinces)
                 item.SetColorAccordingToMapMode();
         }
 

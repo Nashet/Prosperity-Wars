@@ -110,7 +110,7 @@ namespace Nashet.EconomicSimulation
 
         public virtual void setValue(AbstractReformValue selectedReformValue)
         {
-            foreach (PopUnit pop in country.GetAllPopulation())
+            foreach (PopUnit pop in country.AllPops)
                 if (pop.getSayingYes(selectedReformValue))
                 {
                     pop.loyalty.Add(Options.PopLoyaltyBoostOnDiseredReformEnacted);
@@ -310,7 +310,7 @@ namespace Nashet.EconomicSimulation
                 country.setSoldierWage(MoneyView.Zero);
 
                 //nationalization
-                foreach (var factory in province.getAllFactories())
+                foreach (var factory in province.AllFactories)
                 {
                     country.Nationilize(factory);
 
@@ -324,7 +324,7 @@ namespace Nashet.EconomicSimulation
                     //factory.setStatisticToZero();
                 }
                 //nationalize banks
-                foreach (var item in province.GetAllPopulation())
+                foreach (var item in province.AllPops)
                 {
                     item.PayAllAvailableMoney(country);
                     item.loans.SetZero();
@@ -453,7 +453,7 @@ namespace Nashet.EconomicSimulation
                 //nationalization
                 country.Bank.Nationalize();
 
-                foreach (var province in country.AllProvinces())
+                foreach (var province in country.AllProvinces)
                 {
                     onReformEnacted(province);
                 }
@@ -651,7 +651,7 @@ namespace Nashet.EconomicSimulation
                     Country.taxationForRich.setValue(TaxationForRich.PossibleStatuses[5]);
                 if (Country.taxationForPoor.getTypedValue().tax.get() > 0.5f)
                     Country.taxationForPoor.setValue(TaxationForPoor.PossibleStatuses[5]);
-                Country.getAllFactories().PerformAction(
+                Country.AllFactories.PerformAction(
                      x =>
                      {
                          x.setSubsidized(false);

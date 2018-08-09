@@ -65,7 +65,7 @@ namespace Nashet.EconomicSimulation
             sb.Clear();
             sb.Append("Expenses: ");
             sb.Append("\n Unemployment subsidies: ").Append(Game.Player.UnemploymentSubsidiesExpense)
-                .Append(" unemployment: ").Append(Game.Player.GetAllPopulation().GetAverageProcent(x => x.getUnemployment()));
+                .Append(" unemployment: ").Append(Game.Player.AllPops.GetAverageProcent(x => x.getUnemployment()));
             sb.Append("\n Enterprises subsidies: ").Append(Game.Player.FactorySubsidiesExpense);
             if (Game.Player.Invented(Invention.ProfessionalArmy))
                 sb.Append("\n Soldiers paychecks: ").Append(Game.Player.SoldiersWageExpense);

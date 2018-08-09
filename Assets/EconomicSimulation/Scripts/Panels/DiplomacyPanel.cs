@@ -54,18 +54,18 @@ namespace Nashet.EconomicSimulation
             sb.Append("\n\nGDP: ").Append(selectedCountry.getGDP()).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
             sb.Append("\n\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
             //sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.GetAveragePop(x=>x.needsFulfilled));
-            sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.needsFulfilled));
-            sb.Append(", loyalty: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.loyalty));
-            sb.Append(", education: ").Append(selectedCountry.GetAllPopulation().GetAverageProcent(x => x.Education));
+            sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.AllPops.GetAverageProcent(x => x.needsFulfilled));
+            sb.Append(", loyalty: ").Append(selectedCountry.AllPops.GetAverageProcent(x => x.loyalty));
+            sb.Append(", education: ").Append(selectedCountry.AllPops.GetAverageProcent(x => x.Education));
             sb.Append("\n\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
             sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
             sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
             sb.Append("\n\nState culture: ").Append(selectedCountry.getCulture());
-            sb.Append("\nCultures: ").Append(selectedCountry.GetAllPopulation().Group(x => x.culture, y => y.population.Get())
+            sb.Append("\nCultures: ").Append(selectedCountry.AllPops.Group(x => x.culture, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 5));
-            sb.Append("\nClasses: ").Append(selectedCountry.GetAllPopulation().Group(x => x.Type, y => y.population.Get())
+            sb.Append("\nClasses: ").Append(selectedCountry.AllPops.Group(x => x.Type, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
             if (Game.devMode)
                 sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces());

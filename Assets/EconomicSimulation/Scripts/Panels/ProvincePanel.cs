@@ -132,11 +132,11 @@ namespace Nashet.EconomicSimulation
             if (Game.devMode)
             {
                 sb.Append("\nID: ").Append(Game.selectedProvince.ID);
-                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.getAllNeighbors().getString(", "));
+                sb.Append("\nNeighbors: ").Append(Game.selectedProvince.AllNeighbors().getString(", "));
             }
             sb.Append("\nPopulation (with families): ").Append(Game.selectedProvince.getFamilyPopulation());
 
-            sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.GetAllPopulation().GetAverageProcent(x => x.loyalty));
+            sb.Append("\nAverage loyalty: ").Append(Game.selectedProvince.AllPops.GetAverageProcent(x => x.loyalty));
             //sb.Append("\nMajor culture: ").Append(Game.selectedProvince.getMajorCulture());
             //sb.Append("\nGDP: ").Append(Game.selectedProvince.getGDP());
             sb.Append("\nResource: ");
@@ -149,10 +149,10 @@ namespace Nashet.EconomicSimulation
             sb.Append("\nCores: ").Append(Game.selectedProvince.getCoresDescription());
             
 
-            sb.Append("\nCultures: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.culture, y => y.population.Get())
+            sb.Append("\nCultures: ").Append(Game.selectedProvince.AllPops.Group(x => x.culture, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 2));
 
-            sb.Append("\nClasses: ").Append(Game.selectedProvince.GetAllPopulation().Group(x => x.Type, y => y.population.Get())
+            sb.Append("\nClasses: ").Append(Game.selectedProvince.AllPops.Group(x => x.Type, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
 
             if (Game.selectedProvince.getModifiers().Count > 0)

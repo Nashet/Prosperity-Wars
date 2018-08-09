@@ -304,7 +304,7 @@ namespace Nashet.EconomicSimulation
 
             Country.rebelTo(x => x.getPopUnit().getMovement() == this, this);
 
-            mobilize(Country.AllProvinces());
+            mobilize(Country.AllProvinces);
 
             //if (targetReformValue is Separatism)
             //    ;

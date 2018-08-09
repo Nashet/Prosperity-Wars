@@ -56,7 +56,7 @@ namespace Nashet.EconomicSimulation
             {
                 if (hiredWorkForce.Count == 0)
                     //return Province.GetAveragePop(x => x.Education);
-                    return Province.GetAllPopulation().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.Education);
+                    return Province.AllPops.Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.Education);
                 else
                     return averageWorkersEducation.Copy();
             }
@@ -628,7 +628,7 @@ namespace Nashet.EconomicSimulation
             //Should be rise salary if: small unemployment, has profit, need has other resources
             if (IsOpen && Economy.isMarket.checkIfTrue(Country))
             {
-                var unemployment = Province.GetAllPopulation().Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
+                var unemployment = Province.AllPops.Where(x => x.Type == PopType.Workers).GetAverageProcent(x => x.getUnemployment());
                 var margin = GetMargin(true);
 
                 // rise salary to attract  workforce, including workforce from other factories

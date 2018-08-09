@@ -135,7 +135,7 @@ namespace Nashet.EconomicSimulation
             World.DayPassed += OnMoveArmy;
             //Province.OwnerChanged += CheckPathOnProvinceOwnerChanged;
             personal = new Dictionary<PopUnit, Corps>();
-            foreach (var pop in where.GetAllPopulation()) //mirrored in Staff. mobilization
+            foreach (var pop in where.AllPops) //mirrored in Staff. mobilization
                 if (pop.Type.canMobilize(owner) && pop.howMuchCanMobilize(owner, null) > 0)
                     //newArmy.add(item.mobilize(this));
                     this.add(Corps.mobilize(owner, pop));
@@ -631,7 +631,7 @@ namespace Nashet.EconomicSimulation
                                     Province.Country.mobilize(Province.Yield());
                                 else
                                 {
-                                    Province.Country.mobilize(Province.Country.AllProvinces());
+                                    Province.Country.mobilize(Province.Country.AllProvinces);
                                     Province.Country.AllArmies().PerformAction(x => x.SetPathTo(Province.Country.Capital));
                                 }
                             }

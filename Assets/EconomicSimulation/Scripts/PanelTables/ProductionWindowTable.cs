@@ -9,7 +9,7 @@ namespace Nashet.EconomicSimulation
         private SortOrder typeOrder, provinceOrder, productionOrder, resourcesOrder, workForceOrder, profitOrder,
             profitabilityOrder, salaryOrder, unemploymentOrder;
 
-        private Func<IEnumerable<Factory>> content;
+        private IEnumerable<Factory> content;
 
         private void Start()
         {
@@ -30,15 +30,15 @@ namespace Nashet.EconomicSimulation
             {
                 var selectedProvince = MainCamera.productionWindow.SelectedProvince;
                 if (selectedProvince == null)
-                    return Game.Player.getAllFactories();
+                    return Game.Player.AllFactories;
                 else
-                    return selectedProvince.getAllFactories();
+                    return selectedProvince.AllFactories;
             }
             else
-                return content();
+                return content;
         }
 
-        public void SetContent(Func<IEnumerable<Factory>> content)
+        public void SetContent(IEnumerable<Factory> content)
         {
             this.content = content;
         }

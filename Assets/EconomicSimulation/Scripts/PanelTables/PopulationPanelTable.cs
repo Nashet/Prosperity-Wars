@@ -38,9 +38,9 @@ namespace Nashet.EconomicSimulation
         {
             var selectedProvince = MainCamera.populationPanel.SelectedProvince;
             if (selectedProvince == null)
-                return Game.Player.GetAllPopulation();
+                return Game.Player.AllPops;
             else
-                return selectedProvince.GetAllPopulation();
+                return selectedProvince.AllPops;
         }
         private readonly StringBuilder sb = new StringBuilder();
         protected override void AddRow(PopUnit pop, int number)
