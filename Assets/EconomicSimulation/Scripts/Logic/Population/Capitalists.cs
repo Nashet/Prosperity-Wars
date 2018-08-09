@@ -61,7 +61,7 @@ namespace Nashet.EconomicSimulation
         public override void invest()
         {
             //should I invest?
-            if (Economy.isMarket.checkIfTrue(Country) && Country.Invented(Invention.Manufactures))
+            if (Economy.isMarket.checkIfTrue(Country) && Country.Inventions.IsInvented(Invention.Manufactures))
 
             {
                 // if AverageFactoryWorkforceFulfilling isn't full you can get more workforce by raising salary (implement it later)
@@ -72,12 +72,12 @@ namespace Nashet.EconomicSimulation
                 {
                     var isFactory = x.Key as Factory;
                     if (isFactory != null)
-                        return Country.InventedFactory(isFactory.Type);
+                        return Country.Inventions.IsInventedFactory(isFactory.Type);
                     else
                     {
                         var newFactory = x.Key as NewFactoryProject;
                         if (newFactory != null)
-                            return Country.InventedFactory(newFactory.Type);
+                            return Country.Inventions.IsInventedFactory(newFactory.Type);
                         else
                         {
                             var isBuyingShare = x.Key as Owners;

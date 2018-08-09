@@ -8,6 +8,7 @@ namespace Nashet.EconomicSimulation
     public static class  Diplomacy
     {
         private static readonly Dictionary<Country, Country> wars = new Dictionary<Country, Country>();
+
         public static void DeclareWar(Country attacker, Country defender)
         {
             if (!IsInWar(attacker, defender))

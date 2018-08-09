@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
         public Province(string name, int ID, Color colorID, Product resource) : base(name, ID, colorID)
         {
             country = World.UncolonizedLand;
-            ProvinceColor = country.getColor().getAlmostSameColor();
+            ProvinceColor = country.NationalColor.getAlmostSameColor();
             setResource(resource);
             fertileSoil = 5000;
 
@@ -139,7 +139,7 @@ namespace Nashet.EconomicSimulation
         public void simulate()
         {
             if (Rand.Get.Next(Options.ProvinceChanceToGetCore) == 1)
-                if (neighbors.Any(x => x.isCoreFor(Country)) && !cores.Contains(Country) && getMajorCulture() == Country.getCulture())
+                if (neighbors.Any(x => x.isCoreFor(Country)) && !cores.Contains(Country) && getMajorCulture() == Country.Culture)
                     cores.Add(Country);
             // modifiers.LastOrDefault()
             //foreach (var item in modifiers)
@@ -164,7 +164,7 @@ namespace Nashet.EconomicSimulation
 
         public bool isCoreFor(PopUnit pop)
         {
-            return cores.Any(x => x.getCulture() == pop.culture);
+            return cores.Any(x => x.Culture == pop.culture);
         }
 
         public string getCoresDescription()
@@ -220,7 +220,7 @@ namespace Nashet.EconomicSimulation
             // add loyalty penalty for conquered province // temp
             foreach (var pop in allPopUnits)
             {
-                if (pop.culture == taker.getCulture())
+                if (pop.culture == taker.Culture)
                     pop.loyalty.Add(Options.PopLoyaltyChangeOnAnnexStateCulture);
                 else
                     pop.loyalty.Subtract(Options.PopLoyaltyChangeOnAnnexNonStateCulture, false);
@@ -253,7 +253,7 @@ namespace Nashet.EconomicSimulation
         public void OnSecedeGraphic(Country taker)
         {
             //graphic stuff
-            ProvinceColor = taker.getColor().getAlmostSameColor();
+            ProvinceColor = taker.NationalColor.getAlmostSameColor();
             if (meshRenderer != null)
                 meshRenderer.material.color = getColorAccordingToMapMode();
             SetBorderMaterials();
@@ -794,7 +794,7 @@ namespace Nashet.EconomicSimulation
                     return ProvinceColor;
 
                 case Game.MapModes.Cultures: //culture mode
-                    //return World.getAllExistingCountries().FirstOrDefault(x => x.getCulture() == getMajorCulture()).getColor();
+                    //return World.getAllExistingCountries().FirstOrDefault(x => x.Culture == getMajorCulture()).getColor();
                     var culture = getMajorCulture();
                     if (culture == null)
                         return Color.white;
@@ -805,36 +805,36 @@ namespace Nashet.EconomicSimulation
                     if (Game.selectedProvince == null)
                     {
                         if (isCoreFor(Country))
-                            return Country.getColor();
+                            return Country.NationalColor;
                         else
                         {
-                            var c = getRandomCore();
-                            if (c == null)
+                            var randomCore = getRandomCore();
+                            if (randomCore == null)
                                 return Color.yellow;
                             else
-                                return c.getColor();
+                                return randomCore.NationalColor;
                         }
                     }
                     else
                     {
                         if (isCoreFor(Game.selectedProvince.Country))
-                            return Game.selectedProvince.Country.getColor();
+                            return Game.selectedProvince.Country.NationalColor;
                         else
                         {
                             if (isCoreFor(Country))
-                                return Country.getColor();
+                                return Country.NationalColor;
                             else
                             {
-                                var so = getRandomCore(x => x.isAlive());
+                                var so = getRandomCore(x => x.IsAlive);
                                 if (so != null)
-                                    return so.getColor();
+                                    return so.NationalColor;
                                 else
                                 {
                                     var c = getRandomCore();
                                     if (c == null)
                                         return Color.yellow;
                                     else
-                                        return c.getColor();
+                                        return c.NationalColor;
                                 }
                             }
                         }
@@ -852,7 +852,7 @@ namespace Nashet.EconomicSimulation
                         {
                             float maxColor = 3000;
                             //can improve performance
-                            var change = Country.provinces.AllPops.Sum(x => x.getAllPopulationChanges()
+                            var change = Country.Provinces.AllPops.Sum(x => x.getAllPopulationChanges()
                              .Where(y => y.Key == null || y.Key is Province || y.Key is Staff).Sum(y => y.Value));
                             if (change > 0)
                                 return Color.Lerp(Color.grey, Color.green, change / maxColor);
@@ -1100,7 +1100,7 @@ namespace Nashet.EconomicSimulation
 
         public void RemoveDeadPops()
         {
-            allPopUnits.RemoveAll(x => !x.isAlive());
+            allPopUnits.RemoveAll(x => !x.IsAlive);
         }
 
         //public PopUnit BithPop(int amount, PopType type, Culture culture)
@@ -1172,7 +1172,7 @@ namespace Nashet.EconomicSimulation
                     if (!pop.canVote(Country.government.getTypedValue())) // includes Minority politics, but not only
                         lifeQuality.Subtract(-0.10f, false);
 
-                    if (country.getCulture() != pop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
+                    if (country.Culture != pop.culture && country.minorityPolicy.getValue() != MinorityPolicy.Equality)
                         //lifeQuality.Subtract(Options.PopMinorityMigrationBarier, false);
                         return ReadOnlyValue.Zero;
                 }

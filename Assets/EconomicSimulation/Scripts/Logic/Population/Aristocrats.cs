@@ -87,12 +87,12 @@ namespace Nashet.EconomicSimulation
                            return false;
                        var isFactory = x as Factory;
                        if (isFactory != null)
-                           return Country.InventedFactory(isFactory.Type);
+                           return Country.Inventions.IsInventedFactory(isFactory.Type);
                        else
                        {
                            var newFactory = x as NewFactoryProject;
                            if (newFactory != null)
-                               return Country.InventedFactory(newFactory.Type);
+                               return Country.Inventions.IsInventedFactory(newFactory.Type);
                            else
                            {
                                var isBuyingShare = x as Owners;

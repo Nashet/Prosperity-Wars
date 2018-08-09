@@ -292,7 +292,7 @@ namespace Nashet.EconomicSimulation
         //public void clearDeadPops()
         //{
         //    foreach (var item in members)
-        //        if (!item.isAlive())
+        //        if (!item.IsAlive)
         //    {
         //    }
         //}

@@ -10,7 +10,7 @@
 
         public override bool canThisPromoteInto(PopType targetType)
         {
-            if (targetType == PopType.Farmers && Country.Invented(Invention.Farming)
+            if (targetType == PopType.Farmers && Country.Inventions.IsInvented(Invention.Farming)
              || targetType == PopType.Artisans
              )
                 return true;

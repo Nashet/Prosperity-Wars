@@ -63,7 +63,7 @@ namespace Nashet.EconomicSimulation
 
         public void onForceDecisionClick()
         {
-            foreach (PopUnit pop in Game.Player.provinces.AllPops)
+            foreach (PopUnit pop in Game.Player.Provinces.AllPops)
             {
                 if (pop.canVote() && !pop.getSayingYes(selectedReformValue))// can vote and voted no
                 {
@@ -156,10 +156,10 @@ namespace Nashet.EconomicSimulation
 
                 ////
                 Procent procentPopulationSayedYes = new Procent(0f);
-                Procent procentVotersSayedYes = Game.Player.provinces.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
+                Procent procentVotersSayedYes = Game.Player.Provinces.getYesVotes(selectedReformValue, ref procentPopulationSayedYes);
 
                 Dictionary<PopType, int> divisionPopulationResult = new Dictionary<PopType, int>();
-                Dictionary<PopType, int> divisionVotersResult = Game.Player.provinces.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
+                Dictionary<PopType, int> divisionVotersResult = Game.Player.Provinces.getYesVotesByType(selectedReformValue, ref divisionPopulationResult);
 
                 if (selectedReformValue != selectedReform.getValue())
                 {
@@ -169,7 +169,7 @@ namespace Nashet.EconomicSimulation
                         foreach (PopType type in PopType.getAllPopTypes())
                             if (divisionVotersResult[type] > 0)
                             {
-                                Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.provinces.getPopulationAmountByType(type));
+                                Procent res = new Procent(divisionVotersResult[type] / (float)Game.Player.Provinces.getPopulationAmountByType(type));
                                 descriptionText.text += res + " of " + type + "; ";
                             }
                         descriptionText.text += ")";
@@ -181,7 +181,7 @@ namespace Nashet.EconomicSimulation
                     foreach (PopType type in PopType.getAllPopTypes())
                         if (divisionPopulationResult[type] > 0)
                         {
-                            Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.provinces.getPopulationAmountByType(type));
+                            Procent res = new Procent(divisionPopulationResult[type] / (float)Game.Player.Provinces.getPopulationAmountByType(type));
                             descriptionText.text += res + " of " + type + "; ";
                         }
                     descriptionText.text += ")";

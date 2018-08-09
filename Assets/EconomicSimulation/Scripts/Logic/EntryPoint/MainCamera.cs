@@ -145,7 +145,7 @@ namespace Nashet.EconomicSimulation
 
                 if (World.Get.IsRunning && !MessagePanel.IsOpenAny())
                 {
-                    if (Game.isPlayerSurrended() || !Game.Player.isAlive() || Time.time - previousFrameTime >= simulationSpeedLimit)
+                    if (Game.isPlayerSurrended() || !Game.Player.IsAlive || Time.time - previousFrameTime >= simulationSpeedLimit)
                     {
                         World.simulate();
                         //Unit.RedrawAll();
@@ -173,7 +173,7 @@ namespace Nashet.EconomicSimulation
             {
                 Game.playerVisibleProvinces.Clear();
                 Game.playerVisibleProvinces.AddRange(Game.Player.AllProvinces);
-                Game.Player.provinces.AllNeighborProvinces().Distinct().PerformAction(
+                Game.Player.Provinces.AllNeighborProvinces().Distinct().PerformAction(
                     x => Game.playerVisibleProvinces.Add(x));
 
                 if (Game.DrawFogOfWar && Game.MapMode == Game.MapModes.Political)
@@ -241,8 +241,8 @@ namespace Nashet.EconomicSimulation
                     {
                         if (Game.selectedProvince == null)
                             tooltip.SetTextDynamic(() =>
-                           "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.provinces.AllPops.Sum(x => x.population.Get())
-                           + "\n" + hoveredProvince.Country.provinces.AllPopsChanges
+                           "Country: " + hoveredProvince.Country + ", population (men): " + hoveredProvince.Country.Provinces.AllPops.Sum(x => x.population.Get())
+                           + "\n" + hoveredProvince.Country.Provinces.AllPopsChanges
                            .Where(y => y.Key == null || y.Key is Staff || (y.Key is Province && (y.Key as Province).Country != hoveredProvince.Country))
                            .getString("\n", "Total change: "));
                         else

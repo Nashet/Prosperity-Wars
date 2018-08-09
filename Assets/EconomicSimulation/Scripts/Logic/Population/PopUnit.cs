@@ -53,7 +53,7 @@ namespace Nashet.EconomicSimulation
             modifierMinorityPolicy, modifierSomeEverydayNeedsFulfilled;
 
 
-        private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.provinces.Count > (x as PopUnit).Country.government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
+        private static readonly Modifier modCountryIsToBig = new Modifier(x => (x as PopUnit).Country.Provinces.Count > (x as PopUnit).Country.government.getTypedValue().getLoyaltySizeLimit(), "That country is too big for good management", -0.5f, false);
 
         private readonly Date born;
         private Movement movement;
@@ -328,7 +328,7 @@ namespace Nashet.EconomicSimulation
             Movement.leave(this);
         }
 
-        //public Culture getCulture()
+        //public Culture Culture
         //{
         //    return culture;
         //}
@@ -476,9 +476,12 @@ namespace Nashet.EconomicSimulation
             return randomPopulation;
         }
 
-        public bool isAlive()
+        public bool IsAlive
         {
-            return population.Get() > 0;
+            get
+            {
+                return population.Get() > 0;
+            }
         }
 
         /// <summary>
@@ -586,7 +589,7 @@ namespace Nashet.EconomicSimulation
 
         public bool isStateCulture()
         {
-            return culture == Country.getCulture();
+            return culture == Country.Culture;
         }
 
         //virtual public bool CanGainDividents()
@@ -939,7 +942,7 @@ namespace Nashet.EconomicSimulation
         {
             foreach (var item in Province.AllCores())
             {
-                if (!item.isAlive() && item != Country && item.getCulture() == culture)//todo doesn't supports different countries for same culture
+                if (!item.IsAlive && item != Country && item.Culture == culture)//todo doesn't supports different countries for same culture
                 {
                     return Separatism.find(item);
                 }
@@ -1185,13 +1188,13 @@ namespace Nashet.EconomicSimulation
 
         //        foreach (var country in World.getAllExistingCountries())
         //            //if (
-        //            //(country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+        //            //(country.Culture == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
         //            //&& country != this.Country)
         //            //foreach (var proposedNewProvince in country.getAllProvinces())
         //            //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
         //            //province =>
         //            //province.Country != this.Country && province.Country != World.UncolonizedLand
-        //            //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+        //            //&& (province.Country.Culture == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
         //            //))
 
         //            foreach (var proposedNewProvince in Province.getAllNeighbors().Where(x => x.Country != Country))
@@ -1235,13 +1238,13 @@ namespace Nashet.EconomicSimulation
 
                 foreach (var country in World.getAllExistingCountries())
                     //if (
-                    //(country.getCulture() == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                    //(country.Culture == this.culture || country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     //&& country != this.Country)
                     //foreach (var proposedNewProvince in country.getAllProvinces())
                     //foreach (var proposedNewProvince in World.GetAllProvinces().Where(
                     //province =>
                     //province.Country != this.Country && province.Country != World.UncolonizedLand
-                    //&& (province.Country.getCulture() == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
+                    //&& (province.Country.Culture == this.culture || province.Country.minorityPolicy.getValue() == MinorityPolicy.Equality)
                     //))
 
                     foreach (var proposedNewProvince in Province.AllNeighbors().Where(x => x.Country != Country))
@@ -1271,8 +1274,8 @@ namespace Nashet.EconomicSimulation
                 int assimilationSize = getAssimilationSize();
                 if (assimilationSize > 0)
                 {
-                    makeVirtualPop(type, this, assimilationSize, Province, Country.getCulture(), culture);
-                    populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(Country.getCulture(), assimilationSize * -1));
+                    makeVirtualPop(type, this, assimilationSize, Province, Country.Culture, culture);
+                    populationChanges.Enqueue(new KeyValuePair<IWayOfLifeChange, int>(Country.Culture, assimilationSize * -1));
                     isAssimilated = true;
                 }
             }
@@ -1306,7 +1309,7 @@ namespace Nashet.EconomicSimulation
 
         public virtual void invest()
         {
-            if (Country.Invented(Invention.Banking))
+            if (Country.Inventions.IsInvented(Invention.Banking))
             {
                 //Hmm.. Here it's about some world average price..
                 MoneyView extraMoney = Cash.Copy().Subtract(

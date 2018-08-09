@@ -1,4 +1,5 @@
-﻿using Nashet.ValueSpace;
+﻿using Nashet.Utils;
+using Nashet.ValueSpace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace Nashet.EconomicSimulation
 {
+
     /// <summary>
     /// Encapsulates ability to own provinces 
     /// </summary>
-    public class ProvinceHolder : IProvinceHolder, IPopulated
+    public class ProvinceHolder : Component<Country>, IProvinceHolder, IPopulated
     {
         protected readonly List<Province> ownedProvinces = new List<Province>();
-        protected Country owner;
+       
 
-        public ProvinceHolder(Country owner)
+        public ProvinceHolder(Country owner):base (owner)
         {
-            this.owner = owner;
+            
         }
         //public IEnumerator<Province> GetEnumerator()
         //{
@@ -283,7 +285,7 @@ namespace Nashet.EconomicSimulation
             var res = new List<Country>();
             foreach (var item in AllCoresOnMyland())
             {
-                if (!item.isAlive())
+                if (!item.IsAlive)
                     res.Add(item);
             }
             return res;
@@ -292,13 +294,13 @@ namespace Nashet.EconomicSimulation
         {
             Country oldCountry = province.Country;
 
-            province.Country.provinces.ownedProvinces.Remove(province);
+            province.Country.Provinces.ownedProvinces.Remove(province);
             ownedProvinces.Add(province);
             province.OnSecedeTo(owner, addModifier);
             province.OnSecedeGraphic(owner);
 
             //kill country or move capital
-            if (oldCountry.provinces.Count == 0)
+            if (oldCountry.Provinces.Count == 0)
                 oldCountry.OnKillCountry(owner);
             else if (province == oldCountry.Capital)
             {

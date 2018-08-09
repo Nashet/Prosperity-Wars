@@ -46,26 +46,26 @@ namespace Nashet.EconomicSimulation
             captionText.text = sb.ToString();
 
             sb.Clear();
-            sb.Append("Population: ").Append(selectedCountry.provinces.getFamilyPopulation().ToString("N0")).Append("; rank: ").Append(selectedCountry.getPopulationRank());
-            sb.Append(". Provinces: ").Append(selectedCountry.provinces.Count).Append("; rank: ").Append(selectedCountry.getSizeRank());
+            sb.Append("Population: ").Append(selectedCountry.Provinces.getFamilyPopulation().ToString("N0")).Append("; rank: ").Append(selectedCountry.getPopulationRank());
+            sb.Append(". Provinces: ").Append(selectedCountry.Provinces.Count).Append("; rank: ").Append(selectedCountry.getSizeRank());
             //sb.Append(", str: ").Append(selectedCountry.getStregth(null));
             //.Get().ToString("N3")
             //.ToString("F3")
             sb.Append("\n\nGDP: ").Append(selectedCountry.getGDP()).Append("; rank: ").Append(selectedCountry.getGDPRank()).Append("; world share: ").Append(selectedCountry.getGDPShare());
             sb.Append("\n\nGDP per thousand men: ").Append(selectedCountry.getGDPPer1000()).Append("; rank: ").Append(selectedCountry.getGDPPer1000Rank());
             //sb.Append("\nAverage needs fulfilling: ").Append(selectedCountry.GetAveragePop(x=>x.needsFulfilled));
-            sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.provinces.AllPops.GetAverageProcent(x => x.needsFulfilled));
-            sb.Append(", loyalty: ").Append(selectedCountry.provinces.AllPops.GetAverageProcent(x => x.loyalty));
-            sb.Append(", education: ").Append(selectedCountry.provinces.AllPops.GetAverageProcent(x => x.Education));
+            sb.Append("\n\nPops average needs fulfilling: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.needsFulfilled));
+            sb.Append(", loyalty: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.loyalty));
+            sb.Append(", education: ").Append(selectedCountry.Provinces.AllPops.GetAverageProcent(x => x.Education));
             sb.Append("\n\nReforms: ").Append(selectedCountry.government.getValue()).Append("; ").Append(selectedCountry.economy.getValue()).Append("; ").Append(selectedCountry.minorityPolicy.getValue());
             sb.AppendFormat("; {0}", selectedCountry.unemploymentSubsidies.getValue());
             sb.AppendFormat("; {0}", selectedCountry.minimalWage.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForPoor.getValue());
             sb.AppendFormat("; {0}", selectedCountry.taxationForRich.getValue());
-            sb.Append("\n\nState culture: ").Append(selectedCountry.getCulture());
-            sb.Append("\nCultures: ").Append(selectedCountry.provinces.AllPops.Group(x => x.culture, y => y.population.Get())
+            sb.Append("\n\nState culture: ").Append(selectedCountry.Culture);
+            sb.Append("\nCultures: ").Append(selectedCountry.Provinces.AllPops.Group(x => x.culture, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 5));
-            sb.Append("\nClasses: ").Append(selectedCountry.provinces.AllPops.Group(x => x.Type, y => y.population.Get())
+            sb.Append("\nClasses: ").Append(selectedCountry.Provinces.AllPops.Group(x => x.Type, y => y.population.Get())
                 .OrderByDescending(x => x.Value.get()).ToString(", ", 0));
             if (Game.devMode)
                 sb.Append("\n\nArmy: ").Append(selectedCountry.getDefenceForces());

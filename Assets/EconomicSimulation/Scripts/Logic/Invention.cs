@@ -39,15 +39,15 @@ namespace Nashet.EconomicSimulation
             Universities = new Invention("Universities", "Allows building of Universities", new Value(150f))
             ;
 
-        public static readonly Condition ProfessionalArmyInvented = new Condition(x => (x as Country).Invented(ProfessionalArmy), "Professional Army is invented", true);
-        public static readonly Condition SteamPowerInvented = new Condition(x => (x as Country).Invented(SteamPower), "Steam Power is invented", true);
-        public static readonly Condition CombustionEngineInvented = new Condition(x => (x as Country).Invented(CombustionEngine), "Combustion Engine is invented", true);
-        public static readonly Condition IndividualRightsInvented = new Condition(x => (x as Country).Invented(IndividualRights), "Individual Rights are invented", true);
-        public static readonly Condition BankingInvented = new Condition(x => (x as Country).Invented(Banking), "Banking is invented", true);
-        public static readonly Condition WelfareInvented = new Condition(x => (x as Country).Invented(Welfare), "Welfare is invented", true);
-        public static readonly Condition CollectivismInvented = new Condition(x => (x as Country).Invented(Collectivism), "Collectivism is invented", true);
-        public static readonly Condition ManufacturesInvented = new Condition(x => (x as Country).Invented(Manufactures), "Manufactures are invented", true);
-        public static readonly Condition ManufacturesUnInvented = new Condition(x => !(x as Country).Invented(Manufactures), "Manufactures aren't invented", true);
+        public static readonly Condition ProfessionalArmyInvented = new Condition(x => (x as Country).Inventions.IsInvented(ProfessionalArmy), "Professional Army is invented", true);
+        public static readonly Condition SteamPowerInvented = new Condition(x => (x as Country).Inventions.IsInvented(SteamPower), "Steam Power is invented", true);
+        public static readonly Condition CombustionEngineInvented = new Condition(x => (x as Country).Inventions.IsInvented(CombustionEngine), "Combustion Engine is invented", true);
+        public static readonly Condition IndividualRightsInvented = new Condition(x => (x as Country).Inventions.IsInvented(IndividualRights), "Individual Rights are invented", true);
+        public static readonly Condition BankingInvented = new Condition(x => (x as Country).Inventions.IsInvented(Banking), "Banking is invented", true);
+        public static readonly Condition WelfareInvented = new Condition(x => (x as Country).Inventions.IsInvented(Welfare), "Welfare is invented", true);
+        public static readonly Condition CollectivismInvented = new Condition(x => (x as Country).Inventions.IsInvented(Collectivism), "Collectivism is invented", true);
+        public static readonly Condition ManufacturesInvented = new Condition(x => (x as Country).Inventions.IsInvented(Manufactures), "Manufactures are invented", true);
+        public static readonly Condition ManufacturesUnInvented = new Condition(x => !(x as Country).Inventions.IsInvented(Manufactures), "Manufactures aren't invented", true);
 
         public Invention(string name, string description, Value cost) : base(name)
         {
@@ -58,11 +58,14 @@ namespace Nashet.EconomicSimulation
             allInventions.Add(this);
         }
 
-        public static IEnumerable<Invention> getAll()
+        public static IEnumerable<Invention> All
         {
-            foreach (var item in allInventions)
+            get
             {
-                yield return item;
+                foreach (var item in allInventions)
+                {
+                    yield return item;
+                }
             }
         }
 
@@ -71,18 +74,18 @@ namespace Nashet.EconomicSimulation
             return inventedPhrase;
         }
 
-        public bool isAvailable(Country country)
+        public bool IsInvented(Country country)
         {
             if (//this == Collectivism
                 //||
-                (this == Gunpowder && !country.Invented(Metal))
-                || (this == Coal && !country.Invented(Metal))
-                || (this == SteamPower && (!country.Invented(Metal) || !country.Invented(Manufactures)))
-                || (this == Firearms && !country.Invented(Gunpowder))
-                || (this == CombustionEngine && !country.Invented(SteamPower))
-                || (this == Tanks && !country.Invented(CombustionEngine))
-                || (this == Airplanes && !country.Invented(CombustionEngine))
-                || (this == Electronics && !country.Invented(Airplanes))
+                (this == Gunpowder && !country.Inventions.IsInvented(Metal))
+                || (this == Coal && !country.Inventions.IsInvented(Metal))
+                || (this == SteamPower && (!country.Inventions.IsInvented(Metal) || !country.Inventions.IsInvented(Manufactures)))
+                || (this == Firearms && !country.Inventions.IsInvented(Gunpowder))
+                || (this == CombustionEngine && !country.Inventions.IsInvented(SteamPower))
+                || (this == Tanks && !country.Inventions.IsInvented(CombustionEngine))
+                || (this == Airplanes && !country.Inventions.IsInvented(CombustionEngine))
+                || (this == Electronics && !country.Inventions.IsInvented(Airplanes))
                 )
                 return false;
             else

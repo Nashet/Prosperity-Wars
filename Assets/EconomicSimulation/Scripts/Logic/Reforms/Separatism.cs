@@ -38,7 +38,7 @@ namespace Nashet.EconomicSimulation
 
         public override bool isAvailable(Country country)
         {
-            return !separatismTarget.isAlive();
+            return !separatismTarget.IsAlive;
         }
 
         public Country Country

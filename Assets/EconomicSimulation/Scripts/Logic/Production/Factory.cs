@@ -81,7 +81,7 @@ namespace Nashet.EconomicSimulation
             },
                 "High production concentration bonus", 0.25f, false),
 
-            modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).Country.Invented(Invention.Mining) && (x as Factory).Type.isShaft(),
+            modifierInventedMiningAndIsShaft = new Modifier(x => (x as Factory).Country.Inventions.IsInvented(Invention.Mining) && (x as Factory).Type.isShaft(),
                new StringBuilder("Invented ").Append(Invention.Mining).ToString(), 0.50f, false),
 
             modifierBelongsToCountry = new Modifier(x => (x as Factory).ownership.IsCountryOwnsControlPacket(), "Control packet belongs to government", -0.35f, false),
@@ -216,7 +216,7 @@ namespace Nashet.EconomicSimulation
              new Modifier(x=>(x as Factory).Province.hasModifier(TemporaryModifier.recentlyConquered), TemporaryModifier.recentlyConquered.ToString(), -0.20f, false),
              new Modifier(Government.isTribal, x=>(x as Factory).Country, -0.3f, false),
              new Modifier(Government.isDespotism, x=>(x as Factory).Country, -0.20f, false), // remove this?
-             new Modifier(x=>!(x as Factory).Country.InventedFactory((x as Factory).Type), "Uses uninvented technologies", -0.3f, false)
+             new Modifier(x=>!(x as Factory).Country.Inventions.IsInventedFactory((x as Factory).Type), "Uses uninvented technologies", -0.3f, false)
             });
 
         /// <summary>
@@ -809,7 +809,7 @@ namespace Nashet.EconomicSimulation
             toRemove = true;
 
             //return loans only if banking invented
-            if (Country.Invented(Invention.Banking))
+            if (Country.Inventions.IsInvented(Invention.Banking))
             {
                 if (loans.isNotZero())
                 {

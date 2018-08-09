@@ -237,7 +237,7 @@ namespace Nashet.EconomicSimulation
         public static IEnumerable<Staff> getAllStaffs()
         {
             foreach (var country in World.getAllExistingCountries())
-                if (country.isAlive() && country != World.UncolonizedLand)
+                if (country.IsAlive && country != World.UncolonizedLand)
                 {
                     yield return country;
                     foreach (var staff in country.movements)
